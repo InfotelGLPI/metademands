@@ -2,16 +2,16 @@
 
 Wiki : https://github.com/InfotelGLPI/metademands/wiki
 
-Many GLPI users want to set up standard requests, so custom forms to create multiple tickets (assigned to X different groups).
+Many GLPI users want to configure complex requests. As a result, custom forms must allow you to create multiple tickets (assigned to X different groups).
 
-This plugin add the management of standard requests into GLPI. 
+This plugin adds complex request handling in GLPI.
 
-Create your own wizard for end users & generate child tickets for each technician's group.
+Create your own end-user wizard and generate child tickets for each group of technicians.
 
-Features :
+Characteristics :
 
-- [X] Generate your own wizards
-- [X] Link with ticket category for launch it automatically
-- [X] Create a father /childs tickets
-- [X] Semi-automatic creation of childs tickets
+- [X] Generate your own assistants
+- [X] Link with the ticket category to launch it automatically
+- [X] Create a father / child ticket
+- [X] Semi-automatic creation of child tickets
 - [X] Scheduling created tickets
