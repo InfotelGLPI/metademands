@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <name>MetaDemands</name>
+    <key>metademands</key>
+    <state>stable</state>
+    <description>
+        <short>
+            <fr><![CDATA[Ce plugin permet de créer des wizards pour gérer des demandes complexes dans GLPI qui génèreront des tickets enfants attribués à des groupes de techniciens différents]]></fr>
+            <en><![CDATA[This plugin allows you to create wizards to handle complex requests in GLPI that will generate child tickets assigned to different groups of technicians]]></en>
+        </short>
+        <long>
+            <fr><![CDATA[Ce plugin permet de créer des wizards pour gérer des demandes complexes dans GLPI qui génèreront des tickets enfants attribués à des groupes de techniciens différents]]></fr>
+            <en><![CDATA[This plugin allows you to create wizards to handle complex requests in GLPI that will generate child tickets assigned to different groups of technicians]]></en>
+        </long>
+    </description>
+    <homepage>https://github.com/InfotelGLPI/metademands</homepage>
+    <download>https://github.com/InfotelGLPI/metademands/releases</download>
+    <issues>https://github.com/InfotelGLPI/metademands/issues</issues>
+    <readme>https://github.com/InfotelGLPI/metademands/wiki</readme>
+    <authors>
+        <author>Xavier CAILLAUD</author>
+        <author>Infotel</author>
+    </authors>
+    <versions>
+        <version>
+            <num>2.5.2</num>
+            <compatibility>9.3</compatibility>
+        </version>
+    </versions>
+    <langs>
+        <lang>en_GB</lang>
+        <lang>fr_FR</lang>
+    </langs>
+    <license><![CDATA[GPL v2+]]></license>
+    <tags>
+        <fr>
+            <tag>Demande</tag>
+            <tag>Tickets enfants</tag>
+            <tag>Wizard</tag>
+        </fr>
+        <en>
+            <tag>Request</tag>
+            <tag>Child tickets</tag>
+            <tag>Wizard</tag>
+        </en>
+    </tags>
+</root>
