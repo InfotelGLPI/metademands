@@ -3,6 +3,7 @@
     <name>MetaDemands</name>
     <key>metademands</key>
     <state>stable</state>
+    <logo>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/metademands.png</logo>
     <description>
         <short>
             <fr><![CDATA[Ce plugin permet de créer des wizards pour gérer des demandes complexes dans GLPI qui génèreront des tickets enfants attribués à des groupes de techniciens différents]]></fr>
