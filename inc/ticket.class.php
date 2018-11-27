@@ -597,6 +597,77 @@ class PluginMetademandsTicket extends CommonDBTM {
 
    /**
     * @param       $tickets_id
+    * @param array $values
+    *
+    * @return bool
+    */
+   function getHelpdeskApplicationEnvironmentForCatalogueService($tickets_id, $values = []) {
+      global $CFG_GLPI;
+
+      // validation des droits
+      $config = PluginMetademandsConfig::getInstance();
+      if (!$this->canview() || !Session::haveRight('ticket', READ) || !$config['enable_application_environment']) {
+         return false;
+      }
+
+      list($values, $tt) = $this->initApplicationEnvironment($tickets_id, $values);
+
+      echo "<div class=\"form-group\">";
+      // APPLICATION
+      echo "<label class=\"bt-col-md-4 control-label\">";
+      echo $tt->getBeginHiddenFieldText('plugin_metademands_itilapplications_id');
+      echo sprintf(__('%1$s%2$s'), PluginMetademandsITILApplication::getTypeName(0), $tt->getMandatoryMark('plugin_metademands_itilapplications_id'));
+      echo $tt->getEndHiddenFieldText('plugin_metademands_itilapplications_id');
+      echo "</label>";
+      echo "<div class=\"bt-col-md-4 selectContainer\">";
+      echo "<div class=\"input-group\">";
+      echo $tt->getBeginHiddenFieldText('plugin_metademands_itilapplications_id');
+      $rand = mt_rand();
+
+      $params = ['itilapplications_id' => '__VALUE__',
+                 'entity_restrict'     => $values["entities_id"],
+                 'itilenvironments_id' => $values['plugin_metademands_itilenvironments_id']];
+
+      $opt = ['value'    => $values['plugin_metademands_itilapplications_id'],
+              'entity'   => $values["entities_id"],
+              'toupdate' => ['update_item'     => ['value_fieldname' => "dropdown_plugin_metademands_itilapplications_id".$rand,
+                                                   'to_update'       => "show_environment$rand",
+                                                   'url'             => $CFG_GLPI["root_doc"]."/plugins/metademands/ajax/dropdownTicketEnvironments.php",
+                                                   'moreparams'      => $params]],
+              'rand'     => $rand];
+
+      Dropdown::show('PluginMetademandsITILApplication', $opt);
+      echo $tt->getEndHiddenFieldText('plugin_metademands_itilenvironments_id');
+      echo "</div>";
+      echo "</div>";
+      echo "<br><br>";
+      // ENVIRONMENT
+      echo "<label class=\"bt-col-md-4 control-label\">";
+      echo $tt->getBeginHiddenFieldText('plugin_metademands_itilenvironments_id');
+      echo sprintf(__('%1$s%2$s'), PluginMetademandsITILEnvironment::getTypeName(0), $tt->getMandatoryMark('plugin_metademands_itilenvironments_id'));
+      echo $tt->getEndHiddenFieldText('plugin_metademands_itilenvironments_id');
+      echo "</label>";
+      echo "<div class=\"bt-col-md-4 selectContainer\">";
+      echo "<div class=\"input-group\">";
+      echo $tt->getBeginHiddenFieldText('plugin_metademands_itilenvironments_id');
+      $used = [];
+      if ($values['plugin_metademands_itilapplications_id'] != 0 && $values['plugin_metademands_itilapplications_id'] != 1) {
+         $used[] = 1;
+      }
+      $opt = ['value'  => $values['plugin_metademands_itilenvironments_id'],
+              'entity' => $values["entities_id"],
+              'used'   => $used];
+      echo "<span id='show_environment$rand'>";
+      Dropdown::show('PluginMetademandsITILEnvironment', $opt);
+      echo "</span>";
+      echo $tt->getEndHiddenFieldText('plugin_metademands_itilenvironments_id');
+      echo "</div>";
+      echo "</div>";
+      echo "</div>";
+   }
+
+   /**
+    * @param       $tickets_id
     * @param       $input
     * @param array $options
     */
