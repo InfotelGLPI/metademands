@@ -794,7 +794,7 @@ class PluginMetademandsField extends CommonDBChild {
                   foreach ($values as $key => $value) {
                      echo "<p id='custom_values$key'>" . __('Value') . " " . $key . " ";
                      echo '<input type="text" name="custom_values[' . $key . ']"  value="' . $value . '" size="30"/>';
-                     if ($params['value'] == 'checkbox' && $params['value'] == 'radio') {
+                     if ($params['value'] == 'checkbox' || $params['value'] == 'radio') {
                         echo " " . __('Comment') . " ";
                         echo '<input type="text" name="comment_values[' . $key . ']"  value="' . $comment[$key] . '" size="30"/>';
                      }
