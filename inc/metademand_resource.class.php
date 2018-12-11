@@ -111,7 +111,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       }
 
       $used_data = [];
-      $data = $this->getDataForResourceContractType($resourceContractType->fields['id'], "`entities_id` IN ('".implode("','", $_SESSION['glpiactiveentities'])."')");
+      $data = $this->getDataForResourceContractType($resourceContractType->fields['id'], ['entities_id' => $_SESSION['glpiactiveentities']]);
       if ($data) {
          foreach ($data as $field) {
             $used_data[] = $field['plugin_metademands_metademands_id'];
@@ -201,7 +201,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       }
 
       if (!empty($resources->fields["plugin_resources_contracttypes_id"])) {
-         $data = $metademand_resource->getDataForResourceContractType($resources->fields['plugin_resources_contracttypes_id'], '`entities_id`='.$_SESSION['glpiactive_entity']);
+         $data = $metademand_resource->getDataForResourceContractType($resources->fields['plugin_resources_contracttypes_id'], ['entities_id' => $_SESSION['glpiactive_entity']]);
          $data = array_shift($data);
          if (!empty($data["plugin_metademands_metademands_id"])) {
             Html::redirect($CFG_GLPI["root_doc"]."/plugins/metademands/front/wizard.form.php?metademands_id=".$data["plugin_metademands_metademands_id"]."&resources_id=".$resources->fields['id']."&resources_step=".$resources_step."&step=2");
@@ -216,7 +216,9 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
     * @return array
     */
    function getDataForResourceContractType($resourceContractType_id, $condition = '1') {
-      $data = $this->find('`plugin_resources_contracttypes_id`='.$resourceContractType_id." AND $condition");
+      $cond  = ['plugin_resources_contracttypes_id' => $resourceContractType_id]
+                    + $condition;
+      $data = $this->find($cond);
       return $data;
    }
 

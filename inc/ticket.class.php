@@ -185,7 +185,7 @@ class PluginMetademandsTicket extends CommonDBTM {
    static function checkSonTicketsStatus(Ticket $ticket, $with_message = true) {
 
       $ticket_metademand = new PluginMetademandsTicket_Metademand();
-      $ticket_metademand_data = $ticket_metademand->find('`tickets_id` = '.$ticket->fields['id']);
+      $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
 
       // If ticket is Parent : Check if all sons ticket are closed
       if (count($ticket_metademand_data)) {

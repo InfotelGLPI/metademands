@@ -384,7 +384,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       // Check if metademand tasks has been already created
       $ticket_metademand = new PluginMetademandsTicket_Metademand();
-      $ticket_metademand_data = $ticket_metademand->find('`plugin_metademands_metademands_id` = '.$metademands->fields['id']);
+      $ticket_metademand_data = $ticket_metademand->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
       $solved = PluginMetademandsTicket::isTicketSolved($ticket_metademand_data);
       if (!$solved && $canedit) {
          $metademands->showDuplication($metademands->fields['id']);

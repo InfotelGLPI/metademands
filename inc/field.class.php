@@ -365,7 +365,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param $canedit
     */
    private function listFields($plugin_metademands_metademands_id, $canedit) {
-      $data = $this->find("`plugin_metademands_metademands_id` = ".$plugin_metademands_metademands_id, '`rank`, `order`');
+      $data = $this->find(['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id], '`rank`, `order`');
       $rand = mt_rand();
 
       if (count($data)) {
@@ -495,8 +495,9 @@ class PluginMetademandsField extends CommonDBChild {
             $list_fields = [];
             $field = new self();
             foreach ($metademands_parent as $parent_id) {
-               $datas_fields = $field->find("`plugin_metademands_metademands_id` = " . $parent_id . " 
-                                                   AND `type` NOT IN ('parent_field', 'upload')", '`rank`, `order`');
+               $condition = ['plugin_metademands_metademands_id' => $parent_id,
+                             ['NOT' => ['type' => ['parent_field', 'upload']]]];
+               $datas_fields = $field->find($condition, '`rank`, `order`');
                foreach ($datas_fields as $data_field) {
                   $list_fields[$data_field['id']] = $data_field['label'];
                }
@@ -721,9 +722,9 @@ class PluginMetademandsField extends CommonDBChild {
                   foreach ($metademands_parent as $parent_id) {
                      if ($metademand_parent->getFromDB($parent_id)) {
                         $name_metademand = $metademand_parent->getName();
-
-                        $datas_fields = $this->find("`plugin_metademands_metademands_id` = " . $parent_id . " 
-                                                   AND `type` NOT IN ('parent_field', 'upload')", '`rank`, `order`');
+                        $condition = ['plugin_metademands_metademands_id' => $parent_id,
+                                      ['NOT' => ['type' => ['parent_field', 'upload']]]];
+                        $datas_fields = $this->find($condition, '`rank`, `order`');
                         //formatting the name to display (Name of metademand - Father's Field Label - type)
                         foreach ($datas_fields as $data_field) {
                            $fields[$data_field['id']] = $name_metademand." - ".$data_field['label']." - ".self::getFieldTypesName($data_field['type']);
@@ -916,7 +917,7 @@ class PluginMetademandsField extends CommonDBChild {
    static function showFieldsDropdown($metademands_id, $selected_value) {
 
       $fields = new self();
-      $fields_data = $fields->find('`plugin_metademands_metademands_id`='.$metademands_id);
+      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
       $data = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
          $data[$id] = $value['label'];
@@ -1001,7 +1002,7 @@ class PluginMetademandsField extends CommonDBChild {
     */
    function listMetademandsfields($metademands_id) {
       $field = new PluginMetademandsField();
-      $listMetademandsFields = $field->find("`plugin_metademands_metademands_id` = ".$metademands_id);
+      $listMetademandsFields = $field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       return $listMetademandsFields;
    }
@@ -1222,17 +1223,18 @@ class PluginMetademandsField extends CommonDBChild {
     * @param $metademands_id
     */
    function showOrderDropdown($rank, $fields_id, $previous_fields_id, $metademands_id) {
-      $restrict = '';
-      if (!empty($fields_id)) {
-         $restrict = "AND `id` != ".$fields_id;
-      }
+
       if (empty($rank)) {
          $rank = 1;
+      }
+      $restrict = ['rank' => $rank, 'plugin_metademands_metademands_id' => $metademands_id];
+      if (!empty($fields_id)) {
+         $restrict += ['NOT' => ['id' => $fields_id]];
       }
 
       $order = [Dropdown::EMPTY_VALUE];
 
-      foreach ($this->find("`rank`='".$rank."' $restrict AND `plugin_metademands_metademands_id`='".$metademands_id."'", '`order`') as $id => $values) {
+      foreach ($this->find($restrict, '`order`') as $id => $values) {
          $order[$id] = $values['label'];
          if (!empty($values['label2'])) {
             $order[$id] .= ' - '.$values['label2'];
@@ -1260,7 +1262,8 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       // Calculate order
-      foreach ($this->find("`rank`='".$input['rank']."' AND `plugin_metademands_metademands_id`='".$input["plugin_metademands_metademands_id"]."'", '`order`') as $fields_id => $values) {
+      foreach ($this->find(['rank' => $input['rank'],
+                            'plugin_metademands_metademands_id' => $input["plugin_metademands_metademands_id"]], '`order`') as $fields_id => $values) {
          if ($fields_id == $input['id']) {
             $values['order'] = $input['order'];
          }

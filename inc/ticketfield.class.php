@@ -128,7 +128,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $canedit = $meta->can($item->fields['id'], UPDATE);
 
       $tt               = new TicketTemplate();
-      $ticketfield_data = $this->find('`plugin_metademands_metademands_id` = '.$item->fields['id']);
+      $ticketfield_data = $this->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
       $searchOption     = Search::getOptions('Ticket');
 
       $used_fields = $this->getPredefinedFields($item->fields['id'], true);
@@ -509,7 +509,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       }
 
       $metademands      = new PluginMetademandsMetademand();
-      $metademands_data = $metademands->find('`entities_id` = '.$_SESSION['glpiactive_entity'].' AND `itilcategories_id` = '.$categid);
+      $metademands_data = $metademands->find(['entities_id' => $_SESSION['glpiactive_entity'], 'itilcategories_id' => $categid]);
       foreach ($metademands_data as $id => $value) {
          self::addTemplateFields($id, $categid, $type, $value['entities_id']);
       }
@@ -528,7 +528,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          $categid = $itilcategory->fields['id'];
       }
       $metademands      = new PluginMetademandsMetademand();
-      $metademands_data = $metademands->find('`entities_id` = '.$_SESSION['glpiactive_entity'].' AND `itilcategories_id` = '.$categid);
+      $metademands_data = $metademands->find(['entities_id' => $_SESSION['glpiactive_entity'], 'itilcategories_id' => $categid]);
       foreach ($metademands_data as $id => $value) {
          self::addTemplateFields($id, $categid, $type, $value['entities_id'], 'predefined');
       }
@@ -597,7 +597,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          if ($meta_tt->fields['id'] == $ttp->fields['tickettemplates_id']) {
             if (!in_array($fieldsname[$ttp->fields['num']], self::$used_fields) && $ttp->fields['num'] != -2) {
                $used = false;
-               $fields_data = $ticketField->find('`plugin_metademands_metademands_id` = '.$id);
+               $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $id]);
                foreach ($fields_data as $fields_value) {
                   if ($fields_value['num'] == $ttp->fields['num']) {
                      $used = $fields_value['id'];
@@ -687,7 +687,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
     */
    static function addTemplateFields($metademands_id, $categid, $type, $entity, $templatetype = 'mandatory') {
       $ticketField = new self();
-      $fields_data = $ticketField->find('`plugin_metademands_metademands_id` = '.$metademands_id);
+      $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       $ticket = new Ticket();
       $tt     = $ticket->getTicketTemplateToUse(0, $type, $categid, $entity);

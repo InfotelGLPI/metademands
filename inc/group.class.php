@@ -116,7 +116,7 @@ class PluginMetademandsGroup extends CommonDBTM {
 
       $used_groups = [];
 
-      $dataMetademandGroup = $this->find('`plugin_metademands_metademands_id` = '.$item->fields['id']);
+      $dataMetademandGroup = $this->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
 
       $meta = new PluginMetademandsMetademand();
       $canedit = $meta->can($item->fields['id'], UPDATE);
@@ -130,14 +130,13 @@ class PluginMetademandsGroup extends CommonDBTM {
       $groups = [];
       $group = new Group();
       $op = "";
-      $condition = "";
+      $condition = [];
       if (count($used_groups) > 0) {
-         $condition .= "`id` NOT IN (" . implode(',', $used_groups) . ")";
+         $condition += ['NOT' => ['id' => $used_groups]];
          $op = "AND";
       }
       $dbu = new DbUtils();
-      $condition .= $dbu->getEntitiesRestrictRequest($op, $group->getTable(), null, null,
-                                                     $group->maybeRecursive());
+      $condition += $dbu->getEntitiesRestrictCriteria($group->getTable(), '', '', $group->maybeRecursive());
       $dataGroup = $group->find($condition, 'name');
       if ($dataGroup) {
          foreach ($dataGroup as $field) {

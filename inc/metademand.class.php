@@ -346,13 +346,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       switch ($this->fields['type']) {
          case Ticket::INCIDENT_TYPE :
-            $opt['condition'] = "`is_incident`='1'";
+            $opt['condition'] = ['is_incident' => 1];
             break;
          case Ticket::DEMAND_TYPE :
-            $opt['condition'] = "`is_request`='1'";
+            $opt['condition'] = ['is_request' => 1];
             break;
          default :
-            $opt['condition'] = "";
+            $opt['condition'] = [];
             break;
       }
 
@@ -546,13 +546,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
 
       $result    = [];
-      $type      = Ticket::DEMAND_TYPE;
-      $condition = "1 AND `type` = '$type'";
+
       $dbu = new DbUtils();
-      $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), null, null, true);
+      $condition  = ['type' => Ticket::DEMAND_TYPE]
+                    + $dbu->getEntitiesRestrictCriteria($this->getTable(), '', '',true);
 
       if (!empty($params['condition'])) {
-         $condition .= $params['condition'];
+         $condition += $params['condition'];
       }
 
       if (!empty($type)) {
@@ -641,7 +641,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       if (!empty($metademands_id)) {
          // get normal form data
          $field     = new PluginMetademandsField();
-         $form_data = $field->find("`plugin_metademands_metademands_id` = " . $metademands_id, '`rank`, `order`');
+         $form_data = $field->find(['plugin_metademands_metademands_id' => $metademands_id], '`rank`, `order`');
 
          // Construct array
          $forms[$step][$metademands_id]['form']  = [];
@@ -1135,7 +1135,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $result = [];
 
       $ticket_field        = new PluginMetademandsTicketField();
-      $parent_ticketfields = $ticket_field->find('`plugin_metademands_metademands_id` = ' . $metademands_id);
+      $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       $tt = new TicketTemplate();
 
@@ -1257,7 +1257,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $groups_tickets = new Group_Ticket();
 
       // We can add task if one is not already present for ticket
-      $search_ticket = $ticket_task->find('`parent_tickets_id` = ' . $tickets_data['id']);
+      $search_ticket = $ticket_task->find(['parent_tickets_id' =>  $tickets_data['id']]);
       if (!count($search_ticket)) {
          $task   = new PluginMetademandsTask();
          $query  = "SELECT `glpi_plugin_metademands_tickettasks`.*,
@@ -1287,8 +1287,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                      // Find parent metademand tickets_id and get its _groups_id_assign
                      $tickets_found              = PluginMetademandsTicket::getAncestorTickets($tickets_data['id'], true);
-                     $parent_groups_tickets_data = $groups_tickets->find('`tickets_id` = ' . $tickets_found[0]['tickets_id'] . ' 
-                           AND `type` = ' . CommonITILActor::ASSIGN);
+                     $parent_groups_tickets_data = $groups_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'], 'type' => CommonITILActor::ASSIGN]);
 
                      if (count($parent_groups_tickets_data)) {
                         $parent_groups_tickets_data          = reset($parent_groups_tickets_data);
@@ -1316,7 +1315,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
 
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
-      $ticket_metademand_data = $ticket_metademand->find('`tickets_id` = ' . $ticket->fields['id']);
+      $ticket_metademand_data = $ticket_metademand->find(['tickets_id' =>  $ticket->fields['id']]);
       $tickets_found          = [];
       // If ticket is Parent : Check if all sons ticket are closed
       if (count($ticket_metademand_data)) {
@@ -1325,7 +1324,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                                                                           $ticket_metademand_data['plugin_metademands_metademands_id']);
       } else {
          $ticket_task      = new PluginMetademandsTicket_Task();
-         $ticket_task_data = $ticket_task->find('`tickets_id` = ' . $ticket->fields['id']);
+         $ticket_task_data = $ticket_task->find(['tickets_id' => $ticket->fields['id']]);
 
          if (count($ticket_task_data)) {
             $tickets_found = PluginMetademandsTicket::getAncestorTickets($ticket->fields['id'], true);
@@ -1478,7 +1477,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                            }
 
                            // Add metademand group
-                           $groups_data = $groups->find('`plugin_metademands_metademands_id` = ' . $metademands_id);
+                           $groups_data = $groups->find(['plugin_metademands_metademands_id' => $metademands_id]);
                            if (count($groups_data)) {
                               foreach ($groups_data as $values) {
                                  unset($values['id']);
@@ -1509,7 +1508,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                            // Ticket tasks
                            if ($values['type'] == PluginMetademandsTask::TICKET_TYPE) {
-                              $tickettasks_data = $tickettasks->find('`plugin_metademands_tasks_id` = ' . $values['tasks_id']);
+                              $tickettasks_data = $tickettasks->find(['plugin_metademands_tasks_id' => $values['tasks_id']]);
                               if (count($tickettasks_data)) {
                                  foreach ($tickettasks_data as $values) {
                                     unset($values['id']);
@@ -1525,10 +1524,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
             }
             // Add metademand task
-            $tasks_data = $tasks->find('`plugin_metademands_metademands_id` = ' . $metademands_id . ' AND `type` = ' . PluginMetademandsTask::METADEMAND_TYPE);
+            $tasks_data = $tasks->find(['plugin_metademands_metademands_id' => $metademands_id, 'type' => PluginMetademandsTask::METADEMAND_TYPE]);
             if (count($tasks_data)) {
                foreach ($tasks_data as $values) {
-                  $metademandtasks_data = $metademandtasks->find('`plugin_metademands_tasks_id` = ' . $values['id']);
+                  $metademandtasks_data = $metademandtasks->find(['plugin_metademands_tasks_id' => $values['id']]);
                   unset($values['id']);
                   $values['plugin_metademands_metademands_id'] = $new_metademands_id;
                   $new_tasks_id                                = $tasks->add($values);
@@ -1542,7 +1541,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             }
 
             // Add ticket fields
-            $ticketfields_data = $ticketfields->find('`plugin_metademands_metademands_id` = ' . $metademands_id);
+            $ticketfields_data = $ticketfields->find(['plugin_metademands_metademands_id' => $metademands_id]);
             if (count($ticketfields_data)) {
                foreach ($ticketfields_data as $values) {
                   unset($values['id']);
