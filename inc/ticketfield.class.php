@@ -509,7 +509,8 @@ class PluginMetademandsTicketField extends CommonDBChild {
       }
 
       $metademands      = new PluginMetademandsMetademand();
-      $metademands_data = $metademands->find(['entities_id' => $_SESSION['glpiactive_entity'], 'itilcategories_id' => $categid]);
+      $metademands_data = $metademands->find(['entities_id' => $_SESSION['glpiactive_entity'],
+                                              'itilcategories_id' => $categid]);
       foreach ($metademands_data as $id => $value) {
          self::addTemplateFields($id, $categid, $type, $value['entities_id']);
       }
@@ -528,7 +529,8 @@ class PluginMetademandsTicketField extends CommonDBChild {
          $categid = $itilcategory->fields['id'];
       }
       $metademands      = new PluginMetademandsMetademand();
-      $metademands_data = $metademands->find(['entities_id' => $_SESSION['glpiactive_entity'], 'itilcategories_id' => $categid]);
+      $metademands_data = $metademands->find(['entities_id' => $_SESSION['glpiactive_entity'],
+                                              'itilcategories_id' => $categid]);
       foreach ($metademands_data as $id => $value) {
          self::addTemplateFields($id, $categid, $type, $value['entities_id'], 'predefined');
       }

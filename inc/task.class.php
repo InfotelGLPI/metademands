@@ -145,7 +145,8 @@ class PluginMetademandsTask extends CommonTreeDropdown {
             $task_types = self::getTaskTypes();
 
             // Only one metademand can be selected
-            $metademand_tasks = $this->find(['plugin_metademands_metademands_id' => $metademands->fields['id'], 'type' => self::METADEMAND_TYPE]);
+            $metademand_tasks = $this->find(['plugin_metademands_metademands_id' => $metademands->fields['id'],
+                                             'type' => self::METADEMAND_TYPE]);
             if (count($metademand_tasks)) {
                unset($task_types[self::METADEMAND_TYPE]);
             }

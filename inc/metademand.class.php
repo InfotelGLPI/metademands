@@ -641,7 +641,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
       if (!empty($metademands_id)) {
          // get normal form data
          $field     = new PluginMetademandsField();
-         $form_data = $field->find(['plugin_metademands_metademands_id' => $metademands_id], '`rank`, `order`');
+         $form_data = $field->find(['plugin_metademands_metademands_id' => $metademands_id],
+                                   ['rank', 'order']);
 
          // Construct array
          $forms[$step][$metademands_id]['form']  = [];
@@ -1524,7 +1525,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
             }
             // Add metademand task
-            $tasks_data = $tasks->find(['plugin_metademands_metademands_id' => $metademands_id, 'type' => PluginMetademandsTask::METADEMAND_TYPE]);
+            $tasks_data = $tasks->find(['plugin_metademands_metademands_id' => $metademands_id,
+                                        'type' => PluginMetademandsTask::METADEMAND_TYPE]);
             if (count($tasks_data)) {
                foreach ($tasks_data as $values) {
                   $metademandtasks_data = $metademandtasks->find(['plugin_metademands_tasks_id' => $values['id']]);
