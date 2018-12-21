@@ -97,8 +97,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       $dbu = new DbUtils();
-      if ($dbu->countElementsInTable("glpi_plugin_metademands_tickets_metademands", ["`tickets_id`" => $item->fields['id']]) ||
-          $dbu->countElementsInTable("glpi_plugin_metademands_tickets_tasks", ["`tickets_id`" => $item->fields['id']])
+      if ($dbu->countElementsInTable("glpi_plugin_metademands_tickets_metademands", ["tickets_id" => $item->fields['id']]) ||
+          $dbu->countElementsInTable("glpi_plugin_metademands_tickets_tasks", ["tickets_id" => $item->fields['id']])
       ) {
          if (!$withtemplate) {
             if (($item->getType() == 'Ticket' || $item->getType() == 'PluginResourcesResource') && $this->canView()) {
@@ -170,7 +170,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $meta = reset($metas);
                   // Redirect if not linked to a resource contract type
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
-                                            ["`plugin_metademands_metademands_id`" => $meta["id"]])) {
+                                            ["plugin_metademands_metademands_id" => $meta["id"]])) {
                      return $CFG_GLPI["root_doc"] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=" . $ticket->fields["id"] . "&step=2";
                   }
                }
@@ -539,7 +539,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return array
     */
    function listMetademandsCategories($options = []) {
-      $params['condition'] = '';
+      $params['condition'] = [];
 
       foreach ($options as $key => $value) {
          $params[$key] = $value;
@@ -613,7 +613,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
             while ($data = $DB->fetch_assoc($result)) {
                if ($this->canCreate() || PluginMetademandsGroup::isUserHaveRight($data['id'])) {
 
-                  if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources", ["`plugin_metademands_metademands_id`" => $data['id']])) {
+                  if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
+                                                  ["plugin_metademands_metademands_id" => $data['id']])) {
                      $meta_data[$data['id']] = $data['name'] . ' (' . $data['entities_name'] . ')';
                   }
                }

@@ -79,7 +79,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
                $dbu = new DbUtils();
                return self::createTabEntry(self::getTypeName(2),
                                            $dbu->countElementsInTable($this->getTable(),
-                                                                      ["`plugin_metademands_metademands_id`" => $item->getID()]));
+                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
             }
             return self::getTypeName(2);
          }
@@ -425,7 +425,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
             Dropdown::show('Group', ['name'      => 'ticketfield['.$field_id.']',
                                           'value'     => $value,
                                           'entity'    => $_SESSION['glpiactive_entity'],
-                                          'condition' => '`is_requester`']);
+                                          'condition' => ['is_requester' => 1]]);
             break;
          case '_users_id_observer':
             $params = ['name'  => 'ticketfield['.$field_id.']',
@@ -438,7 +438,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
             Dropdown::show('Group', ['name'      => 'ticketfield['.$field_id.']',
                                           'value'     => $value,
                                           'entity'    => $_SESSION['glpiactive_entity'],
-                                          'condition' => '`is_requester`']);
+                                          'condition' => ['is_requester' => 1]]);
             break;
          case '_users_id_assign':
             $params = ['name'  => 'ticketfield['.$field_id.']',
@@ -451,7 +451,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
             Dropdown::show('Group', ['name'      => 'ticketfield['.$field_id.']',
                                           'value'     => $value,
                                           'entity'    => $_SESSION['glpiactive_entity'],
-                                          'condition' => '`is_assign`']);
+                                          'condition' => ['is_assign' => 1]]);
             break;
          case 'status':
             Ticket::dropdownStatus('ticketfield['.$field_id.']', $value, 2);

@@ -146,7 +146,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                  ['name'      => 'parent_tasks_id',
                        'value'     => $values['parent_tasks_id'],
                        'entity'    => $metademands->fields["entities_id"],
-                       'condition' => '`type`='.PluginMetademandsTask::TICKET_TYPE.' AND `plugin_metademands_metademands_id`='.$metademands->fields["id"]." AND `id` != '".$values['plugin_metademands_tasks_id']."'"]);
+                       'condition' => ['type' => PluginMetademandsTask::TICKET_TYPE,
+                                      'plugin_metademands_metademands_id' => $metademands->fields["id"],
+                                      'id' => ['<>', $values['plugin_metademands_tasks_id']]]]);
          echo "<td>";
          echo "</tr>";
       }
@@ -221,7 +223,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          Dropdown::show('Group', ['name'      => 'groups_id_requester',
                                        'value'     => isset($values['groups_id_requester']) ? $values['groups_id_requester'] : 0,
                                        'entity'    => $metademands->fields["entities_id"],
-                                       'condition' => '`is_requester`']);
+                                       'condition' => ['is_requester' => 1]]);
          echo "</td>";
       } else {
          echo "<td>";
@@ -236,7 +238,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          Dropdown::show('Group', ['name'      => 'groups_id_observer',
                                        'value'     => isset($values['groups_id_observer']) ? $values['groups_id_observer'] : 0,
                                        'entity'    => $metademands->fields["entities_id"],
-                                       'condition' => '`is_requester`']);
+                                       'condition' => ['is_requester' => 1]]);
          echo "</td>";
       } else {
          echo "<td>";
@@ -249,7 +251,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       Dropdown::show('Group', ['name'      => 'groups_id_assign',
                                     'value'     => isset($values['groups_id_assign']) ? $values['groups_id_assign'] : 0,
                                     'entity'    => $metademands->fields["entities_id"],
-                                    'condition' => '`is_assign`']);
+                                    'condition' => ['is_assign' => 1]]);
       echo "</td>";
       echo "</tr>";
       echo "</table>";

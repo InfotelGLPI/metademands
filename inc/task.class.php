@@ -76,7 +76,9 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       if (!$withtemplate) {
          if ($item->getType() == 'PluginMetademandsMetademand' && $item->fields['type'] != Ticket::INCIDENT_TYPE) {
             if ($_SESSION['glpishow_count_on_tabs']) {
-               return self::createTabEntry(self::getTypeName(), $dbu->countElementsInTable($this->getTable(), ["`plugin_metademands_metademands_id`" => $item->getID()]));
+               return self::createTabEntry(self::getTypeName(),
+                                           $dbu->countElementsInTable($this->getTable(),
+                                           ["plugin_metademands_metademands_id" => $item->getID()]));
             }
             return self::getTypeName();
          }

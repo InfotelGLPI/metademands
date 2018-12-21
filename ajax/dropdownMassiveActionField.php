@@ -244,7 +244,7 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
             }
 
             if (!$plugdisplay && !$already_display) {
-               $cond = (isset($search['condition']) ? $search['condition'] : '');
+               $cond = (isset($search['condition']) ? $search['condition'] : []);
                Dropdown::show($dbu->getItemTypeForTable($search["table"]),
                               ['name'      => $search["linkfield"],
                                     'value'     => $_POST["value"],

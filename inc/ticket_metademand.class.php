@@ -71,7 +71,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
                $dbu = new DbUtils();
                return self::createTabEntry(self::getTypeName(),
                                            $dbu->countElementsInTable($this->getTable(),
-                                                                      ["`plugin_metademands_metademands_id`" => $item->getID()]));
+                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
             }
             return self::getTypeName();
          }
