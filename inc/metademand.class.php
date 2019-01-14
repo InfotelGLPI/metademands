@@ -1140,13 +1140,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       $tt = new TicketTemplate();
-
       if (count($parent_ticketfields)) {
          $allowed_fields = $tt->getAllowedFields(true, true);
          foreach ($parent_ticketfields as $value) {
             if (isset($allowed_fields[$value['num']]) && (!in_array($allowed_fields[$value['num']], PluginMetademandsTicketField::$used_fields))) {
                $value['item']          = $allowed_fields[$value['num']];
-               $result[$value['item']] = $value['value'];
+               $result[$value['item']] = json_decode($value['value'],true);
             }
          }
       }

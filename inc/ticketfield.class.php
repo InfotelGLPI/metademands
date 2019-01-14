@@ -731,6 +731,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
                if (isset($tt->predefined[$key])) {
                   $default_value = $tt->predefined[$key];
                }
+               $default_value = json_encode($default_value);
                if (!$used) {
                   $ticketField->add(['value'                             => $default_value,
                                           'num'                               => $num,
