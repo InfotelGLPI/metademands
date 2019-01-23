@@ -1415,7 +1415,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
                echo Ticket::getStatus($ticket->fields['status']);
             } else {
-               echo "<img src='" . $CFG_GLPI["root_doc"] . "/plugins/metademands/pics/wait.png' width='25px' height='25px'/> ";
+               echo "<i class='fas fa-hourglass-half fa-4x'></i> ";
                echo __('Coming', 'metademands');
             }
             echo "</td>";

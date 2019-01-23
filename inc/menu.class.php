@@ -71,7 +71,7 @@ class PluginMetademandsMenu extends CommonDBTM {
          //Configure metademand
          echo "<td class='center'>";
          echo "<a href=\"./metademand.php\">";
-         echo "<img src='".$CFG_GLPI["root_doc"]."/plugins/metademands/pics/config_metademands.png' alt=\"".__('Configure demands', 'metademands')."\">";
+         echo "<i class='fas fa-cogs fa-5x' style='color:#000' title=\"".__('Configure demands', 'metademands')."\"></i><br>";
          echo "<br>".__('Configure demands', 'metademands')."</a>";
          echo "</td>";
       }

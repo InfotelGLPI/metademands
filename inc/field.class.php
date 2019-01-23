@@ -849,16 +849,12 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<input type='hidden' id='display_comment' value='$display_comment' />";
       echo '<input type="hidden" id="count_custom_values" value="'.$count.'"/>';
 
-      echo "&nbsp;<img style='cursor:pointer' 
+      echo "&nbsp;<i class='far fa-plus-square' style='cursor:pointer' 
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");' 
-            src='".$CFG_GLPI['root_doc']."/plugins/metademands/pics/add.png' 
-            alt='"._sx("button", "Add")."'
-            title='"._sx("button", "Add")."'/>&nbsp;";
+            title='"._sx("button", "Add")."'/></i>&nbsp;";
 
-      echo "&nbsp;<img style='cursor:pointer'
+      echo "&nbsp;<i class='far fa-trash-alt' style='cursor:pointer'
             onclick='$script metademandWizard.metademands_delete_custom_values(\"custom_values\");'
-            src='".$CFG_GLPI['root_doc']."/plugins/metademands/pics/delete.png'
-            alt='"._sx('button', 'Delete permanently')."'
             title='"._sx('button', 'Delete permanently')."'/>&nbsp;";
 
    }
