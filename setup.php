@@ -101,10 +101,9 @@ function plugin_init_metademands() {
          $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMetademand'];
       }
 
-      //DILA
-            if (Session::haveRight("plugin_metademands", READ) && !class_exists('PluginServicecatalogDashboard')) {
-               $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = '/front/wizard.form.php';
-            }
+      if (Session::haveRight("plugin_metademands", READ) && !class_exists('PluginServicecatalogDashboard')) {
+         $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = '/front/wizard.form.php';
+      }
 
       if (Session::haveRight("config", UPDATE)) {
          $PLUGIN_HOOKS['config_page']['metademands'] = 'front/config.form.php';

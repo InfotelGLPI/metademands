@@ -317,7 +317,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       echo "<table class='tab_glpi metademands_duplication'>";
       echo "<tr>";
-      echo "<td><img src='" . $CFG_GLPI["root_doc"] . "/pics/warning.png' /></td>";
+      echo "<td><i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i></td>";
       echo "<td>" . __('Tasks level cannot be changed as unresolved related tickets exist', 'metademands') . "</td>";
       echo "<td width='70px'>";
       echo "<form name='task_form' id='task_form' method='post' 
@@ -652,7 +652,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $forms[$step][$metademands_id]['form'] = $form_data;
          }
          // Task only for demands
-         if ($metademands->fields['type'] == Ticket::DEMAND_TYPE) {
+         if (isset($metademands->fields['type']) 
+               && $metademands->fields['type'] == Ticket::DEMAND_TYPE) {
             $tasks                                  = new PluginMetademandsTask();
             $tasks_data                             = $tasks->getTasks($metademands_id,
                                                                        ['condition' => '`glpi_plugin_metademands_tasks`.`type` = ' . PluginMetademandsTask::TICKET_TYPE]);
@@ -1408,10 +1409,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
             echo "<td class='$color_class center'>";
             if (!$notcreated) {
                if (in_array($ticket->fields['status'], $status)) {
-                  echo "<img src='" . $CFG_GLPI["root_doc"] . "/pics/ok.png' width='20px' height='20px'/> ";
+                  echo "<i class='fas fa-check-circle fa-4x' style='color:forestgreen'></i> ";
                }
                if ($is_late && !in_array($ticket->fields['status'], $status)) {
-                  echo "<img src='" . $CFG_GLPI["root_doc"] . "/pics/warning.png' width='20px' height='20px'/> ";
+                  echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i> ";
                }
                echo Ticket::getStatus($ticket->fields['status']);
             } else {

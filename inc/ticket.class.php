@@ -209,7 +209,7 @@ class PluginMetademandsTicket extends CommonDBTM {
                        || ($job->fields['status'] != Ticket::SOLVED
                        && $job->fields['status'] != Ticket::CLOSED)) {
                   if ($with_message) {
-                     Session::addMessageAfterRedirect(__('The demand can not be resolved or closed until all tasks are not resolved', 'metademands'), false, ERROR);
+                     Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
                   }
                   $ticket->input = ['id' => $ticket->fields['id']];
                   return false;
