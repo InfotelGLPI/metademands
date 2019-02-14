@@ -855,7 +855,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       echo "&nbsp;<i class='far fa-trash-alt' style='cursor:pointer'
             onclick='$script metademandWizard.metademands_delete_custom_values(\"custom_values\");'
-            title='"._sx('button', 'Delete permanently')."'/>&nbsp;";
+            title='"._sx('button', 'Delete permanently')."'/></i>";
 
    }
 

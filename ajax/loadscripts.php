@@ -43,11 +43,11 @@ if (isset($_POST['action'])) {
                && Session::getCurrentInterface() == "central"
                && strpos($_SERVER['HTTP_REFERER'], "ticket.form.php") !== false
                && strpos($_SERVER['HTTP_REFERER'], 'id=') !== false) {
-            $options['lang']['create_link'] = __('Create a linked ticket', 'metademands');
-            echo "<script type='text/javascript'>";
-            echo "var metademandTicketLink = $(document).metademandTicketLink(".json_encode($options).");";
-            echo "metademandTicketLink.metademand_ticketlink()";
-            echo "</script>";
+//            $options['lang']['create_link'] = __('Create a linked ticket', 'metademands');
+//            echo "<script type='text/javascript'>";
+//            echo "var metademandTicketLink = $(document).metademandTicketLink(".json_encode($options).");";
+//            echo "metademandTicketLink.metademand_ticketlink()";
+//            echo "</script>";
          }
 
          if (Session::getCurrentInterface()
