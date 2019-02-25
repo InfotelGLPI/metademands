@@ -1,6 +1,6 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Metademands Development Team
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the GLPI - Metademands plugin package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-02-24 15:27+0100\n"
-"PO-Revision-Date: 2019-02-24 15:30+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: en_GB\n"
+"PO-Revision-Date: 2019-02-25 11:38+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: en_GB\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "X-Generator: Poedit 2.0.9\n"
 
 #: setup.php:145 inc/metademand.class.php:71 inc/profile.class.php:151
@@ -58,7 +58,7 @@ msgstr "Son ticket tag"
 
 #: inc/config.class.php:110
 msgid "Show requester informations"
-msgstr "Show requester informations in wizard"
+msgstr "Show requester informations"
 
 #: inc/config.class.php:127
 msgid "Enable family field"
@@ -311,7 +311,7 @@ msgstr[1] "Link with metademands"
 
 #: inc/metademand_resource.class.php:160
 msgid "Meta-demands linked"
-msgstr "Meta-Demands linked"
+msgstr "Meta-demands linked"
 
 #: inc/metademandtask.class.php:46 inc/task.class.php:51
 #: inc/ticket_metademand.class.php:48 inc/ticket_task.class.php:48
@@ -378,8 +378,6 @@ msgid "Linked ticket"
 msgstr "Linked ticket"
 
 #: inc/ticket.class.php:212
-#| msgid ""
-#| "The demand can not be resolved or closed until all tasks are not resolved"
 msgid ""
 "The demand cannot be resolved or closed until all child tickets are not "
 "resolved"
@@ -395,8 +393,8 @@ msgstr "Family"
 #: inc/ticketfield.class.php:56
 msgid "Ticket field"
 msgid_plural "Ticket fields"
-msgstr[0] "Father ticket field"
-msgstr[1] "Father ticket fields"
+msgstr[0] "Ticket field"
+msgstr[1] "Ticket fields"
 
 #: inc/ticketfield.class.php:143 inc/ticketfield.class.php:151
 msgid "Synchronise with ticket template"
@@ -461,61 +459,3 @@ msgstr "Date %s cannot be less than today's date"
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr "Date %1$s cannot be greater than date %2$s"
-
-#~ msgid "Create a linked ticket"
-#~ msgstr "Create a linked ticket"
-
-#~ msgid "This plugin requires GLPI >= 9.1"
-#~ msgstr "This plugin requires GLPI >= 9.1"
-
-#~ msgid ""
-#~ "The contract type is related to a demand. Thank you to select another"
-#~ msgstr ""
-#~ "The contract type is related to a demand. Thank you to select another"
-
-#~ msgid "Enter informations about the demand"
-#~ msgstr "Enter informations about the demand"
-
-#~ msgid "This plugin requires GLPI >= 0.90"
-#~ msgstr "This plugin requires GLPI >= 0.90"
-
-#~ msgid "Create PDF"
-#~ msgstr "Create PDF"
-
-#~ msgid "This plugin requires GLPI >= 0.84"
-#~ msgstr "This plugin requires GLPI >= 0.84"
-
-#~ msgid "New value"
-#~ msgstr "New value"
-
-#~ msgid "Rights management"
-#~ msgstr "Rights management"
-
-#~ msgid ""
-#~ "A document with that filename has already been attached to (another) "
-#~ "record"
-#~ msgstr ""
-#~ "A document with that filename has already been attached to (another) "
-#~ "record"
-
-#~ msgid "Tasks link"
-#~ msgstr "Tasks link"
-
-#~ msgid "On selection make this field mandatory"
-#~ msgstr "On selection make this field mandatory"
-
-#~ msgid ""
-#~ "This meta-demand is already linked with a contract type of your entity. "
-#~ "Thank you to select another"
-#~ msgstr ""
-#~ "This meta-demand is already linked with a contract type of your entity. "
-#~ "Thank you to select another"
-
-#~ msgid "Simple ticket successfully created"
-#~ msgstr "Simple ticket successfully created"
-
-#~ msgid "Step %d - Enter the ticket form"
-#~ msgstr "Step %d - Enter the ticket form"
-
-#~ msgid "Step %d - Enter the demand form"
-#~ msgstr "Step %d - Enter the demand form"
