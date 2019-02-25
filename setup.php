@@ -144,7 +144,7 @@ function plugin_version_metademands() {
    return [
       'name'           => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
       'version'        => PLUGIN_METADEMANDS_VERSION,
-      'author'         => "Infotel",
+      'author'         => "<a href='http://blogglpi.infotel.com'>Infotel</a>",
       'license'        => 'GPLv2+',
       'homepage'       => 'https://github.com/InfotelGLPI/metademands',
       'requirements'   => [
