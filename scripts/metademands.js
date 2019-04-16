@@ -607,7 +607,7 @@
                   'action': 'setTicketLinkFields'
                },
                success: function (response, opts) {
-                   window.location.href = object.params['root_doc'] + "/front/ticket.form.php?link_ticket=1";
+                   window.location.href = object.params['root_doc'] + "/front/ticket.form.php";
                }
              });
          };
