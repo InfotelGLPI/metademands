@@ -127,16 +127,14 @@ class PluginMetademandsServicecatalog extends CommonGLPI
 
       $dbu = new DbUtils();
       $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-                                    ["`itilcategories_id`" => $category_id,
-                                     "`is_active`" => 1,
-                                     "`type`" => $type]);
+                                    "`itilcategories_id` = ".$category_id." AND `is_active` AND `type` = ".$type);
 
       if (!empty($metas)) {
          $meta = reset($metas);
           //Redirect if not linked to a resource contract type
          if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
-                                   ["plugin_metademands_metademands_id" => $meta["id"]])) {
-
+                                   "`plugin_metademands_metademands_id`='".$meta["id"]."'")) {
+            
             return $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=".$meta["id"]."&tickets_id=0&step=2";
 
          }

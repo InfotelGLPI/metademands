@@ -226,18 +226,14 @@ class PluginMetademandsITILApplication extends CommonDropdown {
       return $tab;
    }
 
-   public function rawSearchOptions() {
+   public function getSearchOptions() {
+      $tab = parent::getSearchOptions();
 
-      $tab = parent::rawSearchOptions();
-
-      $tab[] = [
-         'id'       => '20',
-         'table'    => $this->getTable(),
-         'field'    => 'is_critical',
-         'name'     => __('Criticity', 'metademands'),
-         'datatype' => 'specific',
-         'searchtype' => 'equals'
-      ];
+      $tab[20]['table']      = $this->getTable();
+      $tab[20]['name']       = __('Criticity', 'metademands');
+      $tab[20]['field']      = 'is_critical';
+      $tab[20]['type']       = 'specific';
+      $tab[20]['searchtype'] = 'equals';
 
       return $tab;
    }

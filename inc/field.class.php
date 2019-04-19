@@ -81,7 +81,7 @@ class PluginMetademandsField extends CommonDBChild {
                $dbu = new DbUtils();
                return self::createTabEntry(self::getTypeName(),
                                            $dbu->countElementsInTable($this->getTable(),
-                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
+                                                                      "`plugin_metademands_metademands_id` = '" . $item->getID() . "'"));
             }
             return self::getTypeName();
          }
@@ -365,8 +365,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param $canedit
     */
    private function listFields($plugin_metademands_metademands_id, $canedit) {
-      $data = $this->find(['plugin_metademands_metademands_id' => $plugin_metademands_metademands_id],
-                          ['rank', 'order']);
+      $data = $this->find("`plugin_metademands_metademands_id` = ".$plugin_metademands_metademands_id, '`rank`, `order`');
       $rand = mt_rand();
 
       if (count($data)) {
@@ -496,9 +495,8 @@ class PluginMetademandsField extends CommonDBChild {
             $list_fields = [];
             $field = new self();
             foreach ($metademands_parent as $parent_id) {
-               $condition = ['plugin_metademands_metademands_id' => $parent_id,
-                             ['NOT' => ['type' => ['parent_field', 'upload']]]];
-               $datas_fields = $field->find($condition, ['rank', 'order']);
+               $datas_fields = $field->find("`plugin_metademands_metademands_id` = " . $parent_id . " 
+                                                   AND `type` NOT IN ('parent_field', 'upload')", '`rank`, `order`');
                foreach ($datas_fields as $data_field) {
                   $list_fields[$data_field['id']] = $data_field['label'];
                }
@@ -723,9 +721,9 @@ class PluginMetademandsField extends CommonDBChild {
                   foreach ($metademands_parent as $parent_id) {
                      if ($metademand_parent->getFromDB($parent_id)) {
                         $name_metademand = $metademand_parent->getName();
-                        $condition = ['plugin_metademands_metademands_id' => $parent_id,
-                                      ['NOT' => ['type' => ['parent_field', 'upload']]]];
-                        $datas_fields = $this->find($condition, ['rank', 'order']);
+
+                        $datas_fields = $this->find("`plugin_metademands_metademands_id` = " . $parent_id . " 
+                                                   AND `type` NOT IN ('parent_field', 'upload')", '`rank`, `order`');
                         //formatting the name to display (Name of metademand - Father's Field Label - type)
                         foreach ($datas_fields as $data_field) {
                            $fields[$data_field['id']] = $name_metademand." - ".$data_field['label']." - ".self::getFieldTypesName($data_field['type']);
@@ -849,13 +847,17 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<input type='hidden' id='display_comment' value='$display_comment' />";
       echo '<input type="hidden" id="count_custom_values" value="'.$count.'"/>';
 
-      echo "&nbsp;<i class='far fa-plus-square' style='cursor:pointer' 
+      echo "&nbsp;<img style='cursor:pointer' 
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");' 
-            title='"._sx("button", "Add")."'/></i>&nbsp;";
-
-      echo "&nbsp;<i class='far fa-trash-alt' style='cursor:pointer'
+            src='".$CFG_GLPI['root_doc']."/plugins/metademands/pics/add.png' 
+            alt='"._sx("button", "Add")."'
+            title='"._sx("button", "Add")."'/>&nbsp;";
+      
+      echo "&nbsp;<img style='cursor:pointer'
             onclick='$script metademandWizard.metademands_delete_custom_values(\"custom_values\");'
-            title='"._sx('button', 'Delete permanently')."'/></i>";
+            src='".$CFG_GLPI['root_doc']."/plugins/metademands/pics/delete.png'
+            alt='"._sx('button', 'Delete permanently')."'
+            title='"._sx('button', 'Delete permanently')."'/>&nbsp;";
 
    }
 
@@ -914,7 +916,7 @@ class PluginMetademandsField extends CommonDBChild {
    static function showFieldsDropdown($metademands_id, $selected_value) {
 
       $fields = new self();
-      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+      $fields_data = $fields->find('`plugin_metademands_metademands_id`='.$metademands_id);
       $data = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
          $data[$id] = $value['label'];
@@ -999,7 +1001,7 @@ class PluginMetademandsField extends CommonDBChild {
     */
    function listMetademandsfields($metademands_id) {
       $field = new PluginMetademandsField();
-      $listMetademandsFields = $field->find(['plugin_metademands_metademands_id' => $metademands_id]);
+      $listMetademandsFields = $field->find("`plugin_metademands_metademands_id` = ".$metademands_id);
 
       return $listMetademandsFields;
    }
@@ -1088,96 +1090,69 @@ class PluginMetademandsField extends CommonDBChild {
       }
       return true;
    }
+   
+   function getSearchOptions() {
 
-   function rawSearchOptions() {
+      $tab = array();
+      $tab['common'] = self::getTypeName(1);
 
-      $tab = [];
+      $tab[1]['table']           = $this->getTable();
+      $tab[1]['field']           = 'name';
+      $tab[1]['name']            = __('Name');
+      $tab[1]['datatype']        = 'itemlink';
+      $tab[1]['itemlink_type']   = $this->getType();
+      $tab[1]['massiveaction']   = false;
 
-      $tab[] = [
-         'id'   => 'common',
-         'name' => self::getTypeName(1)
-      ];
+      $tab[2]['table']           = $this->getTable();
+      $tab[2]['field']           = 'id';
+      $tab[2]['name']            = __('ID');
+      $tab[2]['massiveaction']   = false;
+      $tab[2]['datatype']        = 'number';
+      
+      $tab[814]['table']          = $this->getTable();
+      $tab[814]['field']          = 'rank';
+      $tab[814]['name']           = __('Rank', 'metademands');
+      $tab[814]['massiveaction']  = true;
+      $tab[814]['datatype']       = 'specific';
+      
+      $tab[815]['table']          = $this->getTable();
+      $tab[815]['field']          = 'order';
+      $tab[815]['name']           = __('Order', 'metademands');
+      $tab[815]['massiveaction']  = false;
+      $tab[815]['datatype']       = 'specific';
+      
+      $tab[816]['table']          = $this->getTable();
+      $tab[816]['field']          = 'label';
+      $tab[816]['name']           = __('Label');
+      $tab[816]['massiveaction']  = true;
+      
+      $tab[817]['table']          = $this->getTable();
+      $tab[817]['field']          = 'label2';
+      $tab[817]['name']           = __('Additional label', 'metademands');
+      $tab[817]['massiveaction']  = true;
 
-      $tab[] = [
-         'id'            => '1',
-         'table'         => $this->getTable(),
-         'field'         => 'name',
-         'name'          => __('Name'),
-         'datatype'      => 'itemlink',
-         'itemlink_type' => $this->getType()
-      ];
+      $tab[818]['table']          = $this->getTable();
+      $tab[818]['field']          = 'comment';
+      $tab[818]['name']           = __('Comments');
+      $tab[818]['massiveaction']  = true;
+      
+      $tab[880]['table']          = 'glpi_entities';
+      $tab[880]['field']          = 'completename';
+      $tab[880]['name']           = __('Entity');
+      $tab[880]['massiveaction']  = false;
+      $tab[880]['datatype']       = 'dropdown';
 
-      $tab[] = [
-         'id'       => '30',
-         'table'    => $this->getTable(),
-         'field'    => 'id',
-         'name'     => __('ID'),
-         'datatype' => 'number'
-      ];
+      $tab[886]['table']          = $this->getTable();
+      $tab[886]['field']          = 'is_recursive';
+      $tab[886]['name']           = __('Child entities');
+      $tab[886]['datatype']       = 'bool';
+      $tab[886]['massiveaction']  = true;
 
-      $tab[] = [
-         'id'       => '814',
-         'table'    => $this->getTable(),
-         'field'    => 'rank',
-         'name'     => __('Rank', 'metademands'),
-         'datatype' => 'specific',
-         'massiveaction' => true
-      ];
-
-      $tab[] = [
-         'id'       => '815',
-         'table'    => $this->getTable(),
-         'field'    => 'order',
-         'name'     => __('Order', 'metademands'),
-         'datatype' => 'specific',
-         'massiveaction' => false
-      ];
-
-      $tab[] = [
-         'id'       => '816',
-         'table'    => $this->getTable(),
-         'field'    => 'label',
-         'name'     => __('Label'),
-      ];
-
-      $tab[] = [
-         'id'       => '817',
-         'table'    => $this->getTable(),
-         'field'    => 'label2',
-         'name'     => __('Additional label', 'metademands'),
-      ];
-
-      $tab[] = [
-         'id'       => '818',
-         'table'    => $this->getTable(),
-         'field'    => 'comment',
-         'name'     => __('Comments'),
-         'datatype' => 'text'
-      ];
-
-      $tab[] = [
-         'id'       => '819',
-         'table'    => $this->getTable(),
-         'field'    => 'is_mandatory',
-         'name'     => __('Mandatory field'),
-         'datatype' => 'bool'
-      ];
-
-      $tab[] = [
-         'id'       => '880',
-         'table'    => 'glpi_entities',
-         'field'    => 'completename',
-         'name'     => __('Entity'),
-         'datatype' => 'dropdown'
-      ];
-
-      $tab[] = [
-         'id'       => '886',
-         'table'    => $this->getTable(),
-         'field'    => 'is_recursive',
-         'name'     => __('Child entities'),
-         'datatype' => 'bool'
-      ];
+      $tab[819]['table']          = $this->getTable();
+      $tab[819]['field']          = 'is_mandatory';
+      $tab[819]['name']           = __('Mandatory field');
+      $tab[819]['datatype']       = 'bool';
+      $tab[819]['massiveaction']  = true;
 
       return $tab;
    }
@@ -1224,14 +1199,14 @@ class PluginMetademandsField extends CommonDBChild {
       if (empty($rank)) {
          $rank = 1;
       }
-      $restrict = ['rank' => $rank, 'plugin_metademands_metademands_id' => $metademands_id];
+      $restrict = '';
       if (!empty($fields_id)) {
-         $restrict += ['NOT' => ['id' => $fields_id]];
+         $restrict = "AND `id` != ".$fields_id;
       }
 
       $order = [Dropdown::EMPTY_VALUE];
 
-      foreach ($this->find($restrict, ['order']) as $id => $values) {
+      foreach($this->find("`rank`='".$rank."' $restrict AND `plugin_metademands_metademands_id`='".$metademands_id."'", '`order`') as $id => $values){
          $order[$id] = $values['label'];
          if (!empty($values['label2'])) {
             $order[$id] .= ' - '.$values['label2'];
@@ -1259,9 +1234,7 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       // Calculate order
-      foreach ($this->find(['rank' => $input['rank'],
-                            'plugin_metademands_metademands_id' => $input["plugin_metademands_metademands_id"]],
-                           ['order']) as $fields_id => $values) {
+      foreach($this->find("`rank`='".$input['rank']."' AND `plugin_metademands_metademands_id`='".$input["plugin_metademands_metademands_id"]."'", '`order`') as $fields_id => $values){
          if ($fields_id == $input['id']) {
             $values['order'] = $input['order'];
          }

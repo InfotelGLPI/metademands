@@ -49,7 +49,7 @@ $opt['used'] = $_POST["used"];
 
 if (($_POST['itilapplications_id'] == 0 || $_POST['itilapplications_id'] == 1)) {
    $opt['value'] = PluginMetademandsITILEnvironment::NO_OBJECT;
-   $itilenvironment_data = $itilenvironment->find(['entities_id' => $_POST['entity_restrict']]);
+   $itilenvironment_data = $itilenvironment->find('`entities_id` = '.$_POST['entity_restrict']);
    foreach ($itilenvironment_data as $id => $values) {
       $opt['used'][] = $id;
    }

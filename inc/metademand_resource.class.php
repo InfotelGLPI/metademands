@@ -69,7 +69,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
                $dbu = new DbUtils();
                return self::createTabEntry(self::getTypeName(),
                                            $dbu->countElementsInTable($this->getTable(),
-                                                                      ["plugin_resources_contracttypes_id" => $item->getID()]));
+                                                                      "`plugin_resources_contracttypes_id` = '" . $item->getID() . "'"));
             }
             return self::getTypeName();
          }
@@ -215,10 +215,8 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
     *
     * @return array
     */
-   function getDataForResourceContractType($resourceContractType_id, $condition = []) {
-      $cond  = ['plugin_resources_contracttypes_id' => $resourceContractType_id]
-                    + $condition;
-      $data = $this->find($cond);
+   function getDataForResourceContractType($resourceContractType_id, $condition = '1') {
+      $data = $this->find('`plugin_resources_contracttypes_id`='.$resourceContractType_id." AND $condition");
       return $data;
    }
 

@@ -114,7 +114,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       Html::requireJs("metademands");
       echo Html::css("/plugins/metademands/css/style_bootstrap_main.css");
       echo Html::css("/plugins/metademands/css/style_bootstrap_ticket.css");
-      echo Html::css("/lib/font-awesome/css/all.min.css");
+      echo Html::css("/lib/font-awesome-4.7.0/css/font-awesome.min.css");
       echo Html::script("/plugins/metademands/lib/bootstrap/3.2.0/js/bootstrap.min.js");
       echo "<div id ='content'>";
       echo "<div class='bt-container metademands_wizard_rank' > ";
@@ -360,7 +360,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          // FAMILY
          echo __('Family', 'metademands') . "&nbsp;";
          // Get metademand families
-         $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', ['`level`' => 1]);
+         $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', '`level`= 1');
          if (count($data_categories)) {
             $data_categories = array_keys($data_categories);
          }

@@ -22,8 +22,7 @@
                      // Get the right tab
                   if (option.url != undefined
                              && (object.urlParam(option.url, '_itemtype') == 'Ticket'
-                                     && (object.urlParam(option.url, '_glpi_tab') == 'Ticket$main'
-                                        || object.urlParam(option.url, '_glpi_tab') == 'Ticket$1'))
+                                     && object.urlParam(option.url, '_glpi_tab') == 'Ticket$main')
                              && option.url.indexOf("ajax/common.tabs.php") != -1) {
 
                       object.loadscript(url);

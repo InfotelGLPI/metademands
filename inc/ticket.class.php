@@ -26,7 +26,7 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
+
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
@@ -119,13 +119,11 @@ class PluginMetademandsTicket extends CommonDBTM {
          $dbu = new DbUtils();
          if (!empty($ticket->input["itilcategories_id"])) {
             $cats = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-                                              ["`itilcategories_id`" => $ticket->input["itilcategories_id"],
-                                               "`type`"              => $type]);
+                 "`itilcategories_id` = ".$ticket->input["itilcategories_id"]." AND `type` = ".$type);
 
             // Metademand category found : redirection to wizard
             if (!empty($cats)) {
-               $data = $dbu->getAllDataFromTable('glpi_plugin_metademands_tickets_metademands',
-                                                 ["`tickets_id`" => $ticket->input["id"]]);
+               $data = $dbu->getAllDataFromTable('glpi_plugin_metademands_tickets_metademands', "`tickets_id` = ".$ticket->input["id"]);
 
                if (empty($data)) {
                   $meta = reset($cats);
@@ -138,8 +136,7 @@ class PluginMetademandsTicket extends CommonDBTM {
 
                // Metademand category not found : if is ticket is meta, convert it to simple ticket
             } else {
-               $data = $dbu->getAllDataFromTable('glpi_plugin_metademands_tickets_metademands',
-                                                 ["`tickets_id`" => $ticket->input["id"]]);
+               $data = $dbu->getAllDataFromTable('glpi_plugin_metademands_tickets_metademands', "`tickets_id` = ".$ticket->input["id"]);
                if (!empty($data)) {
                   $data       = reset($data);
                   $metademand = new PluginMetademandsMetademand();
@@ -185,7 +182,7 @@ class PluginMetademandsTicket extends CommonDBTM {
    static function checkSonTicketsStatus(Ticket $ticket, $with_message = true) {
 
       $ticket_metademand = new PluginMetademandsTicket_Metademand();
-      $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
+      $ticket_metademand_data = $ticket_metademand->find('`tickets_id` = '.$ticket->fields['id']);
 
       // If ticket is Parent : Check if all sons ticket are closed
       if (count($ticket_metademand_data)) {
@@ -209,7 +206,7 @@ class PluginMetademandsTicket extends CommonDBTM {
                        || ($job->fields['status'] != Ticket::SOLVED
                        && $job->fields['status'] != Ticket::CLOSED)) {
                   if ($with_message) {
-                     Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
+                     Session::addMessageAfterRedirect(__('The demand can not be resolved or closed until all tasks are not resolved', 'metademands'), false, ERROR);
                   }
                   $ticket->input = ['id' => $ticket->fields['id']];
                   return false;

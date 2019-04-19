@@ -26,7 +26,7 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
+
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
@@ -146,9 +146,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                  ['name'      => 'parent_tasks_id',
                        'value'     => $values['parent_tasks_id'],
                        'entity'    => $metademands->fields["entities_id"],
-                       'condition' => ['type' => PluginMetademandsTask::TICKET_TYPE,
-                                      'plugin_metademands_metademands_id' => $metademands->fields["id"],
-                                      'id' => ['<>', $values['plugin_metademands_tasks_id']]]]);
+                       'condition' => '`type`='.PluginMetademandsTask::TICKET_TYPE.' AND `plugin_metademands_metademands_id`='.$metademands->fields["id"]." AND `id` != '".$values['plugin_metademands_tasks_id']."'"]);
          echo "<td>";
          echo "</tr>";
       }
@@ -223,7 +221,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          Dropdown::show('Group', ['name'      => 'groups_id_requester',
                                        'value'     => isset($values['groups_id_requester']) ? $values['groups_id_requester'] : 0,
                                        'entity'    => $metademands->fields["entities_id"],
-                                       'condition' => ['is_requester' => 1]]);
+                                       'condition' => '`is_requester`']);
          echo "</td>";
       } else {
          echo "<td>";
@@ -238,7 +236,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          Dropdown::show('Group', ['name'      => 'groups_id_observer',
                                        'value'     => isset($values['groups_id_observer']) ? $values['groups_id_observer'] : 0,
                                        'entity'    => $metademands->fields["entities_id"],
-                                       'condition' => ['is_requester' => 1]]);
+                                       'condition' => '`is_requester`']);
          echo "</td>";
       } else {
          echo "<td>";
@@ -251,7 +249,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       Dropdown::show('Group', ['name'      => 'groups_id_assign',
                                     'value'     => isset($values['groups_id_assign']) ? $values['groups_id_assign'] : 0,
                                     'entity'    => $metademands->fields["entities_id"],
-                                    'condition' => ['is_assign' => 1]]);
+                                    'condition' => '`is_assign`']);
       echo "</td>";
       echo "</tr>";
       echo "</table>";
@@ -386,7 +384,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       // Check if metademand tasks has been already created
       $ticket_metademand = new PluginMetademandsTicket_Metademand();
-      $ticket_metademand_data = $ticket_metademand->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
+      $ticket_metademand_data = $ticket_metademand->find('`plugin_metademands_metademands_id` = '.$metademands->fields['id']);
       $solved = PluginMetademandsTicket::isTicketSolved($ticket_metademand_data);
       if (!$solved && $canedit) {
          $metademands->showDuplication($metademands->fields['id']);
@@ -521,8 +519,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          }
          if (!empty($input["itilcategories_id"])) {
             $dbu = new DbUtils();
-            $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands', ["`itilcategories_id`" => $input["itilcategories_id"],
-                                                                                       "`type`" => $type]);
+            $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands', "`itilcategories_id` = ".$input["itilcategories_id"]." AND `type` = ".$type);
 
             if (!empty($metas)) {
                $input = [];

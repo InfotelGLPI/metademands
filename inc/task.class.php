@@ -76,9 +76,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       if (!$withtemplate) {
          if ($item->getType() == 'PluginMetademandsMetademand' && $item->fields['type'] != Ticket::INCIDENT_TYPE) {
             if ($_SESSION['glpishow_count_on_tabs']) {
-               return self::createTabEntry(self::getTypeName(),
-                                           $dbu->countElementsInTable($this->getTable(),
-                                           ["plugin_metademands_metademands_id" => $item->getID()]));
+               return self::createTabEntry(self::getTypeName(), $dbu->countElementsInTable($this->getTable(), "`plugin_metademands_metademands_id` = '".$item->getID()."'"));
             }
             return self::getTypeName();
          }
@@ -129,7 +127,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       if ($canedit) {
          // Check if metademand tasks has been already created
          $ticket_metademand = new PluginMetademandsTicket_Metademand();
-         $ticket_metademand_data = $ticket_metademand->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
+         $ticket_metademand_data = $ticket_metademand->find('`plugin_metademands_metademands_id` = '.$metademands->fields['id']);
 
          $solved = PluginMetademandsTicket::isTicketSolved($ticket_metademand_data);
 
@@ -147,8 +145,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
             $task_types = self::getTaskTypes();
 
             // Only one metademand can be selected
-            $metademand_tasks = $this->find(['plugin_metademands_metademands_id' => $metademands->fields['id'],
-                                             'type' => self::METADEMAND_TYPE]);
+            $metademand_tasks = $this->find('plugin_metademands_metademands_id = '.$metademands->fields['id'].' AND type = '.self::METADEMAND_TYPE);
             if (count($metademand_tasks)) {
                unset($task_types[self::METADEMAND_TYPE]);
             }
@@ -562,8 +559,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          $type = Ticket::DEMAND_TYPE;
          $dbu = new DbUtils();
          $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-              ["`itilcategories_id`" => $input["itilcategories_id"],
-               "`type`" => $type]);
+              "`itilcategories_id` = ".$input["itilcategories_id"]." AND `type` = ".$type);
 
          if (!empty($metas)) {
             $input = [];
@@ -630,31 +626,23 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       Dropdown::showFromArray('plugin_metademands_tasks_id', $data, ['value' => $selected_value, 'tree' => true]);
    }
 
-   function rawSearchOptions() {
+   function getSearchOptions() {
 
-      $tab = [];
+      $tab = array();
+      $tab['common'] = self::getTypeName(1);
 
-      $tab[] = [
-         'id'   => 'common',
-         'name' => self::getTypeName(1)
-      ];
+      $tab[1]['table']           = $this->getTable();
+      $tab[1]['field']           = 'name';
+      $tab[1]['name']            = __('Name');
+      $tab[1]['datatype']        = 'itemlink';
+      $tab[1]['itemlink_type']   = $this->getType();
+      $tab[1]['massiveaction']   = true;
 
-      $tab[] = [
-         'id'            => '1',
-         'table'         => $this->getTable(),
-         'field'         => 'name',
-         'name'          => __('Name'),
-         'datatype'      => 'itemlink',
-         'itemlink_type' => $this->getType()
-      ];
-
-      $tab[] = [
-         'id'       => '30',
-         'table'    => $this->getTable(),
-         'field'    => 'id',
-         'name'     => __('ID'),
-         'datatype' => 'number'
-      ];
+      $tab[2]['table']           = $this->getTable();
+      $tab[2]['field']           = 'id';
+      $tab[2]['name']            = __('ID');
+      $tab[2]['massiveaction']   = false;
+      $tab[2]['datatype']        = 'number';
 
       return $tab;
    }

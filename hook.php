@@ -32,13 +32,9 @@ function plugin_metademands_install() {
 
    include_once (GLPI_ROOT . "/plugins/metademands/inc/profile.class.php");
 
-   $fileEngine =  GLPI_ROOT."/plugins/metademands/install/sql/empty-InnoDB-2.5.2.sql";
-   if (dbMyISAM()) {
-      $fileEngine =  GLPI_ROOT."/plugins/metademands/install/sql/empty-MyISAM-2.5.2.sql";
-   }
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
       // table sql creation
-      $DB->runFile($fileEngine);
+      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/empty-2.4.1.sql");
    }
 
    if (!$DB->tableExists("glpi_plugin_metademands_itilapplications") || !$DB->tableExists("glpi_plugin_metademands_itilenvironments")) {
@@ -79,10 +75,6 @@ function plugin_metademands_install() {
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "comment_values")) {
       $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/update-2.4.1.sql");
    }
-   //version 2.5.2
-   if (!$DB->fieldExists("glpi_plugin_metademands_configs", "childs_parent_content")) {
-      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/update-2.5.2.sql");
-   }
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    PluginMetademandsProfile::initProfile();
@@ -96,7 +88,7 @@ function plugin_metademands_uninstall() {
    global $DB;
 
    // Plugin tables deletion
-   $tables = [ "glpi_plugin_metademands_metademands_resources",
+   $tables = [
                     "glpi_plugin_metademands_configs",
                     "glpi_plugin_metademands_tickets_itilenvironments",
                     "glpi_plugin_metademands_tickets_itilapplications",
@@ -334,25 +326,4 @@ function plugin_datainjection_populate_metademands() {
    global $INJECTABLE_TYPES;
 
    $INJECTABLE_TYPES['PluginMetademandsITILApplicationInjection'] = 'metademands';
-}
-
-function dbMyISAM() {
-   global $DB;
-
-   $query = "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES
-             WHERE TABLE_SCHEMA = '$DB->dbdefault' 
-             AND ENGINE='MyISAM'";
-   $myISAM = false;
-   if ($result = $DB->query($query)) {
-      if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_assoc($result)) {
-            if ($data['TABLE_NAME'] == "glpi_itilcategories" ||
-               $data['TABLE_NAME'] == "glpi_tickets" ||
-               $data['TABLE_NAME'] == "glpi_groups") {
-               $myISAM = true;
-            }
-         }
-      }
-   }
-   return $myISAM;
 }

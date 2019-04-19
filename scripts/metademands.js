@@ -565,6 +565,16 @@
                 if (location.pathname.indexOf('front/ticket.form.php') > 0) {
                     var tickets_id = object.urlParam(window.location.href, 'id');
 
+                    // Launched on each complete Ajax load
+                    $(document).ajaxComplete(function (event, xhr, option) {
+                        setTimeout(function () {
+                            // We execute the code only if the ticket form display request is done
+                            // Get the right tab
+                            if (option.url != undefined
+                                && object.urlParam(option.url, '_itemtype') == 'Ticket'
+                                && object.urlParam(option.url, '_glpi_tab') == 'Ticket$main'
+                                && option.url.indexOf("ajax/common.tabs.php") != -1) {
+
                     // Inject Ticket link
                     var ticketlink_bloc = $("table[id='mainformtable4'] tr:nth-child(3) th:first-child");
 
@@ -587,7 +597,9 @@
                             eval(scripts[1]);
                         }
                     }
-
+                            }
+                        }, 100);
+                    }, this);
                 }
             });
         };

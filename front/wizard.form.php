@@ -71,7 +71,7 @@ if (isset($_POST['next'])) {
       if ($metademands->canCreate()
               || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
 
-         $data = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+         $data = $field->find("`plugin_metademands_metademands_id` = ".$_POST['form_metademands_id']);
          foreach ($data as $id => $value) {
             if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
                $value['second_date_ok'] = true;

@@ -26,7 +26,7 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
+
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
@@ -74,7 +74,7 @@ class PluginMetademandsGroup extends CommonDBTM {
             if ($_SESSION['glpishow_count_on_tabs']) {
                return self::createTabEntry(self::getTypeName(),
                                            $dbu->countElementsInTable($this->getTable(),
-                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
+                                                                       "`plugin_metademands_metademands_id` = '".$item->getID()."'"));
             }
             return self::getTypeName();
          }
@@ -116,7 +116,7 @@ class PluginMetademandsGroup extends CommonDBTM {
 
       $used_groups = [];
 
-      $dataMetademandGroup = $this->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
+      $dataMetademandGroup = $this->find('`plugin_metademands_metademands_id` = '.$item->fields['id']);
 
       $meta = new PluginMetademandsMetademand();
       $canedit = $meta->can($item->fields['id'], UPDATE);
@@ -130,9 +130,9 @@ class PluginMetademandsGroup extends CommonDBTM {
       $groups = [];
       $group = new Group();
       $op = "";
-      $condition = [];
+      $condition = "";
       if (count($used_groups) > 0) {
-         $condition += ['NOT' => ['id' => $used_groups]];
+         $condition .= "`id` NOT IN (" . implode(',', $used_groups) . ")";
          $op = "AND";
       }
       $dbu = new DbUtils();
@@ -259,7 +259,7 @@ class PluginMetademandsGroup extends CommonDBTM {
       $dbu = new DbUtils();
       // Get metademand groups
       $metademands_groups_data = $dbu->getAllDataFromTable('glpi_plugin_metademands_groups',
-                                                           ['`plugin_metademands_metademands_id`' => $metademands_id]);
+              '`plugin_metademands_metademands_id` = '.$metademands_id);
 
       if (!empty($metademands_groups_data)) {
          $metademands_groups_id = [];
@@ -281,40 +281,30 @@ class PluginMetademandsGroup extends CommonDBTM {
       // No restrictions if no group was added in metademand
       return true;
    }
+   
+   function getSearchOptions() {
 
-   function rawSearchOptions() {
+      $tab = array();
+      $tab['common'] = self::getTypeName(1);
 
-      $tab = [];
+      $tab[1]['table']           = $this->getTable();
+      $tab[1]['field']           = 'name';
+      $tab[1]['name']            = __('Name');
+      $tab[1]['datatype']        = 'itemlink';
+      $tab[1]['itemlink_type']   = $this->getType();
+      $tab[1]['massiveaction']   = false;
 
-      $tab[] = [
-         'id'   => 'common',
-         'name' => self::getTypeName(1)
-      ];
-
-      $tab[] = [
-         'id'            => '1',
-         'table'         => $this->getTable(),
-         'field'         => 'name',
-         'name'          => __('Name'),
-         'datatype'      => 'itemlink',
-         'itemlink_type' => $this->getType()
-      ];
-
-      $tab[] = [
-         'id'       => '30',
-         'table'    => $this->getTable(),
-         'field'    => 'id',
-         'name'     => __('ID'),
-         'datatype' => 'number'
-      ];
-
-      $tab[] = [
-         'id'       => '92',
-         'table'    => 'glpi_groups',
-         'field'    => 'name',
-         'name'     => __('Group'),
-         'datatype' => 'dropdown'
-      ];
+      $tab[2]['table']           = $this->getTable();
+      $tab[2]['field']           = 'id';
+      $tab[2]['name']            = __('ID');
+      $tab[2]['massiveaction']   = false;
+      $tab[2]['datatype']        = 'number';
+      
+      $tab[92]['table']           = 'glpi_groups';
+      $tab[92]['field']           = 'name';
+      $tab[92]['name']            = __('Group');
+      $tab[92]['massiveaction']   = true;
+      $tab[92]['datatype']        = 'dropdown';
 
       return $tab;
    }

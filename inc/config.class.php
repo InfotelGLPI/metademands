@@ -170,7 +170,7 @@ class PluginMetademandsConfig extends CommonDBTM {
     */
    function getConfigFromDB($options = []) {
       $table = $this->getTable();
-      $where = [];
+      $where = '1';
       if (isset($options['where'])) {
          $where = $options['where'];
       }

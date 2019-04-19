@@ -27,8 +27,6 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '2.6.0');
-
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands() {
    global $PLUGIN_HOOKS;
@@ -143,25 +141,17 @@ function plugin_version_metademands() {
 
    return [
       'name'           => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
-      'version'        => PLUGIN_METADEMANDS_VERSION,
+      'version'        => '2.4.1',
       'author'         => "<a href='http://blogglpi.infotel.com'>Infotel</a>",
       'license'        => 'GPLv2+',
       'homepage'       => 'https://github.com/InfotelGLPI/metademands',
-      'requirements'   => [
-         'glpi' => [
-            'min' => '9.4',
-            'dev' => false
-         ]
-      ]];
+      'minGlpiVersion' => '9.2'];
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_metademands_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '9.4', 'lt') 
-         || version_compare(GLPI_VERSION, '9.5', 'ge')) {
-      if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '9.4');
-      }
+   if (version_compare(GLPI_VERSION, '9.2', 'lt') || version_compare(GLPI_VERSION, '9.3', 'ge')) {
+      echo __('This plugin requires GLPI >= 9.2');
       return false;
    }
 

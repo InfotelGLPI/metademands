@@ -164,17 +164,14 @@ class PluginMetademandsITILEnvironment extends CommonDropdown {
       return $tab;
    }
 
-   public function rawSearchOptions() {
-      $tab = parent::rawSearchOptions();
+   public function getSearchOptions() {
+      $tab = parent::getSearchOptions();
 
-      $tab[] = [
-         'id'       => '20',
-         'table'    => $this->getTable(),
-         'field'    => 'is_outproduction',
-         'name'     => __('Is out of production', 'metademands'),
-         'datatype' => 'bool',
-         'searchtype' => 'equals'
-      ];
+      $tab[20]['table']      = $this->getTable();
+      $tab[20]['name']       = __('Is out of production', 'metademands');
+      $tab[20]['field']      = 'is_outproduction';
+      $tab[20]['datatype']   = 'bool';
+      $tab[20]['searchtype'] = 'equals';
 
       return $tab;
    }

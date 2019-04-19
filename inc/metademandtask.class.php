@@ -182,7 +182,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
       $metademands_parent = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($metademands_id);
 
       $field = new PluginMetademandsField();
-      $fields = $field->find(['type' => 'parent_field', 'plugin_metademands_metademands_id' => $metademands_id]);
+      $fields = $field->find("`type` = 'parent_field' AND `plugin_metademands_metademands_id` = $metademands_id");
 
       //delete of the metademand fields in the present child requests as father fields
       foreach ($fields as $data) {
