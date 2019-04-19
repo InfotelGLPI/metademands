@@ -1128,7 +1128,7 @@ class PluginMetademandsTicket extends CommonDBTM {
             foreach ($tickets as $key => $val) {
                $job = new Ticket();
                if ($job->getfromDB($val)) {
-                  if (!in_array($job->fields['status'], $status)) {
+                  if (!in_array($job->fields['status'], $status) && $job->fields['is_deleted'] == 0) {
                      $solved = false;
                   }
                }
