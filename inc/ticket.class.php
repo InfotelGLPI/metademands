@@ -1119,7 +1119,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       $solved = true;
       if (!empty($ticket_metademand_data)) {
          foreach ($ticket_metademand_data as $meta) {
-            $tickets_found = PluginMetademandsTicket::getSonTickets($meta['tickets_id'], 0, [], true);
+            $tickets_found = self::getSonTickets($meta['tickets_id'], 0, [], true);
 
             $tickets[] = $meta['tickets_id'];
             foreach ($tickets_found as $k => $v) {
@@ -1130,7 +1130,7 @@ class PluginMetademandsTicket extends CommonDBTM {
             $status = [Ticket::SOLVED, Ticket::CLOSED];
             foreach ($tickets as $key => $val) {
                $job = new Ticket();
-               if ($job->getfromDB($val)) {
+               if ($job->getfromDB($val) && $job->fields['is_deleted'] == 0) {
                   if (!in_array($job->fields['status'], $status) && $job->fields['is_deleted'] == 0) {
                      $solved = false;
                   }

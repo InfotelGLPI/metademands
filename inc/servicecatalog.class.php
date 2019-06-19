@@ -64,7 +64,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI
    static function getMenuLogo() {
       global $CFG_GLPI;
 
-      return "<a class='bt-interface bt-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.php?choose_category&type=metademands'></a>";
+      return "<a class='bt-interface bt-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'></a>";
 
    }
 
@@ -150,7 +150,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI
       $metademands = self::selectMetademands();
 
       echo '<li>';
-      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.php'></a>";
+      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
       echo '</li>';
 
       foreach ($metademands as $id => $name) {
