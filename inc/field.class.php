@@ -786,7 +786,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo __('Value') . " 1 ";
                   echo '<input type="text" name="custom_values[1]"  value="" size="30"/>';
 
-                  self::initCustomValue($values);
+                  self::initCustomValue(1);
                }
 
                break;
