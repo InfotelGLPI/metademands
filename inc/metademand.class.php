@@ -1705,7 +1705,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $plugin_page = "/plugins/metademands/front/menu.php";
       $menu        = [];
       //Menu entry in helpdesk
-      $menu['title']           = self::getTypeName();
+      $menu['title']           = self::getTypeName(2);
       $menu['page']            = $plugin_page;
       $menu['links']['search'] = $plugin_page;
       if (Session::haveRightsOr("plugin_metademands", [CREATE, UPDATE])) {
