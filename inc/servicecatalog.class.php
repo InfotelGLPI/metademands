@@ -149,15 +149,39 @@ class PluginMetademandsServicecatalog extends CommonGLPI
 
       $metademands = self::selectMetademands();
 
-      echo '<li>';
-      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
-      echo '</li>';
+      echo '<div class="btnsc-normal fa-back" id="click">';
+
+
+      $fasize = "fa-5x";
+      $margin = "fas-sc";
+      $config = new PluginServicecatalogConfig();
+      if ($config->getCatSize() == 'verysmall') {
+         $margin = "fas-sc-small";
+      }
+
+      echo "<i class=\"fas $margin fa-chevron-circle-up $fasize\"></i>";
+      echo "<br><br>";
+      echo "<span class=\"label_back bottom_title\">";
+
+      echo __('Back');
+
+      echo "</span>";
+      echo "<script>$(document).ready(function() {
+                 $('#click').click(function() {
+                      window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php';
+                 });
+            });</script>";
+
+      echo "</div>";
+//      echo '<li>';
+//      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
+//      echo '</li>';
 
       foreach ($metademands as $id => $name) {
 
          $meta = new PluginMetademandsMetademand();
          if ($meta->getFromDB($id)) {
-            echo "<li>";
+            echo '<div class="btnsc-normal" >';
             echo "<a class='bt-list-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=".$id."&step=2'>";
             echo "</a>";
             echo "<a style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=".$id."&step=2'>";
@@ -166,7 +190,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI
             echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
             echo $meta->fields['comment'];
             echo "</span></em>";
-            echo "</p></a></li>";
+            echo "</p></a></div>";
          }
       }
 
