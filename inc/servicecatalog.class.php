@@ -35,12 +35,11 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsServicecatalog
  */
-class PluginMetademandsServicecatalog extends CommonGLPI
-{
+class PluginMetademandsServicecatalog extends CommonGLPI {
 
-   static $rightname     = 'plugin_metademands';
+   static $rightname = 'plugin_metademands';
 
-   var     $dohistory = false;
+   var $dohistory = false;
 
    /**
     * @return bool
@@ -55,7 +54,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI
     * @return string
     */
    static function getMenuTitle() {
-      return "<span class=\"de-em\">".__('Create a', 'servicecatalog')." </span>".__('advanced request', 'metademands');
+      return "<span class=\"de-em\">" . __('Create a', 'servicecatalog') . " </span>" . __('advanced request', 'metademands');
    }
 
    /**
@@ -80,7 +79,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI
                    FROM `glpi_plugin_metademands_metademands`
                    WHERE `glpi_plugin_metademands_metademands`.`itilcategories_id` > 0
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
-            . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
+         . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
       $query .= "AND is_active ORDER BY `name`";
       $metademands = [];
       $result = $DB->query($query);
@@ -100,11 +99,11 @@ class PluginMetademandsServicecatalog extends CommonGLPI
     */
    static function getMenuComment() {
 
-      $list ="";
+      $list = "";
       $metademands = self::selectMetademands();
 
       foreach ($metademands as $id => $name) {
-         $list .= $name.'<br>';
+         $list .= $name . '<br>';
       }
       return $list;
    }
@@ -127,17 +126,17 @@ class PluginMetademandsServicecatalog extends CommonGLPI
 
       $dbu = new DbUtils();
       $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-                                    ["`itilcategories_id`" => $category_id,
-                                     "`is_active`" => 1,
-                                     "`type`" => $type]);
+         ["`itilcategories_id`" => $category_id,
+            "`is_active`" => 1,
+            "`type`" => $type]);
 
       if (!empty($metas)) {
          $meta = reset($metas);
-          //Redirect if not linked to a resource contract type
+         //Redirect if not linked to a resource contract type
          if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
-                                   ["plugin_metademands_metademands_id" => $meta["id"]])) {
+            ["plugin_metademands_metademands_id" => $meta["id"]])) {
 
-            return $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=".$meta["id"]."&tickets_id=0&step=2";
+            return $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=0&step=2";
 
          }
       }
@@ -148,32 +147,80 @@ class PluginMetademandsServicecatalog extends CommonGLPI
       global $CFG_GLPI;
 
       $metademands = self::selectMetademands();
+      $plugin = new Plugin();
+      if ($plugin->isActivated("servicecatalog") && ($plugin->getInfo('servicecatalog')["version"] >= "1.6.0")) {
+         echo '<div class="btnsc-normal fa-back" id="click">';
 
-      echo '<li>';
-      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
-      echo '</li>';
 
-      foreach ($metademands as $id => $name) {
+         $fasize = "fa-5x";
+         $margin = "fas-sc";
+         $config = new PluginServicecatalogConfig();
+         if ($config->getCatSize() == 'verysmall') {
+            $margin = "fas-sc-small";
+         }
 
-         $meta = new PluginMetademandsMetademand();
-         if ($meta->getFromDB($id)) {
-            echo "<li>";
-            echo "<a class='bt-list-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=".$id."&step=2'>";
-            echo "</a>";
-            echo "<a style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=".$id."&step=2'>";
-            echo "<p>";
-            echo Html::resume_text($meta->getName(), 30);
-            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-            echo $meta->fields['comment'];
-            echo "</span></em>";
-            echo "</p></a></li>";
+         echo "<i class=\"fas $margin fa-chevron-circle-up $fasize\"></i>";
+         echo "<br><br>";
+         echo "<span class=\"label_back bottom_title\">";
+
+         echo __('Back');
+
+         echo "</span>";
+         echo "<script>$(document).ready(function() {
+                 $('#click').click(function() {
+                      window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php';
+                 });
+            });</script>";
+
+         echo "</div>";
+//      echo '<li>';
+//      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
+//      echo '</li>';
+
+         foreach ($metademands as $id => $name) {
+
+            $meta = new PluginMetademandsMetademand();
+            if ($meta->getFromDB($id)) {
+               echo '<div class="btnsc-normal" >';
+               echo "<a class='bt-list-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "</a>";
+               echo "<a style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<p>";
+               echo Html::resume_text($meta->getName(), 30);
+               echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+               echo $meta->fields['comment'];
+               echo "</span></em>";
+               echo "</p></a></div>";
+            }
+         }
+      } else {
+         echo '<li>';
+         echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
+         echo '</li>';
+
+         foreach ($metademands as $id => $name) {
+
+            $meta = new PluginMetademandsMetademand();
+            if ($meta->getFromDB($id)) {
+               echo '<li>';
+               echo "<a class='bt-list-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "</a>";
+               echo "<a style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<p>";
+               echo Html::resume_text($meta->getName(), 30);
+               echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+               echo $meta->fields['comment'];
+               echo "</span></em>";
+               echo "</p></a></li>";
+            }
          }
       }
+
 
       if (count($metademands) == 0) {
          echo '<div class="bt-feature bt-col-sm-5 bt-col-md-2">';
          echo '<h5 class="bt-title">';
-         echo '<span class="de-em">'.__('No advanced request found', 'metademands').'</span></h5></a>';
+         echo '<span class="de-em">' . __('No advanced request found', 'metademands') . '</span></h5></a>';
          echo '</div>';
          echo '</div>';
       }
