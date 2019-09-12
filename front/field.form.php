@@ -33,11 +33,15 @@ if (empty($_GET["id"])) {
    $_GET["id"] = "";
 }
 
+$field = new PluginMetademandsField();
+
 if (!isset($_POST["check_value"])) {
    $_POST["check_value"] = "";
+} else {
+   $_POST["check_value"] = $field->_serialize($_POST["check_value"]);
+   $_POST["plugin_metademands_tasks_id"] = $field->_serialize($_POST["plugin_metademands_tasks_id"]);
+   $_POST["fields_link"] = $field->_serialize($_POST["fields_link"]);
 }
-
-$field = new PluginMetademandsField();
 
 if (isset($_POST["add"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])) {

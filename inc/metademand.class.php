@@ -289,7 +289,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
                'label' => __('URL'),
                'type'  => 'specific',
                'list'  => true],
-
+         ['name'  => 'tickettemplates_id',
+               'label' => __('Template'),
+               'type'  => 'specific',
+               'list'  => true]
       ];
 
       return $tab;
@@ -365,6 +368,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $opt['entity'] = $_SESSION['glpiactiveentities'];
             echo "<input type='hidden' name='type' value='" . Ticket::DEMAND_TYPE . "'>";
             Dropdown::show('ITILCategory', $opt);
+            break;
+         case 'tickettemplates_id':
+            $opt['condition'] = [];
+            $opt['value']  = $this->fields['tickettemplates_id'];
+            $opt['entity'] = $_SESSION['glpiactiveentities'];
+            TicketTemplate::dropdown($opt);
             break;
       }
    }
@@ -638,8 +647,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
-
-      if (!empty($metademands_id)) {
+      $hidden = false;
+      if(isset($_SESSION['metademands_hide'])){
+         $hidden = in_array($metademands_id,$_SESSION['metademands_hide']);
+      }
+      if (!empty($metademands_id) && !$hidden) {
          // get normal form data
          $field     = new PluginMetademandsField();
          $form_data = $field->find(['plugin_metademands_metademands_id' => $metademands_id],
@@ -839,7 +851,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
 
                // Get predefined ticket fields
-               $parent_ticketfields = $this->formatTicketFields($form_metademands_id);
+               $parent_ticketfields = $this->formatTicketFields($form_metademands_id,$metademand->getField('tickettemplates_id'));
 
                // Case of simple ticket convertion
                // Ticket does not exist : ADD
@@ -936,6 +948,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                      $ticket->update($this->mergeFields($parent_fields, $parent_ticketfields));
                   }
+
+                  unset($_SESSION['son_meta']);
                } else {
                   $KO[] = 1;
                }
@@ -1029,7 +1043,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
          switch ($field['type']) {
             case 'title' :
-               $result['content'] .= "##".$field['label']."##";
+               $result['content'] .= "<h1>##".$field['label']."##</h1>";
                break;
             case 'dropdown':
                if (!empty($field['custom_values']) && $field['item'] == 'other') {
@@ -1131,16 +1145,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
    /**
     * @param $metademands_id
-    *
+    * @param $tickettemplates_id
     * @return array
     */
-   function formatTicketFields($metademands_id) {
+   function formatTicketFields($metademands_id, $tickettemplates_id) {
       $result = [];
 
       $ticket_field        = new PluginMetademandsTicketField();
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       $tt = new TicketTemplate();
+      if($tickettemplates_id != 0){
+         $tt->getFromDB($tickettemplates_id);
+      }
       if (count($parent_ticketfields)) {
          $allowed_fields = $tt->getAllowedFields(true, true);
          foreach ($parent_ticketfields as $value) {
@@ -1201,7 +1218,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
             $content = '';
             if (!empty($son_ticket_data['content'])) {
-               $content = __('################### Son ticket ###################', 'metademands') .
+               $content = "<h1>" . __('########## Son ticket ##########', 'metademands') . "</h1>" .
                            "\r\n" . $son_ticket_data['content'];
                $content .= "\r\n";
             }
@@ -1222,6 +1239,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if (isset($parent_fields['_groups_id_assign'])) {
                $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
             }
+            //*****///
+            $user_id_validate = $son_ticket_data['users_id_validate'];
+            unset($son_ticket_data['users_id_validate']);
+            $son_ticket_data['users_id_validate'][$user_id_validate] = $user_id_validate;
+            //*****///
             if ($son_tickets_id = $ticket->add(Toolbox::addslashes_deep($son_ticket_data))) {
                // Add son link to parent
                $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
