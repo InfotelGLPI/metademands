@@ -35,7 +35,7 @@ function plugin_metademands_install() {
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
       // table sql creation
-      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/empty-2.5.3.sql");
+      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/empty-2.6.1.sql");
    }
 
    if (!$DB->tableExists("glpi_plugin_metademands_itilapplications") || !$DB->tableExists("glpi_plugin_metademands_itilenvironments")) {
@@ -84,6 +84,11 @@ function plugin_metademands_install() {
    //version 2.5.3
    if (!$DB->fieldExists("glpi_plugin_metademands_tickettasks", "users_id_validate")) {
       $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/update-2.5.3.sql");
+   }
+
+   //version 2.6.1
+   if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "tickettemplates_id")) {
+      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/update-2.6.1.sql");
    }
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);

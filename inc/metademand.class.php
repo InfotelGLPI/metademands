@@ -1066,6 +1066,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                }
                break;
+            case 'textarea':
             case 'text':
                $result['content'] .= $field['label'] . ' : ' . $field['value'];
                break;
@@ -1106,9 +1107,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $result['content'] .= $field['label'];
                   }
                }
-               break;
-            case 'textarea':
-               $result['content'] .= $field['label'] . ' : ' . $field['value'];
                break;
             case 'datetime':
                $result['content'] .= $field['label'] . ' : ' . Html::convDate($field['value']);
@@ -1179,6 +1177,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param       $ancestor_tickets_id
     *
     * @return bool
+    * @throws \GlpitestSQLError
     */
    private function createSonsTickets(array $tickettasks_data, $parent_tickets_id, $tasklevel = 1, $parent_fields, $ancestor_tickets_id) {
 

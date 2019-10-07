@@ -65,7 +65,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
-
+      $rand = mt_srand();
       // Default values
       $values = ['itilcategories_id'                      => 0,
                       'type'                                   => Ticket::DEMAND_TYPE,

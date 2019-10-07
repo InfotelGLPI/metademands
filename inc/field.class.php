@@ -952,7 +952,7 @@ class PluginMetademandsField extends CommonDBChild {
                break;
          }
 
-         echo '</td></tr></table>';
+         echo '</table>';
          echo "</td></tr></table>";
       }
    }

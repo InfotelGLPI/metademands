@@ -203,16 +203,18 @@ class PluginMetademandsTicket extends CommonDBTM {
                } else {
                   $job->getEmpty();
                }
-
-               // No resolution or close if a son ticket is not solved or closed
-               if ((!isset($job->fields['status']))
-                       || ($job->fields['status'] != Ticket::SOLVED
-                       && $job->fields['status'] != Ticket::CLOSED)) {
-                  if ($with_message) {
-                     Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
+               if ((isset($job->fields['is_deleted']))
+                   && ($job->fields['is_deleted'] != 1)) {
+                  // No resolution or close if a son ticket is not solved or closed
+                  if ((!isset($job->fields['status']))
+                      || ($job->fields['status'] != Ticket::SOLVED
+                          && $job->fields['status'] != Ticket::CLOSED)) {
+                     if ($with_message) {
+                        Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
+                     }
+                     $ticket->input = ['id' => $ticket->fields['id']];
+                     return false;
                   }
-                  $ticket->input = ['id' => $ticket->fields['id']];
-                  return false;
                }
             }
          }
