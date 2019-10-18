@@ -705,6 +705,11 @@ class PluginMetademandsWizard extends CommonDBTM {
          case 'text':
             echo "<input type='text' name='field[" . $data['id'] . "]' value='" . $value . "'>";
             break;
+
+         case 'link':
+            echo "<a target='_blank' href ='".$data['custom_values']."'>".$data['custom_values']."</a>";
+            echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $data['custom_values'] . "'>";
+            break;
          case 'checkbox':
             if (!empty($data['custom_values'])) {
                $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);

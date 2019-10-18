@@ -1049,6 +1049,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                }
                break;
+            case 'link':
+               if (strpos($field['value'],'http://') !== 0 && strpos($field['value'],'https://') !== 0 ){
+                  $field['value'] = "http://".$field['value'];
+               }
+               $result['content'] .= $field['label'] . ' :<a href="'.$field['value'].'" data-mce-href="'.$field['value'].'" > ' . $field['value'].'</a>';
+               break;
             case 'text':
                $result['content'] .= $field['label'] . ' : ' . $field['value'];
                break;
