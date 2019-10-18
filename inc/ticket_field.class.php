@@ -126,6 +126,11 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                return false;
             }
             break;
+         case 'link':
+            if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value))) {
+               return false;
+            }
+            break;
          default:
             if ($check_value == PluginMetademandsField::$not_null && empty($value)) {
                return false;
