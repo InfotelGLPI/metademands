@@ -825,12 +825,20 @@ class PluginMetademandsField extends CommonDBChild {
                Dropdown::showFromArray("custom_values", $data, $p);
                break;
             case 'link': // Show yes/no default value
-               $val ="";
                if (isset($params['custom_values'])) {
-                  $val = $params['custom_values'];
+                  $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
                }
                echo '<label>'.__("Link").' : </label>';
-               echo '<input type="text" name="custom_values[0]" value="'.$val.'" size="30"/>';
+               echo '<input type="text" name="custom_values[1]" value="'.$params['custom_values'][1].'" size="30"/>';
+
+               echo '<br /><br /><label>'.__("Button Type", "metademands").' : </label>';
+               Dropdown::showFromArray("custom_values[0]",
+                  [
+                     'button' =>__('button'),
+                     'link_a' => __('Web link')
+                  ],
+                  ['value'=>$params['custom_values'][0]]);
+               echo "<br /><i>".__("*use field \"Additional label\" for the button title","metademands")."</i>";
                break;
          }
 

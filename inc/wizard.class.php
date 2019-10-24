@@ -579,7 +579,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "</div>";
 
                // Label 2 (date interval)
-               if (!empty($data['label2'])) {
+               if (!empty($data['label2']) && $data['type'] != 'link') {
                   echo "<div class=\"bt-feature bt-col-sm-3 bt-col-md-3 \">";
                   echo $data['label2'];
                   if ($data['is_mandatory']) {
@@ -707,8 +707,24 @@ class PluginMetademandsWizard extends CommonDBTM {
             break;
 
          case 'link':
-            echo "<a target='_blank' href ='".$data['custom_values']."'>".$data['custom_values']."</a>";
-            echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $data['custom_values'] . "'>";
+            if (!empty($data['custom_values'])) {
+               $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+               switch($data['custom_values'][0]){
+                  case 'button' :
+                  $btnLabel = __('Link');
+                  if(!empty($data['label2'])){
+                     $btnLabel = $data['label2'];
+                  }
+                     echo "<input type='submit' class='submit' value ='$btnLabel' target='_blank' onclick=\"window.open('".$data['custom_values'][1]."','_blank')\">";
+
+                  break;
+                  case 'link_a' :
+                     echo "<a target='_blank' href ='".$data['custom_values'][1]."'>".$data['custom_values'][1]."</a>";
+                  break;
+               }
+            }
+//            echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $data['custom_values'] . "'>";
+
             break;
          case 'checkbox':
             if (!empty($data['custom_values'])) {
