@@ -715,7 +715,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   if(!empty($data['label2'])){
                      $btnLabel = $data['label2'];
                   }
-                     echo "<input type='submit' class='submit' value ='$btnLabel' target='_blank' onclick=\"window.open('".$data['custom_values'][1]."','_blank')\">";
+                     echo "<input type='submit' class='submit' value ='$btnLabel' target='_blank' onclick=\"window.open('".$data['custom_values'][1]."','_blank');return false\">";
 
                   break;
                   case 'link_a' :
