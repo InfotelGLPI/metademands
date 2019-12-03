@@ -41,8 +41,10 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $types = ['PluginMetademandsMetademand'];
 
+   // TODO add type object for dropdwon multiple
+
    static $field_types        = ['', 'dropdown', 'text', 'checkbox', 'textarea', 'datetime',
-                                      'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'parent_field'];
+                                      'datetime_interval', 'dropdown_multiple', 'yesno', 'upload', 'title', 'radio', 'parent_field'];
    static $field_items        = ['', 'user', 'group', 'location', 'other', 'PluginResourcesResource',
                                       'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
@@ -306,9 +308,11 @@ class PluginMetademandsField extends CommonDBChild {
       // SHOW SPECIFIC VALUES
       echo "<td colspan='4'>";
       echo "<div id='show_values'>";
-      if ($this->fields['type'] == 'dropdown') {
+      if ($this->fields['type'] == 'dropdown' ) {
          $this->fields['type'] = $this->fields['item'];
       }
+
+
       $paramTypeField = ['value'          => $this->fields['type'],
                               'custom_values'  => $this->fields['custom_values'],
                               'comment_values' => $this->fields['comment_values'],
@@ -544,6 +548,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       switch ($value) {
          case 'dropdown':          return __('Dropdown', 'metademands');
+         case 'dropdown_multiple':    return __('Dropdown multiple', 'metademands');
          case 'text':              return __('Text', 'metademands');
          case 'checkbox':          return __('Checkbox', 'metademands');
          case 'textarea':          return __('Textarea', 'metademands');
@@ -582,6 +587,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       return Dropdown::showFromArray($name, $options, $p);
    }
+
 
    /**
    * get field items name
@@ -625,7 +631,7 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'group', 'location',
+      $allowed_types = ['yesno', 'datetime', 'datetime_interval',  'user', 'group', 'location',
                              'PluginResourcesResource', 'other', 'checkbox', 'radio', 'parent_field',
                              'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
@@ -753,7 +759,7 @@ class PluginMetademandsField extends CommonDBChild {
          $html .= "<input type='checkbox' name='check_value' value='1' $checked>";
          $html .= "</td></tr>";
          break;
-         case 'user':case 'group':case 'location':case 'PluginResourcesResource':case 'other':case 'dropdown':case 'PluginMetademandsITILApplication':case 'PluginMetademandsITILEnvironment':
+         case 'user':case 'group':case 'location':case 'PluginResourcesResource': case 'dropdown_multiple' : case 'other':case 'dropdown':case 'PluginMetademandsITILApplication':case 'PluginMetademandsITILEnvironment':
                  // Value to check
          $html .= "<tr><td>";
          $html .= __('Value to check', 'metademands');
@@ -887,7 +893,7 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['other', 'checkbox', 'yesno', 'radio'];
+      $allowed_types = ['other', 'checkbox', 'yesno', 'radio', 'dropdown_multiple'];
 
       if (in_array($params['value'], $allowed_types)) {
          echo "<table width='100%' class='metademands_show_values'>";
@@ -896,6 +902,7 @@ class PluginMetademandsField extends CommonDBChild {
          echo '<table class="metademands_show_custom_fields"><tr><td id="show_custom_fields">';
 
          switch ($params['value']) {
+            case 'dropdown_multiple':
             case 'other':
             case 'dropdown':
             if (is_array($values) && !empty($values)) {
