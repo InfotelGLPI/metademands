@@ -882,6 +882,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
 
                         switch ($field['type']) {
+                           case 'dropdown_multiple':
+                              if (!empty($field['custom_values'])) {
+                                 $value_parent_field = $field['custom_values'][$value_parent_field];
+                              }
+                              break;
                            case 'dropdown':
                               if (!empty($field['custom_values']) && $field['item'] == 'other') {
                                  $value_parent_field = $field['custom_values'][$value_parent_field];

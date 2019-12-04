@@ -1092,7 +1092,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             case 'title' :
                $result['content'] .= "<th colspan='2' style='background-color: #ccc;'>" . $field['label'] . "</th>";
                break;
-            case 'dropdown':
+      case 'dropdown':
                if (!empty($field['custom_values']) && $field['item'] == 'other') {
                   $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
                   $result['content']      .= "<td $style_title>" . $field['label'] . "</td><td>" . $field['custom_values'][$field['value']] . "</td>";
@@ -1112,6 +1112,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $result['content'] .= "</td>";
                         break;
                   }
+               }
+               break;
+            case 'dropdown_multiple':
+               if (!empty($field['custom_values'])) {
+                  $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
+                  $result['content']      .= "<td $style_title>" . $field['label'] . "</td><td>" . implode(", ", $field['custom_values']) . "</td>";
                }
                break;
             case 'link':
