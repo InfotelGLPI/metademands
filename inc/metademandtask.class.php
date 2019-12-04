@@ -62,18 +62,18 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
    static function showMetademandTaskForm($ID) {
 
       // Avoid select of parent metademands
-      $used = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($ID);
+      $used   = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($ID);
       $used[] = $ID;
 
-      echo PluginMetademandsMetademand::getTypeName(1)."&nbsp;:&nbsp;";
+      echo PluginMetademandsMetademand::getTypeName(1) . "&nbsp;:&nbsp;";
       Dropdown::show('PluginMetademandsMetademand',
-              ['name' => 'link_metademands_id' ,'used' => $used]);
+                     ['name' => 'link_metademands_id', 'used' => $used]);
 
       unset($used[array_search($ID, $used)]);
 
       foreach ($used as $metademands_id) {
-         echo "<br><span class='red'>".__('This demand is already used in', 'metademands')."&nbsp;:&nbsp;".
-                 Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id)."</span>";
+         echo "<br><span class='red'>" . __('This demand is already used in', 'metademands') . "&nbsp;:&nbsp;" .
+              Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id) . "</span>";
       }
 
    }
@@ -87,16 +87,18 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
    static function getMetademandTaskName($tasks_id) {
       global $DB;
 
-      $query = "SELECT `glpi_plugin_metademands_metademands`.`name`
+      if ($tasks_id > 0) {
+         $query  = "SELECT `glpi_plugin_metademands_metademands`.`name`
                FROM `glpi_plugin_metademands_metademands`
                LEFT JOIN `glpi_plugin_metademands_metademandtasks`
                   ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
-               WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = ".$tasks_id;
-      $result = $DB->query($query);
+               WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = " . $tasks_id;
+         $result = $DB->query($query);
 
-      if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
-            return $data['name'];
+         if ($DB->numrows($result)) {
+            while ($data = $DB->fetch_assoc($result)) {
+               return $data['name'];
+            }
          }
       }
    }
@@ -115,7 +117,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
                FROM `glpi_plugin_metademands_metademandtasks`
                LEFT JOIN `glpi_plugin_metademands_tasks`
                   ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id`)
-               WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = ".$metademands_id;
+               WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
@@ -135,9 +137,9 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
    static function getMetademandTask_TaskId($metademands_id) {
       global $DB;
 
-      $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id
+      $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id
                FROM `glpi_plugin_metademands_metademandtasks`
-               WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = ".$metademands_id;
+               WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
@@ -160,7 +162,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
       $metademandtask = new self();
 
       // Get next elements
-      $query = "SELECT `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` as parent_metademands_id,
+      $query  = "SELECT `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` as parent_metademands_id,
                        `glpi_plugin_metademands_tasks`.`id` as tasks_id
           FROM `glpi_plugin_metademands_tasks`
           LEFT JOIN `glpi_plugin_metademands_metademandtasks`
@@ -170,7 +172,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
             $id_found[] = $data['parent_metademands_id'];
-            $id_found = $metademandtask->getAncestorOfMetademandTask($data['parent_metademands_id'], $id_found);
+            $id_found   = $metademandtask->getAncestorOfMetademandTask($data['parent_metademands_id'], $id_found);
          }
       }
 
@@ -183,7 +185,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
       // list of parents
       $metademands_parent = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($metademands_id);
 
-      $field = new PluginMetademandsField();
+      $field  = new PluginMetademandsField();
       $fields = $field->find(['type' => 'parent_field', 'plugin_metademands_metademands_id' => $metademands_id]);
 
       //delete of the metademand fields in the present child requests as father fields
