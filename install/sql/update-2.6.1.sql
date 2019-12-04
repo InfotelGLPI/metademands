@@ -1,1 +1,0 @@
-ALTER TABLE `glpi_plugin_metademands_metademands` ADD `tickettemplates_id` INT(11) NOT NULL DEFAULT '0';

@@ -122,39 +122,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
    static function isCheckValueOK($value, $check_value, $type) {
       switch ($type) {
          case 'yesno':
-         case 'dropdown':
-         case 'radio':
-            if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
-               return false;
-            } else if ($check_value != $value && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
-               return false;
-            }
-            break;
-
-         case 'checkbox':
-            if(!empty($value)){
-               $ok = false;
-               if(is_array($value)){
-                  foreach($value as $key => $v){
-                     if($key != 0){
-                        if ($check_value == $key || $check_value == 0) {
-                           $ok = true;
-                        }
-                     }
-                  }
-               } else if(is_array(json_decode($value,true))){
-                  foreach(json_decode($value,true) as $key => $v){
-                     if($key != 0) {
-                        if ($check_value == $key || $check_value == 0) {
-                           $ok = true;
-                        }
-                     }
-                  }
-               }
-               if(!$ok){
-                  return false;
-               }
-            } elseif ($check_value != 0){
+            if ($check_value != $value) {
                return false;
             }
             break;

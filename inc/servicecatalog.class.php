@@ -63,14 +63,8 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getMenuLogo() {
       global $CFG_GLPI;
 
-      $display =  "<a class='bt-interface' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'>";
-      $fasize  = "fa-6x";
-      $display .= "<div class='bt-img-responsive center'>";
-      $display .= "<i class='fa-menu-sc fas fa-file-alt $fasize'></i>";//$style
-      $display .= "</div>";
-      $display .= "</a>";
+      return "<a class='bt-interface bt-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'></a>";
 
-      return $display;
    }
 
    /**
@@ -188,14 +182,9 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($id)) {
                echo '<div class="btnsc-normal" >';
-               echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-               $fasize  = "fa-6x";
-               echo "<div class='center'>";
-               echo "<i class='fa-menu-sc fas fa-file-alt $fasize'></i>";//$style
-               echo "</div>";
-         
+               echo "<a class='bt-list-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo "</a>";
-               echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<a style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo "<p>";
                echo Html::resume_text($meta->getName(), 30);
                echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
@@ -216,7 +205,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
                echo '<li>';
                echo "<a class='bt-list-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo "</a>";
-               echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<a style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo "<p>";
                echo Html::resume_text($meta->getName(), 30);
                echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";

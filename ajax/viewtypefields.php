@@ -54,4 +54,4 @@ switch ($_POST['step']) {
       break;
 }
 
-//Html::ajaxFooter();
+Html::ajaxFooter();

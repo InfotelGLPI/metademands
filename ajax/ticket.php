@@ -75,8 +75,4 @@ switch ($_POST['action']) {
       $ticket->getHelpdeskApplicationEnvironment($_POST['tickets_id'], $_POST);
       break;
 
-   case 'getCategory':
-      $ticket = new PluginMetademandsTicket();
-      $ticket->getCategory($_POST['tickets_id'], $_POST);
-      break;
 }

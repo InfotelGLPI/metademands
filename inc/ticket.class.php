@@ -203,18 +203,16 @@ class PluginMetademandsTicket extends CommonDBTM {
                } else {
                   $job->getEmpty();
                }
-               if ((isset($job->fields['is_deleted']))
-                   && ($job->fields['is_deleted'] != 1)) {
-                  // No resolution or close if a son ticket is not solved or closed
-                  if ((!isset($job->fields['status']))
-                      || ($job->fields['status'] != Ticket::SOLVED
-                          && $job->fields['status'] != Ticket::CLOSED)) {
-                     if ($with_message) {
-                        Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
-                     }
-                     $ticket->input = ['id' => $ticket->fields['id']];
-                     return false;
+
+               // No resolution or close if a son ticket is not solved or closed
+               if ((!isset($job->fields['status']))
+                       || ($job->fields['status'] != Ticket::SOLVED
+                       && $job->fields['status'] != Ticket::CLOSED)) {
+                  if ($with_message) {
+                     Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
                   }
+                  $ticket->input = ['id' => $ticket->fields['id']];
+                  return false;
                }
             }
          }
@@ -373,7 +371,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       $query = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
                        `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`
                   FROM glpi_plugin_metademands_tickets_tasks
-                  WHERE `glpi_plugin_metademands_tickets_tasks`.`tickets_id` = ". $tickets_id;
+                  WHERE `glpi_plugin_metademands_tickets_tasks`.`tickets_id` = ". $tickets_id."";
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {

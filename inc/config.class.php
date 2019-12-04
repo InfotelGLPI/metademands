@@ -82,7 +82,7 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
 
       echo "<td>";
-      echo __('Enable application and environment for tickets', 'metademands');
+      echo __('Enable application and environment', 'metademands');
       echo "</td>";
       echo "<td>";
       Dropdown::showYesNo('enable_application_environment', $config['enable_application_environment']);
