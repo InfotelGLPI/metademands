@@ -74,6 +74,9 @@ if (isset($_POST["add"])) {
       }
       $_POST["custom_values"] = $field->_serialize($custom_values);
       $_POST["comment_values"] = $field->_serialize($comment_values);
+   } else if ($_POST["type"] == 'link') {
+      $_POST["custom_values"] = $field->_serialize($_POST['custom_values']);
+      $_POST["comment_values"] = '';
    } else if ($_POST["type"] != 'yesno') {
       $_POST["custom_values"] = '';
       $_POST["comment_values"] = '';

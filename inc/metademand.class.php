@@ -892,6 +892,21 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $values['fields']['tickets_id'] = 0;
                }
 
+               //Prevent create subtickets
+               $fieldDbtm = new PluginMetademandsField();
+               foreach ($_POST['field'] as $key => $field){
+                  $fieldDbtm->getFromDB($key);
+                  $check_value[$key] = $fieldDbtm->getField('check_value');
+                  $idTask = $fieldDbtm->getField("plugin_metademands_tasks_id");
+                  if(isset($check_value[$key])){
+                     if(($check_value[$key] == 'NOT_NULL' && $field == 0) ||
+                        ($check_value[$key] != 'NOT_NULL' && $check_value[$key] != $field)){
+                        unset($line['form'][$key]);
+                        unset($line['tasks'][$idTask]);
+                        unset($values['fields'][$key]);
+                     }
+                  }
+               }
                if ($parent_tickets_id) {
                   // Create link for metademand task with ancestor metademand
                   if ($form_metademands_id == $metademands_id) {
@@ -1066,7 +1081,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                }
                break;
-            case 'textarea':
+            case 'link':
+               if (strpos($field['value'],'http://') !== 0 && strpos($field['value'],'https://') !== 0 ){
+                  $field['value'] = "http://".$field['value'];
+               }
+               $result['content'] .= $field['label'] . ' :<a href="'.$field['value'].'" data-mce-href="'.$field['value'].'" > ' . $field['value'].'</a>';
+               break;
             case 'text':
                $result['content'] .= $field['label'] . ' : ' . $field['value'];
                break;

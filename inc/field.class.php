@@ -42,7 +42,7 @@ class PluginMetademandsField extends CommonDBChild {
    static $types = ['PluginMetademandsMetademand'];
 
    static $field_types        = ['', 'dropdown', 'text', 'checkbox', 'textarea', 'datetime',
-                                      'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'parent_field'];
+                                      'datetime_interval', 'yesno', 'upload', 'title', 'radio','link', 'parent_field'];
    static $field_items        = ['', 'user', 'group', 'location', 'other', 'PluginResourcesResource',
                                       'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
@@ -554,6 +554,7 @@ class PluginMetademandsField extends CommonDBChild {
          case 'title'   :          return __('Add a title', 'metademands');
          case 'radio'   :          return __('Radio button', 'metademands');
          case 'parent_field' :     return __('Father\'s field', 'metademands');
+         case 'link' :             return __('Link');
          default:                  return Dropdown::EMPTY_VALUE;
       }
    }
@@ -887,7 +888,7 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['other', 'checkbox', 'yesno', 'radio'];
+      $allowed_types = ['other', 'checkbox', 'yesno', 'radio','link'];
 
       if (in_array($params['value'], $allowed_types)) {
          echo "<table width='100%' class='metademands_show_values'>";
@@ -949,6 +950,26 @@ class PluginMetademandsField extends CommonDBChild {
                $data[2] = __('Yes');
 
                Dropdown::showFromArray("custom_values", $data, $p);
+               break;
+            case 'link': // Show yes/no default value
+               $linkType = 0;
+               $linkVal = '';
+               if (isset($params['custom_values']) && !empty($params['custom_values'])) {
+                  $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
+                  $linkType = $params['custom_values'][0];
+                  $linkVal = $params['custom_values'][1];
+               }
+               echo '<label>'.__("Link").' : </label>';
+               echo '<input type="text" name="custom_values[1]" value="'.$linkVal.'" size="30"/>';
+
+               echo '<br /><br /><label>'.__("Button Type", "metademands").' : </label>';
+               Dropdown::showFromArray("custom_values[0]",
+                  [
+                     'button' =>__('button'),
+                     'link_a' => __('Web link')
+                  ],
+                  ['value'=>$linkType]);
+               echo "<br /><i>".__("*use field \"Additional label\" for the button title","metademands")."</i>";
                break;
          }
 
