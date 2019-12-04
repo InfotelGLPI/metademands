@@ -91,10 +91,13 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * Display content for each users
     *
     * @static
+    *
     * @param CommonGLPI $item
-    * @param int $tabnum
-    * @param int $withtemplate
+    * @param int        $tabnum
+    * @param int        $withtemplate
+    *
     * @return bool|true
+    * @throws \GlpitestSQLError
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $field = new self();
@@ -108,12 +111,10 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * Print the field form
     *
-    * @param $ID integer ID of the item
-    * @param $options array
-    *     - target filename : where to go when done.
-    *     - withtemplate boolean : template or basic item
+    * @param $item
     *
-    * @return Nothing (display)
+    * @return bool (display)
+    * @throws \GlpitestSQLError
     */
    function showPluginFromItems($item) {
 
@@ -142,7 +143,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          echo "<th colspan='6'>";
          echo __('Synchronise with ticket template', 'metademands')." ";
          $ticket = new Ticket();
-         $tt = $ticket->getTicketTemplateToUse(0, Ticket::DEMAND_TYPE, $item->fields['itilcategories_id'], $item->fields['entities_id']);
+         $tt = $ticket->getTicketTemplateToUse($item->fields['tickettemplates_id'], Ticket::DEMAND_TYPE, $item->fields['itilcategories_id'], $item->fields['entities_id']);
          echo $tt->getLink();
          echo "</th>";
          echo "</tr>";
@@ -162,7 +163,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $this->listFields($ticketfield_data, $fields, $searchOption, $canedit, $tt);
    }
 
-    /**
+   /**
     * Print the field form
     *
     * @param $ID integer ID of the item
@@ -170,7 +171,8 @@ class PluginMetademandsTicketField extends CommonDBChild {
     *     - target filename : where to go when done.
     *     - withtemplate boolean : template or basic item
     *
-    * @return Nothing (display)
+    * @return bool (display)
+    * @throws \GlpitestSQLError
     */
    function showForm($ID, $options = []) {
       global $CFG_GLPI;
@@ -227,13 +229,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
       return true;
    }
 
-   /**
-    * @param $ticketfield_data
-    * @param $fields
-    * @param $searchOption
-    * @param $canedit
-    * @param $tt
-    */
    /**
     * @param $ticketfield_data
     * @param $fields
@@ -327,13 +322,14 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * Get predefined fields for a template
     *
-    * @since version 0.83
-    *
     * @param $ID the template ID
     * @param $withtypeandcategory bool with type and category
     *
-    * @return an array of predefined fields
-   **/
+    * @return array array of predefined fields
+    **@throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
+    * @since version 0.83
+    */
    function getPredefinedFields($ID, $withtypeandcategory = false) {
       global $DB;
 
@@ -391,11 +387,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @param $name
     * @param $value
     */
-   /**
-    * @param $field_id
-    * @param $name
-    * @param $value
-    */
    static function getSpecificTicketFields($field_id, $name, $value) {
 
       $ticket = new Ticket();
@@ -438,7 +429,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
             Dropdown::show('Group', ['name'      => 'ticketfield['.$field_id.']',
                                           'value'     => $value,
                                           'entity'    => $_SESSION['glpiactive_entity'],
-                                          'condition' => ['is_requester' => 1]]);
+                                          'condition' => ['is_watcher' => 1]]);
             break;
          case '_users_id_assign':
             $params = ['name'  => 'ticketfield['.$field_id.']',
@@ -479,17 +470,12 @@ class PluginMetademandsTicketField extends CommonDBChild {
     *
     * @return bool
     */
-   /**
-    * @param $input
-    *
-    * @return bool
-    */
    static function updateMandatoryTicketFields($input) {
       if (isset($input['itilcategories_id']) && isset($input['entities_id']) && isset($input['id'])) {
          // Add mandatory ticket fields
-         self::addTemplateFields($input['id'], $input['itilcategories_id'], Ticket::DEMAND_TYPE, $input['entities_id']);
+         self::addTemplateFields($input['id'], $input['itilcategories_id'], Ticket::DEMAND_TYPE, $input['entities_id'],'mandatory', $input['tickettemplates_id']);
          // Add predefined ticket fields
-         self::addTemplateFields($input['id'], $input['itilcategories_id'], Ticket::DEMAND_TYPE, $input['entities_id'], 'predefined');
+         self::addTemplateFields($input['id'], $input['itilcategories_id'], Ticket::DEMAND_TYPE, $input['entities_id'], 'predefined', $input['tickettemplates_id']);
       }
 
       return true;
@@ -512,13 +498,10 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $metademands_data = $metademands->find(['entities_id' => $_SESSION['glpiactive_entity'],
                                               'itilcategories_id' => $categid]);
       foreach ($metademands_data as $id => $value) {
-         self::addTemplateFields($id, $categid, $type, $value['entities_id']);
+         self::addTemplateFields($id, $categid, $type, $value['entities_id'], 'mandatory', $value['tickettemplates_id']);
       }
    }
 
-   /**
-    * @param \ITILCategory $itilcategory
-    */
    /**
     * @param \ITILCategory $itilcategory
     */
@@ -539,16 +522,10 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * @param \TicketTemplateMandatoryField $ttp
     */
-   /**
-    * @param \TicketTemplateMandatoryField $ttp
-    */
    static function post_add_mandatoryField(TicketTemplateMandatoryField $ttp) {
       self::addFieldsFromTemplate($ttp);
    }
 
-   /**
-    * @param \TicketTemplatePredefinedField $ttp
-    */
    /**
     * @param \TicketTemplatePredefinedField $ttp
     */
@@ -559,9 +536,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * @param \TicketTemplateMandatoryField $ttp
     */
-   /**
-    * @param \TicketTemplateMandatoryField $ttp
-    */
    static function post_delete_mandatoryField(TicketTemplateMandatoryField $ttp) {
       self::deleteFieldsFromTemplate($ttp);
    }
@@ -569,16 +543,10 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * @param \TicketTemplatePredefinedField $ttp
     */
-   /**
-    * @param \TicketTemplatePredefinedField $ttp
-    */
    static function post_delete_predefinedField(TicketTemplatePredefinedField $ttp) {
       self::deleteFieldsFromTemplate($ttp, 'predefined');
    }
 
-   /**
-    * @param $ttp
-    */
    /**
     * @param $ttp
     */
@@ -642,10 +610,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @param        $ttp
     * @param string $templatetype
     */
-   /**
-    * @param        $ttp
-    * @param string $templatetype
-    */
    static function deleteFieldsFromTemplate($ttp, $templatetype = 'mandatory') {
       $ticketField = new PluginMetademandsTicketField();
       $metademands = new PluginMetademandsMetademand();
@@ -680,19 +644,12 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @param        $entity
     * @param string $templatetype
     */
-   /**
-    * @param        $metademands_id
-    * @param        $categid
-    * @param        $type
-    * @param        $entity
-    * @param string $templatetype
-    */
-   static function addTemplateFields($metademands_id, $categid, $type, $entity, $templatetype = 'mandatory') {
+   static function addTemplateFields($metademands_id, $categid, $type, $entity, $templatetype = 'mandatory', $tickettemplates_id) {
       $ticketField = new self();
       $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       $ticket = new Ticket();
-      $tt     = $ticket->getTicketTemplateToUse(0, $type, $categid, $entity);
+      $tt     = $ticket->getTicketTemplateToUse($tickettemplates_id, $type, $categid, $entity);
 
       $fieldnames = $tt->getAllowedFields(true);
       $fieldnames = array_flip($fieldnames);

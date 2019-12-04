@@ -436,6 +436,8 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                        `glpi_plugin_metademands_tickettasks`.`users_id_observer`,
                        `glpi_plugin_metademands_tickettasks`.`groups_id_requester`,
                        `glpi_plugin_metademands_tickettasks`.`users_id_requester`,
+                       `glpi_plugin_metademands_tickettasks`.`users_id_validate`,
+                       `glpi_plugin_metademands_tickettasks`.`_add_validation`,
                        `glpi_plugin_metademands_tasks`.`entities_id`
                   FROM `glpi_plugin_metademands_tasks`
                   LEFT JOIN `glpi_plugin_metademands_tickettasks`
@@ -612,7 +614,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
     * @param $metademands_id
     * @param $selected_value
     */
-   static function showAllTasksDropdown($metademands_id, $selected_value) {
+   static function showAllTasksDropdown($metademands_id, $selected_value, $display = true){
 
       $tasks = new self();
       $tasks_data = $tasks->getTasks($metademands_id);
@@ -627,7 +629,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          }
       }
 
-      Dropdown::showFromArray('plugin_metademands_tasks_id', $data, ['value' => $selected_value, 'tree' => true]);
+      return Dropdown::showFromArray('plugin_metademands_tasks_id[]', $data, ['value' => $selected_value, 'tree' => true, 'display' => $display]);
    }
 
    function rawSearchOptions() {

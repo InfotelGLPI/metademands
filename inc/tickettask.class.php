@@ -60,12 +60,12 @@ class PluginMetademandsTicketTask extends CommonDBTM {
     * @param       $canchangeorder
     * @param array $input
     */
-   static function showTicketTaskForm($metademands_id, $canchangeorder, $input = []) {
+   static function showTicketTaskForm($metademands_id, $canchangeorder, $input = [], $tickettemplate_id = 0){
       global $CFG_GLPI;
 
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
-
+      $rand = mt_srand();
       // Default values
       $values = ['itilcategories_id'                      => 0,
                       'type'                                   => Ticket::DEMAND_TYPE,
@@ -98,15 +98,30 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       $values['type']    = Ticket::DEMAND_TYPE;
 
       // Get Template
-      $tt = $ticket->getTicketTemplateToUse(false, $values['type'], $values['itilcategories_id'], $values['entities_id']);
+      $tt = $ticket->getTicketTemplateToUse($tickettemplate_id, $values['type'], $values['itilcategories_id'], $values['entities_id']);
 
       // In percent
       $colsize1 = '13';
       $colsize3 = '87';
 
-      echo "<div>";
+      echo "<div id='ticketTemplateMetademand'>";
       echo "<table class='tab_cadre_fixe' id='mainformtable'>";
       $metademands_ticket = new PluginMetademandsTicket();
+      echo "<tr class='tab_bg_1'>";
+      echo "<th>".__('Template')."</th>";
+      echo "<td>";
+      $opt = ['value'     => $tickettemplate_id,
+              'entity'    => $metademands->fields["entities_id"]];
+      $rand = TicketTemplate::dropdown($opt);
+      echo "</td>";
+      echo "<td colspan='4'></td>";
+      $params = ['tickettemplate_id' => '__VALUE__',
+                 "plugin_metademands_metademands_id" => $metademands_id];
+      Ajax::updateItemOnSelectEvent("dropdown_tickettemplates_id$rand", "ticketTemplateMetademand",
+          $CFG_GLPI['root_doc']."/plugins/metademands/ajax/updateTicketTemplate.php",$params);
+
+      echo "</tr>";
+
       echo "<tr class='tab_bg_1'>";
       $metademands_ticket->getFamily(0, $values);
 
@@ -314,6 +329,18 @@ class PluginMetademandsTicketTask extends CommonDBTM {
             echo "</td>";
          }
          echo "</tr>";
+      }
+      if ($tt->isMandatoryField('_add_validation')) {
+         echo "<tr class='tab_bg_1'>";
+         echo "<th width='$colsize1%'>".__('Validation request').'&nbsp;:'.$tt->getMandatoryMark('users_id_validate')."</th>";
+         echo "<td>";
+         echo "<input type='hidden' name='_add_validation' value='1'>";
+         $users_id_validate = isset($values['users_id_validate']) ? $values['users_id_validate'] : '';
+
+         User::dropdown(['name'   => 'users_id_validate',
+                         'entity' => $metademands->fields["entities_id"],
+                         'value'  => $users_id_validate,
+                         'right'  => 'all']);
       }
       echo "</table>";
 
