@@ -41,7 +41,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $types = ['PluginMetademandsMetademand'];
 
-   static $field_types        = ['', 'dropdown', 'text', 'checkbox', 'textarea', 'datetime',
+   static $field_types        = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
                                       'datetime_interval', 'yesno', 'upload', 'title', 'radio','link', 'parent_field'];
    static $field_items        = ['', 'user', 'group', 'location', 'other', 'PluginResourcesResource',
                                       'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
@@ -533,6 +533,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       switch ($value) {
          case 'dropdown':          return __('Dropdown', 'metademands');
+         case 'dropdown_multiple':          return __('Dropdown multiple', 'metademands');
          case 'text':              return __('Text', 'metademands');
          case 'checkbox':          return __('Checkbox', 'metademands');
          case 'textarea':          return __('Textarea', 'metademands');
@@ -766,7 +767,7 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['other', 'checkbox', 'yesno', 'radio','link'];
+      $allowed_types = ['other', 'checkbox', 'yesno', 'radio','link', 'dropdown_multiple'];
 
       if (in_array($params['value'], $allowed_types)) {
          echo "<table width='100%' class='metademands_show_values'>";
@@ -776,6 +777,7 @@ class PluginMetademandsField extends CommonDBChild {
 
          switch ($params['value']) {
             case 'other':
+            case 'dropdown_multiple':
             case 'dropdown':
                if (is_array($values) && !empty($values)) {
                   foreach ($values as $key => $value) {

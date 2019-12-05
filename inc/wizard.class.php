@@ -660,6 +660,16 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       // Input
       switch ($data['type']) {
+         case 'dropdown_multiple' :
+            if (!empty($data['custom_values'])) {
+               $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+               $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
+               ksort($data['custom_values']);
+               Dropdown::showFromArray("field[" . $data['id'] . "]", $data['custom_values'],
+                  ['value' => $value, 'width' => 100, 'multiple' => true
+                  ]);
+            }
+            break;
          case 'dropdown':
             if (!empty($data['custom_values']) && $data['item'] == 'other') {
                $data['custom_values']    = PluginMetademandsField::_unserialize($data['custom_values']);

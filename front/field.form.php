@@ -41,6 +41,9 @@ $field = new PluginMetademandsField();
 
 if (isset($_POST["add"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])) {
+      if (isset($_POST['type']) && $_POST['type'] == 'dropdown_multiple') {
+         $_POST['item'] = 'other';
+      }
       $_POST["custom_values"] = $field->_serialize($_POST["custom_values"]);
       if (isset($_POST["comment_values"])) {
          $_POST["comment_values"] = $field->_serialize($_POST["comment_values"]);
