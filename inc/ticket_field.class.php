@@ -101,7 +101,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
-            $check[] = self::isCheckValueOK($data['field_value'], $data['check_value'], $data['type']);
+            $check[] = self::isCheckValueOK(PluginMetademandsField::_unserialize($data['field_value']), $data['check_value'], $data['type']);
          }
       }
 
@@ -132,7 +132,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
             }
             break;
          case 'dropdown_multiple':
-            if ($check_value == PluginMetademandsField::$not_null && ($value[0] != 0 || count($value) > 1)) {
+            if ($check_value == PluginMetademandsField::$not_null && $value[0] == 0 && count($value) == 1) {
                return false;
             }
             break;

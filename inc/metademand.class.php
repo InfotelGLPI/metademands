@@ -887,7 +887,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $check_value[$key] = $fieldDbtm->getField('check_value');
                   $idTask = $fieldDbtm->getField("plugin_metademands_tasks_id");
                   if(isset($check_value[$key])){
-                     if(($check_value[$key] == 'NOT_NULL' && $field == 0) ||
+                     if(($check_value[$key] == 'NOT_NULL' && $field === 0) ||
                         ($check_value[$key] != 'NOT_NULL' && $check_value[$key] != $field)){
                         unset($line['form'][$key]);
                         unset($line['tasks'][$idTask]);
@@ -1234,9 +1234,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $KO            = [];
 
       foreach ($tickettasks_data as $son_ticket_data) {
-         if(in_array($son_ticket_data['tickettasks_id'],$_SESSION['metademands_hide'])){
-            continue;
-         }
          if ($son_ticket_data['level'] == $tasklevel) {
 
             // Skip ticket creation if not allowed by metademand form
