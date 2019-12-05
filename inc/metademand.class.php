@@ -773,8 +773,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                // Get form fields
                $parent_fields = ['content' => ''];
                if (count($line['form']) && isset($values['fields'])) {
-                  $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values['fields']);
-                  $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
+                  $parent_fields = $this->formatFields($line['form'], $metademands_id, $values['fields']);
+                  //                  $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
 
                }
 
@@ -871,8 +871,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                } else {
                   $parent_tickets_id = $parent_fields['id'];
                   $ticket->getFromDB($parent_tickets_id);
-                  $parent_fields['content']       = Html::cleanPostForTextArea($ticket->fields['content'])
-                                                    . "\r\n" . $parent_fields['content'];
+                  $parent_fields['content']       = $ticket->fields['content']
+                                                    . "<br>" . $parent_fields['content'];
                   $parent_fields['name']          = Html::cleanPostForTextArea($parent_fields['name'])
                                                     . '&nbsp;:&nbsp;' . Html::cleanPostForTextArea($ticket->fields['name']);
                   $ticket_exists_array[]          = 1;
@@ -1008,11 +1008,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
    private function formatFields(array $parent_fields, $metademands_id, $values) {
 
       $result            = [];
-      $result['content'] = '';
+      $result['content'] = "";
       $parent_fields_id  = 0;
+      $rank              = 0;
 
+      $name              = Dropdown::getDropdownName($this->getTable(), $metademands_id);
+      $result['content'] .= "<table style='width: 100%;border-style: dashed;'>"; // class='mticket'
+      $result['content'] .= "<tr><th colspan='2' style='background-color: #ccc;'>" . $name . "</th></tr>";
+      //      $result['content'] .= "</table>";
+      $nb = 0;
       foreach ($parent_fields as $fields_id => $field) {
 
+         //         Toolbox::logWarning($field);
          $field['value'] = '';
          if (isset($values[$fields_id])) {
             $field['value'] = $values[$fields_id];
@@ -1022,9 +1029,31 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $field['value2'] = $values[$fields_id . '-2'];
          }
 
+         //         if (isset($field['rank'])
+         //             && $rank != $field['rank']
+         //         ) {
+         //            $result['content'] .= "<table class='tab_cadre'>";
+         //         }
+         if ($nb%2 ==0) {
+            $result['content'] .= "<tr class='even'>";
+         } else {
+            $result['content'] .= "<tr class='odd'>";
+         }
+         $nb++;
+
          self::getContentWithField($parent_fields, $fields_id, $field, $result, $parent_fields_id);
 
+         $result['content'] .= "</tr>";
+
+
+         //         if (isset($field['rank'])
+         //             && $rank != $field['rank']
+         //         ) {
+         //            $result['content'] .= "</table>";
+         //            $rank              = $field['rank'];
+         //         }
       }
+      //      $result['content'] .= "</table>";
       return $result;
    }
 
@@ -1037,32 +1066,36 @@ class PluginMetademandsMetademand extends CommonDropdown {
     */
    function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id) {
 
+      $style_title = "class='title'";
+//      $style_title = "style='background-color: #cccccc;'";
       if (!empty($field['value']) && $field['value'] != 'NULL' || $field['type'] == 'title') {
-         if (isset($parent_fields[$parent_fields_id]['rank']) && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
-            $result['content'] .= "\r\n";
-         }
+         //         if (isset($parent_fields[$parent_fields_id]['rank'])
+         //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
+         //            $result['content'] .= "<tr>";
+         //         }
 
          switch ($field['type']) {
             case 'title' :
-               $result['content'] .= "##".$field['label']."##";
+               $result['content'] .= "<th colspan='2' style='background-color: #ccc;'>" . $field['label'] . "</th>";
                break;
             case 'dropdown':
                if (!empty($field['custom_values']) && $field['item'] == 'other') {
                   $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
-                  $result['content']      .= $field['label'] . ' : ' . $field['custom_values'][$field['value']];
+                  $result['content']      .= "<td $style_title>" . $field['label'] . "</td><td>" . $field['custom_values'][$field['value']] . "</td>";
                } else {
                   switch ($field['item']) {
                      case 'user':
-                        $result['content'] .= $field['label'] . ' : ';
+                        $result['content'] .= "<td $style_title>" . $field['label'] . "</td>";
                         $user              = new User();
                         $user->getFromDB($field['value']);
-                        $result['content'] .= $user->getName();
+                        $result['content'] .= "<td>" . $user->getName() . "</td>";
                         break;
                      default:
-                        $dbu = new DbUtils();
-                        $result['content'] .= $field['label'] . ' : ' .
-                                              Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
-                                                                        $field['value']);
+                        $dbu               = new DbUtils();
+                        $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>";
+                        Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
+                                                  $field['value']);
+                        $result['content'] .= "</td>";
                         break;
                   }
                }
@@ -1071,10 +1104,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
                if (strpos($field['value'],'http://') !== 0 && strpos($field['value'],'https://') !== 0 ){
                   $field['value'] = "http://".$field['value'];
                }
-               $result['content'] .= $field['label'] . ' :<a href="'.$field['value'].'" data-mce-href="'.$field['value'].'" > ' . $field['value'].'</a>';
+               $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" .'<a href="'.$field['value'].'" data-mce-href="'.$field['value'].'" > ' . $field['value'].'</a></td>';
                break;
+            case 'textarea':
             case 'text':
-               $result['content'] .= $field['label'] . ' : ' . $field['value'];
+               $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . $field['value'] . "</td>";
                break;
             case 'checkbox':
                if (!empty($field['custom_values'])) {
@@ -1083,16 +1117,17 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
                   $custom_checkbox = [];
+                  $result['content'] .= "<td $style_title>" . $field['label'] . "</td>";
                   foreach ($field['custom_values'] as $key => $label) {
                      $checked = isset($field['value'][$key]) ? 1 : 0;
                      if ($checked) {
-                        $custom_checkbox[] .= $field['label'] . '&nbsp;-&nbsp;' . $label;
+                        $custom_checkbox[] .= $label;
                      }
                   }
-                  $result['content'] .= implode('\r\n', $custom_checkbox);
+                  $result['content'] .= "<td>" . implode('<br>', $custom_checkbox) . "</td>";
                } else {
                   if ($field['value']) {
-                     $result['content'] .= $field['label'];
+                     $result['content'] .= "<td>" . $field['value'] . "</td>";
                   }
                }
                break;
@@ -1104,13 +1139,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                   foreach ($field['custom_values'] as $key => $label) {
                      if ($field['value'] == $key) {
-                        $result['content'] .= $field['label'] . ' : ' . $label;
+                        $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . $label . "</td>";
                         break;
                      }
                   }
                } else {
                   if ($field['value']) {
-                     $result['content'] .= $field['label'];
+                     $result['content'] .= "<td>" . $field['label'] . "</td>";
                   }
                }
                break;
@@ -1118,11 +1153,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $result['content'] .= $field['label'] . ' : ' . $field['value'];
                break;
             case 'datetime':
-               $result['content'] .= $field['label'] . ' : ' . Html::convDate($field['value']);
+               $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . Html::convDate($field['value']) . "</td>";
                break;
             case 'datetime_interval':
-               $result['content'] .= $field['label'] . ' : ' . Html::convDate($field['value']);
-               $result['content'] .= '\r\n' . $field['label2'] . ' : ' . Html::convDate($field['value2']);
+               $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . Html::convDate($field['value']) . "</td>";
+               $result['content'] .= "<td $style_title>" . $field['label2'] . "</td><td>" . Html::convDate($field['value2']) . "</td>";
                break;
             case 'yesno':
                if ($field['value'] == 2) {
@@ -1130,7 +1165,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                } else {
                   $val = __('No');
                }
-               $result['content'] .= $field['label'] . ' : ' . $val;
+               $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . $val . "</td>";
                break;
 
             case 'parent_field':
@@ -1140,12 +1175,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $parent_field['custom_values'] = $metademand_field->fields['custom_values'];
                   $parent_field['type']          = $metademand_field->fields['type'];
                   $parent_field['item']          = $metademand_field->fields['item'];
+
                   self::getContentWithField($parent_fields, $fields_id, $parent_field, $result, $parent_fields_id);
                }
 
                break;
          }
-         $result['content'] .= "\r\n";
+         //         $result['content'] .= "<br>";
       }
       $parent_fields_id = $fields_id;
    }
@@ -1225,22 +1261,24 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
             $content = '';
             if (!empty($son_ticket_data['content'])) {
-               $content = __('################### Son ticket ###################', 'metademands') .
-                           "\r\n" . $son_ticket_data['content'];
-               $content .= "\r\n";
+               $content = "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2' style='background-color: #ccc;'>" . __('Child Ticket', 'metademands') .
+                          "</th></tr><tr><td colspan='2'>" . $son_ticket_data['content'];
+               $content .= "</td></tr></table><br>";
             }
             $config = new PluginMetademandsConfig();
             $config->getFromDB(1);
-            if($config->getField('childs_parent_content') == 1) {
+            if ($config->getField('childs_parent_content') == 1) {
                if (!empty($parent_fields['content'])) {
-                  if (!strstr($parent_fields['content'], __('################### Parent ticket ###################', 'metademands'))) {
-                     $content .= __('################### Parent ticket ###################', 'metademands') . addslashes("\n");
-                  }
-                  $content .= $parent_fields['content'] . addslashes("\n");
+                  //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
+                     $content .= "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2' style='background-color: #ccc;'>" . __('Parent tickets', 'metademands').
+                            "</th></tr>" . $parent_fields['content'];
+                  //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
+                     $content .= "</table><br>";
+                  //}
                }
             }
 
-            $content = Html::cleanPostForTextArea($content);
+            //            $content = Html::cleanPostForTextArea($content);
 
             $son_ticket_data['content'] = $content;
             if (isset($parent_fields['_groups_id_assign'])) {
@@ -1432,14 +1470,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
             echo "<td class='$color_class center'>";
             if (!$notcreated) {
                if (in_array($ticket->fields['status'], $status)) {
-                  echo "<i class='fas fa-check-circle fa-4x' style='color:forestgreen'></i> ";
+                  echo "<i class='fas fa-check-circle fa-2x' style='color:forestgreen'></i> ";
                }
                if ($is_late && !in_array($ticket->fields['status'], $status)) {
-                  echo "<i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i> ";
+                  echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i> ";
                }
                echo Ticket::getStatus($ticket->fields['status']);
             } else {
-               echo "<i class='fas fa-hourglass-half fa-4x'></i> ";
+               echo "<i class='fas fa-hourglass-half fa-2x'></i> ";
                echo __('Coming', 'metademands');
             }
             echo "</td>";
