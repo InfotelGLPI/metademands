@@ -157,7 +157,8 @@ class PluginMetademandsGroup extends CommonDBTM {
          echo __('Group').'&nbsp;';
          Dropdown::showFromArray("groups_id", $groups, ['name'     => 'groups_id',
                                                              'width'    => '150',
-                                                             'multiple' => true]);
+                                                             'multiple' => true
+         ]);
          echo "</td>";
          echo "</tr>";
 

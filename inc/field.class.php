@@ -617,7 +617,7 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'group', 'location',
-                             'PluginResourcesResource', 'other', 'checkbox', 'radio', 'parent_field',
+                             'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple', 'parent_field',
                              'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
       if (isset($params['check_value']) && in_array($params['value'], $allowed_types)) {
@@ -669,7 +669,7 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<input type='checkbox' name='check_value' value='1' $checked>";
                      echo "</td></tr>";
                   break;
-               case 'user':case 'group':case 'location':case 'PluginResourcesResource':case 'other':case 'dropdown':case 'PluginMetademandsITILApplication':case 'PluginMetademandsITILEnvironment':
+               case 'user':case 'group':case 'location':case 'PluginResourcesResource':case 'other':case 'dropdown':case 'dropdown_multiple':case 'PluginMetademandsITILApplication':case 'PluginMetademandsITILEnvironment':
                                        // Value to check
                                        echo "<tr><td>";
                                        echo __('Value to check', 'metademands');

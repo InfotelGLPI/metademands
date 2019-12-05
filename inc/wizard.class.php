@@ -656,6 +656,8 @@ class PluginMetademandsWizard extends CommonDBTM {
       $value = '';
       if (isset($data['value'])) {
          $value = $data['value'];
+      } else if($data['type']== "dropdown_multiple"){
+         $value = 0;
       }
 
       // Input
