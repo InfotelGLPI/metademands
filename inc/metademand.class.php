@@ -1249,6 +1249,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $KO            = [];
 
       foreach ($tickettasks_data as $son_ticket_data) {
+         if(in_array($son_ticket_data['tickettasks_id'],$_SESSION['metademands_hide'])){
+            continue;
+         }
          if ($son_ticket_data['level'] == $tasklevel) {
 
             // Skip ticket creation if not allowed by metademand form
