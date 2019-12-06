@@ -2,25 +2,25 @@
 # Copyright (C) YEAR Metademands Development Team
 # This file is distributed under the same license as the GLPI - Metademands plugin package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 # Translators:
 # Xavier CAILLAUD <thetsmr@gmail.com>, 2019
-#
+# guillaume GUIBOUX <guillaume.guiboux@infotel.com>, 2019
+# 
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-24 15:27+0100\n"
-"PO-Revision-Date: 2019-12-04 09:53+0100\n"
-"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2019\n"
-"Language-Team: French (France) (https://www.transifex.com/tsmr/teams/96561/"
-"fr_FR/)\n"
+"POT-Creation-Date: 2019-02-25 11:34+0100\n"
+"PO-Revision-Date: 2019-02-25 10:32+0000\n"
+"Last-Translator: guillaume GUIBOUX <guillaume.guiboux@infotel.com>, 2019\n"
+"Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.4\n"
 
 #: setup.php:145 inc/metademand.class.php:71 inc/profile.class.php:151
 msgid "Meta-Demand"
@@ -52,7 +52,7 @@ msgstr "Activer la transformation d'un ticket en méta-demande"
 
 #: inc/config.class.php:85
 msgid "Enable application and environment"
-msgstr "Activer les champs application et environnement"
+msgstr "Activer l'application et l'environnement"
 
 #: inc/config.class.php:94
 msgid "Parent ticket tag"
@@ -125,10 +125,6 @@ msgstr "Valeur non nulle"
 msgid "Dropdown"
 msgstr "Liste déroulante"
 
-#: inc/field.class.php:553
-msgid "Dropdown multiple"
-msgstr "Liste déroulante multiple"
-
 #: inc/field.class.php:533
 msgid "Text"
 msgstr "Texte"
@@ -189,8 +185,8 @@ msgstr "Lier le champ à un autre champ"
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
-"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ "
-"devient obligatoire"
+"Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
+" obligatoire"
 
 #: inc/field.class.php:657
 msgid "Day greater or equal to now"
@@ -297,11 +293,11 @@ msgstr "Ticket \"%s\" modifié en méta-demande avec succès"
 
 #: inc/metademand.class.php:1204
 msgid "################### Son ticket ###################"
-msgstr "################### Ticket fils ###################"
+msgstr "################### His ticket ###################"
 
 #: inc/metademand.class.php:1212 inc/metademand.class.php:1213
 msgid "################### Parent ticket ###################"
-msgstr "################### Ticket père ###################"
+msgstr "################### Ticket parent ###################"
 
 #: inc/metademand.class.php:1338
 msgid "Demand followup"

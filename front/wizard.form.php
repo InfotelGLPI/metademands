@@ -104,8 +104,9 @@ if (isset($_POST['next'])) {
 
                if ($value == 'checkbox') {// Checkbox
                   $_SESSION['plugin_metademands']['fields'][$id] = 1;
-               } else {// Other fields
-                  if (is_array($_POST['field'][$id])) {
+               }
+               else {// Other fields
+                  if (is_array($_POST['field'][$id]) && $value['type'] !== 'dropdown_multiple') {
                      $_POST['field'][$id] = PluginMetademandsField::_serialize($_POST['field'][$id]);
                   }
                   $_SESSION['plugin_metademands']['fields'][$id] = $_POST['field'][$id];

@@ -1103,8 +1103,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
             case 'dropdown_multiple':
                if (!empty($field['custom_values'])) {
                   $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
-                  $result['content']      .= "<td $style_title>" . $field['label'] . "</td><td>" . implode(", ", $field['custom_values']) . "</td>";
+                  $parseValue = [];
+                  foreach ($field['value'] as $value) {
+                    array_push($parseValue,   $field['custom_values'][$value]);
+                  }
+                  $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . implode(', ', $parseValue) . "</td>";
                }
+
                break;
             case 'link':
                if (strpos($field['value'],'http://') !== 0 && strpos($field['value'],'https://') !== 0 ){

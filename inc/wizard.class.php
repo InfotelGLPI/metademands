@@ -656,8 +656,6 @@ class PluginMetademandsWizard extends CommonDBTM {
       $value = '';
       if (isset($data['value'])) {
          $value = $data['value'];
-      } else if($data['type']== "dropdown_multiple"){
-         $value = 0;
       }
 
       // Input
@@ -665,7 +663,6 @@ class PluginMetademandsWizard extends CommonDBTM {
          case 'dropdown_multiple' :
             if (!empty($data['custom_values'])) {
                $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
-               $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
                ksort($data['custom_values']);
                Dropdown::showFromArray("field[" . $data['id'] . "]", $data['custom_values'],
                   ['value' => $value, 'width' => 100, 'multiple' => true
