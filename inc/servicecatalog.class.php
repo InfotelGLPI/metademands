@@ -63,10 +63,15 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getMenuLogo() {
       global $CFG_GLPI;
 
-      return "<a class='bt-interface bt-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'></a>";
+      $display =  "<a class='bt-interface' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'>";
+      $fasize  = "fa-5x";
+      $display .= "<div class='bt-img-responsive center'>";
+      $display .= "<i class='fa-menu-sc fas fa-file-alt $fasize'></i>";//$style
+      $display .= "</div>";
+      $display .= "</a>";
 
+      return $display;
    }
-
    /**
     * @return array
     * @throws \GlpitestSQLError
