@@ -154,21 +154,21 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       $metademands = self::selectMetademands();
       $plugin = new Plugin();
       if ($plugin->isActivated("servicecatalog") && ($plugin->getInfo('servicecatalog')["version"] >= "1.6.0")) {
-         echo '<div class="btnsc-normal fa-back" id="click">';
+         //echo '<div class="btnsc-normal fa-back" id="click">';
 
 
-         $fasize = "fa-5x";
-         $margin = "fas-sc";
-         $config = new PluginServicecatalogConfig();
-         if ($config->getCatSize() == 'verysmall') {
-            $margin = "fas-sc-small";
-         }
+         //$fasize = "fa-5x";
+         //$margin = "fas-sc";
+         //$config = new PluginServicecatalogConfig();
+         //if ($config->getCatSize() == 'verysmall') {
+         //   $margin = "fas-sc-small";
+         //}
 
-         echo "<i class=\"fas $margin fa-chevron-circle-up $fasize\"></i>";
-         echo "<br><br>";
-         echo "<span class=\"label_back bottom_title\">";
+         //echo "<i class=\"fas $margin fa-chevron-circle-up $fasize\"></i>";
+         //echo "<br><br>";
+         //echo "<span class=\"label_back bottom_title\">";
 
-         echo __('Back');
+//         echo __('Back');
 
          echo "</span>";
          echo "<script>$(document).ready(function() {
@@ -177,7 +177,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
                  });
             });</script>";
 
-         echo "</div>";
+         //echo "</div>";
 //      echo '<li>';
 //      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
 //      echo '</li>';
