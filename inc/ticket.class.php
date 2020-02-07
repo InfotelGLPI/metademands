@@ -77,6 +77,21 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
    }
 
+   static function showDocumentAddButton($size = 25, $idDiv) {
+      echo "<script type='text/javascript'>var nbfiles=1; var maxfiles = 5;</script>";
+      echo "<span id='addfilebutton' class='fa fa-plus pointer' title=\"".__s('Add')."\"".
+         "\" onClick=\"if (nbfiles<maxfiles){
+                           var row = ".Html::jsGetElementbyID('uploadfiles'.$idDiv).";
+                           row.append('<br><input type=\'file\' name=\'filename[]\' size=\'$size\'>');
+                           nbfiles++;
+                           if (nbfiles==maxfiles) {
+                              ".Html::jsHide('addfilebutton')."
+                           }
+                        }\"
+              <span class='sr-only'>" . __s('Add') . "</span></span>";
+   }
+
+
    /**
     * @param \Ticket $ticket
     *

@@ -774,8 +774,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                $nbr = 0;
                foreach ($data['custom_values'] as $key => $label) {
                   echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-                  $checked = ($value == $key) ? 'checked' : '';
-                  echo "<input type='radio' name='radio[".$data['id']."]' value='$key' $checked>&nbsp;".$label."&nbsp;";
+                  echo "<input type='radio' name='radio[".$data['id']."]' value='$key' >&nbsp;".$label."&nbsp;";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
                      Html::showToolTip($data['comment_values'][$key],
                                        ['img' => $CFG_GLPI['root_doc']."/plugins/metademands/pics/information.png"]);
@@ -802,8 +801,8 @@ class PluginMetademandsWizard extends CommonDBTM {
             break;
          case 'upload':
             echo __('File') . " (" . Document::getMaxUploadSize() . ")";
-            Ticket::showDocumentAddButton();
-            echo "<div id='uploadfiles'><input type='file' name='filename[]' size='20'></div>";
+            echo "<div id='uploadfiles".$data['id']."'><input type='file' name='filename[]' size='20'></div>";
+            PluginMetademandsTicket::showDocumentAddButton(25,$data['id']);
             break;
 
          case 'parent_field':
