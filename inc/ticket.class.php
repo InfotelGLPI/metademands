@@ -82,11 +82,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       echo "<span id='addfilebutton' class='fa fa-plus pointer' title=\"".__s('Add')."\" onClick=\"
                            var row = ".Html::jsGetElementbyID('uploadfiles'.$idDiv).";
                            row.append('<br><input type=\'file\' name=\'filename[]\' size=\'$size\'>');
-                           nbfiles++;
-                           if (nbfiles==maxfiles) {
-                              ".Html::jsHide('addfilebutton')."
-                        }\"
-              <span class='sr-only'>" . __s('Add') . "</span></span>";
+                           nbfiles++;\"" . __s('Add') . "</span>";
    }
 
 
