@@ -190,7 +190,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
                echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                $fasize  = "fa-6x";
                echo "<div class='center'>";
-               echo "<i class='fa-menu-sc fas fa-file-alt $fasize'></i>";//$style
+               echo "<i class='fas fa-file-alt $fasize'></i>";//$style
                echo "</div>";
          
                echo "</a>";
