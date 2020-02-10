@@ -555,7 +555,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                // Other fields
             } else {
-
+               echo "<div class=\"form-group col-md-5\">";
                self::getFieldType($data, $metademands_data);
                echo "</div>";
 
