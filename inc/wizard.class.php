@@ -555,7 +555,12 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                // Other fields
             } else {
-               echo "<div class=\"form-group col-md-5\">";
+               if ($data['row_display'] == 1) {
+                  echo "<div class=\"form-group col-md-11\">";
+               } else {
+                  echo "<div class=\"form-group col-md-5\">";
+               }
+
                self::getFieldType($data, $metademands_data);
                echo "</div>";
 
@@ -566,7 +571,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      $required = "required";
                   }
                   echo "<div class=\"form-group col-md-5\">";
-                  echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label col-form-label-sm'>".$data['label2']."</label>";
+                  echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label col-form-label-sm'>" . $data['label2'] . "</label>";
                   $value2 = '';
                   if (isset($data['value-2'])) {
                      $value2 = $data['value-2'];
@@ -649,7 +654,16 @@ class PluginMetademandsWizard extends CommonDBTM {
       if ($data['is_mandatory']) {
          $required = "red";
       }
-      echo "<label $required for='field[" . $data['id'] . "]' class='$required col-form-label col-form-label-sm'>" . $data['label'] . " $upload</label>&nbsp;";
+
+      echo "<label for='field[" . $data['id'] . "]' class='$required col-form-label col-form-label-sm'>";
+      echo $data['label'] . " $upload";
+      echo "</label>";
+      echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
+      if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
+         echo "*";
+      }
+      echo "</span>";
+      echo "&nbsp;";
       // Input
       switch ($data['type']) {
          case 'dropdown_multiple' :
@@ -734,9 +748,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                if (!empty($value)) {
                   $value = PluginMetademandsField::_unserialize($value);
                }
-               $nbr = 0;
+               $nbr    = 0;
+               $inline = "";
+               if ($data['row_display'] == 1) {
+                  $inline = 'custom-control-inline';
+               }
                foreach ($data['custom_values'] as $key => $label) {
-                  echo "<div class='custom-control custom-checkbox '>"; //TODO custom-control-inline
+                  echo "<div class='custom-control custom-checkbox $inline'>";
                   $checked = isset($value[$key]) ? 'checked' : '';
                   echo "<input class='custom-control-input' type='checkbox' name='field[" . $data['id'] . "][" . $key . "]' id='field[" . $data['id'] . "][" . $key . "]' value='checkbox' $checked>";
                   $nbr++;
@@ -759,9 +777,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                if (!empty($value)) {
                   $value = PluginMetademandsField::_unserialize($value);
                }
-               $nbr = 0;
+               $nbr    = 0;
+               $inline = "";
+               if ($data['row_display'] == 1) {
+                  $inline = 'custom-control-inline';
+               }
                foreach ($data['custom_values'] as $key => $label) {
-                  echo "<div class='custom-control custom-radio '>"; //TODO custom-control-inline
+                  echo "<div class='custom-control custom-radio $inline'>";
                   $checked = $value == $key ? 'checked' : '';
                   echo "<input class='custom-control-input' type='radio' name='radio[" . $data['id'] . "]' id='radio[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
@@ -774,7 +796,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             break;
          case 'textarea':
-            echo "<textarea class='form-control' rows='3' placeholder=\"".$data['comment']."\" name='field[" . $data['id'] . "]' id='field[" . $data['id'] . "]' $required>" . $value . "</textarea>";
+            echo "<textarea class='form-control' rows='3' placeholder=\"" . $data['comment'] . "\" name='field[" . $data['id'] . "]' id='field[" . $data['id'] . "]' $required>" . $value . "</textarea>";
             break;
          case 'datetime_interval':
          case 'datetime':
@@ -789,7 +811,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             Html::file(['filecontainer' => 'fileupload_info_ticket',
                         'editor_id'     => '',
                         'showtitle'     => false,
-                        'multiple'     => true]);
+                        'multiple'      => true]);
             break;
 
          case 'parent_field':
@@ -954,7 +976,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if ($value['type'] != 'parent_field') {
          // Check fields empty
-         if ($value['is_mandatory'] && is_null($fields['value'])) {
+         if ($value['is_mandatory'] && empty($fields['value'])) {
             $msg[]     = $value['label'];
             $checkKo[] = 1;
          }

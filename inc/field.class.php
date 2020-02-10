@@ -187,7 +187,13 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<td>";
       Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
       echo "</td>";
-      echo "<td colspan='2'></td>";
+
+      echo "<td>";
+      echo __('Takes the whole row', 'metademands');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showYesNo('row_display', ($this->fields['row_display']));
+      echo "</td>";
       echo "</tr>";
 
       // COMMENT
