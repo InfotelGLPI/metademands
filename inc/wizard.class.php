@@ -556,7 +556,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                // Other fields
             } else {
 
-               echo "<div class=\"form-group col-md-5\">";
                self::getFieldType($data, $metademands_data);
                echo "</div>";
 
@@ -953,7 +952,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if ($value['type'] != 'parent_field') {
          // Check fields empty
-         if ($value['is_mandatory'] && empty($fields['value'])) {
+         if ($value['is_mandatory'] && is_null($fields['value'])) {
             $msg[]     = $value['label'];
             $checkKo[] = 1;
          }
