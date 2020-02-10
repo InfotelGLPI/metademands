@@ -204,7 +204,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
 
       // RANK
-      echo "<td>".__('Rank', 'metademands')."</td>";
+      echo "<td>".__('Block', 'metademands')."</td>";
       echo "<td>";
       $randRank = Dropdown::showNumber('rank', ['value' => $this->fields["rank"],
                                                 'min'   => 1,
@@ -401,7 +401,7 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<th class='center b'>".__('Mandatory field')."</th>";
          echo "<th class='center b'>".__('Link a task to the field', 'metademands')."</th>";
          echo "<th class='center b'>".__('Value to check', 'metademands')."</th>";
-         echo "<th class='center b'>".__('Rank', 'metademands')."</th>";
+         echo "<th class='center b'>".__('Block', 'metademands')."</th>";
          echo "<th class='center b'>".__('Order', 'metademands')."</th>";
          echo "</tr>";
          // Init navigation list for field items
@@ -1151,7 +1151,7 @@ class PluginMetademandsField extends CommonDBChild {
          'id'       => '814',
          'table'    => $this->getTable(),
          'field'    => 'rank',
-         'name'     => __('Rank', 'metademands'),
+         'name'     => __('Block', 'metademands'),
          'datatype' => 'specific',
          'massiveaction' => true
       ];

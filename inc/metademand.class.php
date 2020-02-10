@@ -1777,7 +1777,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
    }
 
    static function getMenuContent() {
-      $plugin_page = "/plugins/metademands/front/menu.php";
+      $plugin_page = "/plugins/metademands/front/wizard.form.php";
       $menu        = [];
       //Menu entry in helpdesk
       $menu['title']           = self::getTypeName(2);

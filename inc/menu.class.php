@@ -59,7 +59,7 @@ class PluginMetademandsMenu extends CommonDBTM {
       if (count($data)) {
          echo "<td class='center'>";
          echo "<a href=\"./wizard.form.php?step=1\">";
-         echo "<img src='".$CFG_GLPI["root_doc"]."/plugins/metademands/pics/metademands.png' alt=\"".__('Enter a demand', 'metademands')."\">";
+         echo "<i class='fas fa-share-alt fa-5x' style='color:#000' title=\"".__('Enter a demand', 'metademands')."\"></i><br>";
          echo "<br>".__('Enter a demand', 'metademands')."</a>";
          echo "</td>";
       } else {

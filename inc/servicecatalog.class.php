@@ -46,7 +46,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
     * @throws \GlpitestSQLError
     */
    static function canUse() {
-      $metademands = self::selectMetademands();
+      $metademands = PluginMetademandsWizard::selectMetademands();
       return (Session::haveRight(self::$rightname, READ) && (count($metademands) > 0));
    }
 
@@ -66,38 +66,13 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       $display =  "<a class='bt-interface' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'>";
       $fasize  = "fa-5x";
       $display .= "<div class='bt-img-responsive center'>";
-      $display .= "<i class='fa-menu-sc fas fa-file-alt $fasize'></i>";//$style
+      $display .= "<i class='fa-menu-sc fas fa-share-alt $fasize'></i>";//$style
       $display .= "</div>";
       $display .= "</a>";
 
       return $display;
    }
-   /**
-    * @return array
-    * @throws \GlpitestSQLError
-    */
-   static function selectMetademands() {
-      global $DB;
 
-      $dbu = new DbUtils();
-      $query = "SELECT `id`,`name`
-                   FROM `glpi_plugin_metademands_metademands`
-                   WHERE `glpi_plugin_metademands_metademands`.`itilcategories_id` > 0
-                        AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
-         . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
-      $query .= "AND is_active ORDER BY `name`";
-      $metademands = [];
-      $result = $DB->query($query);
-      if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
-            if (PluginMetademandsGroup::isUserHaveRight($data['id'])) {
-               $metademands[$data['id']] = $data['name'];
-            }
-
-         }
-      }
-      return $metademands;
-   }
 
    /**
     * @return string
@@ -105,7 +80,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getMenuComment() {
 
       $list = "";
-      $metademands = self::selectMetademands();
+      $metademands = PluginMetademandsWizard::selectMetademands();
 
       foreach ($metademands as $id => $name) {
          $list .= $name . '<br>';
@@ -151,7 +126,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getList() {
       global $CFG_GLPI;
 
-      $metademands = self::selectMetademands();
+      $metademands = PluginMetademandsWizard::selectMetademands();
       $plugin = new Plugin();
       if ($plugin->isActivated("servicecatalog") && ($plugin->getInfo('servicecatalog')["version"] >= "1.6.0")) {
          //echo '<div class="btnsc-normal fa-back" id="click">';
@@ -170,7 +145,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
 
 //         echo __('Back');
 
-         echo "</span>";
+//         echo "</span>";
          echo "<script>$(document).ready(function() {
                  $('#click').click(function() {
                       window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php';
@@ -190,7 +165,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
                echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                $fasize  = "fa-6x";
                echo "<div class='center'>";
-               echo "<i class='fas fa-file-alt $fasize'></i>";//$style
+               echo "<i class='bt-interface fa-menu-sc fas fa-share-alt $fasize'></i>";//$style
                echo "</div>";
          
                echo "</a>";
