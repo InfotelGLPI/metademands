@@ -555,7 +555,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                // Other fields
             } else {
                // Label
-               echo "<div class=\"bt-feature bt-col-sm-3 bt-col-md-3 \">";
+               $mdTitle = "bt-feature bt-col-sm-3 bt-col-md-3";
+               $mdContent = "bt-feature bt-col-sm-3 bt-col-md-3";
+               if($data['type']=='upload'){
+                  $mdTitle = "bt-feature bt-col-sm-2 bt-col-md-2";
+                  $mdContent = "bt-feature bt-col-sm-4 bt-col-md-4";
+               }
+               echo "<div class=\"$mdTitle \">";
                echo $data['label'];
 
                // Mandatory
@@ -572,7 +578,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                echo "</div>";
 
-               echo "<div class=\"bt-feature bt-col-sm-3 bt-col-md-3 \">";
+               echo "<div class=\"$mdContent \">";
 
                self::getFieldType($data, $metademands_data);
 
@@ -800,9 +806,16 @@ class PluginMetademandsWizard extends CommonDBTM {
             Dropdown::showFromArray("field[" . $data['id'] . "]", $option, ['value' => $data['custom_values']]);
             break;
          case 'upload':
-            echo __('File') . " (" . Document::getMaxUploadSize() . ")";
-            echo "<div id='uploadfiles".$data['id']."'><input type='file' name='filename[]' size='20'></div>";
-            PluginMetademandsTicket::showDocumentAddButton(25,$data['id']);
+//            echo __('File') . " (" . Document::getMaxUploadSize() . ")";
+//            echo "<div id='uploadfiles".$data['id']."'><input type='file' name='filename[]' size='20'></div>";
+//            PluginMetademandsTicket::showDocumentAddButton(25,$data['id']);
+//            echo "<style>.fileupload.draghoverable{border:none;} .b{display:none;}</style>";
+//            echo "<style>#dropFile{ width: 50px; }</style>";
+//            'dropZone'      => 'dropFile',
+            Html::file(['filecontainer' => 'fileupload_info_ticket',
+               'editor_id'     => '',
+               'showtitle'     => false,
+               'multiple'     => true]);
             break;
 
          case 'parent_field':
@@ -967,7 +980,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if ($value['type'] != 'parent_field') {
          // Check fields empty
-         if ($value['is_mandatory'] && empty($fields['value'])) {
+         if ($value['is_mandatory'] && is_null($fields['value'])) {
             $msg[]     = $value['label'];
             $checkKo[] = 1;
          }

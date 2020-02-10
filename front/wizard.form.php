@@ -133,6 +133,9 @@ if (isset($_POST['next'])) {
             } else if ($value['type'] == 'upload') {
                if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
                   $KO = true;
+               } else{
+                  $_SESSION['plugin_metademands']['fields']['_filename'] = $_POST['_filename'];
+                  $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $_POST['_prefix_filename'];
                }
             }
          }
