@@ -644,7 +644,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       $upload = "";
       if ($data['type'] == "upload") {
-         $upload = "&nbsp;".__('File') . " (" . Document::getMaxUploadSize() . ")";
+         $upload = " (" . Document::getMaxUploadSize() . ")";
       }
       if ($data['is_mandatory']) {
          $required = "red";
@@ -786,8 +786,10 @@ class PluginMetademandsWizard extends CommonDBTM {
             Dropdown::showFromArray("field[" . $data['id'] . "]", $option, ['value' => $value]);
             break;
          case 'upload':
-            echo "<div id='uploadfiles" . $data['id'] . "'><input type='file' name='filename[]' size='20'></div>";
-            PluginMetademandsTicket::showDocumentAddButton(25, $data['id']);
+            Html::file(['filecontainer' => 'fileupload_info_ticket',
+                        'editor_id'     => '',
+                        'showtitle'     => false,
+                        'multiple'     => true]);
             break;
 
          case 'parent_field':
