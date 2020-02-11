@@ -888,6 +888,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          case 'yesno':
             $option[1] = __('No');
             $option[2] = __('Yes');
+            $value = $data['custom_values'];
             Dropdown::showFromArray("field[" . $data['id'] . "]", $option, ['value' => $value]);
             break;
          case 'upload':
