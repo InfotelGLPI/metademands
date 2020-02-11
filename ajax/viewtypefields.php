@@ -49,6 +49,7 @@ switch ($_POST['step']) {
       $fields = new PluginMetademandsField();
       $fields->getEditValue(PluginMetademandsField::_unserialize(stripslashes($_POST['custom_values'])),
                             PluginMetademandsField::_unserialize(stripslashes($_POST['comment_values'])),
+                            PluginMetademandsField::_unserialize(stripslashes($_POST['default_values'])),
                             $_POST);
       $fields->viewTypeField($_POST);
       break;

@@ -117,6 +117,7 @@
             $('#count_custom_values').val(parseInt(count) + 1);
 
             var display_comment = $('#display_comment').val();
+            var display_default = $('#display_default').val();
             $.ajax({
                url: object.params['root_doc'] + '/plugins/metademands/ajax/addnewvalue.php',
                type: "POST",
@@ -124,6 +125,7 @@
                data: {
                   'action': 'add',
                   'display_comment' : display_comment,
+                  'display_default' : display_default,
                   'count': $('#count_custom_values').val()
                },
                success: function (response, opts) {
@@ -145,8 +147,11 @@
          */
          this.metademands_delete_custom_values = function (field_id) {
             var count = $('#count_custom_values').val();
-                $('#' + field_id + count).remove();
+                $('#custom_values' + count).remove();
+                $('#comment_values' + count).remove();
+                $('#default_values' + count).remove();
                 $('#count_custom_values').val(parseInt(count) - 1);
+
 
          };
 

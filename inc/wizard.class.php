@@ -349,15 +349,15 @@ class PluginMetademandsWizard extends CommonDBTM {
       global $DB;
 
 
-      $dbu = new DbUtils();
-      $query = "SELECT `id`,`name`
+      $dbu         = new DbUtils();
+      $query       = "SELECT `id`,`name`
                    FROM `glpi_plugin_metademands_metademands`
                    WHERE `glpi_plugin_metademands_metademands`.`itilcategories_id` > 0
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
-               . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
-      $query .= "AND is_active ORDER BY `name`";
+                     . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
+      $query       .= "AND is_active ORDER BY `name`";
       $metademands = [];
-      $result = $DB->query($query);
+      $result      = $DB->query($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
             if (PluginMetademandsGroup::isUserHaveRight($data['id'])) {
@@ -368,6 +368,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
       return $metademands;
    }
+
    /**
     * @param $step
     *
@@ -385,7 +386,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          if ($meta->getFromDB($id)) {
             echo '<div class="btnsc-normal" >';
             echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-            $fasize  = "fa-6x";
+            $fasize = "fa-6x";
             echo "<div class='center'>";
             echo "<i class='bt-interface fa-menu-md fas fa-share-alt $fasize'></i>";//$style
             echo "</div>";
@@ -410,60 +411,59 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
 
 
-
-//      echo "<div class=\"form-row\">";
-//      $config = PluginMetademandsConfig::getInstance();
-//      if ($config['enable_families']) {
-//
-//         echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
-//         // FAMILY
-//         echo __('Family', 'metademands') . "&nbsp;";
-//         // Get metademand families
-//         $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', ['`level`' => 1]);
-//         if (count($data_categories)) {
-//            $data_categories = array_keys($data_categories);
-//         }
-//
-//         $itilfamilies_id = [Dropdown::EMPTY_VALUE];
-//
-//         foreach ($metademands->listMetademandsCategories() as $value) {
-//            $ancestors_id = $dbu->getAncestorsOf('glpi_itilcategories', $value);
-//            $value        = array_shift($ancestors_id);
-//            if (in_array($value, $data_categories)) {
-//               $itilfamilies_id[$value] = Dropdown::getDropdownName('glpi_itilcategories', $value);
-//            }
-//         }
-//         asort($itilfamilies_id);
-//         $rand   = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
-//         $params = ['family' => '__VALUE__',
-//                    'step'   => 'metademands'];
-//
-//         Ajax::updateItemOnSelectEvent("dropdown_itilfamilies_id$rand", "show_metademands_by_family",
-//                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownListMetademands.php",
-//                                       $params);
-//         echo "</div>";
-//         echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
-//      } else {
-//         echo "<div class=\"bt-feature col-md-12 \">";
-//      }
-//      // METADEMAND list
-//      echo __('Request') . "&nbsp;";
-//      echo "<span id='show_metademands_by_family'>";
-//
-//      $data[0] = Dropdown::EMPTY_VALUE;
-//      $data    = $metademands->listMetademands(false, [], $data);
-//
-//      Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
-//      echo "</span>";
-//      echo "</div>";
-//      echo "</div>";
-//
-//      echo "<br/>";
-//      echo "<div class=\"form-row\">";
-//      echo "<div class=\"bt-feature col-md-12 right\">";
-//      echo "<input type='submit' class='submit' name='next' value='" . __('Next') . "'>";
-//      echo "</div>";
-//      echo "</div>";
+      //      echo "<div class=\"form-row\">";
+      //      $config = PluginMetademandsConfig::getInstance();
+      //      if ($config['enable_families']) {
+      //
+      //         echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
+      //         // FAMILY
+      //         echo __('Family', 'metademands') . "&nbsp;";
+      //         // Get metademand families
+      //         $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', ['`level`' => 1]);
+      //         if (count($data_categories)) {
+      //            $data_categories = array_keys($data_categories);
+      //         }
+      //
+      //         $itilfamilies_id = [Dropdown::EMPTY_VALUE];
+      //
+      //         foreach ($metademands->listMetademandsCategories() as $value) {
+      //            $ancestors_id = $dbu->getAncestorsOf('glpi_itilcategories', $value);
+      //            $value        = array_shift($ancestors_id);
+      //            if (in_array($value, $data_categories)) {
+      //               $itilfamilies_id[$value] = Dropdown::getDropdownName('glpi_itilcategories', $value);
+      //            }
+      //         }
+      //         asort($itilfamilies_id);
+      //         $rand   = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
+      //         $params = ['family' => '__VALUE__',
+      //                    'step'   => 'metademands'];
+      //
+      //         Ajax::updateItemOnSelectEvent("dropdown_itilfamilies_id$rand", "show_metademands_by_family",
+      //                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownListMetademands.php",
+      //                                       $params);
+      //         echo "</div>";
+      //         echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
+      //      } else {
+      //         echo "<div class=\"bt-feature col-md-12 \">";
+      //      }
+      //      // METADEMAND list
+      //      echo __('Request') . "&nbsp;";
+      //      echo "<span id='show_metademands_by_family'>";
+      //
+      //      $data[0] = Dropdown::EMPTY_VALUE;
+      //      $data    = $metademands->listMetademands(false, [], $data);
+      //
+      //      Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
+      //      echo "</span>";
+      //      echo "</div>";
+      //      echo "</div>";
+      //
+      //      echo "<br/>";
+      //      echo "<div class=\"form-row\">";
+      //      echo "<div class=\"bt-feature col-md-12 right\">";
+      //      echo "<input type='submit' class='submit' name='next' value='" . __('Next') . "'>";
+      //      echo "</div>";
+      //      echo "</div>";
    }
 
    /**
@@ -728,8 +728,17 @@ class PluginMetademandsWizard extends CommonDBTM {
          case 'dropdown_multiple' :
             if (!empty($data['custom_values'])) {
                $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+               $defaults              = PluginMetademandsField::_unserialize($data['default_values']);
+               $default_values        = [];
+               if ($defaults) {
+                  foreach ($defaults as $k => $v) {
+                     if ($v != null) {
+                        $default_values[] = $k;
+                     }
+                  }
+               }
                ksort($data['custom_values']);
-               $value = is_array($value)?$value:[];
+               $value = is_array($value) ? $value : $default_values;
                Dropdown::showFromArray("field[" . $data['id'] . "]", $data['custom_values'],
                                        ['values' => $value, 'width' => '250px', 'multiple' => true
                                        ]);
@@ -805,6 +814,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             if (!empty($data['custom_values'])) {
                $data['custom_values']  = PluginMetademandsField::_unserialize($data['custom_values']);
                $data['comment_values'] = PluginMetademandsField::_unserialize($data['comment_values']);
+               $defaults               = PluginMetademandsField::_unserialize($data['default_values']);
                if (!empty($value)) {
                   $value = PluginMetademandsField::_unserialize($value);
                }
@@ -815,7 +825,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
                foreach ($data['custom_values'] as $key => $label) {
                   echo "<div class='custom-control custom-checkbox $inline'>";
-                  $checked = isset($value[$key]) ? 'checked' : '';
+                  $checked = "";
+                  if (isset($value[$key])) {
+                     $checked = isset($value[$key]) ? 'checked' : '';
+                  } elseif (isset($defaults[$key])) {
+                     $checked = isset($defaults[$key]) ? 'checked' : '';
+                  }
                   echo "<input class='custom-control-input' type='checkbox' name='field[" . $data['id'] . "][" . $key . "]' id='field[" . $data['id'] . "][" . $key . "]' value='checkbox' $checked>";
                   $nbr++;
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
@@ -834,6 +849,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             if (!empty($data['custom_values'])) {
                $data['custom_values']  = PluginMetademandsField::_unserialize($data['custom_values']);
                $data['comment_values'] = PluginMetademandsField::_unserialize($data['comment_values']);
+               $defaults               = PluginMetademandsField::_unserialize($data['default_values']);
                if (!empty($value)) {
                   $value = PluginMetademandsField::_unserialize($value);
                }
@@ -844,7 +860,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
                foreach ($data['custom_values'] as $key => $label) {
                   echo "<div class='custom-control custom-radio $inline'>";
-                  $checked = $value == $key ? 'checked' : '';
+
+                  $checked = "";
+                  if (!empty($value) && $value == $key) {
+                     $checked = $value == $key ? 'checked' : '';
+                  } elseif (isset($defaults[$key])) {
+                     $checked = isset($defaults[$key]) ? 'checked' : '';
+                  }
                   echo "<input class='custom-control-input' type='radio' name='radio[" . $data['id'] . "]' id='radio[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
                      Html::showToolTip($data['comment_values'][$key],
@@ -855,7 +877,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
             }
             break;
-         case 'textarea':
+         case
+         'textarea':
             echo "<textarea class='form-control' rows='3' placeholder=\"" . $data['comment'] . "\" name='field[" . $data['id'] . "]' id='field[" . $data['id'] . "]' $required>" . $value . "</textarea>";
             break;
          case 'datetime_interval':
@@ -973,9 +996,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      }
                   }
                }
-
             }
-
             break;
       }
    }

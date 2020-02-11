@@ -59,6 +59,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
   `is_recursive` int(1) NOT NULL default '0', -- is_recursive
   `comment` varchar(255) default NULL,
   `custom_values` text COLLATE utf8_unicode_ci default NULL,
+  `default_values` text COLLATE utf8_unicode_ci default NULL,
   `comment_values` text COLLATE utf8_unicode_ci default NULL,
   `check_value` varchar(255) default NULL,
   `rank` int(1) NOT NULL default '0',

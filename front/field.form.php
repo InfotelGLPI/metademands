@@ -26,8 +26,8 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
-include ('../../../inc/includes.php');
+
+include('../../../inc/includes.php');
 
 if (empty($_GET["id"])) {
    $_GET["id"] = "";
@@ -48,6 +48,9 @@ if (isset($_POST["add"])) {
       if (isset($_POST["comment_values"])) {
          $_POST["comment_values"] = $field->_serialize($_POST["comment_values"]);
       }
+      if (isset($_POST["default_values"])) {
+         $_POST["default_values"] = $field->_serialize($_POST["default_values"]);
+      }
    }
 
    // Check update rights for fields
@@ -62,22 +65,27 @@ if (isset($_POST["add"])) {
 
 } else if (isset($_POST["update"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])
-      && ($_POST["item"] == 'other' || $_POST["type"] == 'checkbox' || $_POST["type"] == 'radio')) {
+       && ($_POST["item"] == 'other' || $_POST["type"] == 'checkbox' || $_POST["type"] == 'radio')) {
       $comment_values = "";
-      $custom_values = "";
-      if(isset($_POST['custom_values'])){
+      $custom_values  = "";
+      $default_values = "";
+      if (isset($_POST['custom_values'])) {
          $custom_values = $_POST['custom_values'];
       }
-      if(isset($_POST['comment_values'])){
+      if (isset($_POST['comment_values'])) {
          $comment_values = $_POST['comment_values'];
       }
-      $_POST["custom_values"] = $field->_serialize($custom_values);
+      if (isset($_POST['default_values'])) {
+         $default_values = $_POST['default_values'];
+      }
+      $_POST["custom_values"]  = $field->_serialize($custom_values);
       $_POST["comment_values"] = $field->_serialize($comment_values);
+      $_POST["default_values"] = $field->_serialize($default_values);
    } else if ($_POST["type"] == 'link') {
-      $_POST["custom_values"] = $field->_serialize($_POST['custom_values']);
+      $_POST["custom_values"]  = $field->_serialize($_POST['custom_values']);
       $_POST["comment_values"] = '';
    } else if ($_POST["type"] != 'yesno') {
-      $_POST["custom_values"] = '';
+      $_POST["custom_values"]  = '';
       $_POST["comment_values"] = '';
    }
    if (isset($_POST["value"]) && is_array($_POST["value"])) {
@@ -86,6 +94,7 @@ if (isset($_POST["add"])) {
 
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
+
    if ($field->update($_POST)) {
       $field->recalculateOrder($_POST);
       PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
@@ -107,10 +116,12 @@ if (isset($_POST["add"])) {
          if ($key == key($_POST["delete_custom_value"])) {
             unset($_POST["custom_values"][$key]);
             unset($_POST["comment_values"][$key]);
+            unset($_POST["default_values"][$key]);
          }
       }
-      $_POST["custom_values"] = $field->_serialize($_POST["custom_values"]);
+      $_POST["custom_values"]  = $field->_serialize($_POST["custom_values"]);
       $_POST["comment_values"] = $field->_serialize($_POST["comment_values"]);
+      $_POST["default_values"] = $field->_serialize($_POST["default_values"]);
       // Check update rights for fields
       $field->check(-1, UPDATE, $_POST);
       $field->update($_POST);

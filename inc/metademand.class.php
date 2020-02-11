@@ -1024,7 +1024,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $nb = 0;
       foreach ($parent_fields as $fields_id => $field) {
 
-         //         Toolbox::logWarning($field);
          $field['value'] = '';
          if (isset($values[$fields_id])) {
             $field['value'] = $values[$fields_id];
