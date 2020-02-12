@@ -89,14 +89,14 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param string $step
     * @param int    $metademands_id
-    * @param bool   $demo
+    * @param bool   $preview
     * @param int    $tickets_id
     * @param int    $resources_id
     * @param string $resources_step
     *
     * @throws \GlpitestSQLError
     */
-   function showWizard($step = 'initWizard', $metademands_id = 0, $demo = false, $tickets_id = 0, $resources_id = 0, $resources_step = '') {
+   function showWizard($step = 'initWizard', $metademands_id = 0, $preview = false, $tickets_id = 0, $resources_id = 0, $resources_step = '') {
       global $CFG_GLPI;
 
       $config = PluginMetademandsConfig::getInstance();
@@ -236,7 +236,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
 
       $options['resources_id'] = $resources_id;
-      $this->showWizardSteps($step, $metademands_id, $demo, $options);
+      $this->showWizardSteps($step, $metademands_id, $preview, $options);
       Html::closeForm();
       echo "</div>";
       echo "</div>";
@@ -246,12 +246,12 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param       $step
     * @param int   $metademands_id
-    * @param bool  $demo
+    * @param bool  $preview
     * @param array $options
     *
     * @throws \GlpitestSQLError
     */
-   function showWizardSteps($step, $metademands_id = 0, $demo = false, $options = []) {
+   function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
 
       switch ($step) {
          case 'initWizard':
@@ -270,7 +270,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             break;
 
          default:
-            $this->showMetademands($metademands_id, $step, $demo);
+            $this->showMetademands($metademands_id, $step, $preview);
             break;
 
       }
@@ -469,11 +469,11 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param      $metademands_id
     * @param      $step
-    * @param bool $demo
+    * @param bool $preview
     *
     * @throws \GlpitestSQLError
     */
-   function showMetademands($metademands_id, $step, $demo = false) {
+   function showMetademands($metademands_id, $step, $preview = false) {
 
       $metademands      = new PluginMetademandsMetademand();
       $metademands_data = $metademands->showMetademands($metademands_id);
@@ -482,8 +482,8 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       echo "<div class='md-wizard'>";
       if (count($metademands_data)) {
-         if ($step - 1 > count($metademands_data) && !$demo) {
-            $this->showWizardSteps('add_metademands', $metademands_id, $demo);
+         if ($step - 1 > count($metademands_data) && !$preview) {
+            $this->showWizardSteps('add_metademands', $metademands_id, $preview);
 
          } else {
             foreach ($metademands_data as $form_step => $data) {
@@ -491,14 +491,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                   foreach ($data as $form_metademands_id => $line) {
                      $no_form = false;
 
-                     $this->constructForm($line['form'], $demo, $metademands_data);
+                     $this->constructForm($line['form'], $preview, $metademands_data);
 
                      echo "<input type='hidden' name='form_metademands_id' value='" . $form_metademands_id . "'>";
                   }
                }
             }
             echo "</div>";
-            if (!$demo) {
+            if (!$preview) {
                echo "<br/>";
                echo "<div class=\"form-row\">";
                echo "<div class=\"bt-feature col-md-12 \">";
@@ -533,10 +533,10 @@ class PluginMetademandsWizard extends CommonDBTM {
 
    /**
     * @param array $line
-    * @param bool  $demo
+    * @param bool  $preview
     * @param       $metademands_data
     */
-   function constructForm(array $line, $demo = false, $metademands_data) {
+   function constructForm(array $line, $preview = false, $metademands_data) {
       global $CFG_GLPI;
 
       $count   = 0;
@@ -549,7 +549,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $keyIndexes       = array_flip($keys);
 
          // Color
-         if ($demo) {
+         if ($preview) {
             $style = 'padding-top:5px; 
                       border-top :3px solid #' . PluginMetademandsField::setColor($line[$keys[0]]['rank']) . ';
                       border-left :3px solid #' . PluginMetademandsField::setColor($line[$keys[0]]['rank']) . ';
@@ -559,7 +559,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<div class=\"form-row\" style='$style'>";
          foreach ($line as $key => $data) {
             $config_link = "";
-            if ($demo) {
+            if ($preview) {
                $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'><i class='fas fa-wrench'></i></a>";
             }
             // Manage ranks
@@ -567,7 +567,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                 && isset($keys[$keyIndexes[$key] - 1])
                 && $data['rank'] != $line[$keys[$keyIndexes[$key] - 1]]['rank']) {
                echo "</div>";
-               if ($demo) {
+               if ($preview) {
                   echo "<div class=\"form-row\" style='border-bottom: 3px solid #" . PluginMetademandsField::setColor($data['rank'] - 1) . ";' >";
                   echo "</div>";
 
@@ -625,7 +625,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<div class=\"form-group col-md-5\">";
                }
 
-               self::getFieldType($data, $metademands_data, $demo, $config_link);
+               self::getFieldType($data, $metademands_data, $preview, $config_link);
                echo "</div>";
 
                // Label 2 (date interval)
@@ -664,7 +664,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             // Next row
             $style_left_right = "";
             if ($count >= $columns) {
-               if ($demo) {
+               if ($preview) {
                   $style_left_right = 'border-left :3px solid #' . PluginMetademandsField::setColor($data['rank']) . ';
                                        border-right :3px solid #' . PluginMetademandsField::setColor($data['rank']);
                }
@@ -676,7 +676,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          }
          echo "</div>";
-         if ($demo) {
+         if ($preview) {
             echo "<div class=\"form-row\" style='border-bottom: 3px solid #" . PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']) . ";' >";
             echo "</div>";
          }
@@ -699,7 +699,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param $data
     * @param $metademands_data
     */
-   function getFieldType($data, $metademands_data, $demo = false, $config_link = "") {
+   function getFieldType($data, $metademands_data, $preview = false, $config_link = "") {
       global $CFG_GLPI;
 
       $value = '';
@@ -721,7 +721,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       echo "<label for='field[" . $data['id'] . "]' class='$required col-form-label col-form-label-sm'>";
       echo $data['label'] . " $upload";
-      if ($demo) {
+      if ($preview) {
          echo $config_link;
       }
       echo "</label>";
