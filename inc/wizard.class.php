@@ -558,6 +558,10 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          echo "<div class=\"form-row\" style='$style'>";
          foreach ($line as $key => $data) {
+            $config_link = "";
+            if ($demo) {
+               $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'><i class='fas fa-wrench'></i></a>";
+            }
             // Manage ranks
             if (isset($keyIndexes[$key])
                 && isset($keys[$keyIndexes[$key] - 1])
@@ -599,6 +603,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<h4 class=\"bt-title-divider\" style='color:" . $data['color'] . ";'>";
 
                echo $data['label'];
+               echo $config_link;
                if (isset($data['label2']) && !empty($data['label2'])) {
                   echo "&nbsp;";
                   Html::showToolTip($data['label2'],
@@ -620,7 +625,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<div class=\"form-group col-md-5\">";
                }
 
-               self::getFieldType($data, $metademands_data);
+               self::getFieldType($data, $metademands_data, $demo, $config_link);
                echo "</div>";
 
                // Label 2 (date interval)
@@ -694,7 +699,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param $data
     * @param $metademands_data
     */
-   function getFieldType($data, $metademands_data) {
+   function getFieldType($data, $metademands_data, $demo = false, $config_link = "") {
       global $CFG_GLPI;
 
       $value = '';
@@ -716,6 +721,9 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       echo "<label for='field[" . $data['id'] . "]' class='$required col-form-label col-form-label-sm'>";
       echo $data['label'] . " $upload";
+      if ($demo) {
+         echo $config_link;
+      }
       echo "</label>";
       echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
       if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
