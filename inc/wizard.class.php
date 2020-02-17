@@ -117,8 +117,14 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo Html::css("/lib/font-awesome/css/all.min.css");
       echo Html::script("/plugins/metademands/lib/bootstrap/3.2.0/js/bootstrap.min.js");
       echo "<div id ='content'>";
-      echo "<div class='bt-container metademands_wizard_rank' > ";
-      echo "<div class='bt-block bt-features' > ";
+      if (!$preview) {
+         echo "<div class='bt-container metademands_wizard_rank' > ";
+      }
+      $style = "";
+      if ($preview) {
+         $style = "style='width: 1000px;'";
+      }
+      echo "<div class='bt-block bt-features' $style> ";
 
       echo "<form name    = 'wizard_form'
                   method  = 'post'
@@ -251,7 +257,9 @@ class PluginMetademandsWizard extends CommonDBTM {
       $this->showWizardSteps($step, $metademands_id, $preview, $options);
       Html::closeForm();
       echo "</div>";
-      echo "</div>";
+      if (!$preview) {
+         echo "</div>";
+      }
       echo "</div>";
    }
 
