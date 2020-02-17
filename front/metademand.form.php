@@ -28,6 +28,7 @@
  */
 
 include ('../../../inc/includes.php');
+Session::checkLoginUser();
 
 $dropdown=new PluginMetademandsMetademand();
 include (GLPI_ROOT . "/front/dropdown.common.form.php");

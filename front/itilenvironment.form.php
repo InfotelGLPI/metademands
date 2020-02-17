@@ -28,6 +28,7 @@
  */
 
 include ('../../../inc/includes.php');
+Session::checkLoginUser();
 
 if (!isset($_POST['is_outproduction'])) {
    $_POST['is_outproduction'] = 0;

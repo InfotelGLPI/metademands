@@ -28,6 +28,7 @@
  */
 
 include ('../../../inc/includes.php');
+Session::checkLoginUser();
 
 $group = new PluginMetademandsGroup();
 

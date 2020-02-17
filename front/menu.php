@@ -28,6 +28,7 @@
  */
 
 include ('../../../inc/includes.php');
+Session::checkLoginUser();
 
 if (Session::getCurrentInterface() == 'central') {
    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");

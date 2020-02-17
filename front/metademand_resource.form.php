@@ -28,6 +28,7 @@
  */
 
 include ('../../../inc/includes.php');
+Session::checkLoginUser();
 
 $metademand_resource = new PluginMetademandsMetademand_Resource();
 
