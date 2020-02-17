@@ -17,6 +17,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
   `comment` text COLLATE utf8_unicode_ci default NULL,
   `type` int(11) NOT NULL default '0', -- metademand type : Incident, demand
   `itilcategories_id` int(11) NOT NULL default '0', -- references itilcategories glpi
+  `icon` varchar(255) default NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

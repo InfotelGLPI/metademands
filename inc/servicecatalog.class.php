@@ -63,7 +63,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getMenuLogo() {
       global $CFG_GLPI;
 
-      $display =  "<a class='bt-interface' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'>";
+      $display = "<a class='bt-interface' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'>";
       $fasize  = "fa-5x";
       $display .= "<div class='bt-img-responsive center'>";
       $display .= "<i class='fa-menu-sc fas fa-share-alt $fasize'></i>";//$style
@@ -79,7 +79,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
     */
    static function getMenuComment() {
 
-      $list = "";
+      $list        = "";
       $metademands = PluginMetademandsWizard::selectMetademands();
 
       foreach ($metademands as $id => $name) {
@@ -104,17 +104,17 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getLinkURL($type, $category_id) {
       global $CFG_GLPI;
 
-      $dbu = new DbUtils();
+      $dbu   = new DbUtils();
       $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-         ["`itilcategories_id`" => $category_id,
-            "`is_active`" => 1,
-            "`type`" => $type]);
+                                         ["`itilcategories_id`" => $category_id,
+                                          "`is_active`"         => 1,
+                                          "`type`"              => $type]);
 
       if (!empty($metas)) {
          $meta = reset($metas);
          //Redirect if not linked to a resource contract type
          if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
-            ["plugin_metademands_metademands_id" => $meta["id"]])) {
+                                         ["plugin_metademands_metademands_id" => $meta["id"]])) {
 
             return $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=0&step=2";
 
@@ -127,7 +127,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       global $CFG_GLPI;
 
       $metademands = PluginMetademandsWizard::selectMetademands();
-      $plugin = new Plugin();
+      $plugin      = new Plugin();
       if ($plugin->isActivated("servicecatalog") && ($plugin->getInfo('servicecatalog')["version"] >= "1.6.0")) {
          //echo '<div class="btnsc-normal fa-back" id="click">';
 
@@ -143,9 +143,9 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
          //echo "<br><br>";
          //echo "<span class=\"label_back bottom_title\">";
 
-//         echo __('Back');
+         //         echo __('Back');
 
-//         echo "</span>";
+         //         echo "</span>";
          echo "<script>$(document).ready(function() {
                  $('#click').click(function() {
                       window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php';
@@ -153,9 +153,9 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
             });</script>";
 
          //echo "</div>";
-//      echo '<li>';
-//      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
-//      echo '</li>';
+         //      echo '<li>';
+         //      echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
+         //      echo '</li>';
 
          foreach ($metademands as $id => $name) {
 
@@ -163,11 +163,15 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
             if ($meta->getFromDB($id)) {
                echo '<div class="btnsc-normal" >';
                echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-               $fasize  = "fa-6x";
+               $fasize = "fa-6x";
                echo "<div class='center'>";
-               echo "<i class='bt-interface fa-menu-sc fas fa-share-alt $fasize'></i>";//$style
+               $icon = "fa-share-alt";
+               if (!empty($meta->fields['icon'])) {
+                  $icon = $meta->fields['icon'];
+               }
+               echo "<i class='bt-interface fa-menu-sc fas $icon $fasize'></i>";//$style
                echo "</div>";
-         
+
                echo "</a>";
                echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo "<p>";

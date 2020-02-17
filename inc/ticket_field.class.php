@@ -132,7 +132,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
             }
             break;
          case 'dropdown_multiple':
-            if ($check_value == PluginMetademandsField::$not_null  && count($value) == 1) {
+            if ($check_value == PluginMetademandsField::$not_null  && is_array($value) && count($value) == 1) {
                return false;
             }
             break;

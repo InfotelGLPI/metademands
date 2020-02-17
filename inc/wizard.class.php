@@ -138,7 +138,14 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<div class=\"form-row\">";
          echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
          echo "<h4 class=\"bt-title-divider\">";
-         echo "<i class='fa-2x fas fa-share-alt'></i>&nbsp;";
+         $icon = "fa-share-alt";
+         $meta = new PluginMetademandsMetademand();
+         if ($meta->getFromDB($metademands_id)) {
+            if (!empty($meta->fields['icon'])) {
+               $icon = $meta->fields['icon'];
+            }
+         }
+         echo "<i class='fa-2x fas $icon'></i>&nbsp;";
          echo __('Demand choice', 'metademands');
          echo "</h4></div></div>";
 
@@ -147,10 +154,15 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<div class=\"form-row\">";
          echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
          echo "<h4 class=\"bt-title-divider\">";
-         echo "<i class='fa-2x fas fa-share-alt'></i>&nbsp;";
+         $meta = new PluginMetademandsMetademand();
+         if ($meta->getFromDB($metademands_id)) {
+            if (!empty($meta->fields['icon'])) {
+               $icon = $meta->fields['icon'];
+            }
+         }
+         echo "<i class='fa-2x fas $icon'></i>&nbsp;";
          echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id);
          echo "</h4>";
-         $meta = new PluginMetademandsMetademand();
          if ($meta->getFromDB($metademands_id)) {
             echo "<label><i>" . nl2br($meta->fields['comment']) . "</i></label>";
          }
@@ -388,7 +400,11 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
             $fasize = "fa-6x";
             echo "<div class='center'>";
-            echo "<i class='bt-interface fa-menu-md fas fa-share-alt $fasize'></i>";//$style
+            $icon = "fa-share-alt";
+            if (!empty($meta->fields['icon'])) {
+               $icon = $meta->fields['icon'];
+            }
+            echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
             echo "</div>";
 
             echo "</a>";
@@ -768,6 +784,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                                      'right'  => 'all',
                                      'value'  => $value]);
                      break;
+                  case 'usertitle':
+                     $titlerand = mt_rand();
+                     UserTitle::dropdown(['name' => "field[" . $data['id'] . "]", 'rand' => $titlerand]);
+                     break;
+                  case 'usercategory':
+                     $catrand = mt_rand();
+                     UserCategory::dropdown(['name' => "field[" . $data['id'] . "]", 'rand' => $catrand]);
+                     break;
                   case 'PluginResourcesResource':
                      PluginResourcesResource::dropdown(['name'   => "field[" . $data['id'] . "]",
                                                         'entity' => $_SESSION['glpiactiveentities'],
@@ -841,11 +865,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
                   echo "<input class='custom-control-input' type='checkbox' name='field[" . $data['id'] . "][" . $key . "]' id='field[" . $data['id'] . "][" . $key . "]' value='checkbox' $checked>";
                   $nbr++;
+                  echo "&nbsp;<label class='custom-control-label' for='field[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
+                     echo "&nbsp;<span style='vertical-align: bottom;'>";
                      Html::showToolTip($data['comment_values'][$key],
                                        ['awesome-class' => 'fa-info-circle']);
+                     echo "</span>";
                   }
-                  echo "&nbsp;<label class='custom-control-label' for='field[" . $data['id'] . "][" . $key . "]'>$label</label></div>";
+                  echo "</div>";
                }
             } else {
                $checked = $value ? 'checked' : '';
@@ -876,12 +903,15 @@ class PluginMetademandsWizard extends CommonDBTM {
                      $checked = isset($defaults[$key]) ? 'checked' : '';
                   }
                   echo "<input class='custom-control-input' type='radio' name='radio[" . $data['id'] . "]' id='radio[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                  $nbr++;
+                  echo "&nbsp;<label class='custom-control-label' for='radio[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
+                     echo "&nbsp;<span style='vertical-align: bottom;'>";
                      Html::showToolTip($data['comment_values'][$key],
                                        ['awesome-class' => 'fa-info-circle']);
+                     echo "</span>";
                   }
-                  $nbr++;
-                  echo "&nbsp;<label class='custom-control-label' for='radio[" . $data['id'] . "][" . $key . "]'>$label</label></div>";
+                  echo "</div>";
                }
             }
             break;
@@ -896,7 +926,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          case 'yesno':
             $option[1] = __('No');
             $option[2] = __('Yes');
-            $value = $data['custom_values'];
+            $value     = $data['custom_values'];
             Dropdown::showFromArray("field[" . $data['id'] . "]", $option, ['value' => $value]);
             break;
          case 'upload':

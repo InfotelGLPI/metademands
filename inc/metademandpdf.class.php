@@ -66,7 +66,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @param $sousTitre
     */
    public function __construct($titre, $sousTitre) {
-      parent::FPDF('P', 'mm', 'A4');
+      parent::__construct('P', 'mm', 'A4');
 
       $this->titre              = $titre;
       $this->sousTitre          = $sousTitre;

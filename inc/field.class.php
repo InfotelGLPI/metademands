@@ -43,7 +43,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'parent_field'];
-   static $field_items = ['', 'user', 'group', 'location', 'other', 'PluginResourcesResource',
+   static $field_items = ['', 'user', 'usertitle', 'usercategory','group', 'location', 'other', 'PluginResourcesResource',
                           'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
    static $not_null = 'NOT_NULL';
@@ -621,6 +621,10 @@ class PluginMetademandsField extends CommonDBChild {
       switch ($value) {
          case 'user':
             return __('User');
+         case 'usertitle':
+            return __('User').' - '._x('person', 'Title');
+         case 'usercategory':
+            return __('User').' - '.__('Category');
          case 'group':
             return __('Group');
          case 'location':
@@ -653,7 +657,7 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'group', 'location',
+      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group', 'location',
                         'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple', 'parent_field',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
@@ -708,6 +712,8 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</td></tr>";
                   break;
                case 'user':
+               case 'usertitle':
+               case 'usercategory':
                case 'group':
                case 'location':
                case 'PluginResourcesResource':
