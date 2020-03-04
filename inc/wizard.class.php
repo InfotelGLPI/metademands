@@ -623,7 +623,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             // Title field
             if ($data['type'] == 'title') {
-               echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
+               echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid; width: 100%'>";
                echo "<h4 class=\"bt-title-divider\" style='color:" . $data['color'] . ";'>";
 
                echo $data['label'];
