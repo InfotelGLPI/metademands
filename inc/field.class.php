@@ -43,7 +43,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'parent_field'];
-   static $field_items = ['', 'user', 'usertitle', 'usercategory','group', 'location', 'other', 'PluginResourcesResource',
+   static $field_items = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'PluginResourcesResource',
                           'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
    static $not_null = 'NOT_NULL';
@@ -233,6 +233,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'item'           => $this->fields['item'],
                      'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                      'fields_link'    => $this->fields['fields_link'],
+                     'fields_display' => $this->fields['fields_display'],
                      'custom_values'  => $this->fields['custom_values'],
                      'comment_values' => $this->fields['comment_values'],
                      'default_values' => $this->fields['default_values'],
@@ -286,6 +287,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'type'           => $this->fields['type'],
                      'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                      'fields_link'    => $this->fields['fields_link'],
+                     'fields_display' => $this->fields['fields_display'],
                      'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                      'custom_values'  => $this->fields["custom_values"],
                      'comment_values' => $this->fields["comment_values"],
@@ -329,6 +331,7 @@ class PluginMetademandsField extends CommonDBChild {
                          'default_values' => $this->fields['default_values'],
                          'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                          'fields_link'    => $this->fields['fields_link'],
+                         'fields_display' => $this->fields['fields_display'],
                          'item'           => $this->fields['item'],
                          'type'           => $this->fields['type'],
                          'check_value'    => $this->fields['check_value'],
@@ -622,9 +625,9 @@ class PluginMetademandsField extends CommonDBChild {
          case 'user':
             return __('User');
          case 'usertitle':
-            return __('User').' - '._x('person', 'Title');
+            return __('User') . ' - ' . _x('person', 'Title');
          case 'usercategory':
-            return __('User').' - '.__('Category');
+            return __('User') . ' - ' . __('Category');
          case 'group':
             return __('Group');
          case 'location':
@@ -695,8 +698,18 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";
-                  self::showFieldsDropdown($metademands->fields["id"], $params['fields_link']);
+                  self::showFieldsDropdown("fields_link", $metademands->fields["id"], $params['fields_link']);
                   echo "</td></tr>";
+
+                  // Show field display
+                  echo "<tr><td>";
+                  echo __('Display if this selected field is filled', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  echo "</td></tr>";
+
                   break;
                case 'datetime' :
                case 'datetime_interval' :
@@ -746,7 +759,16 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";
-                  self::showFieldsDropdown($metademands->fields["id"], $params['fields_link']);
+                  self::showFieldsDropdown("fields_link", $metademands->fields["id"], $params['fields_link']);
+                  echo "</td></tr>";
+
+                  // Show field display
+                  echo "<tr><td>";
+                  echo __('Display if', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
                   echo "</td></tr>";
                   break;
                case 'checkbox':
@@ -932,7 +954,7 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   echo "<tr>";
                   echo "<td colspan='4' align='right' id='show_custom_fields'>";
-                  self::initCustomValue(max(array_keys($values)), true,  true);
+                  self::initCustomValue(max(array_keys($values)), true, true);
                   echo "</td>";
                   echo "</tr>";
                } else {
@@ -955,7 +977,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                   echo "<tr>";
                   echo "<td colspan='3' align='right'  id='show_custom_fields'>";
-                  self::initCustomValue(0, true,  true);
+                  self::initCustomValue(0, true, true);
                   echo "</td>";
                   echo "</tr>";
                }
@@ -1108,7 +1130,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param $metademands_id
     * @param $selected_value
     */
-   static function showFieldsDropdown($metademands_id, $selected_value) {
+   static function showFieldsDropdown($field, $metademands_id, $selected_value) {
 
       $fields      = new self();
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
@@ -1120,7 +1142,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
       }
 
-      Dropdown::showFromArray('fields_link', $data, ['value' => $selected_value]);
+      Dropdown::showFromArray($field, $data, ['value' => $selected_value]);
    }
 
    /**

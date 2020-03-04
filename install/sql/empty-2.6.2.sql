@@ -74,13 +74,15 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
   `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
   `plugin_metademands_tasks_id` int(11) NOT NULL default '0',
   `fields_link` int(11) NOT NULL default '0',
+  `fields_display` int(11) NOT NULL default '0',
   `color` varchar(255) default NULL,
   `parent_field_id` int(11) NOT NULL default '0',
   `row_display` tinyint(1) default 0,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`plugin_metademands_metademands_id`) REFERENCES glpi_plugin_metademands_metademands(id),
   KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-  KEY `fields_link` (`fields_link`)
+  KEY `fields_link` (`fields_link`),
+  KEY `fields_display` (`fields_display`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 

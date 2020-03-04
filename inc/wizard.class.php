@@ -712,6 +712,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
             }
+            if (!empty($data['fields_display'])) {
+               $script = "var metademandWizard = $(document).metademandWizard();";
+               $script .= "metademandWizard.metademand_displayField('metademands_wizard_display" . $data['fields_display'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
+               echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+            }
          }
 
       } else {
@@ -742,6 +747,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       if ($data['is_mandatory']) {
          $required = "red";
       }
+      echo "<span id='metademands_wizard_display" . $data['id'] . "'>";
 
       echo "<label for='field[" . $data['id'] . "]' class='$required col-form-label col-form-label-sm'>";
       echo $data['label'] . " $upload";
@@ -1046,6 +1052,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             break;
       }
+      echo "</span>";
    }
 
    /**
