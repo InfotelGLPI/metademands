@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-02-14 11:56+0100\n"
-"PO-Revision-Date: 2020-02-25 15:59+0100\n"
+"PO-Revision-Date: 2020-02-14 19:59+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.0.3\n"
 
 #: setup.php:145 inc/metademand.class.php:71 inc/profile.class.php:151
 msgid "Meta-Demand"
@@ -67,10 +67,6 @@ msgstr "Enable family field"
 #: inc/config.class.php:134
 msgid "Childs tickets get parent content"
 msgstr "Childs tickets get parent content"
-
-#: inc/config.class.php:143
-msgid "Enable display metademands via icons"
-msgstr "Enable display metademands via icons"
 
 #: inc/field.class.php:58 inc/ticket_field.class.php:51
 msgid "Wizard creation"

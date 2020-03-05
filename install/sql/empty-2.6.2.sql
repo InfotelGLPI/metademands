@@ -315,7 +315,6 @@ CREATE TABLE `glpi_plugin_metademands_configs` (
    `create_pdf` tinyint(1) default '0',
    `show_requester_informations` tinyint(1) default 0,
    `childs_parent_content` tinyint(1) default 0,
-   `display_type` tinyint(1) default 0,
    PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
