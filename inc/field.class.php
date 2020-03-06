@@ -920,7 +920,8 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<p id='default_values$key'>";
                      echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                      $name = "default_values[" . $key . "]";
-                     Dropdown::showYesNo($name, $default[$key]);
+                     $value = (isset($default[$key])?$default[$key]:0);
+                     Dropdown::showYesNo($name, $value);
                      echo '</p>';
                      echo "</td>";
 
