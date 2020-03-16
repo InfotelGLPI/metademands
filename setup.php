@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '2.6.2');
+define('PLUGIN_METADEMANDS_VERSION', '2.6.3');
 
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands() {
