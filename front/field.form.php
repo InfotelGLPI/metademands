@@ -38,6 +38,14 @@ if (!isset($_POST["check_value"])) {
    $_POST["check_value"] = "";
 }
 
+if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
+            && isset($_POST['item']) && $_POST['item'] == 'group') {
+   $custom_values['is_assign'] = $_POST['is_assign'];
+   $custom_values['is_watcher'] = $_POST['is_watcher'];
+   $custom_values['is_requester'] = $_POST['is_requester'];
+   $_POST['custom_values'] = $custom_values;
+}
+
 $field = new PluginMetademandsField();
 
 if (isset($_POST["add"])) {
@@ -66,7 +74,7 @@ if (isset($_POST["add"])) {
 
 } else if (isset($_POST["update"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])
-       && ($_POST["item"] == 'other' || $_POST["type"] == 'checkbox' || $_POST["type"] == 'radio')) {
+       && ($_POST["item"] == 'other' || $_POST["type"] == 'checkbox' || $_POST["type"] == 'radio' || $_POST['item'] == 'group') ) {
       $comment_values = "";
       $custom_values  = "";
       $default_values = "";
@@ -86,7 +94,7 @@ if (isset($_POST["add"])) {
       $_POST["custom_values"]  = $field->_serialize($_POST['custom_values']);
       $_POST["comment_values"] = '';
    } else if ($_POST["type"] != 'yesno') {
-      $_POST["custom_values"]  = '';
+      $_POST["custom_values"] = '';
       $_POST["comment_values"] = '';
    }
    if (isset($_POST["value"]) && is_array($_POST["value"])) {

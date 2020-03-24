@@ -711,10 +711,63 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "<input type='checkbox' name='check_value' value='1' $checked>";
                   echo "</td></tr>";
                   break;
+               case 'group':
+                  $custom_values = [];
+                  if (!empty($params['custom_values'])) {
+                     $custom_values =  self::_unserialize($params['custom_values']);
+
+                  } else {
+                     $custom_values['is_assign'] = 0;
+                     $custom_values['is_watcher'] = 0;
+                     $custom_values['is_requester'] = 0;
+
+                  }
+
+                  // Show task link
+                  echo '<tr><td>';
+                  echo __('Link a task to the field', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the task is created', 'metademands') . '</span>';
+                  echo '</td><td>';
+                  PluginMetademandsTask::showAllTasksDropdown($metademands->fields["id"], $params['task_link']);
+                  echo "</td></tr>";
+
+                  // Show field link
+                  echo "<tr><td>";
+                  echo __('Link a field to the field', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown($metademands->fields["id"], $params['fields_link']);
+                  echo "</td></tr>";
+
+                  // Assigned group
+                  echo "<tr><td>";
+                  echo __('Assigned');
+                  echo '</td>';
+                  echo "<td>";
+                  Dropdown::showYesNo('is_assign', $custom_values['is_assign']);
+                  echo "</td></tr>";
+
+                  // Watcher group
+                  echo "<tr><td>";
+                  echo __('Watcher');
+                  echo '</td>';
+                  echo "<td>";
+                  Dropdown::showYesNo('is_watcher', $custom_values['is_watcher']);
+                  echo "</td></tr>";
+
+                  // Requester group
+                  echo "<tr><td>";
+                  echo __('Requester');
+                  echo '</td>';
+                  echo "<td>";
+                  Dropdown::showYesNo('is_requester', $custom_values['is_requester']);
+                  echo "</td></tr>";
+
+                  break;
                case 'user':
                case 'usertitle':
                case 'usercategory':
-               case 'group':
                case 'location':
                case 'PluginResourcesResource':
                case 'other':

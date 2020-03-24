@@ -101,6 +101,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       $config = PluginMetademandsConfig::getInstance();
 
+
       // Retrieve session values
       if (isset($_SESSION['plugin_metademands']['fields']['tickets_id'])) {
          $tickets_id = $_SESSION['plugin_metademands']['fields']['tickets_id'];
@@ -139,6 +140,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       // Resources step
       echo "<input type = 'hidden' value = '" . $resources_step . "' name = 'resources_step' > ";
 
+      $icon = '';
       if ($step == 1) {
          // Wizard title
          echo "<div class=\"form-row\">";
@@ -792,6 +794,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                      'right'  => 'all',
                                      'value'  => $value]);
                      break;
+                     break;
                   case 'usertitle':
                      $titlerand = mt_rand();
                      UserTitle::dropdown(['name' => "field[" . $data['id'] . "]", 'rand' => $titlerand]);
@@ -818,10 +821,18 @@ class PluginMetademandsWizard extends CommonDBTM {
                      PluginMetademandsITILEnvironment::dropdown($opt);
                      break;
                   default:
+                     $cond = [];
+                     if (!empty($data['custom_values']) && $data['item'] == 'group') {
+                        $options =  PluginMetademandsField::_unserialize($data['custom_values']);
+                        foreach ($options as $type_group => $value ) {
+                           $cond[$type_group] = $value;
+                        }
+                     }
                      Dropdown::show($data['item'], ['name'     => "field[" . $data['id'] . "]",
                                                     'entity'   => $_SESSION['glpiactiveentities'],
                                                     'value'    => $value,
-                                                    'readonly' => true]);
+                                                    'readonly' => true,
+                                                    'condition' => $cond]);
                      break;
                }
             }

@@ -114,11 +114,11 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
 
       echo "<td>";
-      //      echo __('Create PDF', 'metademands');
+      echo __('Create PDF', 'metademands');
       echo "</td>";
       echo "<td>";
-      //      Dropdown::showYesNo('create_pdf', $config['create_pdf']);
-      echo "<input type='hidden' name='create_pdf' value='0'>";
+      Dropdown::showYesNo('create_pdf', $config['create_pdf']);
+      //echo "<input type='hidden' name='create_pdf' value='0'>";
       echo "</td>";
       echo "</tr>";
 
