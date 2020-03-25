@@ -361,8 +361,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
 
       switch ($field['name']) {
-         case 'group_requester':
-
          case 'url':
             echo $this->getURL($this->fields['id']);
             break;
@@ -878,8 +876,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      }
                   }
                   $input                     = $this->mergeFields($parent_fields, $parent_ticketfields);
-                  $input['_filename']        = isset($values['fields']['_filename']) ? $values['fields']['_filename'] : "";
-                  $input['_prefix_filename'] = isset($values['fields']['_prefix_filename']) ? $values['fields']['_prefix_filename'] : "";
+                  if (isset($values['fields']['_filename'])) {
+                     $input['_filename']        = $values['fields']['_filename'];
+                  }
+                  if (isset($values['fields']['_prefix_filename'])) {
+                     $input['_prefix_filename']        = $values['fields']['_prefix_filename'];
+                  }
                   $input                     = Toolbox::addslashes_deep($input);
 
                   $parent_tickets_id = $ticket->add($input);

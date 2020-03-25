@@ -732,7 +732,6 @@ class PluginMetademandsField extends CommonDBChild {
                      $custom_values['is_assign'] = 0;
                      $custom_values['is_watcher'] = 0;
                      $custom_values['is_requester'] = 0;
-
                   }
 
                   // Show task link
@@ -749,7 +748,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";
-                  self::showFieldsDropdown($metademands->fields["id"], $params['fields_link']);
+                  self::showFieldsDropdown("fields_link", $metademands->fields["id"], $params['fields_link']);
                   echo "</td></tr>";
 
                   // Assigned group
