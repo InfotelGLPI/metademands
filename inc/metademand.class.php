@@ -361,6 +361,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
 
       switch ($field['name']) {
+         case 'group_requester':
+
          case 'url':
             echo $this->getURL($this->fields['id']);
             break;
@@ -372,7 +374,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             break;
          case 'icon':
             $opt = [
-               'value'     => $this->fields['icon'],
+               'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
                'maxlength' => 250,
                'size'      => 80,
             ];
