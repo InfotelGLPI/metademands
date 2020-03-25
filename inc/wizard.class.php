@@ -712,6 +712,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
             }
+            if (!empty($data['fields_display'])) {
+               $script = "var metademandWizard = $(document).metademandWizard();";
+               $script .= "metademandWizard.metademand_displayField('metademands_wizard_display" . $data['fields_display'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
+               echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+            }
          }
 
       } else {
@@ -754,6 +759,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "*";
       }
       echo "</span>";
+      echo "<span id='metademands_wizard_display" . $data['id'] . "'>";
       echo "&nbsp;";
       // Input
       switch ($data['type']) {
@@ -869,7 +875,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   if (isset($value[$key])) {
                      $checked = isset($value[$key]) ? 'checked' : '';
                   } elseif (isset($defaults[$key])) {
-                     $checked = ($defaults[$key] == 1 ) ? 'checked' : '';
+                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
                   echo "<input class='custom-control-input' type='checkbox' name='field[" . $data['id'] . "][" . $key . "]' id='field[" . $data['id'] . "][" . $key . "]' value='checkbox' $checked>";
                   $nbr++;
@@ -908,7 +914,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   if (!empty($value) && $value == $key) {
                      $checked = $value == $key ? 'checked' : '';
                   } elseif (isset($defaults[$key])) {
-                     $checked = ($defaults[$key] == 1 ) ? 'checked' : '';
+                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
                   echo "<input class='custom-control-input' type='radio' name='radio[" . $data['id'] . "]' id='radio[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                   $nbr++;
@@ -1046,6 +1052,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             break;
       }
+      echo "</span>";
    }
 
    /**
