@@ -291,7 +291,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                                                                                              '', 'L', '');
                      $elt['custom_values']                   = PluginMetademandsField::_unserialize($elt['custom_values']);
                      foreach ($elt['custom_values'] as $id => $label) {
-                        $lineNumber[$lineCount][$key] += $this->getMulticellLineNumber($this->activityname_width - 20,
+                        $lineNumber[$lineCount][$key] += $this->getMulticellLineNumber($this->activityname_width - 10,
                                                                                        $this->line_height,
                                                                                        Toolbox::decodeFromUtf8($label),
                                                                                        '', 'L', '');
@@ -428,7 +428,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
             $height       = ($max_height / ($lineNumber[$lineCount][$key] * $this->line_height)) * $this->line_height;
             $label_height = ($max_height / ($lineNumber[$lineCount][$key . 'label'] * $this->line_height)) * $this->line_height;
 
-            $valueBorder = 'LRBT';
+            $valueBorder = 'L';
+            if ($fielCount > 0) {
+               $valueBorder = 'LR';
+            }
 
             switch ($elt['type']) {
                case 'textarea':
@@ -441,7 +444,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
                   $this->MultiCellValue($this->activityname_width, $height, str_replace(['\r\n', '\n'],
-                                                                                        "\n", Toolbox::decodeFromUtf8($value)),
+                                                                                        "\n", Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value))),
                                         $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
@@ -476,7 +479,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($value),
+                  $this->MultiCellValue($this->activityname_width, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)),
                                         $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
@@ -537,18 +540,18 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                                         'L', '', 0, '', 'black');
                   break;
 
-               case 'checkbox':case 'radio' :
+               case 'checkbox': case 'radio' :
                   if (!empty($elt['custom_values'])) {
                      $elt['custom_values']         = PluginMetademandsField::_unserialize($elt['custom_values']);
                      $fields['fields'][$elt['id']] = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
 
                      // Draw label
-                     $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
+                     $this->MultiCellValue($this->activityname_width - 10, $label_height, Toolbox::decodeFromUtf8($elt['label']),
                                            'LRBT', 'C', 'grey', 1, '', 'black');
-                     $this->SetY($y + 1);
+                     $this->SetY($y);
                      $this->SetX($x + $this->activityname_width);
 
-                     $x  = $this->GetX() + 1;
+                     $x  = $this->GetX();
                      $x2 = $this->GetX() + 6;
 
                      // Draw line
@@ -557,7 +560,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $this->getCaractereCheckbox(!isset($fields['fields'][$elt['id']][$id]), $this->GetX(),
                                                     $this->GetY());
                         $this->SetX($x2);
-                        $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($label),
+                        $this->MultiCellValue($this->activityname_width - 10, $height, Toolbox::decodeFromUtf8($label),
                                               '', 'L', '', 0, '', 'black');
                      }
                   }
@@ -570,7 +573,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   }
                   // Draw label
                   $this->CellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                   'LRBT', 'C', '', 1, '', 'black');
+                                   'LRBT', 'C', 'grey', 1, '', 'black');
                   //                  $this->SetX($this->GetX() + $this->activityname_width);
                   // Draw line
                   $this->CellValue($this->activityname_width, $height, Html::convDate($fields['fields'][$elt['id']]),
@@ -613,7 +616,6 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $lastField = [];
                }
             }
-
             $rank = $elt['rank'];
          }
       }
@@ -696,10 +698,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    }
 
    /**
-    * @param $checked
-    * @param $x
-    * @param $y
-    */
+ * @param $checked
+ * @param $x
+ * @param $y
+ */
    public function getCaractereCheckbox($checked, $x, $y) {
 
       return $checked ? $this->Image("../pics/checked.png", $x, $y, 4, 4) :
@@ -764,14 +766,14 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    public function addDocument($idTicket, $entitiesId) {
       //Construction du chemin du fichier
       $filename = "metademand_" . $idTicket . ".pdf";
-      $this->Output(GLPI_DOC_DIR . "/_uploads/".$filename);
+      $this->Output(GLPI_DOC_DIR . "/_uploads/".Toolbox::encodeInUtf8($filename));
 
       //Création du document
       $doc = new Document();
       //Construction des données
       $input                = [];
       $input["name"]        = addslashes($filename);
-      $input["upload_file"] = $filename;
+      $input["upload_file"] = Toolbox::encodeInUtf8($filename);
       $input["mime"]        = "application/pdf";
       $input["date_mod"]    = date("Y-m-d H:i:s");
       $input["users_id"]    = Session::getLoginUserID();
