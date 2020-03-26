@@ -265,7 +265,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       foreach ($newForm as $key => $elt) {
          if (isset($fields['fields'][$elt['id']]) || $elt['type'] == 'title' || $elt['type'] == 'linebreak') {
             $lastField[$fielCount] = $elt;
-            $value                 = null;
+            $value                 = '';
 
             $lineNumber[$lineCount][$key]           = 1;
             $lineNumber[$lineCount][$key . 'label'] = 1;
@@ -273,25 +273,25 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
             switch ($elt['type']) {
                case 'textarea':
                   $value                                  = $fields["fields"][$elt['id']];
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width - 10,
+                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($elt['label']),
                                                                                           '', 'L', '');
-                  $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width - 10,
+                  $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
-                                                                                          str_replace(['\r\n', '\n'], "\n", $value),
+                                                                                          str_replace(['\r\n', '\n'], "\n",  Toolbox::decodeFromUtf8($value)),
                                                                                           '', 'L', '');
                   break;
 
                case 'checkbox': case 'radio':
                   if (!empty($elt['custom_values'])) {
-                     $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width - 10,
+                     $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
                                                                                              $this->line_height,
                                                                                              Toolbox::decodeFromUtf8($elt['label']),
                                                                                              '', 'L', '');
                      $elt['custom_values']                   = PluginMetademandsField::_unserialize($elt['custom_values']);
                      foreach ($elt['custom_values'] as $id => $label) {
-                        $lineNumber[$lineCount][$key] += $this->getMulticellLineNumber($this->activityname_width - 10,
+                        $lineNumber[$lineCount][$key] += $this->getMulticellLineNumber($this->activityname_width,
                                                                                        $this->line_height,
                                                                                        Toolbox::decodeFromUtf8($label),
                                                                                        '', 'L', '');
@@ -303,7 +303,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width * 4,
                                                                                 $this->line_height,
                                                                                 Toolbox::decodeFromUtf8($elt['label']),
-                                                                                'LRBT', 'C', 'grey', 1, 14, 'black');
+                                                                                'LRBT', 'C', 'grey', 1);
                   break;
 
                case 'linebreak':
@@ -317,7 +317,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          'LRBT', 'C', 'grey', 1);
+                                                                                           'LRBT', 'C', 'grey', 1);
                   $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($value),
@@ -515,12 +515,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   }
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'grey', 1, '', 'black');
+                     'LRBT', 'C', 'grey', 1, '', 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($value), $valueBorder,
-                                        'L', '', 0, '', 'black');
+                  $this->MultiCellValue($this->activityname_width, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)),
+                     $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
                case 'yesno':
@@ -530,12 +530,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   }
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'grey', 1, '', 'black');
+                     'LRBT', 'C', 'grey', 1, '', 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($value), $valueBorder,
-                                        'L', '', 0, '', 'black');
+                  $this->MultiCellValue($this->activityname_width, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)),
+                     $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
                case 'checkbox': case 'radio' :
@@ -619,6 +619,27 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       }
    }
 
+   function GetMultiCellHeight($w, $txt)
+   {
+      $height = 1;
+      $strlen = strlen($txt);
+      $wdth = 0;
+      for ($i = 0; $i <= $strlen; $i++) {
+         $char = substr($txt, $i, 1);
+         $wdth += $this->GetStringWidth($char);
+         if($char == "\n"){
+            $height++;
+            $wdth = 0;
+         }
+         if($wdth >= $w){
+            $height++;
+            $wdth = 0;
+         }
+      }
+      return $height;
+   }
+
+
    /**
     * @param        $w
     * @param        $h
@@ -630,69 +651,55 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @return int
     */
    public function getMulticellLineNumber($w, $h, $txt, $border = 0, $align = 'J', $fill = 0) {
-
-      $count = 0;
-
-      //Output text with automatic or explicit line breaks
-      $cw = &$this->CurrentFont['cw'];
-      if ($w == 0) {
-         $w = $this->w - $this->rMargin - $this->x;
-      }
-      $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
-      $s    = str_replace("\r", '', $txt);
-      $nb   = strlen($s);
-      if ($nb > 0 && $s[$nb - 1] == "\n") {
-         $nb--;
-      }
-
-      $sep = -1;
-      $i   = 0;
-      $j   = 0;
-      $l   = 0;
-      $ns  = 0;
-      $nl  = 1;
-      while ($i < $nb) {
-         //Get next character
-         $c = $s{$i};
-         if ($c == "\n") {
-            $count++;
-            $i++;
-            $sep = -1;
-            $j   = $i;
-            $l   = 0;
-            $ns  = 0;
-            $nl++;
-            continue;
-         }
-         if ($c == ' ') {
-            $sep = $i;
-            $ns++;
-         }
-         $l += $cw[$c];
-         if ($l > $wmax) {
-            //Automatic line break
-            if ($sep == -1) {
-               if ($i == $j) {
-                  $i++;
-               }
-               $count++;
-            } else {
-               $count++;
-               $i = $sep + 1;
+      {
+         //Computes the number of lines a MultiCell of width w will take
+         $cw=&$this->CurrentFont['cw'];
+         if($w==0)
+            $w=$this->w-$this->rMargin-$this->x;
+         $wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
+         $s=str_replace("\r",'',$txt);
+         $nb=strlen($s);
+         if($nb>0 and $s[$nb-1]=="\n")
+            $nb--;
+         $sep=-1;
+         $i=0;
+         $j=0;
+         $l=0;
+         $nl=1;
+         while($i<$nb)
+         {
+            $c=$s[$i];
+            if($c=="\n")
+            {
+               $i++;
+               $sep=-1;
+               $j=$i;
+               $l=0;
+               $nl++;
+               continue;
             }
-            $sep = -1;
-            $j   = $i;
-            $l   = 0;
-            $ns  = 0;
-            $nl++;
-         } else {
-            $i++;
+            if($c==' ')
+               $sep=$i;
+            $l+=$cw[$c];
+            if($l>$wmax)
+            {
+               if($sep==-1)
+               {
+                  if($i==$j)
+                     $i++;
+               }
+               else
+                  $i=$sep+1;
+               $sep=-1;
+               $j=$i;
+               $l=0;
+               $nl++;
+            }
+            else
+               $i++;
          }
+         return $nl;
       }
-
-      $count++;
-
-      return $count;
    }
 
    /**
