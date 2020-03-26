@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-03-16 11:57+0100\n"
-"PO-Revision-Date: 2020-03-16 11:57+0100\n"
+"PO-Revision-Date: 2020-03-26 18:06+0100\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2020\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/"
 "teams/96561/fr_FR/)\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #: setup.php:145 inc/metademand.class.php:71 inc/profile.class.php:151
 msgid "Meta-Demand"
@@ -351,7 +351,7 @@ msgstr "Meta-Demandes associées"
 
 #: inc/metademandpdf.class.php:790
 msgid "Created on"
-msgstr "Crée le"
+msgstr "Créé le"
 
 #: inc/metademandtask.class.php:46 inc/task.class.php:51
 #: inc/ticket_metademand.class.php:48 inc/ticket_task.class.php:48
