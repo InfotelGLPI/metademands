@@ -408,14 +408,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $lastField = [];
       $rank      = 1;
 
-      $y = $this->GetY();
-      $x = $this->GetX();
 
       $this->CellValue($this->big_width_cell - (2 * $this->margin_left),
                        $this->page_height - 35 - (2 * $this->margin_top), '', 'LRBT', '', '', 0,
                        '', 'black');
-      $this->SetY($y);
-      $this->SetX($x);
+      $this->SetY($this->GetY());
+      $this->SetX($this->GetX());
 
       foreach ($newForm as $key => $elt) {
          if (isset($fields['fields'][$elt['id']]) || $elt['type'] == 'title' || $elt['type'] == 'linebreak') {
@@ -548,10 +546,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      // Draw label
                      $this->MultiCellValue($this->activityname_width - 10, $label_height, Toolbox::decodeFromUtf8($elt['label']),
                                            'LRBT', 'C', 'grey', 1, '', 'black');
-                     $this->SetY($y);
+                     $this->SetY($y + 2);
                      $this->SetX($x + $this->activityname_width);
 
-                     $x  = $this->GetX();
+                     $x  = $this->GetX() + 1;
                      $x2 = $this->GetX() + 6;
 
                      // Draw line
