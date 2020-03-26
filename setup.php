@@ -136,7 +136,7 @@ function plugin_init_metademands() {
 
 /**
  * Get the name and the version of the plugin - Needed
- *
+ *e
  * @return array
  */
 function plugin_version_metademands() {

@@ -26,7 +26,7 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
+
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
@@ -317,7 +317,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          'LRBT', 'C', 'blue', 1);
+                                                                                          'LRBT', 'C', 'grey', 1);
                   $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($value),
@@ -329,7 +329,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          'LRBT', 'C', 'blue', 1);
+                                                                                          'LRBT', 'C', 'grey', 1);
                   $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($value),
@@ -347,6 +347,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      case 'group':
                         $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']),
                            $fields['fields'][$elt['id']]);
+                        $value = $value == '&nbsp;' ? '' : $value;
                         break;
 
                      case 'other':
@@ -359,7 +360,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          'LRBT', 'C', 'blue', 1);
+                                                                                          'LRBT', 'C', 'grey', 1);
                   $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($value),
@@ -374,7 +375,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          'LRBT', 'C', 'blue', 1, '', 'black');
+                                                                                          'LRBT', 'C', 'grey', 1, '', 'black');
                   $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
                                                                                           $this->line_height,
                                                                                           Toolbox::decodeFromUtf8($value),
@@ -435,13 +436,13 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height,
                                         Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'blue', 1, '', 'black');
+                                        'LRBT', 'C', 'grey', 1, '', 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
                   $this->MultiCellValue($this->activityname_width, $height, str_replace(['\r\n', '\n'],
                                                                                         "\n", Toolbox::decodeFromUtf8($value)),
-                                        $valueBorder, 'L', 'grey', 0, '', 'black');
+                                        $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
                case 'title':
@@ -471,24 +472,24 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $value = $fields["fields"][$elt['id']];
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'blue', 1, '', 'black');
+                                        'LRBT', 'C', 'grey', 1, '', 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
                   $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($value),
-                                        $valueBorder, 'L', 'grey', 0, '', 'black');
+                                        $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
                case 'datetime':
                   $value = Html::convDate($fields['fields'][$elt['id']]);
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'blue', 1, '', 'black');
+                                        'LRBT', 'C', 'grey', 1, '', 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
                   $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($value),
-                                        $valueBorder, 'L', 'grey', 0, '', 'black');
+                                        $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
                case 'dropdown':
@@ -502,6 +503,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      case 'group':
                         $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']),
                                                            $fields['fields'][$elt['id']]);
+                        $value = $value == '&nbsp;' ? '' : $value;
                         break;
                      case 'other':
                         if (!empty($elt['custom_values'])) {
@@ -512,12 +514,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   }
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'blue', 1, '', 'black');
+                                        'LRBT', 'C', 'grey', 1, '', 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
                   $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($value), $valueBorder,
-                                        'L', 'grey', 0, '', 'black');
+                                        'L', '', 0, '', 'black');
                   break;
 
                case 'yesno':
@@ -527,12 +529,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   }
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'blue', 1, '', 'black');
+                                        'LRBT', 'C', 'grey', 1, '', 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
                   $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($value), $valueBorder,
-                                        'L', 'grey', 0, '', 'black');
+                                        'L', '', 0, '', 'black');
                   break;
 
                case 'checkbox':case 'radio' :
@@ -542,7 +544,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
                      // Draw label
                      $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                           'LRBT', 'C', 'blue', 1, '', 'black');
+                                           'LRBT', 'C', 'grey', 1, '', 'black');
                      $this->SetY($y + 1);
                      $this->SetX($x + $this->activityname_width);
 
@@ -555,7 +557,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $this->getCaractereCheckbox(!isset($fields['fields'][$elt['id']][$id]), $this->GetX(),
                                                     $this->GetY());
                         $this->SetX($x2);
-                        $this->MultiCellValue($this->activityname_width - 11, $height, Toolbox::decodeFromUtf8($label),
+                        $this->MultiCellValue($this->activityname_width, $height, Toolbox::decodeFromUtf8($label),
                                               '', 'L', '', 0, '', 'black');
                      }
                   }
@@ -568,15 +570,15 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   }
                   // Draw label
                   $this->CellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                   'LRBT', 'C', 'blue', 1, '', 'black');
+                                   'LRBT', 'C', '', 1, '', 'black');
                   //                  $this->SetX($this->GetX() + $this->activityname_width);
                   // Draw line
                   $this->CellValue($this->activityname_width, $height, Html::convDate($fields['fields'][$elt['id']]),
-                                   'LR', 'L', 'grey', 0, '', 'black');
+                                   'LR', 'L', '', 0, '', 'black');
 
                   // Draw label 2
                   $this->CellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label2']),
-                                   'LRBT', 'C', 'blue', 1, '', 'black');
+                                   'LRBT', 'C', 'grey', 1, '', 'black');
                   //                  $this->SetX($this->GetX() + ($this->activityname_width));
                   // Draw line 2
                   $this->CellValue($this->activityname_width, $height, Html::convDate($fields['fields'][$elt['id'] . "-2"]), 'LR', 'L', '', 0, '', 'black');
@@ -713,7 +715,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
       //Cellule contenant l'image
       $largeurImage  = 30;
-      $hauteurImage  = 5;
+      $hauteurImage  = 9;
       $abscisseImage = ($largeurCoteTitre - $largeurImage) / 2 + $this->margin_left;
       $ordonneeImage = (10 - $hauteurImage) / 2 + $this->margin_top;
       $this->CellValue($largeurCoteTitre, 20, '', 'TBL', 'L', '', 0, '', 'black');
@@ -721,14 +723,14 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
       //Cellule contenant le titre
       $this->SetX($this->margin_left + $largeurCoteTitre);
-      $this->CellValue($largeurCaseTitre, 20, $this->title, 'TBL', 'C', '', 1, '', 'black');
+      $this->CellValue($largeurCaseTitre, 20,  Toolbox::decodeFromUtf8($this->title), 'TBL', 'C', '', 1, '', 'black');
 
       //Cellule ne contenant rien pour le moment
       $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellValue($largeurCoteTitre, 4, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'TLR', 'C', '', 0, '', 'black');
+      $this->CellValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'TLR', 'C', '', 0, '', 'black');
       $this->SetY($this->GetY() + 5);
       $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellValue($largeurCoteTitre, 4, Html::convDate(date('Y-m-d')), 'LR', 'C', '', 0, '', 'black');
+      $this->CellValue($largeurCoteTitre, 5, Html::convDate(date('Y-m-d')), 'LR', 'C', '', 0, '', 'black');
       $this->SetY($this->GetY() + 5);
       $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
       $this->CellValue($largeurCoteTitre, 10, '', 'BLR', 'C', '', 0, '', 'black');
