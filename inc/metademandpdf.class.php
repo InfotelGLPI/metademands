@@ -761,14 +761,15 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     */
    public function addDocument($idTicket, $entitiesId) {
       //Construction du chemin du fichier
-      $this->Output(GLPI_DOC_DIR . "/_uploads/metademand_" . $idTicket . ".pdf");
       $filename = "metademand_" . $idTicket . ".pdf";
+      $this->Output(GLPI_DOC_DIR . "/_uploads/".$filename);
+
       //Création du document
       $doc = new Document();
       //Construction des données
       $input                = [];
-      $input["name"]        = "/" . addslashes($filename);
-      $input["upload_file"] = "/" . $filename;
+      $input["name"]        = addslashes($filename);
+      $input["upload_file"] = $filename;
       $input["mime"]        = "application/pdf";
       $input["date_mod"]    = date("Y-m-d H:i:s");
       $input["users_id"]    = Session::getLoginUserID();
