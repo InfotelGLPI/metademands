@@ -46,7 +46,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    var $total_width               = 12;
    var $activityname_width        = 45;
    var $pol_def                   = 'arial'; // Police par défaut;
-   var $tail_pol_def              = 11;      // Taille par défaut de la police.
+   var $tail_pol_def              = 8;      // Taille par défaut de la police.
    var $title_size                = 14;      // Taille du titre.
    var $margin_top                = 10;      // Marge du haut.
    var $margin_left               = 10;       // Marge de gauche et de droite accessoirement.
@@ -212,6 +212,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       if (empty($size)) {
          $size = $this->tail_pol_def;
       }
+
       $this->SetBackgroundColor($color);
       $this->SetFontNormal($fontColor, $bold, $size);
       $this->MultiCell($w, $h, $value, $border, $align, 1);
@@ -271,30 +272,22 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
             $lineNumber[$lineCount][$key . 'label'] = 1;
 
             switch ($elt['type']) {
-               case 'textarea':
+               case 'textarea': case 'datetime_interval': case 'datetime':   case 'text':
                   $value                                  = $fields["fields"][$elt['id']];
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          '', 'L', '');
-                  $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          str_replace(['\r\n', '\n'], "\n",  Toolbox::decodeFromUtf8($value)),
-                                                                                          '', 'L', '');
+                  $total_string_label_width = $this->GetStringWidth(Toolbox::decodeFromUtf8($elt['label']));
+                  $total_string_width = $this->GetStringWidth(Toolbox::decodeFromUtf8($value));
+                  $lineNumber[$lineCount][$key . 'label'] = ceil($total_string_label_width / ($this->activityname_width - 1));
+                  $lineNumber[$lineCount][$key]           = ceil($total_string_width / ($this->activityname_width - 1));
                   break;
 
                case 'checkbox': case 'radio':
                   if (!empty($elt['custom_values'])) {
-                     $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                             $this->line_height,
-                                                                                             Toolbox::decodeFromUtf8($elt['label']),
-                                                                                             '', 'L', '');
+                     $total_string_label_width = $this->GetStringWidth(Toolbox::decodeFromUtf8($elt['label']));
+                     $lineNumber[$lineCount][$key . 'label'] = ceil($total_string_label_width / ($this->activityname_width - 1));
                      $elt['custom_values']                   = PluginMetademandsField::_unserialize($elt['custom_values']);
-                     foreach ($elt['custom_values'] as $id => $label) {
-                        $lineNumber[$lineCount][$key] += $this->getMulticellLineNumber($this->activityname_width,
-                                                                                       $this->line_height,
-                                                                                       Toolbox::decodeFromUtf8($label),
-                                                                                       '', 'L', '');
+                     foreach ($elt['custom_values'] as $id => $value) {
+                        $total_string_width = $this->GetStringWidth(Toolbox::decodeFromUtf8($value));
+                        $lineNumber[$lineCount][$key] += ceil($total_string_width / ($this->activityname_width - 1));
                      }
                   }
                   break;
@@ -302,39 +295,14 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                case 'title':
                   $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width * 4,
                                                                                 $this->line_height,
-                                                                                Toolbox::decodeFromUtf8($elt['label']),
-                                                                                'LRBT', 'C', 'grey', 1);
+                                                                                Toolbox::decodeFromUtf8($elt['label']));
                   break;
 
                case 'linebreak':
                   $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width * 4,
-                                                                                $this->line_height, 'linebreak', 'LRBT',
-                                                                                'C', '', 1, 14, 'black');
+                                                                                $this->line_height, 'linebreak');
                   break;
 
-               case 'datetime_interval': case 'datetime':
-                  $value                                  = Html::convDate($fields['fields'][$elt['id']]);
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($elt['label']),
-                                                                                           'LRBT', 'C', 'grey', 1);
-                  $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($value),
-                                                                                          'L', 'L', '', 0);
-                  break;
-
-               case 'text':
-                  $value                                  = $fields["fields"][$elt['id']];
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          'LRBT', 'C', 'grey', 1);
-                  $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($value),
-                                                                                          'L', 'L', '', 0);
-                  break;
 
                case 'dropdown':
                   switch ($elt['item']) {
@@ -351,20 +319,17 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         break;
 
                      case 'other':
-                        if (!empty($elt['custom_values'])) {
+                        if (!empty($elt['custom_values']) && isset($elt['custom_values'])) {
                            $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
                            $value                = $elt['custom_values'][$fields['fields'][$elt['id']]];
                         }
                         break;
                   }
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          'LRBT', 'C', 'grey', 1);
-                  $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($value),
-                                                                                          'L', 'L', '', 0);
+                  $total_string_label_width = $this->GetStringWidth(Toolbox::decodeFromUtf8($elt['label']));
+                  $lineNumber[$lineCount][$key . 'label'] = ceil($total_string_label_width / ($this->activityname_width - 1));
+
+                  $total_string_width = $this->GetStringWidth(Toolbox::decodeFromUtf8($value));
+                  $lineNumber[$lineCount][$key] += ceil($total_string_width / ($this->activityname_width - 1));
                   break;
 
                case 'yesno':
@@ -372,14 +337,11 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   if ($fields['fields'][$elt['id']] == 2) {
                      $value = __('Yes');
                   }
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($elt['label']),
-                                                                                          'LRBT', 'C', 'grey', 1, '', 'black');
-                  $lineNumber[$lineCount][$key]           = $this->getMulticellLineNumber($this->activityname_width,
-                                                                                          $this->line_height,
-                                                                                          Toolbox::decodeFromUtf8($value),
-                                                                                          'L', 'L', '');
+                  $total_string_label_width = $this->GetStringWidth(Toolbox::decodeFromUtf8($elt['label']));
+                  $lineNumber[$lineCount][$key . 'label'] = ceil($total_string_label_width / ($this->activityname_width - 1));
+
+                  $total_string_width = $this->GetStringWidth(Toolbox::decodeFromUtf8($value));
+                  $lineNumber[$lineCount][$key] += ceil($total_string_width / ($this->activityname_width - 1));
                   break;
             }
 
@@ -421,10 +383,14 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
             $y                     = $this->GetY();
             $x                     = $this->GetX();
             $lastField[$fielCount] = $elt;
+            $size = '';
 
+            $lineNumber[$lineCount][$key] = (int) round($lineNumber[$lineCount][$key]);
+            $lineNumber[$lineCount][$key . 'label'] = (int) round($lineNumber[$lineCount][$key . 'label']);
             $max_height   = max($lineNumber[$lineCount]) * $this->line_height;
-            $height       = ($max_height / ($lineNumber[$lineCount][$key] * $this->line_height)) * $this->line_height;
-            $label_height = ($max_height / ($lineNumber[$lineCount][$key . 'label'] * $this->line_height)) * $this->line_height;
+            $height       = @($max_height / ($lineNumber[$lineCount][$key] * $this->line_height)) * $this->line_height;
+            $label_height = @($max_height / ($lineNumber[$lineCount][$key . 'label'] * $this->line_height)) * $this->line_height ;
+
 
             $valueBorder = 'L';
             if ($fielCount > 0) {
@@ -437,7 +403,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height,
                                         Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'grey', 1, '', 'black');
+                                        'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
@@ -464,7 +430,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $this->SetX($this->margin_left - 0.2);
                   }
                   // Draw line
-                  $this->CellValue(($this->activityname_width * 4) + 0.2, $this->line_height, '', 'TB', 'C', '', 0, '',
+                  $this->CellValue(($this->activityname_width * 4) + 0.2, $this->line_height, '', 'TB', 'C', '', 0, $size,
                                    'black');
                   $this->Ln($this->line_height + 0.2);
                   break;
@@ -473,7 +439,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $value = $fields["fields"][$elt['id']];
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'grey', 1, '', 'black');
+                                        'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
@@ -485,7 +451,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $value = Html::convDate($fields['fields'][$elt['id']]);
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                        'LRBT', 'C', 'grey', 1, '', 'black');
+                                        'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
@@ -507,7 +473,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $value = $value == '&nbsp;' ? '' : $value;
                         break;
                      case 'other':
-                        if (!empty($elt['custom_values'])) {
+                        if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
                            $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
                            $value                = $elt['custom_values'][$fields['fields'][$elt['id']]];
                         }
@@ -515,7 +481,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   }
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                     'LRBT', 'C', 'grey', 1, '', 'black');
+                     'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
@@ -530,7 +496,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   }
                   // Draw label
                   $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                     'LRBT', 'C', 'grey', 1, '', 'black');
+                     'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
@@ -545,7 +511,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
                      // Draw label
                      $this->MultiCellValue($this->activityname_width - 10, $label_height, Toolbox::decodeFromUtf8($elt['label']),
-                                           'LRBT', 'C', 'grey', 1, '', 'black');
+                                           'LRBT', 'C', 'grey', 1, $size, 'black');
                      $this->SetY($y + 2);
                      $this->SetX($x + $this->activityname_width);
 
@@ -603,7 +569,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
                   } else if ($fielCount > 0) {
                      $this->SetY($y);
-                     //TODO
+
                      $width = ($lastField[$fielCount - 1]['type'] != 'checkbox') ? $x + ($this->activityname_width * 2) : $x + ($this->activityname_width - 1);
                      $this->SetX($width);
                   }
@@ -619,25 +585,6 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       }
    }
 
-   function GetMultiCellHeight($w, $txt)
-   {
-      $height = 1;
-      $strlen = strlen($txt);
-      $wdth = 0;
-      for ($i = 0; $i <= $strlen; $i++) {
-         $char = substr($txt, $i, 1);
-         $wdth += $this->GetStringWidth($char);
-         if($char == "\n"){
-            $height++;
-            $wdth = 0;
-         }
-         if($wdth >= $w){
-            $height++;
-            $wdth = 0;
-         }
-      }
-      return $height;
-   }
 
 
    /**
@@ -730,11 +677,11 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
       //Cellule contenant le titre
       $this->SetX($this->margin_left + $largeurCoteTitre);
-      $this->CellValue($largeurCaseTitre, 20,  Toolbox::decodeFromUtf8($this->title), 'TBL', 'C', '', 1, '', 'black');
+      $this->CellValue($largeurCaseTitre, 20,  Toolbox::decodeFromUtf8($this->title), 'TBL', 'C', '', 1, 15, 'black');
 
       //Cellule ne contenant rien pour le moment
       $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'TLR', 'C', '', 0, '', 'black');
+      $this->CellValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'TLR', 'C', '', 0, 11, 'black');
       $this->SetY($this->GetY() + 5);
       $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
       $this->CellValue($largeurCoteTitre, 5, Html::convDate(date('Y-m-d')), 'LR', 'C', '', 0, '', 'black');
