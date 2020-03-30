@@ -377,6 +377,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $fielCount = 0;
       $lineCount = 0;
       $lastField = [];
+      $lastFieldForLineBreak = [];
       $rank      = 1;
 
 
@@ -401,18 +402,15 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                $lineNumber[$lineCount][$key] = 1 ;
                $lineNumber[$lineCount][$key . 'label'] = 1;
             }
-            $height       = $lineNumber[$lineCount][$key] * $this->line_height;
-            $label_height = $lineNumber[$lineCount][$key . 'label'] * $this->line_height;
+
+            $max_height   = max($lineNumber[$lineCount]) * $this->line_height;
+            $height       = ($max_height / ($lineNumber[$lineCount][$key] * $this->line_height ?: 1)) * $this->line_height;
+            $label_height = ($max_height / ($lineNumber[$lineCount][$key . 'label'] * $this->line_height ?: 1)) * $this->line_height;
 
 
-
-            if ($label_height > $height) {
-               $height = $label_height;
-            } else if ($height > $label_height) {
+            if ($height > $label_height) {
                $label_height = $height;
             }
-
-            
 
 
             $valueBorder = 'L';
@@ -430,8 +428,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width, $height, str_replace(['\r\n', '\n'],
-                                                                                        "\n", Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value))),
+                  $this->MultiCellValue($this->activityname_width, $height , Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)),
                                         $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
@@ -453,8 +450,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $this->SetX($this->margin_left - 0.2);
                   }
                   // Draw line
-                  $this->CellValue(($this->activityname_width * 4) + 0.2, $this->line_height, '', 'TB', 'C', '', 0, $size,
-                                   'black');
+                  $this->CellValue(($this->activityname_width * 4) + 0.2, $this->line_height, '', 'TB', 'C', '', 0, '',
+                     'black');
+
                   $this->Ln($this->line_height + 0.2);
                   break;
 
@@ -515,6 +513,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $valueBorder, 'L', '', 0, '', 'black');
                   break;
 
+
                case 'checkbox': case 'radio' :
                   if (!empty($elt['custom_values'])) {
                      $elt['custom_values']         = PluginMetademandsField::_unserialize($elt['custom_values']);
@@ -532,10 +531,16 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      // Draw line
                      foreach ($elt['custom_values'] as $id => $label) {
                         $this->SetX($x);
-                        $this->getCaractereCheckbox(!isset($fields['fields'][$elt['id']][$id]), $this->GetX(),
-                                                    $this->GetY());
+                        if ($elt['type'] == 'radio') {
+                           $this->getRadioCheckbox($fields['fields'],$elt, $id, $this->GetX(),
+                              $this->GetY());
+                        } else {
+                           $this->getCaractereCheckbox(!isset($fields['fields'][$elt['id']][$id]), $this->GetX(),
+                              $this->GetY());
+                        }
+
                         $this->SetX($x2);
-                        $this->MultiCellValue($this->activityname_width , $height, Toolbox::decodeFromUtf8($label),
+                        $this->MultiCellValue($this->activityname_width - 11  , $height, Toolbox::decodeFromUtf8($label),
                                               '', 'L', '', 0, '', 'black');
                      }
                   }
@@ -565,7 +570,6 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
             }
 
             $fielCount++;
-
             // Handle line break
             if (isset($lastField[$fielCount - 1])) {
                if ($lastField[$fielCount - 1]['type'] != 'title'
@@ -574,20 +578,26 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   if ($fielCount >= 2) {
                      $this->SetY($y + $label_height);
                      $this->SetX($this->margin_left);
+                     $lastFieldForLineBreak = $lastField;
+                     $lastFieldForLineBreak[$fielCount - 1]['label_height'] = $height;
                      $fielCount = 0;
                      $lineCount++;
                      $lastField = [];
 
+
                   } else if ($fielCount > 0) {
                      $this->SetY($y);
-                     $width = ($lastField[$fielCount - 1]['type'] !== 'checkbox') ? $x + ($this->activityname_width * 2) : $x + ($this->activityname_width - 1);
+                     $width = ($lastField[$fielCount - 1]['type'] != 'checkbox') ? $x + ($this->activityname_width * 2) : $x + ($this->activityname_width - 1);
+                     $width = ($lastField[$fielCount - 1]['type'] != 'radio') ? $width  : $x + ($this->activityname_width - 1);
                      $this->SetX($width);
+
                   }
 
                } else {
                   $fielCount = 0;
                   $lineCount++;
                   $lastField = [];
+                  $lastFieldForLineBreak = [];
                }
             }
             $rank = $elt['rank'];
@@ -664,6 +674,21 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
  * @param $x
  * @param $y
  */
+   public function getRadioCheckbox($fields, $elt, $id, $x, $y) {
+
+      if (isset($fields[$elt['id']]) && $fields[$elt['id']] == $id) {
+         return $this->Image("../pics/unchecked.png", $x, $y, 4, 4);
+      } else {
+         return $this->Image("../pics/checked.png", $x, $y, 4, 4);
+      }
+     }
+
+
+   /**
+    * @param $checked
+    * @param $x
+    * @param $y
+    */
    public function getCaractereCheckbox($checked, $x, $y) {
 
       return $checked ? $this->Image("../pics/checked.png", $x, $y, 4, 4) :
