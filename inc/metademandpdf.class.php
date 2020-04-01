@@ -331,6 +331,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                            $value = $fields['fields'][$elt['id']] != 0 ? $elt['custom_values'][$fields['fields'][$elt['id']]] : '';
                         }
                         break;
+                     default:
+                        $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
+                        $value = $value == '&nbsp;' ? '' : $value;
+                        break;
                   }
                   $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width, $this->line_height, Toolbox::decodeFromUtf8($elt['label']), 'LRBT', 'C', 'blue', 1, '', 'black');
                   $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width, $this->line_height, Toolbox::decodeFromUtf8($value), 'L', 'L', '', 0, '', 'black');
@@ -374,7 +378,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $this->SetY($this->GetY());
       $this->SetX($this->GetX());
 
+      $label_height_max = 0;
+      $max_prev = 0;
       foreach ($newForm as $key => $elt) {
+
          if (isset($fields['fields'][$elt['id']]) || $elt['type'] == 'title' || $elt['type'] == 'linebreak') {
             $value = null;
             $y = $this->GetY();
@@ -392,16 +399,61 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
 
             if ($elt['type'] !== 'linebreak' && $elt['type'] !== 'title') {
-               if (strlen($elt['label']) >= 23) {
-                  $label_height =  $label_height * 2;
-               }
+//               if (strlen($elt['label']) >= 23.0) {
+//                  $label_height =  $label_height * 2;
+////                  $height = $height * 2;
+//               }
+               (float)$res = (float)strlen($elt['label']) / 23.0;
+                  $label_height =  $label_height * ceil($res);
+//                  $height = $height * 2;
+
             }
 
-            if (($y + $height) >= 257 || ($y + $label_height) >= 257 || $elt['type'] == 'title' && ($y + $label_height) >= 257) {
+            if (($y + $height) >= 247 || ($y + $label_height) >= 247 || $elt['type'] == 'title' && ($y + $label_height) >= 247) {
                $this->AddPage();
                $hasNewPage = true;
                $x = 10;
                $y = 35;
+            }
+            if($elt['type'] == 'title'){
+               $height_temp = $height;
+               $label_height_temp = $label_height;
+
+               if ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12) {
+//                  $height_temp+= ($lastField[$fielCount - 1]['label_height'] * 2);
+                  $height_temp+= $max_prev+10;
+//                  $label_height_temp+= ($lastField[$fielCount - 1]['label_height'] * 2);
+                  $label_height_temp+= $max_prev+10;
+
+               } elseif ($fielCount > 0 ) {
+
+                  $height_temp += $this->line_height+10;
+                  $label_height_temp += $this->line_height+10;
+
+               }
+               if($newForm[$key+1]['type']=='title'){
+                  $max_height_temp = max($lineNumber[$lineCount+1]) * $this->line_height;
+                  $height_temp += ($max_height_temp / ($lineNumber[$lineCount+1][$key+1] * $this->line_height ?: 1)) * $this->line_height;
+                  $label_height_temp += ($max_height_temp / ($lineNumber[$lineCount+1][$key+1 . 'label'] * $this->line_height ?: 1)) * $this->line_height;
+
+                  $max_height_temp = max($lineNumber[$lineCount+2]) * $this->line_height;
+                  $height_temp += ($max_height_temp / ($lineNumber[$lineCount+2][$key+2] * $this->line_height ?: 1)) * $this->line_height;
+                  $label_height_temp += ($max_height_temp / ($lineNumber[$lineCount+2][$key+2 . 'label'] * $this->line_height ?: 1)) * $this->line_height;
+
+               }else{
+                  $max_height_temp = max($lineNumber[$lineCount+1]) * $this->line_height;
+                  $height_temp += ($max_height_temp / ($lineNumber[$lineCount+1][$key+1] * $this->line_height ?: 1)) * $this->line_height;
+                  $label_height_temp += ($max_height_temp / ($lineNumber[$lineCount+1][$key+1 . 'label'] * $this->line_height ?: 1)) * $this->line_height;
+               }
+
+
+
+               if (($y + $height_temp) >= 247 || ($y + $label_height_temp) >= 247) {
+                  $this->AddPage();
+                  $hasNewPage = true;
+                  $x = 10;
+                  $y = 35;
+               }
             }
 
             switch ($elt['type']) {
@@ -418,11 +470,17 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   break;
 
                case 'title':
-                  if ($fielCount > 0) {
-                     $this->SetY($y + $this->line_height);
+                  if($hasNewPage){
+                     $this->SetY($y);
                      $this->SetX($this->margin_left);
-                  } elseif ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12) {
-                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] * 2));
+                  }
+                  elseif ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12 && !$hasNewPage) {
+//                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] * 2));
+                     $this->SetY($y + $max_prev+10);
+                     $this->SetX($this->margin_left);
+                  } elseif ($fielCount > 0 ) {
+
+                     $this->SetY($y + $this->line_height+10);
                      $this->SetX($this->margin_left);
                   }
                   // Draw line
@@ -479,11 +537,19 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
                         $value = $value == '&nbsp;' ? '' : $value;
                         break;
+                     case 'usercategory':
+                        $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
+                        $value = $value == '&nbsp;' ? '' : $value;
+                        break;
                      case 'other':
                         if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
                            $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
                            $value = $fields['fields'][$elt['id']] != 0 ? $elt['custom_values'][$fields['fields'][$elt['id']]] : '';
                         }
+                        break;
+                     default:
+                        $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
+                        $value = $value == '&nbsp;' ? '' : $value;
                         break;
                   }
                   // Draw label
@@ -491,7 +557,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
+                  $this->MultiCellValue($this->activityname_width -2, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
                   break;
 
                case 'yesno':
@@ -563,13 +629,16 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
             if (isset($lastField[$fielCount - 1])) {
                if ($lastField[$fielCount - 1]['type'] != 'title' && $lastField[$fielCount - 1]['type'] != 'datetime_interval' && $lastField[$fielCount - 1]['type'] != 'linebreak') {
                   if ($fielCount >= 2) {
-                     $this->SetY($y + $label_height);
+                     $label_height_max = max($label_height_max,$label_height);
+                     $this->SetY($y + $label_height_max);
                      $this->SetX($this->margin_left);
                      $lastFieldForLineBreak = $lastField;
                      $lastFieldForLineBreak[$fielCount - 1]['label_height'] = $label_height;
                      $fielCount = 0;
                      $lineCount++;
                      $lastField = [];
+                     $max_prev = $label_height_max;
+                     $label_height_max = 0;
 
                   }  else if ($fielCount > 0) {
                      $this->SetY($y);
@@ -577,12 +646,17 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $width = ($lastField[$fielCount - 1]['type'] != 'radio') ? $width : $x + ($this->activityname_width - 1);
                      $lastField[$fielCount - 1]['label_height'] = $label_height;
                      $this->SetX($width);
+                     $label_height_max = max($label_height_max,$label_height);
+                     $max_prev = $label_height_max;
+
                   }
 
                } else {
                   $fielCount = 0;
                   $lineCount++;
                   $lastField = [];
+                  $label_height_max = 0;
+                  $max_prev = $label_height_max;
                   $lastFieldForLineBreak = [];
                }
             }
