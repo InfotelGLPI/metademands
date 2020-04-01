@@ -209,7 +209,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @param type $size
     * @param type $fontColor
     */
-   function MultiCellValue($w, $h, $value, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 12, $fontColor = '', $ln) {
+   function MultiCellValue($w, $h, $value, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 12, $fontColor = '') {
 
       if (empty($size)) {
          $size = $this->tail_pol_def;
@@ -222,9 +222,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $this->SetFontNormal($fontColor, $bold, $size);
       $this->MultiCell($w, $h, $value, $border, $align, true);
 
-      if ($ln == 0) {
+ /*     if ($ln == 0) {
          $this->SetXY($x,$y);
-      }
+      }*/
    }
 
    /**
@@ -389,18 +389,15 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
             $height = ($max_height / ($lineNumber[$lineCount][$key] * $this->line_height ?: 1)) * $this->line_height;
             $label_height = ($max_height / ($lineNumber[$lineCount][$key . 'label'] * $this->line_height ?: 1)) * $this->line_height;
 
-            if ($elt['type'] != 'checkbox' && $elt['type'] != 'radio')
-            if ($height > $label_height ) {
-               $label_height = $height;
-            }
 
-            if ($elt['type'] != 'linebreak' && $elt['type'] != 'title') {
+
+            if ($elt['type'] !== 'linebreak' && $elt['type'] !== 'title') {
                if (strlen($elt['label']) >= 23) {
-                  $ln = 0;
+                  $label_height =  $label_height * 2;
                }
             }
 
-            if (($y + $height) >= 197 || ($y + $label_height) >= 197 || $elt['type'] == 'title' && ($y + $label_height) >= 197) {
+            if (($y + $height) >= 257 || ($y + $label_height) >= 257 || $elt['type'] == 'title' && ($y + $label_height) >= 257) {
                $this->AddPage();
                $hasNewPage = true;
                $x = 10;
@@ -413,30 +410,31 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
                   $value = $fields["fields"][$elt['id']];
                   // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
                   break;
 
                case 'title':
-                  if ($fielCount > 0 && !$hasNewPage) {
-                     $this->SetY($y + $label_height);
+                  if ($fielCount > 0) {
+                     $this->SetY($y + $this->line_height);
                      $this->SetX($this->margin_left);
-                  } elseif ($hasNewPage) {
-                     $this->SetY($y + $label_height - 6);
+                  } elseif ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12) {
+                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] * 2));
                      $this->SetX($this->margin_left);
                   }
-
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width * 4, $this->line_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, 14, 'black', $ln);
-
+                  $this->MultiCellValue($this->activityname_width * 4, $this->line_height,
+                     Toolbox::decodeFromUtf8($elt['label']), 'LRBT', 'C',
+                     'grey', 1, 14, 'black');
+                  $this->Ln(0.2);
                   break;
 
                case 'linebreak':
                   if ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12) {
-                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] + ($this->line_height * 1.5 )));
+                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] * 2));
                      $this->SetX($this->margin_left - 0.2);
                   } elseif ($fielCount > 0) {
                      $this->SetY($y + $this->line_height);
@@ -452,21 +450,21 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                case 'datetime':
                   $value = Html::convDate($fields['fields'][$elt['id']]);
                   // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -11 , $height, Toolbox::decodeFromUtf8($value), '', 'L', '', 0, '', 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width -11 , $height, Toolbox::decodeFromUtf8($value), '', 'L', '', 0, '', 'black');
                   break;
 
                case 'text':
                   $value = $fields['fields'][$elt['id']];
                   // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
                   break;
 
                case 'dropdown':
@@ -489,11 +487,11 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         break;
                   }
                   // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
                   break;
 
                case 'yesno':
@@ -502,11 +500,11 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $value = __('Yes');
                   }
                   // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width - 11 , $height, Toolbox::decodeFromUtf8($value), '', 'L', '', 0, '', 'black', $ln);
+                  $this->MultiCellValue($this->activityname_width - 11 , $height, Toolbox::decodeFromUtf8($value), '', 'L', '', 0, '', 'black');
                   break;
 
 
@@ -517,7 +515,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $fields['fields'][$elt['id']] = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
 
                      // Draw label
-                     $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black', $ln);
+                     $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
                      $this->SetY($y + 1);
                      $this->SetX($x + $this->activityname_width);
 
@@ -534,7 +532,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         }
 
                         $this->SetX($x2);
-                        $this->MultiCellValue($this->activityname_width - 11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($label)), '', 'L', '', 0, '', 'black', $ln);
+                        $this->MultiCellValue($this->activityname_width - 11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($label)), '', 'L', '', 0, '', 'black');
                      }
                   }
                   break;
