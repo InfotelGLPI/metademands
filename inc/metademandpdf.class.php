@@ -404,12 +404,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 ////                  $height = $height * 2;
 //               }
                (float)$res = (float)strlen($elt['label']) / 23.0;
-                  $label_height =  $label_height * ceil($res);
-//                  $height = $height * 2;
+               (int)$label_height =  $label_height * ceil($res);
+//                  $height = $height * ceil($res);
 
             }
 
-            if (($y + $height) >= 247 || ($y + $label_height) >= 247 || $elt['type'] == 'title' && ($y + $label_height) >= 247) {
+            if (($y + $height) >= 237 || ($y + $label_height) >= 237 || $elt['type'] == 'title' && ($y + $label_height) >= 237) {
                $this->AddPage();
                $hasNewPage = true;
                $x = 10;
@@ -448,7 +448,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
 
 
-               if (($y + $height_temp) >= 247 || ($y + $label_height_temp) >= 247) {
+               if (($y + $height_temp) >= 237 || ($y + $label_height_temp) >= 237) {
                   $this->AddPage();
                   $hasNewPage = true;
                   $x = 10;
@@ -492,10 +492,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
                case 'linebreak':
                   if ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12) {
-                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] * 2));
+//                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] * 2));
+                     $this->SetY($y + $max_prev);
                      $this->SetX($this->margin_left - 0.2);
-                  } elseif ($fielCount > 0) {
-                     $this->SetY($y + $this->line_height);
+                  } else  {
+//                     $this->SetY($y + $this->line_height);
+                     $this->SetY($y + $max_prev);
                      $this->SetX($this->margin_left - 0.2);
                   }
 
@@ -522,7 +524,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $this->SetY($y);
                   $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
+                  $this->MultiCellValue($this->activityname_width -2 , $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
                   break;
 
                case 'dropdown':
