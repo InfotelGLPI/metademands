@@ -1106,7 +1106,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
          switch ($field['type']) {
             case 'title' :
-               $result['content'] .= "<th colspan='2' style='background-color: #ccc;'>" . $field['label'] . "</th>";
+               $result['content'] .= "<th colspan='2' style='background-color: #ccc;'>" . stripslashes($field['label']) . "</th>";
                break;
             case 'dropdown':
                if (!empty($field['custom_values']) && $field['item'] == 'other') {
@@ -1161,7 +1161,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'textarea':
             case 'text':
-               $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . $field['value'] . "</td>";
+               $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . stripslashes($field['value']) . "</td>";
                break;
             case 'checkbox':
                if (!empty($field['custom_values'])) {
