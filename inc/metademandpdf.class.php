@@ -39,22 +39,22 @@ require_once(GLPI_ROOT . "/plugins/metademands/fpdf/fpdf.php");
 class PluginMetaDemandsMetaDemandPdf extends FPDF {
    /* Constantes pour paramétrer certaines données. */
 
-   var $line_height = 6;     // Hauteur d'une ligne simple.
-   var $new_height = 0;
-   var $day_width = 6;       // Largeur de cellule jour
+   var $line_height               = 6;     // Hauteur d'une ligne simple.
+   var $new_height                = 0;
+   var $day_width                 = 6;       // Largeur de cellule jour
    var $generalinformations_width = 125;     // Largeur de cellule information générale
-   var $total_width = 12;
-   var $activityname_width = 45;
-   var $pol_def = 'arial'; // Police par défaut;
-   var $tail_pol_def = 8;      // Taille par défaut de la police.
-   var $title_size = 14;      // Taille du titre.
-   var $margin_top = 10;      // Marge du haut.
-   var $margin_bottom = 10;      // Marge du bas.
-   var $margin_left = 10;       // Marge de gauche et de droite accessoirement.
-   var $big_width_cell = 210;     // Largeur d'une cellule qui prend toute la page.
-   var $page_height = 297;
-   var $header_height = 30;
-   var $footer_height = 10;
+   var $total_width               = 12;
+   var $value_width               = 45;
+   var $pol_def                   = 'arial'; // Police par défaut;
+   var $tail_pol_def              = 8;      // Taille par défaut de la police.
+   var $title_size                = 14;      // Taille du titre.
+   var $margin_top                = 10;      // Marge du haut.
+   var $margin_bottom             = 10;      // Marge du bas.
+   var $margin_left               = 10;       // Marge de gauche et de droite accessoirement.
+   var $big_width_cell            = 210;     // Largeur d'une cellule qui prend toute la page.
+   var $page_height               = 297;
+   var $header_height             = 30;
+   var $footer_height             = 10;
    var $page_width;
    var $fields;
    var $title;
@@ -69,10 +69,19 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    public function __construct($title, $subtitle) {
       parent::__construct('P', 'mm', 'A4');
 
-      $this->title = $title;
-      $this->subtitle = $subtitle;
-      $this->page_width = $this->big_width_cell - ($this->margin_left * 2);
-      $this->activityname_width = $this->page_width / 4;
+      $this->title       = $title;
+      $this->subtitle    = $subtitle;
+      $this->page_width  = $this->big_width_cell - ($this->margin_left * 2);
+      $this->title_width = $this->page_width;
+      $quarter           = ($this->page_width / 4);
+      //      $this->label_width = $quarter + ($quarter / 2);
+      //      $this->value_width = ($quarter * 3) - ($quarter / 2);
+      $this->label_width = $quarter * 2;
+      $this->value_width = $quarter * 2;
+      // Set font size
+      $this->SetFontSize(10);
+      // Select our font family
+      $this->SetFont('Helvetica', '');
    }
 
    /**
@@ -174,58 +183,146 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       }
    }
 
+   function Header() {
+      $this->SetY($this->margin_top);
+      $this->SetX($this->margin_left);
+
+      $largeurCoteTitre = 35;
+      $largeurCaseTitre = $this->big_width_cell - ($this->margin_left * 2) - ($largeurCoteTitre * 2);
+
+      //Cellule contenant l'image
+      $image  = '../pics/login_logo_glpi.png';
+      $target = 20;
+      list($width, $height, $type, $attr) = getimagesize($image);
+      list($width, $height) = $this->imageResize($width, $height, $target);
+      $this->CellTitleValue($largeurCoteTitre, 20, '', 'TBL', 'L', 'grey', 0, '', 'black');
+      $this->Image($image, $this->margin_left + 5, $this->margin_top + $height / 3, $width, $height); // x, y, w, h
+
+
+      //Cellule contenant le titre
+      $this->SetX($this->margin_left + $largeurCoteTitre);
+      $this->CellTitleValue($largeurCaseTitre, 20, Toolbox::decodeFromUtf8($this->title), 'TBL', 'C', '', 1, 15, 'black');
+
+      //Cellule ne contenant rien pour le moment
+      $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
+      $this->CellTitleValue($largeurCoteTitre, 5, '', 'TLR', 'C', 'grey', 0, 11, 'black');
+      $this->SetY($this->GetY() + 5);
+      $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
+      $this->CellTitleValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'LR', 'C', 'grey', 0, '', 'black');
+      $this->SetY($this->GetY() + 5);
+      $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
+      $this->CellTitleValue($largeurCoteTitre, 10, Html::convDate(date('Y-m-d')), 'BLR', 'C', 'grey', 0, '', 'black');
+      $this->SetY($this->GetY() + 15);
+   }
+
+
+   /**
+    * ImageResize
+    *
+    * @param int $width
+    * @param int $height
+    * @param int $target
+    *
+    * @return array
+    */
+   function imageResize($width, $height, $target) {
+      if ($width > $height) {
+         $percentage = ($target / $width);
+      } else {
+         $percentage = ($target / $height);
+      }
+
+      $width  = round($width * $percentage);
+      $height = round($height * $percentage);
+
+      return [$width, $height];
+   }
+
    /**
     * Permet de dessiner une cellule.
     *
-    * @param type $w
-    * @param type $h
-    * @param type $value
-    * @param type $border
-    * @param type $align
-    * @param type $color
-    * @param type $bold
-    * @param type $size
-    * @param type $fontColor
+    * @param type   $w
+    * @param type   $h
+    * @param type   $value
+    * @param string $border
+    * @param string $align
+    * @param string $color
+    * @param bool   $bold
+    * @param int    $size
+    * @param string $fontColor
+    * @param string $link
     */
-   function CellValue($w, $h, $value, $border = 'LRB', $align = 'L', $color = '', $bold = false, $size = 12, $fontColor = '') {
+   function CellTitleValue($w, $h, $value, $border = 'LRB', $align = 'L', $color = '', $bold = false, $size = 12, $fontColor = '') {
       if (empty($size)) {
          $size = $this->tail_pol_def;
       }
       $this->SetBackgroundColor($color);
       $this->SetFontNormal($fontColor, $bold, $size);
-      $this->Cell($w, $h, $value, $border, 0, $align, 1);
+      $this->Cell($w, $h, $value, $border, 0, $align, 1, $link);
    }
 
    /**
     * Permet de dessiner une cellule multiligne.
     *
-    * @param type $w
-    * @param type $h
-    * @param type $value
-    * @param type $border
-    * @param type $align
-    * @param type $color
-    * @param type $bold
-    * @param type $size
-    * @param type $fontColor
+    * @param type   $w
+    * @param type   $h
+    * @param type   $value
+    * @param string $border
+    * @param string $align
+    * @param string $color
+    * @param bool   $bold
+    * @param int    $size
+    * @param string $fontColor
+    * @param string $link
     */
-   function MultiCellValue($w, $h, $value, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 12, $fontColor = '') {
+   function MultiCellValue($w, $h, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 12, $fontColor = '', $type, $label, $values, $link = '') {
 
       if (empty($size)) {
          $size = $this->tail_pol_def;
       }
-
-      $x = $this->GetX() + $w;
       $y = $this->GetY();
+      $x = $this->GetX();
 
-      $this->SetBackgroundColor($color);
+      //      $spaceleft = $this->h - $this->GetY() - $this->bMargin;    // Calculates the space available on the current page
+      $spaceleft       = $this->h - $this->GetY() - $this->header_height - $this->footer_height;
+      $multiCellHeight = $this->GetMultiCellHeight($w, $h, $values);    // Calculates what the height of your MultiCell would be
+
+      if ($multiCellHeight > $spaceleft) {
+         $this->AddPage();   // Adds a page if there is not enough space available for the MultiCell
+      }
+      $bgcolor = 'grey';
+      //Draw label
+      $this->SetBackgroundColor($bgcolor);
       $this->SetFontNormal($fontColor, $bold, $size);
-      $this->MultiCell($w, $h, $value, $border, $align, true);
 
- /*     if ($ln == 0) {
-         $this->SetXY($x,$y);
-      }*/
+      if ($type == 'linebreak') {
+         $this->SetBackgroundColor($color);
+         $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
+
+      } else if ($type == 'title') {
+         $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
+
+      } else if ($type == 'textarea') {
+         $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
+
+      } else {
+         $this->MultiCell($this->label_width, $h, $label, $border, $align, true);
+         $this->SetY($y);
+         $this->SetX($x + $this->label_width);
+      }
+
+      if ($type != 'title' && $type != 'linebreak') {
+         $this->SetBackgroundColor($color);
+         $this->SetFontNormal($fontColor, $bold, $size);
+         //Draw values
+         if ($link != "") {
+            $this->Cell($w, $h, $label, $border, 1, $align, true, $link);
+         } else {
+            $this->MultiCell($w, $h, $values, $border, $align, true);
+         }
+      }
    }
+
 
    /**
     * Redéfinit une fonte
@@ -250,10 +347,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    public function setFields($form, $fields) {
 
       $fielCount = 0;
-      $lineCount = 0;
-      $lineNumber = [];
-      $lastField = [];
-      $rank = 1;
+      $rank      = 1;
 
       $newForm = [];
       foreach ($form as $key => $elt) {
@@ -270,264 +364,57 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          }
       }
       $dbu = new DbUtils();
-      $fielCount = 0;
+
       foreach ($newForm as $key => $elt) {
-         if (isset($fields['fields'][$elt['id']]) || $elt['type'] == 'title' || $elt['type'] == 'linebreak') {
-            $lastField[$fielCount] = $elt;
-            $value = '';
 
-            $lineNumber[$lineCount][$key] = 1;
-            $lineNumber[$lineCount][$key . 'label'] = 1;
-
-
+         if (isset($fields['fields'][$elt['id']])
+             || $elt['type'] == 'title'
+             || $elt['type'] == 'linebreak') {
+            $y                = $this->GetY();
+            $x                = $this->GetX();
+            $bgcolor          = 'grey';
+            $line_height      = 10;
+            $linebreak_height = 5;
+            $multiline_height = 5;
+            $label            = "";
+            if (!empty($elt['label'])) {
+               $label = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 45);
+            }
             switch ($elt['type']) {
-
-               case 'datetime_interval' :
-               case 'datetime':
-               case 'text':
-               case 'textarea':
-                  $value = $fields["fields"][$elt['id']];
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width, $this->line_height, Toolbox::decodeFromUtf8($elt['label']), '', 'L', '', 0, '', 'black');
-                  $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width, $this->line_height, str_replace(['\r\n', '\n'], "\n", $value), '', 'L', '', 0, '', 'black');
-                  break;
-
-               case 'checkbox':
-               case 'radio':
-                  if (!empty($elt['custom_values'])) {
-                     $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width - 10, $this->line_height, Toolbox::decodeFromUtf8($elt['label']), '', 'L', '', 0, '', 'black');
-                     $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
-                     foreach ($elt['custom_values'] as $id => $label) {
-                        $lineNumber[$lineCount][$key] += $this->getMulticellLineNumber($this->activityname_width - 20, $this->line_height, Toolbox::decodeFromUtf8($label), '', 'L', '', 0, '', 'black');
-                     }
-                  }
-                  break;
-
                case 'title':
-                  $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width * 4, $this->line_height, $elt['label']);
+                  // Draw line
+                  $this->MultiCellValue($this->title_width, $line_height, 'LRBT', 'C', $bgcolor, 1, 12, 'black', $elt['type'], $label, '');
                   break;
 
                case 'linebreak':
-                  $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width * 4, $this->line_height, 'linebreak');
-                  break;
-
-
-               case 'dropdown':
-                  switch ($elt['item']) {
-                     case 'user':
-                        $value = $dbu->getUserName($fields['fields'][$elt['id']]);
-                        break;
-
-                     case 'location':
-                     case 'PluginResourcesResource':
-                     case 'group':
-                        $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
-                        $value = $value == '&nbsp;' ? '' : $value;
-                        break;
-
-                     case 'other':
-                        if (!empty($elt['custom_values'])) {
-                           $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
-
-                           $value = $fields['fields'][$elt['id']] != 0 ? $elt['custom_values'][$fields['fields'][$elt['id']]] : '';
-                        }
-                        break;
-                     default:
-                        $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
-                        $value = $value == '&nbsp;' ? '' : $value;
-                        break;
-                  }
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width, $this->line_height, Toolbox::decodeFromUtf8($elt['label']), 'LRBT', 'C', 'blue', 1, '', 'black');
-                  $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width, $this->line_height, Toolbox::decodeFromUtf8($value), 'L', 'L', '', 0, '', 'black');
-                  break;
-               case 'yesno':
-                  $value = __('No');
-                  if ($fields['fields'][$elt['id']] == 2) {
-                     $value = __('Yes');
-                  }
-                  $lineNumber[$lineCount][$key . 'label'] = $this->getMulticellLineNumber($this->activityname_width, $this->line_height, Toolbox::decodeFromUtf8($elt['label']), 'LRBT', 'C', 'blue', 1, '', 'black');
-                  $lineNumber[$lineCount][$key] = $this->getMulticellLineNumber($this->activityname_width, $this->line_height, Toolbox::decodeFromUtf8($value), 'L', 'L', '', 0, '', 'black');
-                  break;
-            }
-
-            $fielCount++;
-
-            if (isset($lastField[$fielCount - 1])) {
-               if ($lastField[$fielCount - 1]['type'] != 'title' && $lastField[$fielCount - 1]['type'] != 'datetime_interval' && $lastField[$fielCount - 1]['type'] != 'linebreak') {
-                  if ($fielCount == 2) {
-                     $fielCount = 0;
-                     $lineCount++;
-                     $lastField = [];
-                  }
-               } else {
-                  $fielCount = 0;
-                  $lineCount++;
-                  $lastField = [];
-               }
-            }
-         }
-      }
-
-      $fielCount = 0;
-      $lineCount = 0;
-      $lastField = [];
-      $lastFieldForLineBreak = [];
-      $rank = 1;
-
-
-      $this->CellValue($this->big_width_cell - (2 * $this->margin_left), $this->page_height - 35 - (2 * $this->margin_top), '', 'LRBT', '', '', 0, '', 'black');
-      $this->SetY($this->GetY());
-      $this->SetX($this->GetX());
-
-      $label_height_max = 0;
-      $max_prev = 0;
-      foreach ($newForm as $key => $elt) {
-
-         if (isset($fields['fields'][$elt['id']]) || $elt['type'] == 'title' || $elt['type'] == 'linebreak') {
-            $value = null;
-            $y = $this->GetY();
-            $x = $this->GetX();
-            $lastField[$fielCount] = $elt;
-            $size = '';
-            $hasNewPage = false;
-            $label = '';
-            $ln = 1;
-
-            $max_height = max($lineNumber[$lineCount]) * $this->line_height;
-            $height = ($max_height / ($lineNumber[$lineCount][$key] * $this->line_height ?: 1)) * $this->line_height;
-            $label_height = ($max_height / ($lineNumber[$lineCount][$key . 'label'] * $this->line_height ?: 1)) * $this->line_height;
-
-
-
-            if ($elt['type'] !== 'linebreak' && $elt['type'] !== 'title') {
-//               if (strlen($elt['label']) >= 23.0) {
-//                  $label_height =  $label_height * 2;
-////                  $height = $height * 2;
-//               }
-               (float)$res = (float)strlen($elt['label']) / 23.0;
-               (int)$label_height =  $label_height * ceil($res);
-//                  $height = $height * ceil($res);
-
-            }
-
-            if (($y + $height) >= 237 || ($y + $label_height) >= 237 || $elt['type'] == 'title' && ($y + $label_height) >= 237) {
-               $this->AddPage();
-               $hasNewPage = true;
-               $x = 10;
-               $y = 35;
-            }
-            if($elt['type'] == 'title'){
-               $height_temp = $height;
-               $label_height_temp = $label_height;
-
-               if ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12) {
-//                  $height_temp+= ($lastField[$fielCount - 1]['label_height'] * 2);
-                  $height_temp+= $max_prev+10;
-//                  $label_height_temp+= ($lastField[$fielCount - 1]['label_height'] * 2);
-                  $label_height_temp+= $max_prev+10;
-
-               } elseif ($fielCount > 0 ) {
-
-                  $height_temp += $this->line_height+10;
-                  $label_height_temp += $this->line_height+10;
-
-               }
-               if($newForm[$key+1]['type']=='title'){
-                  $max_height_temp = max($lineNumber[$lineCount+1]) * $this->line_height;
-                  $height_temp += ($max_height_temp / ($lineNumber[$lineCount+1][$key+1] * $this->line_height ?: 1)) * $this->line_height;
-                  $label_height_temp += ($max_height_temp / ($lineNumber[$lineCount+1][$key+1 . 'label'] * $this->line_height ?: 1)) * $this->line_height;
-
-                  $max_height_temp = max($lineNumber[$lineCount+2]) * $this->line_height;
-                  $height_temp += ($max_height_temp / ($lineNumber[$lineCount+2][$key+2] * $this->line_height ?: 1)) * $this->line_height;
-                  $label_height_temp += ($max_height_temp / ($lineNumber[$lineCount+2][$key+2 . 'label'] * $this->line_height ?: 1)) * $this->line_height;
-
-               }else{
-                  $max_height_temp = max($lineNumber[$lineCount+1]) * $this->line_height;
-                  $height_temp += ($max_height_temp / ($lineNumber[$lineCount+1][$key+1] * $this->line_height ?: 1)) * $this->line_height;
-                  $label_height_temp += ($max_height_temp / ($lineNumber[$lineCount+1][$key+1 . 'label'] * $this->line_height ?: 1)) * $this->line_height;
-               }
-
-
-
-               if (($y + $height_temp) >= 237 || ($y + $label_height_temp) >= 237) {
-                  $this->AddPage();
-                  $hasNewPage = true;
-                  $x = 10;
-                  $y = 35;
-               }
-            }
-
-            switch ($elt['type']) {
-
-               case 'textarea':
-
-                  $value = $fields["fields"][$elt['id']];
-                  // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
-                  $this->SetY($y);
-                  $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
-                  break;
-
-               case 'title':
-                  if($hasNewPage){
-                     $this->SetY($y);
-                     $this->SetX($this->margin_left);
-                  }
-                  elseif ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12 && !$hasNewPage) {
-//                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] * 2));
-                     $this->SetY($y + $max_prev+10);
-                     $this->SetX($this->margin_left);
-                  } elseif ($fielCount > 0 ) {
-
-                     $this->SetY($y + $this->line_height+10);
-                     $this->SetX($this->margin_left);
-                  }
-                  // Draw line
-                  $this->MultiCellValue($this->activityname_width * 4, $this->line_height,
-                     Toolbox::decodeFromUtf8($elt['label']), 'LRBT', 'C',
-                     'grey', 1, 14, 'black');
-                  $this->Ln(0.2);
-                  break;
-
-               case 'linebreak':
-                  if ($fielCount > 0 && $lastField[$fielCount - 1]['label_height'] >= 12) {
-//                     $this->SetY($y + ($lastField[$fielCount - 1]['label_height'] * 2));
-                     $this->SetY($y + $max_prev);
-                     $this->SetX($this->margin_left - 0.2);
-                  } else  {
-//                     $this->SetY($y + $this->line_height);
-                     $this->SetY($y + $max_prev);
-                     $this->SetX($this->margin_left - 0.2);
-                  }
-
-                  // Draw line
-                  $this->CellValue(($this->activityname_width * 4) + 0.2, $this->line_height, '', 'TB', 'C', '', 0, '', 'black');
-
-                  $this->Ln($this->line_height + 0.2);
-                  break;
-
-               case 'datetime':
-                  $value = Html::convDate($fields['fields'][$elt['id']]);
-                  // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
-                  $this->SetY($y);
-                  $this->SetX($x + $this->activityname_width);
-                  // Draw line
-                  $this->MultiCellValue($this->activityname_width -11 , $height, Toolbox::decodeFromUtf8($value), '', 'L', '', 0, '', 'black');
+                  $this->MultiCellValue($this->title_width, $linebreak_height, 'TB', 'C', '', 0, '', 'black', $elt['type'], '', '');
                   break;
 
                case 'text':
                   $value = $fields['fields'][$elt['id']];
-                  // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
-                  $this->SetY($y);
-                  $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -2 , $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
+                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                  break;
+
+               case 'textarea':
+                  $value = $fields["fields"][$elt['id']];
+                  // Draw line
+                  $this->MultiCellValue($this->title_width, $multiline_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                  break;
+
+               case 'link':
+                  $label = __('Link');
+                  $value = $fields['fields'][$elt['id']];
+                  if (strpos($value, 'http://') !== 0 && strpos($value, 'https://') !== 0) {
+                     $value = "http://" . $value;
+                  }
+                  // Draw line
+                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
                   break;
 
                case 'dropdown':
+                  $value = " ";
                   switch ($elt['item']) {
                      case 'user':
                         $value = $dbu->getUserName($fields['fields'][$elt['id']]);
@@ -536,30 +423,24 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      case 'location':
                      case 'PluginResourcesResource':
                      case 'group':
-                        $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
-                        $value = $value == '&nbsp;' ? '' : $value;
-                        break;
+                     case 'usertitle':
                      case 'usercategory':
                         $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
-                        $value = $value == '&nbsp;' ? '' : $value;
+                        $value = ($value == '&nbsp;') ? ' ' : $value;
                         break;
                      case 'other':
                         if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
                            $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
-                           $value = $fields['fields'][$elt['id']] != 0 ? $elt['custom_values'][$fields['fields'][$elt['id']]] : '';
+                           $value                = ($fields['fields'][$elt['id']] != 0) ? $elt['custom_values'][$fields['fields'][$elt['id']]] : ' ';
                         }
                         break;
                      default:
                         $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
-                        $value = $value == '&nbsp;' ? '' : $value;
+                        $value = ($value == '&nbsp;') ? ' ' : $value;
                         break;
                   }
-                  // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
-                  $this->SetY($y);
-                  $this->SetX($x + $this->activityname_width);
                   // Draw line
-                  $this->MultiCellValue($this->activityname_width -2, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)), '', 'L', '', 0, '', 'black');
+                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
                   break;
 
                case 'yesno':
@@ -567,145 +448,109 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   if ($fields['fields'][$elt['id']] == 2) {
                      $value = __('Yes');
                   }
-                  // Draw label
-                  $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
-                  $this->SetY($y);
-                  $this->SetX($x + $this->activityname_width);
-                  // Draw line
-                  $this->MultiCellValue($this->activityname_width - 11 , $height, Toolbox::decodeFromUtf8($value), '', 'L', '', 0, '', 'black');
+                  //                  // Draw line
+                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::decodeFromUtf8($value));
                   break;
 
+               case 'dropdown_multiple':
+                  $value = " ";
+                  if (!empty($elt['custom_values'])) {
+                     $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
+                     $values        = $fields['fields'][$elt['id']];
+                     $parseValue    = [];
+
+                     foreach ($values as $key => $label) {
+                        array_push($parseValue, $custom_values[$label]);
+                     }
+                     $value = implode(', ', $parseValue);
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                  }
+                  break;
 
                case 'checkbox':
-               case 'radio' :
+                  $value = " ";
                   if (!empty($elt['custom_values'])) {
-                     $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
-                     $fields['fields'][$elt['id']] = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
+                     $custom_values   = PluginMetademandsField::_unserialize($elt['custom_values']);
+                     $values          = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
+                     $custom_checkbox = [];
 
-                     // Draw label
-                     $this->MultiCellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, $size, 'black');
-                     $this->SetY($y + 1);
-                     $this->SetX($x + $this->activityname_width);
-
-                     $x = $this->GetX() + 1;
-                     $x2 = $this->GetX() + 6;
-
-                     // Draw line
-                     foreach ($elt['custom_values'] as $id => $label) {
-                        $this->SetX($x);
-                        if ($elt['type'] == 'radio') {
-                           $this->getRadioCheckbox($fields['fields'], $elt, $id, $this->GetX(), $this->GetY());
-                        } else {
-                           $this->getCaractereCheckbox(!isset($fields['fields'][$elt['id']][$id]), $this->GetX(), $this->GetY());
+                     foreach ($custom_values as $key => $label) {
+                        $checked = isset($values[$key]) ? 1 : 0;
+                        if ($checked) {
+                           $custom_checkbox[] .= $label;
                         }
-
-                        $this->SetX($x2);
-                        $this->MultiCellValue($this->activityname_width - 11, $height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($label)), '', 'L', '', 0, '', 'black');
                      }
+                     // Draw line
+                     $value = implode(', ', $custom_checkbox);
+                     $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
                   }
+                  break;
+
+               case 'radio' :
+                  $value = " ";
+                  if (!empty($elt['custom_values'])) {
+                     $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
+                     $values        = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
+                     foreach ($custom_values as $id => $label) {
+                        if ($values == $id) {
+                           $value = $custom_values[$id];
+                        }
+                     }
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                  }
+                  break;
+
+               case 'datetime':
+                  $value = Html::convDate($fields['fields'][$elt['id']]);
+                  // Draw line
+                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::decodeFromUtf8($value));
                   break;
 
                case 'datetime_interval':
-
-                  if ($fielCount > 0) {
-                     $this->SetY($y + $label_height);
-                     $this->SetX($this->margin_left);
-                  }
-                  // Draw label
-                  $this->CellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, '', 'black');
-                  //                  $this->SetX($this->GetX() + $this->activityname_width);
+                  $value  = Html::convDate($fields['fields'][$elt['id']]);
+                  $value2 = Html::convDate($fields['fields'][$elt['id'] . "-2"]);
                   // Draw line
-                  $this->CellValue($this->activityname_width, $height, Html::convDate($fields['fields'][$elt['id']]), 'LR', 'L', '', 0, '', 'black');
-
-                  // Draw label 2
-                  $this->CellValue($this->activityname_width, $label_height, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 'LRBT', 'C', 'grey', 1, '', 'black');
-                  //                  $this->SetX($this->GetX() + ($this->activityname_width));
+                  $this->MultiCellValue($this->label_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::decodeFromUtf8($value));
+                  $this->SetY($y + 1);
+                  $this->SetX($x + $this->label_width);
                   // Draw line 2
-                  $this->CellValue($this->activityname_width, $height, Html::convDate($fields['fields'][$elt['id'] . "-2"]), 'LR', 'L', '', 0, '', 'black');
-                  $this->Ln($height);
+                  $this->MultiCellValue($this->label_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::decodeFromUtf8($value2));
                   break;
             }
-
-            $fielCount++;
-            // Handle line break
-            if (isset($lastField[$fielCount - 1])) {
-               if ($lastField[$fielCount - 1]['type'] != 'title' && $lastField[$fielCount - 1]['type'] != 'datetime_interval' && $lastField[$fielCount - 1]['type'] != 'linebreak') {
-                  if ($fielCount >= 2) {
-                     $label_height_max = max($label_height_max,$label_height);
-                     $this->SetY($y + $label_height_max);
-                     $this->SetX($this->margin_left);
-                     $lastFieldForLineBreak = $lastField;
-                     $lastFieldForLineBreak[$fielCount - 1]['label_height'] = $label_height;
-                     $fielCount = 0;
-                     $lineCount++;
-                     $lastField = [];
-                     $max_prev = $label_height_max;
-                     $label_height_max = 0;
-
-                  }  else if ($fielCount > 0) {
-                     $this->SetY($y);
-                     $width = ($lastField[$fielCount - 1]['type'] != 'checkbox') ? $x + ($this->activityname_width * 2) : $x + ($this->activityname_width - 1);
-                     $width = ($lastField[$fielCount - 1]['type'] != 'radio') ? $width : $x + ($this->activityname_width - 1);
-                     $lastField[$fielCount - 1]['label_height'] = $label_height;
-                     $this->SetX($width);
-                     $label_height_max = max($label_height_max,$label_height);
-                     $max_prev = $label_height_max;
-
-                  }
-
-               } else {
-                  $fielCount = 0;
-                  $lineCount++;
-                  $lastField = [];
-                  $label_height_max = 0;
-                  $max_prev = $label_height_max;
-                  $lastFieldForLineBreak = [];
-               }
-            }
-
-            $rank = $elt['rank'];
-
          }
       }
    }
 
-   function MultiCellOveridde($w, $h, $txt, $border = 0, $align = 'J', $fill = false, $ln = 0) {
-      // Custom Tomaz Ahlin
-      if ($ln == 0) {
-         $current_y = $this->GetY();
-         $current_x = $this->GetX();
-      }
 
-      // Output text with automatic or explicit line breaks
+   /**
+    * @param        $w
+    * @param        $h
+    * @param        $txt
+    * @param null   $border
+    * @param string $align
+    * source : https://gist.github.com/johnballantyne/2989898e2196686388f6
+    * @return int
+    */
+   function GetMultiCellHeight($w, $h, $txt, $border = null, $align = 'J') {
+      // Calculate MultiCell with automatic or explicit line breaks height
+      // $border is un-used, but I kept it in the parameters to keep the call
+      //   to this function consistent with MultiCell()
       $cw = &$this->CurrentFont['cw'];
       if ($w == 0)
          $w = $this->w - $this->rMargin - $this->x;
       $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
-      $s = str_replace("\r", '', $txt);
-      $nb = strlen($s);
+      $s    = str_replace("\r", '', $txt);
+      $nb   = strlen($s);
       if ($nb > 0 && $s[$nb - 1] == "\n")
          $nb--;
-      $b = 0;
-      if ($border) {
-         if ($border == 1) {
-            $border = 'LTRB';
-            $b = 'LRT';
-            $b2 = 'LR';
-         } else {
-            $b2 = '';
-            if (strpos($border, 'L') !== false)
-               $b2 .= 'L';
-            if (strpos($border, 'R') !== false)
-               $b2 .= 'R';
-            $b = (strpos($border, 'T') !== false) ? $b2 . 'T' : $b2;
-         }
-      }
-      $sep = -1;
-      $i = 0;
-      $j = 0;
-      $l = 0;
-      $ns = 0;
-      $nl = 1;
+      $sep    = -1;
+      $i      = 0;
+      $j      = 0;
+      $l      = 0;
+      $ns     = 0;
+      $height = 0;
       while ($i < $nb) {
          // Get next character
          $c = $s[$i];
@@ -715,20 +560,18 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                $this->ws = 0;
                $this->_out('0 Tw');
             }
-            $this->Cell($w, $h, substr($s, $j, $i - $j), $b, 2, $align, $fill);
+            //Increase Height
+            $height += $h;
             $i++;
             $sep = -1;
-            $j = $i;
-            $l = 0;
-            $ns = 0;
-            $nl++;
-            if ($border && $nl == 2)
-               $b = $b2;
+            $j   = $i;
+            $l   = 0;
+            $ns  = 0;
             continue;
          }
          if ($c == ' ') {
             $sep = $i;
-            $ls = $l;
+            $ls  = $l;
             $ns++;
          }
          $l += $cw[$c];
@@ -741,22 +584,21 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $this->ws = 0;
                   $this->_out('0 Tw');
                }
-               $this->Cell($w, $h, substr($s, $j, $i - $j), $b, 2, $align, $fill);
+               //Increase Height
+               $height += $h;
             } else {
                if ($align == 'J') {
                   $this->ws = ($ns > 1) ? ($wmax - $ls) / 1000 * $this->FontSize / ($ns - 1) : 0;
                   $this->_out(sprintf('%.3F Tw', $this->ws * $this->k));
                }
-               $this->Cell($w, $h, substr($s, $j, $sep - $j), $b, 2, $align, $fill);
-               $i = $sep + 1;
+               //Increase Height
+               $height += $h;
+               $i      = $sep + 1;
             }
             $sep = -1;
-            $j = $i;
-            $l = 0;
-            $ns = 0;
-            $nl++;
-            if ($border && $nl == 2)
-               $b = $b2;
+            $j   = $i;
+            $l   = 0;
+            $ns  = 0;
          } else
             $i++;
       }
@@ -765,128 +607,19 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          $this->ws = 0;
          $this->_out('0 Tw');
       }
-      if ($border && strpos($border, 'B') !== false)
-         $b .= 'B';
-      $this->Cell($w, $h, substr($s, $j, $i - $j), $b, 2, $align, $fill);
-      $this->x = $this->lMargin;
+      //Increase Height
+      $height += $h;
 
-      // Custom Tomaz Ahlin
-      if ($ln == 0) {
-         $this->SetXY($x,$y);
-      }
+      return $height;
    }
 
-
    /**
-    * @param        $w
-    * @param        $h
-    * @param        $txt
-    * @param int $border
-    * @param string $align
-    * @param int $fill
     *
-    * @return int
     */
-   public function getMulticellLineNumber($w, $h, $txt, $border = 0, $align = 'J', $fill = 0) {
-      {
-         //Computes the number of lines a MultiCell of width w will take
-         $cw =& $this->CurrentFont['cw'];
-         if ($w == 0)
-            $w = $this->w - $this->rMargin - $this->x;
-         $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
-         $s = str_replace("\r", '', $txt);
-         $nb = strlen($s);
-         if ($nb > 0 and $s[$nb - 1] == "\n")
-            $nb--;
-         $sep = -1;
-         $i = 0;
-         $j = 0;
-         $l = 0;
-         $nl = 1;
-         while ($i < $nb) {
-            $c = $s[$i];
-            if ($c == "\n") {
-               $i++;
-               $sep = -1;
-               $j = $i;
-               $l = 0;
-               $nl++;
-               continue;
-            }
-            if ($c == ' ')
-               $sep = $i;
-            $l += $cw[$c];
-            if ($l > $wmax) {
-               if ($sep == -1) {
-                  if ($i == $j)
-                     $i++;
-               } else
-                  $i = $sep + 1;
-               $sep = -1;
-               $j = $i;
-               $l = 0;
-               $nl++;
-            } else
-               $i++;
-         }
-         return $nl;
-      }
-   }
-
-   /**
-    * @param $checked
-    * @param $x
-    * @param $y
-    */
-   public function getRadioCheckbox($fields, $elt, $id, $x, $y) {
-
-      if (isset($fields[$elt['id']]) && $fields[$elt['id']] == $id) {
-         return $this->Image("../pics/unchecked.png", $x, $y, 4, 4);
-      } else {
-         return $this->Image("../pics/checked.png", $x, $y, 4, 4);
-      }
-   }
-
-
-   /**
-    * @param $checked
-    * @param $x
-    * @param $y
-    */
-   public function getCaractereCheckbox($checked, $x, $y) {
-
-      return $checked ? $this->Image("../pics/checked.png", $x, $y, 4, 4) : $this->Image("../pics/unchecked.png", $x, $y, 4, 4);
-   }
-
-   function Header() {
-      $this->SetY($this->margin_top);
-      $this->SetX($this->margin_left);
-
-      $largeurCoteTitre = 35;
-      $largeurCaseTitre = $this->big_width_cell - ($this->margin_left * 2) - ($largeurCoteTitre * 2);
-
-      //Cellule contenant l'image
-      $largeurImage = 30;
-      $hauteurImage = 9;
-      $abscisseImage = ($largeurCoteTitre - $largeurImage) / 2 + $this->margin_left;
-      $ordonneeImage = (10 - $hauteurImage) / 2 + $this->margin_top;
-      $this->CellValue($largeurCoteTitre, 20, '', 'TBL', 'L', '', 0, '', 'black');
-      $this->Image("../pics/logo.jpg", $abscisseImage, $ordonneeImage, $largeurImage, $hauteurImage);
-
-      //Cellule contenant le titre
-      $this->SetX($this->margin_left + $largeurCoteTitre);
-      $this->CellValue($largeurCaseTitre, 20, Toolbox::decodeFromUtf8($this->title), 'TBL', 'C', '', 1, 15, 'black');
-
-      //Cellule ne contenant rien pour le moment
-      $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'TLR', 'C', '', 0, 11, 'black');
-      $this->SetY($this->GetY() + 5);
-      $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellValue($largeurCoteTitre, 5, Html::convDate(date('Y-m-d')), 'LR', 'C', '', 0, '', 'black');
-      $this->SetY($this->GetY() + 5);
-      $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellValue($largeurCoteTitre, 10, '', 'BLR', 'C', '', 0, '', 'black');
-      $this->SetY($this->GetY() + 15);
+   function Footer() {
+      $this->SetY($this->page_height - $this->margin_top - $this->header_height);
+      $numeroPage = $this->PageNo();
+      $this->Cell($this->page_width, $this->header_height, $numeroPage . " sur {nb}", 0, 0, 'C');
    }
 
    /**
@@ -894,18 +627,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @param $fields
     */
    public function drawPdf($form, $fields) {
-
       $this->AliasNbPages();
       $this->AddPage();
       $this->SetAutoPageBreak(false);
       $this->setFields($form, $fields);
-
-   }
-
-   function Footer() {
-      $this->SetY($this->page_height - $this->margin_top - $this->header_height);
-      $numeroPage = $this->PageNo();
-      $this->Cell($this->page_width, $this->header_height, $numeroPage . " sur {nb}", 0, 0, 'C');
    }
 
    /**
@@ -917,28 +642,27 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    public function addDocument($idTicket, $entitiesId) {
       //Construction du chemin du fichier
       $filename = "metademand_" . $idTicket . ".pdf";
-      $this->Output(GLPI_DOC_DIR . "/_uploads/" . Toolbox::encodeInUtf8($filename));
+      $this->Output(GLPI_DOC_DIR . "/_uploads/" . Toolbox::encodeInUtf8($filename), 'F');
 
       //Création du document
       $doc = new Document();
       //Construction des données
-      $input = [];
-      $input["name"] = addslashes($filename);
+      $input                = [];
+      $input["name"]        = addslashes($filename);
       $input["upload_file"] = Toolbox::encodeInUtf8($filename);
-      $input["mime"] = "application/pdf";
-      $input["date_mod"] = date("Y-m-d H:i:s");
-      $input["users_id"] = Session::getLoginUserID();
+      $input["mime"]        = "application/pdf";
+      $input["date_mod"]    = date("Y-m-d H:i:s");
+      $input["users_id"]    = Session::getLoginUserID();
       $input["entities_id"] = $entitiesId;
-      $input["tickets_id"] = $idTicket;
+      $input["tickets_id"]  = $idTicket;
       //entities_id
       //tickets_id
       //Initialisation du document
-      $newdoc = $doc->add($input);
+      $newdoc  = $doc->add($input);
       $docitem = new Document_Item();
 
       //entities_id
       $docitem->add(['itemtype' => "Ticket", "documents_id" => $newdoc, "items_id" => $idTicket, "entities_id" => $entitiesId]);
       return $docitem;
    }
-
 }

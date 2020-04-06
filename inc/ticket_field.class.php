@@ -65,15 +65,18 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
     * @param $tickets_id
     */
    function setTicketFieldsValues($parent_fields, $values, $tickets_id) {
+
       if (count($parent_fields)) {
          foreach ($parent_fields as $fields_id => $field) {
             $field['value'] = '';
-            if (isset($values[$fields_id])) {
+            if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
                $field['value'] = $values[$fields_id];
+            } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
+               $field['value'] = json_encode($values[$fields_id]);
             }
-            $this->add(['value'                             => $field['value'],
-                             'tickets_id'                        => $tickets_id,
-                             'plugin_metademands_fields_id'      => $fields_id]);
+            $this->add(['value'                        => $field['value'],
+                        'tickets_id'                   => $tickets_id,
+                        'plugin_metademands_fields_id' => $fields_id]);
          }
       }
    }
@@ -90,14 +93,14 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
 
       $check = [];
 
-      $query = "SELECT `glpi_plugin_metademands_fields`.`check_value`,
+      $query  = "SELECT `glpi_plugin_metademands_fields`.`check_value`,
                        `glpi_plugin_metademands_fields`.`type`,
                        `glpi_plugin_metademands_tickets_fields`.`value` as field_value
                FROM `glpi_plugin_metademands_tickets_fields`
                LEFT JOIN `glpi_plugin_metademands_fields`
                   ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_tickets_fields`.`plugin_metademands_fields_id`)
-               WHERE `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id` = ".$tasks_id." 
-               AND `glpi_plugin_metademands_tickets_fields`.`tickets_id` = ".$parent_tickets_id;
+               WHERE `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id` = " . $tasks_id . " 
+               AND `glpi_plugin_metademands_tickets_fields`.`tickets_id` = " . $parent_tickets_id;
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
@@ -132,7 +135,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
             }
             break;
          case 'dropdown_multiple':
-            if ($check_value == PluginMetademandsField::$not_null  && is_array($value) && count($value) == 1) {
+            if ($check_value == PluginMetademandsField::$not_null && is_array($value) && count($value) == 1) {
                return false;
             }
             break;

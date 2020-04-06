@@ -1149,7 +1149,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   foreach ($field['value'] as $value) {
                      array_push($parseValue, $field['custom_values'][$value]);
                   }
-                  $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . implode(', ', $parseValue) . "</td>";
+                  $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                }
 
                break;

@@ -863,6 +863,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      echo "<a target='_blank' href ='" . $data['custom_values'][1] . "'>" . $data['custom_values'][1] . "</a>";
                      break;
                }
+               echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $data['custom_values'][1] . "' >";
             }
             //            echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $data['custom_values'] . "'>";
 
