@@ -349,12 +349,16 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $rank      = 1;
 
       $newForm = [];
-      $widths = [];
+      $widths  = [];
+
       foreach ($form as $key => $elt) {
-         if (isset($fields['fields'][$key]) || $elt['type'] == 'title') {
+
+         if (isset($fields['fields'][$key]) || $elt['type'] == 'title' || $elt['type'] == 'upload') {
             $newForm[$fielCount] = $elt;
             if ($rank != $elt['rank']) {
-               $newForm[$fielCount] = ['type' => 'linebreak', 'rank' => $elt['rank'], 'id' => 0];
+               $newForm[$fielCount] = ['type' => 'linebreak',
+                                       'rank' => $elt['rank'],
+                                       'id'   => 0];
                $fielCount++;
                $newForm[$fielCount] = $elt;
             }
@@ -362,11 +366,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
             $fielCount++;
          }
+
          if (!empty($elt['label'])) {
             $widths[] = $this->GetStringWidth($elt['label']);
          }
       }
-      $max_width = max($widths);
+      $max_width         = max($widths);
       $this->label_width = $max_width;
       $this->value_width = $this->page_width - $max_width;
 
@@ -376,6 +381,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
          if (isset($fields['fields'][$elt['id']])
              || $elt['type'] == 'title'
+             || $elt['type'] == 'upload'
              || $elt['type'] == 'linebreak') {
 
             $y = $this->GetY();
@@ -422,6 +428,23 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                   // Draw line
                   $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', $value);
+                  break;
+
+               case 'upload':
+                  $values     = $fields['fields']['_filename'];
+                  $prefixes   = $fields['fields']['_prefix_filename'];
+                  $valid_name = "";
+                  $value = [];
+                  foreach ($values as $k => $v) {
+                     $name       = $values[$k];
+                     $prefix     = $prefixes[$k];
+                     $valid_name = str_replace($prefix, "", $name);
+                     $value[] .= $valid_name;
+                  }
+                  $value = implode(', ', $value);
+                  $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
+                  // Draw line
+                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   break;
 
                case 'dropdown':
