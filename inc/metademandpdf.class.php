@@ -37,24 +37,24 @@ require_once(GLPI_ROOT . "/plugins/metademands/fpdf/fpdf.php");
  * Class PluginMetaDemandsMetaDemandPdf
  */
 class PluginMetaDemandsMetaDemandPdf extends FPDF {
-   /* Constantes pour paramétrer certaines données. */
 
-   var $line_height               = 6;     // Hauteur d'une ligne simple.
-   var $new_height                = 0;
-   var $day_width                 = 6;       // Largeur de cellule jour
-   var $generalinformations_width = 125;     // Largeur de cellule information générale
-   var $total_width               = 12;
-   var $value_width               = 45;
-   var $pol_def                   = 'arial'; // Police par défaut;
-   var $tail_pol_def              = 8;      // Taille par défaut de la police.
-   var $title_size                = 14;      // Taille du titre.
-   var $margin_top                = 10;      // Marge du haut.
-   var $margin_bottom             = 10;      // Marge du bas.
-   var $margin_left               = 10;       // Marge de gauche et de droite accessoirement.
-   var $big_width_cell            = 210;     // Largeur d'une cellule qui prend toute la page.
-   var $page_height               = 297;
-   var $header_height             = 30;
-   var $footer_height             = 10;
+   /* Constantes pour paramétrer certaines données. */
+   var $line_height      = 10;     // Hauteur d'une ligne simple.
+   var $multiline_height = 5;     // Hauteur d'un textarea
+   var $linebreak_height = 5;     // Hauteur d'une break.
+   var $bgcolor          = 'grey';
+   var $value_width      = 45;
+   var $pol_def          = 'Helvetica'; // Police par défaut;
+   var $title_size       = 15;      // Taille du titre.
+   var $subtitle_size    = 12;      // Taille du titre de bloc.
+   var $font_size        = 8;      // Taille des champs.
+   var $margin_top       = 10;      // Marge du haut.
+   var $margin_bottom    = 10;      // Marge du bas.
+   var $margin_left      = 10;       // Marge de gauche et de droite accessoirement.
+   var $big_width_cell   = 210;     // Largeur d'une cellule qui prend toute la page.
+   var $page_height      = 297;
+   var $header_height    = 30;
+   var $footer_height    = 10;
    var $page_width;
    var $fields;
    var $title;
@@ -74,12 +74,13 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $this->page_width  = $this->big_width_cell - ($this->margin_left * 2);
       $this->title_width = $this->page_width;
       $quarter           = ($this->page_width / 4);
-      //      $this->label_width = $quarter + ($quarter / 2);
-      //      $this->value_width = ($quarter * 3) - ($quarter / 2);
+      //      $this->label_width        = $quarter;
+      //      $this->value_width        = ($quarter * 3);
+      //      $this->dateinterval_width = (($quarter * 3) / 2);
       $this->label_width = $quarter * 2;
       $this->value_width = $quarter * 2;
       // Set font size
-      $this->SetFontSize(10);
+      $this->SetFontSize($this->font_size);
       // Select our font family
       $this->SetFont('Helvetica', '');
    }
@@ -195,23 +196,22 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $target = 20;
       list($width, $height, $type, $attr) = getimagesize($image);
       list($width, $height) = $this->imageResize($width, $height, $target);
-      $this->CellTitleValue($largeurCoteTitre, 20, '', 'TBL', 'L', 'grey', 0, '', 'black');
+      $this->CellTitleValue($largeurCoteTitre, 20, '', 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
       $this->Image($image, $this->margin_left + 5, $this->margin_top + $height / 3, $width, $height); // x, y, w, h
-
 
       //Cellule contenant le titre
       $this->SetX($this->margin_left + $largeurCoteTitre);
-      $this->CellTitleValue($largeurCaseTitre, 20, Toolbox::decodeFromUtf8($this->title), 'TBL', 'C', '', 1, 15, 'black');
+      $this->CellTitleValue($largeurCaseTitre, 20, Toolbox::decodeFromUtf8($this->title), 'TBL', 'C', '', 1, $this->title_size, 'black');
 
       //Cellule ne contenant rien pour le moment
       $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellTitleValue($largeurCoteTitre, 5, '', 'TLR', 'C', 'grey', 0, 11, 'black');
+      $this->CellTitleValue($largeurCoteTitre, 5, '', 'TLR', 'C', 'grey', 0, $this->font_size, 'black');
       $this->SetY($this->GetY() + 5);
       $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellTitleValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'LR', 'C', 'grey', 0, '', 'black');
+      $this->CellTitleValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'LR', 'C', 'grey', 0, $this->font_size, 'black');
       $this->SetY($this->GetY() + 5);
       $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
-      $this->CellTitleValue($largeurCoteTitre, 10, Html::convDate(date('Y-m-d')), 'BLR', 'C', 'grey', 0, '', 'black');
+      $this->CellTitleValue($largeurCoteTitre, 10, Html::convDate(date('Y-m-d')), 'BLR', 'C', 'grey', 0, $this->font_size, 'black');
       $this->SetY($this->GetY() + 15);
    }
 
@@ -250,15 +250,14 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @param bool   $bold
     * @param int    $size
     * @param string $fontColor
-    * @param string $link
     */
    function CellTitleValue($w, $h, $value, $border = 'LRB', $align = 'L', $color = '', $bold = false, $size = 12, $fontColor = '') {
       if (empty($size)) {
-         $size = $this->tail_pol_def;
+         $size = $this->font_size;
       }
       $this->SetBackgroundColor($color);
       $this->SetFontNormal($fontColor, $bold, $size);
-      $this->Cell($w, $h, $value, $border, 0, $align, 1, $link);
+      $this->Cell($w, $h, $value, $border, 0, $align, 1);
    }
 
    /**
@@ -266,7 +265,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     *
     * @param type   $w
     * @param type   $h
-    * @param type   $value
+    * @param type   $values
+    * @param type   $label
+    * @param type   $type
     * @param string $border
     * @param string $align
     * @param string $color
@@ -275,34 +276,38 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @param string $fontColor
     * @param string $link
     */
-   function MultiCellValue($w, $h, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 12, $fontColor = '', $type, $label, $values, $link = '') {
+   function MultiCellValue($w, $h, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 10, $fontColor = '', $type, $label, $values, $link = '') {
 
       if (empty($size)) {
-         $size = $this->tail_pol_def;
+         $size = $this->font_size;
       }
       $y = $this->GetY();
       $x = $this->GetX();
 
       //      $spaceleft = $this->h - $this->GetY() - $this->bMargin;    // Calculates the space available on the current page
-      $spaceleft       = $this->h - $this->GetY() - $this->header_height - $this->footer_height;
-      $multiCellHeight = $this->GetMultiCellHeight($w, $h, $values);    // Calculates what the height of your MultiCell would be
+      //      $spaceleft       = $this->h - $this->GetY() - $this->header_height - $this->footer_height;
+      //
+      //      $multiLabelHeight = $this->GetMultiCellHeight($w, $h, $label);    // Calculates what the height of your MultiCell would be
+      //      $multiValueHeight = $this->GetMultiCellHeight($w, $h, $values);    // Calculates what the height of your MultiCell would be
+      //
+      //      if ($multiLabelHeight > $multiValueHeight) {
+      //         $multiCellHeight = $multiLabelHeight;
+      //      } else {
+      //         $multiCellHeight = $multiValueHeight;
+      //      }
+      //      if ($multiCellHeight > $spaceleft) {
+      //         $this->AddPage();   // Adds a page if there is not enough space available for the MultiCell
+      //      }
 
-      if ($multiCellHeight > $spaceleft) {
-         $this->AddPage();   // Adds a page if there is not enough space available for the MultiCell
-      }
-      $bgcolor = 'grey';
       //Draw label
-      $this->SetBackgroundColor($bgcolor);
+      $this->SetBackgroundColor($this->bgcolor);
       $this->SetFontNormal($fontColor, $bold, $size);
 
       if ($type == 'linebreak') {
          $this->SetBackgroundColor($color);
          $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
-      } else if ($type == 'title') {
-         $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
-
-      } else if ($type == 'textarea') {
+      } else if ($type == 'title' || $type == 'textarea') {
          $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
       } else {
@@ -315,7 +320,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          $this->SetBackgroundColor($color);
          $this->SetFontNormal($fontColor, $bold, $size);
          //Draw values
-         if ($link != "") {
+         if ($type == 'link') {
             $this->Cell($w, $h, $label, $border, 1, $align, true, $link);
          } else {
             $this->MultiCell($w, $h, $values, $border, $align, true);
@@ -370,37 +375,38 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          if (isset($fields['fields'][$elt['id']])
              || $elt['type'] == 'title'
              || $elt['type'] == 'linebreak') {
-            $y                = $this->GetY();
-            $x                = $this->GetX();
-            $bgcolor          = 'grey';
-            $line_height      = 10;
-            $linebreak_height = 5;
-            $multiline_height = 5;
-            $label            = "";
+
+            $y = $this->GetY();
+            if (($y + $this->line_height) >= ($this->page_height - $this->header_height)) {
+               $this->AddPage();
+            }
+            $label = "";
             if (!empty($elt['label'])) {
                $label = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 45);
             }
             switch ($elt['type']) {
                case 'title':
                   // Draw line
-                  $this->MultiCellValue($this->title_width, $line_height, 'LRBT', 'C', $bgcolor, 1, 12, 'black', $elt['type'], $label, '');
+                  $this->MultiCellValue($this->title_width, $this->line_height, 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black', $elt['type'], $label, '');
                   break;
 
                case 'linebreak':
                   // Draw line
-                  $this->MultiCellValue($this->title_width, $linebreak_height, 'TB', 'C', '', 0, '', 'black', $elt['type'], '', '');
+                  $this->MultiCellValue($this->title_width, $this->linebreak_height, 'TB', 'C', '', 0, '', 'black', $elt['type'], '', '');
                   break;
 
                case 'text':
                   $value = $fields['fields'][$elt['id']];
+                  $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                   // Draw line
-                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   break;
 
                case 'textarea':
                   $value = $fields["fields"][$elt['id']];
+                  $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                   // Draw line
-                  $this->MultiCellValue($this->title_width, $multiline_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                  $this->MultiCellValue($this->title_width, $this->multiline_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   break;
 
                case 'link':
@@ -409,8 +415,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   if (strpos($value, 'http://') !== 0 && strpos($value, 'https://') !== 0) {
                      $value = "http://" . $value;
                   }
+                  $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                   // Draw line
-                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', $value);
                   break;
 
                case 'dropdown':
@@ -419,28 +426,21 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      case 'user':
                         $value = $dbu->getUserName($fields['fields'][$elt['id']]);
                         break;
-
-                     case 'location':
-                     case 'PluginResourcesResource':
-                     case 'group':
-                     case 'usertitle':
-                     case 'usercategory':
-                        $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
-                        $value = ($value == '&nbsp;') ? ' ' : $value;
-                        break;
                      case 'other':
                         if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
                            $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
                            $value                = ($fields['fields'][$elt['id']] != 0) ? $elt['custom_values'][$fields['fields'][$elt['id']]] : ' ';
                         }
                         break;
+                     //others
                      default:
                         $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
                         $value = ($value == '&nbsp;') ? ' ' : $value;
                         break;
                   }
+                  $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                   // Draw line
-                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   break;
 
                case 'yesno':
@@ -448,8 +448,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   if ($fields['fields'][$elt['id']] == 2) {
                      $value = __('Yes');
                   }
-                  //                  // Draw line
-                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::decodeFromUtf8($value));
+                  $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
+                  // Draw line
+                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   break;
 
                case 'dropdown_multiple':
@@ -459,12 +460,13 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $values        = $fields['fields'][$elt['id']];
                      $parseValue    = [];
 
-                     foreach ($values as $key => $label) {
-                        array_push($parseValue, $custom_values[$label]);
+                     foreach ($values as $k => $v) {
+                        array_push($parseValue, $custom_values[$v]);
                      }
                      $value = implode(', ', $parseValue);
+                     $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                      // Draw line
-                     $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   }
                   break;
 
@@ -475,15 +477,16 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $values          = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
                      $custom_checkbox = [];
 
-                     foreach ($custom_values as $key => $label) {
-                        $checked = isset($values[$key]) ? 1 : 0;
+                     foreach ($custom_values as $k => $v) {
+                        $checked = isset($values[$k]) ? 1 : 0;
                         if ($checked) {
-                           $custom_checkbox[] .= $label;
+                           $custom_checkbox[] .= $v;
                         }
                      }
-                     // Draw line
                      $value = implode(', ', $custom_checkbox);
-                     $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                     $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   }
                   break;
 
@@ -492,31 +495,35 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   if (!empty($elt['custom_values'])) {
                      $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
                      $values        = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
-                     foreach ($custom_values as $id => $label) {
-                        if ($values == $id) {
-                           $value = $custom_values[$id];
+                     foreach ($custom_values as $k => $v) {
+                        if ($values == $k) {
+                           $value = $custom_values[$k];
                         }
                      }
+                     $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                      // Draw line
-                     $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value)));
+                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   }
                   break;
 
                case 'datetime':
                   $value = Html::convDate($fields['fields'][$elt['id']]);
+                  $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                   // Draw line
-                  $this->MultiCellValue($this->value_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::decodeFromUtf8($value));
+                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   break;
 
                case 'datetime_interval':
                   $value  = Html::convDate($fields['fields'][$elt['id']]);
                   $value2 = Html::convDate($fields['fields'][$elt['id'] . "-2"]);
+                  $value  = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
+                  $value2 = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value2));
+                  if (!empty($elt['label2'])) {
+                     $label2 = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label2'])), 45);
+                  }
                   // Draw line
-                  $this->MultiCellValue($this->label_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::decodeFromUtf8($value));
-                  $this->SetY($y + 1);
-                  $this->SetX($x + $this->label_width);
-                  // Draw line 2
-                  $this->MultiCellValue($this->label_width, $line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, Toolbox::decodeFromUtf8($value2));
+                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label2, $value2);
                   break;
             }
          }
@@ -531,6 +538,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @param null   $border
     * @param string $align
     * source : https://gist.github.com/johnballantyne/2989898e2196686388f6
+    *
     * @return int
     */
    function GetMultiCellHeight($w, $h, $txt, $border = null, $align = 'J') {
@@ -618,8 +626,6 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     */
    function Footer() {
       $this->SetY($this->page_height - $this->margin_top - $this->header_height);
-      $numeroPage = $this->PageNo();
-      $this->Cell($this->page_width, $this->header_height, $numeroPage . " sur {nb}", 0, 0, 'C');
    }
 
    /**
@@ -639,22 +645,23 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     *
     * @return \Document_Item
     */
-   public function addDocument($idTicket, $entitiesId) {
+   public function addDocument($name, $tickets_id, $entities_id) {
       //Construction du chemin du fichier
-      $filename = "metademand_" . $idTicket . ".pdf";
-      $this->Output(GLPI_DOC_DIR . "/_uploads/" . Toolbox::encodeInUtf8($filename), 'F');
+      //      $filename = "metademand_" . $idTicket . ".pdf";
+      $filename = $name . ".pdf";
+      $this->Output(GLPI_DOC_DIR . "/_uploads/" . $filename, 'F');
 
       //Création du document
       $doc = new Document();
       //Construction des données
       $input                = [];
       $input["name"]        = addslashes($filename);
-      $input["upload_file"] = Toolbox::encodeInUtf8($filename);
+      $input["upload_file"] = $filename;
       $input["mime"]        = "application/pdf";
       $input["date_mod"]    = date("Y-m-d H:i:s");
       $input["users_id"]    = Session::getLoginUserID();
-      $input["entities_id"] = $entitiesId;
-      $input["tickets_id"]  = $idTicket;
+      $input["entities_id"] = $entities_id;
+      $input["tickets_id"]  = $tickets_id;
       //entities_id
       //tickets_id
       //Initialisation du document
@@ -662,7 +669,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $docitem = new Document_Item();
 
       //entities_id
-      $docitem->add(['itemtype' => "Ticket", "documents_id" => $newdoc, "items_id" => $idTicket, "entities_id" => $entitiesId]);
+      $docitem->add(['itemtype' => "Ticket", "documents_id" => $newdoc, "items_id" => $tickets_id, "entities_id" => $entities_id]);
       return $docitem;
    }
 }

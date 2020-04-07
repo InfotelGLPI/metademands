@@ -875,18 +875,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $parent_fields['_filename'][] = $toUpload['tmp_name'];
                      }
                   }
-                  $input                     = $this->mergeFields($parent_fields, $parent_ticketfields);
+                  $input = $this->mergeFields($parent_fields, $parent_ticketfields);
                   if (isset($values['fields']['_filename'])) {
-                     $input['_filename']        = $values['fields']['_filename'];
+                     $input['_filename'] = $values['fields']['_filename'];
                   }
                   if (isset($values['fields']['_prefix_filename'])) {
-                     $input['_prefix_filename']        = $values['fields']['_prefix_filename'];
+                     $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
                   }
 
                   $input['_filename']        = isset($values['fields']['_filename']) ? $values['fields']['_filename'] : [];
                   $input['_prefix_filename'] = isset($values['fields']['_prefix_filename']) ? $values['fields']['_prefix_filename'] : "";
 
-                  $input                     = Toolbox::addslashes_deep($input);
+                  $input = Toolbox::addslashes_deep($input);
 
                   $parent_tickets_id = $ticket->add($input);
                   if ($docitem == null && $config['create_pdf']) {
@@ -895,7 +895,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                                                                   $this->fields['comment']);
                      $docPdf->drawPdf($metademands_data[2][$metademands_id]['form'], $values);
                      $docPdf->Close();
-                     $docitem = $docPdf->addDocument($ticket->getID(), $_SESSION['glpiactive_entity']);
+                     $docitem = $docPdf->addDocument($metademand->fields['name'], $ticket->getID(), $_SESSION['glpiactive_entity']);
                   }
 
                   // Ticket already exists

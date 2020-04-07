@@ -7,32 +7,32 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin 2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-26 18:19+0100\n"
-"PO-Revision-Date: 2020-03-26 18:21+0100\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: en_GB\n"
+"POT-Creation-Date: 2020-04-07 10:45+0200\n"
+"PO-Revision-Date: 2020-04-07 10:58+0200\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 2.2.4\n"
+"Language: en_GB\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.3\n"
 
 #: setup.php:145 inc/metademand.class.php:71 inc/profile.class.php:151
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
-msgstr[0] "Right to update the requester of a meta-demand"
+msgstr[0] "Meta-Demand"
 msgstr[1] "Meta-Demands"
 
-#: front/wizard.form.php:152
+#: front/wizard.form.php:155
 msgid "Mandatory fields of the metademand ticket must be configured"
 msgstr "Mandatory fields of the metademand ticket must be configured"
 
-#: front/wizard.form.php:190 front/wizard.form.php:192
-#: front/wizard.form.php:205 front/wizard.form.php:207
-#: front/wizard.form.php:261 front/wizard.form.php:263
-#: front/wizard.form.php:276 front/wizard.form.php:278
-#: front/wizard.form.php:294 front/wizard.form.php:297
+#: front/wizard.form.php:193 front/wizard.form.php:195
+#: front/wizard.form.php:208 front/wizard.form.php:210
+#: front/wizard.form.php:264 front/wizard.form.php:266
+#: front/wizard.form.php:279 front/wizard.form.php:281
+#: front/wizard.form.php:297 front/wizard.form.php:300
 msgid "Create a demand"
 msgstr "Create a demand"
 
@@ -194,21 +194,19 @@ msgstr ""
 
 #: inc/field.class.php:706
 msgid "Display if this selected field is filled"
-msgstr ""
+msgstr "Display if this selected field is filled"
 
 #: inc/field.class.php:707 inc/field.class.php:818
 msgid "If the selected field is filled, this field will be displayed"
-msgstr ""
+msgstr "If the selected field is filled, this field will be displayed"
 
 #: inc/field.class.php:716
 msgid "Day greater or equal to now"
 msgstr "Day greater or equal to now"
 
 #: inc/field.class.php:817
-#, fuzzy
-#| msgid "Display field after"
 msgid "Display if"
-msgstr "Display field after"
+msgstr "Display if"
 
 #: inc/field.class.php:902
 msgid "Custom values"
@@ -345,6 +343,10 @@ msgstr "Due date"
 msgid "Coming"
 msgstr "Coming"
 
+#: inc/metademandpdf.class.php:211
+msgid "Created on"
+msgstr "Created on"
+
 #: inc/metademand_resource.class.php:46
 msgid "Link with a metademand"
 msgid_plural "Link with metademands"
@@ -354,10 +356,6 @@ msgstr[1] "Link with metademands"
 #: inc/metademand_resource.class.php:160
 msgid "Meta-demands linked"
 msgstr "Meta-demands linked"
-
-#: inc/metademandpdf.class.php:730
-msgid "Created on"
-msgstr "Created on"
 
 #: inc/metademandtask.class.php:46 inc/task.class.php:51
 #: inc/ticket_metademand.class.php:48 inc/ticket_task.class.php:48
@@ -495,12 +493,12 @@ msgstr "Finish"
 msgid "Step %d - Ticket type choice"
 msgstr "Step %d - Ticket type choice"
 
-#: inc/wizard.class.php:1155
+#: inc/wizard.class.php:1156
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "Date %s cannot be less than today's date"
 
-#: inc/wizard.class.php:1163
+#: inc/wizard.class.php:1164
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr "Date %1$s cannot be greater than date %2$s"
