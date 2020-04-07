@@ -39,15 +39,15 @@ require_once(GLPI_ROOT . "/plugins/metademands/fpdf/fpdf.php");
 class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
    /* Constantes pour paramétrer certaines données. */
-   var $line_height      = 10;     // Hauteur d'une ligne simple.
-   var $multiline_height = 5;     // Hauteur d'un textarea
-   var $linebreak_height = 5;     // Hauteur d'une break.
+   var $line_height      = 6;     // Hauteur d'une ligne simple.
+   var $multiline_height = 6;     // Hauteur d'un textarea
+   var $linebreak_height = 6;     // Hauteur d'une break.
    var $bgcolor          = 'grey';
    var $value_width      = 45;
    var $pol_def          = 'Helvetica'; // Police par défaut;
    var $title_size       = 15;      // Taille du titre.
    var $subtitle_size    = 12;      // Taille du titre de bloc.
-   var $font_size        = 8;      // Taille des champs.
+   var $font_size        = 9;      // Taille des champs.
    var $margin_top       = 10;      // Marge du haut.
    var $margin_bottom    = 10;      // Marge du bas.
    var $margin_left      = 10;       // Marge de gauche et de droite accessoirement.
@@ -74,11 +74,11 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $this->page_width  = $this->big_width_cell - ($this->margin_left * 2);
       $this->title_width = $this->page_width;
       $quarter           = ($this->page_width / 4);
-      //      $this->label_width        = $quarter;
-      //      $this->value_width        = ($quarter * 3);
-      //      $this->dateinterval_width = (($quarter * 3) / 2);
-      $this->label_width = $quarter * 2;
-      $this->value_width = $quarter * 2;
+      $this->label_width = $quarter;
+      $this->value_width = ($quarter * 3);
+
+      //      $this->label_width = $quarter * 2;
+      //      $this->value_width = $quarter * 2;
       // Set font size
       $this->SetFontSize($this->font_size);
       // Select our font family
@@ -185,8 +185,8 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    }
 
    function Header() {
-      $this->SetY($this->margin_top);
-      $this->SetX($this->margin_left);
+
+      $this->SetXY($this->margin_left, $this->margin_top);
 
       $largeurCoteTitre = 35;
       $largeurCaseTitre = $this->big_width_cell - ($this->margin_left * 2) - ($largeurCoteTitre * 2);
@@ -284,25 +284,14 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $y = $this->GetY();
       $x = $this->GetX();
 
-      //      $spaceleft = $this->h - $this->GetY() - $this->bMargin;    // Calculates the space available on the current page
-      //      $spaceleft       = $this->h - $this->GetY() - $this->header_height - $this->footer_height;
-      //
-      //      $multiLabelHeight = $this->GetMultiCellHeight($w, $h, $label);    // Calculates what the height of your MultiCell would be
-      //      $multiValueHeight = $this->GetMultiCellHeight($w, $h, $values);    // Calculates what the height of your MultiCell would be
-      //
-      //      if ($multiLabelHeight > $multiValueHeight) {
-      //         $multiCellHeight = $multiLabelHeight;
-      //      } else {
-      //         $multiCellHeight = $multiValueHeight;
-      //      }
-      //      if ($multiCellHeight > $spaceleft) {
-      //         $this->AddPage();   // Adds a page if there is not enough space available for the MultiCell
-      //      }
-
       //Draw label
       $this->SetBackgroundColor($this->bgcolor);
       $this->SetFontNormal($fontColor, $bold, $size);
-
+      //Calculate label
+      //      $width = $this->GetStringWidth($label) + ($this->cMargin * 2);
+      //      if ($width < $this->label_width) {
+      $width = $this->label_width;
+      //      }
       if ($type == 'linebreak') {
          $this->SetBackgroundColor($color);
          $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
@@ -311,9 +300,8 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
       } else {
-         $this->MultiCell($this->label_width, $h, $label, $border, $align, true);
-         $this->SetY($y);
-         $this->SetX($x + $this->label_width);
+         $this->MultiCell($width, $h, $label, $border, $align, true);
+         $this->SetXY($x + $width, $y);
       }
 
       if ($type != 'title' && $type != 'linebreak') {
@@ -322,8 +310,14 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          //Draw values
          if ($type == 'link') {
             $this->Cell($w, $h, $label, $border, 1, $align, true, $link);
-         } else {
+         } else if ($type == 'textarea') {
             $this->MultiCell($w, $h, $values, $border, $align, true);
+         } else {
+            $width_values = $w;
+            //            if ($width != $this->label_width) {
+            //               $width_values = $w - $width;
+            //            }
+            $this->MultiCell($width_values, $h, $values, $border, $align, true);
          }
       }
    }
@@ -355,6 +349,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $rank      = 1;
 
       $newForm = [];
+      $widths = [];
       foreach ($form as $key => $elt) {
          if (isset($fields['fields'][$key]) || $elt['type'] == 'title') {
             $newForm[$fielCount] = $elt;
@@ -367,7 +362,14 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
             $fielCount++;
          }
+         if (!empty($elt['label'])) {
+            $widths[] = $this->GetStringWidth($elt['label']);
+         }
       }
+      $max_width = max($widths);
+      $this->label_width = $max_width;
+      $this->value_width = $this->page_width - $max_width;
+
       $dbu = new DbUtils();
 
       foreach ($newForm as $key => $elt) {
@@ -382,7 +384,8 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
             }
             $label = "";
             if (!empty($elt['label'])) {
-               $label = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 45);
+               //               $label = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 30);
+               $label = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label']));
             }
             switch ($elt['type']) {
                case 'title':
@@ -519,7 +522,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   $value  = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                   $value2 = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value2));
                   if (!empty($elt['label2'])) {
-                     $label2 = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label2'])), 45);
+                     $label2 = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label2'])), 30);
                   }
                   // Draw line
                   $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
@@ -530,96 +533,6 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       }
    }
 
-
-   /**
-    * @param        $w
-    * @param        $h
-    * @param        $txt
-    * @param null   $border
-    * @param string $align
-    * source : https://gist.github.com/johnballantyne/2989898e2196686388f6
-    *
-    * @return int
-    */
-   function GetMultiCellHeight($w, $h, $txt, $border = null, $align = 'J') {
-      // Calculate MultiCell with automatic or explicit line breaks height
-      // $border is un-used, but I kept it in the parameters to keep the call
-      //   to this function consistent with MultiCell()
-      $cw = &$this->CurrentFont['cw'];
-      if ($w == 0)
-         $w = $this->w - $this->rMargin - $this->x;
-      $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
-      $s    = str_replace("\r", '', $txt);
-      $nb   = strlen($s);
-      if ($nb > 0 && $s[$nb - 1] == "\n")
-         $nb--;
-      $sep    = -1;
-      $i      = 0;
-      $j      = 0;
-      $l      = 0;
-      $ns     = 0;
-      $height = 0;
-      while ($i < $nb) {
-         // Get next character
-         $c = $s[$i];
-         if ($c == "\n") {
-            // Explicit line break
-            if ($this->ws > 0) {
-               $this->ws = 0;
-               $this->_out('0 Tw');
-            }
-            //Increase Height
-            $height += $h;
-            $i++;
-            $sep = -1;
-            $j   = $i;
-            $l   = 0;
-            $ns  = 0;
-            continue;
-         }
-         if ($c == ' ') {
-            $sep = $i;
-            $ls  = $l;
-            $ns++;
-         }
-         $l += $cw[$c];
-         if ($l > $wmax) {
-            // Automatic line break
-            if ($sep == -1) {
-               if ($i == $j)
-                  $i++;
-               if ($this->ws > 0) {
-                  $this->ws = 0;
-                  $this->_out('0 Tw');
-               }
-               //Increase Height
-               $height += $h;
-            } else {
-               if ($align == 'J') {
-                  $this->ws = ($ns > 1) ? ($wmax - $ls) / 1000 * $this->FontSize / ($ns - 1) : 0;
-                  $this->_out(sprintf('%.3F Tw', $this->ws * $this->k));
-               }
-               //Increase Height
-               $height += $h;
-               $i      = $sep + 1;
-            }
-            $sep = -1;
-            $j   = $i;
-            $l   = 0;
-            $ns  = 0;
-         } else
-            $i++;
-      }
-      // Last chunk
-      if ($this->ws > 0) {
-         $this->ws = 0;
-         $this->_out('0 Tw');
-      }
-      //Increase Height
-      $height += $h;
-
-      return $height;
-   }
 
    /**
     *
@@ -637,6 +550,16 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $this->AddPage();
       $this->SetAutoPageBreak(false);
       $this->setFields($form, $fields);
+   }
+
+   static function cleanTitle($string) {
+      $string = str_replace(array('[\', \']'), '', $string);
+      $string = preg_replace('/\[.*\]/U', '', $string);
+      $string = preg_replace('/&(amp;)?#?[a-z0-9]+;/i', '-', $string);
+      $string = htmlentities($string, ENT_COMPAT, 'utf-8');
+      $string = preg_replace('/&([a-z])(acute|uml|circ|grave|ring|cedil|slash|tilde|caron|lig|quot|rsquo);/i', '\\1', $string);
+      $string = preg_replace(array('/[^a-z0-9]/i', '/[-]+/'), '-', $string);
+      return strtolower(trim($string, '-'));
    }
 
    /**

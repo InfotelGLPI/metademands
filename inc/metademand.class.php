@@ -895,7 +895,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                                                                   $this->fields['comment']);
                      $docPdf->drawPdf($metademands_data[2][$metademands_id]['form'], $values);
                      $docPdf->Close();
-                     $docitem = $docPdf->addDocument($metademand->fields['name'], $ticket->getID(), $_SESSION['glpiactive_entity']);
+                     $name = PluginMetaDemandsMetaDemandPdf::cleanTitle($metademand->fields['name']);
+                     $docitem = $docPdf->addDocument($name, $ticket->getID(), $_SESSION['glpiactive_entity']);
                   }
 
                   // Ticket already exists
