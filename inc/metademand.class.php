@@ -1213,6 +1213,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . Html::convDate($field['value']) . "</td>";
                $result['content'] .= "<td $style_title>" . $field['label2'] . "</td><td>" . Html::convDate($field['value2']) . "</td>";
                break;
+            case 'number':
+               $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>" . $field['value'] . "</td>";
+               break;
             case 'yesno':
                if ($field['value'] == 2) {
                   $val = __('Yes');

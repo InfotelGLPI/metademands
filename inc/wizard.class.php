@@ -949,6 +949,15 @@ class PluginMetademandsWizard extends CommonDBTM {
          case 'datetime':
             Html::showDateField("field[" . $data['id'] . "]", ['value' => $value]);
             break;
+         case 'number':
+            $data['custom_values']  = PluginMetademandsField::_unserialize($data['custom_values']);
+            Dropdown::showNumber("field[" . $data['id'] . "]", ['value' => $value,
+                                                   'min'   => (isset($data['custom_values']['min'])?$data['custom_values']['min']:1),
+                                                   'max'   => (isset($data['custom_values']['max'])?$data['custom_values']['max']:360),
+                                                   'step'  => (isset($data['custom_values']['step'])?$data['custom_values']['step']:1),
+//                                                   'toadd' => [0 => __('Infinite')]
+            ]);
+            break;
          case 'yesno':
             $option[1] = __('No');
             $option[2] = __('Yes');

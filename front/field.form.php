@@ -46,6 +46,13 @@ if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
    $_POST['custom_values'] = $custom_values;
 }
 
+if (isset($_POST['type']) && $_POST['type'] == 'number') {
+   $custom_values['min'] = $_POST['min'];
+   $custom_values['max'] = $_POST['max'];
+   $custom_values['step'] = $_POST['step'];
+   $_POST['custom_values'] = $custom_values;
+}
+
 $field = new PluginMetademandsField();
 
 if (isset($_POST["add"])) {
@@ -74,7 +81,7 @@ if (isset($_POST["add"])) {
 
 } else if (isset($_POST["update"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])
-       && ($_POST["item"] == 'other' || $_POST["type"] == 'checkbox' || $_POST["type"] == 'radio' || $_POST['item'] == 'group') ) {
+       && ($_POST["item"] == 'other' || $_POST["type"] == 'checkbox' || $_POST["type"] == 'radio' || $_POST['item'] == 'group' || $_POST['type'] == 'number') ) {
       $comment_values = "";
       $custom_values  = "";
       $default_values = "";

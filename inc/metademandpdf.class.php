@@ -399,6 +399,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   break;
 
                case 'text':
+               case 'number':
                   $value = $fields['fields'][$elt['id']];
                   $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
                   // Draw line

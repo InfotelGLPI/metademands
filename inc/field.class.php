@@ -42,7 +42,7 @@ class PluginMetademandsField extends CommonDBChild {
    static $types = ['PluginMetademandsMetademand'];
 
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
-                          'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'parent_field'];
+                          'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
    static $field_items = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'PluginResourcesResource',
                           'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
@@ -581,6 +581,8 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Father\'s field', 'metademands');
          case 'link' :
             return __('Link');
+         case 'number':
+            return __('Number', 'metademands');
          default:
             return Dropdown::EMPTY_VALUE;
       }
@@ -661,7 +663,7 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group', 'location',
-                        'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple', 'parent_field',
+                        'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple', 'parent_field', 'number',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
       if (isset($params['check_value']) && in_array($params['value'], $allowed_types)) {
@@ -722,6 +724,51 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   echo "<input type='checkbox' name='check_value' value='1' $checked>";
                   echo "</td></tr>";
+                  break;
+               case 'number' :
+                  $custom_values = [];
+                  if (!empty($params['custom_values'])) {
+                     $custom_values =  self::_unserialize($params['custom_values']);
+
+                  } else {
+                     $custom_values['min'] = 0;
+                     $custom_values['max'] = 0;
+                     $custom_values['step'] = 0;
+                  }
+
+                  echo "<tr><td>";
+                  echo __('Minimum', 'servicecatalog');
+                  echo '</td>';
+                  echo "<td>";
+                  Dropdown::showNumber('min', ['value' => $custom_values['min'],
+                                                'min'   => 1,
+                                                'max'   => 360,
+                                                'step'  => 1]);
+                  echo "</td></tr>";
+
+                  // Watcher group
+                  echo "<tr><td>";
+                  echo __('Maximum', 'servicecatalog');
+                  echo '</td>';
+                  echo "<td>";
+                  Dropdown::showNumber('max', ['value' => $custom_values['max'],
+                                               'min'   => 1,
+                                               'max'   => 360,
+                                               'step'  => 1]);
+                  echo "</td></tr>";
+
+                  // Requester group
+                  echo "<tr><td>";
+                  echo __('Step', 'servicecatalog');
+                  echo '</td>';
+                  echo "<td>";
+                  Dropdown::showNumber('step', ['value' => $custom_values['step'],
+                                                         'min'   => 1,
+                                                         'max'   => 360,
+                                                         'step'  => 1]);
+                  echo "</td></tr>";
+
+
                   break;
                case 'group':
                   $custom_values = [];
@@ -1336,7 +1383,6 @@ class PluginMetademandsField extends CommonDBChild {
             if (empty($value)) {
                if (($key == 'item' && $input['type'] == 'dropdown')
                    || ($key == 'label2' && $input['type'] == 'datetime_interval')) {
-
                   $msg[]   = $mandatory_fields[$key];
                   $checkKo = true;
                } else if ($key != 'item' && $key != 'label2') {
