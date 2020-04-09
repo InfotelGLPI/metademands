@@ -896,7 +896,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                                                                   $this->fields['comment']);
                      $docPdf->drawPdf($metademands_data[2][$metademands_id]['form'], $values);
                      $docPdf->Close();
-                     $name = PluginMetaDemandsMetaDemandPdf::cleanTitle($metademand->fields['name']);
+                     $name    = PluginMetaDemandsMetaDemandPdf::cleanTitle($metademand->fields['name']);
                      $docitem = $docPdf->addDocument($name, $ticket->getID(), $_SESSION['glpiactive_entity']);
                   }
 
@@ -914,20 +914,25 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
 
                //Prevent create subtickets
-               $fieldDbtm = new PluginMetademandsField();
-               foreach ($_POST['field'] as $key => $field) {
-                  $fieldDbtm->getFromDB($key);
-                  $check_value[$key] = $fieldDbtm->getField('check_value');
-                  $idTask            = $fieldDbtm->getField("plugin_metademands_tasks_id");
-                  if (isset($check_value[$key])) {
-                     if (($check_value[$key] == 'NOT_NULL' && $field === 0) ||
-                         ($check_value[$key] != 'NOT_NULL' && $check_value[$key] != $field)) {
-                        unset($line['form'][$key]);
-                        unset($line['tasks'][$idTask]);
-                        unset($values['fields'][$key]);
-                     }
-                  }
-               }
+//               $tasks = [];
+//               foreach ($values['fields'] as $key => $field) {
+//                  $fieldDbtm = new PluginMetademandsField();
+//                  if ($fieldDbtm->getFromDB($key)) {
+//
+//                     $check_value = $fieldDbtm->fields['check_value'];
+//                     $type        = $fieldDbtm->fields['type'];
+//                     $test    = PluginMetademandsTicket_Field::isCheckValueOK($field, $check_value, $type);
+//                     $check[] = ($test == false) ? 0 : 1;
+//                     if (in_array(0, $check)) {
+//                        $tasks[] .= $fieldDbtm->fields['plugin_metademands_tasks_id'];
+//                     }
+//                  }
+//               }
+//
+//               foreach ($tasks as $k => $task) {
+//                  unset($line['tasks'][$task]);
+//               }
+
                if ($parent_tickets_id) {
                   // Create link for metademand task with ancestor metademand
                   if ($form_metademands_id == $metademands_id) {
@@ -954,7 +959,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
 
                   // Create sons ticket tasks
-                  if (count($line['tasks'])) {
+                  if (isset($line['tasks'])
+                      && is_array($line['tasks'])
+                      && count($line['tasks'])) {
                      if (!$this->createSonsTickets($line['tasks'], $parent_tickets_id, $tasklevel,
                                                    $this->mergeFields($parent_fields,
                                                                       $parent_ticketfields),
@@ -1085,7 +1092,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          //            $rank              = $field['rank'];
          //         }
       }
-            $result['content'] .= "</table>";
+      $result['content'] .= "</table>";
       return $result;
    }
 
@@ -1278,7 +1285,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @return bool
     */
-   private function createSonsTickets(array $tickettasks_data, $parent_tickets_id, $tasklevel = 1, $parent_fields, $ancestor_tickets_id) {
+   private function createSonsTickets($tickettasks_data = [], $parent_tickets_id, $tasklevel = 1, $parent_fields, $ancestor_tickets_id) {
 
       $ticket_ticket = new Ticket_Ticket();
       $ticket_task   = new PluginMetademandsTicket_Task();
@@ -1286,12 +1293,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $KO            = [];
 
       foreach ($tickettasks_data as $son_ticket_data) {
-         if ($son_ticket_data['level'] == $tasklevel) {
+
+         if ($son_ticket_data['level'] == $tasklevel
+             && PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $ancestor_tickets_id)) {
 
             // Skip ticket creation if not allowed by metademand form
-            if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $ancestor_tickets_id)) {
-               continue;
-            }
 
             // Field format for ticket
             foreach ($son_ticket_data as $field => $value) {
@@ -1339,6 +1345,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if (isset($parent_fields['_groups_id_assign'])) {
                $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
             }
+
             if ($son_tickets_id = $ticket->add(Toolbox::addslashes_deep($son_ticket_data))) {
                // Add son link to parent
                $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
@@ -1452,10 +1459,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       if (count($tickets_found)) {
          echo "<div align='center'><table class='tab_cadre_fixe'>";
-         echo "<tr><th colspan='5'>" . __('Demand followup', 'metademands') . "</th></tr>";
+         echo "<tr><th colspan='6'>" . __('Demand followup', 'metademands') . "</th></tr>";
          echo "<tr>";
          echo "<th>" . __('Ticket') . "</th>";
          echo "<th>" . __('Opening date') . "</th>";
+         echo "<th>" . __('Assigned to') . "</th>";
          echo "<th>" . __('Status') . "</th>";
          echo "<th>" . __('Due date', 'metademands') . "</th>";
          echo "<th>" . __('Status') . " " . __('SLT') . "</th></tr>";
@@ -1519,6 +1527,42 @@ class PluginMetademandsMetademand extends CommonDropdown {
             //date
             echo "<td class='$color_class'>";
             echo Html::convDateTime($ticket->fields['date']);
+            echo "</td>";
+
+            //group
+            $techdata = '';
+            if ($ticket->countUsers(CommonITILActor::ASSIGN)) {
+
+               foreach ($ticket->getUsers(CommonITILActor::ASSIGN) as $u) {
+                  $k = $u['users_id'];
+                  if ($k) {
+                     $techdata .= getUserName($k);
+                  }
+
+                  if ($ticket->countUsers(CommonITILActor::ASSIGN) > 1) {
+                     $techdata .= "<br>";
+                  }
+               }
+               $techdata .= "<br>";
+            }
+
+            if ($ticket->countGroups(CommonITILActor::ASSIGN)) {
+
+               foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $u) {
+                  $k = $u['groups_id'];
+                  if ($k) {
+                     $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
+                  }
+
+                  if ($ticket->countGroups(CommonITILActor::ASSIGN) > 1) {
+                     $techdata .= "<br>";
+                  }
+               }
+            }
+            echo "<td class='$color_class'>";
+            if (!$notcreated) {
+               echo $techdata;
+            }
             echo "</td>";
 
             //status

@@ -488,9 +488,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
                      $values        = $fields['fields'][$elt['id']];
                      $parseValue    = [];
-
-                     foreach ($values as $k => $v) {
-                        array_push($parseValue, $custom_values[$v]);
+                     if (is_array($values) && count($values)) {
+                        foreach ($values as $k => $v) {
+                           array_push($parseValue, $custom_values[$v]);
+                        }
                      }
                      $value = implode(', ', $parseValue);
                      $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));

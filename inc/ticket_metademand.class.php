@@ -96,11 +96,4 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
       }
       return true;
    }
-
-   /**
-    * @param \Ticket $Ticket
-    */
-   function post_update_ticket(Ticket $Ticket) {
-
-   }
 }

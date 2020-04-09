@@ -95,7 +95,8 @@ class PluginMetademandsTicket extends CommonDBTM {
    static function post_update_ticket(Ticket $ticket) {
       $metademand = new PluginMetademandsMetademand();
 
-      if ($ticket->fields['status'] == Ticket::SOLVED || $ticket->fields['status'] == Ticket::CLOSED) {
+      if ($ticket->fields['status'] == Ticket::SOLVED
+          || $ticket->fields['status'] == Ticket::CLOSED) {
          $metademand->addSonTickets($ticket->fields);
       }
 

@@ -102,13 +102,15 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                WHERE `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id` = " . $tasks_id . " 
                AND `glpi_plugin_metademands_tickets_fields`.`tickets_id` = " . $parent_tickets_id;
       $result = $DB->query($query);
+
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
-            $check[] = self::isCheckValueOK(PluginMetademandsField::_unserialize($data['field_value']), $data['check_value'], $data['type']);
+            $test  = self::isCheckValueOK(PluginMetademandsField::_unserialize($data['field_value']), $data['check_value'], $data['type']);
+            $check[] = ($test == false) ? 0 : 1;
          }
       }
 
-      if (in_array(false, $check)) {
+      if (in_array(0, $check)) {
          return false;
       }
 
@@ -123,6 +125,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
     * @return bool
     */
    static function isCheckValueOK($value, $check_value, $type) {
+
       switch ($type) {
          case 'yesno':
             if ($check_value != $value) {
@@ -135,7 +138,10 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
             }
             break;
          case 'dropdown_multiple':
-            if ($check_value == PluginMetademandsField::$not_null && is_array($value) && count($value) == 1) {
+            if (empty($value)) {
+               $value = [];
+            }
+            if ($check_value == PluginMetademandsField::$not_null && is_array($value) && count($value) == 0) {
                return false;
             }
             break;
