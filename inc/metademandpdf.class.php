@@ -47,7 +47,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    var $pol_def          = 'Helvetica'; // Police par défaut;
    var $title_size       = 15;      // Taille du titre.
    var $subtitle_size    = 12;      // Taille du titre de bloc.
-   var $font_size        = 9;      // Taille des champs.
+   var $font_size        = 10;      // Taille des champs.
    var $margin_top       = 10;      // Marge du haut.
    var $margin_bottom    = 10;      // Marge du bas.
    var $margin_left      = 10;       // Marge de gauche et de droite accessoirement.
@@ -431,20 +431,22 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   break;
 
                case 'upload':
-                  $values     = $fields['fields']['_filename'];
-                  $prefixes   = $fields['fields']['_prefix_filename'];
-                  $valid_name = "";
-                  $value = [];
-                  foreach ($values as $k => $v) {
-                     $name       = $values[$k];
-                     $prefix     = $prefixes[$k];
-                     $valid_name = str_replace($prefix, "", $name);
-                     $value[] .= $valid_name;
+                  if (isset($fields['fields']['_filename'])) {
+                     $values     = $fields['fields']['_filename'];
+                     $prefixes   = $fields['fields']['_prefix_filename'];
+                     $valid_name = "";
+                     $value      = [];
+                     foreach ($values as $k => $v) {
+                        $name       = $values[$k];
+                        $prefix     = $prefixes[$k];
+                        $valid_name = str_replace($prefix, "", $name);
+                        $value[]    .= $valid_name;
+                     }
+                     $value = implode(', ', $value);
+                     $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   }
-                  $value = implode(', ', $value);
-                  $value = Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($value));
-                  // Draw line
-                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                   break;
 
                case 'dropdown':

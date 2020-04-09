@@ -679,7 +679,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
          }
 
          // Check if task are metademands, if some found : recursive call
-         if ($metademands->fields['type'] == Ticket::DEMAND_TYPE) {
+         if (isset($metademands->fields['type'])
+             && $metademands->fields['type'] == Ticket::DEMAND_TYPE) {
             $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` AS link_metademands_id
                         FROM `glpi_plugin_metademands_tasks`
                         RIGHT JOIN `glpi_plugin_metademands_metademandtasks`
@@ -1084,7 +1085,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          //            $rank              = $field['rank'];
          //         }
       }
-      //      $result['content'] .= "</table>";
+            $result['content'] .= "</table>";
       return $result;
    }
 
@@ -1325,9 +1326,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                if (!empty($parent_fields['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2' style='background-color: #ccc;'>" . __('Parent tickets', 'metademands') .
-                              "</th></tr>" . $parent_fields['content'];
+                              "</th></tr><tr><td colspan='2'>" . $parent_fields['content'];
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                  $content .= "</table><br>";
+                  $content .= "</td></tr></table><br>";
                   //}
                }
             }
