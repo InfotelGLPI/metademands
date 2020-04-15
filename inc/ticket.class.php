@@ -26,7 +26,7 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
+
 if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
@@ -63,9 +63,9 @@ class PluginMetademandsTicket extends CommonDBTM {
       // Metademand redirection on ticket creation
 
       if (isset($_REQUEST['tickets_id'])
-            && $_REQUEST['tickets_id'] == 0
-            && isset($_REQUEST['type'])
-            && isset($_REQUEST['itilcategories_id'])) {
+          && $_REQUEST['tickets_id'] == 0
+          && isset($_REQUEST['type'])
+          && isset($_REQUEST['itilcategories_id'])) {
 
          $myticket                             = new Ticket();
          $myticket->fields['id']               = 0;
@@ -79,8 +79,8 @@ class PluginMetademandsTicket extends CommonDBTM {
 
    static function showDocumentAddButton($size = 25, $idDiv) {
       echo "<script type='text/javascript'>var nbfiles=1;</script>";
-      echo "<span id='addfilebutton' class='fa fa-plus pointer' title=\"".__s('Add')."\" onClick=\"
-                           var row = ".Html::jsGetElementbyID('uploadfiles'.$idDiv).";
+      echo "<span id='addfilebutton' class='fa fa-plus pointer' title=\"" . __s('Add') . "\" onClick=\"
+                           var row = " . Html::jsGetElementbyID('uploadfiles' . $idDiv) . ";
                            row.append('<br><input type=\'file\' name=\'filename[]\' size=\'$size\'>');
                            nbfiles++;\"" . __s('Add') . "</span>";
    }
@@ -113,7 +113,8 @@ class PluginMetademandsTicket extends CommonDBTM {
 
       if (isset($ticket->input['status'])) {
          // Actions done on ticket close
-         if ($ticket->input['status'] == Ticket::SOLVED || $ticket->input['status'] == Ticket::CLOSED) {
+         if ($ticket->input['status'] == Ticket::SOLVED
+             || $ticket->input['status'] == Ticket::CLOSED) {
             self::checkSonTicketsStatus($ticket);
          }
       }
@@ -194,15 +195,15 @@ class PluginMetademandsTicket extends CommonDBTM {
     */
    static function checkSonTicketsStatus(Ticket $ticket, $with_message = true) {
 
-      $ticket_metademand = new PluginMetademandsTicket_Metademand();
+      $ticket_metademand      = new PluginMetademandsTicket_Metademand();
       $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
 
       // If ticket is Parent : Check if all sons ticket are closed
       if (count($ticket_metademand_data)) {
          $ticket_metademand_data = reset($ticket_metademand_data);
-         $tickets_found = self::getSonTickets($ticket->fields['id'],
-                                              $ticket_metademand_data['plugin_metademands_metademands_id'],
-                                              [], true);
+         $tickets_found          = self::getSonTickets($ticket->fields['id'],
+                                                       $ticket_metademand_data['plugin_metademands_metademands_id'],
+                                                       [], true);
 
          // If son tickets check status
          if (count($tickets_found)) {
@@ -210,19 +211,16 @@ class PluginMetademandsTicket extends CommonDBTM {
                $job = new Ticket();
                if (!empty($values['tickets_id'])) {
                   $job->getFromDB($values['tickets_id']);
-               } else {
-                  $job->getEmpty();
-               }
-
-               // No resolution or close if a son ticket is not solved or closed
-               if ((!isset($job->fields['status']))
-                       || ($job->fields['status'] != Ticket::SOLVED
-                       && $job->fields['status'] != Ticket::CLOSED)) {
-                  if ($with_message) {
-                     Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
+                  // No resolution or close if a son ticket is not solved or closed
+                  if ((!isset($job->fields['status']))
+                      || ($job->fields['status'] != Ticket::SOLVED
+                          && $job->fields['status'] != Ticket::CLOSED)) {
+                     if ($with_message) {
+                        Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
+                     }
+                     $ticket->input = ['id' => $ticket->fields['id']];
+                     return false;
                   }
-                  $ticket->input = ['id' => $ticket->fields['id']];
-                  return false;
                }
             }
          }
@@ -245,21 +243,21 @@ class PluginMetademandsTicket extends CommonDBTM {
       global $DB;
 
       // Search metademand son ticket : if found recursive call
-      $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id,
+      $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id,
                        `glpi_plugin_metademands_tickets_metademands`.`tickets_id`,
                        `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id`
                FROM `glpi_plugin_metademands_tickets_metademands`
                RIGHT JOIN `glpi_plugin_metademands_metademandtasks`
                  ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id`)
-               WHERE `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id` = ". $tickets_id." 
-               AND `glpi_plugin_metademands_tickets_metademands`.`tickets_id` != ".$tickets_id;
+               WHERE `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id` = " . $tickets_id . " 
+               AND `glpi_plugin_metademands_tickets_metademands`.`tickets_id` != " . $tickets_id;
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
-            $data['type'] = PluginMetademandsTask::METADEMAND_TYPE;
+            $data['type']  = PluginMetademandsTask::METADEMAND_TYPE;
             $data['level'] = 1;
-            $used = false;
+            $used          = false;
             if (count($ticket_task_data)) {
                foreach ($ticket_task_data as $values) {
                   if ($values['tickets_id'] == $data['tickets_id']) {
@@ -278,28 +276,28 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       // Get direct son ticket
-      $query = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
+      $query  = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
                        `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`,
                        `glpi_plugin_metademands_tickets_tasks`.`level`,
                        `glpi_plugin_metademands_tickets_tasks`.`plugin_metademands_tasks_id` as tasks_id
                   FROM glpi_plugin_metademands_tickets_tasks
-                  WHERE `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` = ". $tickets_id."";
+                  WHERE `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` = " . $tickets_id . "";
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
-            $data['type'] = PluginMetademandsTask::TICKET_TYPE;
+            $data['type']       = PluginMetademandsTask::TICKET_TYPE;
             $ticket_task_data[] = $data;
-            $ticket_task_data = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive);
+            $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive);
          }
       }
 
       // Fill array with uncreated son tickets
       if (!empty($metademands_id)) {
          $task_data = [];
-         $task = new PluginMetademandsTask();
+         $task      = new PluginMetademandsTask();
 
-         $parent_tasks_id = [];
+         $parent_tasks_id     = [];
          $parent_tickets_id[] = $tickets_id;
          foreach ($ticket_task_data as $values) {
             $parent_tickets_id[] = $values['tickets_id'];
@@ -313,43 +311,44 @@ class PluginMetademandsTicket extends CommonDBTM {
                           `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
                           `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`,
                           `glpi_plugin_metademands_tasks`.`level`,
-                          `glpi_plugin_metademands_tasks`.`id` as tasks_id
+       `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id`,
+       `glpi_plugin_metademands_tickets_tasks`.`level` AS parent_level,
+                          `glpi_plugin_metademands_tasks`.`id` AS tasks_id
                      FROM glpi_plugin_metademands_tasks
                      LEFT JOIN `glpi_plugin_metademands_tickets_tasks`
                         ON (`glpi_plugin_metademands_tickets_tasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
-                     WHERE `glpi_plugin_metademands_tasks`.`type` = ".PluginMetademandsTask::TICKET_TYPE ."
-                     AND `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = ".$metademands_id."
-                     AND `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` IN ('".implode("','", $parent_tickets_id)."')
+                     WHERE `glpi_plugin_metademands_tasks`.`type` = " . PluginMetademandsTask::TICKET_TYPE . "
+                     AND `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id . "
+                     AND `glpi_plugin_metademands_tickets_tasks`.`tickets_id` IN ('" . implode("','", $parent_tickets_id) . "')
                      ORDER BY `glpi_plugin_metademands_tasks`.`completename`";
+
          $result = $DB->query($query);
+         $count  = 0;
+
          if ($DB->numrows($result)) {
-            $count = 0;
-            $dbu = new DbUtils();
             while ($data = $DB->fetch_assoc($result)) {
-               $data['type'] = PluginMetademandsTask::TICKET_TYPE;
+               $data['type']      = PluginMetademandsTask::TICKET_TYPE;
                $task_data[$count] = $data;
-               $children = $dbu->getSonsOf($task->getTable(), $data['tasks_id']);
+               // If child task exists : son ticket creation
+               $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
+               if ($child_tasks_data !== false) {
+                  $tasks = [];
+                  foreach ($child_tasks_data as $child_tasks_id) {
+                     $tasks[] = $task->getTasks($data['plugin_metademands_metademands_id'],
+                                                ['condition' => '`glpi_plugin_metademands_tasks`.`id` = ' . $child_tasks_id]);
+                  }
 
-               foreach ($children as $child_tasks_id) {
-                  if ($child_tasks_id != $data['tasks_id'] && !in_array($child_tasks_id, $parent_tasks_id)) {
-                     // Remove recurrent data
-                     foreach ($task_data as $key => $values) {
-                        if ($values['tasks_id'] == $child_tasks_id) {
-                           unset($task_data[$key]);
-                        }
+                  $count++;
+                  foreach ($tasks as $k => $v) {
+                     foreach ($v as $taskchild) {
+                        $task_data[] = ['tasks_name' => $taskchild['tickettasks_name'],
+                                        'level'      => $taskchild['level'],
+                                        'tickets_id' => 0,
+                                        'tasks_id'   => $taskchild['tasks_id'],
+                                        'type'       => PluginMetademandsTask::TICKET_TYPE];
                      }
-
-                     $task->getFromDB($child_tasks_id);
-                     $count++;
-                     $task_data[$count] = ['tasks_name'        => $task->fields['name'],
-                                                'level'             => $task->fields['level'],
-                                                'tickets_id'        => 0,
-                                                'tasks_id'          => $child_tasks_id,
-                                                'type'              => PluginMetademandsTask::TICKET_TYPE];
                   }
                }
-
-               $count++;
             }
          }
 
@@ -362,7 +361,6 @@ class PluginMetademandsTicket extends CommonDBTM {
 
          $ticket_task_data = $task_data;
       }
-
       return $ticket_task_data;
    }
 
@@ -378,15 +376,15 @@ class PluginMetademandsTicket extends CommonDBTM {
       global $DB;
 
       // Get direct son ticket
-      $query = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
+      $query  = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
                        `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`
                   FROM glpi_plugin_metademands_tickets_tasks
-                  WHERE `glpi_plugin_metademands_tickets_tasks`.`tickets_id` = ". $tickets_id."";
+                  WHERE `glpi_plugin_metademands_tickets_tasks`.`tickets_id` = " . $tickets_id . "";
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
             if (!$only_metademand) {
-               $data['type'] = PluginMetademandsTask::TICKET_TYPE;
+               $data['type']       = PluginMetademandsTask::TICKET_TYPE;
                $ticket_task_data[] = $data;
             }
             $ticket_task_data = self::getAncestorTickets($data['parent_tickets_id'], $only_metademand, $ticket_task_data);
@@ -394,16 +392,16 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       // Search metademand parent ticket
-      $query = "SELECT `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
+      $query  = "SELECT `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
                FROM `glpi_plugin_metademands_tickets_metademands`
-               WHERE `glpi_plugin_metademands_tickets_metademands`.`tickets_id` = ".$tickets_id;
+               WHERE `glpi_plugin_metademands_tickets_metademands`.`tickets_id` = " . $tickets_id;
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
-            $data['type'] = PluginMetademandsTask::METADEMAND_TYPE;
-            $data['level'] = 1;
+            $data['type']               = PluginMetademandsTask::METADEMAND_TYPE;
+            $data['level']              = 1;
             $data['tasks_completename'] = '';
-            $ticket_task_data[] = $data;
+            $ticket_task_data[]         = $data;
          }
       }
 
@@ -467,6 +465,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @param array $values
     *
     * @return bool
+    * @throws \GlpitestSQLError
     */
    function getApplicationEnvironment($tickets_id, $values = []) {
       global $CFG_GLPI;
@@ -492,16 +491,16 @@ class PluginMetademandsTicket extends CommonDBTM {
          $rand = mt_rand();
 
          $params = ['itilapplications_id' => '__VALUE__',
-                         'entity_restrict'     => $values["entities_id"],
-                         'itilenvironments_id' => $values['plugin_metademands_itilenvironments_id']];
+                    'entity_restrict'     => $values["entities_id"],
+                    'itilenvironments_id' => $values['plugin_metademands_itilenvironments_id']];
 
          $opt = ['value'    => $values['plugin_metademands_itilapplications_id'],
-                      'entity'   => $values["entities_id"],
-                      'toupdate' => ['update_item' => ['value_fieldname' => "dropdown_plugin_metademands_itilapplications_id".$rand,
-                                          'to_update'       => "show_environment$rand",
-                                          'url'             => $CFG_GLPI["root_doc"]."/plugins/metademands/ajax/dropdownTicketEnvironments.php",
-                                          'moreparams'      => $params]],
-                      'rand'     => $rand];
+                 'entity'   => $values["entities_id"],
+                 'toupdate' => ['update_item' => ['value_fieldname' => "dropdown_plugin_metademands_itilapplications_id" . $rand,
+                                                  'to_update'       => "show_environment$rand",
+                                                  'url'             => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownTicketEnvironments.php",
+                                                  'moreparams'      => $params]],
+                 'rand'     => $rand];
 
          Dropdown::show('PluginMetademandsITILApplication', $opt);
       } else {
@@ -524,8 +523,8 @@ class PluginMetademandsTicket extends CommonDBTM {
             $used[] = 1;
          }
          $opt = ['value'  => $values['plugin_metademands_itilenvironments_id'],
-                      'entity' => $values["entities_id"],
-                      'used'   => $used];
+                 'entity' => $values["entities_id"],
+                 'used'   => $used];
          echo "<span id='show_environment$rand'>";
          Dropdown::show('PluginMetademandsITILEnvironment', $opt);
          echo "</span>";
@@ -542,6 +541,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @param array $values
     *
     * @return bool
+    * @throws \GlpitestSQLError
     */
    function getHelpdeskApplicationEnvironment($tickets_id, $values = []) {
       global $CFG_GLPI;
@@ -566,16 +566,16 @@ class PluginMetademandsTicket extends CommonDBTM {
       $rand = mt_rand();
 
       $params = ['itilapplications_id' => '__VALUE__',
-                      'entity_restrict'     => $values["entities_id"],
-                      'itilenvironments_id' => $values['plugin_metademands_itilenvironments_id']];
+                 'entity_restrict'     => $values["entities_id"],
+                 'itilenvironments_id' => $values['plugin_metademands_itilenvironments_id']];
 
       $opt = ['value'    => $values['plugin_metademands_itilapplications_id'],
-                   'entity'   => $values["entities_id"],
-                   'toupdate' => ['update_item'     => ['value_fieldname' => "dropdown_plugin_metademands_itilapplications_id".$rand,
-                                       'to_update'       => "show_environment$rand",
-                                       'url'             => $CFG_GLPI["root_doc"]."/plugins/metademands/ajax/dropdownTicketEnvironments.php",
-                                       'moreparams'      => $params]],
-                   'rand'     => $rand];
+              'entity'   => $values["entities_id"],
+              'toupdate' => ['update_item' => ['value_fieldname' => "dropdown_plugin_metademands_itilapplications_id" . $rand,
+                                               'to_update'       => "show_environment$rand",
+                                               'url'             => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownTicketEnvironments.php",
+                                               'moreparams'      => $params]],
+              'rand'     => $rand];
 
       Dropdown::show('PluginMetademandsITILApplication', $opt);
       echo $tt->getEndHiddenFieldText('plugin_metademands_itilenvironments_id');
@@ -595,8 +595,8 @@ class PluginMetademandsTicket extends CommonDBTM {
          $used[] = 1;
       }
       $opt = ['value'  => $values['plugin_metademands_itilenvironments_id'],
-                   'entity' => $values["entities_id"],
-                   'used'   => $used];
+              'entity' => $values["entities_id"],
+              'used'   => $used];
       echo "<span id='show_environment$rand'>";
       Dropdown::show('PluginMetademandsITILEnvironment', $opt);
       echo "</span>";
@@ -610,6 +610,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @param array $values
     *
     * @return bool
+    * @throws \GlpitestSQLError
     */
    function getHelpdeskApplicationEnvironmentForCatalogueService($tickets_id, $values = []) {
       global $CFG_GLPI;
@@ -640,10 +641,10 @@ class PluginMetademandsTicket extends CommonDBTM {
 
       $opt = ['value'    => $values['plugin_metademands_itilapplications_id'],
               'entity'   => $values["entities_id"],
-              'toupdate' => ['update_item'     => ['value_fieldname' => "dropdown_plugin_metademands_itilapplications_id".$rand,
-                                                   'to_update'       => "show_environment$rand",
-                                                   'url'             => $CFG_GLPI["root_doc"]."/plugins/metademands/ajax/dropdownTicketEnvironments.php",
-                                                   'moreparams'      => $params]],
+              'toupdate' => ['update_item' => ['value_fieldname' => "dropdown_plugin_metademands_itilapplications_id" . $rand,
+                                               'to_update'       => "show_environment$rand",
+                                               'url'             => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownTicketEnvironments.php",
+                                               'moreparams'      => $params]],
               'rand'     => $rand];
 
       Dropdown::show('PluginMetademandsITILApplication', $opt);
@@ -680,11 +681,13 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @param       $tickets_id
     * @param       $input
     * @param array $options
+    *
+    * @return bool
     */
    function getFamily($tickets_id, $input, $options = []) {
 
       // Init params
-      $dbu = new DbUtils();
+      $dbu    = new DbUtils();
       $params = [];
       foreach ($options as $key => $val) {
          $params[$key] = $val;
@@ -721,12 +724,12 @@ class PluginMetademandsTicket extends CommonDBTM {
       // Load ticket template
       $tt = $ticket->getTicketTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
 
-      $canupdate = Session::haveRight('ticket', UPDATE);
+      $canupdate       = Session::haveRight('ticket', UPDATE);
       $canupdate_descr = $canupdate
-                   || (($input['status'] == Ticket::INCOMING)
-                       && $ticket->isUser(CommonITILActor::REQUESTER, Session::getLoginUserID())
-                       && ($ticket->numberOfFollowups() == 0)
-                       && ($ticket->numberOfTasks() == 0));
+                         || (($input['status'] == Ticket::INCOMING)
+                             && $ticket->isUser(CommonITILActor::REQUESTER, Session::getLoginUserID())
+                             && ($ticket->numberOfFollowups() == 0)
+                             && ($ticket->numberOfTasks() == 0));
 
       // Permit to set category when creating ticket without update right
       if ($canupdate
@@ -734,7 +737,7 @@ class PluginMetademandsTicket extends CommonDBTM {
           || $canupdate_descr) {
 
          $opt = ['value'  => $input["itilcategories_id"],
-                      'entity' => $input["entities_id"]];
+                 'entity' => $input["entities_id"]];
 
          if (Session::getCurrentInterface() == "helpdesk") {
             $opt['condition'] = "`is_helpdeskvisible`='1' AND ";
@@ -766,7 +769,7 @@ class PluginMetademandsTicket extends CommonDBTM {
 
          // Show Type
          if (!isset($input['displayType'])) {
-            echo "<th>".sprintf(__('%1$s%2$s'), __('Type'), $tt->getMandatoryMark('type'))."</th>";
+            echo "<th>" . sprintf(__('%1$s%2$s'), __('Type'), $tt->getMandatoryMark('type')) . "</th>";
             echo "<td>";
             // Permit to set type when creating ticket without update right
             if ($canupdate || !$tickets_id) {
@@ -798,11 +801,11 @@ class PluginMetademandsTicket extends CommonDBTM {
          // Show category
          $opt['condition'] .= " AND `level` != 1";
          if (!empty($input['families_id'])) {
-            $children = $dbu->getSonsOf('glpi_itilcategories', $input['families_id']);
-            $opt['condition'] .= " AND `id` IN ('".implode("','", $children)."')";
+            $children         = $dbu->getSonsOf('glpi_itilcategories', $input['families_id']);
+            $opt['condition'] .= " AND `id` IN ('" . implode("','", $children) . "')";
          }
-         echo "<th>".sprintf(__('%1$s%2$s'), __('Category'),
-                     $tt->getMandatoryMark('itilcategories_id'))."</th>";
+         echo "<th>" . sprintf(__('%1$s%2$s'), __('Category'),
+                               $tt->getMandatoryMark('itilcategories_id')) . "</th>";
          echo "<td>";
          echo "<span id='show_category_by_type'>";
          if (!$tickets_id) {
@@ -812,13 +815,13 @@ class PluginMetademandsTicket extends CommonDBTM {
          echo "</span>";
 
          if (isset($input['displayType'])) {
-            echo "<input type='hidden' name='type' value='".$input["type"]."'>";
-            echo "<input type='hidden' name='displayType' value='".$input["displayType"]."'>";
+            echo "<input type='hidden' name='type' value='" . $input["type"] . "'>";
+            echo "<input type='hidden' name='displayType' value='" . $input["displayType"] . "'>";
          }
          echo "</td>";
 
       } else {
-         echo "<th>".sprintf(__('%1$s%2$s'), __('Type'), $tt->getMandatoryMark('type'))."</th>";
+         echo "<th>" . sprintf(__('%1$s%2$s'), __('Type'), $tt->getMandatoryMark('type')) . "</th>";
          echo "<td>";
          echo Ticket::getTicketTypeName($input["type"]);
          echo "</td>";
@@ -828,7 +831,7 @@ class PluginMetademandsTicket extends CommonDBTM {
          echo "<td>";
          echo Dropdown::getDropdownName("glpi_itilcategories", isset($input['families_id']) ? $input['families_id'] : 0);
          echo "</td>";
-         echo "<th>".sprintf(__('%1$s%2$s'), __('Category'), $tt->getMandatoryMark('itilcategories_id'))."</th>";
+         echo "<th>" . sprintf(__('%1$s%2$s'), __('Category'), $tt->getMandatoryMark('itilcategories_id')) . "</th>";
          echo "<td>";
          echo Dropdown::getDropdownName("glpi_itilcategories", $input["itilcategories_id"]);
          echo "</td>";
@@ -839,11 +842,13 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @param       $tickets_id
     * @param       $input
     * @param array $options
+    *
+    * @return bool
     */
    function getHelpdeskFamily($tickets_id, $input, $options = []) {
 
       // Init params
-      $dbu = new DbUtils();
+      $dbu    = new DbUtils();
       $params = [];
       foreach ($options as $key => $val) {
          $params[$key] = $val;
@@ -875,10 +880,10 @@ class PluginMetademandsTicket extends CommonDBTM {
       $tt = $ticket->getTicketTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".sprintf(__('%1$s%2$s'), __('Type'), $tt->getMandatoryMark('type'))."</td>";
+      echo "<td>" . sprintf(__('%1$s%2$s'), __('Type'), $tt->getMandatoryMark('type')) . "</td>";
       echo "<td>";
       Ticket::dropdownType('type', ['value'     => $input['type'],
-                                       'on_change' => 'this.form.submit()', 'readonly' => true]);
+                                    'on_change' => 'this.form.submit()', 'readonly' => true]);
       echo "</td></tr>";
 
       // Show family
@@ -898,20 +903,20 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       $opt = ['value'     => $input['itilcategories_id'],
-                   'condition' => $condition];
+              'condition' => $condition];
 
-      $optFamily            = $opt;
-      $optFamily['name']    = 'families_id';
+      $optFamily              = $opt;
+      $optFamily['name']      = 'families_id';
       $optFamily['condition'] .= ' AND `level` = 1';
-      $optFamily['value']   = isset($input['families_id']) ? $input['families_id'] : 0;
-      $optFamily['addicon'] = false;
+      $optFamily['value']     = isset($input['families_id']) ? $input['families_id'] : 0;
+      $optFamily['addicon']   = false;
       unset($optFamily['on_change']);
       ITILCategory::dropdown($optFamily);
       echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".sprintf(__('%1$s%2$s'), __('Category'), $tt->getMandatoryMark('itilcategories_id'))."</td>";
+      echo "<td>" . sprintf(__('%1$s%2$s'), __('Category'), $tt->getMandatoryMark('itilcategories_id')) . "</td>";
       echo "<td>";
 
       if ($input['itilcategories_id'] && $tt->isMandatoryField("itilcategories_id")) {
@@ -919,8 +924,8 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
       $opt['condition'] .= " AND `level` != 1";
       if (!empty($input['families_id'])) {
-         $children = $dbu->getSonsOf('glpi_itilcategories', $input['families_id']);
-         $opt['condition'] .= " AND `id` IN ('".implode("','", $children)."')";
+         $children         = $dbu->getSonsOf('glpi_itilcategories', $input['families_id']);
+         $opt['condition'] .= " AND `id` IN ('" . implode("','", $children) . "')";
       }
       if (!$tickets_id) {
          $opt['on_change'] = 'this.form.submit();';
@@ -987,8 +992,8 @@ class PluginMetademandsTicket extends CommonDBTM {
    static function methodIsMandatoryFields($params, $protocol) {
 
       if (isset ($params['help'])) {
-         return [  'help'            => 'bool,optional',
-                        'values'          => 'array,mandatory'];
+         return ['help'   => 'bool,optional',
+                 'values' => 'array,mandatory'];
       }
 
       if (!Session::getLoginUserID()) {
@@ -1004,7 +1009,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       $tickettask = new PluginMetademandsTicketTask();
-      $result = $tickettask->isMandatoryField($params['values'], false, true);
+      $result     = $tickettask->isMandatoryField($params['values'], false, true);
 
       return $result;
    }
@@ -1019,9 +1024,9 @@ class PluginMetademandsTicket extends CommonDBTM {
    static function methodShowTicketForm($params, $protocol) {
 
       if (isset ($params['help'])) {
-         return [  'help'              => 'bool,optional',
-                        'ticket_template'   => 'int,optional',
-                        'values'            => 'array,optional'];
+         return ['help'            => 'bool,optional',
+                 'ticket_template' => 'int,optional',
+                 'values'          => 'array,optional'];
       }
 
       if (!Session::getLoginUserID()) {
@@ -1045,14 +1050,16 @@ class PluginMetademandsTicket extends CommonDBTM {
       return $response;
    }
 
-      /**
+   /**
     * Print the helpdesk form
     *
-    * @param $ID int : ID of the user who want to display the Helpdesk
-    * @param $ticket_template int : ID ticket template for preview : false if not used for preview
+    * @param       $ID int : ID of the user who want to display the Helpdesk
+    * @param bool  $ticket_template int : ID ticket template for preview : false if not used for preview
     *
-    * @return nothing (print the helpdesk)
-   **/
+    * @param array $values
+    *
+    * @return bool (print the helpdesk)
+    */
    static function showFormHelpdesk($ID, $ticket_template = false, $values = []) {
       global $CFG_GLPI;
 
@@ -1062,14 +1069,14 @@ class PluginMetademandsTicket extends CommonDBTM {
 
       $entities_id = $_SESSION['glpiactive_entity'];
 
-      $fields = ['itilcategories_id' => 0,
-                      'itilapplications_id' => 0,
-                      'itilenvironments_id' => 0,
-                      'content' => '',
-                      'name' => '',
-                      'type' => 0,
-                      'urgency' => 0,
-                      'entities_id' => $entities_id];
+      $fields = ['itilcategories_id'   => 0,
+                 'itilapplications_id' => 0,
+                 'itilenvironments_id' => 0,
+                 'content'             => '',
+                 'name'                => '',
+                 'type'                => 0,
+                 'urgency'             => 0,
+                 'entities_id'         => $entities_id];
 
       $tt = new TicketTemplate();
       if ($ticket_template) {
@@ -1085,35 +1092,35 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       echo "<input type='hidden' name='_from_helpdesk' value='1'>";
-      echo "<input type='hidden' name='requesttypes_id' value='".RequestType::getDefault('helpdesk')."'>";
-      echo "<input type='hidden' name='entities_id' value='".$entities_id."'>";
+      echo "<input type='hidden' name='requesttypes_id' value='" . RequestType::getDefault('helpdesk') . "'>";
+      echo "<input type='hidden' name='entities_id' value='" . $entities_id . "'>";
 
       echo "<div class='center'><table class='tab_cadre_fixe'>";
       // URGENCY
-      if ($CFG_GLPI['urgency_mask']!=(1<<3)) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>".__('Urgency');
-            echo $tt->getMandatoryMark('urgency')."</td>";
-            echo "<td>";
-            Ticket::dropdownUrgency("urgency");
-            echo "</td></tr>";
+      if ($CFG_GLPI['urgency_mask'] != (1 << 3)) {
+         echo "<tr class='tab_bg_1'>";
+         echo "<td>" . __('Urgency');
+         echo $tt->getMandatoryMark('urgency') . "</td>";
+         echo "<td>";
+         Ticket::dropdownUrgency("urgency");
+         echo "</td></tr>";
 
       }
 
       // TITLE
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Title');
+      echo "<td>" . __('Title');
       echo $tt->getMandatoryMark('name');
       echo "</td>";
       echo "<td><input type='text' maxlength='250' size='80' name='name'
-                       value=\"".$fields['name']."\"></td></tr>";
+                       value=\"" . $fields['name'] . "\"></td></tr>";
 
       // CONTENT
       echo "<tr class='tab_bg_1'>";
-      echo "<td>".__('Description');
+      echo "<td>" . __('Description');
       echo $tt->getMandatoryMark('content');
       echo "</td>";
-      echo "<td><textarea name='content' cols='80' rows='14'>".$fields['content']."</textarea>";
+      echo "<td><textarea name='content' cols='80' rows='14'>" . $fields['content'] . "</textarea>";
       echo "</td></tr>";
 
       echo "</table></div>";
@@ -1123,10 +1130,11 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @param $ticket_metademand_data
     *
     * @return bool
+    * @throws \GlpitestSQLError
     */
    static function isTicketSolved($ticket_metademand_data) {
       $tickets = [];
-      $solved = true;
+      $solved  = true;
       if (!empty($ticket_metademand_data)) {
          foreach ($ticket_metademand_data as $meta) {
             $tickets_found = self::getSonTickets($meta['tickets_id'], 0, [], true);
@@ -1176,7 +1184,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @param $document_name name of the document into glpi
     *
     * @return true or an Error
-   **/
+    **/
    static function uploadDocument($params, $filename, $document_name) {
 
       $files   = [];
@@ -1190,14 +1198,14 @@ class PluginMetademandsTicket extends CommonDBTM {
          $files['name'] = basename($document_name);
       }
 
-      $splitter = explode(".", $filename);
+      $splitter  = explode(".", $filename);
       $splitter2 = explode(".", basename($files['name']));
 
-      $filename = $splitter[0].".".$splitter2[1];
+      $filename = $splitter[0] . "." . $splitter2[1];
 
       @file_put_contents($filename, $content);
 
-      $files['tmp_name'] = "/".basename($filename);
+      $files['tmp_name'] = "/" . basename($filename);
 
       return $files;
    }
@@ -1213,8 +1221,12 @@ class PluginMetademandsTicket extends CommonDBTM {
       $resultFound = [];
 
       switch ($type) {
-         case 'users_id': $item = new Ticket_User(); break;
-         case 'groups_id': $item = new Group_Ticket(); break;
+         case 'users_id':
+            $item = new Ticket_User();
+            break;
+         case 'groups_id':
+            $item = new Group_Ticket();
+            break;
       }
 
       $dataActors = $item->getActors($tickets_id);
@@ -1232,12 +1244,13 @@ class PluginMetademandsTicket extends CommonDBTM {
     * Add allowed fields for ticket templates
     *
     * @param string $allowed_fields
+    *
     * @return string
     */
    static function getAllowedFields($allowed_fields) {
 
       $itilapplication = new PluginMetademandsITILApplication();
-      $searchOptions = $itilapplication->getAddSearchOptions();
+      $searchOptions   = $itilapplication->getAddSearchOptions();
       foreach ($searchOptions as $key => $val) {
          if (isset($val['name'])) {
             $allowed_fields[$key] = $val['field_name'];
@@ -1245,7 +1258,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       $itilenvironment = new PluginMetademandsITILEnvironment();
-      $searchOptions = $itilenvironment->getAddSearchOptions();
+      $searchOptions   = $itilenvironment->getAddSearchOptions();
       foreach ($searchOptions as $key => $val) {
          if (isset($val['name'])) {
             $allowed_fields[$key] = $val['field_name'];

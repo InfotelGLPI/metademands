@@ -107,12 +107,10 @@ class PluginMetademandsTask extends CommonTreeDropdown {
    /**
     * Print the field form
     *
-    * @param $ID integer ID of the item
-    * @param $options array
-    *     - target filename : where to go when done.
-    *     - withtemplate boolean : template or basic item
+    * @param $metademands
     *
-    * @return Nothing (display)
+    * @return bool (display)
+    * @throws \GlpitestSQLError
     */
    function showPluginFromItems($metademands) {
       global $CFG_GLPI;
