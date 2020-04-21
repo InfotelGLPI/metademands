@@ -911,7 +911,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                $data['custom_values']  = PluginMetademandsField::_unserialize($data['custom_values']);
                $data['comment_values'] = PluginMetademandsField::_unserialize($data['comment_values']);
                $defaults               = PluginMetademandsField::_unserialize($data['default_values']);
-               if (!empty($value)) {
+               if ($value != NULL) {
                   $value = PluginMetademandsField::_unserialize($value);
                }
                $nbr    = 0;
@@ -923,9 +923,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<div class='custom-control custom-radio $inline'>";
 
                   $checked = "";
-                  if (!empty($value) && $value == $key) {
+                  if ($value != NULL && $value == $key) {
                      $checked = $value == $key ? 'checked' : '';
-                  } elseif (isset($defaults[$key])) {
+                  } elseif ($value == NULL && isset($defaults[$key])) {
                      $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
                   echo "<input class='custom-control-input' type='radio' name='radio[" . $data['id'] . "]' id='radio[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
@@ -1124,15 +1124,16 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @return bool
     */
-   static function checkMandatoryFields(array $value, array $fields, array $all_fields = []) {
+   static function checkMandatoryFields(array $value, $fields = [], $all_fields = []) {
 
       $checkKo             = [];
       $checkKoDateInterval = [];
       $msg                 = [];
 
+
       if ($value['type'] != 'parent_field') {
          // Check fields empty
-         if ($value['is_mandatory'] && empty($fields['value'])) {
+         if ($value['is_mandatory'] && empty($fields['value']) && $value['type'] != 'radio') {
             $msg[]     = $value['label'];
             $checkKo[] = 1;
          }
@@ -1148,6 +1149,14 @@ class PluginMetademandsWizard extends CommonDBTM {
             $field->getFromDB($value['fields_link']);
             $msg[]     = $field->fields['label'] . ' ' . $field->fields['label2'];
             $checkKo[] = 1;
+
+         }
+
+         if ($value['type'] == 'radio' && $value['is_mandatory']) {
+            if ($fields['value'] == NULL) {
+               $msg[]     = $value['label'];
+               $checkKo[] = 1;
+            }
          }
 
          // Check date
