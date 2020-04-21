@@ -1141,6 +1141,24 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $userc->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $userc->getName() . "</td>";
                         break;
+                     case strpos($field['item'], 'PluginLdapfields'):
+                        $result['content'] .= "<td $style_title>" . $field['label'] . "</td>";
+                        $classname             = new $field['item']();
+                        $classname->getFromDB($field['value']);
+                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
+                        break;
+                     case PluginMetademandsITILEnvironment::class:
+                        $result['content'] .= "<td $style_title>" . $field['label'] . "</td>";
+                        $classname             = new PluginMetademandsITILEnvironment();
+                        $classname->getFromDB($field['value']);
+                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
+                        break;
+                     case PluginMetademandsITILApplication::class:
+                        $result['content'] .= "<td $style_title>" . $field['label'] . "</td>";
+                        $classname             = new PluginMetademandsITILApplication();
+                        $classname->getFromDB($field['value']);
+                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
+                        break;
                      default:
                         $dbu               = new DbUtils();
                         $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>";

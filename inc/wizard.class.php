@@ -826,6 +826,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                              'name'   => "field[" . $data['id'] . "]"];
                      PluginMetademandsITILEnvironment::dropdown($opt);
                      break;
+                  case strpos($data['item'],'PluginLdapfields'):
+                     $opt = ['value'  => $value,
+                        'entity' => $_SESSION['glpiactiveentities'],
+                        'name'   => "field[" . $data['id'] . "]"];
+                     $container_class = new $data['item']();
+                     $container_class::dropdown($opt);
+                     break;
                   default:
                      $cond = [];
                      if (!empty($data['custom_values']) && $data['item'] == 'group') {
