@@ -601,8 +601,19 @@ class PluginMetademandsField extends CommonDBChild {
       foreach ($param as $key => $val) {
          $p[$key] = $val;
       }
+      $config = new PluginMetademandsConfig();
+      $data = $config->getConfigFromDB();
       $plugin = new Plugin();
-      foreach (self::$field_items as $key => $items) {
+      $type_fields = self::$field_items;
+      if ($data['enable_application_environment'] == 0) {
+         if (($key = array_search('PluginMetademandsITILApplication', $type_fields)) !== false) {
+            unset($type_fields[$key]);
+         }
+         if (($key = array_search('PluginMetademandsITILEnvironment', $type_fields)) !== false) {
+            unset($type_fields[$key]);
+         }
+      }
+      foreach ($type_fields as $key => $items) {
          if (empty($items)) {
             $options[$key] = self::getFieldItemsName($items);
          } elseif ($plugin->isActivated('ldapfields') && $items == 'PluginLdapfields') {
