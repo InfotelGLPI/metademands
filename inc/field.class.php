@@ -746,7 +746,6 @@ class PluginMetademandsField extends CommonDBChild {
                                                 'step'  => 1]);
                   echo "</td></tr>";
 
-                  // Watcher group
                   echo "<tr><td>";
                   echo __('Maximum', 'servicecatalog');
                   echo '</td>';
@@ -757,7 +756,6 @@ class PluginMetademandsField extends CommonDBChild {
                                                'step'  => 1]);
                   echo "</td></tr>";
 
-                  // Requester group
                   echo "<tr><td>";
                   echo __('Step', 'servicecatalog');
                   echo '</td>';

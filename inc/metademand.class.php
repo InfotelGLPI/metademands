@@ -1144,7 +1144,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      default:
                         $dbu               = new DbUtils();
                         $result['content'] .= "<td $style_title>" . $field['label'] . "</td><td>";
-                        Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
+                        $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                   $field['value']);
                         $result['content'] .= "</td>";
                         break;
