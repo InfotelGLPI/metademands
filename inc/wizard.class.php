@@ -414,32 +414,90 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo Html::css("/plugins/metademands/css/wizard.php");
 
       $metademands = self::selectMetademands();
-      foreach ($metademands as $id => $name) {
+      $config = new PluginMetademandsConfig();
+      $config->getFromDB(1);
+      $meta = new PluginMetademandsMetademand();
+      $dbu = new DbUtils();
+      if ($config->getField('display_type') == 1) {
+         foreach ($metademands as $id => $name) {
 
-         $meta = new PluginMetademandsMetademand();
-         if ($meta->getFromDB($id)) {
-            echo '<div class="btnsc-normal" >';
-            echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-            $fasize = "fa-6x";
-            echo "<div class='center'>";
-            $icon = "fa-share-alt";
-            if (!empty($meta->fields['icon'])) {
-               $icon = $meta->fields['icon'];
+            $meta = new PluginMetademandsMetademand();
+            if ($meta->getFromDB($id)) {
+               echo '<div class="btnsc-normal" >';
+               echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               $fasize = "fa-6x";
+               echo "<div class='center'>";
+               $icon = "fa-share-alt";
+               if (!empty($meta->fields['icon'])) {
+                  $icon = $meta->fields['icon'];
+               }
+               echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
+               echo "</div>";
+
+               echo "</a>";
+               echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<p>";
+               echo Html::resume_text($meta->getName(), 30);
+               echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+               echo $meta->fields['comment'];
+               echo "</span></em>";
+               echo "</p></a></div>";
             }
-            echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
-            echo "</div>";
-
-            echo "</a>";
-            echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-            echo "<p>";
-            echo Html::resume_text($meta->getName(), 30);
-            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-            echo $meta->fields['comment'];
-            echo "</span></em>";
-            echo "</p></a></div>";
          }
-      }
+      } else {
+         echo "<div class=\"bt-row\">";
+         $config = PluginMetademandsConfig::getInstance();
+         if ($config['enable_families']) {
 
+            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
+            // FAMILY
+            echo __('Family', 'metademands') . "&nbsp;";
+            // Get metademand families
+            $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', ['`level`' => 1]);
+            if (count($data_categories)) {
+               $data_categories = array_keys($data_categories);
+            }
+
+            $itilfamilies_id = [Dropdown::EMPTY_VALUE];
+            foreach ($meta->listMetademandsCategories() as $value) {
+               $ancestors_id = $dbu->getAncestorsOf('glpi_itilcategories', $value);
+               $value = array_shift($ancestors_id);
+               if (in_array($value, $data_categories)) {
+                  $itilfamilies_id[$value] = Dropdown::getDropdownName('glpi_itilcategories', $value);
+               }
+            }
+            asort($itilfamilies_id);
+            $rand = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
+            $params = ['family' => '__VALUE__',
+                       'step' => 'metademands'];
+
+            Ajax::updateItemOnSelectEvent("dropdown_itilfamilies_id$rand", "show_metademands_by_family",
+                                          $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownListMetademands.php",
+                                          $params);
+            echo "</div>";
+            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
+         } else {
+            echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
+         }
+         // METADEMAND list
+         echo __('Request') . "&nbsp;";
+         echo "<span id='show_metademands_by_family'>";
+
+         $data[0] = Dropdown::EMPTY_VALUE;
+         $data    = $meta->listMetademands(false, [], $data);
+
+         Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
+         echo "</span>";
+         echo "</div>";
+         echo "</div>";
+
+         echo "<br/>";
+         echo "<div class=\"bt-row\">";
+         echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 right\">";
+         echo "<input type='submit' class='submit' name='next' value='" . __('Next') . "'>";
+         echo "</div>";
+         echo "</div>";
+      }
       if (count($metademands) == 0) {
          echo '<div class="bt-feature bt-col-sm-5 bt-col-md-2">';
          echo '<h5 class="bt-title">';

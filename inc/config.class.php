@@ -141,6 +141,16 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>";
+      echo __("Enable display metademands via icons",'metademands');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showYesNo("display_type",$config['display_type']);
+      echo "</td>";
+      echo "<td colspan='2'></td>";
+      echo "</tr>";
+
       echo "<tr><td class='tab_bg_2 center' colspan='6'><input type=\"submit\" name=\"update_config\" class=\"submit\"
          value=\""._sx('button', 'Update')."\" ></td></tr>";
 
