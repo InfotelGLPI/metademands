@@ -34,16 +34,21 @@ class PluginMetademandsMenu extends CommonDBTM {
 
    static $rightname = 'plugin_metademands';
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
 
    function showMenu() {
-      global $CFG_GLPI;
 
       echo "<div align='center'>";
       echo "<table class='tab_cadre' cellpadding='5' height='150'>";

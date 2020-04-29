@@ -44,11 +44,19 @@ class PluginMetademandsITILApplication extends CommonDropdown {
    // Minor criticity
    const MINOR_CRITICITY    = 3;
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
 
       return _n('Application', 'Applications', $nb, 'metademands');
    }
 
+   /**
+    * @return bool
+    */
    function pre_deleteItem() {
       if ($this->input['id'] == self::NO_APPLICATION) {
          return false;
@@ -89,6 +97,9 @@ class PluginMetademandsITILApplication extends CommonDropdown {
 
    /**
     * @param array $ticket_values
+    *
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     */
    function updateITILApplicationForTicket($ticket_values = []) {
       if (isset($ticket_values['plugin_metademands_itilapplications_id'])) {
@@ -118,6 +129,9 @@ class PluginMetademandsITILApplication extends CommonDropdown {
       }
    }
 
+   /**
+    * @return array|array[]
+    */
    function getAdditionalFields() {
       $tab = [['name'  => 'is_critical',
             'label' => __('Criticity', 'metademands'),
@@ -165,12 +179,15 @@ class PluginMetademandsITILApplication extends CommonDropdown {
    }
 
    /**
-    * @since version 0.84
-    *
     * @param $field
     * @param $values
     * @param $options   array
-    * */
+    *
+    * @return mixed|string
+    * @return mixed|string
+    * @since version 0.84
+    *
+    */
    static function getSpecificValueToDisplay($field, $values, array $options = []) {
 
       if (!is_array($values)) {
@@ -202,7 +219,10 @@ class PluginMetademandsITILApplication extends CommonDropdown {
     * Get application criticity Name
     *
     * @param $value criticity ID
-    * */
+    *
+    * @return mixed
+    * @return mixed
+    */
    static function getApplicationCriticityName($value) {
       $criticity = self::getCriticity();
       if (isset($criticity[$value])) {
@@ -226,6 +246,9 @@ class PluginMetademandsITILApplication extends CommonDropdown {
       return $tab;
    }
 
+   /**
+    * @return array
+    */
    public function rawSearchOptions() {
 
       $tab = parent::rawSearchOptions();

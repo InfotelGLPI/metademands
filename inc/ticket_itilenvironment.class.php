@@ -36,6 +36,11 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsTicket_ITILEnvironment extends CommonDBTM {
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
 
       return _n('Environment', 'Environments', $nb, 'metademands');

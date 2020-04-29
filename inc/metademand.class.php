@@ -65,16 +65,26 @@ class PluginMetademandsMetademand extends CommonDropdown {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
 
       return _n('Meta-Demand', 'Meta-Demands', $nb, 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, UPDATE);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
@@ -134,7 +144,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
    /**
     * Display tab for each metademands
-    * */
+    * @param array $options
+    * @return array
+*/
    function defineTabs($options = []) {
       $ong = [];
 
@@ -180,6 +192,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       return false;
    }
 
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
    function prepareInputForAdd($input) {
 
       if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
@@ -196,6 +213,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       return $input;
    }
 
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
    function prepareInputForUpdate($input) {
 
       if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
@@ -222,6 +244,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
       PluginMetademandsTicketField::updateMandatoryTicketFields($this->input);
    }
 
+   /**
+    * @param int $history
+    */
    function post_updateItem($history = 1) {
       parent::post_updateItem($history);
 
@@ -240,6 +265,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
    }
 
+   /**
+    * @return array
+    */
    function rawSearchOptions() {
 
       $tab = parent::rawSearchOptions();
@@ -274,6 +302,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
       return $tab;
    }
 
+   /**
+    * @return array|array[]
+    */
    function getAdditionalFields() {
 
       $tab = [
@@ -299,6 +330,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
       return $tab;
    }
 
+   /**
+    * @param string       $field
+    * @param array|string $values
+    * @param array        $options
+    *
+    * @return string
+    */
    static function getSpecificValueToDisplay($field, $values, array $options = []) {
       if (!is_array($values)) {
          $values = [$field => $values];
@@ -317,7 +355,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param $metademands_id
     */
    function showDuplication($metademands_id) {
-      global $CFG_GLPI;
 
       echo "<table class='tab_glpi metademands_duplication'>";
       echo "<tr>";
@@ -390,8 +427,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
    /**
     * Add Logs
     *
-    * @return nothing
-    * */
+    * @param $input
+    * @param $logtype
+    * @return void
+*/
    static function addLog($input, $logtype) {
 
       $new_value = $_SESSION["glpiname"] . " ";
@@ -418,8 +457,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
    /**
     * Add an history
     *
-    * @return nothing
-    * */
+    * @param        $ID
+    * @param        $type
+    * @param string $old_value
+    * @param string $new_value
+    * @return void
+*/
    static function addHistory($ID, $type, $old_value = '', $new_value = '') {
       $changes[0] = 0;
       $changes[1] = $old_value;
@@ -434,6 +477,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param type  $protocol
     *
     * @return type
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     * @global type $DB
     *
     */
@@ -483,6 +528,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param type  $protocol
     *
     * @return type
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     * @global type $DB
     *
     */
@@ -762,7 +809,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
    function addMetademands($metademands_id, $values, $tasklevel = 1) {
       global $DB;
 
-      $message          = '';
       $metademands_data = $this->showMetademands($metademands_id);
       $this->getFromDB($metademands_id);
 
@@ -1050,7 +1096,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $result            = [];
       $result['content'] = "";
       $parent_fields_id  = 0;
-      $rank              = 0;
 
       $name              = Dropdown::getDropdownName($this->getTable(), $metademands_id);
       $result['content'] .= "<table style='width: 100%;border-style: dashed;'>"; // class='mticket'
@@ -1302,6 +1347,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param       $ancestor_tickets_id
     *
     * @return bool
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     */
    private function createSonsTickets($tickettasks_data = [], $parent_tickets_id, $tasklevel = 1, $parent_fields, $ancestor_tickets_id) {
 
@@ -1451,9 +1498,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param $ticket
     *
     * @return bool
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     */
    function showPluginForTicket($ticket) {
-      global $CFG_GLPI;
 
       if (!$this->canView()) {
          return false;
@@ -1726,6 +1774,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param array $options
     *
     * @return bool
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     */
    function executeDuplicate($options = []) {
       global $CFG_GLPI;
@@ -1911,10 +1961,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @param $checkitem link item to check right   (default NULL)
     *
-    * @return an array of massive actions
+    * @return array array of massive actions
     * *@since version 0.84
-    *
-    */
+*/
    function getSpecificMassiveActions($checkitem = null) {
       $isadmin = static::canUpdate();
       $actions = parent::getSpecificMassiveActions($checkitem);
@@ -1979,6 +2028,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
       parent::processMassiveActionsForOneItemtype($ma, $item, $ids);
    }
 
+   /**
+    * @return array
+    */
+   /**
+    * @return array
+    */
    function getForbiddenStandardMassiveAction() {
 
       $forbidden = parent::getForbiddenStandardMassiveAction();
@@ -1988,6 +2043,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
       return $forbidden;
    }
 
+   /**
+    * @return array|array[]|bool
+    */
+   /**
+    * @return array
+    */
    static function getMenuContent() {
       $plugin_page = "/plugins/metademands/front/wizard.form.php";
       $menu        = [];

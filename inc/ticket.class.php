@@ -43,15 +43,25 @@ class PluginMetademandsTicket extends CommonDBTM {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('Linked ticket', 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
@@ -77,6 +87,10 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
    }
 
+   /**
+    * @param int $size
+    * @param     $idDiv
+    */
    static function showDocumentAddButton($size = 25, $idDiv) {
       echo "<script type='text/javascript'>var nbfiles=1;</script>";
       echo "<span id='addfilebutton' class='fa fa-plus pointer' title=\"" . __s('Add') . "\" onClick=\"
@@ -1179,12 +1193,11 @@ class PluginMetademandsTicket extends CommonDBTM {
     * This method manage upload of files into GLPI
     *
     * @param $params parameters
-    * @param $protocol the protocol used for remote call
     * @param $filename name of the file on the filesystem
     * @param $document_name name of the document into glpi
     *
-    * @return true or an Error
-    **/
+    * @return array or an Error
+*/
    static function uploadDocument($params, $filename, $document_name) {
 
       $files   = [];

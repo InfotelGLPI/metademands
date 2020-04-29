@@ -37,15 +37,25 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    **/
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('Wizard overview', 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
@@ -94,6 +104,8 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param int    $resources_id
     * @param string $resources_step
     *
+    * @return bool
+    * @return bool
     * @throws \GlpitestSQLError
     */
    function showWizard($step = 'initWizard', $metademands_id = 0, $preview = false, $tickets_id = 0, $resources_id = 0, $resources_step = '') {
@@ -563,7 +575,6 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param       $metademands_data
     */
    function constructForm(array $line, $preview = false, $metademands_data) {
-      global $CFG_GLPI;
 
       $count   = 0;
       $columns = 2;
@@ -727,11 +738,12 @@ class PluginMetademandsWizard extends CommonDBTM {
    }
 
    /**
-    * @param $data
-    * @param $metademands_data
-    */
+    * @param        $data
+    * @param        $metademands_data
+    * @param bool   $preview
+    * @param string $config_link
+*/
    function getFieldType($data, $metademands_data, $preview = false, $config_link = "") {
-      global $CFG_GLPI;
 
       $value = '';
       if (isset($data['value'])) {

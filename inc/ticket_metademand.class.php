@@ -43,15 +43,25 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('Task creation', 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }

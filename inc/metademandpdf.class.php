@@ -63,8 +63,8 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    /**
     * PluginMetaDemandsMetaDemandPdf constructor.
     *
-    * @param $titre
-    * @param $sousTitre
+    * @param $title
+    * @param $subtitle
     */
    public function __construct($title, $subtitle) {
       parent::__construct('P', 'mm', 'A4');
@@ -579,6 +579,16 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $this->setFields($form, $fields);
    }
 
+   /**
+    * @param $string
+    *
+    * @return string
+    */
+   /**
+    * @param $string
+    *
+    * @return string
+    */
    static function cleanTitle($string) {
       $string = str_replace(array('[\', \']'), '', $string);
       $string = preg_replace('/\[.*\]/U', '', $string);
@@ -590,8 +600,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    }
 
    /**
-    * @param $idTicket
-    * @param $entitiesId
+    * @param $name
+    * @param $tickets_id
+    * @param $entities_id
     *
     * @return \Document_Item
     */

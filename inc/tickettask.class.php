@@ -42,15 +42,25 @@ class PluginMetademandsTicketTask extends CommonDBTM {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('Task creation', 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
@@ -59,6 +69,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
     * @param       $metademands_id
     * @param       $canchangeorder
     * @param array $input
+    *
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     */
    static function showTicketTaskForm($metademands_id, $canchangeorder, $input = []) {
       global $CFG_GLPI;
@@ -354,7 +367,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "</div>";
    }
 
-    /**
+   /**
     * Print the field form
     *
     * @param $ID integer ID of the item
@@ -362,8 +375,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
     *     - target filename : where to go when done.
     *     - withtemplate boolean : template or basic item
     *
-    * @return Nothing (display)
-    */
+    * @return bool (display)
+    * @throws \GlpitestSQLError
+*/
    function showForm($ID, $options = [""]) {
 
       if (!$this->canview() || !$this->cancreate()) {
@@ -420,6 +434,16 @@ class PluginMetademandsTicketTask extends CommonDBTM {
    }
 
 
+   /**
+    * @param array $input
+    *
+    * @return array
+    */
+   /**
+    * @param array $input
+    *
+    * @return array
+    */
    function prepareInputForAdd($input) {
 
       //Aplication/Environment interaction control
@@ -498,6 +522,16 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       }
    }
 
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
    function prepareInputForUpdate($input) {
 
       $this->getFromDB($input['id']);

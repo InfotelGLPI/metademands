@@ -41,15 +41,25 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return _n('Link with a metademand', 'Link with metademands', $nb, 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
@@ -211,10 +221,10 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
 
    /**
     * @param        $resourceContractType_id
-    * @param string $condition
+    * @param array  $condition
     *
     * @return array
-    */
+*/
    function getDataForResourceContractType($resourceContractType_id, $condition = []) {
       $cond  = ['plugin_resources_contracttypes_id' => $resourceContractType_id]
                     + $condition;

@@ -51,15 +51,25 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return _n('Ticket field', 'Ticket fields', $nb, 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
@@ -108,13 +118,10 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * Print the field form
     *
-    * @param $ID integer ID of the item
-    * @param $options array
-    *     - target filename : where to go when done.
-    *     - withtemplate boolean : template or basic item
-    *
-    * @return Nothing (display)
-    */
+    * @param $item
+    * @return bool (display)
+    * @throws \GlpitestSQLError
+*/
    function showPluginFromItems($item) {
 
       if (!$this->canview()) {
@@ -162,7 +169,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $this->listFields($ticketfield_data, $fields, $searchOption, $canedit, $tt);
    }
 
-    /**
+   /**
     * Print the field form
     *
     * @param $ID integer ID of the item
@@ -170,8 +177,9 @@ class PluginMetademandsTicketField extends CommonDBChild {
     *     - target filename : where to go when done.
     *     - withtemplate boolean : template or basic item
     *
-    * @return Nothing (display)
-    */
+    * @return bool (display)
+    * @throws \GlpitestSQLError
+*/
    function showForm($ID, $options = []) {
       global $CFG_GLPI;
 
@@ -327,13 +335,15 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * Get predefined fields for a template
     *
-    * @since version 0.83
-    *
     * @param $ID the template ID
     * @param $withtypeandcategory bool with type and category
     *
     * @return an array of predefined fields
-   **/
+    **@throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
+    * @since version 0.83
+    *
+    */
    function getPredefinedFields($ID, $withtypeandcategory = false) {
       global $DB;
 
@@ -749,6 +759,12 @@ class PluginMetademandsTicketField extends CommonDBChild {
       }
    }
 
+   /**
+    * @return array
+    */
+   /**
+    * @return array
+    */
    function getForbiddenStandardMassiveAction() {
 
       $forbidden = parent::getForbiddenStandardMassiveAction();

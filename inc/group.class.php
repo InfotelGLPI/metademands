@@ -46,15 +46,25 @@ class PluginMetademandsGroup extends CommonDBTM {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('Groups rights', 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
@@ -129,12 +139,8 @@ class PluginMetademandsGroup extends CommonDBTM {
 
       $groups = [];
       $group = new Group();
-      $op = "";
       $condition = [];
-      if (count($used_groups) > 0) {
-         $condition += ['NOT' => ['id' => $used_groups]];
-         $op = "AND";
-      }
+
       $dbu = new DbUtils();
       $condition += $dbu->getEntitiesRestrictCriteria($group->getTable(), '', '', $group->maybeRecursive());
       $dataGroup = $group->find($condition, 'name');
@@ -283,6 +289,9 @@ class PluginMetademandsGroup extends CommonDBTM {
       return true;
    }
 
+   /**
+    * @return array
+    */
    function rawSearchOptions() {
 
       $tab = [];
@@ -320,6 +329,11 @@ class PluginMetademandsGroup extends CommonDBTM {
       return $tab;
    }
 
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
    function prepareInputForAdd($input) {
       if (!$this->checkMandatoryFields($input)) {
          return false;
@@ -328,6 +342,11 @@ class PluginMetademandsGroup extends CommonDBTM {
       return $input;
    }
 
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
    function prepareInputForUpdate($input) {
       if (!$this->checkMandatoryFields($input)) {
          return false;

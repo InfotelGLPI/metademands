@@ -53,15 +53,25 @@ class PluginMetademandsField extends CommonDBChild {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('Wizard creation', 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
@@ -113,13 +123,15 @@ class PluginMetademandsField extends CommonDBChild {
    /**
     * Print the field form
     *
-    * @param $ID integer ID of the item
-    * @param $options array
+    * @param       $ID integer ID of the item
+    * @param array $item
+    * @param       $options array
     *     - target filename : where to go when done.
     *     - withtemplate boolean : template or basic item
     *
-    * @return Nothing (display)
-    */
+    * @return bool (display)
+    * @throws \GlpitestSQLError
+*/
    function showForm($ID, $item = [], $options = [""]) {
       global $CFG_GLPI;
 
@@ -548,10 +560,10 @@ class PluginMetademandsField extends CommonDBChild {
    /**
     * get field types name
     *
-    * @param type $value
+    * @param string $value
     *
     * @return string types
-    */
+*/
    static function getFieldTypesName($value = '') {
       switch ($value) {
          case 'dropdown':
@@ -590,11 +602,10 @@ class PluginMetademandsField extends CommonDBChild {
    /**
     * Show field item dropdown
     *
-    * @param type $name
-    * @param type $value
-    *
+    * @param type  $name
+    * @param array $param
     * @return dropdown of items
-    */
+*/
    static function dropdownFieldItems($name, $param = []) {
 
       $p = [];
@@ -638,12 +649,12 @@ class PluginMetademandsField extends CommonDBChild {
    /**
     * get field items name
     *
-    * @param type $value
+    * @param string $value
     *
     * @return string item
-    */
+*/
    static function getFieldItemsName($value = '') {
-      $you= '';
+
       switch ($value) {
          case 'user':
             return __('User');
@@ -681,8 +692,9 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @param array $options
     *
-    * @return html
-    */
+    * @return void
+    * @throws \GlpitestSQLError
+*/
    function viewTypeField($options) {
       $params['value']       = 0;
       $params['check_value'] = 0;
@@ -1168,7 +1180,8 @@ class PluginMetademandsField extends CommonDBChild {
    /**
     * @param      $count
     * @param bool $display_comment
-    */
+    * @param bool $display_default
+*/
    static function initCustomValue($count, $display_comment = false, $display_default = false) {
       global $CFG_GLPI;
 
@@ -1192,7 +1205,8 @@ class PluginMetademandsField extends CommonDBChild {
    /**
     * @param $valueId
     * @param $display_comment
-    */
+    * @param $display_default
+*/
    static function addNewValue($valueId, $display_comment, $display_default) {
 
       echo '<table width=\'100%\' class="tab_cadre">';
@@ -1261,9 +1275,10 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
+    * @param $field
     * @param $metademands_id
     * @param $selected_value
-    */
+*/
    static function showFieldsDropdown($field, $metademands_id, $selected_value) {
 
       $fields      = new self();
@@ -1357,6 +1372,16 @@ class PluginMetademandsField extends CommonDBChild {
       return $listMetademandsFields;
    }
 
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
    function prepareInputForAdd($input) {
       if (!$this->checkMandatoryFields($input)) {
          return false;
@@ -1365,6 +1390,16 @@ class PluginMetademandsField extends CommonDBChild {
       return $input;
    }
 
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
+   /**
+    * @param array $input
+    *
+    * @return array|bool
+    */
    function prepareInputForUpdate($input) {
 
       if (!$this->checkMandatoryFields($input)) {
@@ -1441,6 +1476,12 @@ class PluginMetademandsField extends CommonDBChild {
       return true;
    }
 
+   /**
+    * @return array
+    */
+   /**
+    * @return array
+    */
    function rawSearchOptions() {
 
       $tab = [];

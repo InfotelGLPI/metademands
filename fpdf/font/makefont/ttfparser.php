@@ -32,7 +32,14 @@ class TTFParser
 	public $underlineThickness;
 	public $isFixedPitch;
 
-	function __construct($file)
+   /**
+    * TTFParser constructor.
+    *
+    * @param $file
+    *
+    * @throws \Exception
+    */
+   function __construct($file)
 	{
 		$this->f = fopen($file, 'rb');
 		if(!$this->f)
@@ -352,7 +359,10 @@ class TTFParser
 			$this->glyphNames = false;
 	}
 
-	function Subset($chars)
+   /**
+    * @param $chars
+    */
+   function Subset($chars)
 	{
 /*		$chars = array_keys($this->chars);
 		$this->subsettedChars = $chars;
@@ -375,7 +385,10 @@ class TTFParser
 		}
 	}
 
-	function AddGlyph($id)
+   /**
+    * @param $id
+    */
+   function AddGlyph($id)
 	{
 		if(!isset($this->glyphs[$id]['ssid']))
 		{
@@ -389,7 +402,11 @@ class TTFParser
 		}
 	}
 
-	function Build()
+   /**
+    * @return false|string
+    * @throws \Exception
+    */
+   function Build()
 	{
 		$this->BuildCmap();
 		$this->BuildHhea();
@@ -590,6 +607,14 @@ class TTFParser
 		$this->SetTable('post', $data);
 	}
 
+   /**
+    * @return false|string
+    * @throws \Exception
+    */
+	/**
+	 * @return false|string
+	 * @throws \Exception
+	 */
 	function BuildFont()
 	{
 		$tags = array();
@@ -643,6 +668,16 @@ class TTFParser
 		return $font;
 	}
 
+   /**
+    * @param $tag
+    *
+    * @throws \Exception
+    */
+	/**
+	 * @param $tag
+	 *
+	 * @throws \Exception
+	 */
 	function LoadTable($tag)
 	{
 		$this->Seek($tag);
@@ -653,6 +688,14 @@ class TTFParser
 		$this->tables[$tag]['data'] = $this->Read($length);
 	}
 
+   /**
+    * @param $tag
+    * @param $data
+    */
+	/**
+	 * @param $tag
+	 * @param $data
+	 */
 	function SetTable($tag, $data)
 	{
 		$length = strlen($data);
@@ -664,6 +707,16 @@ class TTFParser
 		$this->tables[$tag]['checkSum'] = $this->CheckSum($data);
 	}
 
+   /**
+    * @param $tag
+    *
+    * @throws \Exception
+    */
+	/**
+	 * @param $tag
+	 *
+	 * @throws \Exception
+	 */
 	function Seek($tag)
 	{
 		if(!isset($this->tables[$tag]))
@@ -671,22 +724,50 @@ class TTFParser
 		fseek($this->f, $this->tables[$tag]['offset'], SEEK_SET);
 	}
 
+   /**
+    * @param $n
+    */
+	/**
+	 * @param $n
+	 */
 	function Skip($n)
 	{
 		fseek($this->f, $n, SEEK_CUR);
 	}
 
+   /**
+    * @param $n
+    *
+    * @return false|string
+    */
+	/**
+	 * @param $n
+	 *
+	 * @return false|string
+	 */
 	function Read($n)
 	{
 		return $n>0 ? fread($this->f, $n) : '';
 	}
 
+   /**
+    * @return mixed
+    */
+	/**
+	 * @return mixed
+	 */
 	function ReadUShort()
 	{
 		$a = unpack('nn', fread($this->f,2));
 		return $a['n'];
 	}
 
+   /**
+    * @return int|mixed
+    */
+	/**
+	 * @return int|mixed
+	 */
 	function ReadShort()
 	{
 		$a = unpack('nn', fread($this->f,2));
@@ -696,12 +777,28 @@ class TTFParser
 		return $v;
 	}
 
+   /**
+    * @return mixed
+    */
+	/**
+	 * @return mixed
+	 */
 	function ReadULong()
 	{
 		$a = unpack('NN', fread($this->f,4));
 		return $a['N'];
 	}
 
+   /**
+    * @param $s
+    *
+    * @return false|string
+    */
+	/**
+	 * @param $s
+	 *
+	 * @return false|string
+	 */
 	function CheckSum($s)
 	{
 		$n = strlen($s);
@@ -715,6 +812,16 @@ class TTFParser
 		return pack('nn', $high+($low>>16), $low);
 	}
 
+   /**
+    * @param $msg
+    *
+    * @throws \Exception
+    */
+	/**
+	 * @param $msg
+	 *
+	 * @throws \Exception
+	 */
 	function Error($msg)
 	{
 		throw new Exception($msg);

@@ -36,18 +36,29 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsITILApplicationInjection extends PluginMetademandsITILApplication implements PluginDatainjectionInjectionInterface {
 
+   /**
+    * @return \a|bool
+    */
    function isPrimaryType() {
 
       return true;
    }
 
 
+   /**
+    * @return \an|array
+    */
    function connectedTo() {
 
       return [];
    }
 
 
+   /**
+    * @param null $classname
+    *
+    * @return string
+    */
    static function getTable($classname = null) {
 
       $parenttype = get_parent_class();
@@ -57,8 +68,11 @@ class PluginMetademandsITILApplicationInjection extends PluginMetademandsITILApp
 
 
    /**
+    * @param string $primary_type
+    *
+    * @return array
     * @see plugins/datainjection/inc/PluginDatainjectionInjectionInterface::getOptions()
-    **/
+    */
    function getOptions($primary_type = '') {
 
       $tab           = Search::getOptions(get_parent_class($this));
@@ -77,7 +91,10 @@ class PluginMetademandsITILApplicationInjection extends PluginMetademandsITILApp
 
    /**
     * @see plugins/datainjection/inc/PluginDatainjectionInjectionInterface::addOrUpdateObject()
-    **/
+    * @param array $values
+    * @param array $options
+    * @return \an|array
+    */
    function addOrUpdateObject($values = [], $options = []) {
 
       $lib = new PluginDatainjectionCommonInjectionLib($this, $values, $options);

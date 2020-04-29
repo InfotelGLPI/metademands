@@ -36,6 +36,11 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsTicket_ITILApplication extends CommonDropdown {
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
 
       return _n('Application', 'Applications', $nb, 'metademands');

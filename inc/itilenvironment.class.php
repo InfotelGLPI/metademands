@@ -38,6 +38,11 @@ class PluginMetademandsITILEnvironment extends CommonDropdown {
 
    const NO_OBJECT = 1;
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
 
       return _n('Environment', 'Environments', $nb, 'metademands');
@@ -109,6 +114,9 @@ class PluginMetademandsITILEnvironment extends CommonDropdown {
 
    /**
     * @param array $ticket_values
+    *
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     */
    function updateITILEnvironmentForTicket($ticket_values = []) {
       if (isset($ticket_values['plugin_metademands_itilenvironments_id'])) {
@@ -137,6 +145,9 @@ class PluginMetademandsITILEnvironment extends CommonDropdown {
       }
    }
 
+   /**
+    * @return array|array[]
+    */
    function getAdditionalFields() {
 
       $tab = [['name'  => 'is_outproduction',
@@ -164,6 +175,9 @@ class PluginMetademandsITILEnvironment extends CommonDropdown {
       return $tab;
    }
 
+   /**
+    * @return array
+    */
    public function rawSearchOptions() {
       $tab = parent::rawSearchOptions();
 

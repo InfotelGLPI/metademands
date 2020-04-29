@@ -156,6 +156,9 @@ function plugin_version_metademands() {
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
+/**
+ * @return bool
+ */
 function plugin_metademands_check_prerequisites() {
    if (version_compare(GLPI_VERSION, '9.4', 'lt') 
          || version_compare(GLPI_VERSION, '9.5', 'ge')) {
@@ -169,6 +172,9 @@ function plugin_metademands_check_prerequisites() {
 }
 
 // Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
+/**
+ * @return bool
+ */
 function plugin_metademands_check_config() {
    return true;
 }

@@ -36,18 +36,35 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsProfile extends Profile {
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return _n('Right management', 'Rights management', $nb, 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
 
+   /**
+    * @param \CommonGLPI $item
+    * @param int         $withtemplate
+    *
+    * @return string
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if ($item->getType()=='Profile') {
@@ -57,6 +74,13 @@ class PluginMetademandsProfile extends Profile {
    }
 
 
+   /**
+    * @param \CommonGLPI $item
+    * @param int         $tabnum
+    * @param int         $withtemplate
+    *
+    * @return bool
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
       if ($item->getType()=='Profile') {
@@ -187,7 +211,10 @@ class PluginMetademandsProfile extends Profile {
    /**
     * Init profiles
     *
-    **/
+    * @param $old_right
+    *
+    * @return int
+    */
 
    static function translateARight($old_right) {
       switch ($old_right) {
@@ -207,10 +234,15 @@ class PluginMetademandsProfile extends Profile {
    }
 
    /**
-   * @since 0.85
-   * Migration rights from old system to the new one for one profile
-   * @param $profiles_id the profile ID
-   */
+    * @param $profiles_id the profile ID
+    *
+    * @return bool
+    * @return bool
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
+    * @since 0.85
+    * Migration rights from old system to the new one for one profile
+    */
    static function migrateOneProfile() {
       global $DB;
       //Cannot launch migration if there's nothing to migrate...
@@ -318,8 +350,10 @@ class PluginMetademandsProfile extends Profile {
    }
 
    /**
-    * @param $profile
-   **/
+    * @param      $profiles_id
+    * @param      $rights
+    * @param bool $drop_existing
+    */
    static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing = false) {
       $dbu = new DbUtils();
       $profileRight = new ProfileRight();

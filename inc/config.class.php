@@ -47,12 +47,15 @@ class PluginMetademandsConfig extends CommonDBTM {
     *
     * May be overloaded if needed
     *
-    * @return booleen
-    **/
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }

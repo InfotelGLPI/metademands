@@ -27,15 +27,15 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * @return bool
+ * @throws \GlpitestSQLError
+ */
 function plugin_metademands_install() {
    global $DB;
 
    include_once (GLPI_ROOT . "/plugins/metademands/inc/profile.class.php");
 
-   $fileEngine =  GLPI_ROOT."/plugins/metademands/install/sql/empty-InnoDB-2.6.2.sql";
-   if (dbMyISAM()) {
-      $fileEngine =  GLPI_ROOT."/plugins/metademands/install/sql/empty-MyISAM-2.6.2.sql";
-   }
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
       $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/empty-2.6.2.sql");
    }
@@ -96,6 +96,10 @@ function plugin_metademands_install() {
 }
 
 // Uninstall process for plugin : need to return true if succeeded
+/**
+ * @return bool
+ * @throws \GlpitestSQLError
+ */
 function plugin_metademands_uninstall() {
    global $DB;
 
@@ -132,6 +136,11 @@ function plugin_metademands_uninstall() {
    return true;
 }
 
+/**
+ * @param $itemtype
+ *
+ * @return array
+ */
 function plugin_metademands_getAddSearchOptions($itemtype) {
    if ($itemtype == 'Ticket') {
       $config = new PluginMetademandsConfig();
@@ -148,6 +157,15 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
    }
 }
 
+/**
+ * @param $itemtype
+ * @param $ref_table
+ * @param $new_table
+ * @param $linkfield
+ * @param $already_link_tables
+ *
+ * @return string
+ */
 function plugin_metademands_addLeftJoin($itemtype, $ref_table, $new_table, $linkfield, $already_link_tables) {
    if ($itemtype == 'Ticket' && $new_table == 'glpi_plugin_metademands_itilapplications') {
       return " LEFT JOIN `glpi_plugin_metademands_tickets_itilapplications` "
@@ -163,6 +181,9 @@ function plugin_metademands_addLeftJoin($itemtype, $ref_table, $new_table, $link
 }
 
 // Define Dropdown tables to be manage in GLPI
+/**
+ * @return array
+ */
 function plugin_metademands_getDropdown() {
 
    $plugin = new Plugin();
@@ -177,6 +198,9 @@ function plugin_metademands_getDropdown() {
 }
 
 // Hook done on purge item case
+/**
+ * @param $item
+ */
 function plugin_pre_item_purge_metademands($item) {
    switch (get_class($item)) {
       case 'PluginMetademandsMetademand' :
@@ -237,6 +261,9 @@ function plugin_pre_item_purge_metademands($item) {
 
 // How to display specific actions ?
 // options contain at least itemtype and and action
+/**
+ * @param array $options
+ */
 function plugin_metademands_MassiveActionsDisplay($options = []) {
 
    switch ($options['itemtype']) {
@@ -252,6 +279,9 @@ function plugin_metademands_MassiveActionsDisplay($options = []) {
 }
 
 // Define dropdown relations
+/**
+ * @return array|\string[][]
+ */
 function plugin_metademands_getDatabaseRelations() {
 
    $plugin = new Plugin();
@@ -293,6 +323,16 @@ function plugin_metademands_getDatabaseRelations() {
    }
 }
 
+/**
+ * @param $data
+ *
+ * @return mixed
+ */
+/**
+ * @param $data
+ *
+ * @return mixed
+ */
 function plugin_metademands_MassiveActionsProcess($data) {
    $metademand = new PluginMetademandsMetademand();
    $res = $metademand->doSpecificMassiveActions($data);
@@ -300,6 +340,16 @@ function plugin_metademands_MassiveActionsProcess($data) {
    return $res;
 }
 
+/**
+ * @param $options
+ *
+ * @return array
+ */
+/**
+ * @param $options
+ *
+ * @return array
+ */
 function plugin_metademands_getRuleActions($options) {
    if ($options['rule_itemtype'] == 'RuleTicket') {
       $ticket = new PluginMetademandsTicket();
@@ -307,6 +357,16 @@ function plugin_metademands_getRuleActions($options) {
    }
 }
 
+/**
+ * @param $options
+ *
+ * @return array
+ */
+/**
+ * @param $options
+ *
+ * @return array
+ */
 function plugin_metademands_getRuleCriteria($options) {
    if ($options['rule_itemtype'] == 'RuleTicket') {
       $ticket = new PluginMetademandsTicket();
@@ -340,6 +400,14 @@ function plugin_datainjection_populate_metademands() {
    $INJECTABLE_TYPES['PluginMetademandsITILApplicationInjection'] = 'metademands';
 }
 
+/**
+ * @return bool
+ * @throws \GlpitestSQLError
+ */
+/**
+ * @return bool
+ * @throws \GlpitestSQLError
+ */
 function dbMyISAM() {
    global $DB;
 

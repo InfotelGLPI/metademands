@@ -46,19 +46,32 @@ class PluginMetademandsTask extends CommonTreeDropdown {
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
-    * */
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
    static function getTypeName($nb = 0) {
       return __('Task creation', 'metademands');
    }
 
+   /**
+    * @return bool|int
+    */
    static function canView() {
       return Session::haveRight(self::$rightname, READ);
    }
 
+   /**
+    * @return bool
+    */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
 
+   /**
+    * @return bool|int
+    */
    static function canPurge() {
       return Session::haveRight(self::$rightname, PURGE);
    }
@@ -90,10 +103,14 @@ class PluginMetademandsTask extends CommonTreeDropdown {
     * Display content for each users
     *
     * @static
+    *
     * @param CommonGLPI $item
-    * @param int $tabnum
-    * @param int $withtemplate
+    * @param int        $tabnum
+    * @param int        $withtemplate
+    *
     * @return bool|true
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $field = new self();
@@ -189,8 +206,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
    }
 
 
-
-    /**
+   /**
     * Print the field form
     *
     * @param $ID integer ID of the item
@@ -198,8 +214,9 @@ class PluginMetademandsTask extends CommonTreeDropdown {
     *     - target filename : where to go when done.
     *     - withtemplate boolean : template or basic item
     *
-    * @return Nothing (display)
-    */
+    * @return bool (display)
+    * @throws \GlpitestSQLError
+*/
    function showForm($ID, $options = [""]) {
 
       if (!$this->canview()) {
@@ -505,7 +522,11 @@ class PluginMetademandsTask extends CommonTreeDropdown {
     * Get ticket type Name
     *
     * @param $value type ID
-   **/
+    **
+    *
+    * @return string
+    * @return string
+    */
    static function getTaskTypeName($value) {
 
       switch ($value) {
@@ -515,12 +536,15 @@ class PluginMetademandsTask extends CommonTreeDropdown {
    }
 
    /**
-   * Get a child for a level given
-   *
-   * @param integer $tasks_id
-   * @param integer $search_level
-   * @return integer child
-   */
+    * Get a child for a level given
+    *
+    * @param integer $tasks_id
+    * @param integer $search_level
+    *
+    * @return integer child
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
+    */
    function getChildrenForLevel($tasks_id, $search_level) {
       $ChildrenForLevel = [];
 
@@ -609,6 +633,9 @@ class PluginMetademandsTask extends CommonTreeDropdown {
    /**
     * @param $metademands_id
     * @param $selected_value
+    *
+    * @throws \GlpitestSQLError
+    * @throws \GlpitestSQLError
     */
    static function showAllTasksDropdown($metademands_id, $selected_value) {
 
@@ -628,6 +655,12 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       Dropdown::showFromArray('plugin_metademands_tasks_id', $data, ['value' => $selected_value, 'tree' => true]);
    }
 
+   /**
+    * @return array
+    */
+   /**
+    * @return array
+    */
    function rawSearchOptions() {
 
       $tab = [];
@@ -657,6 +690,12 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       return $tab;
    }
 
+   /**
+    * @return array
+    */
+   /**
+    * @return array
+    */
    function getForbiddenStandardMassiveAction() {
 
       $forbidden = parent::getForbiddenStandardMassiveAction();
