@@ -437,7 +437,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "</a>";
                echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo "<p>";
-               echo Html::resume_text($meta->getName(), 30);
+               echo $meta->getName();
                echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                echo $meta->fields['comment'];
                echo "</span></em>";
@@ -820,6 +820,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $required = "red";
       }
 
+      echo "<span id='metademands_wizard_display" . $data['id'] . "'>";
       echo "<label for='field[" . $data['id'] . "]' class='$required col-form-label col-form-label-sm'>";
       echo $data['label'] . " $upload";
       if ($preview) {
@@ -831,7 +832,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "*";
       }
       echo "</span>";
-      echo "<span id='metademands_wizard_display" . $data['id'] . "'>";
+
       echo "&nbsp;";
       // Input
       switch ($data['type']) {

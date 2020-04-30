@@ -127,14 +127,14 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                           $tt->getMandatoryMark('itilcategories_id'))."</th>";
       echo "<td>";
 
-      $condition = "1";
+      $condition = [];
       switch ($values['type']) {
          case Ticket::DEMAND_TYPE :
-            $condition .= " AND `is_request`='1'";
+            $condition = ['is_request' => 1];
             break;
 
          default: // Ticket::INCIDENT_TYPE :
-            $condition .= " AND `is_incident`='1'";
+            $condition = ['is_incident' => 1];
       }
       $opt = ['value'     => $values['itilcategories_id'],
                    'condition' => $condition,
@@ -344,9 +344,19 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<th width='$colsize1%'>".__('Description')."</th>";
       echo "<td width='$colsize3%'>";
-      echo '<textarea rows="6" cols="90" name="content">';
-      echo isset($values['content'])?$values['content']:'';
-      echo '</textarea>';
+
+      $rand      = mt_rand();
+      $rand_text = mt_rand();
+      Html::initEditorSystem("content" . $rand, $rand, true);
+      if (!isset($values['content'])) {
+         $content = '';
+      } else {
+         $content = $values['content'];
+      }
+      echo "<div id='content$rand_text'>";
+      echo "<textarea id='content$rand' name='content' rows='3'>" . stripslashes($content) . "</textarea>";
+      echo "</div>";
+
       echo "<input type='hidden' name='_tickettemplates_id' value='".$tt->fields['id']."'>";
       echo "<input type='hidden' name='showForMetademands' value='1'>";
       echo "<input type='hidden' name='displayType' value='0'>";

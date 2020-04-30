@@ -312,7 +312,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
-         echo "<th class='center b' colspan='5'>".__('Tasks', 'metademands')."</th>";
+         echo "<th class='center b' colspan='7'>".__('Tasks', 'metademands')."</th>";
          echo "</tr>";
 
          echo "<tr class='tab_bg_2'>";
@@ -324,6 +324,8 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          echo "<th class='center b'>".__('ID')."</th>";
          echo "<th class='center b'>".__('Name')."</th>";
          echo "<th class='center b'>". __('Type') ."</th>";
+         echo "<th class='center b'>" . __('Category') . "</th>";
+         echo "<th class='center b'>" . __('Assigned to') . "</th>";
          echo "<th class='center b' colspan='2'>".__('Level', 'metademands')."</th>";
          echo "</tr>";
          foreach ($tasks as $value) {
@@ -373,6 +375,33 @@ class PluginMetademandsTask extends CommonTreeDropdown {
 
             // Type
             echo "<td ".$color_class.">".self::getTaskTypeName($value['type'])."</td>";
+
+            $cat = "";
+            if ($value['type'] == self::TICKET_TYPE
+                && isset($value['itilcategories_id'])
+                && $value['itilcategories_id'] > 0) {
+               $cat = Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
+            }
+            echo "<td class='$color_class'>";
+            echo $cat;
+            echo "</td>";
+
+            //assign
+            $techdata = "";
+            if ($value['type'] == self::TICKET_TYPE) {
+               if (isset($value['users_id_assign'])
+                   && $value['users_id_assign'] > 0) {
+                  $techdata .= getUserName($value['users_id_assign']);
+                  $techdata .= "<br>";
+               }
+               if (isset($value['groups_id_assign'])
+                   && $value['groups_id_assign'] > 0) {
+                  $techdata .= Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
+               }
+            }
+            echo "<td class='$color_class'>";
+            echo $techdata;
+            echo "</td>";
 
             // Order
             if ($value['type'] == self::TICKET_TYPE) {

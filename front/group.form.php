@@ -27,17 +27,17 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 Session::checkLoginUser();
 
 $group = new PluginMetademandsGroup();
 
-if (isset($_POST["add_groups"])) {
+if (isset($_POST["add_groups"]) && isset($_POST['groups_id'])) {
    $group->check(-1, UPDATE, $_POST);
    //add groups
    foreach ($_POST['groups_id'] as $groups_id) {
       $group->add(['groups_id'                         => $groups_id,
-                        'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
+                   'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
    }
    Html::back();
 }
