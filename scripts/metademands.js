@@ -186,23 +186,25 @@
             }
          };
 
-        this.metademand_displayField = function (toupdate, toobserve, check_value) {
-
-            $('#' + toupdate).hide();
-            object.metademand_checkField(toupdate, toobserve, check_value);
-            $("[name='" + toobserve + "']").change(function () {
-                object.metademand_checkField(toupdate, toobserve, check_value);
-            });
-        };
-
-        this.metademand_checkField = function (toupdate, toobserve, check_value) {
-            if (check_value != 0 && ($("[name='" + toobserve + "']").val() == check_value
-                || (check_value == 'NOT_NULL' && $("[name='" + toobserve + "']").val() != 0))) {
-                $('#' + toupdate).show();
-            } else {
-                $('#' + toupdate).hide();
-            }
-        };
+        // this.metademand_displayField = function (toupdate, toobserve, check_value) {
+        //     console.log('toto');
+        //     $('#' + toupdate).hide();
+        //
+        //     this.metademand_checkField(toupdate, toobserve, check_value);
+        //     $("[name='" + toobserve + "']").change(function () {
+        //         this.metademand_checkField(toupdate, toobserve, check_value);
+        //     });
+        // };
+        //
+        // this.metademand_checkField = function (toupdate, toobserve, check_value) {
+        //     console.log(check_value);
+        //     if (check_value != 0 && ($("[name='" + toobserve + "']").val() == check_value
+        //         || (check_value == 'NOT_NULL' && $("[name='" + toobserve + "']").val() != 0))) {
+        //         $('#' + toupdate).show();
+        //     } else {
+        //         $('#' + toupdate).hide();
+        //     }
+        // };
 
          return this;
     }

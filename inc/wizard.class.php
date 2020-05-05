@@ -414,10 +414,10 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo Html::css("/plugins/metademands/css/wizard.php");
 
       $metademands = self::selectMetademands();
-      $config = new PluginMetademandsConfig();
+      $config      = new PluginMetademandsConfig();
       $config->getFromDB(1);
       $meta = new PluginMetademandsMetademand();
-      $dbu = new DbUtils();
+      $dbu  = new DbUtils();
       if ($config->getField('display_type') == 1) {
          foreach ($metademands as $id => $name) {
 
@@ -433,10 +433,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
                echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
                echo "</div>";
-
-               echo "</a>";
-               echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-               echo "<p>";
+               echo "<br><p>";
                echo $meta->getName();
                echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                echo $meta->fields['comment'];
@@ -461,15 +458,15 @@ class PluginMetademandsWizard extends CommonDBTM {
             $itilfamilies_id = [Dropdown::EMPTY_VALUE];
             foreach ($meta->listMetademandsCategories() as $value) {
                $ancestors_id = $dbu->getAncestorsOf('glpi_itilcategories', $value);
-               $value = array_shift($ancestors_id);
+               $value        = array_shift($ancestors_id);
                if (in_array($value, $data_categories)) {
                   $itilfamilies_id[$value] = Dropdown::getDropdownName('glpi_itilcategories', $value);
                }
             }
             asort($itilfamilies_id);
-            $rand = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
+            $rand   = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
             $params = ['family' => '__VALUE__',
-                       'step' => 'metademands'];
+                       'step'   => 'metademands'];
 
             Ajax::updateItemOnSelectEvent("dropdown_itilfamilies_id$rand", "show_metademands_by_family",
                                           $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownListMetademands.php",
@@ -652,6 +649,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
          echo "<div class=\"form-row\" style='$style'>";
+
          foreach ($line as $key => $data) {
             $config_link = "";
             if ($preview) {
@@ -783,11 +781,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
             }
-            if (!empty($data['fields_display'])) {
-               $script = "var metademandWizard = $(document).metademandWizard();";
-               $script .= "metademandWizard.metademand_displayField('metademands_wizard_display" . $data['fields_display'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
-               echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-            }
          }
 
       } else {
@@ -800,7 +793,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param        $metademands_data
     * @param bool   $preview
     * @param string $config_link
-*/
+    */
    function getFieldType($data, $metademands_data, $preview = false, $config_link = "") {
 
       $value = '';
@@ -819,8 +812,12 @@ class PluginMetademandsWizard extends CommonDBTM {
       if ($data['is_mandatory']) {
          $required = "red";
       }
+      $rand = mt_rand();
 
-      echo "<span id='metademands_wizard_display" . $data['id'] . "'>";
+      if ($data['fields_display'] > 0) {
+         echo "<span id='metademands_wizard_display" . $rand . $data['fields_display'] . "'>";
+      }
+
       echo "<label for='field[" . $data['id'] . "]' class='$required col-form-label col-form-label-sm'>";
       echo $data['label'] . " $upload";
       if ($preview) {
@@ -897,25 +894,25 @@ class PluginMetademandsWizard extends CommonDBTM {
                              'name'   => "field[" . $data['id'] . "]"];
                      PluginMetademandsITILEnvironment::dropdown($opt);
                      break;
-                  case strpos($data['item'],'PluginLdapfields'):
-                     $opt = ['value'  => $value,
-                        'entity' => $_SESSION['glpiactiveentities'],
-                        'name'   => "field[" . $data['id'] . "]"];
+                  case strpos($data['item'], 'PluginLdapfields'):
+                     $opt             = ['value'  => $value,
+                                         'entity' => $_SESSION['glpiactiveentities'],
+                                         'name'   => "field[" . $data['id'] . "]"];
                      $container_class = new $data['item']();
                      $container_class::dropdown($opt);
                      break;
                   default:
                      $cond = [];
                      if (!empty($data['custom_values']) && $data['item'] == 'group') {
-                        $options =  PluginMetademandsField::_unserialize($data['custom_values']);
-                        foreach ($options as $type_group => $value ) {
+                        $options = PluginMetademandsField::_unserialize($data['custom_values']);
+                        foreach ($options as $type_group => $value) {
                            $cond[$type_group] = $value;
                         }
                      }
-                     Dropdown::show($data['item'], ['name'     => "field[" . $data['id'] . "]",
-                                                    'entity'   => $_SESSION['glpiactiveentities'],
-                                                    'value'    => $value,
-                                                    'readonly' => true,
+                     Dropdown::show($data['item'], ['name'      => "field[" . $data['id'] . "]",
+                                                    'entity'    => $_SESSION['glpiactiveentities'],
+                                                    'value'     => $value,
+                                                    'readonly'  => true,
                                                     'condition' => $cond]);
                      break;
                }
@@ -1028,12 +1025,12 @@ class PluginMetademandsWizard extends CommonDBTM {
             Html::showDateField("field[" . $data['id'] . "]", ['value' => $value]);
             break;
          case 'number':
-            $data['custom_values']  = PluginMetademandsField::_unserialize($data['custom_values']);
+            $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
             Dropdown::showNumber("field[" . $data['id'] . "]", ['value' => $value,
-                                                   'min'   => (isset($data['custom_values']['min'])?$data['custom_values']['min']:1),
-                                                   'max'   => (isset($data['custom_values']['max'])?$data['custom_values']['max']:360),
-                                                   'step'  => (isset($data['custom_values']['step'])?$data['custom_values']['step']:1),
-//                                                   'toadd' => [0 => __('Infinite')]
+                                                                'min'   => (isset($data['custom_values']['min']) ? $data['custom_values']['min'] : 1),
+                                                                'max'   => (isset($data['custom_values']['max']) ? $data['custom_values']['max'] : 360),
+                                                                'step'  => (isset($data['custom_values']['step']) ? $data['custom_values']['step'] : 1),
+                                                                //                                                   'toadd' => [0 => __('Infinite')]
             ]);
             break;
          case 'yesno':
@@ -1151,7 +1148,37 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             break;
       }
-      echo "</span>";
+      if ($data['fields_display'] > 0) {
+         echo "</span>";
+
+         //TODO change function by type !
+         echo Html::scriptBlock('$(document).ready(function() {
+                                    metademand_displayField = function (toupdate, toobserve, check_value) {
+                                   
+                                          $("#" + toupdate).hide();
+                                          $("[name^=\'" + toobserve + "\']").change(function () {
+                                              metademand_checkField(toupdate, toobserve, check_value);
+                                          });
+                                      };
+                              
+                                      metademand_checkField = function (toupdate, toobserve, check_value) {
+//                                      console.log(check_value)
+                                          if (check_value != 0 && ($("[name^=\'" + toobserve + "\']").val() == check_value)
+                                             || (check_value == \'NOT_NULL\' && $("[name^=\'" + toobserve + "\']").val() != 0)) {
+                                              $("#" + toupdate).show();
+                                          } else {
+                                              $("#" + toupdate).hide();
+                                          }
+                                      };});');
+
+         $field = new PluginMetademandsField();
+         $field->getFromDB($data['fields_display']);
+         $check_value = (isset($field->fields['check_value']) ? $field->fields['check_value'] : "");
+         $script      = "metademand_displayField('metademands_wizard_display" . $rand . $data['fields_display'] . "', 'field[" . $data['fields_display'] . "]', '$check_value');";
+         echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+      }
+
+
    }
 
    /**
