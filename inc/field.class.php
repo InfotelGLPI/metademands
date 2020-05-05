@@ -131,7 +131,7 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @return bool (display)
     * @throws \GlpitestSQLError
-*/
+    */
    function showForm($ID, $item = [], $options = [""]) {
       global $CFG_GLPI;
 
@@ -563,7 +563,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param string $value
     *
     * @return string types
-*/
+    */
    static function getFieldTypesName($value = '') {
       switch ($value) {
          case 'dropdown':
@@ -604,17 +604,18 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @param type  $name
     * @param array $param
+    *
     * @return dropdown of items
-*/
+    */
    static function dropdownFieldItems($name, $param = []) {
 
       $p = [];
       foreach ($param as $key => $val) {
          $p[$key] = $val;
       }
-      $config = new PluginMetademandsConfig();
-      $data = $config->getConfigFromDB();
-      $plugin = new Plugin();
+      $config      = new PluginMetademandsConfig();
+      $data        = $config->getConfigFromDB();
+      $plugin      = new Plugin();
       $type_fields = self::$field_items;
       if ($data['enable_application_environment'] == 0) {
          if (($key = array_search('PluginMetademandsITILApplication', $type_fields)) !== false) {
@@ -629,12 +630,12 @@ class PluginMetademandsField extends CommonDBChild {
             $options[$key] = self::getFieldItemsName($items);
          } elseif ($plugin->isActivated('ldapfields') && $items == 'PluginLdapfields') {
             $ldapfields_containers = new PluginLdapfieldsContainer();
-            $ldapfields = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
+            $ldapfields            = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
             if (count($ldapfields) > 0) {
                foreach ($ldapfields as $ldapfield) {
                   $ldapattribute = new PluginLdapfieldsAuthLDAP();
                   $ldapattribute->getFromDB($ldapfield['plugin_ldapfields_authldaps_id']);
-                  $label = PluginLdapfieldsLabelTranslation::getLabelFor($ldapattribute);
+                  $label                       = PluginLdapfieldsLabelTranslation::getLabelFor($ldapattribute);
                   $options[$ldapfield['name']] = $label;
                }
             }
@@ -642,7 +643,7 @@ class PluginMetademandsField extends CommonDBChild {
             $options[$items] = self::getFieldItemsName($items);
          }
       }
-         return Dropdown::showFromArray($name, $options, $p);
+      return Dropdown::showFromArray($name, $options, $p);
 
    }
 
@@ -652,7 +653,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param string $value
     *
     * @return string item
-*/
+    */
    static function getFieldItemsName($value = '') {
 
       switch ($value) {
@@ -674,12 +675,12 @@ class PluginMetademandsField extends CommonDBChild {
             return PluginMetademandsITILApplication::getTypeName();
          case 'PluginMetademandsITILEnvironment' :
             return PluginMetademandsITILEnvironment::getTypeName();
-         case strpos($value,'PluginLdapfields'):
+         case strpos($value, 'PluginLdapfields'):
             if (empty($value)) {
                return Dropdown::EMPTY_VALUE;
             } else {
-            $classname = new $value();
-            return $classname::getDisplayName();
+               $classname = new $value();
+               return $classname::getDisplayName();
             }
          default:
             return Dropdown::EMPTY_VALUE;
@@ -694,7 +695,7 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @return void
     * @throws \GlpitestSQLError
-*/
+    */
    function viewTypeField($options) {
       $params['value']       = 0;
       $params['check_value'] = 0;
@@ -705,13 +706,13 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group', 'location',
-                        'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple', 'parent_field', 'number',
+                        'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple', 'parent_field', 'number', 'text', 'textarea',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
       $plugin = new Plugin();
       if ($plugin->isActivated('ldapfields')) {
          $ldapfields_containers = new PluginLdapfieldsContainer();
-         $ldapfields = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
+         $ldapfields            = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
          if (count($ldapfields) > 0) {
             foreach ($ldapfields as $ldapfield) {
                array_push($allowed_types, $ldapfield['name']);
@@ -729,6 +730,28 @@ class PluginMetademandsField extends CommonDBChild {
             echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "</th></tr>";
             echo "<tr><td><table class='metademands_show_custom_fields'>";
             switch ($params['value']) {
+               case 'text':
+                  // Show field display
+                  // Value to check
+                  echo "<tr><td>";
+                  echo __('Value to check', 'metademands');
+                  echo '</td>';
+                  echo '<td>';
+                  echo __('Not null value', 'metademands');
+                  echo '<input type="hidden" name="check_value" value="' . self::$not_null . '">';
+                  echo "</td>";
+                  echo "</tr>";
+                  break;
+               case 'textarea':
+                  // Show field display
+                  echo "<tr><td>";
+                  echo __('Display if this selected field is filled', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  echo "</td></tr>";
+                  break;
                case 'yesno':
                   $data[1] = __('No');
                   $data[2] = __('Yes');
@@ -777,15 +800,25 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   echo "<input type='checkbox' name='check_value' value='1' $checked>";
                   echo "</td></tr>";
+
+                  // Show field display
+                  echo "<tr><td>";
+                  echo __('Display if this selected field is filled', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  echo "</td></tr>";
+
                   break;
                case 'number' :
                   $custom_values = [];
                   if (!empty($params['custom_values'])) {
-                     $custom_values =  self::_unserialize($params['custom_values']);
+                     $custom_values = self::_unserialize($params['custom_values']);
 
                   } else {
-                     $custom_values['min'] = 0;
-                     $custom_values['max'] = 0;
+                     $custom_values['min']  = 0;
+                     $custom_values['max']  = 0;
                      $custom_values['step'] = 0;
                   }
 
@@ -794,9 +827,9 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '</td>';
                   echo "<td>";
                   Dropdown::showNumber('min', ['value' => $custom_values['min'],
-                                                'min'   => 1,
-                                                'max'   => 360,
-                                                'step'  => 1]);
+                                               'min'   => 1,
+                                               'max'   => 360,
+                                               'step'  => 1]);
                   echo "</td></tr>";
 
                   echo "<tr><td>";
@@ -814,21 +847,29 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '</td>';
                   echo "<td>";
                   Dropdown::showNumber('step', ['value' => $custom_values['step'],
-                                                         'min'   => 1,
-                                                         'max'   => 360,
-                                                         'step'  => 1]);
+                                                'min'   => 1,
+                                                'max'   => 360,
+                                                'step'  => 1]);
                   echo "</td></tr>";
 
+                  // Show field display
+                  echo "<tr><td>";
+                  echo __('Display if this selected field is filled', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  echo "</td></tr>";
 
                   break;
                case 'group':
                   $custom_values = [];
                   if (!empty($params['custom_values'])) {
-                     $custom_values =  self::_unserialize($params['custom_values']);
+                     $custom_values = self::_unserialize($params['custom_values']);
 
                   } else {
-                     $custom_values['is_assign'] = 0;
-                     $custom_values['is_watcher'] = 0;
+                     $custom_values['is_assign']    = 0;
+                     $custom_values['is_watcher']   = 0;
                      $custom_values['is_requester'] = 0;
                   }
 
@@ -873,6 +914,15 @@ class PluginMetademandsField extends CommonDBChild {
                   Dropdown::showYesNo('is_requester', $custom_values['is_requester']);
                   echo "</td></tr>";
 
+                  // Show field display
+                  echo "<tr><td>";
+                  echo __('Display if this selected field is filled', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  echo "</td></tr>";
+
                   break;
                case 'user':
                case 'usertitle':
@@ -884,7 +934,7 @@ class PluginMetademandsField extends CommonDBChild {
                case 'dropdown_multiple':
                case 'PluginMetademandsITILApplication':
                case 'PluginMetademandsITILEnvironment':
-               case strpos($params['value'],'PluginLdapfields'):
+               case strpos($params['value'], 'PluginLdapfields'):
                   // Value to check
                   echo "<tr><td>";
                   echo __('Value to check', 'metademands');
@@ -936,6 +986,15 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the task is created', 'metademands') . '</span>';
                   echo '</td><td>';
                   PluginMetademandsTask::showAllTasksDropdown($metademands->fields["id"], $params['task_link']);
+                  echo "</td></tr>";
+
+                  // Show field display
+                  echo "<tr><td>";
+                  echo __('Display if this selected field is filled', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
                   echo "</td></tr>";
                   break;
                case 'parent_field':
@@ -1181,7 +1240,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param      $count
     * @param bool $display_comment
     * @param bool $display_default
-*/
+    */
    static function initCustomValue($count, $display_comment = false, $display_default = false) {
       global $CFG_GLPI;
 
@@ -1206,7 +1265,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param $valueId
     * @param $display_comment
     * @param $display_default
-*/
+    */
    static function addNewValue($valueId, $display_comment, $display_default) {
 
       echo '<table width=\'100%\' class="tab_cadre">';
@@ -1278,10 +1337,11 @@ class PluginMetademandsField extends CommonDBChild {
     * @param $field
     * @param $metademands_id
     * @param $selected_value
-*/
+    */
    static function showFieldsDropdown($field, $metademands_id, $selected_value) {
 
       $fields      = new self();
+      //TODO Add authorized types for fields_display ?
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
       $data        = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {

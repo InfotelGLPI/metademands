@@ -848,7 +848,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                ksort($data['custom_values']);
                $value = is_array($value) ? $value : $default_values;
                Dropdown::showFromArray("field[" . $data['id'] . "]", $data['custom_values'],
-                                       ['values' => $value, 'width' => '250px', 'multiple' => true
+                                       ['values' => $value,
+                                        'width' => '250px',
+                                        'multiple' => true
                                        ]);
             }
             break;
@@ -858,7 +860,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
                ksort($data['custom_values']);
                Dropdown::showFromArray("field[" . $data['id'] . "]", $data['custom_values'],
-                                       ['value' => $value, 'width' => '200px',
+                                       ['value' => $value,
+                                        'width' => '200px',
                                        ]);
             } else {
                switch ($data['item']) {
