@@ -54,28 +54,30 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
     * @return string
     */
    static function getMenuTitle() {
-      return "<span class=\"de-em\">" . __('Create a', 'servicecatalog') . " </span>" . __('advanced request', 'metademands');
+      return "<span class=\"de-em\">" . __('Create a', 'servicecatalog')  ." ". __('advanced request', 'metademands'). " </span>";
+   }
+
+   /**
+    * @return string
+    */
+   static function getMenuLink() {
+      global $CFG_GLPI;
+
+      return $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands";
    }
 
    /**
     * @return string
     */
    static function getMenuLogo() {
-      global $CFG_GLPI;
 
-      $display = "<a class='bt-interface' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands'>";
-      $fasize  = "fa-5x";
-      $display .= "<div class='bt-img-responsive center'>";
-      $display .= "<i class='fa-menu-sc fas fa-share-alt $fasize'></i>";//$style
-      $display .= "</div>";
-      $display .= "</a>";
-
-      return $display;
+      return "fas fa-share-alt";
    }
 
 
    /**
     * @return string
+    * @throws \GlpitestSQLError
     */
    static function getMenuComment() {
 
@@ -161,7 +163,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
 
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($id)) {
-               echo '<div class="btnsc-normal" >';
+               echo '<div class="favsc-normal visitedchildbg favsc-link-normal sc-widget" >';
                echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                $fasize = "fa-6x";
                echo "<div class='center'>";
@@ -173,12 +175,17 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
                echo "</div>";
 
                echo "</a>";
-               echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<a class='bt-buttons center' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo "<p>";
-               echo Html::resume_text($meta->getName(), 30);
-               echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-               echo $meta->fields['comment'];
+               echo $meta->getName();
+               echo "<br>";
+
+               echo "<em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+               if (!empty($meta->fields['comment'])) {
+                  echo $meta->fields['comment'];
+               }
                echo "</span></em>";
+
                echo "</p></a></div>";
             }
          }

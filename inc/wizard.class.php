@@ -161,7 +161,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $icon = "fa-share-alt";
          $meta = new PluginMetademandsMetademand();
          if ($meta->getFromDB($metademands_id)) {
-            if (!empty($meta->fields['icon'])) {
+            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                $icon = $meta->fields['icon'];
             }
          }
@@ -176,7 +176,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<h4 class=\"bt-title-divider\">";
          $meta = new PluginMetademandsMetademand();
          if ($meta->getFromDB($metademands_id)) {
-            if (!empty($meta->fields['icon'])) {
+            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                $icon = $meta->fields['icon'];
             }
          }

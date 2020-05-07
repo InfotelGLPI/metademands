@@ -655,7 +655,8 @@ class PluginMetademandsField extends CommonDBChild {
     * @return string item
     */
    static function getFieldItemsName($value = '') {
-
+      $dbu   = new DbUtils();
+      
       switch ($value) {
          case 'user':
             return __('User');
@@ -679,8 +680,10 @@ class PluginMetademandsField extends CommonDBChild {
             if (empty($value)) {
                return Dropdown::EMPTY_VALUE;
             } else {
-               $classname = new $value();
-               return $classname::getDisplayName();
+               if ($item = $dbu->getItemForItemtype($value)) {
+                  $classname = new $value();
+                  return $classname::getDisplayName();
+               }
             }
          default:
             return Dropdown::EMPTY_VALUE;
