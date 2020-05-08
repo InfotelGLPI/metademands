@@ -9,30 +9,27 @@ $hover = "#ff9c10";
 
 
 div[class^="btnsc"] {
-   float: left;
    margin: 0 10px 10px 0;
    height: 175px !important;
-   position: relative;
    cursor: pointer;
    transition: all .4s ease;
    user-drag: element;
-   /*border: solid 1px dashed;*/
    text-align: center;
-   /*line-height:100px;*/
-   /*min-height: 250px !important;*/
-   /*padding: 20px !important;*/
-   border-radius: 10px !important;
    -moz-border-radius: 10px;
-   -webkit-border-radius: 10px !important;
-   margin: 2px;
-   border-color: #CCC;
-   border-style: dashed;
-width: 200px;
+   width: 250px;
+   float: left;
+   list-style-type: none;
+   padding: 4px 15px 15px 15px;
+   overflow: auto;
+   transition: all .4s ease;
+   user-drag: element;
+   border: solid #CCC 1px;
+   background: #cccccc1f!important;
 }
 
 
 div[class^="btnsc"]:hover {
-   opacity: 0.7;
+   opacity: 0.9;
 }
 
 div[class^="btnsc"]:active {

@@ -709,7 +709,8 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group', 'location',
-                        'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple', 'parent_field', 'number', 'text', 'textarea',
+                        'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple',
+                        'parent_field', 'number', 'text', 'textarea', 'upload',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
       $plugin = new Plugin();
@@ -744,8 +745,17 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '<input type="hidden" name="check_value" value="' . self::$not_null . '">';
                   echo "</td>";
                   echo "</tr>";
+                  // Show field display
+                  echo "<tr><td>";
+                  echo __('Display if this selected field is filled', 'metademands');
+                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  echo "</td></tr>";
                   break;
                case 'textarea':
+               case 'upload':
                   // Show field display
                   echo "<tr><td>";
                   echo __('Display if this selected field is filled', 'metademands');

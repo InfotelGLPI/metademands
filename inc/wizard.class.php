@@ -423,8 +423,9 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($id)) {
-               echo '<div class="btnsc-normal" >';
+
                echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo '<div class="btnsc-normal" >';
                $fasize = "fa-6x";
                echo "<div class='center'>";
                $icon = "fa-share-alt";
@@ -438,7 +439,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                echo $meta->fields['comment'];
                echo "</span></em>";
-               echo "</p></a></div>";
+               echo "</p></div></a>";
             }
          }
       } else {
@@ -1238,10 +1239,11 @@ class PluginMetademandsWizard extends CommonDBTM {
       $checkKoDateInterval = [];
       $msg                 = [];
 
-
       if ($value['type'] != 'parent_field') {
          // Check fields empty
-         if ($value['is_mandatory'] && empty($fields['value']) && $value['type'] != 'radio') {
+         if ($value['is_mandatory']
+             && empty($fields['value'])
+             && $value['type'] != 'radio') {
             $msg[]     = $value['label'];
             $checkKo[] = 1;
          }
@@ -1268,9 +1270,12 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
          // Check date
-         if ($value['type'] == "date" || $value['type'] == "datetime" || $value['type'] == "datetime_interval") {
+         if ($value['type'] == "date"
+             || $value['type'] == "datetime"
+             || $value['type'] == "datetime_interval") {
             // date Null
-            if ($value['is_mandatory'] && $fields['value'] == 'NULL') {
+            if ($value['is_mandatory']
+                && $fields['value'] == 'NULL') {
                $msg[]     = $value['label'];
                $checkKo[] = 1;
             }
@@ -1285,7 +1290,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
          // Check date interval is right
-         if ($value['type'] == "datetime_interval" && isset($all_fields[$fields['id'] . '-2'])) {
+         if ($value['type'] == "datetime_interval"
+             && isset($all_fields[$fields['id'] . '-2'])) {
             if (strtotime($fields['value']) > strtotime($all_fields[$fields['id'] . '-2'])) {
                $msg[]                 = sprintf(__('Date %1$s cannot be greater than date %2$s', 'metademands'), $value['label'], $value['label2']);
                $checkKoDateInterval[] = 1;
@@ -1293,7 +1299,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
          // Check File upload field
-         if ($value['type'] == "upload" && $value['is_mandatory']) {
+         if ($value['type'] == "upload"
+             && $value['is_mandatory']) {
             if (isset($_FILES['filename']['tmp_name'])) {
                if (empty($_FILES['filename']['tmp_name'][0])) {
                   $msg[]     = $value['label'];
@@ -1303,7 +1310,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
       }
-      if (in_array(1, $checkKo) || in_array(1, $checkKoDateInterval)) {
+      if (in_array(1, $checkKo)
+          || in_array(1, $checkKoDateInterval)) {
          Session::addMessageAfterRedirect(__('Mandatory field') . " : " . implode(', ', $msg), false, ERROR);
          return false;
       }
