@@ -93,7 +93,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     */
    static function showDocumentAddButton($size = 25, $idDiv) {
       echo "<script type='text/javascript'>var nbfiles=1;</script>";
-      echo "<span id='addfilebutton' class='fa fa-plus pointer' title=\"" . __s('Add') . "\" onClick=\"
+      echo "<span id='addfilebutton' class='fas fa-plus pointer' title=\"" . __s('Add') . "\" onClick=\"
                            var row = " . Html::jsGetElementbyID('uploadfiles' . $idDiv) . ";
                            row.append('<br><input type=\'file\' name=\'filename[]\' size=\'$size\'>');
                            nbfiles++;\"" . __s('Add') . "</span>";
