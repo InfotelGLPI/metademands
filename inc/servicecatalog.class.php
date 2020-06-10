@@ -54,7 +54,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
     * @return string
     */
    static function getMenuTitle() {
-      return "<span class=\"de-em\">" . __('Create a', 'servicecatalog')  ." ". __('advanced request', 'metademands'). " </span>";
+      return __('Create a', 'servicecatalog')  ." ". __('advanced request', 'metademands');
    }
 
    /**
@@ -174,7 +174,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
                echo "<i class='bt-interface fa-menu-sc fas $icon $fasize'></i>";//$style
                echo "</div>";
 
-               echo "</a>";
+               echo "</a><br>";
                echo "<a class='bt-buttons center' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo "<p>";
                echo $meta->getName();
