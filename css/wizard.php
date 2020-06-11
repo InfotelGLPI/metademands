@@ -5,6 +5,10 @@ $color = "#3a5693";
 $hover = "#ff9c10";
 ?>
 
+a .far, a .fas, .btn-linkstyled .fa, .btn-linkstyled .far, .btn-linkstyled .fas {
+color: unset;
+}
+
 /* Wrapper Style */
 
 

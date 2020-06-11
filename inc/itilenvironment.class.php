@@ -103,7 +103,7 @@ class PluginMetademandsITILEnvironment extends CommonDropdown {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         $this->fields = $DB->fetch_assoc($result);
+         $this->fields = $DB->fetchAssoc($result);
       } else {
          $this->getEmpty();
          $this->fields['plugin_metademands_itilenvironments_id'] = 0;

@@ -106,7 +106,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
          $result = $DB->query($query);
 
          if ($DB->numrows($result)) {
-            while ($data = $DB->fetch_assoc($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
                return $data['name'];
             }
          }
@@ -130,7 +130,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             return $data['tasks_id'];
          }
       }
@@ -151,7 +151,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             return $data['tasks_id'];
          }
       }
@@ -178,7 +178,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
           WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = '$metademands_id'";
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $id_found[] = $data['parent_metademands_id'];
             $id_found   = $metademandtask->getAncestorOfMetademandTask($data['parent_metademands_id'], $id_found);
          }

@@ -176,7 +176,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
 
                echo "</a><br>";
                echo "<a class='bt-buttons center' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-               echo "<p>";
+               echo "<p style=\"margin-top:0px\">";
                echo $meta->getName();
                echo "<br>";
 

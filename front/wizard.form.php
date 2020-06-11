@@ -248,7 +248,7 @@ if (isset($_POST['next'])) {
       if ($plugin->isActivated('servicecatalog')
           && $_POST['step'] == 1
           && Session::haveRight("plugin_servicecatalog", READ)) {
-         Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
+         Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands");
       }
       $wizard->showWizard($_POST['step'], $_POST['metademands_id']);
    }

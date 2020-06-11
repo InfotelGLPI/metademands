@@ -675,7 +675,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
          $result = $DB->query($query);
          if ($DB->numrows($result)) {
-            while ($data = $DB->fetch_assoc($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
                if ($this->canCreate() || PluginMetademandsGroup::isUserHaveRight($data['id'])) {
 
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
@@ -735,7 +735,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
             $result = $DB->query($query);
             if ($DB->numrows($result)) {
-               while ($data = $DB->fetch_assoc($result)) {
+               while ($data = $DB->fetchAssoc($result)) {
                   $step++;
                   $forms = $this->showMetademands($data['link_metademands_id'], $forms, $step);
                }
@@ -1463,7 +1463,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $result = $DB->query($query);
 
          if ($DB->numrows($result)) {
-            while ($data = $DB->fetch_assoc($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
 
                // If child task exists : son ticket creation
                $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
@@ -2074,8 +2074,16 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $menu['options']['config']['links']['add']    = '/plugins/metademands/front/metademand.form.php';
       $menu['options']['config']['links']['search'] = '/plugins/metademands/front/metademand.php';
 
-      return $menu;
+      $menu['icon']    = self::getIcon();
 
+      return $menu;
+   }
+
+   /**
+    * @return string
+    */
+   static function getIcon() {
+      return "fas fa-share-alt";
    }
 
    function displayHeader() {

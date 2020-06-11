@@ -421,7 +421,7 @@ function dbMyISAM() {
    $myISAM = false;
    if ($result = $DB->query($query)) {
       if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             if ($data['TABLE_NAME'] == "glpi_itilcategories" ||
                $data['TABLE_NAME'] == "glpi_tickets" ||
                $data['TABLE_NAME'] == "glpi_groups") {

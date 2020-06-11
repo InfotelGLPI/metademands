@@ -287,9 +287,9 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</span>";
 
       echo "<span id='show_item_title' style='display:none'>";
-      echo Html::script('/lib/jqueryplugins/spectrum-colorpicker/spectrum.js');
-      echo Html::css('lib/jqueryplugins/spectrum-colorpicker/spectrum.min.css');
-      Html::requireJs('colorpicker');
+//      echo Html::script('/lib/jqueryplugins/spectrum-colorpicker/spectrum.js');
+//      echo Html::css('lib/jqueryplugins/spectrum-colorpicker/spectrum.min.css');
+//      Html::requireJs('colorpicker');
       $rand = mt_rand();
       Html::showColorField('color', ['value' => $this->fields["color"], 'rand' => $rand]);
       echo "</span>";

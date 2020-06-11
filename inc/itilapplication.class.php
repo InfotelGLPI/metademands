@@ -86,7 +86,7 @@ class PluginMetademandsITILApplication extends CommonDropdown {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         $this->fields = $DB->fetch_assoc($result);
+         $this->fields = $DB->fetchAssoc($result);
       } else {
          $this->getEmpty();
          $this->fields['plugin_metademands_itilapplications_id'] = 0;

@@ -268,7 +268,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $data['type']  = PluginMetademandsTask::METADEMAND_TYPE;
             $data['level'] = 1;
             $used          = false;
@@ -299,7 +299,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $data['type']       = PluginMetademandsTask::TICKET_TYPE;
             $ticket_task_data[] = $data;
             $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive);
@@ -340,7 +340,7 @@ class PluginMetademandsTicket extends CommonDBTM {
          $count  = 0;
 
          if ($DB->numrows($result)) {
-            while ($data = $DB->fetch_assoc($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
                $data['type']      = PluginMetademandsTask::TICKET_TYPE;
                $task_data[$count] = $data;
                // If child task exists : son ticket creation
@@ -396,7 +396,7 @@ class PluginMetademandsTicket extends CommonDBTM {
                   WHERE `glpi_plugin_metademands_tickets_tasks`.`tickets_id` = " . $tickets_id . "";
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             if (!$only_metademand) {
                $data['type']       = PluginMetademandsTask::TICKET_TYPE;
                $ticket_task_data[] = $data;
@@ -411,7 +411,7 @@ class PluginMetademandsTicket extends CommonDBTM {
                WHERE `glpi_plugin_metademands_tickets_metademands`.`tickets_id` = " . $tickets_id;
       $result = $DB->query($query);
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $data['type']               = PluginMetademandsTask::METADEMAND_TYPE;
             $data['level']              = 1;
             $data['tasks_completename'] = '';
@@ -462,7 +462,7 @@ class PluginMetademandsTicket extends CommonDBTM {
          }
       }
 
-      $tt = $ticket->getTicketTemplateToUse(false, $values['type'], $values['itilcategories_id'], $values['entities_id']);
+      $tt = $ticket->getITILTemplateToUse(false, $values['type'], $values['itilcategories_id'], $values['entities_id']);
 
       // Predefined values
       if (isset($tt->predefined) && count($tt->predefined) && $tickets_id == 0) {
@@ -736,7 +736,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       // Load ticket template
-      $tt = $ticket->getTicketTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
+      $tt = $ticket->getITILTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
 
       $canupdate       = Session::haveRight('ticket', UPDATE);
       $canupdate_descr = $canupdate
@@ -891,7 +891,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       // Load ticket template
-      $tt = $ticket->getTicketTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
+      $tt = $ticket->getITILTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . sprintf(__('%1$s%2$s'), __('Type'), $tt->getMandatoryMark('type')) . "</td>";

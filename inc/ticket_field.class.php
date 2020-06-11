@@ -114,7 +114,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             $test  = self::isCheckValueOK(PluginMetademandsField::_unserialize($data['field_value']), $data['check_value'], $data['type']);
             $check[] = ($test == false) ? 0 : 1;
          }

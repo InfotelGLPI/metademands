@@ -127,7 +127,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       Html::requireJs("metademands");
       echo Html::css("/plugins/metademands/css/style_bootstrap_main.css");
       echo Html::css("/plugins/metademands/css/style_bootstrap_ticket.css");
-      echo Html::css("/lib/font-awesome/css/all.min.css");
+      echo Html::css("/public/lib/base.css");
       echo Html::script("/plugins/metademands/lib/bootstrap/3.2.0/js/bootstrap.min.js");
       echo "<div id ='content'>";
       if (!$preview) {
@@ -393,7 +393,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       $metademands = [];
       $result      = $DB->query($query);
       if ($DB->numrows($result)) {
-         while ($data = $DB->fetch_assoc($result)) {
+         while ($data = $DB->fetchAssoc($result)) {
             if (PluginMetademandsGroup::isUserHaveRight($data['id'])) {
                $metademands[$data['id']] = $data['name'];
             }

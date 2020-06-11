@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '2.6.3');
+define('PLUGIN_METADEMANDS_VERSION', '2.7.0');
 
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands() {
@@ -44,6 +44,8 @@ function plugin_init_metademands() {
        || strpos($_SERVER['REQUEST_URI'], "tracking.injector.php") !== false) {
       $PLUGIN_HOOKS['add_javascript']['metademands'][] = 'scripts/metademands_load_scripts.js';
    }
+
+   $plugin = new Plugin();
 
    if (Session::getLoginUserID()) {
       Plugin::registerClass('PluginMetademandsMetademand', ['addtabon' => 'Ticket']);
@@ -101,7 +103,8 @@ function plugin_init_metademands() {
          $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMetademand'];
       }
 
-      if (Session::haveRight("plugin_metademands", READ) && !class_exists('PluginServicecatalogDashboard')) {
+      if (Session::haveRight("plugin_metademands", READ)
+          && !$plugin->isActivated('servicecatalog')) {
          $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = '/front/wizard.form.php';
       }
 
@@ -109,7 +112,7 @@ function plugin_init_metademands() {
          $PLUGIN_HOOKS['config_page']['metademands'] = 'front/config.form.php';
       }
 
-      if (Session::haveRight("metademands", UPDATE) && class_exists('PluginMetademandsProfile')) {
+      if (Session::haveRight("metademands", UPDATE)) {
          $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
       }
 
@@ -123,7 +126,7 @@ function plugin_init_metademands() {
       $PLUGIN_HOOKS['item_get_datas']['metademands'] = ['NotificationTargetTicket' =>
                                                            ['PluginMetademandsTicket', 'addNotificationDatas']];
 
-      if (class_exists('PluginServicecatalogDashboard')) {
+      if ($plugin->isActivated('servicecatalog')) {
          $PLUGIN_HOOKS['servicecatalog']['metademands'] = ['PluginMetademandsServicecatalog'];
       }
    }
@@ -149,7 +152,7 @@ function plugin_version_metademands() {
       'homepage'       => 'https://github.com/InfotelGLPI/metademands',
       'requirements'   => [
          'glpi' => [
-            'min' => '9.4',
+            'min' => '9.5',
             'dev' => false
          ]
       ]];
@@ -160,10 +163,10 @@ function plugin_version_metademands() {
  * @return bool
  */
 function plugin_metademands_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '9.4', 'lt') 
-         || version_compare(GLPI_VERSION, '9.5', 'ge')) {
+   if (version_compare(GLPI_VERSION, '9.5', 'lt')
+         || version_compare(GLPI_VERSION, '9.6', 'ge')) {
       if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '9.4');
+         echo Plugin::messageIncompatible('core', '9.5');
       }
       return false;
    }

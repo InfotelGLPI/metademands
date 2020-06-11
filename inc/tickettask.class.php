@@ -111,7 +111,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       $values['type']    = Ticket::DEMAND_TYPE;
 
       // Get Template
-      $tt = $ticket->getTicketTemplateToUse(false, $values['type'], $values['itilcategories_id'], $values['entities_id']);
+      $tt = $ticket->getITILTemplateToUse(false, $values['type'], $values['itilcategories_id'], $values['entities_id']);
 
       // In percent
       $colsize1 = '13';
@@ -426,7 +426,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       // Get Template
       $ticket = new Ticket();
-      $tt = $ticket->getTicketTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
+      $tt = $ticket->getITILTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
 
       echo "<form name='form_ticket' method='post' action='".Toolbox::getItemTypeFormURL(__CLASS__)."?_in_modal=1&id=$ID' enctype=\"multipart/form-data\">";
       PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved, $input);
@@ -493,7 +493,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       // Get Template
       $ticket = new Ticket();
-      $tt = $ticket->getTicketTemplateToUse(false, $type, $categid, $input['entities_id']);
+      $tt = $ticket->getITILTemplateToUse(false, $type, $categid, $input['entities_id']);
 
       $message = '';
       $mandatory_missing = [];
@@ -598,7 +598,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
-         $metademands->fields = $DB->fetch_assoc($result);
+         $metademands->fields = $DB->fetchAssoc($result);
       } else {
          $metademands->getEmpty();
       }
