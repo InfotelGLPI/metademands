@@ -24,6 +24,14 @@
     </authors>
     <versions>
         <version>
+            <num>2.6.4</num>
+            <compatibility>9.4</compatibility>
+        </version>
+        <version>
+            <num>2.6.3</num>
+            <compatibility>9.4</compatibility>
+        </version>
+        <version>
             <num>2.6.2</num>
             <compatibility>9.4</compatibility>
         </version>
