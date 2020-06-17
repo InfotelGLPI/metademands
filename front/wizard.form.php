@@ -96,11 +96,11 @@ if (isset($_POST['next'])) {
 
             if (isset($_POST['field'][$id])) {
                if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['field'][$id]], $_POST['field'])) {
-                  foreach ($_POST['field'] as $key => $field) {
-                     $field                = str_replace('\r\n', '&#x0A;', $field);
-                     $_POST['field'][$key] = $field;
-                  }
                   $KO = true;
+               }
+               foreach ($_POST['field'] as $key => $field) {
+                  $field                = str_replace('\r\n', '&#x0A;', $field);
+                  $_POST['field'][$key] = $field;
                }
 
                if ($value == 'checkbox') {// Checkbox
