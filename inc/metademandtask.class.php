@@ -152,9 +152,10 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
 
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
-            return $data['tasks_id'];
+            $return['tasks_id'][] = $data['tasks_id'];
          }
       }
+      return $return['tasks_id'];
    }
 
    /**

@@ -826,12 +826,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
          foreach ($metademands_data as $form_step => $data) {
             $docitem = null;
             foreach ($data as $form_metademands_id => $line) {
+               $noChild = false;
                if ($ancestor_tickets_id > 0) {
                   // Skip ticket creation if not allowed by metademand form
-                  $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
-                  if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_id, $ancestor_tickets_id)) {
-                     continue;
+                  $metademandtasks_tasks_ids = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
+                  foreach ($metademandtasks_tasks_ids as $metademandtasks_tasks_id){
+                     if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_id, $ancestor_tickets_id)) {
+                        $noChild = true;
+                     }
                   }
+               }
+               if($noChild){
+                  continue;
                }
                $metademand = new PluginMetademandsMetademand();
                $metademand->getFromDB($form_metademands_id);
