@@ -811,7 +811,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $upload = " (" . Document::getMaxUploadSize() . ")";
       }
       if ($data['is_mandatory']) {
-         $required = "red";
+         $required = "style='color:red'";
       }
       $rand = mt_rand();
 
@@ -819,7 +819,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<span id='metademands_wizard_display" . $rand . $data['fields_display'] . "'>";
       }
 
-      echo "<label for='field[" . $data['id'] . "]' class='$required col-form-label col-form-label-sm'>";
+      echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
       echo $data['label'] . " $upload";
       if ($preview) {
          echo $config_link;
@@ -1212,7 +1212,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param bool $error
     */
    function showMessage($message, $error = false) {
-      $class = $error ? "class='red'" : "";
+      $class = $error ? "style='color:red'" : "";
 
       echo "<br><div class='box'>";
       echo "<div class='box-tleft'><div class='box-tright'><div class='box-tcenter'>";

@@ -321,4 +321,4 @@ CREATE TABLE `glpi_plugin_metademands_configs` (
    PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `glpi_plugin_metademands_configs` (`id` ,`simpleticket_to_metademand`) VALUES ('1', '0');
+INSERT INTO `glpi_plugin_metademands_configs` (`id` ,`simpleticket_to_metademand`, `childs_parent_content`) VALUES ('1', '1', '1');

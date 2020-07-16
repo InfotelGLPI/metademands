@@ -82,7 +82,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
       unset($used[array_search($ID, $used)]);
 
       foreach ($used as $metademands_id) {
-         echo "<br><span class='red'>" . __('This demand is already used in', 'metademands') . "&nbsp;:&nbsp;" .
+         echo "<br><span style='color:red'>" . __('This demand is already used in', 'metademands') . "&nbsp;:&nbsp;" .
               Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id) . "</span>";
       }
 

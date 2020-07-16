@@ -175,7 +175,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<tr class='tab_bg_1'>";
 
       // LABEL
-      echo "<td>" . __('Label') . "<span class='red'>&nbsp;*&nbsp;</span></td>";
+      echo "<td>" . __('Label') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
       echo "<td>";
       Html::autocompletionTextField($this, "label", ['value' => stripslashes($this->fields["label"])]);
       if ($ID > 0) {
@@ -197,7 +197,7 @@ class PluginMetademandsField extends CommonDBChild {
       // LABEL 2
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
-      echo __('Additional label', 'metademands') . "&nbsp;<span class='red' id='show_label2' style='display:none'>&nbsp;*&nbsp;</span>";
+      echo __('Additional label', 'metademands') . "&nbsp;<span style='color:red' id='show_label2' style='display:none'>&nbsp;*&nbsp;</span>";
       echo "</td>";
       echo "<td>";
       Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
@@ -236,7 +236,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       echo "<tr class='tab_bg_1'>";
       // TYPE
-      echo "<td>" . __('Type') . "<span class='red'>&nbsp;*&nbsp;</span></td>";
+      echo "<td>" . __('Type') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
       echo "<td>";
       $randType   = self::dropdownFieldTypes("type", ['value'          => $this->fields["type"],
                                                       'metademands_id' => $this->fields["plugin_metademands_metademands_id"]]);
@@ -273,12 +273,12 @@ class PluginMetademandsField extends CommonDBChild {
       //Display for dropdown list
       echo "<td>";
       echo "<span id='show_item_object' style='display:none'>";
-      echo __('Object', 'metademands') . "<span class='red'>&nbsp;*&nbsp;</span>";
+      echo __('Object', 'metademands') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
       echo "</span>";
 
       //Display to add a title
       echo "<span id='show_item_label_title' style='display:none'>";
-      echo __('Color') . "<span class='red'>&nbsp;*&nbsp;</span>";
+      echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
       echo "</span>";
       echo "</td>";
       echo "<td>";

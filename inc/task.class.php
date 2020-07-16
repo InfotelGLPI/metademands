@@ -183,7 +183,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
             if (Session::haveRight('ticket', CREATE)) {
                PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved);
             } else {
-               echo "<span class='red'>".__("You don't have the ticket creation right", 'metademands')."</span>";
+               echo "<span style='color:red'>".__("You don't have the ticket creation right", 'metademands')."</span>";
             }
             echo "</span>";
             echo "</td>";

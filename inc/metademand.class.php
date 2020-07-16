@@ -144,9 +144,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
    /**
     * Display tab for each metademands
+    *
     * @param array $options
+    *
     * @return array
-*/
+    */
    function defineTabs($options = []) {
       $ong = [];
 
@@ -429,8 +431,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @param $input
     * @param $logtype
+    *
     * @return void
-*/
+    */
    static function addLog($input, $logtype) {
 
       $new_value = $_SESSION["glpiname"] . " ";
@@ -461,8 +464,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param        $type
     * @param string $old_value
     * @param string $new_value
+    *
     * @return void
-*/
+    */
    static function addHistory($ID, $type, $old_value = '', $new_value = '') {
       $changes[0] = 0;
       $changes[1] = $old_value;
@@ -1155,7 +1159,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $style_title = "class='title'";
       //      $style_title = "style='background-color: #cccccc;'";
-      $label = Toolbox::stripslashes_deep($field['label']);
+      $label  = Toolbox::stripslashes_deep($field['label']);
       $label2 = Toolbox::stripslashes_deep($field['label2']);
       if (!empty($field['value']) && $field['value'] != 'NULL' || $field['type'] == 'title') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
@@ -1193,19 +1197,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         break;
                      case strpos($field['item'], 'PluginLdapfields'):
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $classname             = new $field['item']();
+                        $classname         = new $field['item']();
                         $classname->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $classname->getName() . "</td>";
                         break;
                      case PluginMetademandsITILEnvironment::class:
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $classname             = new PluginMetademandsITILEnvironment();
+                        $classname         = new PluginMetademandsITILEnvironment();
                         $classname->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $classname->getName() . "</td>";
                         break;
                      case PluginMetademandsITILApplication::class:
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $classname             = new PluginMetademandsITILApplication();
+                        $classname         = new PluginMetademandsITILApplication();
                         $classname->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $classname->getName() . "</td>";
                         break;
@@ -1213,7 +1217,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $dbu               = new DbUtils();
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>";
                         $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
-                                                  $field['value']);
+                                                                        $field['value']);
                         $result['content'] .= "</td>";
                         break;
                   }
@@ -1968,7 +1972,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @return array array of massive actions
     * *@since version 0.84
-*/
+    */
    function getSpecificMassiveActions($checkitem = null) {
       $isadmin = static::canUpdate();
       $actions = parent::getSpecificMassiveActions($checkitem);
@@ -2080,7 +2084,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $menu['options']['config']['links']['add']    = '/plugins/metademands/front/metademand.form.php';
       $menu['options']['config']['links']['search'] = '/plugins/metademands/front/metademand.php';
 
-      $menu['icon']    = self::getIcon();
+      $menu['icon'] = self::getIcon();
 
       return $menu;
    }
