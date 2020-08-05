@@ -1161,7 +1161,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       //      $style_title = "style='background-color: #cccccc;'";
       $label  = Toolbox::stripslashes_deep($field['label']);
       $label2 = Toolbox::stripslashes_deep($field['label2']);
-      if (!empty($field['value']) && $field['value'] != 'NULL' || $field['type'] == 'title') {
+      if ((!empty($field['value']) || $field['value'] == "0" ) && $field['value'] != 'NULL' || $field['type'] == 'title') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
          //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
          //            $result['content'] .= "<tr>";
@@ -1273,7 +1273,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                   foreach ($field['custom_values'] as $key => $label) {
                      if ($field['value'] == $key) {
-                        $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $label . "</td>";
+                        $result['content'] .= "<td $style_title>" . $field["label"] . "</td><td>" . $label . "</td>";
                         break;
                      }
                   }
