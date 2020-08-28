@@ -1353,12 +1353,16 @@ class PluginMetademandsField extends CommonDBChild {
     */
    static function showFieldsDropdown($field, $metademands_id, $selected_value) {
 
-      $fields      = new self();
+      $fields = new self();
       //TODO Add authorized types for fields_display ?
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
       $data        = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
-         $data[$id] = $value['label'];
+         $name = $value['label'];
+         if (empty(trim($name))) {
+            $name = 'ID - ' . $id;
+         }
+         $data[$id] = $name;
          if (!empty($value['label2'])) {
             $data[$id] = ' ' . $value['label2'];
          }
