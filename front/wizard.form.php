@@ -131,7 +131,7 @@ if (isset($_POST['next'])) {
                   $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
                }
             } else if ($value['type'] == 'upload') {
-               if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
+               if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['_filename']])) {
                   $KO = true;
                } else {
                   if (isset($_POST['_filename'])) {

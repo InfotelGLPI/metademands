@@ -1301,8 +1301,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check File upload field
          if ($value['type'] == "upload"
              && $value['is_mandatory']) {
-            if (isset($_FILES['filename']['tmp_name'])) {
-               if (empty($_FILES['filename']['tmp_name'][0])) {
+            if (isset($fields['_filename']['tmp_name'])) {
+               if (empty($fields['_filename']['tmp_name'][0])) {
                   $msg[]     = $value['label'];
                   $checkKo[] = 1;
                }
@@ -1312,7 +1312,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
       if (in_array(1, $checkKo)
           || in_array(1, $checkKoDateInterval)) {
-         Session::addMessageAfterRedirect(__('Mandatory field') . " : " . implode(', ', $msg), false, ERROR);
+         Session::addMessageAfterRedirect(sprintf(__("Mandatory fields are not filled. Please correct: %s"), implode(', ', $msg)), false, ERROR);
          return false;
       }
 
