@@ -54,6 +54,10 @@ if (empty($_GET['resources_step'])) {
    $_GET['resources_step'] = '';
 }
 
+if (empty($_GET['itilcategories_id'])) {
+   $_GET['itilcategories_id'] = '';
+}
+
 if (empty($_GET['step'])) {
    $_GET['step'] = "1";
 }
@@ -300,7 +304,7 @@ if (isset($_POST['next'])) {
       Html::helpHeader(__('Create a demand', 'metademands'));
    }
 
-   $wizard->showWizard($_GET['step'], $_GET['metademands_id'], false, $_GET['tickets_id'], $_GET['resources_id'], $_GET['resources_step']);
+   $wizard->showWizard($_GET['step'], $_GET['metademands_id'], false, $_GET['tickets_id'], $_GET['resources_id'], $_GET['resources_step'], $_GET['itilcategories_id']);
 
    if (Session::getCurrentInterface() == 'central') {
       Html::footer();

@@ -43,7 +43,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
-   static $field_items = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'PluginResourcesResource',
+   static $field_items = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'itilcategory', 'PluginResourcesResource',
                           'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'PluginLdapfields'];
 
    static $not_null = 'NOT_NULL';
@@ -161,6 +161,8 @@ class PluginMetademandsField extends CommonDBChild {
          unset($_SESSION['glpi_plugin_metademands_fields']);
       }
 
+
+
       if ($ID > 0) {
          $this->showFormHeader(['colspan' => 2]);
       } else {
@@ -169,6 +171,15 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_1'>";
          echo "<th colspan='6'>" . __('Add a field', 'metademands') . "</th>";
+         echo "</tr>";
+      }
+
+      $metademand_fields = new PluginMetademandsField();
+      $metademand_fields->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getField('id'), 'item' => 'itilcategory']);
+
+      if (count($metademand_fields->fields) < 1) {
+         echo "<tr style='margin-bottom: 5px;' class='tab_bg_1'>";
+         echo "<td><i class='fas fa-exclamation-triangle'></i><span style='color:red;'> " . __('Please add a type category field') . "</span></td></td>";
          echo "</tr>";
       }
 
@@ -670,6 +681,8 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Location');
          case 'other':
             return __('Other');
+         case 'itilcategory':
+            return __('Category of the metademand');
          case 'PluginResourcesResource':
             return _n('Human resource', 'Human resources', 1, 'resources');
          case 'PluginMetademandsITILApplication' :
@@ -710,7 +723,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group', 'location',
                         'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple',
-                        'parent_field', 'number', 'text', 'textarea', 'upload',
+                        'parent_field', 'number', 'text', 'textarea', 'upload', 'itilcategory',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
       $plugin = new Plugin();
@@ -941,6 +954,7 @@ class PluginMetademandsField extends CommonDBChild {
                case 'usertitle':
                case 'usercategory':
                case 'location':
+               case 'itilcategory':
                case 'PluginResourcesResource':
                case 'other':
                case 'dropdown':

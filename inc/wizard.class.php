@@ -108,7 +108,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @return bool
     * @throws \GlpitestSQLError
     */
-   function showWizard($step = 'initWizard', $metademands_id = 0, $preview = false, $tickets_id = 0, $resources_id = 0, $resources_step = '') {
+   function showWizard($step = 'initWizard', $metademands_id = 0, $preview = false, $tickets_id = 0, $resources_id = 0, $resources_step = '', $itilcategories_id = 0) {
       global $CFG_GLPI;
 
       $config = PluginMetademandsConfig::getInstance();
@@ -151,6 +151,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo "<input type = 'hidden' value = '" . $resources_id . "' name = 'resources_id' > ";
       // Resources step
       echo "<input type = 'hidden' value = '" . $resources_step . "' name = 'resources_step' > ";
+
 
       $icon = '';
       if ($step == 1) {
@@ -213,15 +214,16 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "</div>";
             echo "</div>";
             echo "</div>";
-         } else if (!self::canCreate() &&
-                    !PluginMetademandsGroup::isUserHaveRight($metademands_id)
-         ) {
-            $this->showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
-            echo "</div>";
-            echo "</div>";
-            echo "</div>";
-            return false;
          }
+//         } else if (!self::canCreate() &&
+//                    !PluginMetademandsGroup::isUserHaveRight($metademands_id)
+//         ) {
+//            $this->showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
+//            echo "</div>";
+//            echo "</div>";
+//            echo "</div>";
+//            return false;
+//         }
 
          if ($config['show_requester_informations']) {
             echo "<div class=\"form-row\">";
@@ -268,7 +270,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
 
       $options['resources_id'] = $resources_id;
-      $this->showWizardSteps($step, $metademands_id, $preview, $options);
+      $this->showWizardSteps($step, $metademands_id, $preview, $options, $itilcategories_id);
       Html::closeForm();
       echo "</div>";
       if (!$preview) {
@@ -285,7 +287,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
+   function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $itilcategories_id = 0) {
 
       switch ($step) {
          case 'initWizard':
@@ -304,7 +306,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             break;
 
          default:
-            $this->showMetademands($metademands_id, $step, $preview);
+            $this->showMetademands($metademands_id, $step, $preview, $itilcategories_id);
             break;
 
       }
@@ -386,7 +388,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       $dbu         = new DbUtils();
       $query       = "SELECT `id`,`name`
                    FROM `glpi_plugin_metademands_metademands`
-                   WHERE `glpi_plugin_metademands_metademands`.`itilcategories_id` > 0
+                   WHERE `glpi_plugin_metademands_metademands`.`itilcategories_id` <> ''
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
                      . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
       $query       .= "AND is_active ORDER BY `name`";
@@ -394,9 +396,9 @@ class PluginMetademandsWizard extends CommonDBTM {
       $result      = $DB->query($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetchAssoc($result)) {
-            if (PluginMetademandsGroup::isUserHaveRight($data['id'])) {
+   //         if (PluginMetademandsGroup::isUserHaveRight($data['id'])) {
                $metademands[$data['id']] = $data['name'];
-            }
+   //         }
 
          }
       }
@@ -567,7 +569,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   function showMetademands($metademands_id, $step, $preview = false) {
+   function showMetademands($metademands_id, $step, $preview = false, $itilcategories_id = 0) {
 
       $metademands      = new PluginMetademandsMetademand();
       $metademands_data = $metademands->showMetademands($metademands_id);
@@ -585,7 +587,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   foreach ($data as $form_metademands_id => $line) {
                      $no_form = false;
 
-                     $this->constructForm($line['form'], $preview, $metademands_data);
+                     $this->constructForm($line['form'], $preview, $metademands_data, $itilcategories_id);
 
                      echo "<input type='hidden' name='form_metademands_id' value='" . $form_metademands_id . "'>";
                   }
@@ -630,7 +632,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param bool  $preview
     * @param       $metademands_data
     */
-   function constructForm(array $line, $preview = false, $metademands_data) {
+   function constructForm(array $line, $preview = false, $metademands_data, $itilcategories_id = 0) {
 
       $count   = 0;
       $columns = 2;
@@ -719,7 +721,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<div class=\"form-group col-md-5\">";
                }
 
-               self::getFieldType($data, $metademands_data, $preview, $config_link);
+               self::getFieldType($data, $metademands_data, $preview, $config_link, $itilcategories_id);
                echo "</div>";
 
                // Label 2 (date interval)
@@ -795,9 +797,9 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param bool   $preview
     * @param string $config_link
     */
-   function getFieldType($data, $metademands_data, $preview = false, $config_link = "") {
+   function getFieldType($data, $metademands_data, $preview = false, $config_link = "", $itilcategories_id = 0) {
 
-      $value = '';
+     $value  = '';
       if (isset($data['value'])) {
          $value = $data['value'];
       }
@@ -819,7 +821,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<span id='metademands_wizard_display" . $rand . $data['fields_display'] . "'>";
       }
 
-      echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
+      echo "<label  for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
       echo $data['label'] . " $upload";
       if ($preview) {
          echo $config_link;
@@ -872,6 +874,30 @@ class PluginMetademandsWizard extends CommonDBTM {
                                      'right'  => 'all',
                                      'value'  => $value]);
                      break;
+                  case 'itilcategory':
+                     $metademand = new PluginMetademandsMetademand();
+                     if (isset($_GET['id'])) {
+                        $metademand->getFromDB($_GET['id']);
+                     } else if (isset($_GET['metademands_id'])) {
+                        $metademand->getFromDB($_GET['metademands_id']);
+                     }
+
+                     if ($itilcategories_id > 0) {
+                        // itilcat from service catalog
+                        $itilCategory = new ITILCategory();
+                        $itilCategory->getFromDB($itilcategories_id);
+                        echo "<span>" . $itilCategory->getField('name');
+                        echo "<input type='hidden' name='plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id. "' >";
+                        echo "<span>";
+                     } else {
+                        $values = json_decode($metademand->getField('itilcategories_id'));
+                        $opt = ['name' => "field[" . $data['id'] . "]", 'right' => 'all','value'     => $value,
+                           'condition' => ["`id` IN ('" . implode("','", $values) . "')" ]];
+
+                        ITILCategory::dropdown($opt);
+                     }
+
+
                      break;
                   case 'usertitle':
                      $titlerand = mt_rand();
