@@ -93,7 +93,8 @@ function plugin_metademands_install() {
    }
 
    if ($DB->fieldExists("glpi_plugin_metademands_metademands", "itilcategories_id")) {
-      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/update-2.7.1.sql");
+      include(GLPI_ROOT."/plugins/metademands/install/update270_271.php");
+      update270_271();
    }
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);

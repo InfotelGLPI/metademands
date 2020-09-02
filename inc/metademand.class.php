@@ -490,10 +490,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if (isset($this->fields['itilcategories_id'])) {
                if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
                   $categories = $this->fields['itilcategories_id'];
-               } else {
-                  //TODO - TO DROP when metademands will be migrated
-                  $array = [$this->fields['itilcategories_id']];
-                  $categories = json_encode($array);
                }
             }
             $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
