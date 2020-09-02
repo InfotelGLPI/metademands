@@ -1,0 +1,1 @@
+ALTER TABLE `glpi_plugin_metademands_metademands` CHANGE `itilcategories_id` `itilcategories_id` VARCHAR(255) NOT NULL DEFAULT '[]';

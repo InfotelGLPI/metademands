@@ -168,7 +168,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return bool|string
     */
    static function redirectForm(Ticket $ticket, $type = 'show') {
-      global $CFG_GLPI;
+      global $CFG_GLPI, $DB;
 
       $conf   = new PluginMetademandsConfig();
       $config = $conf->getInstance();
@@ -176,16 +176,26 @@ class PluginMetademandsMetademand extends CommonDropdown {
          if (($type == 'show' && $ticket->fields["id"] == 0) || ($type == 'update' && $ticket->fields["id"] > 0)) {
             if (!empty($ticket->input["itilcategories_id"])) {
                $dbu   = new DbUtils();
-               $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-                                                  ["`itilcategories_id`" => $ticket->input["itilcategories_id"],
-                                                   "`is_active`"         => 1,
-                                                   "`type`"              => $ticket->input["type"]]);
-               if (!empty($metas)) {
-                  $meta = reset($metas);
+               $metademand = new PluginMetademandsMetademand();
+               $metas = $metademand->find(['is_active' => 1, 'type' => $ticket->input["type"]]);
+
+               foreach ($metas as $meta) {
+                  $cats[$meta['id']] = json_decode($meta['itilcategories_id']);
+               }
+               $meta_concerned = 0;
+               foreach ($cats as $meta => $meta_cats) {
+                  if (in_array($ticket->input['itilcategories_id'], $meta_cats)) {
+                     $meta_concerned = $meta;
+                  }
+               }
+
+               if ($meta_concerned) {
+                  //$meta = reset($metas);
                   // Redirect if not linked to a resource contract type
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
-                                                  ["plugin_metademands_metademands_id" => $meta["id"]])) {
-                     return $CFG_GLPI["root_doc"] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=" . $ticket->fields["id"] . "&step=2";
+                                                  ["plugin_metademands_metademands_id" => $meta_concerned])) {
+                     return $CFG_GLPI["root_doc"] . "/plugins/metademands/front/wizard.form.php?itilcategories_id=" .
+                        $ticket->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned . "&tickets_id=" . $ticket->fields["id"] . "&step=2";
                   }
                }
             }
@@ -200,20 +210,39 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return array|bool
     */
    function prepareInputForAdd($input) {
-
+      global $DB;
+      $cat_already_store = false;
       if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
 
-         $restrict = ["`itilcategories_id`" => $input['itilcategories_id']];
-         $dbu      = new DbUtils();
-         $cats     = $dbu->getAllDataFromTable($this->getTable(), $restrict);
-         if (!empty($cats)) {
-            Session::addMessageAfterRedirect(__('The category is related to a demand. Thank you to select another', 'metademands'), false, ERROR);
-            return false;
+         //retreive all multiple cats from all metademands
+         $iterator_cats = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
+         $cats = $_POST ['itilcategories_id'];
+
+            while ($data = $iterator_cats->next()) {
+               if (is_array(json_decode($data['itilcategories_id']))) {
+                  $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
+               }
+               if ($cat_already_store) {
+                  Session::addMessageAfterRedirect(__('The category is related to a demand. Thank you to select another', 'metademands'), false, ERROR);
+                  return false;
+               }
+            }
+         }
+
+      if (!$cat_already_store) {
+         if (isset($input['itilcategories_id'])) {
+            if ($input['itilcategories_id'] != null) {
+               $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
+            } else {
+               $input['itilcategories_id'] = '';
+            }
+         } else {
+            $input['itilcategories_id'] = '';
          }
       }
+         return $input;
+      }
 
-      return $input;
-   }
 
    /**
     * @param array $input
@@ -221,17 +250,55 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return array|bool
     */
    function prepareInputForUpdate($input) {
+      global $DB;
+      $cat_already_store= false;
+      if (isset($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
 
-      if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
+//         $restrict = ["`itilcategories_id`" => $input['itilcategories_id'],
+//                      "NOT"                 => ["id" => $input['id']]];
+//         $dbu      = new DbUtils();
+//         $cats     = $dbu->getAllDataFromTable($this->getTable(), $restrict);
 
-         $restrict = ["`itilcategories_id`" => $input['itilcategories_id'],
-                      "NOT"                 => ["id" => $input['id']]];
-         $dbu      = new DbUtils();
-         $cats     = $dbu->getAllDataFromTable($this->getTable(), $restrict);
-         if (!empty($cats)) {
-            Session::addMessageAfterRedirect(__('The category is related to a demand. Thank you to select another', 'metademands'), false, ERROR);
-            return false;
+         //retreive all multiple cats from all metademands
+         $iterator_cats = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
+         $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id', 'FROM' => $this->getTable() , 'WHERE' => ['id' => $_POST['id']]]);
+
+         $number_cats_meta = count($iterator_meta_existing_cats);
+         if ($number_cats_meta) {
+            while ($data = $iterator_meta_existing_cats->next()) {
+               $cats = json_decode($data['itilcategories_id']);
+            }
+            if ($cats == null) {
+               $cats = [];
+            }
          }
+
+         if (count($_POST ['itilcategories_id']) >= count($cats))  {
+            foreach ($_POST ['itilcategories_id'] as $post_cats) {
+               if (in_array($post_cats, $cats)) {
+                  unset( $cats[array_search( $post_cats, $cats )] );
+               } else {
+                  $cats[] = $post_cats;
+               }
+            }
+
+            while ($data = $iterator_cats->next()) {
+               if (is_array(json_decode($data['itilcategories_id'])) && $_POST['id'] != $data['id']) {
+                  $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
+               }
+               if ($cat_already_store) {
+                  Session::addMessageAfterRedirect(__('The category is related to a demand. Thank you to select another', 'metademands'), false, ERROR);
+                  return false;
+               }
+            }
+       if (!$cat_already_store) {
+            $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
+         }
+      } else {
+            $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
+         }
+      } else {
+         $input['itilcategories_id'] = '';
       }
 
       return $input;
@@ -279,7 +346,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'table'         => 'glpi_itilcategories',
          'field'         => 'name',
          'name'          => __('Category'),
-         'datatype'      => 'dropdown',
+         'datatype'      => 'specific',
          'massiveaction' => false
       ];
 
@@ -347,8 +414,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
          case 'id':
             $metademand = new self();
             $metademand->getFromDB($values[$field]);
-
             return $metademand->getURL($metademand->fields['id']);
+
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }
@@ -404,10 +471,20 @@ class PluginMetademandsMetademand extends CommonDropdown {
             echo $this->getURL($this->fields['id']);
             break;
          case 'itilcategories_id':
-            $opt['value']  = $this->fields['itilcategories_id'];
-            $opt['entity'] = $_SESSION['glpiactiveentities'];
             echo "<input type='hidden' name='type' value='" . Ticket::DEMAND_TYPE . "'>";
-            Dropdown::show('ITILCategory', $opt);
+            $dbu = new DbUtils();
+            $result = $dbu->getAllDataFromTable(ITILCategory::getTable());
+            $temp = [];
+            foreach ($result as $item) {
+               $temp[$item['id']] = $item['name'];
+            }
+
+            $values = $this->fields['itilcategories_id'] ? json_decode($this->fields['itilcategories_id']) : [];
+            Dropdown::showFromArray('itilcategories_id', $temp,
+               ['values'   => $values,
+               'width'    => '100%',
+               'multiple' => true,
+               'entity'   => $_SESSION['glpiactiveentities']]);
             break;
          case 'icon':
             $opt = [
@@ -858,7 +935,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $parent_fields['name']              = self::$PARENT_PREFIX .
                                                      Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                $parent_fields['type']              = $this->fields['type'];
-               $parent_fields['itilcategories_id'] = $metademand->fields['itilcategories_id'];
+
                $parent_fields['entities_id']       = $_SESSION['glpiactive_entity'];
                // Requester user field
                $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
@@ -867,7 +944,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                // Resources id
                if (!empty($values['fields']['resources_id'])) {
-
                   $parent_fields['items_id'] = ['PluginResourcesResource' => [$values['fields']['resources_id']]];
                }
 
@@ -880,6 +956,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                            break;
                         case 'PluginMetademandsITILApplication':
                            $parent_fields['plugin_metademands_itilapplications_id'] = $data;
+                           break;
+                        case 'itilcategory':
+                           $parent_fields['itilcategories_id'] = $data;
+                           if (isset($_POST['plugin_servicecatalog_itilcategories_id']) && $_POST['plugin_servicecatalog_itilcategories_id'] > 0) {
+                              $parent_fields['itilcategories_id'] = $_POST['plugin_servicecatalog_itilcategories_id'];
+                           }
                            break;
                      }
                   }
@@ -938,6 +1020,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                   if (isset($values['fields']['_prefix_filename'])) {
                      $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
+                  }
+
+                  if (isset($_POST['plugin_servicecatalog_itilcategories_id']) && $_POST['plugin_servicecatalog_itilcategories_id'] > 0) {
+                     $input['itilcategories_id'] = $_POST['plugin_servicecatalog_itilcategories_id'];
                   }
 
                   $input = Toolbox::addslashes_deep($input);
