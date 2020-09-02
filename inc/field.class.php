@@ -162,7 +162,6 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
 
-
       if ($ID > 0) {
          $this->showFormHeader(['colspan' => 2]);
       } else {
@@ -176,10 +175,20 @@ class PluginMetademandsField extends CommonDBChild {
 
       $metademand_fields = new PluginMetademandsField();
       $metademand_fields->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getField('id'), 'item' => 'itilcategory']);
+      $categories = [];
+      if (isset($metademand->fields['itilcategories_id'])) {
+         if (is_array(json_decode($metademand->fields['itilcategories_id'], true))) {
+            $categories = json_decode($metademand->fields['itilcategories_id'], true);
+         }
+      }
 
-      if (count($metademand_fields->fields) < 1) {
+      if (count($metademand_fields->fields) < 1 && count($categories) > 1) {
          echo "<tr style='margin-bottom: 5px;' class='tab_bg_1'>";
-         echo "<td align='center' colspan='4'><span style='color:orange;font-size: 14px'><i class='fas fa-exclamation-triangle'></i> " . __('Please add a type category field') . "</span></td>";
+         echo "<td align='center' colspan='4'>";
+         echo "<span style='color:orange;font-size: 14px'>";
+         echo "<i class='fas fa-exclamation-triangle'></i> " . __('Please add a type category field', 'metademands');
+         echo "</span>";
+         echo "</td>";
          echo "</tr>";
       }
 
@@ -298,9 +307,9 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</span>";
 
       echo "<span id='show_item_title' style='display:none'>";
-//      echo Html::script('/lib/jqueryplugins/spectrum-colorpicker/spectrum.js');
-//      echo Html::css('lib/jqueryplugins/spectrum-colorpicker/spectrum.min.css');
-//      Html::requireJs('colorpicker');
+      //      echo Html::script('/lib/jqueryplugins/spectrum-colorpicker/spectrum.js');
+      //      echo Html::css('lib/jqueryplugins/spectrum-colorpicker/spectrum.min.css');
+      //      Html::requireJs('colorpicker');
       $rand = mt_rand();
       Html::showColorField('color', ['value' => $this->fields["color"], 'rand' => $rand]);
       echo "</span>";
@@ -667,8 +676,8 @@ class PluginMetademandsField extends CommonDBChild {
     * @return string item
     */
    static function getFieldItemsName($value = '') {
-      $dbu   = new DbUtils();
-      
+      $dbu = new DbUtils();
+
       switch ($value) {
          case 'user':
             return __('User');
@@ -683,7 +692,7 @@ class PluginMetademandsField extends CommonDBChild {
          case 'other':
             return __('Other');
          case 'itilcategory':
-            return __('Category of the metademand');
+            return __('Category of the metademand', 'metademands');
          case 'PluginResourcesResource':
             return _n('Human resource', 'Human resources', 1, 'resources');
          case 'PluginMetademandsITILApplication' :

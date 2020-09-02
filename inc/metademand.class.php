@@ -178,9 +178,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $dbu   = new DbUtils();
                $metademand = new PluginMetademandsMetademand();
                $metas = $metademand->find(['is_active' => 1, 'type' => $ticket->input["type"]]);
+               $cats = [];
 
                foreach ($metas as $meta) {
-                  $cats[$meta['id']] = json_decode($meta['itilcategories_id']);
+                  $categories = [];
+                  if (isset($meta['itilcategories_id'])) {
+                     if (is_array(json_decode($meta['itilcategories_id'], true))) {
+                        $categories = $meta['itilcategories_id'];
+                     } else {
+                        $array = [$meta['itilcategories_id']];
+                        $categories = json_encode($array);
+                     }
+                  }
+                  $cats[$meta['id']] = json_decode($categories);
                }
                $meta_concerned = 0;
                foreach ($cats as $meta => $meta_cats) {
@@ -490,6 +500,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if (isset($this->fields['itilcategories_id'])) {
                if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
                   $categories = $this->fields['itilcategories_id'];
+               } else {
+                  $array = [$this->fields['itilcategories_id']];
+                  $categories = json_encode($array);
                }
             }
             $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];

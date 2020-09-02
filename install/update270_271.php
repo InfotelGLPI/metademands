@@ -36,7 +36,7 @@ ini_set("max_execution_time", 0);
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
 if (!defined('GLPI_ROOT')) {
-   define('GLPI_ROOT', realpath('..'));
+   define('GLPI_ROOT', realpath('../../..'));
 }
 
 include_once (GLPI_ROOT."/inc/autoload.function.php");
