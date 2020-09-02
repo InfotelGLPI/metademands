@@ -108,21 +108,35 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @return bool
     * @throws \GlpitestSQLError
     */
-   function showWizard($step = 'initWizard', $metademands_id = 0, $preview = false, $tickets_id = 0, $resources_id = 0, $resources_step = '', $itilcategories_id = 0) {
+   function showWizard($options) {
       global $CFG_GLPI;
 
       $config = PluginMetademandsConfig::getInstance();
 
+      $parameters = ['step' => 'initWizard',
+                     'metademands_id' => 0,
+                     'preview' => false,
+                     'tickets_id' => 0,
+                     'resources_id' => 0,
+                     'resources_step' => '',
+                     'itilcategories_id' => 0];
+
+      // if given parameters, override defaults
+      foreach ($options as $key => $value) {
+         if (isset($parameters[$key])) {
+            $parameters[$key] = $value;
+         }
+      }
 
       // Retrieve session values
       if (isset($_SESSION['plugin_metademands']['fields']['tickets_id'])) {
-         $tickets_id = $_SESSION['plugin_metademands']['fields']['tickets_id'];
+         $parameters['tickets_id'] = $_SESSION['plugin_metademands']['fields']['tickets_id'];
       }
       if (isset($_SESSION['plugin_metademands']['fields']['resources_id'])) {
-         $resources_id = $_SESSION['plugin_metademands']['fields']['resources_id'];
+         $parameters['resources_id'] = $_SESSION['plugin_metademands']['fields']['resources_id'];
       }
       if (isset($_SESSION['plugin_metademands']['fields']['resources_step'])) {
-         $resources_step = $_SESSION['plugin_metademands']['fields']['resources_step'];
+         $parameters['resources_step'] = $_SESSION['plugin_metademands']['fields']['resources_step'];
       }
       Html::requireJs("metademands");
       echo Html::css("/plugins/metademands/css/style_bootstrap_main.css");
@@ -130,11 +144,11 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo Html::css("/public/lib/base.css");
       echo Html::script("/plugins/metademands/lib/bootstrap/3.2.0/js/bootstrap.min.js");
       echo "<div id ='content'>";
-      if (!$preview) {
+      if (!$parameters['preview']) {
          echo "<div class='bt-container metademands_wizard_rank' > ";
       }
       $style = "";
-      if ($preview) {
+      if ($parameters['preview']) {
          $style = "style='width: 1000px;'";
       }
       echo "<div class='bt-block bt-features' $style> ";
@@ -146,22 +160,22 @@ class PluginMetademandsWizard extends CommonDBTM {
                   class = 'metademands_img'> ";
 
       // Case of simple ticket convertion
-      echo "<input type = 'hidden' value = '" . $tickets_id . "' name = 'tickets_id' > ";
+      echo "<input type = 'hidden' value = '" . $parameters['tickets_id'] . "' name = 'tickets_id' > ";
       // Resources id
-      echo "<input type = 'hidden' value = '" . $resources_id . "' name = 'resources_id' > ";
+      echo "<input type = 'hidden' value = '" . $parameters['resources_id'] . "' name = 'resources_id' > ";
       // Resources step
-      echo "<input type = 'hidden' value = '" . $resources_step . "' name = 'resources_step' > ";
+      echo "<input type = 'hidden' value = '" . $parameters['resources_step'] . "' name = 'resources_step' > ";
 
 
       $icon = '';
-      if ($step == 1) {
+      if ($parameters['step'] == 1) {
          // Wizard title
          echo "<div class=\"form-row\">";
          echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
          echo "<h4 class=\"bt-title-divider\">";
          $icon = "fa-share-alt";
          $meta = new PluginMetademandsMetademand();
-         if ($meta->getFromDB($metademands_id)) {
+         if ($meta->getFromDB($parameters['metademands_id'])) {
             if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                $icon = $meta->fields['icon'];
             }
@@ -170,21 +184,21 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo __('Demand choice', 'metademands');
          echo "</h4></div></div>";
 
-      } else if ($step >= 2) {
+      } else if ($parameters['step'] >= 2) {
          // Wizard title
          echo "<div class=\"form-row\">";
          echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
          echo "<h4 class=\"bt-title-divider\">";
          $meta = new PluginMetademandsMetademand();
-         if ($meta->getFromDB($metademands_id)) {
+         if ($meta->getFromDB($parameters['metademands_id'])) {
             if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                $icon = $meta->fields['icon'];
             }
          }
          echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id);
+         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
          echo "</h4>";
-         if ($meta->getFromDB($metademands_id)) {
+         if ($meta->getFromDB($parameters['metademands_id'])) {
             echo "<label><i>" . nl2br($meta->fields['comment']) . "</i></label>";
          }
          echo "</div></div>";
@@ -192,8 +206,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Display user informations
          $userid = Session::getLoginUserID();
          // If ticket exists we get its first requester
-         if ($tickets_id) {
-            $users_id_requester = PluginMetademandsTicket::getUsedActors($tickets_id, CommonITILActor::REQUESTER, 'users_id');
+         if ($parameters['tickets_id']) {
+            $users_id_requester = PluginMetademandsTicket::getUsedActors($parameters['tickets_id'], CommonITILActor::REQUESTER, 'users_id');
             if (count($users_id_requester)) {
                $userid = $users_id_requester[0];
             }
@@ -208,22 +222,22 @@ class PluginMetademandsWizard extends CommonDBTM {
          $user->getFromDB($userid);
 
          // Rights management
-         if (!empty($tickets_id) && !Session::haveRight('ticket', UPDATE)) {
+         if (!empty($parameters['tickets_id']) && !Session::haveRight('ticket', UPDATE)) {
             $this->showMessage(__("You don't have the right to update tickets", 'metademands'), true);
             return false;
             echo "</div>";
             echo "</div>";
             echo "</div>";
+
+         } else if (!self::canCreate() &&
+                    !PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id'])
+         ) {
+            $this->showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
+            echo "</div>";
+            echo "</div>";
+            echo "</div>";
+            return false;
          }
-//         } else if (!self::canCreate() &&
-//                    !PluginMetademandsGroup::isUserHaveRight($metademands_id)
-//         ) {
-//            $this->showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
-//            echo "</div>";
-//            echo "</div>";
-//            echo "</div>";
-//            return false;
-//         }
 
          if ($config['show_requester_informations']) {
             echo "<div class=\"form-row\">";
@@ -233,7 +247,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "</h4></div>";
 
             // If profile have right on requester update
-            if ($this->canUpdateRequester() && empty($tickets_id)) {
+            if ($this->canUpdateRequester() && empty($parameters['tickets_id'])) {
                $rand = mt_rand();
 
                echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
@@ -247,7 +261,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "function showRequester$rand() {\n";
                $params = ['value'      => '__VALUE__',
                           'old_value'  => $userid,
-                          'tickets_id' => $tickets_id];
+                          'tickets_id' => $parameters['tickets_id']];
                Ajax::updateItemJsCode("show_users_id_requester",
                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardUser.php",
                                       $params,
@@ -260,7 +274,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
             echo "<span id='show_users_id_requester'>";
-            $this->showUserInformations($user, $tickets_id);
+            $this->showUserInformations($user, $parameters['tickets_id']);
             echo "</span>";
             echo "</div>";
             echo "</div><br/>";
@@ -269,11 +283,11 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
       }
 
-      $options['resources_id'] = $resources_id;
-      $this->showWizardSteps($step, $metademands_id, $preview, $options, $itilcategories_id);
+      $options['resources_id'] = $parameters['resources_id'];
+      $this->showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['itilcategories_id']);
       Html::closeForm();
       echo "</div>";
-      if (!$preview) {
+      if (!$parameters['preview']) {
          echo "</div>";
       }
       echo "</div>";

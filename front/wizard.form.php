@@ -30,6 +30,8 @@
 include('../../../inc/includes.php');
 Session::checkLoginUser();
 
+global $CFG_GLPI;
+
 $wizard      = new PluginMetademandsWizard();
 $metademands = new PluginMetademandsMetademand();
 $field       = new PluginMetademandsField();
@@ -199,7 +201,9 @@ if (isset($_POST['next'])) {
       Html::helpHeader(__('Create a demand', 'metademands'));
    }
 
-   $wizard->showWizard($step, $_POST['metademands_id']);
+   $options= ['step' => $step, 'metademands_id' => $_POST['metademands_id']];
+
+   $wizard->showWizard($options);
 
    if (Session::getCurrentInterface() == 'central') {
       Html::footer();
@@ -254,7 +258,8 @@ if (isset($_POST['next'])) {
           && Session::haveRight("plugin_servicecatalog", READ)) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands");
       }
-      $wizard->showWizard($_POST['step'], $_POST['metademands_id']);
+      $options = ['step' => $_POST['step'], 'metademands_id' => $_POST['metademands_id']];
+      $wizard->showWizard($options);
    }
 
    if (Session::getCurrentInterface() == 'central') {
@@ -270,7 +275,7 @@ if (isset($_POST['next'])) {
       Html::helpHeader(__('Create a demand', 'metademands'));
    }
 
-   $wizard->showWizard('initWizard');
+   $wizard->showWizard($options['step'] = 'initWizard');
 
    if (Session::getCurrentInterface() == 'central') {
       Html::footer();
@@ -288,7 +293,7 @@ if (isset($_POST['next'])) {
    if (!empty($_FILES['filename']['tmp_name'][0])) {
       $wizard->uploadFiles($_POST);
    } else {
-      $wizard->showWizard('initWizard');
+      $wizard->showWizard($options['step'] = 'initWizard');
    }
    if (Session::getCurrentInterface() == 'central') {
       Html::footer();
@@ -304,7 +309,15 @@ if (isset($_POST['next'])) {
       Html::helpHeader(__('Create a demand', 'metademands'));
    }
 
-   $wizard->showWizard($_GET['step'], $_GET['metademands_id'], false, $_GET['tickets_id'], $_GET['resources_id'], $_GET['resources_step'], $_GET['itilcategories_id']);
+   $options = ['step'               => $_GET['step'],
+               'metademands_id'     => $_GET['metademands_id'],
+               'preview'            => false,
+               'tickets_id'         => $_GET['tickets_id'],
+               'resources_id'       => $_GET['resources_id'],
+               'resources_step'     => $_GET['resources_step'],
+               'itilcategories_id'  => $_GET['itilcategories_id']];
+
+   $wizard->showWizard($options);
 
    if (Session::getCurrentInterface() == 'central') {
       Html::footer();

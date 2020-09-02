@@ -395,7 +395,8 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr><th class='tab_bg_1'>" . PluginMetademandsWizard::getTypeName() . "</th></tr>";
          echo "<tr><td>";
-         $wizard->showWizard(2, $item->getID(), true);
+         $options = ['step' => 2, 'metademands_id' => $item->getID(), 'preview' => true];
+         $wizard->showWizard($options);
          echo "</td></tr>";
          echo "</table>";
       }
