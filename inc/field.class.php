@@ -179,7 +179,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       if (count($metademand_fields->fields) < 1) {
          echo "<tr style='margin-bottom: 5px;' class='tab_bg_1'>";
-         echo "<td><i class='fas fa-exclamation-triangle'></i><span style='color:red;'> " . __('Please add a type category field') . "</span></td></td>";
+         echo "<td align='center' colspan='4'><span style='color:orange;font-size: 14px'><i class='fas fa-exclamation-triangle'></i> " . __('Please add a type category field') . "</span></td>";
          echo "</tr>";
       }
 

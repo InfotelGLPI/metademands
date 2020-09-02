@@ -454,32 +454,50 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $this->getFromDB($ID);
 
-      switch ($this->fields['type']) {
-         case Ticket::INCIDENT_TYPE :
-            $opt['condition'] = ['is_incident' => 1];
-            break;
-         case Ticket::DEMAND_TYPE :
-            $opt['condition'] = ['is_request' => 1];
-            break;
-         default :
-            $opt['condition'] = [];
-            break;
-      }
-
       switch ($field['name']) {
          case 'url':
             echo $this->getURL($this->fields['id']);
             break;
          case 'itilcategories_id':
             echo "<input type='hidden' name='type' value='" . Ticket::DEMAND_TYPE . "'>";
+
+//            switch ($this->fields['type']) {
+//               case Ticket::INCIDENT_TYPE :
+//                  $criteria = ['is_incident' => 1];
+//                  break;
+//               case Ticket::DEMAND_TYPE :
+//                  $criteria = ['is_request' => 1];
+//                  break;
+//               default :
+//                  $criteria = [];
+//                  break;
+//            }
+            $criteria = ['is_request' => 1];
+            $criteria += getEntitiesRestrictCriteria(
+               \ITILCategory::getTable(),
+               'entities_id',
+               $_SESSION['glpiactiveentities'],
+               true
+            );
+
             $dbu = new DbUtils();
-            $result = $dbu->getAllDataFromTable(ITILCategory::getTable());
+            $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
             $temp = [];
             foreach ($result as $item) {
-               $temp[$item['id']] = $item['name'];
+               $temp[$item['id']] = $item['completename'];
             }
+            $categories = [];
+            if (isset($this->fields['itilcategories_id'])) {
+               if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
+                  $categories = $this->fields['itilcategories_id'];
+               } else {
+                  //TODO - TO DROP when metademands will be migrated
+                  $array = [$this->fields['itilcategories_id']];
+                  $categories = json_encode($array);
+               }
+            }
+            $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
 
-            $values = $this->fields['itilcategories_id'] ? json_decode($this->fields['itilcategories_id']) : [];
             Dropdown::showFromArray('itilcategories_id', $temp,
                ['values'   => $values,
                'width'    => '100%',
@@ -1260,7 +1278,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
             case 'dropdown':
                if (!empty($field['custom_values']) && $field['item'] == 'other') {
                   $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
-                  $result['content']      .= "<td $style_title>" . $label . "</td><td>" . $field['custom_values'][$field['value']] . "</td>";
+                  if (isset($field['custom_values'][$field['value']])) {
+                     $result['content']      .= "<td $style_title>" . $label . "</td><td>" . $field['custom_values'][$field['value']] . "</td>";
+                  }
                } else {
                   switch ($field['item']) {
                      case 'user':
