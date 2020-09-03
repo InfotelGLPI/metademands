@@ -163,6 +163,10 @@ if (isset($_POST['next'])) {
             }
          }
 
+         unset ($_SESSION['plugin_metademands']['fields']['_users_id_requester']);
+         unset ($_SESSION['plugin_metademands']['fields']['tickets_id']);
+         unset ($_SESSION['plugin_metademands']['fields']['resources_id']);
+         unset ($_SESSION['plugin_metademands']['fields']['resources_step']);
          // Save requester user
          $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
          // Case of simple ticket convertion
