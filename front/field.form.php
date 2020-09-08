@@ -40,9 +40,15 @@ if (!isset($_POST["check_value"])) {
 
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
             && isset($_POST['item']) && $_POST['item'] == 'group') {
-   $custom_values['is_assign'] = $_POST['is_assign'];
-   $custom_values['is_watcher'] = $_POST['is_watcher'];
-   $custom_values['is_requester'] = $_POST['is_requester'];
+   if ($_POST['is_assign'] > 0) {
+      $custom_values['is_assign'] = $_POST['is_assign'];
+   }
+   if ($_POST['is_watcher'] > 0) {
+      $custom_values['is_watcher'] = $_POST['is_watcher'];
+   }
+   if ($_POST['is_requester'] > 0) {
+      $custom_values['is_requester'] = $_POST['is_requester'];
+   }
    $_POST['custom_values'] = $custom_values;
 }
 
@@ -60,12 +66,12 @@ if (isset($_POST["add"])) {
       if (isset($_POST['type']) && $_POST['type'] == 'dropdown_multiple') {
          $_POST['item'] = 'other';
       }
-      $_POST["custom_values"] = $field->_serialize($_POST["custom_values"]);
+      $_POST["custom_values"] = PluginMetademandsField::_serialize($_POST["custom_values"]);
       if (isset($_POST["comment_values"])) {
-         $_POST["comment_values"] = $field->_serialize($_POST["comment_values"]);
+         $_POST["comment_values"] = PluginMetademandsField::_serialize($_POST["comment_values"]);
       }
       if (isset($_POST["default_values"])) {
-         $_POST["default_values"] = $field->_serialize($_POST["default_values"]);
+         $_POST["default_values"] = PluginMetademandsField::_serialize($_POST["default_values"]);
       }
    }
 
@@ -94,18 +100,18 @@ if (isset($_POST["add"])) {
       if (isset($_POST['default_values'])) {
          $default_values = $_POST['default_values'];
       }
-      $_POST["custom_values"]  = $field->_serialize($custom_values);
-      $_POST["comment_values"] = $field->_serialize($comment_values);
-      $_POST["default_values"] = $field->_serialize($default_values);
+      $_POST["custom_values"]  = PluginMetademandsField::_serialize($custom_values);
+      $_POST["comment_values"] = PluginMetademandsField::_serialize($comment_values);
+      $_POST["default_values"] = PluginMetademandsField::_serialize($default_values);
    } else if ($_POST["type"] == 'link') {
-      $_POST["custom_values"]  = $field->_serialize($_POST['custom_values']);
+      $_POST["custom_values"]  = PluginMetademandsField::_serialize($_POST['custom_values']);
       $_POST["comment_values"] = '';
    } else if ($_POST["type"] != 'yesno') {
       $_POST["custom_values"] = '';
       $_POST["comment_values"] = '';
    }
    if (isset($_POST["value"]) && is_array($_POST["value"])) {
-      $_POST["value"] = $field->_serialize($_POST["value"]);
+      $_POST["value"] = PluginMetademandsField::_serialize($_POST["value"]);
    }
 
    // Check update rights for fields
@@ -135,9 +141,9 @@ if (isset($_POST["add"])) {
             unset($_POST["default_values"][$key]);
          }
       }
-      $_POST["custom_values"]  = $field->_serialize($_POST["custom_values"]);
-      $_POST["comment_values"] = $field->_serialize($_POST["comment_values"]);
-      $_POST["default_values"] = $field->_serialize($_POST["default_values"]);
+      $_POST["custom_values"]  = PluginMetademandsField::_serialize($_POST["custom_values"]);
+      $_POST["comment_values"] = PluginMetademandsField::_serialize($_POST["comment_values"]);
+      $_POST["default_values"] = PluginMetademandsField::_serialize($_POST["default_values"]);
       // Check update rights for fields
       $field->check(-1, UPDATE, $_POST);
       $field->update($_POST);

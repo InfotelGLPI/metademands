@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once (GLPI_ROOT . "/plugins/metademands/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
-      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/empty-2.7.1.sql");
+      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/empty-2.7.2.sql");
    }
 
    if (!$DB->tableExists("glpi_plugin_metademands_itilapplications") || !$DB->tableExists("glpi_plugin_metademands_itilenvironments")) {
@@ -88,13 +88,21 @@ function plugin_metademands_install() {
       $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/update-2.6.2.sql");
    }
 
+   //version 2.6.3
    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "display_type")) {
       $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/update-2.6.3.sql");
    }
 
+   //version 2.7.1
    if ($DB->fieldExists("glpi_plugin_metademands_metademands", "itilcategories_id")) {
       include(GLPI_ROOT."/plugins/metademands/install/update270_271.php");
       update270_271();
+   }
+
+   //version 2.7.2
+   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "is_basket") &&
+       !$DB->fieldExists("glpi_plugin_metademands_metademands", "is_order")) {
+      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.2.sql");
    }
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
