@@ -901,6 +901,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param        $metademands_data
     * @param bool   $preview
     * @param string $config_link
+    * @param int    $itilcategories_id
     */
    function getFieldType($data, $metademands_data, $preview = false, $config_link = "", $itilcategories_id = 0) {
       global $PLUGIN_HOOKS;
@@ -978,10 +979,12 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             break;
          case 'dropdown':
-            if (!empty($data['custom_values']) && $data['item'] == 'other') {
+            if (!empty($data['custom_values'])
+                && $data['item'] == 'other') {
                $data['custom_values']    = PluginMetademandsField::_unserialize($data['custom_values']);
                $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
                ksort($data['custom_values']);
+               echo "<br>";
                Dropdown::showFromArray("field[" . $data['id'] . "]", $data['custom_values'],
                                        ['value' => $value,
                                         'width' => '200px',
@@ -995,12 +998,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                                      'value'  => $value]);
                      break;
                   case 'itilcategory':
-                     $metademand = new PluginMetademandsMetademand();
-                     if (isset($_GET['id'])) {
-                        $metademand->getFromDB($_GET['id']);
-                     } else if (isset($_GET['metademands_id'])) {
-                        $metademand->getFromDB($_GET['metademands_id']);
-                     }
 
                      if ($itilcategories_id > 0) {
                         // itilcat from service catalog
@@ -1010,9 +1007,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                         echo "<input type='hidden' name='plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
                         echo "<span>";
                      } else {
+                        $metademand = new PluginMetademandsMetademand();
+                        $metademand->getFromDB($data['plugin_metademands_metademands_id']);
                         $values = json_decode($metademand->getField('itilcategories_id'));
-                        $opt    = ['name'      => "field[" . $data['id'] . "]", 'right' => 'all', 'value' => $value,
-                                   'condition' => ["`id` IN ('" . implode("','", $values) . "')"]];
+                        $opt    = ['name'      => "field[" . $data['id'] . "]",
+                                   'right'     => 'all',
+                                   'value'     => $value,
+                                   'condition' => ["id" => $values]];
 
                         ITILCategory::dropdown($opt);
                      }
@@ -1047,10 +1048,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $cond[$type_group] = $value;
                         }
                      }
-                     $opt             = ['value'  => $value,
-                                         'entity' => $_SESSION['glpiactiveentities'],
-                                         'display' => true,
-                                         'name'   => "field[" . $data['id'] . "]",
+                     $opt             = ['value'     => $value,
+                                         'entity'    => $_SESSION['glpiactiveentities'],
+                                         'display'   => true,
+                                         'name'      => "field[" . $data['id'] . "]",
                                          'readonly'  => true,
                                          'condition' => $cond];
                      $container_class = new $data['item']();
@@ -1337,9 +1338,9 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (!empty($options['resources_id'])) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
       }
-//      else {
-//         Html::back();
-//      }
+      //      else {
+      //         Html::back();
+      //      }
    }
 
    /**

@@ -43,8 +43,8 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
-   static $list_items  = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'itilcategory', 'PluginResourcesResource',
-                          'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'PluginLdapfields'];
+   static $list_items  = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'itilcategory',
+                          'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
    static $not_null = 'NOT_NULL';
 
@@ -183,7 +183,7 @@ class PluginMetademandsField extends CommonDBChild {
       if (count($metademand_fields->fields) < 1 && count($categories) > 1) {
          echo "<tr style='margin-bottom: 5px;' class='tab_bg_1'>";
          echo "<td align='center' colspan='4'>";
-         echo "<span style='color:orange;font-size: 14px'>";
+         echo "<span style='color:darkred;font-size: 14px'>";
          echo "<i class='fas fa-exclamation-triangle'></i> " . __('Please add a type category field', 'metademands');
          echo "</span>";
          echo "</td>";
@@ -1427,7 +1427,7 @@ class PluginMetademandsField extends CommonDBChild {
                break;
          }
 
-         echo '</td></tr></table>';
+         echo '</table>';
          echo "</td></tr></table>";
       }
    }

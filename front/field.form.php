@@ -87,7 +87,11 @@ if (isset($_POST["add"])) {
 
 } else if (isset($_POST["update"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])
-       && ($_POST["item"] == 'other' || $_POST["type"] == 'checkbox' || $_POST["type"] == 'radio' || $_POST['item'] == 'group' || $_POST['type'] == 'number') ) {
+       && ($_POST["item"] == 'other'
+           || $_POST["type"] == 'checkbox'
+           || $_POST["type"] == 'radio'
+           || $_POST['item'] == 'group'
+           || $_POST['type'] == 'number') ) {
       $comment_values = "";
       $custom_values  = "";
       $default_values = "";
