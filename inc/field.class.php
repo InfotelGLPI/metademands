@@ -889,6 +889,7 @@ class PluginMetademandsField extends CommonDBChild {
                         'location', 'other', 'checkbox', 'radio', 'dropdown_multiple',
                         'parent_field', 'number', 'text', 'textarea', 'upload', 'itilcategory',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
+      $new_fields = [];
 
       $plugin = new Plugin();
       //      if ($plugin->isActivated('ldapfields')) {
@@ -905,7 +906,7 @@ class PluginMetademandsField extends CommonDBChild {
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
             $new_fields = self::addPluginFieldItems($plug);
             if ($plugin->isActivated($plug) && is_array($new_fields)) {
-               array_push($allowed_types, $new_fields);
+               $allowed_types = array_merge($allowed_types, $new_fields);
             }
          }
       }
@@ -913,7 +914,9 @@ class PluginMetademandsField extends CommonDBChild {
       if (isset($params['check_value']) && in_array($params['value'], $allowed_types)) {
          $metademands = new PluginMetademandsMetademand();
          $metademands->getFromDB($options['metademands_id']);
-
+         if(in_array($params['value'],$new_fields)){
+            $params['value'] = $params['type'];
+         }
          if (isset($params['value'])) {
             echo "<div id='show_type_fields'>";
             echo "<table width='100%' class='metademands_show_values'>";
@@ -1427,7 +1430,7 @@ class PluginMetademandsField extends CommonDBChild {
                break;
          }
 
-         echo '</table>';
+         echo '</td></tr></table>';
          echo "</td></tr></table>";
       }
    }

@@ -62,22 +62,14 @@ class PluginMetademandsBasketline extends CommonDBTM {
                      break;
 
                   case 'upload':
-                     $display = "";
-                     //                     Toolbox::logWarning($fields);
-                     //                     if (isset($fields['fields']['_filename'])) {
-                     //                        $values_fields     = $fields['fields']['_filename'];
-                     //                        $prefixes   = $fields['fields']['_prefix_filename'];
-                     //                        $valid_name = "";
-                     //                        $display      = [];
-                     //                        foreach ($values_fields as $key => $val) {
-                     //                           $name       = $values_fields[$key];
-                     //                           $prefix     = $prefixes[$key];
-                     //                           $valid_name = str_replace($prefix, "", $name);
-                     //                           $value[]    .= $valid_name;
-                     //                        }
-                     //                        $display = implode(', ', $display);
-                     //                     }
-                     echo "<td>" . $value['value'] . "</td>";
+                     $arrayFiles = json_decode($value['value'], true);
+                     echo "<td>";
+                     if ($arrayFiles != "") {
+                        foreach ($arrayFiles as $file) {
+                           echo str_replace($file['_prefix_filename'], "", $file['_filename']) . "<br />";
+                        }
+                     }
+                     echo "</td>";
                      break;
 
                   case 'dropdown':

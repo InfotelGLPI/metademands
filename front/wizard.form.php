@@ -125,6 +125,7 @@ if (isset($_POST['next'])) {
             }
             if ($nblines == 0) {
                $post = $_POST['field'];
+               $nblines = 1;
             }
 
             for ($i = 0; $i < $nblines; $i++) {
@@ -167,6 +168,21 @@ if (isset($_POST['next'])) {
 
                      if ($value == 'checkbox') {// Checkbox
                         $_SESSION['plugin_metademands']['fields'][$id] = 1;
+                     } else if ($value['type'] == 'upload') {
+                        $files = json_decode($post[$id],1);
+                        $filename = [];
+                        $prefixname = [];
+                        $tagname = [];
+                        foreach ($files as $file){
+                           $filename[] = $file['_filename'];
+                           $prefixname[] = $file['_prefix_filename'];
+                           $tagname[] = $file['_tag_filename'];
+                        }
+                        $_POST['_filename'] = $filename;
+                        $_POST['_prefix_filename'] = $prefixname;
+                        $_POST['_tag_filename'] = $tagname;
+                        $_SESSION['plugin_metademands']['fields']['_filename'] = $_POST['_filename'];
+                        $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $_POST['_prefix_filename'];
                      } else {// Other fields
                         if (is_array($post[$id]) && $value['type'] !== 'dropdown_multiple') {
                            $post[$id] = PluginMetademandsField::_serialize($post[$id]);
@@ -395,9 +411,15 @@ if (isset($_POST['next'])) {
          $content[$id]['item']   = $value['item'];
          $content[$id]['type']   = $value['type'];
       } else {
-         $content[$id]['plugin_metademands_fields_id'] = 0;
+         $content[$id]['plugin_metademands_fields_id'] = $id;
          if (isset($_POST['_filename']) && $value['type'] == "upload") {
-            $content[$id]['value'] = PluginMetademandsField::_serialize($_POST['_filename']);
+            $files = [];
+            foreach($_POST['_filename'] as $key => $filename){
+               $files[$key]['_prefix_filename'] = $_POST['_prefix_filename'][$key];
+               $files[$key]['_tag_filename'] = $_POST['_tag_filename'][$key];
+               $files[$key]['_filename'] = $_POST['_filename'][$key];
+            }
+            $content[$id]['value'] = json_encode($files);
          } else {
             $content[$id]['value'] = '';
          }

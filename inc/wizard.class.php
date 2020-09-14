@@ -402,7 +402,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       $dbu         = new DbUtils();
       $query       = "SELECT `id`,`name`
                    FROM `glpi_plugin_metademands_metademands`
-                   WHERE `glpi_plugin_metademands_metademands`.`itilcategories_id` <> ''
+                   WHERE is_order = 1  OR `glpi_plugin_metademands_metademands`.`itilcategories_id` <> ''
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
                      . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
       $query       .= "AND is_active ORDER BY `name`";
@@ -848,7 +848,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "<tr class='basket-label'>";
 
             foreach ($line as $key => $data) {
-               echo "<th class='basket-th'>" . $data['label'] . "</th>";
+               if($data['is_basket'] == 1){
+                  echo "<th class='basket-th'>" . $data['label'] . "</th>";
+               }
             }
             $class = "basket-th";
             //            if ($preview == false) {
