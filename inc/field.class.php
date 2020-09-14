@@ -44,7 +44,7 @@ class PluginMetademandsField extends CommonDBChild {
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
    static $list_items  = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'itilcategory',
-                          'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
+                          'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'appliance'];
 
    static $not_null = 'NOT_NULL';
 
@@ -845,6 +845,8 @@ class PluginMetademandsField extends CommonDBChild {
             return PluginMetademandsITILApplication::getTypeName();
          case 'PluginMetademandsITILEnvironment' :
             return PluginMetademandsITILEnvironment::getTypeName();
+         case 'appliance' :
+            return __('Appliance');
          default:
             if (isset($PLUGIN_HOOKS['metademands'])) {
                $plugin = new Plugin();
@@ -888,7 +890,7 @@ class PluginMetademandsField extends CommonDBChild {
       $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group',
                         'location', 'other', 'checkbox', 'radio', 'dropdown_multiple',
                         'parent_field', 'number', 'text', 'textarea', 'upload', 'itilcategory',
-                        'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
+                        'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'appliance'];
       $new_fields = [];
 
       $plugin = new Plugin();
@@ -1137,6 +1139,7 @@ class PluginMetademandsField extends CommonDBChild {
                case 'dropdown_multiple':
                case 'PluginMetademandsITILApplication':
                case 'PluginMetademandsITILEnvironment':
+               case 'appliance' :
                   //               case strpos($params['value'], 'PluginLdapfields'):
                   // Value to check
                   echo "<tr><td>";
