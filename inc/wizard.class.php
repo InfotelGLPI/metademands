@@ -1333,7 +1333,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       global $CFG_GLPI;
 
       $metademands = new PluginMetademandsMetademand();
-      $result      = $metademands->addMetademands($metademands_id, $values);
+      $result      = $metademands->addMetademands($metademands_id, $values, $options);
       Session::addMessageAfterRedirect($result['message']);
       unset($_SESSION['plugin_metademands']);
 

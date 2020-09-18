@@ -75,6 +75,10 @@ if (isset($_POST["add"])) {
       }
    }
 
+   if(isset($_POST['item']) && (empty($_POST['item']) || $_POST['item'] == 0)
+      && isset($_POST['type'])) {
+      $_POST['item'] = $_POST['type'];
+   }
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
    if ($_POST['id'] = $field->add($_POST)) {
@@ -118,6 +122,10 @@ if (isset($_POST["add"])) {
       $_POST["value"] = PluginMetademandsField::_serialize($_POST["value"]);
    }
 
+   if(isset($_POST['item']) && (empty($_POST['item']) || $_POST['item'] == 0)
+      && isset($_POST['type'])) {
+      $_POST['item'] = $_POST['type'];
+   }
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
 

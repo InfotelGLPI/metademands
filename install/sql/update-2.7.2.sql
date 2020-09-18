@@ -1,4 +1,8 @@
 ALTER TABLE glpi_plugin_metademands_metademands ADD `is_order` tinyint(1) default 0;
+ALTER TABLE glpi_plugin_metademands_metademands ADD `date_creation` datetime DEFAULT NULL;
+ALTER TABLE glpi_plugin_metademands_metademands ADD `date_mod` datetime DEFAULT NULL;
+ALTER TABLE glpi_plugin_metademands_fields ADD `date_creation` datetime DEFAULT NULL;
+ALTER TABLE glpi_plugin_metademands_fields ADD `date_mod` datetime DEFAULT NULL;
 ALTER TABLE glpi_plugin_metademands_fields ADD `is_basket` tinyint(1) default 0;
 
 CREATE TABLE `glpi_plugin_metademands_basketlines` (

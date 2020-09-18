@@ -163,7 +163,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
 
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($id)) {
-               echo '<div class="favsc-normal visitedchildbg favsc-link-normal sc-widget" >';
+               echo '<div class="menusc-normal visitedchildbg menusc-link-normal sc-widget" >';
                echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW."'>";
                $fasize = "fa-6x";
                echo "<div class='center'>";

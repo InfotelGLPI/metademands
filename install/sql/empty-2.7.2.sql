@@ -19,6 +19,8 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
   `type` int(11) NOT NULL default '0', -- metademand type : Incident, demand
   `itilcategories_id` varchar(255) default '[]', -- references itilcategories glpi
   `icon` varchar(255) default NULL,
+  `date_creation` datetime DEFAULT NULL,
+  `date_mod` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -80,6 +82,8 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
   `color` varchar(255) default NULL,
   `parent_field_id` int(11) NOT NULL default '0',
   `row_display` tinyint(1) default 0,
+  `date_creation` datetime DEFAULT NULL,
+  `date_mod` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`plugin_metademands_metademands_id`) REFERENCES glpi_plugin_metademands_metademands(id),
   KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),

@@ -928,8 +928,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return array
     * @throws \GlpitestSQLError
     */
-   function addMetademands($metademands_id, $values, $tasklevel = 1) {
+   function addMetademands($metademands_id, $values, $options = []) {
       global $DB;
+
+      $tasklevel = 1;
 
       $metademands_data = $this->showMetademands($metademands_id);
       $this->getFromDB($metademands_id);
@@ -984,8 +986,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $parent_fields['id'] = $values['fields']['tickets_id'];
 
                // Resources id
-               if (!empty($values['fields']['resources_id'])) {
-                  $parent_fields['items_id'] = ['PluginResourcesResource' => [$values['fields']['resources_id']]];
+               if (!empty($options['resources_id'])) {
+                  $parent_fields['items_id'] = ['PluginResourcesResource' => [$options['resources_id']]];
                }
 
                foreach ($values['fields'] as $id => $data) {

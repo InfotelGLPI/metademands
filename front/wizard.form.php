@@ -315,6 +315,10 @@ if (isset($_POST['next'])) {
             $values['target'] = Toolbox::getItemTypeFormURL('PluginResourcesWizard');
             $resource->wizardFiveForm($_POST['resources_id'], $values);
             break;
+         case 'six_step':
+            $resourcehabilitation = new PluginResourcesResourceHabilitation();
+            $resourcehabilitation->wizardSixForm($_POST['resources_id']);
+            break;
       }
       // Else metademand wizard step
    } else {

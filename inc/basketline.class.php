@@ -199,7 +199,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
       foreach ($content as $values) {
          //TODO drop if empty datas ??
          $name = $values['item'];
-         if ($name == "" || $values['type'] == "dropdown_multiple") {
+         if ($values['type'] == "dropdown_multiple") {
             $name = $values['type'];
          }
          $this->add(['name'                              => $name,
