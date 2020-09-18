@@ -17,3 +17,7 @@ CREATE TABLE `glpi_plugin_metademands_basketlines` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`,`line`,`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE glpi_plugin_metademands_tasks DROP FOREIGN KEY glpi_plugin_metademands_tasks_ibfk_1;
+ALTER TABLE glpi_plugin_metademands_tickets_metademands DROP FOREIGN KEY glpi_plugin_metademands_tickets_metademands_ibfk_1;
+ALTER TABLE glpi_plugin_metademands_tickets_tasks DROP FOREIGN KEY glpi_plugin_metademands_tickets_tasks_ibfk_1;

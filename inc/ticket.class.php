@@ -349,7 +349,7 @@ class PluginMetademandsTicket extends CommonDBTM {
                   $tasks = [];
                   foreach ($child_tasks_data as $child_tasks_id) {
                      $tasks[] = $task->getTasks($data['plugin_metademands_metademands_id'],
-                                                ['condition' => '`glpi_plugin_metademands_tasks`.`id` = ' . $child_tasks_id]);
+                                                ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]);
                   }
 
                   $count++;

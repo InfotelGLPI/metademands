@@ -186,7 +186,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $dbu        = new DbUtils();
                $metademand = new PluginMetademandsMetademand();
                $metas      = $metademand->find(['is_active' => 1,
-                                                'type' => $ticket->input["type"]]);
+                                                'type'      => $ticket->input["type"]]);
                $cats       = [];
 
                foreach ($metas as $meta) {
@@ -842,8 +842,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
          if (isset($metademands->fields['type'])
              && $metademands->fields['type'] == Ticket::DEMAND_TYPE) {
             $tasks                                  = new PluginMetademandsTask();
-            $tasks_data                             = $tasks->getTasks($metademands_id,
-                                                                       ['condition' => '`glpi_plugin_metademands_tasks`.`type` = ' . PluginMetademandsTask::TICKET_TYPE]);
+            $tasks_data = $tasks->getTasks($metademands_id,
+                                          ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]);
+
             $forms[$step][$metademands_id]['tasks'] = $tasks_data;
          }
 
@@ -921,9 +922,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
    }
 
    /**
-    * @param     $metademands_id
-    * @param     $values
-    * @param int $tasklevel
+    * @param       $metademands_id
+    * @param       $values
+    * @param array $options
     *
     * @return array
     * @throws \GlpitestSQLError
@@ -970,7 +971,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                // Get form fields
                $parent_fields = ['content' => ''];
                if (count($line['form']) && isset($values['fields'])) {
-                  $parent_fields = $this->formatFields($line['form'], $metademands_id, $values['fields']);
+                  $parent_fields = $this->formatFields($line['form'], $metademands_id, $values['fields'], $options);
                   //                  $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
 
                }
@@ -983,7 +984,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                // Requester user field
                $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
                // Existing tickets id field
-               $parent_fields['id'] = $values['fields']['tickets_id'];
+               $parent_fields['id']     = $values['fields']['tickets_id'];
+               $parent_fields['status'] = CommonITILObject::INCOMING;
 
                // Resources id
                if (!empty($options['resources_id'])) {
@@ -1227,7 +1229,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @return array
     */
-   private function formatFields(array $parent_fields, $metademands_id, $values) {
+   private function formatFields(array $parent_fields, $metademands_id, $values, $options = []) {
 
       $result            = [];
       $result['content'] = "";
@@ -1236,6 +1238,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $name              = Dropdown::getDropdownName($this->getTable(), $metademands_id);
       $result['content'] .= "<table style='width: 100%;border-style: dashed;'>"; // class='mticket'
       $result['content'] .= "<tr><th colspan='2' style='background-color: #ccc;'>" . $name . "</th></tr>";
+      if (!empty($options['resources_id'])) {
+         $resource = new PluginResourcesResource();
+         $resource->getFromDB($options['resources_id']);
+         $result['content'] .= "<tr><th colspan='2' style='background-color: #ccc;'>" . $resource->fields['name'] . " " . $resource->fields['firstname'] . "</th></tr>";
+      }
       //      $result['content'] .= "</table>";
       $nb = 0;
       foreach ($parent_fields as $fields_id => $field) {
@@ -1248,12 +1255,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
          if ($field['type'] == 'datetime_interval' && isset($values[$fields_id . '-2'])) {
             $field['value2'] = $values[$fields_id . '-2'];
          }
-
-         //         if (isset($field['rank'])
-         //             && $rank != $field['rank']
-         //         ) {
-         //            $result['content'] .= "<table class='tab_cadre'>";
-         //         }
          if ($nb % 2 == 0) {
             $result['content'] .= "<tr class='even'>";
          } else {
@@ -1265,13 +1266,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
          $result['content'] .= "</tr>";
 
-
-         //         if (isset($field['rank'])
-         //             && $rank != $field['rank']
-         //         ) {
-         //            $result['content'] .= "</table>";
-         //            $rank              = $field['rank'];
-         //         }
       }
       $result['content'] .= "</table>";
       return $result;
@@ -1311,7 +1305,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
             }
          }
-
 
          switch ($field['type']) {
             case 'title' :
@@ -1442,8 +1435,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
                break;
             case 'datetime_interval':
-               $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
-               $result['content'] .= "<td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
+               $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td></tr>";
+               $result['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
                break;
             case 'number':
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $field['value'] . "</td>";
@@ -1661,7 +1654,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                if ($child_tasks_data) {
                   foreach ($child_tasks_data as $child_tasks_id) {
                      $tasks_data = $task->getTasks($data['plugin_metademands_metademands_id'],
-                                                   ['condition' => '`glpi_plugin_metademands_tasks`.`id` = ' . $child_tasks_id]);
+                                                ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]);
 
                      // Get parent ticket data
                      $ticket->getFromDB($tickets_data['id']);
