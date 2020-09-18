@@ -43,8 +43,8 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
-   static $field_items = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'PluginResourcesResource',
-                          'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'PluginLdapfields'];
+   static $list_items  = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other',
+                          'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment',];
 
    static $not_null = 'NOT_NULL';
 
@@ -326,7 +326,11 @@ class PluginMetademandsField extends CommonDBChild {
       echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
 
       echo "</td>";
-      echo "<td colspan='2'>";
+
+      // Is_Basket Fields
+      echo "<td>" . __('Display into the basket ?') . "</td>";
+      echo "<td>";
+      Dropdown::showYesNo("is_basket", $this->fields["is_basket"]);
       echo "</td>";
       echo "</tr>";
 
@@ -520,13 +524,27 @@ class PluginMetademandsField extends CommonDBChild {
     * @throws \GlpitestSQLError
     */
    static function dropdownFieldTypes($name, $param = []) {
+      global $PLUGIN_HOOKS;
 
       $p = [];
       foreach ($param as $key => $val) {
          $p[$key] = $val;
       }
 
-      foreach (self::$field_types as $key => $types) {
+      $type_fields = self::$field_types;
+
+      $plugin = new Plugin();
+
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $new_fields = self::addPluginTextFieldItems($plug);
+            if ($plugin->isActivated($plug) && is_array($new_fields)) {
+               $type_fields = array_merge($type_fields, $new_fields);
+            }
+         }
+      }
+
+      foreach ($type_fields as $key => $types) {
          //delete type parent_field if no parent metademand & not field
          if ($types == 'parent_field') {
             $metademands_parent = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($p['metademands_id']);
@@ -542,18 +560,18 @@ class PluginMetademandsField extends CommonDBChild {
             }
 
             if (count($metademands_parent) == 0) {
-               break;
+               continue;
             } else if (count($list_fields) == 0) {
-               break;
+               continue;
             }
          }
+
          if (empty($types)) {
             $options[$key] = self::getFieldTypesName($types);
          } else {
             $options[$types] = self::getFieldTypesName($types);
          }
       }
-
       return Dropdown::showFromArray($name, $options, $p);
    }
 
@@ -565,6 +583,8 @@ class PluginMetademandsField extends CommonDBChild {
     * @return string types
     */
    static function getFieldTypesName($value = '') {
+      global $PLUGIN_HOOKS;
+
       switch ($value) {
          case 'dropdown':
             return __('Dropdown', 'metademands');
@@ -595,7 +615,122 @@ class PluginMetademandsField extends CommonDBChild {
          case 'number':
             return __('Number', 'metademands');
          default:
+            if (isset($PLUGIN_HOOKS['metademands'])) {
+               $plugin = new Plugin();
+               foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                  $new_fields = self::getPluginFieldItemsName($plug);
+                  if ($plugin->isActivated($plug)
+                      && is_array($new_fields)) {
+                     if (isset($new_fields[$value])) {
+                        return $new_fields[$value];
+                     } else {
+                        continue;
+                     }
+                     return Dropdown::EMPTY_VALUE;
+                  }
+               }
+            }
             return Dropdown::EMPTY_VALUE;
+      }
+   }
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function addPluginFieldItems($plug) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'addFieldItems'])) {
+               return $item->addFieldItems();
+            }
+         }
+      }
+   }
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function addPluginDropdownFieldItems($plug) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'addDropdownFieldItems'])) {
+               return $item->addDropdownFieldItems();
+            }
+         }
+      }
+   }
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function addPluginTextFieldItems($plug) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'addTextFieldItems'])) {
+               return $item->addTextFieldItems();
+            }
+         }
+      }
+   }
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginFieldItemsName($plug) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'getFieldItemsName'])) {
+               return $item->getFieldItemsName();
+            }
+         }
       }
    }
 
@@ -608,6 +743,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return dropdown of items
     */
    static function dropdownFieldItems($name, $param = []) {
+      global $PLUGIN_HOOKS;
 
       $p = [];
       foreach ($param as $key => $val) {
@@ -616,7 +752,18 @@ class PluginMetademandsField extends CommonDBChild {
       $config      = new PluginMetademandsConfig();
       $data        = $config->getConfigFromDB();
       $plugin      = new Plugin();
-      $type_fields = self::$field_items;
+
+      $type_fields = self::$list_items;
+
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $new_fields = self::addPluginDropdownFieldItems($plug);
+            if ($plugin->isActivated($plug) && is_array($new_fields)) {
+               $type_fields = array_merge($type_fields, $new_fields);
+            }
+         }
+      }
+
       if ($data['enable_application_environment'] == 0) {
          if (($key = array_search('PluginMetademandsITILApplication', $type_fields)) !== false) {
             unset($type_fields[$key]);
@@ -626,22 +773,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
       }
       foreach ($type_fields as $key => $items) {
-         if (empty($items)) {
-            $options[$key] = self::getFieldItemsName($items);
-         } elseif ($plugin->isActivated('ldapfields') && $items == 'PluginLdapfields') {
-            $ldapfields_containers = new PluginLdapfieldsContainer();
-            $ldapfields            = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
-            if (count($ldapfields) > 0) {
-               foreach ($ldapfields as $ldapfield) {
-                  $ldapattribute = new PluginLdapfieldsAuthLDAP();
-                  $ldapattribute->getFromDB($ldapfield['plugin_ldapfields_authldaps_id']);
-                  $label                       = PluginLdapfieldsLabelTranslation::getLabelFor($ldapattribute);
-                  $options[$ldapfield['name']] = $label;
-               }
-            }
-         } else {
-            $options[$items] = self::getFieldItemsName($items);
-         }
+         $options[$items] = self::getFieldItemsName($items);
       }
       return Dropdown::showFromArray($name, $options, $p);
 
@@ -655,8 +787,8 @@ class PluginMetademandsField extends CommonDBChild {
     * @return string item
     */
    static function getFieldItemsName($value = '') {
-      $dbu   = new DbUtils();
-      
+      global $PLUGIN_HOOKS;
+
       switch ($value) {
          case 'user':
             return __('User');
@@ -670,22 +802,26 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Location');
          case 'other':
             return __('Other');
-         case 'PluginResourcesResource':
-            return _n('Human resource', 'Human resources', 1, 'resources');
          case 'PluginMetademandsITILApplication' :
             return PluginMetademandsITILApplication::getTypeName();
          case 'PluginMetademandsITILEnvironment' :
             return PluginMetademandsITILEnvironment::getTypeName();
-         case strpos($value, 'PluginLdapfields'):
-            if (empty($value)) {
-               return Dropdown::EMPTY_VALUE;
-            } else {
-               if ($item = $dbu->getItemForItemtype($value)) {
-                  $classname = new $value();
-                  return $classname::getDisplayName();
+         default:
+            if (isset($PLUGIN_HOOKS['metademands'])) {
+               $plugin = new Plugin();
+               foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                  $new_fields = self::getPluginFieldItemsName($plug);
+                  if ($plugin->isActivated($plug)
+                      && is_array($new_fields)) {
+                     if (isset($new_fields[$value])) {
+                        return $new_fields[$value];
+                     } else {
+                        continue;
+                     }
+                     return Dropdown::EMPTY_VALUE;
+                  }
                }
             }
-         default:
             return Dropdown::EMPTY_VALUE;
       }
    }
@@ -700,6 +836,8 @@ class PluginMetademandsField extends CommonDBChild {
     * @throws \GlpitestSQLError
     */
    function viewTypeField($options) {
+      global $PLUGIN_HOOKS;
+
       $params['value']       = 0;
       $params['check_value'] = 0;
 
@@ -708,18 +846,19 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group', 'location',
-                        'PluginResourcesResource', 'other', 'checkbox', 'radio', 'dropdown_multiple',
+      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group',
+                        'location','other', 'checkbox', 'radio', 'dropdown_multiple',
                         'parent_field', 'number', 'text', 'textarea', 'upload',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
+      $new_fields = [];
 
       $plugin = new Plugin();
-      if ($plugin->isActivated('ldapfields')) {
-         $ldapfields_containers = new PluginLdapfieldsContainer();
-         $ldapfields            = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
-         if (count($ldapfields) > 0) {
-            foreach ($ldapfields as $ldapfield) {
-               array_push($allowed_types, $ldapfield['name']);
+
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $new_fields = self::addPluginFieldItems($plug);
+            if ($plugin->isActivated($plug) && is_array($new_fields)) {
+               $allowed_types = array_merge($allowed_types, $new_fields);
             }
          }
       }
@@ -727,7 +866,9 @@ class PluginMetademandsField extends CommonDBChild {
       if (isset($params['check_value']) && in_array($params['value'], $allowed_types)) {
          $metademands = new PluginMetademandsMetademand();
          $metademands->getFromDB($options['metademands_id']);
-
+         if(in_array($params['value'],$new_fields)){
+            $params['value'] = $params['type'];
+         }
          if (isset($params['value'])) {
             echo "<div id='show_type_fields'>";
             echo "<table width='100%' class='metademands_show_values'>";
@@ -941,13 +1082,13 @@ class PluginMetademandsField extends CommonDBChild {
                case 'usertitle':
                case 'usercategory':
                case 'location':
-               case 'PluginResourcesResource':
+//               case 'PluginResourcesResource':
                case 'other':
                case 'dropdown':
                case 'dropdown_multiple':
                case 'PluginMetademandsITILApplication':
                case 'PluginMetademandsITILEnvironment':
-               case strpos($params['value'], 'PluginLdapfields'):
+                  //               case strpos($params['value'], 'PluginLdapfields'):
                   // Value to check
                   echo "<tr><td>";
                   echo __('Value to check', 'metademands');
@@ -1218,7 +1359,7 @@ class PluginMetademandsField extends CommonDBChild {
                $linkType = 0;
                $linkVal  = '';
                if (isset($params['custom_values']) && !empty($params['custom_values'])) {
-                  $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
+                  $params['custom_values'] = self::_unserialize($params['custom_values']);
                   $linkType                = $params['custom_values'][0];
                   $linkVal                 = $params['custom_values'][1];
                }
@@ -1335,7 +1476,9 @@ class PluginMetademandsField extends CommonDBChild {
     */
    static function _unserialize($input) {
       if (!empty($input)) {
-         $input = json_decode($input, true);
+         if (!is_array($input)) {
+            $input = json_decode($input, true);
+         }
          if (is_array($input)) {
             foreach ($input as &$value) {
                $value = urldecode($value);
@@ -1353,7 +1496,7 @@ class PluginMetademandsField extends CommonDBChild {
     */
    static function showFieldsDropdown($field, $metademands_id, $selected_value) {
 
-      $fields      = new self();
+      $fields = new self();
       //TODO Add authorized types for fields_display ?
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
       $data        = [Dropdown::EMPTY_VALUE];
@@ -1458,6 +1601,13 @@ class PluginMetademandsField extends CommonDBChild {
    function prepareInputForAdd($input) {
       if (!$this->checkMandatoryFields($input)) {
          return false;
+      }
+
+      $meta = new PluginMetademandsMetademand();
+
+      if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
+          && $meta->fields['is_order'] == 1) {
+         $input['is_basket'] = 1;
       }
 
       return $input;

@@ -49,23 +49,24 @@ class PluginMetademandsMenu extends CommonDBTM {
    }
 
    function showMenu() {
+      global $CFG_GLPI;
 
       echo "<div align='center'>";
       echo "<table class='tab_cadre' cellpadding='5' height='150'>";
       echo "<tr>";
-      echo "<th colspan='2'>".PluginMetademandsMetademand::getTypeName(2)."</th>";
+      echo "<th colspan='2'>" . PluginMetademandsMetademand::getTypeName(2) . "</th>";
       echo "</tr>";
       echo "<tr class='tab_bg_1' style='background-color:white;'>";
 
       //Enter Metademand
       $metademands = new PluginMetademandsMetademand();
-      $data = $metademands->listMetademands(true);
+      $data        = $metademands->listMetademands(true);
 
       if (count($data)) {
          echo "<td class='center'>";
-         echo "<a href=\"./wizard.form.php?step=1\">";
-         echo "<i class='fas fa-share-alt fa-5x' style='color:#000' title=\"".__('Enter a demand', 'metademands')."\"></i><br>";
-         echo "<br>".__('Enter a demand', 'metademands')."</a>";
+         echo "<a href='".$CFG_GLPI['root_doc'] . "/plugins/metademands/wizard.form.php?step=".PluginMetademandsMetademand::STEP_LIST."'>";
+         echo "<i class='fas fa-share-alt fa-5x' style='color:#000' title=\"" . __('Enter a demand', 'metademands') . "\"></i><br>";
+         echo "<br>" . __('Enter a demand', 'metademands') . "</a>";
          echo "</td>";
       } else {
          echo "<td class='center'>";
@@ -76,8 +77,8 @@ class PluginMetademandsMenu extends CommonDBTM {
          //Configure metademand
          echo "<td class='center'>";
          echo "<a href=\"./metademand.php\">";
-         echo "<i class='fas fa-cogs fa-5x' style='color:#000' title=\"".__('Configure demands', 'metademands')."\"></i><br>";
-         echo "<br>".__('Configure demands', 'metademands')."</a>";
+         echo "<i class='fas fa-cogs fa-5x' style='color:#000' title=\"" . __('Configure demands', 'metademands') . "\"></i><br>";
+         echo "<br>" . __('Configure demands', 'metademands') . "</a>";
          echo "</td>";
       }
 

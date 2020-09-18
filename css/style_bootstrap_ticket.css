@@ -57,11 +57,49 @@ legend {
 }
 
 .md-wizard {
-    /*padding: 1.5rem;*/
     margin-right: 0;
     margin-left: 0;
     border-width: .2rem;
 }
+
+.table-basket {
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid #ced4da;
+}
+
+.basket-th {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #ced4da;
+}
+
+.basket-delete-th {
+    padding: 15px;
+    border-left: 1px solid #ced4da;
+    background-color: white !important;
+    border-bottom: 1px solid #ced4da;
+}
+
+.basket-label {
+    background-color: #ced4da;
+}
+
+.basket-title {
+    margin: 5px 0 5px 3px;
+    font-size: 20px;
+}
+
+.table-basket td {
+    padding : 15px;
+    text-align: center;
+}
+
+.delete-line-basket {
+    background-color: whitesmoke !important;
+
+}
+
 
 .row {
     display: -ms-flexbox;

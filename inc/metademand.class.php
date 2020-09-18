@@ -52,6 +52,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
    static $SON_PREFIX    = '';
    static $rightname     = 'plugin_metademands';
 
+   const STEP_INIT    = 0;
+   const STEP_LIST    = 1;
+   const STEP_SHOW    = 2;
+   const STEP_CREATE  = 3;
+   const STEP_PREVIEW = 4;
+
    var     $dohistory = false;
    private $config;
 
@@ -111,7 +117,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
           $dbu->countElementsInTable("glpi_plugin_metademands_tickets_tasks", ["tickets_id" => $item->fields['id']])
       ) {
          if (!$withtemplate) {
-            if (($item->getType() == 'Ticket' || $item->getType() == 'PluginResourcesResource') && $this->canView()) {
+            if (($item->getType() == 'Ticket' || $item->getType() == 'PluginResourcesResource')
+                && $this->canView()) {
                return self::getTypeName(1);
             }
          }
@@ -144,9 +151,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
    /**
     * Display tab for each metademands
+    *
     * @param array $options
+    *
     * @return array
-*/
+    */
    function defineTabs($options = []) {
       $ong = [];
 
@@ -183,7 +192,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   // Redirect if not linked to a resource contract type
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                                   ["plugin_metademands_metademands_id" => $meta["id"]])) {
-                     return $CFG_GLPI["root_doc"] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=" . $ticket->fields["id"] . "&step=2";
+                     return $CFG_GLPI["root_doc"] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=" . $ticket->fields["id"] . "&step=" . self::STEP_SHOW;
                   }
                }
             }
@@ -307,6 +316,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     */
    function getAdditionalFields() {
 
+
       $tab = [
          ['name'  => 'itilcategories_id',
           'label' => __('Category'),
@@ -324,10 +334,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
           'label' => __('Icon'),
           'type'  => 'specific',
           'list'  => true],
-
+         ['name'  => 'is_order',
+          'label' => __('Use as basket', 'metademands'),
+          'type'  => 'bool',
+          'list'  => true]
       ];
 
       return $tab;
+
    }
 
    /**
@@ -429,8 +443,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @param $input
     * @param $logtype
+    *
     * @return void
-*/
+    */
    static function addLog($input, $logtype) {
 
       $new_value = $_SESSION["glpiname"] . " ";
@@ -461,8 +476,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param        $type
     * @param string $old_value
     * @param string $new_value
+    *
     * @return void
-*/
+    */
    static function addHistory($ID, $type, $old_value = '', $new_value = '') {
       $changes[0] = 0;
       $changes[1] = $old_value;
@@ -698,7 +714,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return array
     * @throws \GlpitestSQLError
     */
-   function showMetademands($metademands_id, $forms = [], $step = 2) {
+   function showMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW) {
       global $DB;
 
       $metademands = new PluginMetademandsMetademand();
@@ -826,18 +842,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
          foreach ($metademands_data as $form_step => $data) {
             $docitem = null;
             foreach ($data as $form_metademands_id => $line) {
-               $noChild = false;
                if ($ancestor_tickets_id > 0) {
                   // Skip ticket creation if not allowed by metademand form
-                  $metademandtasks_tasks_ids = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
-                  foreach ($metademandtasks_tasks_ids as $metademandtasks_tasks_id){
-                     if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_id, $ancestor_tickets_id)) {
-                        $noChild = true;
-                     }
+                  $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
+                  if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_id, $ancestor_tickets_id)) {
+                     continue;
                   }
-               }
-               if($noChild){
-                  continue;
                }
                $metademand = new PluginMetademandsMetademand();
                $metademand->getFromDB($form_metademands_id);
@@ -856,6 +866,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $parent_fields['type']              = $this->fields['type'];
                $parent_fields['itilcategories_id'] = $metademand->fields['itilcategories_id'];
                $parent_fields['entities_id']       = $_SESSION['glpiactive_entity'];
+               $parent_fields['status']            = CommonITILObject::INCOMING;
                // Requester user field
                $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
                // Existing tickets id field
@@ -1145,6 +1156,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
    }
 
    /**
+    * Format fields to display on ticket content
+    *
     * @param $parent_fields
     * @param $fields_id
     * @param $field
@@ -1152,23 +1165,38 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param $parent_fields_id
     */
    function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id) {
+      global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
       //      $style_title = "style='background-color: #cccccc;'";
-      $label = Toolbox::stripslashes_deep($field['label']);
+      $label  = Toolbox::stripslashes_deep($field['label']);
       $label2 = Toolbox::stripslashes_deep($field['label2']);
-      if ((!empty($field['value']) || $field['value'] == "0") && $field['value'] != 'NULL' || $field['type'] == 'title') {
+      if (!empty($field['value']) && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'radio') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
          //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
          //            $result['content'] .= "<tr>";
          //         }
+
+         $plugin = new Plugin();
+         //use plugin fields types
+         if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+               $new_fields = PluginMetademandsWizard::getPluginFieldItemsType($plug);
+               if ($plugin->isActivated($plug) && is_array($new_fields)) {
+                  if (in_array($field['type'], array_keys($new_fields))) {
+                     $field['type'] = $new_fields[$field['type']];
+                  }
+               }
+            }
+         }
 
          switch ($field['type']) {
             case 'title' :
                $result['content'] .= "<th colspan='2' style='background-color: #ccc;'>" . $label . "</th>";
                break;
             case 'dropdown':
-               if (!empty($field['custom_values']) && $field['item'] == 'other') {
+               if (!empty($field['custom_values'])
+                   && $field['item'] == 'other') {
                   $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
                   $result['content']      .= "<td $style_title>" . $label . "</td><td>" . $field['custom_values'][$field['value']] . "</td>";
                } else {
@@ -1191,21 +1219,21 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $userc->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $userc->getName() . "</td>";
                         break;
-                     case strpos($field['item'], 'PluginLdapfields'):
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $classname             = new $field['item']();
-                        $classname->getFromDB($field['value']);
-                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
-                        break;
+                     //                     case strpos($field['item'], 'PluginLdapfields'):
+                     //                        $result['content'] .= "<td $style_title>" . $label . "</td>";
+                     //                        $classname         = new $field['item']();
+                     //                        $classname->getFromDB($field['value']);
+                     //                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
+                     //                        break;
                      case PluginMetademandsITILEnvironment::class:
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $classname             = new PluginMetademandsITILEnvironment();
+                        $classname         = new PluginMetademandsITILEnvironment();
                         $classname->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $classname->getName() . "</td>";
                         break;
                      case PluginMetademandsITILApplication::class:
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $classname             = new PluginMetademandsITILApplication();
+                        $classname         = new PluginMetademandsITILApplication();
                         $classname->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $classname->getName() . "</td>";
                         break;
@@ -1213,7 +1241,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $dbu               = new DbUtils();
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>";
                         $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
-                                                  $field['value']);
+                                                                        $field['value']);
                         $result['content'] .= "</td>";
                         break;
                   }
@@ -1222,6 +1250,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             case 'dropdown_multiple':
                if (!empty($field['custom_values'])) {
                   $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
+                  $field['value']         = PluginMetademandsField::_unserialize($field['value']);
                   $parseValue             = [];
                   foreach ($field['value'] as $value) {
                      array_push($parseValue, $field['custom_values'][$value]);
@@ -1248,10 +1277,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                   $custom_checkbox   = [];
                   $result['content'] .= "<td $style_title>" . $label . "</td>";
-                  foreach ($field['custom_values'] as $key => $label) {
+                  foreach ($field['custom_values'] as $key => $val) {
                      $checked = isset($field['value'][$key]) ? 1 : 0;
                      if ($checked) {
-                        $custom_checkbox[] .= $label;
+                        $custom_checkbox[] .= $val;
                      }
                   }
                   $result['content'] .= "<td>" . implode('<br>', $custom_checkbox) . "</td>";
@@ -1264,15 +1293,17 @@ class PluginMetademandsMetademand extends CommonDropdown {
             case 'radio':
                if (!empty($field['custom_values'])) {
                   $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
-                  if (!empty($field['value'])) {
+                  if ($field['value'] != "") {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
-                  foreach ($field['custom_values'] as $key => $label) {
+                  $result['content'] .= "<td $style_title>" . $label . "</td>";
+                  $custom_radio      = "";
+                  foreach ($field['custom_values'] as $key => $val) {
                      if ($field['value'] == $key) {
-                        $result['content'] .= "<td $style_title>" . $field["label"] . "</td><td>" . $label . "</td>";
-                        break;
+                        $custom_radio = $val;
                      }
                   }
+                  $result['content'] .= "<td>" . $custom_radio . "</td>";
                } else {
                   if ($field['value']) {
                      $result['content'] .= "<td>" . $label . "</td>";
@@ -1286,8 +1317,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
                break;
             case 'datetime_interval':
-               $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
-               $result['content'] .= "<td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
+               $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td></tr>";
+               $result['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
                break;
             case 'number':
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $field['value'] . "</td>";
@@ -1313,11 +1344,39 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
 
                break;
+            default:
+               //plugins case
+               break;
          }
          //         $result['content'] .= "<br>";
       }
       $parent_fields_id = $fields_id;
    }
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   //   static function displayPluginFieldItems($plug) {
+   //      global $PLUGIN_HOOKS;
+   //
+   //      $dbu = new DbUtils();
+   //      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+   //         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+   //
+   //         foreach ($pluginclasses as $pluginclass) {
+   //            if (!class_exists($pluginclass)) {
+   //               continue;
+   //            }
+   //            $form[$pluginclass] = [];
+   //            $item               = $dbu->getItemForItemtype($pluginclass);
+   //            if ($item && is_callable([$item, 'displayFieldItems'])) {
+   //               return $item->displayFieldItems();
+   //            }
+   //         }
+   //      }
+   //   }
 
    /**
     * @param $metademands_id
@@ -1968,7 +2027,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @return array array of massive actions
     * *@since version 0.84
-*/
+    */
    function getSpecificMassiveActions($checkitem = null) {
       $isadmin = static::canUpdate();
       $actions = parent::getSpecificMassiveActions($checkitem);
