@@ -71,29 +71,21 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param \User $user
     * @param       $tickets_id
     */
-   function showUserInformations(User $user, $tickets_id) {
+   function showUserInformations(User $user) {
 
-      echo "<div class=\"form-row\">";
-
-      // If profile have no rights on requester update : display connected user info
-      if (!$this->canUpdateRequester() || !empty($tickets_id)) {
-         echo "<div class=\"bt-feature bt-col-sm-4 bt-col-md- \">";
-         echo __('Name') . "&nbsp;";
-         echo $user->getField('realname');
-         echo " / ";
-         echo __('First name') . "&nbsp;";
-         echo $user->getField('firstname');
-         echo " / ";
-      }
-
+      echo __('Name') . "&nbsp;";
+      echo $user->getField('realname');
+      echo " / ";
+      echo __('First name') . "&nbsp;";
+      echo $user->getField('firstname');
+      echo " / ";
       echo __('Login') . "&nbsp;";
       echo $user->getField('name');
-      echo " / ";
-      echo __('Phone') . "&nbsp;";
-      echo $user->getField('phone');
-      echo "</div>";
-
-      echo "</div>";
+      if (!empty($user->getField('phone'))) {
+         echo " / ";
+         echo __('Phone') . "&nbsp;";
+         echo $user->getField('phone');
+      }
    }
 
    /**
@@ -274,10 +266,11 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
             echo "<span id='show_users_id_requester'>";
-            $this->showUserInformations($user, $parameters['tickets_id']);
+            $this->showUserInformations($user);
             echo "</span>";
             echo "</div>";
-            echo "</div><br/>";
+
+            echo "</div>";
          } else {
             echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
          }
@@ -848,7 +841,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "<tr class='basket-label'>";
 
             foreach ($line as $key => $data) {
-               if($data['is_basket'] == 1){
+               if ($data['is_basket'] == 1) {
                   echo "<th class='basket-th'>" . $data['label'] . "</th>";
                }
             }

@@ -42,5 +42,5 @@ if (isset($_POST["value"])) {
    }
 
    $wizard = new PluginMetademandsWizard();
-   $wizard->showUserInformations($user, $_POST['tickets_id']);
+   $wizard->showUserInformations($user);
 }

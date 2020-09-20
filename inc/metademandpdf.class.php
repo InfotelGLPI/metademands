@@ -634,7 +634,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $docitem = new Document_Item();
 
       //entities_id
-      $docitem->add(['itemtype' => "Ticket", "documents_id" => $newdoc, "items_id" => $tickets_id, "entities_id" => $entities_id]);
+      $docitem->add(['itemtype' => "Ticket",
+                     "documents_id" => $newdoc,
+                     "items_id" => $tickets_id,
+                     "entities_id" => $entities_id]);
       return $docitem;
    }
 }

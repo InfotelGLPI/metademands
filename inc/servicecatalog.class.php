@@ -87,6 +87,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       foreach ($metademands as $id => $name) {
          $list .= $name . '<br>';
       }
+      $list = Html::resume_name($list, 180);
       return $list;
    }
 
