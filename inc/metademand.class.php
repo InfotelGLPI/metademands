@@ -116,7 +116,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
       if ($dbu->countElementsInTable("glpi_plugin_metademands_tickets_metademands", ["tickets_id" => $item->fields['id']]) ||
           $dbu->countElementsInTable("glpi_plugin_metademands_tickets_tasks", ["tickets_id" => $item->fields['id']])
       ) {
-         if (!$withtemplate) {
+         if (!$withtemplate
+             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             if (($item->getType() == 'Ticket' || $item->getType() == 'PluginResourcesResource')
                 && $this->canView()) {
                return self::getTypeName(1);
@@ -867,8 +868,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $parent_fields['itilcategories_id'] = $metademand->fields['itilcategories_id'];
                $parent_fields['entities_id']       = $_SESSION['glpiactive_entity'];
                $parent_fields['status']            = CommonITILObject::INCOMING;
-               // Requester user field
-               $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
+
+
                // Existing tickets id field
                $parent_fields['id'] = $values['fields']['tickets_id'];
 
@@ -892,13 +893,24 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                }
 
+               // Requester user field
+               if ($values['fields']['_users_id_requester']) {
+                  $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
+               }
                // Add requester if empty
                if (empty($parent_fields['_users_id_requester'])) {
                   $parent_fields['_users_id_requester'] = Session::getLoginUserID();
                }
 
+               $email                                      = UserEmail::getDefaultForUser($parent_fields['_users_id_requester']);
+               $default_use_notif                          = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
+               $parent_fields['_users_id_requester_notif'] = ['use_notification'
+                                                                                  => (($email == "") ? 0 : $default_use_notif),
+                                                              'alternative_email' => ['']];
+
                // If requester is different of connected user : Force his requester group on ticket
-               if ($parent_fields['_users_id_requester'] != Session::getLoginUserID()) {
+               if (isset($parent_fields['_users_id_requester'])
+                   && $parent_fields['_users_id_requester'] != Session::getLoginUserID()) {
                   $query  = "SELECT `glpi_groups`.`id` AS _groups_id_requester
                            FROM `glpi_groups_users`
                            LEFT JOIN `glpi_groups`

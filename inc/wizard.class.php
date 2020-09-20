@@ -73,27 +73,19 @@ class PluginMetademandsWizard extends CommonDBTM {
     */
    function showUserInformations(User $user, $tickets_id) {
 
-      echo "<div class=\"form-row\">";
-
-      // If profile have no rights on requester update : display connected user info
-      if (!$this->canUpdateRequester() || !empty($tickets_id)) {
-         echo "<div class=\"bt-feature bt-col-sm-4 bt-col-md- \">";
-         echo __('Name') . "&nbsp;";
-         echo $user->getField('realname');
-         echo " / ";
-         echo __('First name') . "&nbsp;";
-         echo $user->getField('firstname');
-         echo " / ";
-      }
-
+      echo __('Name') . "&nbsp;";
+      echo $user->getField('realname');
+      echo " / ";
+      echo __('First name') . "&nbsp;";
+      echo $user->getField('firstname');
+      echo " / ";
       echo __('Login') . "&nbsp;";
       echo $user->getField('name');
-      echo " / ";
-      echo __('Phone') . "&nbsp;";
-      echo $user->getField('phone');
-      echo "</div>";
-
-      echo "</div>";
+      if (!empty($user->getField('phone'))) {
+         echo " / ";
+         echo __('Phone') . "&nbsp;";
+         echo $user->getField('phone');
+      }
    }
 
    /**
@@ -260,7 +252,8 @@ class PluginMetademandsWizard extends CommonDBTM {
             $this->showUserInformations($user, $tickets_id);
             echo "</span>";
             echo "</div>";
-            echo "</div><br/>";
+
+            echo "</div>";
          } else {
             echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
          }
@@ -601,8 +594,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<input type='hidden' name='add_metademands'>";
                   if ($metademands->fields['is_order']) {
                      if (!countElementsInTable("glpi_plugin_metademands_basketlines",
-                                                     ["plugin_metademands_metademands_id" => $metademands->fields['id'],
-                                                        "users_id" => Session::getLoginUserID()])) {
+                                               ["plugin_metademands_metademands_id" => $metademands->fields['id'],
+                                                "users_id"                          => Session::getLoginUserID()])) {
                         echo "<input type='submit' class='submit metademand_next_button' id='add_to_basket' name='add_to_basket' value='"
                              . _sx('button', 'Add to basket', 'metademands') . "'>";
                      } else {
@@ -644,12 +637,12 @@ class PluginMetademandsWizard extends CommonDBTM {
    function constructBasket($line = [], $preview = false, $metademands_id) {
 
       if (count($line) > 0) {
-         $metademands      = new PluginMetademandsMetademand();
+         $metademands = new PluginMetademandsMetademand();
          $metademands->getFromDB($metademands_id);
          $plugin = new Plugin();
          if (countElementsInTable("glpi_plugin_metademands_basketlines",
-                                   ["plugin_metademands_metademands_id" => $metademands->fields['id'],
-                                    "users_id" => Session::getLoginUserID()])) {
+                                  ["plugin_metademands_metademands_id" => $metademands->fields['id'],
+                                   "users_id"                          => Session::getLoginUserID()])) {
             echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
             echo "<input type='submit' class='submit' id='add_to_basket' name='add_to_basket' value='"
                  . _sx('button', 'Add to basket', 'metademands') . "'>";
@@ -657,21 +650,21 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          $basketline = new PluginMetademandsBasketline();
          if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
-                                                     'users_id' => Session::getLoginUserID()])) {
+                                                   'users_id'                          => Session::getLoginUserID()])) {
 
             echo "<table class='table-basket'>";;
             echo "<caption class='basket-title'>" . __('Your basket', 'metademands') . "</caption> ";
             echo "<tr class='basket-label'>";
 
             foreach ($line as $key => $data) {
-               if($data['is_basket'] == 1){
+               if ($data['is_basket'] == 1) {
                   echo "<th class='basket-th'>" . $data['label'] . "</th>";
                }
             }
             $class = "basket-th";
-//            if ($preview == false) {
-//               $class = "basket-delete-th";
-//            }
+            //            if ($preview == false) {
+            //               $class = "basket-delete-th";
+            //            }
             echo "<th class='$class'></th>";
             echo "</tr>";
 
@@ -1002,10 +995,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $cond[$type_group] = $value;
                         }
                      }
-                     $opt             = ['value'  => $value,
-                                         'entity' => $_SESSION['glpiactiveentities'],
-                                         'display' => true,
-                                         'name'   => "field[" . $data['id'] . "]",
+                     $opt             = ['value'     => $value,
+                                         'entity'    => $_SESSION['glpiactiveentities'],
+                                         'display'   => true,
+                                         'name'      => "field[" . $data['id'] . "]",
                                          'readonly'  => true,
                                          'condition' => $cond];
                      $container_class = new $data['item']();
@@ -1293,9 +1286,9 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (!empty($options['resources_id'])) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
       }
-//      else {
-//         Html::back();
-//      }
+      //      else {
+      //         Html::back();
+      //      }
    }
 
    /**
