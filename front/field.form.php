@@ -52,6 +52,10 @@ if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
    $_POST['custom_values'] = $custom_values;
 }
 
+if(isset($_POST['item']) && isset($_POST['type']) && (empty($_POST['item']) || $_POST['item'] === 0)) {
+   $_POST['item'] = $_POST['type'];
+}
+
 if (isset($_POST['type']) && $_POST['type'] == 'number') {
    $custom_values['min'] = $_POST['min'];
    $custom_values['max'] = $_POST['max'];
@@ -73,11 +77,6 @@ if (isset($_POST["add"])) {
       if (isset($_POST["default_values"])) {
          $_POST["default_values"] = PluginMetademandsField::_serialize($_POST["default_values"]);
       }
-   }
-
-   if(isset($_POST['item']) && (empty($_POST['item']) || $_POST['item'] == 0)
-      && isset($_POST['type'])) {
-      $_POST['item'] = $_POST['type'];
    }
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
@@ -120,11 +119,6 @@ if (isset($_POST["add"])) {
    }
    if (isset($_POST["value"]) && is_array($_POST["value"])) {
       $_POST["value"] = PluginMetademandsField::_serialize($_POST["value"]);
-   }
-
-   if(isset($_POST['item']) && (empty($_POST['item']) || $_POST['item'] == 0)
-      && isset($_POST['type'])) {
-      $_POST['item'] = $_POST['type'];
    }
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
