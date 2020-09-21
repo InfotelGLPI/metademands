@@ -42,8 +42,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
          foreach ($values as $key => $value) {
 
-            if ($v['type'] == $value['name']
-                || $v['item'] == $value['name']) {
+            if ($v['id'] == $value['plugin_metademands_fields_id']) {
 
                switch ($v['type']) {
 

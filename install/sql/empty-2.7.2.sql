@@ -345,5 +345,5 @@ CREATE TABLE `glpi_plugin_metademands_basketlines` (
     `value` text COLLATE utf8_unicode_ci,
     `value2` text COLLATE utf8_unicode_ci,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`,`line`,`name`)
+    UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`,`plugin_metademands_fields_id`,`line`,`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
