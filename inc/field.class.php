@@ -138,12 +138,14 @@ class PluginMetademandsField extends CommonDBChild {
          return false;
       }
 
+      $metademand = new PluginMetademandsMetademand();
+
       if ($ID > 0) {
          $this->check($ID, READ);
+         $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
       } else {
          // Create item
          $item = $options['item'];
-         $metademand = new PluginMetademandsMetademand();
          $canedit    = $metademand->can($item->fields['id'], UPDATE);
          $this->getEmpty();
          $this->fields["plugin_metademands_metademands_id"] = $item->fields['id'];
@@ -345,10 +347,14 @@ class PluginMetademandsField extends CommonDBChild {
 
       echo "</td>";
       // Is_Basket Fields
-      echo "<td>" . __('Display into the basket ?') . "</td>";
-      echo "<td>";
-      Dropdown::showYesNo("is_basket", $this->fields["is_basket"]);
-      echo "</td>";
+      if ($metademand->fields['is_order'] == 1) {
+         echo "<td>" . __('Display into the basket ?') . "</td>";
+         echo "<td>";
+         Dropdown::showYesNo("is_basket", $this->fields["is_basket"]);
+         echo "</td>";
+      } else {
+         echo "<td colspan='2'></td>";
+      }
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
