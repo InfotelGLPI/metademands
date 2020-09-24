@@ -422,6 +422,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
             echo "<input type='hidden' name='type' value='" . Ticket::DEMAND_TYPE . "'>";
             Dropdown::show('ITILCategory', $opt);
             break;
+         case 'tickettemplates_id':
+            $opt['condition'] = [];
+            $opt['value']  = $this->fields['tickettemplates_id'];
+            $opt['entity'] = $_SESSION['glpiactiveentities'];
+            TicketTemplate::dropdown($opt);
+            break;
          case 'icon':
             $opt = [
                'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
@@ -721,7 +727,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
 
-      if (!empty($metademands_id)) {
+      $hidden = false;
+      if(isset($_SESSION['metademands_hide'])){
+         $hidden = in_array($metademands_id,$_SESSION['metademands_hide']);
+      }
+      if (!empty($metademands_id) && !$hidden) {
          // get normal form data
          $field     = new PluginMetademandsField();
          $form_data = $field->find(['plugin_metademands_metademands_id' => $metademands_id],
@@ -858,7 +868,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $parent_fields = ['content' => ''];
                if (count($line['form']) && isset($values['fields'])) {
                   $parent_fields = $this->formatFields($line['form'], $metademands_id, $values['fields']);
-                  //                  $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
+                  $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
 
                }
 
@@ -935,7 +945,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
 
                // Get predefined ticket fields
-               $parent_ticketfields = $this->formatTicketFields($form_metademands_id);
+               $parent_ticketfields = $this->formatTicketFields($form_metademands_id,$metademand->getField('tickettemplates_id'));
 
                // Case of simple ticket convertion
                // Ticket does not exist : ADD
@@ -1395,13 +1405,16 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @return array
     */
-   function formatTicketFields($metademands_id) {
+   function formatTicketFields($metademands_id, $tickettemplates_id) {
       $result = [];
 
       $ticket_field        = new PluginMetademandsTicketField();
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       $tt = new TicketTemplate();
+      if($tickettemplates_id != 0){
+         $tt->getFromDB($tickettemplates_id);
+      }
       if (count($parent_ticketfields)) {
          $allowed_fields = $tt->getAllowedFields(true, true);
          foreach ($parent_ticketfields as $value) {
@@ -1435,10 +1448,15 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       foreach ($tickettasks_data as $son_ticket_data) {
 
-         if ($son_ticket_data['level'] == $tasklevel
-             && PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $ancestor_tickets_id)) {
+         if(in_array($son_ticket_data['tickettasks_id'],$_SESSION['metademands_hide'])){
+            continue;
+         }
+         if ($son_ticket_data['level'] == $tasklevel) {
 
             // Skip ticket creation if not allowed by metademand form
+            if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $ancestor_tickets_id)) {
+               continue;
+            }
 
             // Field format for ticket
             foreach ($son_ticket_data as $field => $value) {

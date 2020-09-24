@@ -122,7 +122,8 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
    static function getSonMetademandTaskId($metademands_id) {
       global $DB;
 
-      $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id
+      $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id,
+                       `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id
                FROM `glpi_plugin_metademands_metademandtasks`
                LEFT JOIN `glpi_plugin_metademands_tasks`
                   ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id`)
@@ -131,8 +132,9 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
 
       if ($DB->numrows($result)) {
          while ($data = $DB->fetch_assoc($result)) {
-            return $data['tasks_id'];
+            $res[$data['metademands_id']] = $data['tasks_id'];
          }
+         return $res;
       }
    }
 

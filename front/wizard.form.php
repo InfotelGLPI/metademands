@@ -216,7 +216,9 @@ if (isset($_POST['next'])) {
                   }
                }
 
-               $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id']);
+//               $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id']);
+               $metademands->getFromDB($_POST['form_metademands_id']);
+               $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id'],$metademands->getField('tickettemplates_id'));
                if (count($ticketfields_data)) {
                   if (!isset($ticketfields_data['entities_id'])) {
                      $ticketfields_data['entities_id'] = $_SESSION['glpiactive_entity'];
@@ -326,6 +328,13 @@ if (isset($_POST['next'])) {
              && $_POST['step'] == PluginMetademandsMetademand::STEP_LIST
              && Session::haveRight("plugin_servicecatalog", READ)) {
             Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
+         } else if($_POST['step'] == 2){
+            if(isset($_SESSION['metademands_hide'])){
+               unset($_SESSION['metademands_hide']);
+            }
+            if(isset($_SESSION['son_meta'])){
+               unset($_SESSION['son_meta']);
+            }
          }
          $wizard->showWizard($_POST['step'], $_POST['metademands_id']);
       }
@@ -470,7 +479,9 @@ if (isset($_POST['next'])) {
       } else {
          Html::helpHeader(__('Create a demand', 'metademands'));
       }
-
+      if(isset($_SESSION['metademands_hide'])){
+         unset($_SESSION['metademands_hide']);
+      }
       $wizard->showWizard($_GET['step'], $_GET['metademands_id'], false, $_GET['tickets_id'], $_GET['resources_id'], $_GET['resources_step']);
 
       if (Session::getCurrentInterface() == 'central') {

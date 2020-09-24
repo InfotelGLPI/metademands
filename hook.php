@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once (GLPI_ROOT . "/plugins/metademands/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
-      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/empty-2.6.5.sql");
+      $DB->runFile(GLPI_ROOT."/plugins/metademands/install/sql/empty-2.6.6.sql");
    }
 
    if (!$DB->tableExists("glpi_plugin_metademands_itilapplications") || !$DB->tableExists("glpi_plugin_metademands_itilenvironments")) {
@@ -97,6 +97,21 @@ function plugin_metademands_install() {
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "is_basket") &&
        !$DB->fieldExists("glpi_plugin_metademands_metademands", "is_order")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.6.5.sql");
+   }
+
+   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_link")) {
+      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.6.6.sql");
+      $field = new PluginMetademandsField();
+      $fields = $field->find();
+      foreach ($fields as $f){
+         if(!empty($f["hidden_link"])){
+            $array = [];
+            $array[] = $f["hidden_link"];
+            $update["id"] = $f["id"];
+            $update["hidden_link"] = json_encode($array);
+            $field->update($update);
+         }
+      }
    }
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);

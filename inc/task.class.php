@@ -666,7 +666,8 @@ class PluginMetademandsTask extends CommonTreeDropdown {
     * @throws \GlpitestSQLError
     * @throws \GlpitestSQLError
     */
-   static function showAllTasksDropdown($metademands_id, $selected_value) {
+   static function showAllTasksDropdown($metademands_id, $selected_value, $display = true){
+
 
       $tasks = new self();
       $tasks_data = $tasks->getTasks($metademands_id);
@@ -681,7 +682,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          }
       }
 
-      Dropdown::showFromArray('plugin_metademands_tasks_id', $data, ['value' => $selected_value, 'tree' => true]);
+      return Dropdown::showFromArray('plugin_metademands_tasks_id[]', $data, ['value' => $selected_value, 'tree' => true, 'display' => $display]);
    }
 
    /**

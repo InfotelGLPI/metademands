@@ -150,6 +150,7 @@
                 $('#custom_values' + count).remove();
                 $('#comment_values' + count).remove();
                 $('#default_values' + count).remove();
+                $('#' + field_id + count).remove();
                 $('#count_custom_values').val(parseInt(count) - 1);
 
 
