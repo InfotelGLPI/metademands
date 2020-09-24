@@ -1508,10 +1508,18 @@ class PluginMetademandsWizard extends CommonDBTM {
             Dropdown::showFromArray("field[" . $data['id'] . "]", $option, ['value' => $value]);
             break;
          case 'upload':
-            Html::file(['filecontainer' => 'fileupload_info_ticket',
-                        'editor_id'     => '',
-                        'showtitle'     => false,
-                        'multiple'      => true]);
+            if ($data["max_upload"] > 1){
+               Html::file(['filecontainer' => 'fileupload_info_ticket',
+                           'editor_id'     => '',
+                           'showtitle'     => false,
+                           'multiple'      => true]);
+            }else{
+               Html::file(['filecontainer' => 'fileupload_info_ticket',
+                           'editor_id'     => '',
+                           'showtitle'     => false
+                           ]);
+            }
+
             break;
 
          case 'parent_field':
@@ -1701,7 +1709,10 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       $checkKo             = [];
       $checkKoDateInterval = [];
+      $checkNbDoc = [];
+      $checkRegex = [];
       $msg                 = [];
+      $msg2                 = [];
 
       if ($value['type'] != 'parent_field') {
          // Check fields empty
@@ -1765,18 +1776,48 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check File upload field
          if ($value['type'] == "upload"
              && $value['is_mandatory']) {
-            if (isset($fields['_filename']['tmp_name'])) {
-               if (empty($fields['_filename']['tmp_name'][0])) {
+            if (isset($_POST['_filename'])) {
+               if (empty($_POST['_filename'][0])) {
                   $msg[]     = $value['label'];
                   $checkKo[] = 1;
                }
+            }else{
+               $msg[]     = $value['label'];
+               $checkKo[] = 1;
             }
          }
+
+         // Check File upload field
+         if ($value['type'] == "upload" && !empty($value["max_upload"])) {
+            if ($value["max_upload"] < count($_POST['_filename'])) {
+               $msg2[]     = $value['label'];
+               $checkNbDoc[] = 1;
+            }
+         }
+
+         // Check text with regex
+         if ($value['type'] == "text" && !empty($value["regex"])) {
+
+            if (!preg_match(Toolbox::stripslashes_deep($value['regex']),$fields['value'])) {
+               $msg3[]     = $value['label'];
+               $checkRegex[] = 1;
+            }
+         }
+
+
 
       }
       if (in_array(1, $checkKo)
           || in_array(1, $checkKoDateInterval)) {
          Session::addMessageAfterRedirect(sprintf(__("Mandatory fields are not filled. Please correct: %s"), implode(', ', $msg)), false, ERROR);
+         return false;
+      }
+      if(in_array(1,$checkNbDoc)){
+         Session::addMessageAfterRedirect(sprintf(__("Too much documents are upload, max %s. Please correct: %s","metademands"),$value["max_upload"], implode(', ', $msg2)), false, ERROR);
+         return false;
+      }
+      if(in_array(1,$checkRegex)){
+         Session::addMessageAfterRedirect(sprintf(__("Fileds don't match with regex:  %s. Please correct: %s","metademands"),$value["regex"], implode(', ', $msg3)), false, ERROR);
          return false;
       }
 

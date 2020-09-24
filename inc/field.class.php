@@ -245,6 +245,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'item'           => $this->fields['item'],
                      'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                      'fields_link'    => $this->fields['fields_link'],
+                     'max_upload'    => $this->fields['max_upload'],
+                     'regex'    => $this->fields['regex'],
 //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'    => $this->fields['hidden_link'],
                      'custom_values'  => $this->fields['custom_values'],
@@ -300,6 +302,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'type'           => $this->fields['type'],
                      'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                      'fields_link'    => $this->fields['fields_link'],
+                     'max_upload'    => $this->fields['max_upload'],
+                     'regex'    => $this->fields['regex'],
 //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'    => $this->fields['hidden_link'],
                      'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
@@ -349,6 +353,8 @@ class PluginMetademandsField extends CommonDBChild {
                          'default_values' => $this->fields['default_values'],
                          'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                          'fields_link'    => $this->fields['fields_link'],
+                         'max_upload'    => $this->fields['max_upload'],
+                         'regex'    => $this->fields['regex'],
                          'hidden_link'    => $this->fields['hidden_link'],
 //                         'fields_display' => $this->fields['fields_display'],
                          'item'           => $this->fields['item'],
@@ -1230,7 +1236,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
       }
 
-      if (isset($params['check_value']) && in_array($params['value'], $allowed_types)) {
+      if ((isset($params['check_value']) || $params['value'] == 'upload' || $params['value'] == 'text') && in_array($params['value'], $allowed_types)) {
          $metademands = new PluginMetademandsMetademand();
          $metademands->getFromDB($options['metademands_id']);
 
@@ -1255,6 +1261,48 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                }
 
+               if($params["value"] == 'upload') {
+
+                  echo "<tr><td>";
+                  echo "<table class='metademands_show_custom_fields' style='border-bottom: 1px dashed black'>";
+                  echo "<tr><td>";
+                  echo __('Multiple document ', 'metademands');
+                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  $data[0] = Dropdown::EMPTY_VALUE;
+                  for ($i = 1; $i <= 50; $i++) {
+                     $data[$i] = $i;
+                  }
+
+
+                  echo Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => false));
+                  //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
+                  echo "</td></tr>";
+                  echo "</table>";
+                  echo "</td></tr>";
+               }
+               if($params["value"] == 'text') {
+
+                  echo "<tr><td>";
+                  echo "<table class='metademands_show_custom_fields' style='border-bottom: 1px dashed black'>";
+                  echo "<tr><td>";
+                  echo __('regex ', 'metademands');
+                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+
+
+
+//                  echo Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => false));
+                  echo '<input type="text" name="regex"  value="' . (Toolbox::stripslashes_deep($params["regex"])) . '" size="50"/>';
+                  //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
+                  echo "</td></tr>";
+                  echo "</table>";
+                  echo "</td></tr>";
+               }
                if($nb == 0){
                   echo $this->addNewOpt($url);
                } else{
@@ -1507,17 +1555,27 @@ class PluginMetademandsField extends CommonDBChild {
 
             break;
 
-//         case 'upload':
-//            // Show field display
-//            echo "<tr><td>";
-//            echo __('Display if this selected field is filled', 'metademands');
-//            echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-//            echo '</td>';
-//            echo "<td>";
-////            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-//            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
-//            echo "</td></tr>";
-//            break;
+         case 'upload':
+            // Show field display
+//            if($nbOpt == 0){
+//               $html .= "<tr><td>";
+//               $html .= __('Multiple document ', 'metademands');
+////               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+//               $html .= '</td>';
+//               $html .= "<td>";
+//               $data[0] = Dropdown::EMPTY_VALUE;
+//               for($i =1;$i<=50;$i++){
+//                  $data[$i] = $i;
+//               }
+//
+//
+//               $html .= Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => $display));
+//               //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+//               //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
+//               $html .= "</td></tr>";
+//            }
+
+            break;
       }
 
       return $html;

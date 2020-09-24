@@ -78,6 +78,8 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
   `plugin_metademands_tasks_id` VARCHAR(255) DEFAULT NULL ,
   `fields_link` int(11) NOT NULL default '0',
   `hidden_link` varchar(255) NOT NULL default '0',
+  `max_upload` INT(11) NOT NULL DEFAULT 0,
+  `regex` VARCHAR(255) NOT NULL DEFAULT '',
   `color` varchar(255) default NULL,
   `parent_field_id` int(11) NOT NULL default '0',
   `row_display` tinyint(1) default 0,
