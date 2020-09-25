@@ -1276,7 +1276,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       $upload = "";
       if ($data['type'] == "upload") {
-         $upload = " (" . Document::getMaxUploadSize() . ")";
+         $upload = "( ".sprintf(__("Maximum number of documents : %s ","metademands"),$data["max_upload"]).") (" . Document::getMaxUploadSize() . ")";
       }
       if ($data['is_mandatory']) {
          $required = "red";
@@ -1526,6 +1526,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             Dropdown::showFromArray("field[" . $data['id'] . "]", $option, ['value' => $value]);
             break;
          case 'upload':
+
             if ($data["max_upload"] > 1){
                Html::file(['filecontainer' => 'fileupload_info_ticket',
                            'editor_id'     => '',
@@ -1816,7 +1817,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check text with regex
          if ($value['type'] == "text" && !empty($value["regex"])) {
 
-            if (!preg_match(Toolbox::stripslashes_deep($value['regex']),$fields['value'])) {
+            if (!preg_match(($value['regex']),$fields['value'])) {
                $msg3[]     = $value['label'];
                $checkRegex[] = 1;
             }
@@ -1835,7 +1836,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          return false;
       }
       if(in_array(1,$checkRegex)){
-         Session::addMessageAfterRedirect(sprintf(__("Fileds don't match with regex:  %s. Please correct: %s","metademands"),$value["regex"], implode(', ', $msg3)), false, ERROR);
+         Session::addMessageAfterRedirect(sprintf(__("Field do not correspond to the expected format. Please correct: %s","metademands"), implode(', ', $msg3)), false, ERROR);
          return false;
       }
 
