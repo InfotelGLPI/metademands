@@ -75,9 +75,11 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
   `is_mandatory` int(1) NOT NULL default '0',
   `plugin_metademands_fields_id` int(11) NOT NULL default '0',
   `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
-  `plugin_metademands_tasks_id` int(11) NOT NULL default '0',
+  `plugin_metademands_tasks_id` VARCHAR(255) DEFAULT NULL ,
   `fields_link` int(11) NOT NULL default '0',
-  `fields_display` int(11) NOT NULL default '0',
+  `hidden_link` varchar(255) NOT NULL default '0',
+  `max_upload` INT(11) NOT NULL DEFAULT 0,
+  `regex` VARCHAR(255) NOT NULL DEFAULT '',
   `color` varchar(255) default NULL,
   `parent_field_id` int(11) NOT NULL default '0',
   `row_display` tinyint(1) default 0,
@@ -191,6 +193,7 @@ CREATE TABLE `glpi_plugin_metademands_tickets_metademands` (
   `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
   `tickets_id` int(11) NOT NULL default '0',
   `parent_tickets_id` int(11) NOT NULL default '0',
+  `tickettemplates_id` INT(11) NOT NULL DEFAULT '0'
   PRIMARY KEY (`id`),
   KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
   KEY `tickets_id` (`tickets_id`)
@@ -345,5 +348,5 @@ CREATE TABLE `glpi_plugin_metademands_basketlines` (
     `value` text COLLATE utf8_unicode_ci,
     `value2` text COLLATE utf8_unicode_ci,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`,`line`,`name`)
+    UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`,`plugin_metademands_fields_id`,`line`,`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
