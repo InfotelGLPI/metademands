@@ -611,6 +611,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<input type='hidden' name='update_fields'>";
                if ($step - 1 >= count($metademands_data)) {
                   echo "<input type='hidden' name='add_metademands'>";
+                  echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
+                  echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
+                  echo "</a>";
                   if ($metademands->fields['is_order']) {
                      if (!countElementsInTable("glpi_plugin_metademands_basketlines",
                                                ["plugin_metademands_metademands_id" => $metademands->fields['id'],
@@ -738,6 +741,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             } else {
                if ($data['row_display'] == 1) {
                   echo "<div class=\"form-group col-md-11\">";
+                  $count++;
                } else {
                   echo "<div class=\"form-group col-md-5\">";
                }
@@ -823,7 +827,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (count($line) > 0) {
          $metademands = new PluginMetademandsMetademand();
          $metademands->getFromDB($metademands_id);
-         $plugin = new Plugin();
+
          if (countElementsInTable("glpi_plugin_metademands_basketlines",
                                   ["plugin_metademands_metademands_id" => $metademands->fields['id'],
                                    "users_id"                          => Session::getLoginUserID()])) {
@@ -839,8 +843,10 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "<table class='table-basket'>";;
             echo "<caption class='basket-title'>" . __('Your basket', 'metademands') . "</caption> ";
             echo "<tr class='basket-label'>";
-
             foreach ($line as $key => $data) {
+               if ($data['item'] == 'informations') {
+                  continue;
+               }
                if ($data['is_basket'] == 1) {
                   echo "<th class='basket-th'>" . $data['label'] . "</th>";
                }
@@ -987,6 +993,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             } else {
                switch ($data['item']) {
                   case 'user':
+                     echo "<br>";
                      User::dropdown(['name'   => "field[" . $data['id'] . "]",
                                      'entity' => $_SESSION['glpiactiveentities'],
                                      'right'  => 'all',
@@ -1002,6 +1009,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         echo "<input type='hidden' name='plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
                         echo "<span>";
                      } else {
+                        echo "<br>";
                         $metademand = new PluginMetademandsMetademand();
                         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
                         $values = json_decode($metademand->getField('itilcategories_id'));
@@ -1016,20 +1024,24 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                      break;
                   case 'usertitle':
+                     echo "<br>";
                      $titlerand = mt_rand();
                      UserTitle::dropdown(['name' => "field[" . $data['id'] . "]", 'rand' => $titlerand]);
                      break;
                   case 'usercategory':
+                     echo "<br>";
                      $catrand = mt_rand();
                      UserCategory::dropdown(['name' => "field[" . $data['id'] . "]", 'rand' => $catrand]);
                      break;
                   case 'PluginMetademandsITILApplication' :
+                     echo "<br>";
                      $opt = ['value'  => $value,
                              'entity' => $_SESSION['glpiactiveentities'],
                              'name'   => "field[" . $data['id'] . "]"];
                      PluginMetademandsITILApplication::dropdown($opt);
                      break;
                   case 'PluginMetademandsITILEnvironment' :
+                     echo "<br>";
                      $opt = ['value'  => $value,
                              'entity' => $_SESSION['glpiactiveentities'],
                              'name'   => "field[" . $data['id'] . "]"];
@@ -1037,6 +1049,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      break;
                   default:
                      $cond = [];
+                     echo "<br>";
                      if (!empty($data['custom_values']) && $data['item'] == 'group') {
                         $options = PluginMetademandsField::_unserialize($data['custom_values']);
                         foreach ($options as $type_group => $value) {
@@ -1058,7 +1071,9 @@ class PluginMetademandsWizard extends CommonDBTM {
          case 'text':
             echo "<input type='text' name='field[" . $data['id'] . "]' value='" . $value . "' class='form-control form-control-sm' id='field[" . $data['id'] . "]' placeholder=\"" . $data['comment'] . "\">";
             break;
-
+         case 'informations':
+            echo nl2br($data['comment']);
+            break;
          case 'link':
             if (!empty($data['custom_values'])) {
                $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
@@ -1173,6 +1188,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $option[1] = __('No');
             $option[2] = __('Yes');
             $value     = $data['custom_values'];
+            echo "<br>";
             Dropdown::showFromArray("field[" . $data['id'] . "]", $option, ['value' => $value]);
             break;
          case 'upload':

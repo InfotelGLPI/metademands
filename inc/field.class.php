@@ -41,7 +41,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $types = ['PluginMetademandsMetademand'];
 
-   static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
+   static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
    static $list_items  = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'itilcategory',
                           'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'appliance'];
@@ -638,6 +638,8 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Link');
          case 'number':
             return __('Number', 'metademands');
+         case 'informations':
+            return __('Informations', 'metademands');
          default:
             if (isset($PLUGIN_HOOKS['metademands'])) {
                $plugin = new Plugin();

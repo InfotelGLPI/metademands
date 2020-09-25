@@ -842,9 +842,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
          // Task only for demands
          if (isset($metademands->fields['type'])
              && $metademands->fields['type'] == Ticket::DEMAND_TYPE) {
-            $tasks                                  = new PluginMetademandsTask();
+            $tasks      = new PluginMetademandsTask();
             $tasks_data = $tasks->getTasks($metademands_id,
-                                          ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]);
+                                           ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]);
 
             $forms[$step][$metademands_id]['tasks'] = $tasks_data;
          }
@@ -1078,12 +1078,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
                   }
 
-                  if (isset($_POST['plugin_servicecatalog_itilcategories_id']) && $_POST['plugin_servicecatalog_itilcategories_id'] > 0) {
+                  if (isset($_POST['plugin_servicecatalog_itilcategories_id'])
+                      && $_POST['plugin_servicecatalog_itilcategories_id'] > 0) {
                      $input['itilcategories_id'] = $_POST['plugin_servicecatalog_itilcategories_id'];
                   }
 
                   $input = Toolbox::addslashes_deep($input);
-
+                  //ADD TICKET
                   $parent_tickets_id = $ticket->add($input);
                   if ($docitem == null && $config['create_pdf']) {
                      //Génération du document PDF
@@ -1218,9 +1219,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       foreach ($parent_ticketfields as $key => $val) {
          switch ($key) {
-            case 'name' :
-               $parent_fields[$key] .= ' ' . $val;
-               break;
+//            case 'name' :
+//               $parent_fields[$key] .= ' ' . $val;
+//               break;
             //            case 'content' :
             //               $parent_fields[$key] .= '\r\n' . $val;
             //               break;
@@ -1522,7 +1523,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
       if (count($parent_ticketfields)) {
          $allowed_fields = $tt->getAllowedFields(true, true);
          foreach ($parent_ticketfields as $value) {
-            if (isset($allowed_fields[$value['num']]) && (!in_array($allowed_fields[$value['num']], PluginMetademandsTicketField::$used_fields))) {
+            if (isset($allowed_fields[$value['num']])
+                && (!in_array($allowed_fields[$value['num']], PluginMetademandsTicketField::$used_fields))) {
                $value['item']          = $allowed_fields[$value['num']];
                $result[$value['item']] = json_decode($value['value'], true);
             }
@@ -1665,7 +1667,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                if ($child_tasks_data) {
                   foreach ($child_tasks_data as $child_tasks_id) {
                      $tasks_data = $task->getTasks($data['plugin_metademands_metademands_id'],
-                                                ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]);
+                                                   ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]);
 
                      // Get parent ticket data
                      $ticket->getFromDB($tickets_data['id']);

@@ -251,7 +251,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          Dropdown::show('Group', ['name'      => 'groups_id_observer',
                                        'value'     => isset($values['groups_id_observer']) ? $values['groups_id_observer'] : 0,
                                        'entity'    => $metademands->fields["entities_id"],
-                                       'condition' => ['is_requester' => 1]]);
+                                       'condition' => ['is_watcher' => 1]]);
          echo "</td>";
       } else {
          echo "<td>";
