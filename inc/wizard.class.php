@@ -1817,7 +1817,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          return false;
       }
       if(in_array(1,$checkRegex)){
-         Session::addMessageAfterRedirect(sprintf(__("Fileds don't match with regex:  %s. Please correct: %s","metademands"),$value["regex"], implode(', ', $msg3)), false, ERROR);
+         Session::addMessageAfterRedirect(sprintf(__("Field do not correspond to the expected format. Please correct: %s","metademands"), implode(', ', $msg3)), false, ERROR);
          return false;
       }
 
