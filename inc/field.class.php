@@ -1266,7 +1266,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "<tr><td>";
                   echo "<table class='metademands_show_custom_fields' style='border-bottom: 1px dashed black'>";
                   echo "<tr><td>";
-                  echo __('Multiple document ', 'metademands');
+                  echo __('Multiple documents', 'metademands');
                   //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";
@@ -1288,7 +1288,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "<tr><td>";
                   echo "<table class='metademands_show_custom_fields' style='border-bottom: 1px dashed black'>";
                   echo "<tr><td>";
-                  echo __('regex ', 'metademands');
+                  echo __('Regex', 'metademands');
                   //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";

@@ -138,10 +138,10 @@ if (isset($_POST["add"])) {
       $_POST["value"] = PluginMetademandsField::_serialize($_POST["value"]);
    }
 
-   $_POST["check_value"] = $field->_serialize($_POST["check_value"]);
-   $_POST["plugin_metademands_tasks_id"] = $field->_serialize($_POST["plugin_metademands_tasks_id"]);
-   $_POST["fields_link"] = $field->_serialize($_POST["fields_link"]);
-   $_POST["hidden_link"] = $field->_serialize($_POST["hidden_link"]);
+   $_POST["check_value"] = PluginMetademandsField::_serialize($_POST["check_value"]);
+   $_POST["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
+   $_POST["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
+   $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
 
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
