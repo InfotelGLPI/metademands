@@ -1266,7 +1266,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "<tr><td>";
                   echo "<table class='metademands_show_custom_fields' style='border-bottom: 1px dashed black'>";
                   echo "<tr><td>";
-                  echo __('Multiple documents', 'metademands');
+                  echo __('Number of documents allowed', 'metademands');
                   //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";
@@ -1630,9 +1630,9 @@ class PluginMetademandsField extends CommonDBChild {
       $data = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
          if($idF != $id){
-            $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
+            $data[$id] = urldecode(html_entity_decode($value['label']));
             if (!empty($value['label2'])) {
-               $data[$id] = ' '.utf8_decode(urldecode(html_entity_decode($value['label2'])));
+               $data[$id] = ' '.urldecode(html_entity_decode($value['label2']));
             }
          }
 
