@@ -53,6 +53,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
                      case 'plugin_metademands_metademands_id':
                      case 'plugin_metademands_fields_id':
                      case 'link':
+                     case 'informations':
                         break;
 
                      case 'text':
@@ -199,6 +200,9 @@ class PluginMetademandsBasketline extends CommonDBTM {
       $line = $DB->result($result, 0, 0) + 1;
 
       foreach ($content as $values) {
+         if ($values['item'] == "informations") {
+            continue;
+         }
          //TODO drop if empty datas ??
          $name = $values['item'];
          if ($name == 0 || $name == "" ||  $values['type'] == "dropdown_multiple") {

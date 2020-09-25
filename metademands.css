@@ -78,6 +78,11 @@
    float:left;
 }
 
+a.metademand_middle_button{
+   position: absolute;
+   left: 50%;
+}
+
 .metademand_next_button{
    float:right;
 }

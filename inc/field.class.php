@@ -41,7 +41,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $types = ['PluginMetademandsMetademand'];
 
-   static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime',
+   static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
    static $list_items  = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other',
                           'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment',];
@@ -115,7 +115,7 @@ class PluginMetademandsField extends CommonDBChild {
       $field = new self();
 
       if (in_array($item->getType(), self::getTypes(true))) {
-         $field->showForm(0, $item);
+         $field->showForm(0, ["item" => $item]);
       }
       return true;
    }
@@ -124,7 +124,6 @@ class PluginMetademandsField extends CommonDBChild {
     * Print the field form
     *
     * @param       $ID integer ID of the item
-    * @param array $item
     * @param       $options array
     *     - target filename : where to go when done.
     *     - withtemplate boolean : template or basic item
@@ -132,7 +131,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return bool (display)
     * @throws \GlpitestSQLError
     */
-   function showForm($ID, $item = [], $options = [""]) {
+   function showForm($ID, $options = []) {
       global $CFG_GLPI;
 
       if (!$this->canview()) {
@@ -142,11 +141,14 @@ class PluginMetademandsField extends CommonDBChild {
          return false;
       }
 
+      $metademand = new PluginMetademandsMetademand();
+
       if ($ID > 0) {
          $this->check($ID, READ);
+         $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
       } else {
          // Create item
-         $metademand = new PluginMetademandsMetademand();
+         $item = $options['item'];
          $canedit    = $metademand->can($item->fields['id'], UPDATE);
          $this->getEmpty();
          $this->fields["plugin_metademands_metademands_id"] = $item->fields['id'];
@@ -334,11 +336,15 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
 
       // Is_Basket Fields
-      echo "<td>" . __('Display into the basket ','metademands') . "</td>";
-      echo "<td>";
-      Dropdown::showYesNo("is_basket", $this->fields["is_basket"]);
-      echo "</td>";
-      echo "</tr>";
+      // Is_Basket Fields
+      if ($metademand->fields['is_order'] == 1) {
+         echo "<td>" . __('Display into the basket', 'metademads') . "</td>";
+         echo "<td>";
+         Dropdown::showYesNo("is_basket", $this->fields["is_basket"]);
+         echo "</td>";
+      } else {
+         echo "<td colspan='2'></td>";
+      }
 
       echo "<tr class='tab_bg_1'>";
       // SHOW SPECIFIC VALUES
@@ -635,6 +641,8 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Link');
          case 'number':
             return __('Number', 'metademands');
+         case 'informations':
+            return __('Informations', 'metademands');
          default:
             if (isset($PLUGIN_HOOKS['metademands'])) {
                $plugin = new Plugin();
