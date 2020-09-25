@@ -1807,7 +1807,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
          // Check File upload field
-         if ($value['type'] == "upload" && !empty($value["max_upload"])) {
+         if ($value['type'] == "upload" && !empty($value["max_upload"]) && isset($_POST['_filename'])) {
             if ($value["max_upload"] < count($_POST['_filename'])) {
                $msg2[]     = $value['label'];
                $checkNbDoc[] = 1;

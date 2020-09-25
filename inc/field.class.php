@@ -1304,7 +1304,7 @@ class PluginMetademandsField extends CommonDBChild {
 
 
 //                  echo Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => false));
-                  echo '<input type="text" name="regex"  value="' . (Toolbox::stripslashes_deep($params["regex"])) . '" size="50"/>';
+                  echo '<input type="text" name="regex"  value="' . ($params["regex"]) . '" size="50"/>';
                   //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
                   //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
                   echo "</td></tr>";
