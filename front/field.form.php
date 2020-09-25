@@ -36,6 +36,25 @@ if (empty($_GET["id"])) {
 
 if (!isset($_POST["check_value"])) {
    $_POST["check_value"] = "";
+} else {
+   $field = new PluginMetademandsField();
+//   if(is_string($_POST["id"])){
+//      $_POST["id"] = intval($_POST["id"]);
+//   }
+   $field->getFromDB($_POST["id"]);
+   foreach (PluginMetademandsField::_unserialize($field->fields["hidden_link"]) as $hidden_link){
+      $update["id"] = $hidden_link;
+      $update["to_hide"] = 0;
+      $field->update($update);
+   }
+   foreach ($_POST["hidden_link"] as $idField){
+      $update = [];
+      $update["id"] = $idField;
+      $update["to_hide"] = 1;
+      $field->update($update);
+   }
+
+
 }
 
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
@@ -118,6 +137,11 @@ if (isset($_POST["add"])) {
    if (isset($_POST["value"]) && is_array($_POST["value"])) {
       $_POST["value"] = PluginMetademandsField::_serialize($_POST["value"]);
    }
+
+   $_POST["check_value"] = PluginMetademandsField::_serialize($_POST["check_value"]);
+   $_POST["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
+   $_POST["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
+   $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
 
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
