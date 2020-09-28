@@ -82,12 +82,12 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getMenuComment() {
 
       $list        = "";
-      $metademands = PluginMetademandsWizard::selectMetademands();
+      $metademands = PluginMetademandsWizard::selectMetademands(" LIMIT 5");
 
       foreach ($metademands as $id => $name) {
          $list .= $name . '<br>';
       }
-      $list = Html::resume_name($list, 180);
+      $list .= "(...)";
       return $list;
    }
 
@@ -131,7 +131,8 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
 
       $metademands = PluginMetademandsWizard::selectMetademands();
       $plugin      = new Plugin();
-      if ($plugin->isActivated("servicecatalog") && ($plugin->getInfo('servicecatalog')["version"] >= "1.6.0")) {
+      if ($plugin->isActivated("servicecatalog")
+          && ($plugin->getInfo('servicecatalog')["version"] >= "1.6.0")) {
          //echo '<div class="btnsc-normal fa-back" id="click">';
 
 

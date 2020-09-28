@@ -388,10 +388,12 @@ class PluginMetademandsWizard extends CommonDBTM {
    }
 
    /**
+    * @param string $limit
+    *
     * @return array
     * @throws \GlpitestSQLError
     */
-   static function selectMetademands() {
+   static function selectMetademands($limit = "") {
       global $DB;
 
 
@@ -401,7 +403,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                    WHERE is_order = 1  OR `glpi_plugin_metademands_metademands`.`itilcategories_id` <> ''
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
                      . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
-      $query       .= "AND is_active ORDER BY `name`";
+      $query       .= "AND is_active ORDER BY `name` $limit";
       $metademands = [];
       $result      = $DB->query($query);
       if ($DB->numrows($result)) {
