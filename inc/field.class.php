@@ -1437,7 +1437,10 @@ class PluginMetademandsField extends CommonDBChild {
 //               } else{
                   $name = "check_value[]";
 //               }
-               $html .= $params['value']::Dropdown(["name" => $name, "value" =>  $params['check_value'], "display" => $display,"addicon"=>false]);
+               $html .= $params['value']::Dropdown(["name" => $name,
+                                                    "value" =>  $params['check_value'],
+                                                    "display" => $display,
+                                                    "addicon"=>false]);
             } else{
                $elements[0] = Dropdown::EMPTY_VALUE;
                if(is_array(json_decode($params['custom_values'],true))){
