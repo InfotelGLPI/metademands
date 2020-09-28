@@ -189,6 +189,9 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "<i class='fa-2x fas $icon'></i>&nbsp;";
          echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
+         if (Session::haveRight('plugin_metademands', UPDATE)) {
+            echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'><i class='fas fa-wrench'></i></a>";
+         }
          echo "</h4>";
          if ($meta->getFromDB($parameters['metademands_id'])) {
             echo "<label><i>" . nl2br($meta->fields['comment']) . "</i></label>";
