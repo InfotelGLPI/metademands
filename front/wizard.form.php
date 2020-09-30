@@ -141,11 +141,11 @@ if (isset($_POST['next'])) {
 
                      if (!is_null($metademandtasks_tasks_id)) {
                         $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-                        if (!isset($_POST['field'])) {
-                           $_POST['field'][$id] = 0;
+                        if (!isset($post)) {
+                           $post[$id] = 0;
                         }
                         if (isset($_POST['radio'][$id])) {
-                           $_POST['field'][$id] = $_POST['radio'][$id];
+                           $post[$id] = $_POST['radio'][$id];
                         }
                         foreach (PluginMetademandsField::_unserialize($value['check_value']) as $keyId => $check_value) {
                            $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
@@ -156,11 +156,11 @@ if (isset($_POST['next'])) {
                         $value['check_value'] = $check_value;
                         $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id'])[$keyId];
                         $value['fields_link'] = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
-                        if (isset($_POST['field'][$id])) {
-                           if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['field'][$id]], $_POST['field'])) {
-                              foreach ($_POST['field'] as $key => $field) {
+                        if (isset($post[$id])) {
+                           if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $post[$id]], $post)) {
+                              foreach ($post as $key => $field) {
                                  $field = str_replace('\r\n', '&#x0A;', $field);
-                                 $_POST['field'][$key] = $field;
+                                 $post[$key] = $field;
                               }
                               $KO = true;
                            }
@@ -168,15 +168,15 @@ if (isset($_POST['next'])) {
                            if ($value == 'checkbox') {// Checkbox
                               $_SESSION['plugin_metademands']['fields'][$id] = 1;
                            } else {// Other fields
-                              if (is_array($_POST['field'][$id])) {
-                                 $_POST['field'][$id] = PluginMetademandsField::_serialize($_POST['field'][$id]);
+                              if (is_array($post[$id])) {
+                                 $post[$id] = PluginMetademandsField::_serialize($post[$id]);
                               }
-                              $_SESSION['plugin_metademands']['fields'][$id] = $_POST['field'][$id];
+                              $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
                            }
 
                         } else if ($value['type'] == 'checkbox') {
-                           if (!isset($_POST['field'])
-                              || (isset($_POST['field']) && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $_POST['field']))) {
+                           if (!isset($post)
+                              || (isset($post) && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $post))) {
                               $_SESSION['plugin_metademands']['fields'][$id] = '';
                            } else {
                               $KO = true;
@@ -238,19 +238,19 @@ if (isset($_POST['next'])) {
 
                      if (!is_null($metademandtasks_tasks_id)) {
                         $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-                        if (!isset($_POST['field'])) {
-                           $_POST['field'][$id] = 0;
+                        if (!isset($post)) {
+                           $post[$id] = 0;
                         }
                         if (isset($_POST['radio'][$id])) {
-                           $_POST['field'][$id] = $_POST['radio'][$id];
+                           $post[$id] = $_POST['radio'][$id];
                         }
                         $wizard->checkValueOk($value['check_value'], $value['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value);
                      }
-                     if (isset($_POST['field'][$id])) {
-                        if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['field'][$id]], $_POST['field'])) {
-                           foreach ($_POST['field'] as $key => $field) {
+                     if (isset($post[$id])) {
+                        if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $post[$id]], $post)) {
+                           foreach ($post as $key => $field) {
                               $field = str_replace('\r\n', '&#x0A;', $field);
-                              $_POST['field'][$key] = $field;
+                              $post[$key] = $field;
                            }
                            $KO = true;
                         }
@@ -258,27 +258,29 @@ if (isset($_POST['next'])) {
                         if ($value == 'checkbox') {// Checkbox
                            $_SESSION['plugin_metademands']['fields'][$id] = 1;
                         } else {// Other fields
-                           if (is_array($_POST['field'][$id])) {
-                              $_POST['field'][$id] = PluginMetademandsField::_serialize($_POST['field'][$id]);
+                        if (is_array($post[$id]) && $value['type'] !== 'dropdown_multiple') {
+                              $post[$id] = PluginMetademandsField::_serialize($post[$id]);
                            }
-                           $_SESSION['plugin_metademands']['fields'][$id] = $_POST['field'][$id];
+                           $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
                         }
 
                      } else if ($value['type'] == 'checkbox') {
-                        if (!isset($_POST['field'])
-                           || (isset($_POST['field']) && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $_POST['field']))) {
+                        if (!isset($post)
+                           || (isset($post) && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $post))) {
                            $_SESSION['plugin_metademands']['fields'][$id] = '';
                         } else {
                            $KO = true;
                         }
                      } else if ($value['type'] == 'radio') {
                         if ($value['is_mandatory'] == 1) {
-                           if (isset($_POST['radio'])
-                              && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['radio'][$id]])) {
-                              $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
+                        if (isset($post)
+                            && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $post[$id]])) {
+                           $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
                            } else {
                               $KO = true;
                            }
+                        } else if (isset($post[$id])) {
+                           $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
                         } else if (isset($_POST['radio'][$id])) {
                            $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
                         }
@@ -307,12 +309,14 @@ if (isset($_POST['next'])) {
                      }
                   }
 
+//               $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id']);
                   $metademands->getFromDB($_POST['form_metademands_id']);
                   $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id'], $metademands->getField('tickettemplates_id'));
                   if (count($ticketfields_data)) {
                      if (!isset($ticketfields_data['entities_id'])) {
                         $ticketfields_data['entities_id'] = $_SESSION['glpiactive_entity'];
                      }
+                  $metademands->getFromDB($_POST['form_metademands_id']);
                      $ticketfields_data['itilcategories_id'] = $metademands->fields['itilcategories_id'];
                      $tickettasks = new PluginMetademandsTicketTask();
                      if (!$tickettasks->isMandatoryField($ticketfields_data, true, false, __('Mandatory fields of the metademand ticket must be configured', 'metademands'))) {
@@ -355,7 +359,6 @@ if (isset($_POST['next'])) {
          }
       }
    }
-//   Html::back();
    if (Session::getCurrentInterface() == 'central') {
       Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
    } else {
@@ -369,6 +372,7 @@ if (isset($_POST['next'])) {
    } else {
       Html::helpFooter();
    }
+
 } else
    if (isset($_POST['previous'])) {
       if (Session::getCurrentInterface() == 'central') {

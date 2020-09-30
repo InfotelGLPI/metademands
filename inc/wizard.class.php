@@ -1683,8 +1683,16 @@ class PluginMetademandsWizard extends CommonDBTM {
       global $CFG_GLPI;
 
       $metademands = new PluginMetademandsMetademand();
-      $result      = $metademands->addMetademands($metademands_id, $values);
-      Session::addMessageAfterRedirect($result['message']);
+      if(isset($_POST['basket'])){
+         foreach ($_POST['basket'] as $basket){
+            $values['fields'] = $basket;
+            $result      = $metademands->addMetademands($metademands_id, $values);
+            Session::addMessageAfterRedirect($result['message']);
+         }
+      } else{
+         $result      = $metademands->addMetademands($metademands_id, $values);
+         Session::addMessageAfterRedirect($result['message']);
+      }
       unset($_SESSION['plugin_metademands']);
 
       if (!empty($options['resources_id'])) {
