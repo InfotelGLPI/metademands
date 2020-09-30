@@ -1690,9 +1690,9 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (!empty($options['resources_id'])) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
       }
-      //      else {
-      //         Html::back();
-      //      }
+      else {
+         Html::back();
+      }
    }
 
    /**
