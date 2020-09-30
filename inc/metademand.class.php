@@ -1219,9 +1219,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       foreach ($parent_ticketfields as $key => $val) {
          switch ($key) {
-//            case 'name' :
-//               $parent_fields[$key] .= ' ' . $val;
-//               break;
+            //            case 'name' :
+            //               $parent_fields[$key] .= ' ' . $val;
+            //               break;
             //            case 'content' :
             //               $parent_fields[$key] .= '\r\n' . $val;
             //               break;
@@ -1397,6 +1397,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'textarea':
             case 'text':
+               $field['value']    = Html::cleanPostForTextArea($field['value']);
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . stripslashes($field['value']) . "</td>";
                break;
             case 'checkbox':

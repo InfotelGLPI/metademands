@@ -1174,7 +1174,8 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             break;
          case 'textarea':
-            echo "<textarea class='form-control' rows='3' placeholder=\"" . $data['comment'] . "\" name='field[" . $data['id'] . "]' id='field[" . $data['id'] . "]' $required>" . $value . "</textarea>";
+            $value = Html::cleanPostForTextArea($value);
+            echo "<textarea class='form-control' rows='3' placeholder=\"" . $data['comment'] . "\" name='field[" . $data['id'] . "]' id='field[" . $data['id'] . "]'>" . $value . "</textarea>";
             break;
          case 'datetime_interval':
          case 'datetime':

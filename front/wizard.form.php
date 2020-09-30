@@ -85,8 +85,8 @@ if (isset($_POST['next'])) {
          $plugin = new Plugin();
          if ($plugin->isActivated('orderprojects')) {
             $orderprojects = new PluginOrderprojectsMetademand();
-            $data  = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
-            if ($data) {
+            $meta  = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+            if ($meta) {
                $orderprojects->createFromMetademands($_POST);
                Html::back();
             }
