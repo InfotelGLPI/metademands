@@ -34,22 +34,20 @@ if (empty($_GET["id"])) {
    $_GET["id"] = "";
 }
 
+$field = new PluginMetademandsField();
+
 if (!isset($_POST["check_value"])) {
    $_POST["check_value"] = "";
 } else {
-   $field = new PluginMetademandsField();
-   //   if(is_string($_POST["id"])){
-   //      $_POST["id"] = intval($_POST["id"]);
-   //   }
    $field->getFromDB($_POST["id"]);
-   foreach (PluginMetademandsField::_unserialize($field->fields["hidden_link"]) as $hidden_link){
-      $update["id"] = $hidden_link;
+   foreach (PluginMetademandsField::_unserialize($field->fields["hidden_link"]) as $hidden_link) {
+      $update["id"]      = $hidden_link;
       $update["to_hide"] = 0;
       $field->update($update);
    }
-   foreach ($_POST["hidden_link"] as $idField){
-      $update = [];
-      $update["id"] = $idField;
+   foreach ($_POST["hidden_link"] as $idField) {
+      $update            = [];
+      $update["id"]      = $idField;
       $update["to_hide"] = 1;
       $field->update($update);
    }
@@ -58,7 +56,7 @@ if (!isset($_POST["check_value"])) {
 }
 
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
-            && isset($_POST['item']) && $_POST['item'] == 'group') {
+    && isset($_POST['item']) && $_POST['item'] == 'group') {
    if ($_POST['is_assign'] > 0) {
       $custom_values['is_assign'] = $_POST['is_assign'];
    }
@@ -71,18 +69,16 @@ if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
    $_POST['custom_values'] = $custom_values;
 }
 
-if(isset($_POST['item']) && isset($_POST['type']) && (empty($_POST['item']) || $_POST['item'] === 0)) {
+if (isset($_POST['item']) && isset($_POST['type']) && (empty($_POST['item']) || $_POST['item'] === 0)) {
    $_POST['item'] = $_POST['type'];
 }
 
 if (isset($_POST['type']) && $_POST['type'] == 'number') {
-   $custom_values['min'] = $_POST['min'];
-   $custom_values['max'] = $_POST['max'];
-   $custom_values['step'] = $_POST['step'];
+   $custom_values['min']   = $_POST['min'];
+   $custom_values['max']   = $_POST['max'];
+   $custom_values['step']  = $_POST['step'];
    $_POST['custom_values'] = $custom_values;
 }
-
-$field = new PluginMetademandsField();
 
 if (isset($_POST["add"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])) {
@@ -113,7 +109,7 @@ if (isset($_POST["add"])) {
            || $_POST["type"] == 'checkbox'
            || $_POST["type"] == 'radio'
            || $_POST['item'] == 'group'
-           || $_POST['type'] == 'number') ) {
+           || $_POST['type'] == 'number')) {
       $comment_values = "";
       $custom_values  = "";
       $default_values = "";
@@ -133,24 +129,24 @@ if (isset($_POST["add"])) {
       $_POST["custom_values"]  = PluginMetademandsField::_serialize($_POST['custom_values']);
       $_POST["comment_values"] = '';
    } else if ($_POST["type"] != 'yesno') {
-      $_POST["custom_values"] = '';
+      $_POST["custom_values"]  = '';
       $_POST["comment_values"] = '';
    }
    if (isset($_POST["value"]) && is_array($_POST["value"])) {
       $_POST["value"] = PluginMetademandsField::_serialize($_POST["value"]);
    }
 
-   if(isset($_POST["check_value"] )){
+   if (isset($_POST["check_value"])) {
       $_POST["check_value"] = PluginMetademandsField::_serialize($_POST["check_value"]);
    }
-   if(isset($_POST["plugin_metademands_tasks_id"] )){
+   if (isset($_POST["plugin_metademands_tasks_id"])) {
       $_POST["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
    }
 
-   if(isset($_POST["fields_link"] )){
+   if (isset($_POST["fields_link"])) {
       $_POST["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
    }
-   if(isset($_POST["hidden_link"] )){
+   if (isset($_POST["hidden_link"])) {
       $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
    }
    // Check update rights for fields
