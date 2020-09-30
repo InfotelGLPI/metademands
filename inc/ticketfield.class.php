@@ -439,7 +439,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
             Dropdown::show('Group', ['name'      => 'ticketfield[' . $field_id . ']',
                                      'value'     => $value,
                                      'entity'    => $_SESSION['glpiactive_entity'],
-                                     'condition' => ['is_requester' => 1]]);
+                                     'condition' => ['is_watcher' => 1]]);
             break;
          case '_users_id_observer':
             $params = ['name'  => 'ticketfield[' . $field_id . ']',

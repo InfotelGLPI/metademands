@@ -103,6 +103,18 @@ function plugin_metademands_install() {
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "is_basket") &&
        !$DB->fieldExists("glpi_plugin_metademands_metademands", "is_order")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.2.sql");
+
+      $field = new PluginMetademandsField();
+      $fields = $field->find();
+      foreach ($fields as $f){
+         if(!empty($f["hidden_link"])){
+            $array = [];
+            $array[] = $f["hidden_link"];
+            $update["id"] = $f["id"];
+            $update["hidden_link"] = json_encode($array);
+            $field->update($update);
+         }
+      }
    }
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);

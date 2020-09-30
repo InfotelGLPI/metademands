@@ -250,7 +250,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'metademands_id'     => $this->fields['plugin_metademands_metademands_id'],
                      'previous_fields_id' => $this->fields['plugin_metademands_fields_id']];
       Ajax::updateItemOnSelectEvent('dropdown_rank' . $randRank, "show_order", $CFG_GLPI["root_doc"] .
-                                                                               "/plugins/metademands/ajax/viewtypefields.php", $paramsRank);
+                                                                               "/plugins/metademands/ajax/viewtypefields.php?id=".$this->fields['id'], $paramsRank);
       echo "</td>";
       echo "</tr>";
 
@@ -265,7 +265,10 @@ class PluginMetademandsField extends CommonDBChild {
                      'item'           => $this->fields['item'],
                      'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                      'fields_link'    => $this->fields['fields_link'],
-                     'fields_display' => $this->fields['fields_display'],
+                     'max_upload'    => $this->fields['max_upload'],
+                     'regex'    => $this->fields['regex'],
+                     //                     'fields_display' => $this->fields['fields_display'],
+                     'hidden_link'    => $this->fields['hidden_link'],
                      'custom_values'  => $this->fields['custom_values'],
                      'comment_values' => $this->fields['comment_values'],
                      'default_values' => $this->fields['default_values'],
@@ -273,7 +276,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                      'change_type'    => 1];
       Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", $CFG_GLPI["root_doc"] .
-                                                                                "/plugins/metademands/ajax/viewtypefields.php", $paramsType);
+                                                                                "/plugins/metademands/ajax/viewtypefields.php?id=".$this->fields['id'], $paramsType);
       echo "</td>";
 
       // ORDER
@@ -319,14 +322,17 @@ class PluginMetademandsField extends CommonDBChild {
                      'type'           => $this->fields['type'],
                      'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                      'fields_link'    => $this->fields['fields_link'],
-                     'fields_display' => $this->fields['fields_display'],
+                     'max_upload'    => $this->fields['max_upload'],
+                     'regex'    => $this->fields['regex'],
+                     //                     'fields_display' => $this->fields['fields_display'],
+                     'hidden_link'    => $this->fields['hidden_link'],
                      'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                      'custom_values'  => $this->fields["custom_values"],
                      'comment_values' => $this->fields["comment_values"],
                      'default_values' => $this->fields["default_values"],
                      'check_value'    => $this->fields['check_value']];
       Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", $CFG_GLPI["root_doc"] .
-                                                                                "/plugins/metademands/ajax/viewtypefields.php", $paramsItem);
+                                                                                "/plugins/metademands/ajax/viewtypefields.php?id=".$this->fields['id'], $paramsItem);
       echo "<input type='hidden' name='plugin_metademands_metademands_id' value='" . $this->fields["plugin_metademands_metademands_id"] . "'/>";
       $params = ['id'                 => 'dropdown_type' . $randType,
                  'to_change'          => 'dropdown_item' . $randItem,
@@ -370,7 +376,10 @@ class PluginMetademandsField extends CommonDBChild {
                          'default_values' => $this->fields['default_values'],
                          'task_link'      => $this->fields['plugin_metademands_tasks_id'],
                          'fields_link'    => $this->fields['fields_link'],
-                         'fields_display' => $this->fields['fields_display'],
+                         'max_upload'    => $this->fields['max_upload'],
+                         'regex'    => $this->fields['regex'],
+                         'hidden_link'    => $this->fields['hidden_link'],
+                         //                         'fields_display' => $this->fields['fields_display'],
                          'item'           => $this->fields['item'],
                          'type'           => $this->fields['type'],
                          'check_value'    => $this->fields['check_value'],
@@ -491,25 +500,37 @@ class PluginMetademandsField extends CommonDBChild {
             echo "<td>" . Dropdown::getYesNo($value['is_mandatory']) . "</td>";
             echo "<td>";
             $name = Dropdown::getDropdownName('glpi_plugin_metademands_tasks', $value['plugin_metademands_tasks_id']);
-            if ($name == '&nbsp;') {
-               $name = PluginMetademandsMetademandTask::getMetademandTaskName($value['plugin_metademands_tasks_id']);
+            if($name == '&nbsp;'){
+               if(!is_array(self::_unserialize($value['check_value']))) {
+                  if(!empty($value['check_value'])){
+                     $name = PluginMetademandsMetademandTask::getMetademandTaskName($value['plugin_metademands_tasks_id']);
+                  } else{
+                     $name = '-----';
+                  }
+               } else{
+                  $name = __('Multiples', 'metademands');
+               }
             }
             echo !empty($name) ? $name : Dropdown::EMPTY_VALUE;
             echo "</td>";
             echo "<td>";
             if (!empty($value['plugin_metademands_tasks_id'])) {
-               switch ($value['type']) {
-                  case 'yesno':
-                     echo Dropdown::getYesNo($value['check_value'] - 1);
-                     break;
-                  case 'dropdown':
-                  case'checkbox':
-                  case 'radio':
-                     echo __('Not null value', 'metademands');
-                     break;
-                  default:
-                     echo Dropdown::EMPTY_VALUE;
-                     break;
+               if(is_array(self::_unserialize($value['check_value']))){
+                  echo __('Multiples', 'metademands');
+               } else{
+                  switch ($value['type']) {
+                     case 'yesno':
+                        echo Dropdown::getYesNo($value['check_value'] - 1);
+                        break;
+                     case 'dropdown':
+                     case'checkbox':
+                     case 'radio':
+                        echo __('Not null value', 'metademands');
+                        break;
+                     default:
+                        echo Dropdown::EMPTY_VALUE;
+                        break;
+                  }
                }
             } else {
                echo Dropdown::EMPTY_VALUE;
@@ -921,331 +942,416 @@ class PluginMetademandsField extends CommonDBChild {
          }
       }
 
-      if (isset($params['check_value']) && in_array($params['value'], $allowed_types)) {
+      if ((isset($params['check_value']) || $params['value'] == 'upload' || $params['value'] == 'text') && in_array($params['value'], $allowed_types)) {
          $metademands = new PluginMetademandsMetademand();
          $metademands->getFromDB($options['metademands_id']);
          if(in_array($params['value'],$new_fields)){
             $params['value'] = $params['type'];
          }
          if (isset($params['value'])) {
-            echo "<div id='show_type_fields'>";
-            echo "<table width='100%' class='metademands_show_values'>";
-            echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "</th></tr>";
-            echo "<tr><td><table class='metademands_show_custom_fields'>";
-            switch ($params['value']) {
-               case 'text':
-                  // Show field display
-                  // Value to check
-                  echo "<tr><td>";
-                  echo __('Value to check', 'metademands');
-                  echo '</td>';
-                  echo '<td>';
-                  echo __('Not null value', 'metademands');
-                  echo '<input type="hidden" name="check_value" value="' . self::$not_null . '">';
-                  echo "</td>";
-                  echo "</tr>";
-                  // Show field display
-                  echo "<tr><td>";
-                  echo __('Display if this selected field is filled', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-                  echo "</td></tr>";
-                  break;
-               case 'textarea':
-               case 'upload':
-                  // Show field display
-                  echo "<tr><td>";
-                  echo __('Display if this selected field is filled', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-                  echo "</td></tr>";
-                  break;
-               case 'yesno':
-                  $data[1] = __('No');
-                  $data[2] = __('Yes');
+            if(strpos($_SERVER['HTTP_REFERER'],'field.form.php')>0){
+               echo "<div id='show_type_fields'>";
+               echo "<table width='100%' class='metademands_show_values'>";
+               echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "</th></tr>";
+               echo "<i class='fa fa-plus' id='addNewOpt' ></i>";
+               echo "</th></tr></thead><tbody>";
 
-                  // Value to check
-                  echo "<tr><td>";
-                  echo __('Value to check', 'metademands') . '</td><td>';
-                  Dropdown::showFromArray("check_value", $data, ['value' => $params['check_value']]);
-                  echo "</td>";
-                  echo "</tr><td>";
+               //               echo "<tr>";
+               $nb = 0;
+               $url = 'field.form.php?id='.$_GET['id'];
+               // Multi criterias
 
-                  // Show task link
-                  echo __('Link a task to the field', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the task is created', 'metademands') . '</span>';
-                  echo '</td><td>';
-                  PluginMetademandsTask::showAllTasksDropdown($metademands->fields["id"], $params['task_link']);
-                  echo "</td></tr>";
-
-                  // Show field link
-                  echo "<tr><td>";
-                  echo __('Link a field to the field', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_link", $metademands->fields["id"], $params['fields_link']);
-                  echo "</td></tr>";
-
-                  // Show field display
-                  echo "<tr><td>";
-                  echo __('Display if this selected field is filled', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-                  echo "</td></tr>";
-                  break;
-               case 'datetime' :
-               case 'datetime_interval' :
-                  echo "<tr><td>";
-                  echo __('Day greater or equal to now', 'metademands');
-                  echo "</td><td>";
-
-                  $checked = '';
-                  if (isset($params['check_value']) && !empty($params['check_value'])) {
-                     $checked = 'checked';
+               if(strpos($_SERVER['HTTP_REFERER'],'nbOpt=') > 0){
+                  $nb = substr($_SERVER['HTTP_REFERER'],strpos($_SERVER['HTTP_REFERER'],'nbOpt=')+6);
+               } else if(is_array(self::_unserialize($this->getField('check_value')))){
+                  foreach (self::_unserialize($this->getField('check_value')) as $elem){
+                     $nb++;
                   }
-                  echo "<input type='checkbox' name='check_value' value='1' $checked>";
-                  echo "</td></tr>";
+               }
 
-                  // Show field display
+               if($params["value"] == 'upload') {
+
                   echo "<tr><td>";
-                  echo __('Display if this selected field is filled', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo "<table class='metademands_show_custom_fields' style='border-bottom: 1px dashed black'>";
+                  echo "<tr><td>";
+                  echo __('Number of documents allowed', 'metademands');
+                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";
-                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-                  echo "</td></tr>";
-
-                  break;
-               case 'number' :
-                  $custom_values = [];
-                  if (!empty($params['custom_values'])) {
-                     $custom_values = self::_unserialize($params['custom_values']);
-
-                  } else {
-                     $custom_values['min']  = 0;
-                     $custom_values['max']  = 0;
-                     $custom_values['step'] = 0;
+                  $data[0] = Dropdown::EMPTY_VALUE;
+                  for ($i = 1; $i <= 50; $i++) {
+                     $data[$i] = $i;
                   }
 
-                  echo "<tr><td>";
-                  echo __('Minimum', 'servicecatalog');
-                  echo '</td>';
-                  echo "<td>";
-                  Dropdown::showNumber('min', ['value' => $custom_values['min'],
-                                               'min'   => 1,
-                                               'max'   => 360,
-                                               'step'  => 1]);
-                  echo "</td></tr>";
 
-                  echo "<tr><td>";
-                  echo __('Maximum', 'servicecatalog');
-                  echo '</td>';
-                  echo "<td>";
-                  Dropdown::showNumber('max', ['value' => $custom_values['max'],
-                                               'min'   => 1,
-                                               'max'   => 360,
-                                               'step'  => 1]);
+                  echo Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => false));
+                  //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
                   echo "</td></tr>";
+                  echo "</table>";
+                  echo "</td></tr>";
+               }
+               if($params["value"] == 'text') {
 
                   echo "<tr><td>";
-                  echo __('Step', 'servicecatalog');
-                  echo '</td>';
-                  echo "<td>";
-                  Dropdown::showNumber('step', ['value' => $custom_values['step'],
-                                                'min'   => 1,
-                                                'max'   => 360,
-                                                'step'  => 1]);
-                  echo "</td></tr>";
-
-                  // Show field display
+                  echo "<table class='metademands_show_custom_fields' style='border-bottom: 1px dashed black'>";
                   echo "<tr><td>";
-                  echo __('Display if this selected field is filled', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo __('Regex', 'metademands');
+                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";
-                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+
+
+
+                  //                  echo Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => false));
+                  echo '<input type="text" name="regex"  value="' . ($params["regex"]) . '" size="50"/>';
+                  //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+                  //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
                   echo "</td></tr>";
-
-                  break;
-               case 'group':
-                  $custom_values = [];
-                  if (!empty($params['custom_values'])) {
-                     $custom_values = self::_unserialize($params['custom_values']);
-
-                  } else {
-                     $custom_values['is_assign']    = 0;
-                     $custom_values['is_watcher']   = 0;
-                     $custom_values['is_requester'] = 0;
+                  echo "</table>";
+                  echo "</td></tr>";
+               }
+               if($nb == 0){
+                  echo $this->addNewOpt($url);
+               } else{
+                  echo "<tr><td>";
+                  for ($i=0;$i<$nb;$i++){
+                     echo "<table class='metademands_show_custom_fields' style='border-bottom: 1px dashed black'>";
+                     echo $this->showOptions($metademands->getField('id'), $params, $i);
+                     echo "</table>";
+                     echo $this->addNewOpt($url);
                   }
-
-                  // Show task link
-                  echo '<tr><td>';
-                  echo __('Link a task to the field', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the task is created', 'metademands') . '</span>';
-                  echo '</td><td>';
-                  PluginMetademandsTask::showAllTasksDropdown($metademands->fields["id"], $params['task_link']);
                   echo "</td></tr>";
+               }
 
-                  // Show field link
-                  echo "<tr><td>";
-                  echo __('Link a field to the field', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_link", $metademands->fields["id"], $params['fields_link']);
-                  echo "</td></tr>";
-
-                  // Assigned group
-                  echo "<tr><td>";
-                  echo __('Assigned');
-                  echo '</td>';
-                  echo "<td>";
-                  Dropdown::showYesNo('is_assign', $custom_values['is_assign']);
-                  echo "</td></tr>";
-
-                  // Watcher group
-                  echo "<tr><td>";
-                  echo __('Watcher');
-                  echo '</td>';
-                  echo "<td>";
-                  Dropdown::showYesNo('is_watcher', $custom_values['is_watcher']);
-                  echo "</td></tr>";
-
-                  // Requester group
-                  echo "<tr><td>";
-                  echo __('Requester');
-                  echo '</td>';
-                  echo "<td>";
-                  Dropdown::showYesNo('is_requester', $custom_values['is_requester']);
-                  echo "</td></tr>";
-
-                  // Show field display
-                  echo "<tr><td>";
-                  echo __('Display if this selected field is filled', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-                  echo "</td></tr>";
-
-                  break;
-               case 'user':
-               case 'usertitle':
-               case 'usercategory':
-               case 'location':
-               case 'itilcategory':
-                  //               case 'PluginResourcesResource':
-               case 'other':
-               case 'dropdown':
-               case 'dropdown_multiple':
-               case 'PluginMetademandsITILApplication':
-               case 'PluginMetademandsITILEnvironment':
-               case 'appliance' :
-                  //               case strpos($params['value'], 'PluginLdapfields'):
-                  // Value to check
-                  echo "<tr><td>";
-                  echo __('Value to check', 'metademands');
-                  echo '</td>';
-                  echo '<td>';
-                  echo __('Not null value', 'metademands');
-                  echo '<input type="hidden" name="check_value" value="' . self::$not_null . '">';
-                  echo "</td>";
-                  echo "</tr>";
-
-                  // Show task link
-                  echo '<tr><td>';
-                  echo __('Link a task to the field', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the task is created', 'metademands') . '</span>';
-                  echo '</td><td>';
-                  PluginMetademandsTask::showAllTasksDropdown($metademands->fields["id"], $params['task_link']);
-                  echo "</td></tr>";
-
-                  // Show field link
-                  echo "<tr><td>";
-                  echo __('Link a field to the field', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_link", $metademands->fields["id"], $params['fields_link']);
-                  echo "</td></tr>";
-                  // Show field display
-                  echo "<tr><td>";
-                  echo __('Display if', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-                  echo "</td></tr>";
-                  break;
-               case 'checkbox':
-               case 'radio':
-                  // Value to check
-                  echo "<tr><td>";
-                  echo __('Value to check', 'metademands') . '</td>';
-                  echo '<td>';
-                  echo __('Not null value', 'metademands');
-                  echo '<input type="hidden" name="check_value" value="' . self::$not_null . '">';
-                  echo "</td>";
-                  echo "</tr><td>";
-
-                  // Show task link
-                  echo __('Link a task to the field', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the task is created', 'metademands') . '</span>';
-                  echo '</td><td>';
-                  PluginMetademandsTask::showAllTasksDropdown($metademands->fields["id"], $params['task_link']);
-                  echo "</td></tr>";
-
-                  // Show field display
-                  echo "<tr><td>";
-                  echo __('Display if this selected field is filled', 'metademands');
-                  echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-                  echo "</td></tr>";
-                  break;
-               case 'parent_field':
-                  echo "<tr><td>";
-                  echo __('Field') . '</td>';
-                  echo '<td>';
-                  //list of fields
-                  $fields            = [];
-                  $metademand_parent = new PluginMetademandsMetademand();
-
-                  // list of parents
-                  $metademands_parent = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($metademands->fields["id"]);
-
-                  foreach ($metademands_parent as $parent_id) {
-                     if ($metademand_parent->getFromDB($parent_id)) {
-                        $name_metademand = $metademand_parent->getName();
-                        $condition       = ['plugin_metademands_metademands_id' => $parent_id,
-                                            ['NOT' => ['type' => ['parent_field', 'upload']]]];
-                        $datas_fields    = $this->find($condition, ['rank', 'order']);
-                        //formatting the name to display (Name of metademand - Father's Field Label - type)
-                        foreach ($datas_fields as $data_field) {
-                           $fields[$data_field['id']] = $name_metademand . " - " . $data_field['label'] . " - " . self::getFieldTypesName($data_field['type']);
-                        }
-                     }
-                  }
-                  Dropdown::showFromArray('parent_field_id', $fields);
-                  echo "</td>";
-                  echo "</tr>";
-                  break;
+               echo "<input type='hidden' id='nbOptions' value='".$nb."' />";
+               echo "</tbody></table>";
+               echo "</div>";
             }
-
-            echo "</table></td></tr>";
-            echo "</table>";
-            echo "</div>";
          }
       }
    }
+
+   function addNewOpt($url){
+      global $CFG_GLPI;
+      $res = "<script type='text/javascript'>
+
+      var rootDoc = '".$CFG_GLPI['root_doc']."';
+                $('#addNewOpt').click(function(){
+                    var nb = document.getElementById('nbOptions').valueOf().value;
+                    nb++;
+                    parent.parent.window.location.replace(rootDoc + '/plugins/metademands/front/".$url."&nbOpt='+nb);
+                });
+                </script>";
+      echo $res;
+   }
+
+   function showOptions($metademands_id, $params, $nbOpt){
+      $metademands = new PluginMetademandsMetademand();
+      $metademands->getFromDB($metademands_id);
+
+      $display = false;
+      $html = "";
+
+      $params['check_value'] = self::_unserialize($params['check_value']);
+      if(!isset($params['check_value'][$nbOpt])){
+         $params['check_value'] = "";
+      } else{
+         $params['check_value'] = $params['check_value'][$nbOpt];
+      }
+
+      $params['task_link'] = self::_unserialize($params['task_link']);
+      if(!isset($params['task_link'][$nbOpt])){
+         $params['task_link'] = "";
+      } else{
+         $params['task_link'] = $params['task_link'][$nbOpt];
+      }
+
+      $params['fields_link'] = self::_unserialize($params['fields_link']);
+      if(!isset($params['fields_link'][$nbOpt])){
+         $params['fields_link'] = "";
+      } else{
+         $params['fields_link'] = $params['fields_link'][$nbOpt];
+      }
+      $params['hidden_link'] = self::_unserialize($params['hidden_link']);
+      if(!isset($params['hidden_link'][$nbOpt])){
+         $params['hidden_link'] = "";
+      } else{
+         $params['hidden_link'] = $params['hidden_link'][$nbOpt];
+      }
+
+
+      switch ($params['value']) {
+         case 'yesno':
+            $data[1] = __('No');
+            $data[2] = __('Yes');
+            // Value to check
+            $html .= "<tr><td>";
+            $html .= __('Value to check', 'metademands').'</td><td>';
+            $html .= Dropdown::showFromArray("check_value[]", $data, array('value' => $params['check_value'], 'display' => $display));
+            //            $html .= Dropdown::showYesNo("check_value[]", $params['check_value'],-1,['display' => $display]);
+            $html .=  "</td>";
+            $html .=  "</tr><td>";
+
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt,1,1,1);
+
+            //            // Show field link
+            //            $html .= "<tr><td>";
+            //            $html .= __('Link a field to the field', 'metademands');
+            //            $html .= '</br><span class="metademands_wizard_comments">'.__('If the value selected equals the value to check, the field becomes mandatory', 'metademands').'</span>';
+            //            $html .= '</td>';
+            //            $html .= "<td>";
+            //            $html .= self::showFieldsDropdown($metademands->fields["id"], $params['fields_link'],false);
+            //            $html .= "</td></tr>";
+            break;
+         case 'datetime' :
+         case 'datetime_interval' :
+            $html .= "<tr><td>";
+            $html .= __('Day greater or equal to now', 'metademands');
+            $html .= "</td><td>";
+
+            $checked = '';
+            if (isset($params['check_value']) && !empty($params['check_value'])) {
+               $checked = 'checked';
+            }
+            $html .= "<input type='checkbox' name='check_value' value='1' $checked>";
+            $html .= "</td></tr>";
+            break;
+         case 'user':
+         case 'usertitle':
+         case 'usercategory':
+         case 'group':
+         case 'location':
+         case 'PluginResourcesResource':
+         case 'PluginMetademandsITILApplication':
+         case 'PluginMetademandsITILEnvironment':
+            // Value to check
+            $html .= "<tr><td>";
+            $html .= __('Value to check', 'metademands');
+            $html .= " ( ". Dropdown::EMPTY_VALUE ." = " .  __('Not null value', 'metademands') .")";
+            $html .= '</td>';
+            $html .= '<td>';
+            if(class_exists($params['value'])){
+               //               if($params['value'] == 'group' || $params['value'] == 'usertitle'|| $params['value'] == 'usercategory'){
+               //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
+               //               } else{
+               $name = "check_value[]";
+               //               }
+               $html .= $params['value']::Dropdown(["name" => $name,
+                                                    "value" =>  $params['check_value'],
+                                                    "display" => $display,
+                                                    "addicon"=>false]);
+            } else{
+               $elements[0] = Dropdown::EMPTY_VALUE;
+               if(is_array(json_decode($params['custom_values'],true))){
+                  $elements += json_decode($params['custom_values'],true);
+                  //                  $elements = html_entity_decode();
+               }
+               foreach ($elements as $key => $val){
+                  $elements[$key] = urldecode($val);
+               }
+               $html .= Dropdown::showFromArray("check_value[]",
+                                                $elements,
+                                                ['value' => $params['check_value'],
+                                                 'display' => $display]);
+            }
+
+            $html .= "</td>";
+            $html .= "</tr>";
+
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt,1,1,1);
+
+            break;
+         case 'other':
+         case 'dropdown':
+         case 'dropdown_multiple':
+            $html .= "<tr><td>";
+            $html .= __('Value to check', 'metademands');
+            $html .= " ( ". Dropdown::EMPTY_VALUE ." = " .  __('Not null value', 'metademands') .")";
+            $html .= '</td>';
+            $html .= '<td>';
+            if(class_exists($params['value'])){
+               if($params['value'] == 'group'){
+                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
+               } else{
+                  $name = "check_value[]";
+               }
+               $html .= $params['value']::Dropdown(["name" => $name, "value" =>  $params['check_value'], "display" => $display]);
+            } else{
+               $elements[0] = Dropdown::EMPTY_VALUE;
+               if(is_array(json_decode($params['custom_values'],true))){
+                  $elements += json_decode($params['custom_values'],true);
+               }
+               foreach ($elements as $key => $val){
+                  $elements[$key] = urldecode($val);
+               }
+               $html .= Dropdown::showFromArray("check_value[]",
+                                                $elements,
+                                                ['value' => $params['check_value'],
+                                                 'display' => $display]);
+            }
+
+            $html .= "</td>";
+            $html .= "</tr>";
+
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt,1,1,1);
+
+            break;
+         case 'checkbox':
+         case 'radio':
+            // Value to check
+            $html .= "<tr><td>";
+            $html .= __('Value to check', 'metademands');
+            $html .= " ( ". Dropdown::EMPTY_VALUE ." = " .  __('Not null value', 'metademands') .")".'</td>';
+            $html .= '<td>';
+            $elements[-1] = Dropdown::EMPTY_VALUE;
+            if(is_array(json_decode($params['custom_values'],true))){
+               $elements += json_decode($params['custom_values'],true);
+            }
+            foreach ($elements as $key => $val){
+               $elements[$key] = urldecode($val);
+            }
+            $html .=Dropdown::showFromArray("check_value[]",
+                                            $elements,
+                                            ['value' => $params['check_value'],
+                                             'display' => $display]);
+
+            $html .= "</td>";
+            $html .= "</tr><td>";
+
+            $html .= $this->showLinkHtml($metademands->fields["id"],$params, $nbOpt, 1,0,1);
+
+            break;
+         case 'parent_field':
+            $html .= "<tr><td>";
+            $html .= __('Field').'</td>';
+            $html .= '<td>';
+            //list of fields
+            $fields = array();
+            $metademand_parent = new PluginMetademandsMetademand();
+
+            // list of parents
+            $metademands_parent = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($metademands->fields["id"]);
+
+            foreach ($metademands_parent as $parent_id) {
+               if ($metademand_parent->getFromDB($parent_id)) {
+                  $name_metademand = $metademand_parent->getName();
+
+                  $condition = ['plugin_metademands_metademands_id' => $parent_id,
+                                ['NOT' => ['type' => ['parent_field', 'upload']]]];
+                  $datas_fields = $this->find($condition, ['rank', 'order']);
+                  //formatting the name to display (Name of metademand - Father's Field Label - type)
+                  foreach ($datas_fields as $data_field) {
+                     $fields[$data_field['id']] = $name_metademand." - ".$data_field['label']." - ".self::getFieldTypesName($data_field['type']);
+                  }
+               }
+            }
+            $html .= Dropdown::showFromArray('parent_field_id[]', $fields,['display' => $display]);
+            $html .= "</td></tr>";
+            break;
+         case 'text':
+         case 'textarea':
+            $data[1] = __('No');
+            $data[2] = __('Yes');
+            // Value to check
+            $html .= "<tr><td>";
+            $html .= __('If field empty', 'metademands').'</td><td>';
+            $html .= Dropdown::showFromArray("check_value[]", $data, array('value' => $params['check_value'], 'display' => $display));
+            //            $html .= Dropdown::showYesNo("check_value[]", $params['check_value'],-1,['display' => $display]);
+            $html .=  "</td>";
+            $html .=  "</tr><td>";
+
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1,0,1);
+
+
+            break;
+
+         case 'upload':
+            // Show field display
+            //            if($nbOpt == 0){
+            //               $html .= "<tr><td>";
+            //               $html .= __('Multiple document ', 'metademands');
+            ////               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+            //               $html .= '</td>';
+            //               $html .= "<td>";
+            //               $data[0] = Dropdown::EMPTY_VALUE;
+            //               for($i =1;$i<=50;$i++){
+            //                  $data[$i] = $i;
+            //               }
+            //
+            //
+            //               $html .= Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => $display));
+            //               //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
+            //               //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
+            //               $html .= "</td></tr>";
+            //            }
+
+            break;
+      }
+
+      return $html;
+   }
+
+   /**
+    * @param $metademands_id
+    * @param $params
+    * @return string
+    */
+   function showLinkHtml($metademands_id, $params, $nb, $task = 1, $field = 1,$hidden = 0){
+
+      $res = "";
+
+      // Show task link
+      if($task){
+         $res = '<tr><td>';
+         $res .= __('Link a task to the field', 'metademands');
+         $res .= '</br><span class="metademands_wizard_comments">'.__('If the value selected equals the value to check, the task is created', 'metademands').'</span>';
+         $res .= '</td><td>';
+         $res .= PluginMetademandsTask::showAllTasksDropdown($metademands_id, $params['task_link'], false);
+         $res .= "</td></tr>";
+      }
+
+      // Show field link
+      if($field){
+         $res .= "<tr><td>";
+         $res .= __('Link a field to the field', 'metademands');
+         $res .= '</br><span class="metademands_wizard_comments">'.__('If the value selected equals the value to check, the field becomes mandatory', 'metademands').'</span>';
+         $res .= '</td>';
+         $res .= "<td>";
+         $res .= self::showFieldsDropdown($metademands_id, $params['fields_link'],false,$this->getID());
+         $res .= "</td></tr>";
+      }
+      if($hidden){
+         $res .= "<tr><td>";
+         $res .= __('Link a hidden field', 'metademands');
+         $res .= '</br><span class="metademands_wizard_comments">'.__('If the value selected equals the value to check, the field becomes visible', 'metademands').'</span>';
+         $res .= '</td>';
+         $res .= "<td>";
+         $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'],false,$this->getID());
+         $res .= "</td></tr>";
+      }
+
+      return $res;
+   }
+   static function showHiddenDropdown($metademands_id, $selected_value, $display=true,$idF){
+
+
+      $fields = new self();
+      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+      $data = [Dropdown::EMPTY_VALUE];
+      foreach ($fields_data as $id => $value) {
+         if($idF != $id){
+            $data[$id] = urldecode(html_entity_decode($value['label']));
+            if (!empty($value['label2'])) {
+               $data[$id] = ' '.urldecode(html_entity_decode($value['label2']));
+            }
+         }
+
+      }
+
+      return Dropdown::showFromArray('hidden_link[]', $data, ['value' => $selected_value, 'display' => $display]);
+   }
+
 
    /**
     * View custom values for items or types
@@ -1554,24 +1660,21 @@ class PluginMetademandsField extends CommonDBChild {
     * @param $metademands_id
     * @param $selected_value
     */
-   static function showFieldsDropdown($field, $metademands_id, $selected_value) {
+   static function showFieldsDropdown($metademands_id, $selected_value, $display=true,$idF){
 
       $fields = new self();
-      //TODO Add authorized types for fields_display ?
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-      $data        = [Dropdown::EMPTY_VALUE];
+      $data = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
-         $name = $value['label'];
-         if (empty(trim($name))) {
-            $name = 'ID - ' . $id;
-         }
-         $data[$id] = $name;
-         if (!empty($value['label2'])) {
-            $data[$id] = ' ' . $value['label2'];
+         if($idF != $id) {
+            $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
+            if (!empty($value['label2'])) {
+               $data[$id] = ' ' . $value['label2'];
+            }
          }
       }
 
-      Dropdown::showFromArray($field, $data, ['value' => $selected_value]);
+      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
    }
 
    /**
