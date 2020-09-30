@@ -52,11 +52,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
    static $SON_PREFIX    = '';
    static $rightname     = 'plugin_metademands';
 
-   const STEP_INIT    = 0;
-   const STEP_LIST    = 1;
-   const STEP_SHOW    = 2;
-   const STEP_CREATE  = 3;
-   const STEP_PREVIEW = 4;
+   const STEP_INIT   = 0;
+   const STEP_LIST   = 1;
+   const STEP_SHOW   = 2;
+   const STEP_CREATE = "add_metademands";
 
    var     $dohistory = false;
    private $config;
@@ -530,8 +529,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
             break;
          case 'tickettemplates_id':
             $opt['condition'] = [];
-            $opt['value']  = $this->fields['tickettemplates_id'];
-            $opt['entity'] = $_SESSION['glpiactiveentities'];
+            $opt['value']     = $this->fields['tickettemplates_id'];
+            $opt['entity']    = $_SESSION['glpiactiveentities'];
             TicketTemplate::dropdown($opt);
             break;
          case 'icon':
@@ -834,11 +833,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $metademands->getFromDB($metademands_id);
 
       $hidden = false;
-      if(isset($_SESSION['metademands_hide'])){
-         $hidden = in_array($metademands_id,$_SESSION['metademands_hide']);
+      if (isset($_SESSION['metademands_hide'])) {
+         $hidden = in_array($metademands_id, $_SESSION['metademands_hide']);
       }
 
-      if (!empty($metademands_id) && !$hidden ) {
+      if (!empty($metademands_id) && !$hidden) {
          // get normal form data
          $field     = new PluginMetademandsField();
          $form_data = $field->find(['plugin_metademands_metademands_id' => $metademands_id],
@@ -972,6 +971,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $noChild = true;
                      }
                   }
+               } else {
+                  $values['fields']['tickets_id'] = 0;
+                  $values['fields']['tickets_id'] = 0;
                }
                if ($noChild) {
                   continue;
@@ -983,7 +985,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                // Get form fields
                $parent_fields = ['content' => ''];
                if (count($line['form']) && isset($values['fields'])) {
-                  $parent_fields = $this->formatFields($line['form'], $metademands_id, $values['fields'], $options);
+                  $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values['fields'], $options);
                   $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
 
                }
@@ -1024,10 +1026,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
 
                // Requester user field
-               if ($values['fields']['_users_id_requester']) {
+               if (isset($values['fields']['_users_id_requester'])) {
                   $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
                }
                // Add requester if empty
+               $parent_fields['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : "";
                if (empty($parent_fields['_users_id_requester'])) {
                   $parent_fields['_users_id_requester'] = Session::getLoginUserID();
                }
@@ -1065,7 +1068,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
 
                // Get predefined ticket fields
-               $parent_ticketfields = $this->formatTicketFields($form_metademands_id,$metademand->getField('tickettemplates_id'));
+               $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $metademand->getField('tickettemplates_id'));
 
                // Case of simple ticket convertion
                // Ticket does not exist : ADD
@@ -1310,7 +1313,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       //      $style_title = "style='background-color: #cccccc;'";
       $label  = Toolbox::stripslashes_deep($field['label']);
       $label2 = Toolbox::stripslashes_deep($field['label2']);
-      if ((!empty($field['value']) || $field['value'] == "0") && $field['value'] != 'NULL' || $field['type'] == 'title') {
+      if ((!empty($field['value']) || $field['value'] == "0") && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'radio') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
          //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
          //            $result['content'] .= "<tr>";
@@ -1532,7 +1535,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       $tt = new TicketTemplate();
-      if($tickettemplates_id != 0){
+      if ($tickettemplates_id != 0) {
          $tt->getFromDB($tickettemplates_id);
       }
       if (count($parent_ticketfields)) {
@@ -1570,7 +1573,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       foreach ($tickettasks_data as $son_ticket_data) {
 
          if ($son_ticket_data['level'] == $tasklevel) {
-            if(in_array($son_ticket_data['tickettasks_id'],$_SESSION['metademands_hide'])){
+            if (in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
                continue;
             }
             // Skip ticket creation if not allowed by metademand form

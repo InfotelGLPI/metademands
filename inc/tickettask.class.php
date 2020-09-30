@@ -588,17 +588,21 @@ class PluginMetademandsTicketTask extends CommonDBTM {
    function getMetademandForTicketTask($tasks_id, PluginMetademandsMetademand $metademands) {
       global $DB;
 
-      $query  = "SELECT `glpi_plugin_metademands_metademands`.*
+      if ($tasks_id > 0) {
+         $query  = "SELECT `glpi_plugin_metademands_metademands`.*
                   FROM `glpi_plugin_metademands_tickettasks`
                   LEFT JOIN `glpi_plugin_metademands_tasks`
                     ON (`glpi_plugin_metademands_tickettasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
                   LEFT JOIN `glpi_plugin_metademands_metademands`
                     ON (`glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
                   WHERE `glpi_plugin_metademands_tickettasks`.`id` = " . $tasks_id;
-      $result = $DB->query($query);
+         $result = $DB->query($query);
 
-      if ($DB->numrows($result)) {
-         $metademands->fields = $DB->fetchAssoc($result);
+         if ($DB->numrows($result)) {
+            $metademands->fields = $DB->fetchAssoc($result);
+         } else {
+            $metademands->getEmpty();
+         }
       } else {
          $metademands->getEmpty();
       }
