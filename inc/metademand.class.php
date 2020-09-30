@@ -1289,6 +1289,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'textarea':
             case 'text':
+               $field['value']    = Html::cleanPostForTextArea($field['value']);
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . stripslashes($field['value']) . "</td>";
                break;
             case 'checkbox':
@@ -1331,10 +1332,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $result['content'] .= "<td>" . $label . "</td>";
                   }
                }
-               break;
-            case 'textarea':
-               $field['value']    = Html::cleanPostForTextArea($field['value']);
-               $result['content'] .= $label . ' : ' . $field['value'];
                break;
             case 'datetime':
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
