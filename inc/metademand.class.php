@@ -1333,6 +1333,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
                break;
             case 'textarea':
+               $field['value']    = Html::cleanPostForTextArea($field['value']);
                $result['content'] .= $label . ' : ' . $field['value'];
                break;
             case 'datetime':
