@@ -55,8 +55,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
    const STEP_INIT    = 0;
    const STEP_LIST    = 1;
    const STEP_SHOW    = 2;
-   const STEP_CREATE  = 3;
-   const STEP_PREVIEW = 4;
+   const STEP_CREATE  = "add_metademands";
 
    var     $dohistory = false;
    private $config;

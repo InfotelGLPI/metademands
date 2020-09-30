@@ -160,7 +160,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo __('Demand choice', 'metademands');
          echo "</h4></div></div>";
 
-      } else if ($step > PluginMetademandsMetademand::STEP_LIST) {
+      } else if ($step >= PluginMetademandsMetademand::STEP_LIST) {
          // Wizard title
          echo "<div class=\"form-row\">";
          echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
@@ -285,9 +285,9 @@ class PluginMetademandsWizard extends CommonDBTM {
    function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
 
       switch ($step) {
-         case PluginMetademandsMetademand::STEP_INIT:
-            $this->chooseType($step);
-            unset($_SESSION['plugin_metademands']);
+         case PluginMetademandsMetademand::STEP_CREATE:
+            $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
+            $this->createMetademands($metademands_id, $values, $options);
             break;
 
          case PluginMetademandsMetademand::STEP_LIST:
@@ -295,9 +295,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             unset($_SESSION['plugin_metademands']);
             break;
 
-         case PluginMetademandsMetademand::STEP_CREATE:
-            $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
-            $this->createMetademands($metademands_id, $values, $options);
+         case PluginMetademandsMetademand::STEP_INIT:
+            $this->chooseType($step);
+            unset($_SESSION['plugin_metademands']);
             break;
 
          default:
@@ -1898,175 +1898,4 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
       }
    }
-
-
-   /**
-    * @param $id
-    * @param $value
-    * @param $wizard
-    */
-   function arrayFieldsNext($id, $value, $wizard) {
-      if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
-         $value['second_date_ok'] = true;
-         $value['id']             = $id . '-2';
-         $value['label']          = $value['label2'];
-         $data[$id . '-2']        = $value;
-      }
-      // Check if no form values block the creation of meta
-      $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-
-      if (!is_null($metademandtasks_tasks_id)) {
-         $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-         if (!isset($_POST['field'])) {
-            $_POST['field'][$id] = 0;
-         }
-         if (isset($_POST['radio'][$id])) {
-            $_POST['field'][$id] = $_POST['radio'][$id];
-         }
-         foreach (PluginMetademandsField::_unserialize($value['check_value']) as $keyId => $check_value) {
-            $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
-            $this->checkValueOk($check_value, $plugin_metademands_tasks_id[$keyId], $metademandtasks_tasks_id, $id, $value);
-         }
-      }
-      foreach (PluginMetademandsField::_unserialize($value['check_value']) as $keyId => $check_value) {
-         $value['check_value']                 = $check_value;
-         $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id'])[$keyId];
-         $value['fields_link']                 = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
-         if (isset($_POST['field'][$id])) {
-            if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['field'][$id]], $_POST['field'])) {
-               foreach ($_POST['field'] as $key => $field) {
-                  $field                = str_replace('\r\n', '&#x0A;', $field);
-                  $_POST['field'][$key] = $field;
-               }
-               $KO = true;
-            }
-
-            if ($value == 'checkbox') {// Checkbox
-               $_SESSION['plugin_metademands']['fields'][$id] = 1;
-            } else {// Other fields
-               if (is_array($_POST['field'][$id])) {
-                  $_POST['field'][$id] = PluginMetademandsField::_serialize($_POST['field'][$id]);
-               }
-               $_SESSION['plugin_metademands']['fields'][$id] = $_POST['field'][$id];
-            }
-
-         } else if ($value['type'] == 'checkbox') {
-            if (!isset($_POST['field'])
-                || (isset($_POST['field']) && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $_POST['field']))) {
-               $_SESSION['plugin_metademands']['fields'][$id] = '';
-            } else {
-               $KO = true;
-            }
-         } else if ($value['type'] == 'radio') {
-            if ($value['is_mandatory'] == 1) {
-               if (isset($_POST['radio'])
-                   && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['radio'][$id]])) {
-                  $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
-               } else {
-                  $KO = true;
-               }
-            } else if (isset($_POST['radio'][$id])) {
-               $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
-            }
-
-            // Check if no form values block the creation of meta
-            $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-            if (isset($_POST['radio'][$id]) &&
-                is_array($metademandtasks_tasks_id) &&
-                in_array($value['plugin_metademands_tasks_id'], $metademandtasks_tasks_id) &&
-                !PluginMetademandsTicket_Field::isCheckValueOK($_POST['radio'][$id], $value['check_value'], $value['type'])) {
-               //                   $step++;
-               $metademandToHide                                   = array_keys($metademandtasks_tasks_id, $value['plugin_metademands_tasks_id']);
-               $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
-
-            }
-         } else if ($value['type'] == 'upload') {
-            if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
-               $KO = true;
-            }
-         }
-      }
-   }
-
-   /**
-    * @param $id
-    * @param $value
-    * @param $wizard
-    */
-   function notArrayFieldsNext($id, $value, $wizard) {
-      $KO = false;
-      if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
-         $value['second_date_ok'] = true;
-         $value['id']             = $id . '-2';
-         $value['label']          = $value['label2'];
-         $data[$id . '-2']        = $value;
-      }
-      // Check if no form values block the creation of meta
-      $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-
-      if (!is_null($metademandtasks_tasks_id)) {
-         $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-         if (!isset($_POST['field'])) {
-            $_POST['field'][$id] = 0;
-         }
-         if (isset($_POST['radio'][$id])) {
-            $_POST['field'][$id] = $_POST['radio'][$id];
-         }
-         $this->checkValueOk($value['check_value'], $value['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value);
-      }
-      if (isset($_POST['field'][$id])) {
-         if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['field'][$id]], $_POST['field'])) {
-            foreach ($_POST['field'] as $key => $field) {
-               $field                = str_replace('\r\n', '&#x0A;', $field);
-               $_POST['field'][$key] = $field;
-            }
-            $KO = true;
-         }
-
-         if ($value == 'checkbox') {// Checkbox
-            $_SESSION['plugin_metademands']['fields'][$id] = 1;
-         } else {// Other fields
-            if (is_array($_POST['field'][$id])) {
-               $_POST['field'][$id] = PluginMetademandsField::_serialize($_POST['field'][$id]);
-            }
-            $_SESSION['plugin_metademands']['fields'][$id] = $_POST['field'][$id];
-         }
-
-      } else if ($value['type'] == 'checkbox') {
-         if (!isset($_POST['field'])
-             || (isset($_POST['field']) && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $_POST['field']))) {
-            $_SESSION['plugin_metademands']['fields'][$id] = '';
-         } else {
-            $KO = true;
-         }
-      } else if ($value['type'] == 'radio') {
-         if ($value['is_mandatory'] == 1) {
-            if (isset($_POST['radio'])
-                && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['radio'][$id]])) {
-               $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
-            } else {
-               $KO = true;
-            }
-         } else if (isset($_POST['radio'][$id])) {
-            $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
-         }
-
-         // Check if no form values block the creation of meta
-         $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-         if (isset($_POST['radio'][$id]) &&
-             is_array($metademandtasks_tasks_id) &&
-             in_array($value['plugin_metademands_tasks_id'], $metademandtasks_tasks_id) &&
-             !PluginMetademandsTicket_Field::isCheckValueOK($_POST['radio'][$id], $value['check_value'], $value['type'])) {
-            //                   $step++;
-            $metademandToHide                                   = array_keys($metademandtasks_tasks_id, $value['plugin_metademands_tasks_id']);
-            $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
-         }
-      } else if ($value['type'] == 'upload') {
-         if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
-            $KO = true;
-         }
-      }
-      return $KO;
-   }
-
 }

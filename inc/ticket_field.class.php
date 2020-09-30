@@ -109,7 +109,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                FROM `glpi_plugin_metademands_tickets_fields`
                LEFT JOIN `glpi_plugin_metademands_fields`
                   ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_tickets_fields`.`plugin_metademands_fields_id`)
-               WHERE `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id` = " . $tasks_id . " 
+               WHERE `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id` IN (" . implode(",",$tasks_id) . ") 
                AND `glpi_plugin_metademands_tickets_fields`.`tickets_id` = " . $parent_tickets_id;
       $result = $DB->query($query);
 
@@ -138,12 +138,51 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
 
       switch ($type) {
          case 'yesno':
-            if ($check_value != $value) {
+         case 'dropdown':
+         case 'radio':
+            if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
+               return false;
+            } else if ($check_value != $value && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
+               return false;
+            }
+            break;
+
+         case 'checkbox':
+            if(!empty($value)){
+               $ok = false;
+               if(is_array($value)){
+                  foreach($value as $key => $v){
+                     if($key != 0){
+                        if ($check_value == $key || $check_value == 0) {
+                           $ok = true;
+                        }
+                     }
+                  }
+               } else if(is_array(json_decode($value,true))){
+                  foreach(json_decode($value,true) as $key => $v){
+                     if($key != 0) {
+                        if ($check_value == $key || $check_value == 0) {
+                           $ok = true;
+                        }
+                     }
+                  }
+               }
+               if(!$ok){
+                  return false;
+               }
+            } elseif ($check_value != 0){
                return false;
             }
             break;
          case 'link':
             if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value))) {
+               return false;
+            }
+            break;
+         case 'text':
+            if (($check_value == 2  && $value != "")) {
+               return false;
+            }elseif ($check_value == 1 && $value == ""){
                return false;
             }
             break;

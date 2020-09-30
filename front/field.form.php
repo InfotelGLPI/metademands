@@ -34,13 +34,11 @@ if (empty($_GET["id"])) {
    $_GET["id"] = "";
 }
 
+$field = new PluginMetademandsField();
+
 if (!isset($_POST["check_value"])) {
    $_POST["check_value"] = "";
 } else {
-   $field = new PluginMetademandsField();
-//   if(is_string($_POST["id"])){
-//      $_POST["id"] = intval($_POST["id"]);
-//   }
    $field->getFromDB($_POST["id"]);
    foreach (PluginMetademandsField::_unserialize($field->fields["hidden_link"]) as $hidden_link){
       $update["id"] = $hidden_link;
@@ -53,8 +51,6 @@ if (!isset($_POST["check_value"])) {
       $update["to_hide"] = 1;
       $field->update($update);
    }
-
-
 }
 
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
@@ -77,8 +73,6 @@ if (isset($_POST['type']) && $_POST['type'] == 'number') {
    $custom_values['step'] = $_POST['step'];
    $_POST['custom_values'] = $custom_values;
 }
-
-$field = new PluginMetademandsField();
 
 if (isset($_POST["add"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])) {
