@@ -226,7 +226,6 @@ if (isset($_POST['next'])) {
                         }
                      }
                   } else {
-                     $KO = false;
                      if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
                         $value['second_date_ok'] = true;
                         $value['id'] = $id . '-2';

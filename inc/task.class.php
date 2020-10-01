@@ -487,9 +487,14 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                   LEFT JOIN `glpi_plugin_metademands_metademandtasks`
                     ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`) ".
                   $params['join']." 
-                  WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = ". $metademands_id."
-                  AND ".$params['condition'].
-                  " ORDER BY `glpi_plugin_metademands_tasks`.`completename`";
+                  WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id . "";
+
+      if (count($params['condition']) > 0) {
+         foreach ($params['condition'] as $cond => $value) {
+            $query .= " AND " . $cond . " = ".$value;
+         }
+      }
+      $query  .= " ORDER BY `glpi_plugin_metademands_tasks`.`completename`";
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {

@@ -844,7 +844,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $ticket_ticket             = new Ticket_Ticket();
       $KO                        = [];
       $ancestor_tickets_id       = 0;
-      $parent_tickets_id_created = [];
       $ticket_exists_array       = [];
       $config                    = $this->getConfig();
 
@@ -1019,8 +1018,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   if ($form_metademands_id == $metademands_id) {
                      $ancestor_tickets_id = $parent_tickets_id;
                   }
-
-                  $parent_tickets_id_created[] = $parent_tickets_id;
 
                   // Metademands - ticket relation
                   $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
@@ -1445,7 +1442,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       foreach ($tickettasks_data as $son_ticket_data) {
 
-         if(in_array($son_ticket_data['tickettasks_id'],$_SESSION['metademands_hide'])){
+         if(isset($_SESSION['metademands_hide']) && in_array($son_ticket_data['tickettasks_id'],$_SESSION['metademands_hide'])){
             continue;
          }
          if ($son_ticket_data['level'] == $tasklevel) {
