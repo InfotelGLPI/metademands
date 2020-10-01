@@ -816,7 +816,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
                //see fields
                self::getFieldType($data, $metademands_data, $preview, $config_link);
-               echo "</div>";
+
 
                // Label 2 (date interval)
                if (!empty($data['label2']) && $data['type'] != 'link') {
@@ -839,6 +839,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
                   echo "</div>";
                }
+               echo "</div>";
             }
 
             // If next field is date interval : pass to next line
