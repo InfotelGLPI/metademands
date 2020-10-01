@@ -954,7 +954,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $ticket_ticket             = new Ticket_Ticket();
       $KO                        = [];
       $ancestor_tickets_id       = 0;
-      $parent_tickets_id_created = [];
       $ticket_exists_array       = [];
       $config                    = $this->getConfig();
 
@@ -972,7 +971,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      }
                   }
                } else {
-                  $values['fields']['tickets_id'] = 0;
                   $values['fields']['tickets_id'] = 0;
                }
                if ($noChild) {
@@ -1149,8 +1147,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $ancestor_tickets_id = $parent_tickets_id;
                   }
 
-                  $parent_tickets_id_created[] = $parent_tickets_id;
-
                   // Metademands - ticket relation
                   $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
                                            'parent_tickets_id'                 => $ancestor_tickets_id,
@@ -1168,7 +1164,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                                           'link'         => Ticket_Ticket::SON_OF]);
                   }
 
-                  // Create sons ticket tasks
+                  // Create sons tickets
                   if (isset($line['tasks'])
                       && is_array($line['tasks'])
                       && count($line['tasks'])) {
@@ -1573,7 +1569,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
       foreach ($tickettasks_data as $son_ticket_data) {
 
          if ($son_ticket_data['level'] == $tasklevel) {
-            if (in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
+            if (isset($_SESSION['metademands_hide'])
+                && in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
                continue;
             }
             // Skip ticket creation if not allowed by metademand form

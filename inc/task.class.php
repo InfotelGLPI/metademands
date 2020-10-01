@@ -491,8 +491,8 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                   WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id . "";
 
       if (count($params['condition']) > 0) {
-         foreach ($params['condition'] as $cond) {
-            $query .= " AND " . $cond . "";
+         foreach ($params['condition'] as $cond => $value) {
+            $query .= " AND " . $cond . " = ".$value;
          }
       }
 

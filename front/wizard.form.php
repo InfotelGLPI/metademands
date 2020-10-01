@@ -234,7 +234,7 @@ if (isset($_POST['next'])) {
                         }
                      }
                   } else {
-                     $KO = false;
+
                      if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
                         $value['second_date_ok'] = true;
                         $value['id']             = $id . '-2';
@@ -316,7 +316,6 @@ if (isset($_POST['next'])) {
                         }
                      }
                   }
-
                   //               $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id']);
                   $metademands->getFromDB($_POST['form_metademands_id']);
                   $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id'], $metademands->getField('tickettemplates_id'));
@@ -367,6 +366,7 @@ if (isset($_POST['next'])) {
          }
       }
    }
+
    if (Session::getCurrentInterface() == 'central') {
       Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
    } else {

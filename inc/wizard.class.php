@@ -89,14 +89,8 @@ class PluginMetademandsWizard extends CommonDBTM {
    }
 
    /**
-    * @param string $step
-    * @param int    $metademands_id
-    * @param bool   $preview
-    * @param int    $tickets_id
-    * @param int    $resources_id
-    * @param string $resources_step
+    * @param $options
     *
-    * @return bool
     * @return bool
     * @throws \GlpitestSQLError
     */
