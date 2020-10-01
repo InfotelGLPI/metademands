@@ -746,8 +746,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
          if (isset($metademands->fields['type'])
              && $metademands->fields['type'] == Ticket::DEMAND_TYPE) {
             $tasks                                  = new PluginMetademandsTask();
-            $tasks_data                             = $tasks->getTasks($metademands_id,
-                                                                       ['condition' => '`glpi_plugin_metademands_tasks`.`type` = ' . PluginMetademandsTask::TICKET_TYPE]);
+            $tasks_data = $tasks->getTasks($metademands_id,
+                                           ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]);
             $forms[$step][$metademands_id]['tasks'] = $tasks_data;
          }
 
@@ -857,6 +857,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_id, $ancestor_tickets_id)) {
                      continue;
                   }
+               } else {
+                  $values['fields']['tickets_id'] = 0;
                }
                $metademand = new PluginMetademandsMetademand();
                $metademand->getFromDB($form_metademands_id);

@@ -449,7 +449,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
    function getTasks($metademands_id, $options = []) {
       global $DB;
 
-      $params['condition'] = '1';
+      $params['condition'] = [];
       $params['join'] = '';
       foreach ($options as $key => $val) {
          $params[$key] = $val;
