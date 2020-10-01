@@ -1022,7 +1022,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      }
                   }
                }
-
+               if(!isset($parent_fields['itilcategories_id'])){
+                  $parent_fields['itilcategories_id'] = json_decode($this->getField('itilcategories_id'),1)[0];
+               }
                // Requester user field
                if (isset($values['fields']['_users_id_requester'])) {
                   $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
