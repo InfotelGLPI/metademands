@@ -90,7 +90,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
   KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
   KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
   KEY `fields_link` (`fields_link`),
-  KEY `fields_display` (`fields_display`)
+  KEY `hidden_link` (`hidden_link`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
