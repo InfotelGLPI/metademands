@@ -965,11 +965,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
                if ($ancestor_tickets_id > 0) {
                   // Skip ticket creation if not allowed by metademand form
                   $metademandtasks_tasks_ids = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
-                  foreach ($metademandtasks_tasks_ids as $metademandtasks_tasks_id) {
-                     if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_id, $ancestor_tickets_id)) {
+//                  foreach ($metademandtasks_tasks_ids as $metademandtasks_tasks_id) {
+                     if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_ids, $ancestor_tickets_id)) {
                         $noChild = true;
                      }
-                  }
+//                  }
                } else {
                   $values['fields']['tickets_id'] = 0;
                }
@@ -1022,9 +1022,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      }
                   }
                }
-               if(!isset($parent_fields['itilcategories_id'])){
-                  $parent_fields['itilcategories_id'] = json_decode($this->getField('itilcategories_id'),1)[0];
-               }
+
                // Requester user field
                if (isset($values['fields']['_users_id_requester'])) {
                   $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
