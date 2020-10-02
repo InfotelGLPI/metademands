@@ -1100,6 +1100,40 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $ticket->add($input);
+                  if(plugin::isPluginActive('resources')){
+                     if(isset($options["resources_id"])){
+                        $checklistConfig = new PluginResourcesChecklistconfig();
+                        $resource = new PluginResourcesResource();
+                        $resource->getFromDB($options["resources_id"]);
+                        if(count($line["form"])){
+                           foreach ($line["form"] as $id => $v){
+                              if(array_key_exists ($v["id"],$values["fields"])){
+                                 $Pfield = new PluginResourcesLinkmetademand();
+                                 if($Pfield->getFromDBByCrit(["plugin_metademands_fields_id"=>$v["id"]])){
+                                    $checkvalues =  PluginMetademandsField::_unserialize($Pfield->fields["check_value"]);
+                                    $checklist_in =  PluginMetademandsField::_unserialize($Pfield->fields["checklist_in"]);
+                                    $checklist_out =  PluginMetademandsField::_unserialize($Pfield->fields["checklist_out"]);
+                                    if(isset($checkvalues) && is_array($checkvalues)){
+                                       foreach ($checkvalues as $k => $checkvalue){
+                                          if($checkvalue == $values["fields"][$v["id"]]){
+                                             if($checklist_in[$k] != 0){
+                                                $c = $checklist_in[$k];
+                                                $checklistConfig->addResourceChecklist($resource, $c, PluginResourcesChecklist::RESOURCES_CHECKLIST_IN);
+                                             }
+                                             if($checklist_out[$k] != 0){
+                                                $c = $checklist_out[$k];
+                                                $checklistConfig->addResourceChecklist($resource,$c , PluginResourcesChecklist::RESOURCES_CHECKLIST_OUT);
+                                             }
+
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
                   if ($docitem == null && $config['create_pdf']) {
                      //Génération du document PDF
                      $docPdf = new PluginMetaDemandsMetaDemandPdf($this->fields['name'],

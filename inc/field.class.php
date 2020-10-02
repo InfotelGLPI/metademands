@@ -1079,6 +1079,26 @@ class PluginMetademandsField extends CommonDBChild {
          $params['hidden_link'] = $params['hidden_link'][$nbOpt];
       }
 
+      if(Plugin::isPluginActive('resources')){
+         $linkmeta = new PluginResourcesLinkmetademand();
+         if(!$linkmeta->getFromDBByCrit(["plugin_metademands_fields_id"=>$this->getID(),"plugin_metademands_metademands_id"=>$metademands_id])){
+            $linkmeta->getEmpty();
+         }
+         $params['checklist_in'] = self::_unserialize($linkmeta->fields["checklist_in"]);
+         if (!isset($params['checklist_in'][$nbOpt])) {
+            $params['checklist_in'] = "";
+         } else {
+            $params['checklist_in'] = $params['checklist_in'][$nbOpt];
+         }
+
+         $params['checklist_out'] = self::_unserialize($linkmeta->fields["checklist_out"]);
+         if (!isset($params['checklist_out'][$nbOpt])) {
+            $params['checklist_out'] = "";
+         } else {
+            $params['checklist_out'] = $params['checklist_out'][$nbOpt];
+         }
+
+      }
 
       switch ($params['value']) {
          case 'yesno':
@@ -1330,6 +1350,25 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'], false, $this->getID());
          $res .= "</td></tr>";
       }
+      if(Plugin::isPluginActive('resources')) {
+         if ($hidden) {
+            $res .= "<tr><td>";
+            $res .= __('Link a checklist in', 'metademands');
+            $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the checklist in will be add', 'metademands') . '</span>';
+            $res .= '</td>';
+            $res .= "<td>";
+            $res .= PluginResourcesLinkmetademand::showChecklistInDropdown($metademands_id, $params['checklist_in'], false, $this->getID());
+            $res .= "</td></tr>";
+
+            $res .= "<tr><td>";
+            $res .= __('Link a checklist out', 'metademands');
+            $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the checklist out will be add', 'metademands') . '</span>';
+            $res .= '</td>';
+            $res .= "<td>";
+            $res .= PluginResourcesLinkmetademand::showChecklistOutDropdown($metademands_id, $params['checklist_out'], false, $this->getID());
+            $res .= "</td></tr>";
+         }
+      }
 
       return $res;
    }
@@ -1343,9 +1382,9 @@ class PluginMetademandsField extends CommonDBChild {
       foreach ($fields_data as $id => $value) {
          if ($idF != $id) {
             $data[$id] = urldecode(html_entity_decode($value['label']));
-            if (!empty($value['label2'])) {
-               $data[$id] = ' ' . urldecode(html_entity_decode($value['label2']));
-            }
+//            if (!empty($value['label2'])) {
+//               $data[$id] .= ' - ' . urldecode(html_entity_decode($value['label2']));
+//            }
          }
 
       }
@@ -1669,9 +1708,9 @@ class PluginMetademandsField extends CommonDBChild {
       foreach ($fields_data as $id => $value) {
          if ($idF != $id) {
             $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
-            if (!empty($value['label2'])) {
-               $data[$id] = ' ' . $value['label2'];
-            }
+//            if (!empty($value['label2'])) {
+//               $data[$id] .= ' - ' . $value['label2'];
+//            }
          }
       }
 

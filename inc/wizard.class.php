@@ -802,6 +802,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
                   echo "</div>";
                }
+               echo "</div>";
             }
 
             // If next field is date interval : pass to next line
@@ -1727,11 +1728,11 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (isset($_POST['basket'])) {
          foreach ($_POST['basket'] as $basket) {
             $values['fields'] = $basket;
-            $result           = $metademands->addMetademands($metademands_id, $values);
+            $result           = $metademands->addMetademands($metademands_id, $values, $options);
             Session::addMessageAfterRedirect($result['message']);
          }
       } else {
-         $result = $metademands->addMetademands($metademands_id, $values);
+         $result = $metademands->addMetademands($metademands_id, $values, $options);
          Session::addMessageAfterRedirect($result['message']);
       }
       unset($_SESSION['plugin_metademands']);
