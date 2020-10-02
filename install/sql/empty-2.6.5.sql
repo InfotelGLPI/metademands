@@ -193,7 +193,7 @@ CREATE TABLE `glpi_plugin_metademands_tickets_metademands` (
   `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
   `tickets_id` int(11) NOT NULL default '0',
   `parent_tickets_id` int(11) NOT NULL default '0',
-  `tickettemplates_id` INT(11) NOT NULL DEFAULT '0'
+  `tickettemplates_id` INT(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
   KEY `tickets_id` (`tickets_id`)
