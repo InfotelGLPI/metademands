@@ -783,7 +783,7 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
-    * Load fields from plugins
+    * Load data options saves from plugins
     *
     * @param $plug
     */
@@ -808,7 +808,7 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
-    * Load fields from plugins
+    * show options fields from plugins
     *
     * @param $plug
     */
@@ -833,7 +833,7 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
-    * Load fields from plugins
+    * saves data fields option from plugins
     *
     * @param $plug
     */
@@ -1156,6 +1156,8 @@ class PluginMetademandsField extends CommonDBChild {
       } else {
          $params['hidden_link'] = $params['hidden_link'][$nbOpt];
       }
+
+      //Hook to get values saves from plugin
       if (isset($PLUGIN_HOOKS['metademands'])) {
          $plugin = new Plugin();
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1424,6 +1426,7 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= "</td></tr>";
       }
 
+      //Hook to print new options from plugins
       if (isset($PLUGIN_HOOKS['metademands'])) {
          $plugin = new Plugin();
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {

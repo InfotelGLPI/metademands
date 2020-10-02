@@ -1100,6 +1100,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $ticket->add($input);
+                  //Hook to do action after ticket creation with metademands
                   if (isset($PLUGIN_HOOKS['metademands'])) {
                      $plugin = new Plugin();
                      foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1108,7 +1109,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $p["values"] = $values;
                         $p["line"] = $line;
 
-                        $new_res = PluginMetademandsField::getPluginAfterCreateTicket($plug,$p);
+                        $new_res = PluginMetademandsMetademand::getPluginAfterCreateTicket($plug,$p);
                      }
                   }
 
@@ -2319,7 +2320,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
    }
 
    /**
-    * Load fields from plugins
+    * Action after ticket creation with metademands
     *
     * @param $plug
     */
