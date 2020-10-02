@@ -941,7 +941,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @throws \GlpitestSQLError
     */
    function addMetademands($metademands_id, $values, $options = []) {
-      global $DB;
+      global $DB, $PLUGIN_HOOKS;
 
       $tasklevel = 1;
 
@@ -1100,40 +1100,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $ticket->add($input);
-                  if(plugin::isPluginActive('resources')){
-                     if(isset($options["resources_id"])){
-                        $checklistConfig = new PluginResourcesChecklistconfig();
-                        $resource = new PluginResourcesResource();
-                        $resource->getFromDB($options["resources_id"]);
-                        if(count($line["form"])){
-                           foreach ($line["form"] as $id => $v){
-                              if(array_key_exists ($v["id"],$values["fields"])){
-                                 $Pfield = new PluginResourcesLinkmetademand();
-                                 if($Pfield->getFromDBByCrit(["plugin_metademands_fields_id"=>$v["id"]])){
-                                    $checkvalues =  PluginMetademandsField::_unserialize($Pfield->fields["check_value"]);
-                                    $checklist_in =  PluginMetademandsField::_unserialize($Pfield->fields["checklist_in"]);
-                                    $checklist_out =  PluginMetademandsField::_unserialize($Pfield->fields["checklist_out"]);
-                                    if(isset($checkvalues) && is_array($checkvalues)){
-                                       foreach ($checkvalues as $k => $checkvalue){
-                                          if($checkvalue == $values["fields"][$v["id"]]){
-                                             if($checklist_in[$k] != 0){
-                                                $c = $checklist_in[$k];
-                                                $checklistConfig->addResourceChecklist($resource, $c, PluginResourcesChecklist::RESOURCES_CHECKLIST_IN);
-                                             }
-                                             if($checklist_out[$k] != 0){
-                                                $c = $checklist_out[$k];
-                                                $checklistConfig->addResourceChecklist($resource,$c , PluginResourcesChecklist::RESOURCES_CHECKLIST_OUT);
-                                             }
+                  if (isset($PLUGIN_HOOKS['metademands'])) {
+                     $plugin = new Plugin();
+                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        $p = [];
+                        $p["options"] = $options;
+                        $p["values"] = $values;
+                        $p["line"] = $line;
 
-                                          }
-                                       }
-                                    }
-                                 }
-                              }
-                           }
-                        }
+                        $new_res = PluginMetademandsField::getPluginAfterCreateTicket($plug,$p);
                      }
                   }
+
                   if ($docitem == null && $config['create_pdf']) {
                      //Génération du document PDF
                      $docPdf = new PluginMetaDemandsMetaDemandPdf($this->fields['name'],
@@ -2338,6 +2316,34 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
    function displayHeader() {
       Html::header(__('Configure demands', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand", "metademand");
+   }
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginAfterCreateTicket($plug,$params) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         if(Plugin::isPluginActive($plug)){
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+               if (!class_exists($pluginclass)) {
+                  continue;
+               }
+               $form[$pluginclass] = [];
+               $item               = $dbu->getItemForItemtype($pluginclass);
+               if ($item && is_callable([$item, 'afterCreateTicket'])) {
+                  return $item->afterCreateTicket($params);
+               }
+            }
+         }
+
+      }
    }
 
 }

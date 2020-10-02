@@ -155,24 +155,16 @@ if (isset($_POST["add"])) {
    if ($field->update($_POST)) {
       $field->recalculateOrder($_POST);
       PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
-      if(Plugin::isPluginActive('resources')){
-         $input["check_value"] =$_POST["check_value"];
-         $linkmeta = new PluginResourcesLinkmetademand();
-         if (isset($_POST["checklist_in"])) {
-            $input["checklist_in"] = PluginMetademandsField::_serialize($_POST["checklist_in"]);
-         }
-         if (isset($_POST["checklist_out"])) {
-            $input["checklist_out"] = PluginMetademandsField::_serialize($_POST["checklist_out"]);
-         }
-         if($linkmeta->getFromDBByCrit(["plugin_metademands_fields_id"=>$_POST["id"],"plugin_metademands_metademands_id"=>$_POST["plugin_metademands_metademands_id"]])){
-            $input["id"] = $linkmeta->getID();
-            $linkmeta->update($input);
-         }else{
-            $input["plugin_metademands_fields_id"] = $_POST["id"];
-            $input["plugin_metademands_metademands_id"] = $_POST["plugin_metademands_metademands_id"];
-            $linkmeta->add($input);
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         $plugin = new Plugin();
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $p = $_POST;
+
+
+            $new_res = PluginMetademandsField::getPluginSaveOptions($plug,$p);
          }
       }
+
    }
 
    Html::back();

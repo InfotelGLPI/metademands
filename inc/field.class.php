@@ -782,6 +782,83 @@ class PluginMetademandsField extends CommonDBChild {
       }
    }
 
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginParamsOptions($plug,$params) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'getParamsOptions'])) {
+               return $item->getParamsOptions($params);
+            }
+         }
+      }
+   }
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginShowOptions($plug,$params) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'showOptions'])) {
+               return $item->showOptions($params);
+            }
+         }
+      }
+   }
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginSaveOptions($plug,$params) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         if(Plugin::isPluginActive($plug)){
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+               if (!class_exists($pluginclass)) {
+                  continue;
+               }
+               $form[$pluginclass] = [];
+               $item               = $dbu->getItemForItemtype($pluginclass);
+               if ($item && is_callable([$item, 'saveOptions'])) {
+                  return $item->saveOptions($params);
+               }
+            }
+         }
+
+      }
+   }
 
    /**
     * Show field item dropdown
@@ -1046,6 +1123,7 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    function showOptions($metademands_id, $params, $nbOpt) {
+      global $PLUGIN_HOOKS;
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
 
@@ -1078,27 +1156,22 @@ class PluginMetademandsField extends CommonDBChild {
       } else {
          $params['hidden_link'] = $params['hidden_link'][$nbOpt];
       }
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         $plugin = new Plugin();
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $p = [];
+            $p["plugin_metademands_fields_id"] = $this->getID();
+            $p["plugin_metademands_metademands_id"] = $metademands_id;
+            $p["nbOpt"] = $nbOpt;
 
-      if(Plugin::isPluginActive('resources')){
-         $linkmeta = new PluginResourcesLinkmetademand();
-         if(!$linkmeta->getFromDBByCrit(["plugin_metademands_fields_id"=>$this->getID(),"plugin_metademands_metademands_id"=>$metademands_id])){
-            $linkmeta->getEmpty();
+            $new_params = self::getPluginParamsOptions($plug,$p);
+            if ($plugin->isActivated($plug)
+                && is_array($new_params)) {
+               $params = array_merge($params,$new_params);
+            }
          }
-         $params['checklist_in'] = self::_unserialize($linkmeta->fields["checklist_in"]);
-         if (!isset($params['checklist_in'][$nbOpt])) {
-            $params['checklist_in'] = "";
-         } else {
-            $params['checklist_in'] = $params['checklist_in'][$nbOpt];
-         }
-
-         $params['checklist_out'] = self::_unserialize($linkmeta->fields["checklist_out"]);
-         if (!isset($params['checklist_out'][$nbOpt])) {
-            $params['checklist_out'] = "";
-         } else {
-            $params['checklist_out'] = $params['checklist_out'][$nbOpt];
-         }
-
       }
+
 
       switch ($params['value']) {
          case 'yesno':
@@ -1318,7 +1391,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return string
     */
    function showLinkHtml($metademands_id, $params, $nb, $task = 1, $field = 1, $hidden = 0) {
-
+      global $PLUGIN_HOOKS;
       $res = "";
 
       // Show task link
@@ -1350,23 +1423,23 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'], false, $this->getID());
          $res .= "</td></tr>";
       }
-      if(Plugin::isPluginActive('resources')) {
-         if ($hidden) {
-            $res .= "<tr><td>";
-            $res .= __('Link a checklist in', 'metademands');
-            $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the checklist in will be add', 'metademands') . '</span>';
-            $res .= '</td>';
-            $res .= "<td>";
-            $res .= PluginResourcesLinkmetademand::showChecklistInDropdown($metademands_id, $params['checklist_in'], false, $this->getID());
-            $res .= "</td></tr>";
 
-            $res .= "<tr><td>";
-            $res .= __('Link a checklist out', 'metademands');
-            $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the checklist out will be add', 'metademands') . '</span>';
-            $res .= '</td>';
-            $res .= "<td>";
-            $res .= PluginResourcesLinkmetademand::showChecklistOutDropdown($metademands_id, $params['checklist_out'], false, $this->getID());
-            $res .= "</td></tr>";
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         $plugin = new Plugin();
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $p = [];
+            $p["plugin_metademands_fields_id"] = $this->getID();
+            $p["plugin_metademands_metademands_id"] = $metademands_id;
+            $p["checklist_in"] = $params['checklist_in'];
+            $p["checklist_out"] = $params['checklist_out'];
+            $p["hidden"] = $hidden;
+
+
+            $new_res = self::getPluginShowOptions($plug,$p);
+            if ($plugin->isActivated($plug)
+                && !empty($new_res)) {
+              $res .= $new_res;
+            }
          }
       }
 

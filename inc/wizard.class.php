@@ -779,7 +779,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
                //see fields
                self::getFieldType($data, $metademands_data, $preview, $config_link, $itilcategories_id);
-               
+
 
                // Label 2 (date interval)
                if (!empty($data['label2']) && $data['type'] != 'link') {
