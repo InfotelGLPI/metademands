@@ -1343,9 +1343,9 @@ class PluginMetademandsField extends CommonDBChild {
       foreach ($fields_data as $id => $value) {
          if ($idF != $id) {
             $data[$id] = urldecode(html_entity_decode($value['label']));
-            if (!empty($value['label2'])) {
-               $data[$id] = ' ' . urldecode(html_entity_decode($value['label2']));
-            }
+//            if (!empty($value['label2'])) {
+//               $data[$id] .= ' - ' . urldecode(html_entity_decode($value['label2']));
+//            }
          }
 
       }
@@ -1669,9 +1669,9 @@ class PluginMetademandsField extends CommonDBChild {
       foreach ($fields_data as $id => $value) {
          if ($idF != $id) {
             $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
-            if (!empty($value['label2'])) {
-               $data[$id] = ' ' . $value['label2'];
-            }
+//            if (!empty($value['label2'])) {
+//               $data[$id] .= ' - ' . $value['label2'];
+//            }
          }
       }
 
