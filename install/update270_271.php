@@ -58,6 +58,7 @@ Session::start();
 $_SESSION['glpi_use_mode'] = 0;
 Session::loadLanguage();
 
+Global $DB;
 if (!$DB->connected) {
    die("No DB connection\r\n");
 }
