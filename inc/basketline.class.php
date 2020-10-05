@@ -27,12 +27,17 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginMetademandsBasketline
+ */
 class PluginMetademandsBasketline extends CommonDBTM {
 
    static $rightname = 'plugin_metademands';
 
    /**
+    * @param $idline
     * @param $values
+    * @param $fields
     */
    public static function retrieveDatasByType($idline, $values, $fields) {
 
@@ -67,6 +72,9 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
    /**
     * @param $content
+    * @param $plugin_metademands_metademands_id
+    *
+    * @throws \GlpitestSQLError
     */
    function addToBasket($content, $plugin_metademands_metademands_id) {
       global $DB;
@@ -102,6 +110,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
    /**
     * @param $input
+    * @param $line
     */
    function updateFromBasket($input, $line) {
 

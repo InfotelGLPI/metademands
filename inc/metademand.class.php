@@ -136,6 +136,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param int        $withtemplate
     *
     * @return bool|true
+    * @throws \GlpitestSQLError
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $metademands = new self();
@@ -644,9 +645,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          }
       }
 
-      $message = $metademands->addMetademands($params['metademands_id'], $meta_data);
-
-      return $message;
+      return $metademands->addMetademands($params['metademands_id'], $meta_data);
    }
 
    /**
@@ -763,12 +762,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
    /**
     * @param bool  $forceview
     * @param array $options
-    * @param array $meta_data
     *
     * @return array
     * @throws \GlpitestSQLError
     */
-   function listMetademands($forceview = false, $options = [], $meta_data = []) {
+   function listMetademands($forceview = false, $options = []) {
       global $DB;
 
       $dbu                 = new DbUtils();
@@ -1257,6 +1255,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @param       $metademands_id
     * @param       $values
     *
+    * @param array $options
+    *
     * @return array
     */
    private function formatFields(array $parent_fields, $metademands_id, $values, $options = []) {
@@ -1530,6 +1530,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
    /**
     * @param $metademands_id
     *
+    * @param $tickettemplates_id
+    *
     * @return array
     */
    function formatTicketFields($metademands_id, $tickettemplates_id) {
@@ -1777,7 +1779,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $status = [Ticket::SOLVED, Ticket::CLOSED];
 
             foreach ($tickets_existant as $values) {
-               $notcreated  = false;
                $color_class = '';
                // Get ticket values if it exists
                $ticket->getFromDB($values['tickets_id']);
@@ -2180,7 +2181,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
    /**
     * Get the specific massive actions
     *
-    * @param $checkitem link item to check right   (default NULL)
+    * @param null $checkitem link item to check right   (default NULL)
     *
     * @return array array of massive actions
     * *@since version 0.84

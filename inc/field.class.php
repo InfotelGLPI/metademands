@@ -122,8 +122,8 @@ class PluginMetademandsField extends CommonDBChild {
 
 
    /**
-    * @param $ID
-    * @param $item
+    * @param       $ID
+    * @param array $options
     *
     * @return bool
     * @throws \GlpitestSQLError
@@ -217,7 +217,7 @@ class PluginMetademandsField extends CommonDBChild {
       // LABEL 2
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
-      echo __('Additional label', 'metademands') . "&nbsp;<span style='color:red' id='show_label2' style='display:none'>&nbsp;*&nbsp;</span>";
+      echo __('Additional label', 'metademands') . "&nbsp;<span id='show_label2' style='color:red;display:none;'>&nbsp;*&nbsp;</span>";
       echo "</td>";
       echo "<td>";
       Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
@@ -853,8 +853,6 @@ class PluginMetademandsField extends CommonDBChild {
    static function getFieldItemsName($value = '') {
       global $PLUGIN_HOOKS;
 
-      $dbu = new DbUtils();
-
       switch ($value) {
          case 'user':
             return __('User');
@@ -1433,6 +1431,17 @@ class PluginMetademandsField extends CommonDBChild {
       }
    }
 
+   /**
+    * @param        $action
+    * @param        $btname
+    * @param        $btlabel
+    * @param array  $fields
+    * @param string $btimage
+    * @param string $btoption
+    * @param string $confirm
+    *
+    * @return string
+    */
    static function showSimpleForm($action, $btname, $btlabel, array $fields = [], $btimage = '',
                                   $btoption = '', $confirm = '') {
 
@@ -1573,6 +1582,9 @@ class PluginMetademandsField extends CommonDBChild {
       }
    }
 
+   /**
+    * @param $url
+    */
    function addNewOpt($url) {
       global $CFG_GLPI;
       $res = "<script type='text/javascript'>
@@ -1587,6 +1599,14 @@ class PluginMetademandsField extends CommonDBChild {
       echo $res;
    }
 
+   /**
+    * @param $metademands_id
+    * @param $params
+    * @param $nbOpt
+    *
+    * @return string
+    * @throws \GlpitestSQLError
+    */
    function showOptions($metademands_id, $params, $nbOpt) {
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
@@ -1634,7 +1654,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  1, 1, 1);
 
             //            // Show field link
             //            $html .= "<tr><td>";
@@ -1700,7 +1720,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             break;
          case 'other':
@@ -1735,7 +1755,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  1, 1, 1);
 
             break;
          case 'checkbox':
@@ -1760,7 +1780,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 0, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  1, 0, 1);
 
             break;
          case 'parent_field':
@@ -1802,7 +1822,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 0, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  1, 0, 1);
 
 
             break;
@@ -1823,7 +1843,7 @@ class PluginMetademandsField extends CommonDBChild {
             //
             //               $html .= Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => $display));
             //               //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-            //               //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
+            //               //            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  0,0,0);
             //               $html .= "</td></tr>";
             //            }
 
@@ -1834,12 +1854,17 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
-    * @param $metademands_id
-    * @param $params
+    * @param     $metademands_id
+    * @param     $params
+    *
+    * @param int $task
+    * @param int $field
+    * @param int $hidden
     *
     * @return string
+    * @throws \GlpitestSQLError
     */
-   function showLinkHtml($metademands_id, $params, $nb, $task = 1, $field = 1, $hidden = 0) {
+   function showLinkHtml($metademands_id, $params, $task = 1, $field = 1, $hidden = 0) {
 
       $res = "";
 
@@ -1860,7 +1885,7 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
          $res .= '</td>';
          $res .= "<td>";
-         $res .= self::showFieldsDropdown($metademands_id, $params['fields_link'], false, $this->getID());
+         $res .= self::showFieldsDropdown($metademands_id, $params['fields_link'], $this->getID(), false);
          $res .= "</td></tr>";
       }
       if ($hidden) {
@@ -1869,14 +1894,22 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes visible', 'metademands') . '</span>';
          $res .= '</td>';
          $res .= "<td>";
-         $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'], false, $this->getID());
+         $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'], $this->getID(), false);
          $res .= "</td></tr>";
       }
 
       return $res;
    }
 
-   static function showHiddenDropdown($metademands_id, $selected_value, $display = true, $idF) {
+   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param bool $display
+    * @param      $idF
+    *
+    * @return int|string
+    */
+   static function showHiddenDropdown($metademands_id, $selected_value, $idF, $display = true) {
 
 
       $fields      = new self();
@@ -2203,7 +2236,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param $metademands_id
     * @param $selected_value
     */
-   static function showFieldsDropdown($metademands_id, $selected_value, $display = true, $idF) {
+   static function showFieldsDropdown($metademands_id, $selected_value, $idF, $display = true) {
 
       $fields      = new self();
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
