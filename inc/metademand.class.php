@@ -1093,6 +1093,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   if (isset($_POST['plugin_servicecatalog_itilcategories_id'])
                       && $_POST['plugin_servicecatalog_itilcategories_id'] > 0) {
                      $input['itilcategories_id'] = $_POST['plugin_servicecatalog_itilcategories_id'];
+                  } else {
+                     $cats = json_decode($this->fields['itilcategories_id'], true);
+                     if (count($cats) == 1){
+                        foreach ($cats as $cat) {
+                           $input['itilcategories_id'] = $cat;
+                        }
+                     }
+
                   }
 
                   $input = Toolbox::addslashes_deep($input);
@@ -1319,7 +1327,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          //use plugin fields types
          if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-               $new_fields = PluginMetademandsWizard::getPluginFieldItemsType($plug);
+               $new_fields = PluginMetademandsField::getPluginFieldItemsType($plug);
                if ($plugin->isActivated($plug) && is_array($new_fields)) {
                   if (in_array($field['type'], array_keys($new_fields))) {
                      $field['type'] = $new_fields[$field['type']];

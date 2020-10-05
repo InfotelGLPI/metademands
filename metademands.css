@@ -143,19 +143,18 @@ a.metademand_middle_button{
 }
 
 .table-basket {
-   margin-left: auto;
-   margin-right: auto;
+   width: 100%;
    border: 1px solid #ced4da;
 }
 
 .basket-th {
-   padding: 15px;
+   padding: 10px;
    text-align: center;
    border-bottom: 1px solid #ced4da;
 }
 
 .basket-delete-th {
-   padding: 15px;
+   padding: 10px;
    border-left: 1px solid #ced4da;
    background-color: white !important;
    border-bottom: 1px solid #ced4da;
@@ -171,11 +170,13 @@ a.metademand_middle_button{
 }
 
 .table-basket td {
-   padding : 15px;
+   padding-left: 10px;
+   padding-right: 10px;
    text-align: center;
 }
 
+.update-line-basket,
 .delete-line-basket {
-   background-color: whitesmoke !important;
-
+   background-color: #FFF;
+   border: none;
 }

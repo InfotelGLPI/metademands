@@ -503,27 +503,16 @@ if (isset($_POST['next'])) {
             if (!$wizard->checkMandatoryFields($value, ['id'    => $id,
                                                         'value' => $_POST['field'][$id]],
                                                $_POST['field'])) {
-               //            foreach ($_POST['field'] as $key => $field) {
-               //               if (is_array($field)) {
-               //
-               //               } else {
-               //                  $field = str_replace('\r\n', '&#x0A;', $field);
-               //                  $_POST['field'][$key] = $field;
-               //               }
-               //            }
                $KO = true;
             }
             $content[$id]['plugin_metademands_fields_id'] = $id;
-            if (isset($_POST['_filename']) && $value['type'] == "upload") {
-               $content[$id]['value'] = PluginMetademandsField::_serialize($_POST['_filename']);
-            } else {
+            if ($value['type'] != "upload") {
                $content[$id]['value'] = (is_array($_POST['field'][$id])) ? PluginMetademandsField::_serialize($_POST['field'][$id]) : $_POST['field'][$id];
             }
             $content[$id]['value2'] = (isset($_POST['field'][$id . "-2"])) ? $_POST['field'][$id . "-2"] : "";
             $content[$id]['item']   = $value['item'];
             $content[$id]['type']   = $value['type'];
-         } else {
-            $content[$id]['plugin_metademands_fields_id'] = $id;
+
             if (isset($_POST['_filename']) && $value['type'] == "upload") {
                $files = [];
                foreach ($_POST['_filename'] as $key => $filename) {
@@ -532,12 +521,7 @@ if (isset($_POST['next'])) {
                   $files[$key]['_filename']        = $_POST['_filename'][$key];
                }
                $content[$id]['value'] = json_encode($files);
-            } else {
-               $content[$id]['value'] = '';
             }
-            $content[$id]['value2'] = '';
-            $content[$id]['item']   = $value['item'];
-            $content[$id]['type']   = $value['type'];
          }
       }
 
@@ -563,11 +547,45 @@ if (isset($_POST['next'])) {
          Html::helpFooter();
       }
 
-   } else if (isset($_POST['deletebasketline'])) {
+   } else if (isset($_POST['updatebasketline'])) {
 
-      $basketline = new PluginMetademandsBasketline();
-      $basketline->deleteFromBasket($_POST);
+      $line = $_POST['updatebasketline'];
+      if (isset($_POST['field_basket_'.$line])) {
+         $KO = false;
 
+         $data = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+
+         foreach ($data as $id => $value) {
+
+            if ($value['type'] != 'upload') {
+               if (!$wizard->checkMandatoryFields($value, ['id'    => $id,
+                                                           'value' => isset($_POST['field_basket_'.$line][$id]) ? $_POST['field_basket_'.$line][$id] : ""],
+                                                  $_POST['field_basket_'.$line])) {
+                  $KO = true;
+               }
+            }
+            if ($value['type'] == 'upload') {
+               if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
+                  $KO = true;
+               } else {
+                  if (isset($_POST['_filename'])) {
+                     foreach ($_POST['_filename'] as $key => $filename) {
+                        $files[$key]['_prefix_filename'] = $_POST['_prefix_filename'][$key];
+                        $files[$key]['_tag_filename']    = $_POST['_tag_filename'][$key];
+                        $files[$key]['_filename']        = $_POST['_filename'][$key];
+                     }
+
+                     $_POST['field_basket_'.$line][$id] = json_encode($files);
+                  }
+               }
+            }
+         }
+      }
+      if ($KO === false) {
+
+         $basketline = new PluginMetademandsBasketline();
+         $basketline->updateFromBasket($_POST, $line);
+      }
       if (Session::getCurrentInterface() == 'central') {
          Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
       } else {
@@ -585,30 +603,75 @@ if (isset($_POST['next'])) {
          Html::helpFooter();
       }
 
-   } else {
-      if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
+   } else
+      if (isset($_POST['deletebasketline'])) {
+
+         $basketline = new PluginMetademandsBasketline();
+         $basketline->deleteFromBasket($_POST);
+
+         if (Session::getCurrentInterface() == 'central') {
+            Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
+         } else {
+            Html::helpHeader(__('Create a demand', 'metademands'));
+         }
+
+         $options = ['step'           => PluginMetademandsMetademand::STEP_SHOW,
+                     'metademands_id' => $_POST['metademands_id']];
+
+         $wizard->showWizard($options);
+
+         if (Session::getCurrentInterface() == 'central') {
+            Html::footer();
+         } else {
+            Html::helpFooter();
+         }
+
+      } else if (isset($_POST['delete_basket_file'])) {
+
+         $basketline = new PluginMetademandsBasketline();
+         $basketline->deleteFileFromBasket($_POST);
+
+         if (Session::getCurrentInterface() == 'central') {
+            Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
+         } else {
+            Html::helpHeader(__('Create a demand', 'metademands'));
+         }
+
+         $options = ['step'           => PluginMetademandsMetademand::STEP_SHOW,
+                     'metademands_id' => $_POST['metademands_id']];
+
+         $wizard->showWizard($options);
+
+         if (Session::getCurrentInterface() == 'central') {
+            Html::footer();
+         } else {
+            Html::helpFooter();
+         }
 
       } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
-      }
+         if (Session::getCurrentInterface() == 'central') {
+            Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
 
-      if (isset($_SESSION['metademands_hide'])) {
-         unset($_SESSION['metademands_hide']);
-      }
-      $options = ['step'              => $_GET['step'],
-                  'metademands_id'    => $_GET['metademands_id'],
-                  'preview'           => false,
-                  'tickets_id'        => $_GET['tickets_id'],
-                  'resources_id'      => $_GET['resources_id'],
-                  'resources_step'    => $_GET['resources_step'],
-                  'itilcategories_id' => $_GET['itilcategories_id']];
+         } else {
+            Html::helpHeader(__('Create a demand', 'metademands'));
+         }
 
-      $wizard->showWizard($options);
+         if (isset($_SESSION['metademands_hide'])) {
+            unset($_SESSION['metademands_hide']);
+         }
+         $options = ['step'              => $_GET['step'],
+                     'metademands_id'    => $_GET['metademands_id'],
+                     'preview'           => false,
+                     'tickets_id'        => $_GET['tickets_id'],
+                     'resources_id'      => $_GET['resources_id'],
+                     'resources_step'    => $_GET['resources_step'],
+                     'itilcategories_id' => $_GET['itilcategories_id']];
 
-      if (Session::getCurrentInterface() == 'central') {
-         Html::footer();
-      } else {
-         Html::helpFooter();
+         $wizard->showWizard($options);
+
+         if (Session::getCurrentInterface() == 'central') {
+            Html::footer();
+         } else {
+            Html::helpFooter();
+         }
       }
-   }
