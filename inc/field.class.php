@@ -995,6 +995,7 @@ class PluginMetademandsField extends CommonDBChild {
     */
    static function getFieldInput($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0) {
 
+      $field = '';
       $value = '';
       if (isset($data['value'])) {
          $value = $data['value'];
@@ -1127,6 +1128,9 @@ class PluginMetademandsField extends CommonDBChild {
                                       'readonly'  => true,
                                       'condition' => $cond,
                                       'display'   => false];
+                  if (!($item = getItemForItemtype($data['item']))) {
+                     break;
+                  }
                   $container_class = new $data['item']();
                   $field           = "";
                   $field           .= $container_class::dropdown($opt);
@@ -2279,17 +2283,6 @@ class PluginMetademandsField extends CommonDBChild {
          }
       }
       return $types;
-   }
-
-   /**
-    * @param $rand
-    */
-   static function dropdownMassiveAction($rand) {
-
-      echo "<input type='hidden' name='itemtype' value='PluginMetademandsField'>";
-      echo "<input type='hidden' name='action' value='delete'>";
-      echo "&nbsp;<input type='submit' name='massiveaction' class='submit' value='" . _sx('button', 'Delete permanently') . "' >";
-
    }
 
    /**

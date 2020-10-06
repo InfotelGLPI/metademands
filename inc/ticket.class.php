@@ -274,13 +274,9 @@ class PluginMetademandsTicket extends CommonDBTM {
          $task_data = [];
          $task      = new PluginMetademandsTask();
 
-         $parent_tasks_id     = [];
          $parent_tickets_id[] = $tickets_id;
          foreach ($ticket_task_data as $values) {
             $parent_tickets_id[] = $values['tickets_id'];
-            if (isset($values['tasks_id'])) {
-               $parent_tasks_id[] = $values['tasks_id'];
-            }
          }
 
          // Search tasks linked to a created ticket

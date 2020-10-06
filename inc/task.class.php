@@ -331,12 +331,19 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          echo "</tr>";
          foreach ($tasks as $value) {
             echo "<tr class='tab_bg_1'>";
+
+            if ($value['type'] == self::TICKET_TYPE) {
+               $color_class = '';
+            } else {
+               $color_class = "class='metademand_metademandtasks'";
+            }
+
             if ($canedit && $canchangeorder) {
-               echo "<td width='10'>";
+               echo "<td $color_class width='10'>";
                echo "<input type='checkbox' name='item[" . $this->getType() . "][" . $value['tasks_id'] . "]' value='1' data-glpicore-ma-tags='common'>";
                echo "</td>";
             } else {
-               echo "<td width='10'></td>";
+               echo "<td $color_class width='10'></td>";
             }
 
             // ID
@@ -355,7 +362,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
 
             } else {
                $color_class = "class='metademand_metademandtasks'";
-               echo "<td " . $color_class . "><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') .
+               echo "<td $color_class><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') .
                     "?id=" . $value['link_metademands_id'] . "'>" . $value['link_metademands_id'] . "</a></td>";
             }
 
@@ -370,12 +377,12 @@ class PluginMetademandsTask extends CommonTreeDropdown {
 
             } else {
                $color_class = "class='metademand_metademandtasks'";
-               echo "<td " . $color_class . "><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') .
+               echo "<td $color_class><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') .
                     "?id=" . $value['link_metademands_id'] . "'>" . Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']) . "</a></td>";
             }
 
             // Type
-            echo "<td " . $color_class . ">" . self::getTaskTypeName($value['type']) . "</td>";
+            echo "<td $color_class>" . self::getTaskTypeName($value['type']) . "</td>";
 
             $cat = "";
             if ($value['type'] == self::TICKET_TYPE
@@ -383,7 +390,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                 && $value['itilcategories_id'] > 0) {
                $cat = Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
             }
-            echo "<td class='$color_class'>";
+            echo "<td $color_class>";
             echo $cat;
             echo "</td>";
 
@@ -400,7 +407,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                   $techdata .= Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
                }
             }
-            echo "<td class='$color_class'>";
+            echo "<td $color_class>";
             echo $techdata;
             echo "</td>";
 
