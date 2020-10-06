@@ -61,9 +61,9 @@ class PluginMetademandsBasketline extends CommonDBTM {
          }
       }
       echo "<td width='100px'>";
-      echo "<button type='submit' class='btn update-line-basket' name='updatebasketline' value='$idline'>";
+      echo "<button type='submit' class='btn update-line-basket' name='update_basket_line' value='$idline'>";
       echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-      echo "<button type='submit' class='btn delete-line-basket' name='deletebasketline' value='$idline'>";
+      echo "<button type='submit' class='btn delete-line-basket' name='delete_basket_line' value='$idline'>";
       echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
       echo "</button>";
       echo "</td>";
@@ -119,7 +119,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
          //get id from form_metademands_id & $id
          $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
                                  'plugin_metademands_fields_id'      => $fields_id,
-                                 'line'                              => $input['updatebasketline']]);
+                                 'line'                              => $input['update_basket_line']]);
 
          if ($this->fields['name'] == "upload") {
             $new_files = json_decode($value, 1);
@@ -141,7 +141,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
     */
    function deleteFromBasket($input) {
 
-      $this->deleteByCriteria(['line'     => $input['deletebasketline'],
+      $this->deleteByCriteria(['line'     => $input['delete_basket_line'],
                                'users_id' => Session::getLoginUserID()]);
       Session::addMessageAfterRedirect(__("The line has been deleted", "metademands"), false, INFO);
    }

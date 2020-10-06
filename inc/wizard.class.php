@@ -647,7 +647,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          foreach ($line as $key => $data) {
             $config_link = "";
             if ($preview) {
-               $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'><i class='fas fa-wrench'></i></a>";
+               $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
+               $config_link .= "<i class='fas fa-wrench'></i></a>";
             }
             // Manage ranks
             if (isset($keyIndexes[$key])
@@ -663,9 +664,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                             border-left :3px solid #' . PluginMetademandsField::setColor($data['rank']) . ';
                             border-right :3px solid #' . PluginMetademandsField::setColor($data['rank']);
                }
-               echo "<div class='bt-feature col-md-12' 
-                          style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;
-                                 '>";
+               echo "<div class='bt-feature col-md-12' style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;'>";
                echo "</div>";
                echo "&nbsp;";
                echo "<div class=\"form-row\" style='$style'>";

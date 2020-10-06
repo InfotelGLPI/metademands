@@ -360,7 +360,7 @@ if (isset($_POST['next'])) {
                   if ($KO) {
                      $step = $_POST['step'];
                   } else if (isset($_POST['add_metademands'])) {
-                     $step = 'add_metademands';
+                     $step = PluginMetademandsMetademand::STEP_CREATE;
                   }
                }
             }
@@ -548,9 +548,9 @@ if (isset($_POST['next'])) {
          Html::helpFooter();
       }
 
-   } else if (isset($_POST['updatebasketline'])) {
+   } else if (isset($_POST['update_basket_line'])) {
 
-      $line = $_POST['updatebasketline'];
+      $line = $_POST['update_basket_line'];
       if (isset($_POST['field_basket_' . $line])) {
          $KO = false;
 
@@ -604,7 +604,7 @@ if (isset($_POST['next'])) {
          Html::helpFooter();
       }
 
-   } else if (isset($_POST['deletebasketline'])) {
+   } else if (isset($_POST['delete_basket_line'])) {
 
       $basketline = new PluginMetademandsBasketline();
       $basketline->deleteFromBasket($_POST);

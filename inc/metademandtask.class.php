@@ -77,7 +77,10 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
 
       echo PluginMetademandsMetademand::getTypeName(1) . "&nbsp;:&nbsp;";
       Dropdown::show('PluginMetademandsMetademand',
-                     ['name' => 'link_metademands_id', 'used' => $used]);
+                     ['name' => 'link_metademands_id',
+                      'used' => $used,
+                      'condition' => ['is_order' => 0]
+                     ]);
 
       unset($used[array_search($ID, $used)]);
 
@@ -122,6 +125,7 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
    static function getSonMetademandTaskId($metademands_id) {
       global $DB;
 
+      $res = [];
       $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id,
                        `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id
                FROM `glpi_plugin_metademands_metademandtasks`
@@ -146,6 +150,8 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
     */
    static function getMetademandTask_TaskId($metademands_id) {
       global $DB;
+
+      $return = [];
 
       $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id
                FROM `glpi_plugin_metademands_metademandtasks`
