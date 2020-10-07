@@ -18,3 +18,7 @@ Characteristics :
 - [X] Create a father / child ticket
 - [X] Semi-automatic creation of child tickets
 - [X] Scheduling created tickets
+
+News :
+- [X] Create basket from assistants
+- [X] Create PDF for your demands
