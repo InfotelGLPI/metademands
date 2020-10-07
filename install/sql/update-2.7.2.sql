@@ -1,0 +1,1 @@
+ALTER TABLE glpi_plugin_metademands_metademands ADD `create_one_ticket` tinyint(1) default 0;

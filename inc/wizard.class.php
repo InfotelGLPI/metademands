@@ -70,7 +70,7 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param \User $user
     */
-   function showUserInformations(User $user) {
+   static function showUserInformations(User $user) {
 
       echo __('Name') . "&nbsp;";
       echo $user->getField('realname');
@@ -210,17 +210,18 @@ class PluginMetademandsWizard extends CommonDBTM {
          $user->getFromDB($userid);
 
          // Rights management
-         if (!empty($parameters['tickets_id']) && !Session::haveRight('ticket', UPDATE)) {
-            $this->showMessage(__("You don't have the right to update tickets", 'metademands'), true);
+         if (!empty($parameters['tickets_id'])
+             && !Session::haveRight('ticket', UPDATE)) {
+            self::showMessage(__("You don't have the right to update tickets", 'metademands'), true);
             return false;
             echo "</div>";
             echo "</div>";
             echo "</div>";
 
-         } else if (!self::canCreate() &&
-                    !PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id'])
+         } else if (!self::canCreate()
+                    && !PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id'])
          ) {
-            $this->showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
+            self::showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
             echo "</div>";
             echo "</div>";
             echo "</div>";
@@ -262,7 +263,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
             echo "<span id='show_users_id_requester'>";
-            $this->showUserInformations($user);
+            self::showUserInformations($user);
             echo "</span>";
             echo "</div>";
 
@@ -273,7 +274,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
 
       $options['resources_id'] = $parameters['resources_id'];
-      $this->showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options);
+      self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options);
       Html::closeForm();
       echo "</div>";
       if (!$parameters['preview']) {
@@ -290,26 +291,26 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
+   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
 
       switch ($step) {
          case PluginMetademandsMetademand::STEP_CREATE:
             $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
-            $this->createMetademands($metademands_id, $values, $options);
+            self::createMetademands($metademands_id, $values, $options);
             break;
 
          case PluginMetademandsMetademand::STEP_LIST:
-            $this->listMetademands();
+            self::listMetademands();
             unset($_SESSION['plugin_metademands']);
             break;
 
          case PluginMetademandsMetademand::STEP_INIT:
-            $this->chooseType($step);
+            self::chooseType($step);
             unset($_SESSION['plugin_metademands']);
             break;
 
          default:
-            $this->showMetademands($metademands_id, $step, $preview);
+            self::showMetademands($metademands_id, $step, $preview);
             break;
 
       }
@@ -350,7 +351,7 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param $step
     */
-   function chooseType($step) {
+   static function chooseType($step) {
 
       echo "<div class=\"form-row\">";
       echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
@@ -413,7 +414,7 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @throws \GlpitestSQLError
     */
-   function listMetademands() {
+   static function listMetademands() {
       global $CFG_GLPI;
 
       echo Html::css("/plugins/metademands/css/wizard.php");
@@ -486,8 +487,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo __('Request') . "&nbsp;";
          echo "<span id='show_metademands_by_family'>";
 
-         $data[0] = Dropdown::EMPTY_VALUE;
-         $data    = $meta->listMetademands(false, [], $data);
+         $options['empty_value'] = true;
+         $data                   = $meta->listMetademands(false, $options);
 
          Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
          echo "</span>";
@@ -517,7 +518,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   function showMetademands($metademands_id, $step, $preview = false) {
+   static function showMetademands($metademands_id, $step, $preview = false) {
 
       $metademands      = new PluginMetademandsMetademand();
       $metademands_data = $metademands->showMetademands($metademands_id);
@@ -543,8 +544,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if (count($metademands_data)) {
          if ($step - 1 > count($metademands_data) && !$preview) {
-            $this->showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview);
-
+            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview);
          } else {
             foreach ($metademands_data as $form_step => $data) {
                if ($form_step == $step) {
@@ -553,16 +553,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (!isset($_POST['form_metademands_id']) ||
                          (isset($_POST['form_metademands_id']) && $form_metademands_id != $_POST['form_metademands_id'])) {
                         if (!isset($_SESSION['metademands_hide'][$form_metademands_id])) {
-                           $this->constructForm($metademands_data, $line['form'], $preview);
+                           self::constructForm($metademands_data, $line['form'], $preview);
                         } else {
                            $step++;
                         }
                      } else {
-                        $this->constructForm($metademands_data, $line['form'], $preview);
+                        self::constructForm($metademands_data, $line['form'], $preview);
 
                      }
                      if ($metademands->getField('is_order')) {
-                        $this->constructBasket($metademands_id, $line['form'], $preview);
+                        PluginMetademandsBasketline::constructBasket($metademands_id, $line['form'], $preview);
                      }
                      echo "<input type='hidden' name='form_metademands_id' value='" . $form_metademands_id . "'>";
                   }
@@ -576,7 +576,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<input type='hidden' name='metademands_id' value='" . $metademands_id . "'>";
                echo "<input type='hidden' name='update_fields'>";
                if ($step - 1 >= count($metademands_data)) {
-                  echo "<input type='hidden' name='add_metademands'>";
+                  echo "<input type='hidden' name='create_metademands'>";
                   echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
                   echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
                   echo "</a>";
@@ -623,7 +623,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param bool  $preview
     * @param int   $itilcategories_id
     */
-   function constructForm($metademands_data, $line = [], $preview = false, $itilcategories_id = 0) {
+   static function constructForm($metademands_data, $line = [], $preview = false, $itilcategories_id = 0) {
 
       $count   = 0;
       $columns = 2;
@@ -1125,89 +1125,112 @@ class PluginMetademandsWizard extends CommonDBTM {
 
 
    /**
-    * @param array $line
-    * @param bool  $preview
-    * @param       $metademands_id
-    */
-   function constructBasket($metademands_id, $line = [], $preview = false) {
-
-      if (count($line) > 0) {
-         $metademands = new PluginMetademandsMetademand();
-         $metademands->getFromDB($metademands_id);
-
-         if (countElementsInTable("glpi_plugin_metademands_basketlines",
-                                  ["plugin_metademands_metademands_id" => $metademands->fields['id'],
-                                   "users_id"                          => Session::getLoginUserID()])) {
-            echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-            echo "<input type='submit' class='submit' id='add_to_basket' name='add_to_basket' value='"
-                 . _sx('button', 'Add to basket', 'metademands') . "'>";
-            echo "</div>";
-         }
-         $basketline = new PluginMetademandsBasketline();
-         if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
-                                                   'users_id'                          => Session::getLoginUserID()])) {
-
-            echo "<table class='table-basket'>";
-            echo "<caption class='basket-title'>" . __('Your basket', 'metademands') . "</caption> ";
-            echo "<tr class='basket-label'>";
-            foreach ($line as $key => $data) {
-               if ($data['item'] == 'informations') {
-                  continue;
-               }
-               if ($data['is_basket'] == 1) {
-
-                  echo "<th class='basket-th'>";
-                  echo $data['label'];
-                  echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
-                  if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
-                     echo "*";
-                  }
-                  echo "</span>";
-                  echo "</th>";
-               }
-            }
-            $class = "basket-th";
-            //            if ($preview == false) {
-            //               $class = "basket-delete-th";
-            //            }
-            echo "<th class='$class'></th>";
-            echo "</tr>";
-
-            $basketLines = [];
-            if ($preview == false) {
-               foreach ($basketlinesFind as $basketLine) {
-                  $basketLines[$basketLine['line']][] = $basketLine;
-               }
-               foreach ($basketLines as $idline => $fieldlines) {
-                  PluginMetademandsBasketline::retrieveDatasByType($idline, $fieldlines, $line);
-               }
-            }
-            echo "</table>";
-         }
-      }
-   }
-
-
-
-   /**
     * @param       $metademands_id
     * @param       $values
     * @param array $options
     *
     * @throws \GlpitestSQLError
     */
-   function createMetademands($metademands_id, $values, $options = []) {
+   static function createMetademands($metademands_id, $values, $options = []) {
       global $CFG_GLPI;
 
       $metademands = new PluginMetademandsMetademand();
-      if (isset($_POST['basket'])) {
-         foreach ($_POST['basket'] as $basket) {
-            $values['fields'] = $basket;
-            $result           = $metademands->addMetademands($metademands_id, $values);
+      if (isset($values['basket'])) {
+         $metademands->getFromDB($metademands_id);
+
+         if ($metademands->fields['create_one_ticket'] == 0) {
+            //create one ticket for each basket
+            foreach ($values['basket'] as $k => $basket) {
+               $datas           = [];
+               $datas['basket'] = $basket;
+
+               if (isset($values['fields']['_filename'])) {
+                  unset($values['fields']['_filename']);
+               }
+               if (isset($values['fields']['_prefix_filename'])) {
+                  unset($values['fields']['_prefix_filename']);
+               }
+               if (isset($values['fields']['_tag_filename'])) {
+                  unset($values['fields']['_tag_filename']);
+               }
+               $filename    = [];
+               $prefixname  = [];
+               $tagname     = [];
+               $basketclass = new PluginMetademandsBasketline();
+
+               foreach ($basket as $key => $val) {
+                  $line = $k + 1;
+
+                  if ($basketclass->find(["plugin_metademands_metademands_id" => $metademands_id,
+                                                  'plugin_metademands_fields_id'      => $key,
+                                                  'line'                              => $line,
+                                                  'name'                              => "upload"
+                                                 ])) {
+                     if (!empty($val)) {
+                        $files = json_decode($val, 1);
+                        foreach ($files as $file) {
+                           $filename[]   = $file['_filename'];
+                           $prefixname[] = $file['_prefix_filename'];
+                           $tagname[]    = $file['_tag_filename'];
+                        }
+                     }
+                  }
+               }
+               $values['fields']['_filename']        = $filename;
+               $values['fields']['_prefix_filename'] = $prefixname;
+               $values['fields']['_tag_filename']    = $tagname;
+
+               $datas['fields'] = $values['fields'];
+               $result          = $metademands->addMetademands($metademands_id, $datas, $options);
+               Session::addMessageAfterRedirect($result['message']);
+            }
+         } else {
+            //create one ticket for all basket
+            if (isset($values['fields']['_filename'])) {
+               unset($values['fields']['_filename']);
+            }
+            if (isset($values['fields']['_prefix_filename'])) {
+               unset($values['fields']['_prefix_filename']);
+            }
+            if (isset($values['fields']['_tag_filename'])) {
+               unset($values['fields']['_tag_filename']);
+            }
+            $filename    = [];
+            $prefixname  = [];
+            $tagname     = [];
+            $basketclass = new PluginMetademandsBasketline();
+
+            foreach ($values['basket'] as $k => $basket) {
+
+               foreach ($basket as $key => $val) {
+                  $line = $k + 1;
+                  if ($basketclass->find(["plugin_metademands_metademands_id" => $metademands_id,
+                                          'plugin_metademands_fields_id'      => $key,
+                                          'line'                              => $line,
+                                          'name'                              => "upload"
+                                         ])) {
+
+                     if (!empty($val)) {
+                        $files = json_decode($val, 1);
+                        foreach ($files as $file) {
+                           $filename[]   = $file['_filename'];
+                           $prefixname[] = $file['_prefix_filename'];
+                           $tagname[]    = $file['_tag_filename'];
+                        }
+                     }
+                  }
+               }
+            }
+            $values['fields']['_filename']        = $filename;
+            $values['fields']['_prefix_filename'] = $prefixname;
+            $values['fields']['_tag_filename']    = $tagname;
+
+            $result = $metademands->addMetademands($metademands_id, $values, $options);
             Session::addMessageAfterRedirect($result['message']);
          }
+
       } else {
-         $result = $metademands->addMetademands($metademands_id, $values);
+         $result = $metademands->addMetademands($metademands_id, $values, $options);
          Session::addMessageAfterRedirect($result['message']);
       }
       unset($_SESSION['plugin_metademands']);
@@ -1223,7 +1246,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param      $message
     * @param bool $error
     */
-   function showMessage($message, $error = false) {
+   static function showMessage($message, $error = false) {
       $class = $error ? "style='color:red'" : "";
 
       echo "<br><div class='box'>";

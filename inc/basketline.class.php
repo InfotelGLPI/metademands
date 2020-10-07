@@ -35,6 +35,69 @@ class PluginMetademandsBasketline extends CommonDBTM {
    static $rightname = 'plugin_metademands';
 
    /**
+    * @param array $line
+    * @param bool  $preview
+    * @param       $metademands_id
+    */
+   static function constructBasket($metademands_id, $line = [], $preview = false) {
+
+      if (count($line) > 0) {
+         $metademands = new PluginMetademandsMetademand();
+         $metademands->getFromDB($metademands_id);
+
+         if (countElementsInTable("glpi_plugin_metademands_basketlines",
+                                  ["plugin_metademands_metademands_id" => $metademands->fields['id'],
+                                   "users_id"                          => Session::getLoginUserID()])) {
+            echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
+            echo "<input type='submit' class='submit' id='add_to_basket' name='add_to_basket' value='"
+                 . _sx('button', 'Add to basket', 'metademands') . "'>";
+            echo "</div>";
+         }
+         $basketline = new self();
+         if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
+                                                   'users_id'                          => Session::getLoginUserID()])) {
+
+            echo "<table class='table-basket'>";
+            echo "<caption class='basket-title'>" . __('Your basket', 'metademands') . "</caption> ";
+            echo "<tr class='basket-label'>";
+            foreach ($line as $key => $data) {
+               if ($data['item'] == 'informations') {
+                  continue;
+               }
+               if ($data['is_basket'] == 1) {
+
+                  echo "<th class='basket-th'>";
+                  echo $data['label'];
+                  echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
+                  if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
+                     echo "*";
+                  }
+                  echo "</span>";
+                  echo "</th>";
+               }
+            }
+            $class = "basket-th";
+            //            if ($preview == false) {
+            //               $class = "basket-delete-th";
+            //            }
+            echo "<th class='$class'></th>";
+            echo "</tr>";
+
+            $basketLines = [];
+            if ($preview == false) {
+               foreach ($basketlinesFind as $basketLine) {
+                  $basketLines[$basketLine['line']][] = $basketLine;
+               }
+               foreach ($basketLines as $idline => $fieldlines) {
+                  self::retrieveDatasByType($idline, $fieldlines, $line);
+               }
+            }
+            echo "</table>";
+         }
+      }
+   }
+
+   /**
     * @param $idline
     * @param $values
     * @param $fields
@@ -97,8 +160,9 @@ class PluginMetademandsBasketline extends CommonDBTM {
          if ($values['type'] == "dropdown_multiple") {
             $name = $values['type'];
          }
+
          $this->add(['name'                              => $name,
-                     'value'                             => $values['value'],
+                     'value'                             => isset($values['value']) ? $values['value'] : NULL,
                      'value2'                            => $values['value2'],
                      'line'                              => $line,
                      'plugin_metademands_fields_id'      => $values['plugin_metademands_fields_id'],
@@ -114,7 +178,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
     */
    function updateFromBasket($input, $line) {
 
-      foreach ($input['field_basket_'.$line] as $fields_id => $value) {
+      foreach ($input['field_basket_' . $line] as $fields_id => $value) {
 
          //get id from form_metademands_id & $id
          $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
@@ -122,16 +186,36 @@ class PluginMetademandsBasketline extends CommonDBTM {
                                  'line'                              => $input['update_basket_line']]);
 
          if ($this->fields['name'] == "upload") {
-            $new_files = json_decode($value, 1);
-            $old_files = json_decode($this->fields['value'], 1);
-            $files     = array_merge($old_files, $new_files);
-            $value     = json_encode($files);
+
+            $new_files = [];
+            if (isset($value) && $value != NULL) {
+               $new_files = json_decode($value, 1);
+            }
+            $old_files = [];
+            if (isset($this->fields['value']) && $this->fields['value'] != NULL) {
+               $old_files = json_decode($this->fields['value'], 1);
+            }
+            if (is_array($new_files) && count($new_files) > 1) {
+               $files = array_merge($old_files, $new_files);
+               $value = json_encode($files);
+            }
+
          }
 
          $this->update(['plugin_metademands_fields_id' => $fields_id,
                         'value'                        => $value,
                         'id'                           => $this->fields['id']]);
       }
+      if (isset($input['basket_plugin_servicecatalog_itilcategories_id'])) {
+
+         $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
+                                 'name'                              => "itilcategory",
+                                 'line'                              => $input['update_basket_line']]);
+
+         $this->update(['value'                        => $input['basket_plugin_servicecatalog_itilcategories_id'],
+                        'id'                           => $this->fields['id']]);
+      }
+
 
       Session::addMessageAfterRedirect(__("The line has been updated", "metademands"), false, INFO);
    }

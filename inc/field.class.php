@@ -1060,22 +1060,31 @@ class PluginMetademandsField extends CommonDBChild {
                                            ]);
                   break;
                case 'itilcategory':
+                  if ($on_basket == false) {
+                     $nameitil = 'field';
+                  } else {
+                     $nameitil = 'basket';
+                  }
+                  $metademand = new PluginMetademandsMetademand();
+                  $metademand->getFromDB($data['plugin_metademands_metademands_id']);
+                  $values = json_decode($metademand->fields['itilcategories_id']);
+                  if (count($values) == 1) {
+                     foreach ($values as $key => $val)
+                     $itilcategories_id = $val;
+                  }
                   if ($itilcategories_id > 0) {
                      // itilcat from service catalog
                      $itilCategory = new ITILCategory();
                      $itilCategory->getFromDB($itilcategories_id);
                      $field = "<span>" . $itilCategory->getField('name');
-                     $field .= "<input type='hidden' name='plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
+                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
                      $field .= "<span>";
                   } else {
-                     $metademand = new PluginMetademandsMetademand();
-                     $metademand->getFromDB($data['plugin_metademands_metademands_id']);
-                     $values = json_decode($metademand->getField('itilcategories_id'));
-                     $opt    = ['name'      => $namefield . "[" . $data['id'] . "]",
-                                'right'     => 'all',
-                                'value'     => $value,
-                                'condition' => ["id" => $values],
-                                'display'   => false];
+                     $opt = ['name'      => $nameitil . "_plugin_servicecatalog_itilcategories_id",
+                             'right'     => 'all',
+                             'value'     => $value,
+                             'condition' => ["id" => $values],
+                             'display'   => false];
 
                      $field = "";
                      $field .= ITILCategory::dropdown($opt);
@@ -1121,13 +1130,13 @@ class PluginMetademandsField extends CommonDBChild {
                         $cond[$type_group] = $val;
                      }
                   }
-                  $opt             = ['value'     => $value,
-                                      'entity'    => $_SESSION['glpiactiveentities'],
-                                      'display'   => true,
-                                      'name'      => $namefield . "[" . $data['id'] . "]",
-                                      'readonly'  => true,
-                                      'condition' => $cond,
-                                      'display'   => false];
+                  $opt = ['value'     => $value,
+                          'entity'    => $_SESSION['glpiactiveentities'],
+                          'display'   => true,
+                          'name'      => $namefield . "[" . $data['id'] . "]",
+                          'readonly'  => true,
+                          'condition' => $cond,
+                          'display'   => false];
                   if (!($item = getItemForItemtype($data['item']))) {
                      break;
                   }
@@ -1275,8 +1284,8 @@ class PluginMetademandsField extends CommonDBChild {
             $nb         = 0;
             if ($arrayFiles != "") {
                foreach ($arrayFiles as $k => $file) {
-                  $field    .= str_replace($file['_prefix_filename'], "", $file['_filename']);
-                  $wiz      = new PluginMetademandsWizard();
+                  $field .= str_replace($file['_prefix_filename'], "", $file['_filename']);
+                  $wiz   = new PluginMetademandsWizard();
                   $field .= "&nbsp;";
                   //own showSimpleForm for return (not echo)
                   $field .= self::showSimpleForm($wiz->getFormURL(), 'delete_basket_file',
@@ -1658,7 +1667,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             //            // Show field link
             //            $html .= "<tr><td>";
@@ -1759,7 +1768,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             break;
          case 'checkbox':
@@ -1784,7 +1793,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  1, 0, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 0, 1);
 
             break;
          case 'parent_field':
@@ -1826,7 +1835,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  1, 0, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 0, 1);
 
 
             break;
@@ -2306,8 +2315,8 @@ class PluginMetademandsField extends CommonDBChild {
          return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
       }
 
-      $metademands = new self();
-      $result      = $metademands->listMetademandsfields($params['metademands_id']);
+      $field  = new self();
+      $result = $field->find(['plugin_metademands_metademands_id' => $params['metademands_id']]);
 
       return $result;
    }
@@ -2318,7 +2327,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return array
     */
    function listMetademandsfields($metademands_id) {
-      $field                 = new PluginMetademandsField();
+      $field                 = new self();
       $listMetademandsFields = $field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       return $listMetademandsFields;

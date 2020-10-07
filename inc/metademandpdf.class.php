@@ -341,223 +341,259 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
    }
 
    /**
-    * @param $form
-    * @param $fields
+    * @param      $form
+    * @param      $fields
+    * @param bool $with_basket
     */
-   public function setFields($form, $fields) {
+   public function setFields($form, $field_forms, $with_basket = false) {
 
-      $fielCount = 0;
-      $rank      = 1;
+      $nb = count($field_forms);
 
-      $newForm = [];
-      $widths  = [];
+      for ($i = 0; $i < $nb; $i++) {
+         if ($with_basket == false) {
+            $fields = $field_forms[$i]['fields'];
+         } else {
+            $fields = $field_forms[$i]['basket'];
+         }
 
-      foreach ($form as $key => $elt) {
+         $fielCount = 0;
+         $rank      = 1;
 
-         if (isset($fields['fields'][$key]) || $elt['type'] == 'title' || $elt['type'] == 'upload') {
-            $newForm[$fielCount] = $elt;
-            if ($rank != $elt['rank']) {
-               $newForm[$fielCount] = ['type' => 'linebreak',
-                                       'rank' => $elt['rank'],
-                                       'id'   => 0];
-               $fielCount++;
+         $newForm = [];
+         $widths  = [];
+
+         foreach ($form as $key => $elt) {
+
+            if (isset($fields[$key])
+                || $elt['type'] == 'title'
+                || $elt['type'] == 'upload') {
                $newForm[$fielCount] = $elt;
+               if ($rank != $elt['rank']) {
+                  $newForm[$fielCount] = ['type' => 'linebreak',
+                                          'rank' => $elt['rank'],
+                                          'id'   => 0];
+                  $fielCount++;
+                  $newForm[$fielCount] = $elt;
+               }
+               $rank = $elt['rank'];
+
+               $fielCount++;
             }
-            $rank = $elt['rank'];
 
-            $fielCount++;
-         }
-
-         if (!empty($elt['label'])) {
-            $widths[] = $this->GetStringWidth($elt['label']);
-         }
-      }
-      $max_width         = max($widths);
-      $this->label_width = $max_width;
-      $this->value_width = $this->page_width - $max_width;
-
-      $dbu = new DbUtils();
-
-      foreach ($newForm as $key => $elt) {
-
-         if (isset($fields['fields'][$elt['id']])
-             || $elt['type'] == 'title'
-             || $elt['type'] == 'upload'
-             || $elt['type'] == 'linebreak') {
-
-            $y = $this->GetY();
-            if (($y + $this->line_height) >= ($this->page_height - $this->header_height)) {
-               $this->AddPage();
-            }
-            $label = "";
             if (!empty($elt['label'])) {
-               //               $label = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 30);
-               $elt['label'] = str_replace("’", "'", $elt['label']);
-               $label        = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label']));
+               $widths[] = $this->GetStringWidth($elt['label']);
             }
-            switch ($elt['type']) {
-               case 'title':
-                  // Draw line
-                  $this->MultiCellValue($this->title_width, $this->line_height, 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black', $elt['type'], $label, '');
-                  break;
+         }
+         $max_width         = max($widths);
+         $this->label_width = $max_width;
+         $this->value_width = $this->page_width - $max_width;
 
-               case 'linebreak':
-                  // Draw line
-                  $this->MultiCellValue($this->title_width, $this->linebreak_height, 'TB', 'C', '', 0, '', 'black', $elt['type'], '', '');
-                  break;
+         $dbu = new DbUtils();
 
-               case 'text':
-               case 'number':
-                  $value = $fields['fields'][$elt['id']];
-                  $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                  // Draw line
-                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  break;
+         if ($i > 0) {
+            $this->MultiCellValue($this->title_width, $this->linebreak_height, 'TB', 'C', '', 0, '', 'black', 'linebreak', '', '');
+         }
 
-               case 'textarea':
-                  $value = $fields["fields"][$elt['id']];
-                  $value    = Html::cleanPostForTextArea($value);
-                  $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                  // Draw line
-                  $this->MultiCellValue($this->title_width, $this->multiline_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  break;
+         foreach ($newForm as $key => $elt) {
 
-               case 'link':
-//                  $label = __('Link');
-//                  $value = $fields['fields'][$elt['id']];
-//                  if (strpos($value, 'http://') !== 0 && strpos($value, 'https://') !== 0) {
-//                     $value = "http://" . $value;
-//                  }
-//                  $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-//                  // Draw line
-//                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', $value);
-                  break;
+            if (isset($fields[$elt['id']])
+                || $elt['type'] == 'title'
+                || $elt['type'] == 'upload'
+                || $elt['type'] == 'linebreak') {
 
-               case 'upload':
-                  if (isset($fields['fields']['_filename'])) {
-                     $values     = $fields['fields']['_filename'];
-                     $prefixes   = $fields['fields']['_prefix_filename'];
-                     $valid_name = "";
-                     $value      = [];
-                     foreach ($values as $k => $v) {
-                        $name       = $values[$k];
-                        $prefix     = $prefixes[$k];
-                        $valid_name = str_replace($prefix, "", $name);
-                        $value[]    .= $valid_name;
-                     }
-                     $value = implode(', ', $value);
+               $y = $this->GetY();
+               if (($y + $this->line_height) >= ($this->page_height - $this->header_height)) {
+                  $this->AddPage();
+               }
+
+               $label = "";
+               if (!empty($elt['label'])) {
+                  //               $label = Html::resume_name(Toolbox::stripslashes_deep(Toolbox::decodeFromUtf8($elt['label'])), 30);
+                  $elt['label'] = str_replace("’", "'", $elt['label']);
+                  $label        = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label']));
+               }
+
+               switch ($elt['type']) {
+                  case 'title':
+                     // Draw line
+                     $this->MultiCellValue($this->title_width, $this->line_height, 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black', $elt['type'], $label, '');
+                     break;
+
+                  case 'linebreak':
+                     // Draw line
+                     $this->MultiCellValue($this->title_width, $this->linebreak_height, 'TB', 'C', '', 0, '', 'black', $elt['type'], '', '');
+                     break;
+
+                  case 'text':
+                  case 'number':
+                     $value = $fields[$elt['id']];
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  }
-                  break;
+                     break;
 
-               case 'dropdown':
-                  $value = " ";
-                  switch ($elt['item']) {
-                     case 'user':
-                        $value = $dbu->getUserName($fields['fields'][$elt['id']]);
-                        break;
-                     case 'other':
-                        if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
-                           $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
-                           $value                = ($fields['fields'][$elt['id']] != 0) ? $elt['custom_values'][$fields['fields'][$elt['id']]] : ' ';
-                        }
-                        break;
-                     //others
-                     default:
-                        $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields['fields'][$elt['id']]);
-                        $value = ($value == '&nbsp;') ? ' ' : $value;
-                        break;
-                  }
-                  $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                  // Draw line
-                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  break;
-
-               case 'yesno':
-                  $value = __('No');
-                  if ($fields['fields'][$elt['id']] == 2) {
-                     $value = __('Yes');
-                  }
-                  $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                  // Draw line
-                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  break;
-
-               case 'dropdown_multiple':
-                  $value = " ";
-                  if (!empty($elt['custom_values'])) {
-                     $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
-                     $values        = $fields['fields'][$elt['id']];
-                     $parseValue    = [];
-                     if (is_array($values) && count($values)) {
-                        foreach ($values as $k => $v) {
-                           array_push($parseValue, $custom_values[$v]);
-                        }
-                     }
-                     $value = implode(', ', $parseValue);
+                  case 'textarea':
+                     $value = $fields[$elt['id']];
+                     $value = Html::cleanPostForTextArea($value);
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
-                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  }
-                  break;
+                     $this->MultiCellValue($this->title_width, $this->multiline_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     break;
 
-               case 'checkbox':
-                  $value = " ";
-                  if (!empty($elt['custom_values'])) {
-                     $custom_values   = PluginMetademandsField::_unserialize($elt['custom_values']);
-                     $values          = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
-                     $custom_checkbox = [];
+                  case 'link':
+                     //                  $label = __('Link');
+                     //                  $value = $fields[$elt['id']];
+                     //                  if (strpos($value, 'http://') !== 0 && strpos($value, 'https://') !== 0) {
+                     //                     $value = "http://" . $value;
+                     //                  }
+                     //                  $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                     //                  // Draw line
+                     //                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', $value);
+                     break;
 
-                     foreach ($custom_values as $k => $v) {
-                        $checked = isset($values[$k]) ? 1 : 0;
-                        if ($checked) {
-                           $custom_checkbox[] .= $v;
+                  case 'upload':
+                     if ($with_basket == false) {
+                        if (isset($fields['_filename'])) {
+                           $values   = $fields['_filename'];
+                           $prefixes = $fields['_prefix_filename'];
+                           $value    = [];
+                           foreach ($values as $k => $v) {
+                              $name       = $values[$k];
+                              $prefix     = $prefixes[$k];
+                              $valid_name = str_replace($prefix, "", $name);
+                              $value[]    .= $valid_name;
+                           }
+                           $value = implode(', ', $value);
+                           $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                           // Draw line
+                           $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                         }
+                     } else {
+                        $value = [];
+                        if (!empty($fields[$elt['id']])) {
+                           $files = json_decode($fields[$elt['id']], 1);
+                           foreach ($files as $file) {
+                              $name       = $file['_filename'];
+                              $prefix     = $file['_prefix_filename'];
+                              $valid_name = str_replace($prefix, "", $name);
+                              $value[]    .= $valid_name;
+
+                           }
+                        }
+                        $value = implode(', ', $value);
+                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                        // Draw line
+                        $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
                      }
-                     $value = implode(', ', $custom_checkbox);
-                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                     // Draw line
-                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  }
-                  break;
+                     break;
 
-               case 'radio' :
-                  $value = " ";
-                  if (!empty($elt['custom_values'])) {
-                     $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
-                     $values        = PluginMetademandsField::_unserialize($fields['fields'][$elt['id']]);
-                     foreach ($custom_values as $k => $v) {
-                        if ($values == $k) {
-                           $value = $custom_values[$k];
-                        }
+                  case 'dropdown':
+                     $value = " ";
+                     switch ($elt['item']) {
+                        case 'user':
+                           $value = $dbu->getUserName($fields[$elt['id']]);
+                           break;
+                        case 'other':
+                           if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
+                              $elt['custom_values'] = PluginMetademandsField::_unserialize($elt['custom_values']);
+                              $value                = ($fields[$elt['id']] != 0) ? $elt['custom_values'][$fields[$elt['id']]] : ' ';
+                           }
+                           break;
+                        //others
+                        default:
+                           $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields[$elt['id']]);
+                           $value = ($value == '&nbsp;') ? ' ' : $value;
+                           break;
                      }
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  }
-                  break;
+                     break;
 
-               case 'datetime':
-                  $value = Html::convDate($fields['fields'][$elt['id']]);
-                  $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                  // Draw line
-                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  break;
+                  case 'yesno':
+                     $value = __('No');
+                     if ($fields[$elt['id']] == 2) {
+                        $value = __('Yes');
+                     }
+                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     break;
 
-               case 'datetime_interval':
-                  $value  = Html::convDate($fields['fields'][$elt['id']]);
-                  $value2 = Html::convDate($fields['fields'][$elt['id'] . "-2"]);
-                  $value  = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                  $value2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value2));
-                  if (!empty($elt['label2'])) {
-                     $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
-                  }
-                  // Draw line
-                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label2, $value2);
-                  break;
+                  case 'dropdown_multiple':
+                     $value = " ";
+                     if (!empty($elt['custom_values'])) {
+                        $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
+                        $values        = $fields[$elt['id']];
+                        $parseValue    = [];
+                        if (is_array($values) && count($values)) {
+                           foreach ($values as $k => $v) {
+                              array_push($parseValue, $custom_values[$v]);
+                           }
+                        }
+                        $value = implode(', ', $parseValue);
+                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                        // Draw line
+                        $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     }
+                     break;
+
+                  case 'checkbox':
+                     $value = " ";
+                     if (!empty($elt['custom_values'])) {
+                        $custom_values   = PluginMetademandsField::_unserialize($elt['custom_values']);
+                        $values          = PluginMetademandsField::_unserialize($fields[$elt['id']]);
+                        $custom_checkbox = [];
+
+                        foreach ($custom_values as $k => $v) {
+                           $checked = isset($values[$k]) ? 1 : 0;
+                           if ($checked) {
+                              $custom_checkbox[] .= $v;
+                           }
+                        }
+                        $value = implode(', ', $custom_checkbox);
+                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                        // Draw line
+                        $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     }
+                     break;
+
+                  case 'radio' :
+                     $value = " ";
+                     if (!empty($elt['custom_values'])) {
+                        $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
+                        $values        = PluginMetademandsField::_unserialize($fields[$elt['id']]);
+                        foreach ($custom_values as $k => $v) {
+                           if ($values == $k) {
+                              $value = $custom_values[$k];
+                           }
+                        }
+                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                        // Draw line
+                        $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     }
+                     break;
+
+                  case 'datetime':
+                     $value = Html::convDate($fields[$elt['id']]);
+                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     break;
+
+                  case 'datetime_interval':
+                     $value  = Html::convDate($fields[$elt['id']]);
+                     $value2 = Html::convDate($fields[$elt['id'] . "-2"]);
+                     $value  = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                     $value2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value2));
+                     if (!empty($elt['label2'])) {
+                        $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
+                     }
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label2, $value2);
+                     break;
+               }
             }
          }
       }
@@ -575,11 +611,11 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @param $form
     * @param $fields
     */
-   public function drawPdf($form, $fields) {
+   public function drawPdf($form, $fields, $with_basket = false) {
       $this->AliasNbPages();
       $this->AddPage();
       $this->SetAutoPageBreak(false);
-      $this->setFields($form, $fields);
+      $this->setFields($form, $fields, $with_basket);
    }
 
    /**
@@ -635,10 +671,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $docitem = new Document_Item();
 
       //entities_id
-      $docitem->add(['itemtype' => "Ticket",
+      $docitem->add(['itemtype'     => "Ticket",
                      "documents_id" => $newdoc,
-                     "items_id" => $tickets_id,
-                     "entities_id" => $entities_id]);
+                     "items_id"     => $tickets_id,
+                     "entities_id"  => $entities_id]);
       return $docitem;
    }
 }

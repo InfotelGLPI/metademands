@@ -76,6 +76,7 @@ if (isset($_POST['next'])) {
    $onlybasketdatas = false;
    $step            = $_POST['step'] + 1;
    if (isset($_POST['update_fields'])) {
+
       if ($metademands->canCreate()
           || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
 
@@ -112,7 +113,7 @@ if (isset($_POST['next'])) {
                         $basket[$v['plugin_metademands_fields_id']] = $v['value'];
                      }
 
-                     $_POST['basket'][$nblines] = $basket;
+                     $_SESSION['plugin_metademands']['basket'][$nblines] = $basket;
                      $nblines++;
                   }
                   $_POST['field'] = $basket;
@@ -132,7 +133,7 @@ if (isset($_POST['next'])) {
                for ($i = 0; $i < $nblines; $i++) {
 
                   if ($metademands->fields['is_order'] == 1) {
-                     $post = $_POST['basket'][$i];
+                     $post = $_SESSION['plugin_metademands']['basket'][$i];
                   }
 
                   foreach ($data as $id => $value) {
@@ -164,7 +165,10 @@ if (isset($_POST['next'])) {
                            $value['check_value']                 = $check_value;
                            $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id'])[$keyId];
                            $value['fields_link']                 = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
-                           if (isset($post[$id])) {
+                           if (isset($post[$id])
+                               && $value['type'] != 'checkbox'
+                               && $value['type'] != 'radio'
+                               && $value['type'] != 'upload') {
                               if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $post[$id]], $post)) {
                                  foreach ($post as $key => $field) {
                                     $field      = str_replace('\r\n', '&#x0A;', $field);
@@ -184,7 +188,7 @@ if (isset($_POST['next'])) {
 
                            } else if ($value['type'] == 'checkbox') {
                               if (!isset($post)
-                                  || (isset($post) && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $post))) {
+                                  || $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $post)) {
                                  $_SESSION['plugin_metademands']['fields'][$id] = '';
                               } else {
                                  $KO = true;
@@ -216,20 +220,32 @@ if (isset($_POST['next'])) {
                               if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
                                  $KO = true;
                               } else {
-                                 $files      = json_decode($post[$id], 1);
-                                 $filename   = [];
-                                 $prefixname = [];
-                                 $tagname    = [];
-                                 foreach ($files as $file) {
-                                    $filename[]   = $file['_filename'];
-                                    $prefixname[] = $file['_prefix_filename'];
-                                    $tagname[]    = $file['_tag_filename'];
+                                 //basket mode
+                                 $files = [];
+                                 if (isset($post[$id]) && !empty($post[$id])) {
+                                    $files      = json_decode($post[$id], 1);
+                                    $filename   = [];
+                                    $prefixname = [];
+                                    $tagname    = [];
+                                    foreach ($files as $file) {
+                                       $filename[]   = $file['_filename'];
+                                       $prefixname[] = $file['_prefix_filename'];
+                                       $tagname[]    = $file['_tag_filename'];
+                                    }
+                                    $_POST['_filename']        = $filename;
+                                    $_POST['_prefix_filename'] = $prefixname;
+                                    $_POST['_tag_filename']    = $tagname;
                                  }
-                                 $_POST['_filename']                                           = $filename;
-                                 $_POST['_prefix_filename']                                    = $prefixname;
-                                 $_POST['_tag_filename']                                       = $tagname;
-                                 $_SESSION['plugin_metademands']['fields']['_filename']        = $_POST['_filename'];
-                                 $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $_POST['_prefix_filename'];
+                                 //normal mode
+                                 if (isset($_POST['_filename'])) {
+                                    $_SESSION['plugin_metademands']['fields']['_filename'] = $_POST['_filename'];
+                                 }
+                                 if (isset($_POST['_prefix_filename'])) {
+                                    $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $_POST['_prefix_filename'];
+                                 }
+                                 if (isset($_POST['_tag_filename'])) {
+                                    $_SESSION['plugin_metademands']['fields']['_tag_filename'] = $_POST['_tag_filename'];
+                                 }
                               }
                            }
                         }
@@ -254,7 +270,10 @@ if (isset($_POST['next'])) {
                            }
                            $wizard->checkValueOk($value['check_value'], $value['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value);
                         }
-                        if (isset($post[$id])) {
+                        if (isset($post[$id])
+                            && $value['type'] != 'checkbox'
+                            && $value['type'] != 'radio'
+                            && $value['type'] != 'upload') {
                            if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $post[$id]], $post)) {
                               foreach ($post as $key => $field) {
                                  $field      = str_replace('\r\n', '&#x0A;', $field);
@@ -274,7 +293,7 @@ if (isset($_POST['next'])) {
 
                         } else if ($value['type'] == 'checkbox') {
                            if (!isset($post)
-                               || (isset($post) && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $post))) {
+                               || $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $post)) {
                               $_SESSION['plugin_metademands']['fields'][$id] = '';
                            } else {
                               $KO = true;
@@ -307,11 +326,31 @@ if (isset($_POST['next'])) {
                            if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
                               $KO = true;
                            } else {
-                              if (isset($_POST['_filename'])) {
+                              //basket mode
+                              $files = [];
+                              if (isset($post[$id]) && !empty($post[$id])) {
+                                 $files      = json_decode($post[$id], 1);
+                                 $filename   = [];
+                                 $prefixname = [];
+                                 $tagname    = [];
+                                 foreach ($files as $file) {
+                                    $filename[]   = $file['_filename'];
+                                    $prefixname[] = $file['_prefix_filename'];
+                                    $tagname[]    = $file['_tag_filename'];
+                                 }
+                                 $_POST['_filename']        = $filename;
+                                 $_POST['_prefix_filename'] = $prefixname;
+                                 $_POST['_tag_filename']    = $tagname;
+                              }
+                              //normal mode
+                              if (isset($_POST['_filename']) || isset($post[$id])) {
                                  $_SESSION['plugin_metademands']['fields']['_filename'] = $_POST['_filename'];
                               }
-                              if (isset($_POST['_prefix_filename'])) {
+                              if (isset($_POST['_prefix_filename']) || isset($post[$id])) {
                                  $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $_POST['_prefix_filename'];
+                              }
+                              if (isset($_POST['_tag_filename']) || isset($post[$id])) {
+                                 $_SESSION['plugin_metademands']['fields']['_tag_filename'] = $_POST['_tag_filename'];
                               }
                            }
                         }
@@ -340,26 +379,28 @@ if (isset($_POST['next'])) {
                      // Resources step
                      $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
 
-
-                     // FILE UPLOAD
-                     if (isset($_FILES['filename']['tmp_name'])) {
-                        if (!isset($_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']])) {
-                           foreach ($_FILES['filename']['tmp_name'] as $key => $tmp_name) {
-
-                              if (!empty($tmp_name)) {
-                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['base64'] = base64_encode(file_get_contents($tmp_name));
-                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['name']   = $_FILES['filename']['name'][$key];
-                              }
-                           }
-                        }
-                        unset($_FILES['filename']);
+                     if (isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
+                        $_SESSION['plugin_metademands']['fields']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
                      }
+                     // FILE UPLOAD
+                     //                     if (isset($_FILES['filename']['tmp_name'])) {
+                     //                        if (!isset($_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']])) {
+                     //                           foreach ($_FILES['filename']['tmp_name'] as $key => $tmp_name) {
+                     //
+                     //                              if (!empty($tmp_name)) {
+                     //                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['base64'] = base64_encode(file_get_contents($tmp_name));
+                     //                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['name']   = $_FILES['filename']['name'][$key];
+                     //                              }
+                     //                           }
+                     //                        }
+                     //                        unset($_FILES['filename']);
+                     //                     }
                      //               unset($_SESSION['plugin_metademands']);
                   }
 
                   if ($KO) {
                      $step = $_POST['step'];
-                  } else if (isset($_POST['add_metademands'])) {
+                  } else if (isset($_POST['create_metademands'])) {
                      $step = PluginMetademandsMetademand::STEP_CREATE;
                   }
                }
@@ -499,7 +540,15 @@ if (isset($_POST['next'])) {
 
       foreach ($data as $id => $value) {
 
-         if (isset($_POST['field'][$id])) {
+         if ($value['item'] == 'itilcategory') {
+
+            $content[$id]['plugin_metademands_fields_id'] = $id;
+            $content[$id]['value'] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
+            $content[$id]['value2'] = "";
+            $content[$id]['item']   = $value['item'];
+            $content[$id]['type']   = $value['type'];
+
+         } else if (isset($_POST['field'][$id])) {
 
             if (!$wizard->checkMandatoryFields($value, ['id'    => $id,
                                                         'value' => $_POST['field'][$id]],
@@ -558,7 +607,8 @@ if (isset($_POST['next'])) {
 
          foreach ($data as $id => $value) {
 
-            if ($value['type'] != 'upload') {
+            if ($value['type'] != 'upload'
+            && $value['item'] != 'itilcategory') {
                if (!$wizard->checkMandatoryFields($value, ['id'    => $id,
                                                            'value' => isset($_POST['field_basket_' . $line][$id]) ? $_POST['field_basket_' . $line][$id] : ""],
                                                   $_POST['field_basket_' . $line])) {
