@@ -130,6 +130,10 @@ if (isset($_POST['next'])) {
                $nblines = 1;
             }
             if ($KO === false) {
+
+               $checks  = [];
+               $content = [];
+
                for ($i = 0; $i < $nblines; $i++) {
 
                   if ($metademands->fields['is_order'] == 1) {
@@ -164,9 +168,6 @@ if (isset($_POST['next'])) {
                         }
                      }
 
-                     $checks  = [];
-                     $content = [];
-
                      if ($value['type'] == 'radio') {
                         if (!isset($_POST['field'][$id])) {
                            $_POST['field'][$id] = NULL;
@@ -186,7 +187,12 @@ if (isset($_POST['next'])) {
                         $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
                      }
                      $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
-
+                  }
+                  foreach ($checks as $check) {
+                     if ($check['result'] == true) {
+                        $KO = true;
+                     }
+                     $content = array_merge($content, $check['content']);
                   }
                   if ($KO) {
                      $step = $_POST['step'];

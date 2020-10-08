@@ -1125,18 +1125,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
                // Get form fields
                $parent_fields['content'] = '';
 
-               foreach ($values['fields'] as $id => $data) {
+               foreach ($values['fields'] as $id => $datav) {
                   $metademands_fields = new PluginMetademandsField();
                   if ($metademands_fields->getFromDB($id)) {
                      switch ($metademands_fields->fields['item']) {
                         case 'PluginMetademandsITILEnvironment':
-                           $parent_fields['plugin_metademands_itilenvironments_id'] = $data;
+                           $parent_fields['plugin_metademands_itilenvironments_id'] = $datav;
                            break;
                         case 'PluginMetademandsITILApplication':
-                           $parent_fields['plugin_metademands_itilapplications_id'] = $data;
+                           $parent_fields['plugin_metademands_itilapplications_id'] = $datav;
                            break;
                         case 'itilcategory':
-                           $parent_fields['itilcategories_id'] = $data;
+                           $parent_fields['itilcategories_id'] = $datav;
                            if ($itilcategory > 0) {
                               $parent_fields['itilcategories_id'] = $itilcategory;
                            }
@@ -1284,7 +1284,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                                                                   $this->fields['comment']);
                      if ($metademand->fields['is_order'] == 0) {
                         $values_form['0'] = $values;
-                        $docPdf->drawPdf($metademands_data[2][$metademands_id]['form'], $values_form, false);
+                        $docPdf->drawPdf($line['form'], $values_form, false);
                      } elseif ($metademand->fields['is_order'] == 1) {
                         if ($metademand->fields['create_one_ticket'] == 0) {
                            //create one ticket for each basket
@@ -1297,7 +1297,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                            $values_form = $baskets;
                         }
-                        $docPdf->drawPdf($metademands_data[2][$metademands_id]['form'], $values_form, true);
+                        $docPdf->drawPdf($line['form'], $values_form, true);
                      }
                      $docPdf->Close();
                      $name    = PluginMetaDemandsMetaDemandPdf::cleanTitle($metademand->fields['name']);

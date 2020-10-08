@@ -1558,10 +1558,7 @@ class PluginMetademandsWizard extends CommonDBTM {
           && $check_value != null
           && in_array($plugin_metademands_tasks_id, $metademandtasks_tasks_id)) {
 
-         Toolbox::logWarning($post[$id]);
-         Toolbox::logWarning($check_value);
          if (!PluginMetademandsTicket_Field::isCheckValueOK($post[$id], $check_value, $value['type'])) {
-            Toolbox::logWarning('test');
             $metademandToHide                                   = array_keys($metademandtasks_tasks_id, $plugin_metademands_tasks_id);
             $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
             unset($_SESSION['son_meta'][$metademandToHide[0]]);
