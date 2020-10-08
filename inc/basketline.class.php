@@ -185,26 +185,29 @@ class PluginMetademandsBasketline extends CommonDBTM {
                                  'plugin_metademands_fields_id'      => $fields_id,
                                  'line'                              => $input['update_basket_line']]);
 
-         if ($this->fields['name'] == "upload") {
+         if ($this->fields['name'] != "itilcategory") {
+            if ($this->fields['name'] == "upload") {
+               $new_files = [];
+               if (isset($value) && $value != NULL) {
+                  $new_files = json_decode($value, 1);
+               }
+               $old_files = [];
+               if (isset($this->fields['value']) && $this->fields['value'] != NULL) {
+                  $old_files = json_decode($this->fields['value'], 1);
+               }
+               if (is_array($new_files) && count($new_files) > 1) {
+                  $files = array_merge($old_files, $new_files);
+                  $value = json_encode($files);
+               }
 
-            $new_files = [];
-            if (isset($value) && $value != NULL) {
-               $new_files = json_decode($value, 1);
-            }
-            $old_files = [];
-            if (isset($this->fields['value']) && $this->fields['value'] != NULL) {
-               $old_files = json_decode($this->fields['value'], 1);
-            }
-            if (is_array($new_files) && count($new_files) > 1) {
-               $files = array_merge($old_files, $new_files);
-               $value = json_encode($files);
+            } else {
+               $value = is_array($value) ? PluginMetademandsField::_serialize($value) : $value;
             }
 
+            $this->update(['plugin_metademands_fields_id' => $fields_id,
+                           'value'                        => $value,
+                           'id'                           => $this->fields['id']]);
          }
-
-         $this->update(['plugin_metademands_fields_id' => $fields_id,
-                        'value'                        => $value,
-                        'id'                           => $this->fields['id']]);
       }
       if (isset($input['basket_plugin_servicecatalog_itilcategories_id'])) {
 

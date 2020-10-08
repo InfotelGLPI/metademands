@@ -448,7 +448,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
-         echo "<th class='center b' colspan='9'>" . __('Form fields', 'metademands') . "</th>";
+         echo "<th class='center b' colspan='10'>" . __('Form fields', 'metademands') . "</th>";
          echo "</tr>";
          echo "<tr class='tab_bg_2'>";
          echo "<th width='10'>";
@@ -462,6 +462,10 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<th class='center b'>" . __('Mandatory field') . "</th>";
          echo "<th class='center b'>" . __('Link a task to the field', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Value to check', 'metademands') . "</th>";
+         $meta = new PluginMetademandsMetademand();
+         if ($meta->getFromDB($plugin_metademands_metademands_id) && $meta->fields['is_order'] == 1) {
+            echo "<th class='center b'>" . __('Display into the basket', 'metademands') . "</th>";
+         }
          echo "<th class='center b'>" . __('Block', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Order', 'metademands') . "</th>";
          echo "</tr>";
@@ -536,6 +540,10 @@ class PluginMetademandsField extends CommonDBChild {
                echo Dropdown::EMPTY_VALUE;
             }
             echo "</td>";
+            if ($meta->fields['is_order'] == 1) {
+               echo "<td>" . Dropdown::getYesNo($value['is_basket']) . "</td>";
+            }
+
             echo "<td class='center' style='color:white;background-color: #" . self::setColor($value['rank']) . "'>" . $value['rank'] . "</td>";
             echo "<td class='center' style='color:white;background-color: #" . self::setColor($value['rank']) . "'>";
             echo empty($value['order']) ? __('None') : $value['order'];
@@ -1070,7 +1078,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $values = json_decode($metademand->fields['itilcategories_id']);
                   if (count($values) == 1) {
                      foreach ($values as $key => $val)
-                     $itilcategories_id = $val;
+                        $itilcategories_id = $val;
                   }
                   if ($itilcategories_id > 0) {
                      // itilcat from service catalog
@@ -1150,7 +1158,9 @@ class PluginMetademandsField extends CommonDBChild {
             $field = "<input type='text' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "' class='form-control form-control-sm' id='" . $namefield . "[" . $data['id'] . "]' placeholder=\"" . $data['comment'] . "\">";
             break;
          case 'informations':
-            $field = nl2br($data['comment']);
+            if ($on_basket == false) {
+               $field = nl2br($data['comment']);
+            }
             break;
          case 'link':
             if (!empty($data['custom_values'])) {
@@ -1192,7 +1202,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $checked = "";
                   if (isset($value[$key])) {
                      $checked = isset($value[$key]) ? 'checked' : '';
-                  } elseif (isset($defaults[$key])) {
+                  } elseif (isset($defaults[$key]) && $on_basket == false) {
                      $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
                   $field .= "<input class='custom-control-input' type='checkbox' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
@@ -1233,7 +1243,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $checked = "";
                   if ($value != NULL && $value == $key) {
                      $checked = $value == $key ? 'checked' : '';
-                  } elseif ($value == NULL && isset($defaults[$key])) {
+                  } elseif ($value == NULL && isset($defaults[$key]) && $on_basket == false) {
                      $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
                   $field .= "<input class='custom-control-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
@@ -1273,7 +1283,6 @@ class PluginMetademandsField extends CommonDBChild {
          case 'yesno':
             $option[1] = __('No');
             $option[2] = __('Yes');
-            $value     = $data['custom_values'];
             $field     = "";
             $field     .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
                                                                                                   'display' => false]);
@@ -2050,7 +2059,11 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<p id='comment_values$key'>";
                      if ($params['value'] == 'checkbox' || $params['value'] == 'radio') {
                         echo " " . __('Comment') . " ";
-                        echo '<input type="text" name="comment_values[' . $key . ']"  value="' . $comment[$key] . '" size="30"/>';
+                        $value_comment = "";
+                        if (isset($comment[$key])) {
+                           $value_comment = $comment[$key];
+                        }
+                        echo '<input type="text" name="comment_values[' . $key . ']"  value="' . $value_comment . '" size="30"/>';
                      }
                      echo '</p>';
                      echo "</td>";
@@ -2344,6 +2357,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return array|bool
     */
    function prepareInputForAdd($input) {
+
       if (!$this->checkMandatoryFields($input)) {
          return false;
       }
@@ -2353,6 +2367,13 @@ class PluginMetademandsField extends CommonDBChild {
       if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
           && $meta->fields['is_order'] == 1) {
          $input['is_basket'] = 1;
+      }
+
+      if (isset($input["type"]) && $input["type"] == "checkbox") {
+         $input["item"] = "checkbox";
+      }
+      if (isset($input["type"]) && $input["type"] == "radio") {
+         $input["item"] = "radio";
       }
 
       return $input;
@@ -2370,17 +2391,16 @@ class PluginMetademandsField extends CommonDBChild {
     */
    function prepareInputForUpdate($input) {
 
+
       if (!$this->checkMandatoryFields($input)) {
          return false;
       }
-
-      //      $data = array_keys($input);
-      //
-      //      foreach($DB->list_fields($this->getTable()) as $field => $values){
-      //         if(!in_array($field, $data)){
-      //            $input[$field] = 0;
-      //         }
-      //      }
+      if (isset($input["type"]) && $input["type"] == "checkbox") {
+         $input["item"] = "checkbox";
+      }
+      if (isset($input["type"]) && $input["type"] == "radio") {
+         $input["item"] = "radio";
+      }
 
       return $input;
    }
@@ -2521,6 +2541,14 @@ class PluginMetademandsField extends CommonDBChild {
          'table'    => $this->getTable(),
          'field'    => 'is_mandatory',
          'name'     => __('Mandatory field'),
+         'datatype' => 'bool'
+      ];
+
+      $tab[] = [
+         'id'       => '820',
+         'table'    => $this->getTable(),
+         'field'    => 'is_basket',
+         'name'     => __('Display into the basket', 'metademands'),
          'datatype' => 'bool'
       ];
 

@@ -1162,10 +1162,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                   $line = $k + 1;
 
                   if ($basketclass->find(["plugin_metademands_metademands_id" => $metademands_id,
-                                                  'plugin_metademands_fields_id'      => $key,
-                                                  'line'                              => $line,
-                                                  'name'                              => "upload"
-                                                 ])) {
+                                          'plugin_metademands_fields_id'      => $key,
+                                          'line'                              => $line,
+                                          'name'                              => "upload"
+                                         ])) {
                      if (!empty($val)) {
                         $files = json_decode($val, 1);
                         foreach ($files as $file) {
@@ -1262,6 +1262,104 @@ class PluginMetademandsWizard extends CommonDBTM {
 
 
    /**
+    * @param       $value
+    * @param       $id
+    * @param       $post
+    * @param       $fieldname
+    * @param false $on_basket
+    *
+    * @return array
+    */
+   static function checkvalues($value, $id, $post, $fieldname, $on_basket = false) {
+
+      $KO      = false;
+      $content = [];
+      if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
+         $value['second_date_ok'] = true;
+         $value['id']             = $id . '-2';
+         $value['label']          = $value['label2'];
+         $data[$id . '-2']        = $value;
+      }
+
+      if (isset($post[$fieldname][$id])
+          && $value['type'] != 'checkbox'
+          && $value['type'] != 'radio'
+          && $value['item'] != 'itilcategory') {
+
+         if (!self::checkMandatoryFields($value, ['id'    => $id,
+                                                  'value' => $post[$fieldname][$id]],
+                                         $post[$fieldname])) {
+            $KO = true;
+         } else {
+            $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+         }
+
+      } else if ($value['item'] == 'itilcategory') {
+
+         $content[$id]['plugin_metademands_fields_id'] = $id;
+         if ($on_basket == false) {
+            $content[$id]['value']                        = $post['field_plugin_servicecatalog_itilcategories_id'];
+         } else {
+            $content[$id]['value']                        = $post['basket_plugin_servicecatalog_itilcategories_id'];
+         }
+
+         $content[$id]['value2']                       = "";
+         $content[$id]['item']                         = $value['item'];
+         $content[$id]['type']                         = $value['type'];
+
+      } else if ($value['type'] == 'checkbox') {
+
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $post[$fieldname])) {
+            $KO = true;
+         } else {
+            $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+         }
+      } else if ($value['type'] == 'radio') {
+
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $post[$fieldname])) {
+            $KO = true;
+         } else {
+            $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+         }
+      } else if ($value['type'] == 'upload') {
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
+            $KO = true;
+         } else {
+            if (isset($post['_filename']) || isset($post[$id])) {
+               $_SESSION['plugin_metademands']['fields']['_filename'] = $post['_filename'];
+            }
+            if (isset($post['_prefix_filename']) || isset($post[$id])) {
+               $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $post['_prefix_filename'];
+            }
+            if (isset($post['_tag_filename']) || isset($post[$id])) {
+               $_SESSION['plugin_metademands']['fields']['_tag_filename'] = $post['_tag_filename'];
+            }
+         }
+      }
+      //INFO : not used for update basket
+      if ($value['item'] != 'itilcategory' && $KO === false) {
+         $content[$id]['plugin_metademands_fields_id'] = $id;
+         if ($value['type'] != "upload") {
+            $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];
+         }
+         $content[$id]['value2'] = (isset($post[$fieldname][$id . "-2"])) ? $post[$fieldname][$id . "-2"] : "";
+         $content[$id]['item']   = $value['item'];
+         $content[$id]['type']   = $value['type'];
+
+         if (isset($post['_filename']) && $value['type'] == "upload") {
+            $files = [];
+            foreach ($post['_filename'] as $key => $filename) {
+               $files[$key]['_prefix_filename'] = $post['_prefix_filename'][$key];
+               $files[$key]['_tag_filename']    = $post['_tag_filename'][$key];
+               $files[$key]['_filename']        = $post['_filename'][$key];
+            }
+            $content[$id]['value'] = json_encode($files);
+         }
+      }
+      return ['result' => $KO, 'content' => $content];
+   }
+
+   /**
     * @param array $value
     * @param array $fields
     * @param array $all_fields
@@ -1282,6 +1380,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          if ($value['is_mandatory']
              && empty($fields['value'])
              && $value['type'] != 'radio'
+             && $value['type'] != 'checkbox'
              && $value['type'] != 'informations') {
             $msg[]     = $value['label'];
             $checkKo[] = 1;
@@ -1300,8 +1399,18 @@ class PluginMetademandsWizard extends CommonDBTM {
             $checkKo[] = 1;
 
          }
+         //radio
+         if ($value['type'] == 'radio'
+             && $value['is_mandatory']) {
+            if ($fields['value'] == NULL) {
+               $msg[]     = $value['label'];
+               $checkKo[] = 1;
+            }
+         }
 
-         if ($value['type'] == 'radio' && $value['is_mandatory']) {
+         //checkbox
+         if ($value['type'] == 'checkbox'
+             && $value['is_mandatory']) {
             if ($fields['value'] == NULL) {
                $msg[]     = $value['label'];
                $checkKo[] = 1;
@@ -1351,7 +1460,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
          }
          // Check File upload field
-         if ($value['type'] == "upload" && !empty($value["max_upload"]) && isset($_POST['_filename'])) {
+         if ($value['type'] == "upload"
+             && !empty($value["max_upload"])
+             && isset($_POST['_filename'])) {
             if ($value["max_upload"] < count($_POST['_filename'])) {
                $msg2[]       = $value['label'];
                $checkNbDoc[] = 1;
@@ -1359,7 +1470,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
          // Check text with regex
-         if ($value['type'] == "text" && !empty($value["regex"])) {
+         if ($value['type'] == "text"
+             && !empty($value["regex"])) {
 
             if (!preg_match(($value['regex']), $fields['value'])) {
                $msg3[]       = $value['label'];
@@ -1433,17 +1545,23 @@ class PluginMetademandsWizard extends CommonDBTM {
    }
 
    /**
+    * Used for check if hide child metademands
     * @param $check_value
     * @param $plugin_metademands_tasks_id
     * @param $metademandtasks_tasks_id
     * @param $id
     * @param $value
     */
-   function checkValueOk($check_value, $plugin_metademands_tasks_id, $metademandtasks_tasks_id, $id, $value) {
-      if (isset($_POST['field'][$id])
+   function checkValueOk($check_value, $plugin_metademands_tasks_id, $metademandtasks_tasks_id, $id, $value, $post) {
+
+      if (isset($post[$id])
           && $check_value != null
           && in_array($plugin_metademands_tasks_id, $metademandtasks_tasks_id)) {
-         if (!PluginMetademandsTicket_Field::isCheckValueOK($_POST['field'][$id], $check_value, $value['type'])) {
+
+         Toolbox::logWarning($post[$id]);
+         Toolbox::logWarning($check_value);
+         if (!PluginMetademandsTicket_Field::isCheckValueOK($post[$id], $check_value, $value['type'])) {
+            Toolbox::logWarning('test');
             $metademandToHide                                   = array_keys($metademandtasks_tasks_id, $plugin_metademands_tasks_id);
             $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
             unset($_SESSION['son_meta'][$metademandToHide[0]]);

@@ -104,6 +104,11 @@ if (isset($_POST["add"])) {
    Html::back();
 
 } else if (isset($_POST["update"])) {
+
+   if ($_POST["type"] == 'checkbox'
+       || $_POST["type"] == 'radio') {
+      $_POST["item"] = 0;
+   }
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])
        && ($_POST["item"] == 'other'
            || $_POST["type"] == 'checkbox'

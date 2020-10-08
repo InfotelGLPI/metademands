@@ -137,267 +137,57 @@ if (isset($_POST['next'])) {
                   }
 
                   foreach ($data as $id => $value) {
-                     if (is_array(PluginMetademandsField::_unserialize($value['check_value']))) {
-                        if ($value['type'] == 'datetime_interval'
-                            && !isset($value['second_date_ok'])) {
-                           $value['second_date_ok'] = true;
-                           $value['id']             = $id . '-2';
-                           $value['label']          = $value['label2'];
-                           $data[$id . '-2']        = $value;
-                        }
+
+                     //Permit to launch child metademand on check value
+                     $checkchild = PluginMetademandsField::_unserialize($value['check_value']);
+                     if (is_array($checkchild)) {
+
                         // Check if no form values block the creation of meta
                         $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
 
                         if (!is_null($metademandtasks_tasks_id)) {
+
                            $_SESSION['son_meta'] = $metademandtasks_tasks_id;
                            if (!isset($post)) {
                               $post[$id] = 0;
                            }
-                           if (isset($_POST['radio'][$id])) {
-                              $post[$id] = $_POST['radio'][$id];
-                           }
-                           foreach (PluginMetademandsField::_unserialize($value['check_value']) as $keyId => $check_value) {
+                           foreach ($checkchild as $keyId => $check_value) {
                               $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
-                              $wizard->checkValueOk($check_value, $plugin_metademands_tasks_id[$keyId], $metademandtasks_tasks_id, $id, $value);
+                              $wizard->checkValueOk($check_value, $plugin_metademands_tasks_id[$keyId], $metademandtasks_tasks_id, $id, $value, $post);
                            }
                         }
-                        foreach (PluginMetademandsField::_unserialize($value['check_value']) as $keyId => $check_value) {
+
+                        foreach ($checkchild as $keyId => $check_value) {
                            $value['check_value']                 = $check_value;
                            $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id'])[$keyId];
                            $value['fields_link']                 = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
-                           if (isset($post[$id])
-                               && $value['type'] != 'checkbox'
-                               && $value['type'] != 'radio'
-                               && $value['type'] != 'upload') {
-                              if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $post[$id]], $post)) {
-                                 foreach ($post as $key => $field) {
-                                    $field      = str_replace('\r\n', '&#x0A;', $field);
-                                    $post[$key] = $field;
-                                 }
-                                 $KO = true;
-                              }
-
-                              if ($value == 'checkbox') {// Checkbox
-                                 $_SESSION['plugin_metademands']['fields'][$id] = 1;
-                              } else {// Other fields
-                                 if (is_array($post[$id])) {
-                                    $post[$id] = PluginMetademandsField::_serialize($post[$id]);
-                                 }
-                                 $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
-                              }
-
-                           } else if ($value['type'] == 'checkbox') {
-                              if (!isset($post)
-                                  || $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $post)) {
-                                 $_SESSION['plugin_metademands']['fields'][$id] = '';
-                              } else {
-                                 $KO = true;
-                              }
-                           } else if ($value['type'] == 'radio') {
-                              if ($value['is_mandatory'] == 1) {
-                                 if (isset($_POST['radio'])
-                                     && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $_POST['radio'][$id]])) {
-                                    $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
-                                 } else {
-                                    $KO = true;
-                                 }
-                              } else if (isset($_POST['radio'][$id])) {
-                                 $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
-                              }
-
-                              // Check if no form values block the creation of meta
-                              $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-                              if (isset($_POST['radio'][$id]) &&
-                                  is_array($metademandtasks_tasks_id) &&
-                                  in_array($value['plugin_metademands_tasks_id'], $metademandtasks_tasks_id) &&
-                                  !PluginMetademandsTicket_Field::isCheckValueOK($_POST['radio'][$id], $value['check_value'], $value['type'])) {
-                                 //                   $step++;
-                                 $metademandToHide                                   = array_keys($metademandtasks_tasks_id, $value['plugin_metademands_tasks_id']);
-                                 $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
-
-                              }
-                           } else if ($value['type'] == 'upload') {
-                              if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
-                                 $KO = true;
-                              } else {
-                                 //basket mode
-                                 $files = [];
-                                 if (isset($post[$id]) && !empty($post[$id])) {
-                                    $files      = json_decode($post[$id], 1);
-                                    $filename   = [];
-                                    $prefixname = [];
-                                    $tagname    = [];
-                                    foreach ($files as $file) {
-                                       $filename[]   = $file['_filename'];
-                                       $prefixname[] = $file['_prefix_filename'];
-                                       $tagname[]    = $file['_tag_filename'];
-                                    }
-                                    $_POST['_filename']        = $filename;
-                                    $_POST['_prefix_filename'] = $prefixname;
-                                    $_POST['_tag_filename']    = $tagname;
-                                 }
-                                 //normal mode
-                                 if (isset($_POST['_filename'])) {
-                                    $_SESSION['plugin_metademands']['fields']['_filename'] = $_POST['_filename'];
-                                 }
-                                 if (isset($_POST['_prefix_filename'])) {
-                                    $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $_POST['_prefix_filename'];
-                                 }
-                                 if (isset($_POST['_tag_filename'])) {
-                                    $_SESSION['plugin_metademands']['fields']['_tag_filename'] = $_POST['_tag_filename'];
-                                 }
-                              }
-                           }
-                        }
-                     } else {
-
-                        if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
-                           $value['second_date_ok'] = true;
-                           $value['id']             = $id . '-2';
-                           $value['label']          = $value['label2'];
-                           $data[$id . '-2']        = $value;
-                        }
-                        // Check if no form values block the creation of meta
-                        $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-
-                        if (!is_null($metademandtasks_tasks_id)) {
-                           $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-                           if (!isset($post)) {
-                              $post[$id] = 0;
-                           }
-                           if (isset($_POST['radio'][$id])) {
-                              $post[$id] = $_POST['radio'][$id];
-                           }
-                           $wizard->checkValueOk($value['check_value'], $value['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value);
-                        }
-                        if (isset($post[$id])
-                            && $value['type'] != 'checkbox'
-                            && $value['type'] != 'radio'
-                            && $value['type'] != 'upload') {
-                           if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $post[$id]], $post)) {
-                              foreach ($post as $key => $field) {
-                                 $field      = str_replace('\r\n', '&#x0A;', $field);
-                                 $post[$key] = $field;
-                              }
-                              $KO = true;
-                           }
-
-                           if ($value == 'checkbox') {// Checkbox
-                              $_SESSION['plugin_metademands']['fields'][$id] = 1;
-                           } else {// Other fields
-                              if (is_array($post[$id]) && $value['type'] !== 'dropdown_multiple') {
-                                 $post[$id] = PluginMetademandsField::_serialize($post[$id]);
-                              }
-                              $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
-                           }
-
-                        } else if ($value['type'] == 'checkbox') {
-                           if (!isset($post)
-                               || $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => ''], $post)) {
-                              $_SESSION['plugin_metademands']['fields'][$id] = '';
-                           } else {
-                              $KO = true;
-                           }
-                        } else if ($value['type'] == 'radio') {
-                           if ($value['is_mandatory'] == 1) {
-                              if (isset($post)
-                                  && $wizard->checkMandatoryFields($value, ['id' => $id, 'value' => $post[$id]])) {
-                                 $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
-                              } else {
-                                 $KO = true;
-                              }
-                           } else if (isset($post[$id])) {
-                              $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
-                           } else if (isset($_POST['radio'][$id])) {
-                              $_SESSION['plugin_metademands']['fields'][$id] = $_POST['radio'][$id];
-                           }
-
-                           // Check if no form values block the creation of meta
-                           $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-                           if (isset($_POST['radio'][$id]) &&
-                               is_array($metademandtasks_tasks_id) &&
-                               in_array($value['plugin_metademands_tasks_id'], $metademandtasks_tasks_id) &&
-                               !PluginMetademandsTicket_Field::isCheckValueOK($_POST['radio'][$id], $value['check_value'], $value['type'])) {
-                              //                   $step++;
-                              $metademandToHide                                   = array_keys($metademandtasks_tasks_id, $value['plugin_metademands_tasks_id']);
-                              $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
-                           }
-                        } else if ($value['type'] == 'upload') {
-                           if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
-                              $KO = true;
-                           } else {
-                              //basket mode
-                              $files = [];
-                              if (isset($post[$id]) && !empty($post[$id])) {
-                                 $files      = json_decode($post[$id], 1);
-                                 $filename   = [];
-                                 $prefixname = [];
-                                 $tagname    = [];
-                                 foreach ($files as $file) {
-                                    $filename[]   = $file['_filename'];
-                                    $prefixname[] = $file['_prefix_filename'];
-                                    $tagname[]    = $file['_tag_filename'];
-                                 }
-                                 $_POST['_filename']        = $filename;
-                                 $_POST['_prefix_filename'] = $prefixname;
-                                 $_POST['_tag_filename']    = $tagname;
-                              }
-                              //normal mode
-                              if (isset($_POST['_filename']) || isset($post[$id])) {
-                                 $_SESSION['plugin_metademands']['fields']['_filename'] = $_POST['_filename'];
-                              }
-                              if (isset($_POST['_prefix_filename']) || isset($post[$id])) {
-                                 $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $_POST['_prefix_filename'];
-                              }
-                              if (isset($_POST['_tag_filename']) || isset($post[$id])) {
-                                 $_SESSION['plugin_metademands']['fields']['_tag_filename'] = $_POST['_tag_filename'];
-                              }
-                           }
-                        }
-                     }
-                     //               $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id']);
-                     $metademands->getFromDB($_POST['form_metademands_id']);
-                     $ticketfields_data = $metademands->formatTicketFields($_POST['form_metademands_id'], $metademands->getField('tickettemplates_id'));
-                     if (count($ticketfields_data)) {
-                        if (!isset($ticketfields_data['entities_id'])) {
-                           $ticketfields_data['entities_id'] = $_SESSION['glpiactive_entity'];
-                        }
-                        $metademands->getFromDB($_POST['form_metademands_id']);
-                        $ticketfields_data['itilcategories_id'] = $metademands->fields['itilcategories_id'];
-                        $tickettasks                            = new PluginMetademandsTicketTask();
-                        if (!$tickettasks->isMandatoryField($ticketfields_data, true, false, __('Mandatory fields of the metademand ticket must be configured', 'metademands'))) {
-                           $KO = true;
                         }
                      }
 
-                     // Save requester user
-                     $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
-                     // Case of simple ticket convertion
-                     $_SESSION['plugin_metademands']['fields']['tickets_id'] = $_POST['tickets_id'];
-                     // Resources id
-                     $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
-                     // Resources step
-                     $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
+                     $checks  = [];
+                     $content = [];
 
-                     if (isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
-                        $_SESSION['plugin_metademands']['fields']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
+                     if ($value['type'] == 'radio') {
+                        if (!isset($_POST['field'][$id])) {
+                           $_POST['field'][$id] = NULL;
+                        }
                      }
-                     // FILE UPLOAD
-                     //                     if (isset($_FILES['filename']['tmp_name'])) {
-                     //                        if (!isset($_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']])) {
-                     //                           foreach ($_FILES['filename']['tmp_name'] as $key => $tmp_name) {
-                     //
-                     //                              if (!empty($tmp_name)) {
-                     //                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['base64'] = base64_encode(file_get_contents($tmp_name));
-                     //                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['name']   = $_FILES['filename']['name'][$key];
-                     //                              }
-                     //                           }
-                     //                        }
-                     //                        unset($_FILES['filename']);
-                     //                     }
-                     //               unset($_SESSION['plugin_metademands']);
+                     if ($value['type'] == 'checkbox') {
+                        if (!isset($_POST['field'][$id])) {
+                           $_POST['field'][$id] = 0;
+                        }
+                     }
+                     if ($value['type'] == 'informations') {
+                        if (!isset($_POST['field'][$id])) {
+                           $_POST['field'][$id] = 0;
+                        }
+                     }
+                     if ($value['item'] == 'itilcategory') {
+                        $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+                     }
+                     $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
+
                   }
-
                   if ($KO) {
                      $step = $_POST['step'];
                   } else if (isset($_POST['create_metademands'])) {
@@ -534,45 +324,40 @@ if (isset($_POST['next'])) {
       $KO   = false;
       $step = PluginMetademandsMetademand::STEP_SHOW;
 
+      $checks  = [];
       $content = [];
       $data    = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
                                'is_basket'                         => 1]);
 
       foreach ($data as $id => $value) {
 
-         if ($value['item'] == 'itilcategory') {
-
-            $content[$id]['plugin_metademands_fields_id'] = $id;
-            $content[$id]['value'] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
-            $content[$id]['value2'] = "";
-            $content[$id]['item']   = $value['item'];
-            $content[$id]['type']   = $value['type'];
-
-         } else if (isset($_POST['field'][$id])) {
-
-            if (!$wizard->checkMandatoryFields($value, ['id'    => $id,
-                                                        'value' => $_POST['field'][$id]],
-                                               $_POST['field'])) {
-               $KO = true;
-            }
-            $content[$id]['plugin_metademands_fields_id'] = $id;
-            if ($value['type'] != "upload") {
-               $content[$id]['value'] = (is_array($_POST['field'][$id])) ? PluginMetademandsField::_serialize($_POST['field'][$id]) : $_POST['field'][$id];
-            }
-            $content[$id]['value2'] = (isset($_POST['field'][$id . "-2"])) ? $_POST['field'][$id . "-2"] : "";
-            $content[$id]['item']   = $value['item'];
-            $content[$id]['type']   = $value['type'];
-
-            if (isset($_POST['_filename']) && $value['type'] == "upload") {
-               $files = [];
-               foreach ($_POST['_filename'] as $key => $filename) {
-                  $files[$key]['_prefix_filename'] = $_POST['_prefix_filename'][$key];
-                  $files[$key]['_tag_filename']    = $_POST['_tag_filename'][$key];
-                  $files[$key]['_filename']        = $_POST['_filename'][$key];
-               }
-               $content[$id]['value'] = json_encode($files);
+         if ($value['type'] == 'radio') {
+            if (!isset($_POST['field'][$id])) {
+               $_POST['field'][$id] = NULL;
             }
          }
+         if ($value['type'] == 'checkbox') {
+            if (!isset($_POST['field'][$id])) {
+               $_POST['field'][$id] = 0;
+            }
+         }
+         if ($value['type'] == 'informations') {
+            if (!isset($_POST['field'][$id])) {
+               $_POST['field'][$id] = 0;
+            }
+         }
+         if ($value['item'] == 'itilcategory') {
+            $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id'])?$_POST['field_plugin_servicecatalog_itilcategories_id']:0;
+         }
+
+         $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
+
+      }
+      foreach ($checks as $check) {
+         if ($check['result'] == true) {
+            $KO = true;
+         }
+         $content = array_merge($content, $check['content']);
       }
 
       if ($KO === false) {
@@ -603,37 +388,55 @@ if (isset($_POST['next'])) {
       if (isset($_POST['field_basket_' . $line])) {
          $KO = false;
 
+         $checks  = [];
+         $content = [];
          $data = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
 
          foreach ($data as $id => $value) {
 
-            if ($value['type'] != 'upload'
-            && $value['item'] != 'itilcategory') {
-               if (!$wizard->checkMandatoryFields($value, ['id'    => $id,
-                                                           'value' => isset($_POST['field_basket_' . $line][$id]) ? $_POST['field_basket_' . $line][$id] : ""],
-                                                  $_POST['field_basket_' . $line])) {
-                  $KO = true;
+            if ($value['type'] == 'radio') {
+               if (!isset($_POST['field_basket_' . $line][$id])) {
+                  $_POST['field_basket_' . $line][$id] = NULL;
                }
             }
-            if ($value['type'] == 'upload') {
-               if (!$wizard->checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
-                  $KO = true;
-               } else {
-                  if (isset($_POST['_filename'])) {
-                     foreach ($_POST['_filename'] as $key => $filename) {
-                        $files[$key]['_prefix_filename'] = $_POST['_prefix_filename'][$key];
-                        $files[$key]['_tag_filename']    = $_POST['_tag_filename'][$key];
-                        $files[$key]['_filename']        = $_POST['_filename'][$key];
-                     }
+            if ($value['type'] == 'checkbox') {
+               if (!isset($_POST['field_basket_' . $line][$id])) {
+                  $_POST['field_basket_' . $line][$id] = 0;
+               }
+            }
+            if ($value['type'] == 'informations') {
+               if (!isset($_POST['field_basket_' . $line][$id])) {
+                  $_POST['field_basket_' . $line][$id] = "";
+               }
+            }
+            if ($value['item'] == 'itilcategory') {
+               $_POST['field_basket_' . $line][$id] = isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])?$_POST['basket_plugin_servicecatalog_itilcategories_id']:0;
+            }
+            $fieldname = 'field_basket_' . $line;
+            $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, $fieldname, true);
 
-                     $_POST['field_basket_' . $line][$id] = json_encode($files);
+            if ($value['type'] == 'upload') {
+               if (isset($_POST['_filename'])) {
+                  foreach ($_POST['_filename'] as $key => $filename) {
+                     $files[$key]['_prefix_filename'] = $_POST['_prefix_filename'][$key];
+                     $files[$key]['_tag_filename']    = $_POST['_tag_filename'][$key];
+                     $files[$key]['_filename']        = $_POST['_filename'][$key];
                   }
+
+                  $_POST['field_basket_' . $line][$id] = json_encode($files);
                }
             }
          }
       }
-      if ($KO === false) {
+      foreach ($checks as $check) {
+         if ($check['result'] == true) {
+            $KO = true;
+         }
+         //not used
+         $content = array_merge($content, $check['content']);
+      }
 
+      if ($KO === false) {
          $basketline = new PluginMetademandsBasketline();
          $basketline->updateFromBasket($_POST, $line);
       }
