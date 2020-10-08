@@ -1268,7 +1268,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $input['itilcategories_id'] = $itilcategory;
                   } else {
                      $cats = json_decode($this->fields['itilcategories_id'], true);
-                     if (count($cats) == 1) {
+                     if (is_array($cats) && count($cats) == 1) {
                         foreach ($cats as $cat) {
                            $input['itilcategories_id'] = $cat;
                         }
@@ -1376,19 +1376,23 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   if ($ticket_exists) {
                      if (isset($parent_ticketfields['_users_id_observer'])
                          && !empty($parent_ticketfields['_users_id_observer'])) {
-                        $parent_ticketfields['_itil_observer'] = ['users_id' => $parent_ticketfields['_users_id_observer'], '_type' => 'user'];
+                        $parent_ticketfields['_itil_observer'] = ['users_id' => $parent_ticketfields['_users_id_observer'],
+                                                                  '_type' => 'user'];
                      }
                      if (isset($parent_ticketfields['_groups_id_observer'])
                          && !empty($parent_ticketfields['_groups_id_observer'])) {
-                        $parent_ticketfields['_itil_observer'] = ['groups_id' => $parent_ticketfields['_groups_id_observer'], '_type' => 'group'];
+                        $parent_ticketfields['_itil_observer'] = ['groups_id' => $parent_ticketfields['_groups_id_observer'],
+                                                                  '_type' => 'group'];
                      }
                      if (isset($parent_ticketfields['_users_id_assign'])
                          && !empty($parent_ticketfields['_users_id_assign'])) {
-                        $parent_ticketfields['_itil_assign'] = ['users_id' => $parent_ticketfields['_users_id_assign'], '_type' => 'user'];
+                        $parent_ticketfields['_itil_assign'] = ['users_id' => $parent_ticketfields['_users_id_assign'],
+                                                                '_type' => 'user'];
                      }
                      if (isset($parent_ticketfields['_groups_id_assign'])
                          && !empty($parent_ticketfields['_groups_id_assign'])) {
-                        $parent_ticketfields['_itil_assign'] = ['groups_id' => $parent_ticketfields['_groups_id_assign'], '_type' => 'group'];
+                        $parent_ticketfields['_itil_assign'] = ['groups_id' => $parent_ticketfields['_groups_id_assign'],
+                                                                '_type' => 'group'];
                      }
 
                      $ticket->update($this->mergeFields($parent_fields, $parent_ticketfields));
@@ -1742,7 +1746,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if (isset($allowed_fields[$value['num']])
                 && (!in_array($allowed_fields[$value['num']], PluginMetademandsTicketField::$used_fields))) {
                $value['item']          = $allowed_fields[$value['num']];
-               $result[$value['item']] = json_decode($value['value'], true);
+               if ($value['item'] == 'name') {
+                  $result[$value['item']] = $value['value'];
+               } else {
+                  $result[$value['item']] = json_decode($value['value'], true);
+               }
             }
          }
       }

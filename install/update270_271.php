@@ -72,7 +72,7 @@ function update270_271() {
    $metademands           = new PluginMetademandsMetademand();
    $metademands           = $metademands->find();
    $transient_metademands = [];
-   $itilcat               = '';
+
    foreach ($metademands as $metademand) {
       $itilcat                                                     = [$metademand['itilcategories_id']];
       $transient_metademands[$metademand['id']]['itil_categories'] = json_encode($itilcat);

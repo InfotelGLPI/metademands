@@ -116,6 +116,16 @@ function plugin_metademands_install() {
 
    //version 2.7.2
    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "create_one_ticket")) {
+
+      $sql    = "SHOW COLUMNS FROM `glpi_plugin_metademands_metademands`";
+      $result = $DB->query($sql);
+      while ($data = $DB->fetchArray($result)) {
+         if ($data['Field'] == 'itilcategories_id' && $data['Type'] == 'int(1)') {
+            include(GLPI_ROOT . "/plugins/metademands/install/update270_271.php");
+            update270_271();
+         }
+      }
+
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.2.sql");
    }
 
