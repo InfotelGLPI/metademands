@@ -76,7 +76,6 @@ if (isset($_POST['next'])) {
    $onlybasketdatas = false;
    $step            = $_POST['step'] + 1;
    if (isset($_POST['update_fields'])) {
-
       if ($metademands->canCreate()
           || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
 
@@ -140,8 +139,18 @@ if (isset($_POST['next'])) {
                      $post = $_SESSION['plugin_metademands']['basket'][$i];
                   }
 
-                  foreach ($data as $id => $value) {
 
+                  //Clean $post & $data & $_POST
+                  $dataOld = $data;
+                  // Double appel for prevent order fields
+                  PluginMetademandsWizard::unsetHidden($data, $post);
+                  PluginMetademandsWizard::unsetHidden($dataOld, $post);
+                  $_POST['field'] = $post;
+
+                  foreach ($data as $id => $value) {
+                     if(!isset($post[$id])){
+                        $post[$id] = [];
+                     }
                      //Permit to launch child metademand on check value
                      $checkchild = PluginMetademandsField::_unserialize($value['check_value']);
                      if (is_array($checkchild)) {
@@ -163,7 +172,7 @@ if (isset($_POST['next'])) {
 
                         foreach ($checkchild as $keyId => $check_value) {
                            $value['check_value']                 = $check_value;
-                           $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id'])[$keyId];
+                           $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId];
                            $value['fields_link']                 = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
                         }
                      }
@@ -186,6 +195,7 @@ if (isset($_POST['next'])) {
                      if ($value['item'] == 'itilcategory') {
                         $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
                      }
+
                      $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
                   }
                   foreach ($checks as $check) {
@@ -195,6 +205,9 @@ if (isset($_POST['next'])) {
                      $content = array_merge($content, $check['content']);
                   }
                   if ($KO) {
+                     if (isset($_SESSION['metademands_hide'])) {
+                        unset($_SESSION['metademands_hide']);
+                     }
                      $step = $_POST['step'];
                   } else if (isset($_POST['create_metademands'])) {
                      $step = PluginMetademandsMetademand::STEP_CREATE;
@@ -223,6 +236,9 @@ if (isset($_POST['next'])) {
 
 } else
    if (isset($_POST['previous'])) {
+      if (isset($_SESSION['metademands_hide'])) {
+         unset($_SESSION['metademands_hide']);
+      }
       if (Session::getCurrentInterface() == 'central') {
          Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
       } else {
@@ -293,6 +309,9 @@ if (isset($_POST['next'])) {
       }
 
    } else if (isset($_POST['return'])) {
+      if (isset($_SESSION['metademands_hide'])) {
+         unset($_SESSION['metademands_hide']);
+      }
       if (Session::getCurrentInterface() == 'central') {
          Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
       } else {

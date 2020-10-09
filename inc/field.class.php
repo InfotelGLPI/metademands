@@ -1273,9 +1273,9 @@ class PluginMetademandsField extends CommonDBChild {
          case 'number':
             $data['custom_values'] = self::_unserialize($data['custom_values']);
             $field                 = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", ['value'   => $value,
-                                                                                                 'min'     => (isset($data['custom_values']['min']) ? $data['custom_values']['min'] : 1),
-                                                                                                 'max'     => (isset($data['custom_values']['max']) ? $data['custom_values']['max'] : 360),
-                                                                                                 'step'    => (isset($data['custom_values']['step']) ? $data['custom_values']['step'] : 1),
+                                                                                                 'min'     => ((isset($data['custom_values']['min']) && $data['custom_values']['min'] != "") ? $data['custom_values']['min'] : 0),
+                                                                                                 'max'     => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 360),
+                                                                                                 'step'    => ((isset($data['custom_values']['step']) && $data['custom_values']['step'] != "") ? $data['custom_values']['step'] : 1),
                                                                                                  'display' => false
                                                                                                  //                                                   'toadd' => [0 => __('Infinite')]
             ]);

@@ -1260,7 +1260,6 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo "</div>";
    }
 
-
    /**
     * @param       $value
     * @param       $id
@@ -1337,7 +1336,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
       }
       //INFO : not used for update basket
-      if ($value['item'] != 'itilcategory' && $KO === false) {
+      if ($value['item'] != 'itilcategory' && $KO === false && isset($post[$fieldname][$id])) {
          $content[$id]['plugin_metademands_fields_id'] = $id;
          if ($value['type'] != "upload") {
             $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];
@@ -1565,4 +1564,42 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
       }
    }
+
+   /**
+    * Unset values in data & post for hiddens fields
+    * Add metademands_hide in Session for hidden fields
+    * @param $data
+    * @param $post
+    */
+   static function unsetHidden(&$data, &$post){
+      foreach ($data as $id => $value) {
+         //if field is hidden remove it from Data & Post
+         $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
+         $unserialisedHiddenLink = PluginMetademandsField::_unserialize($value['hidden_link']);
+         $unserialisedTaskChild  = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
+         if (is_array($unserialisedCheck) && is_array($unserialisedHiddenLink)) {
+            foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
+               if (!isset($post[$id]) || $unserialisedCheck[$key] != $post[$id]) {
+
+                  if(isset($post[$hiddenFields])) unset($post[$hiddenFields]) ;
+                  if(isset($data[$hiddenFields])) unset($data[$hiddenFields]);
+
+                  //If the field is hidden and linked to a sub metademand
+                  //Dont show the sub metademand
+                  if (is_array($unserialisedTaskChild)) {
+                     foreach ($unserialisedTaskChild as $child) {
+                        if ($child != 0) {
+                           $metaTask = new PluginMetademandsMetademandTask();
+                           $metaTask->getFromDB($child);
+                           $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
+                           $_SESSION['metademands_hide'][$idChild] = $idChild;
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+
 }
