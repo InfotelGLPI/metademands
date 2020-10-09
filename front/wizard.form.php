@@ -188,7 +188,7 @@ if (isset($_POST['next'])) {
                         }
                      }
                      if ($value['type'] == 'informations'
-                      || $value['type'] == 'title') {
+                         || $value['type'] == 'title') {
                         if (!isset($_POST['field'][$id])) {
                            $_POST['field'][$id] = 0;
                         }
@@ -205,6 +205,32 @@ if (isset($_POST['next'])) {
                      }
                      $content = array_merge($content, $check['content']);
                   }
+
+                  if ($KO === false) {
+                     // Save requester user
+                     $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+                     // Case of simple ticket convertion
+                     $_SESSION['plugin_metademands']['fields']['tickets_id'] = $_POST['tickets_id'];
+                     // Resources id
+                     $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
+                     // Resources step
+                     $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
+
+                     // FILE UPLOAD
+                     if (isset($_FILES['filename']['tmp_name'])) {
+                        if (!isset($_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']])) {
+                           foreach ($_FILES['filename']['tmp_name'] as $key => $tmp_name) {
+
+                              if (!empty($tmp_name)) {
+                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['base64'] = base64_encode(file_get_contents($tmp_name));
+                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['name']   = $_FILES['filename']['name'][$key];
+                              }
+                           }
+                        }
+                        unset($_FILES['filename']);
+                     }
+                  }
+
                   if ($KO) {
                      if (isset($_SESSION['metademands_hide'])) {
                         unset($_SESSION['metademands_hide']);
@@ -374,7 +400,7 @@ if (isset($_POST['next'])) {
             }
          }
          if ($value['item'] == 'itilcategory') {
-            $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id'])?$_POST['field_plugin_servicecatalog_itilcategories_id']:0;
+            $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
          }
 
          $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
@@ -417,7 +443,7 @@ if (isset($_POST['next'])) {
 
          $checks  = [];
          $content = [];
-         $data = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+         $data    = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
 
          foreach ($data as $id => $value) {
 
@@ -438,10 +464,10 @@ if (isset($_POST['next'])) {
                }
             }
             if ($value['item'] == 'itilcategory') {
-               $_POST['field_basket_' . $line][$id] = isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])?$_POST['basket_plugin_servicecatalog_itilcategories_id']:0;
+               $_POST['field_basket_' . $line][$id] = isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
             }
             $fieldname = 'field_basket_' . $line;
-            $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, $fieldname, true);
+            $checks[]  = PluginMetademandsWizard::checkvalues($value, $id, $_POST, $fieldname, true);
 
             if ($value['type'] == 'upload') {
                if (isset($_POST['_filename'])) {
