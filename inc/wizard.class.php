@@ -1238,12 +1238,12 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                $datas['fields'] = $values['fields'];
 
-               $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
-                                               'users_id'                          => Session::getLoginUserID()]);
 
                $result = $metademands->addMetademands($metademands_id, $datas, $options);
                Session::addMessageAfterRedirect($result['message']);
             }
+            $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
+                                            'users_id'                          => Session::getLoginUserID()]);
          } else {
             //create one ticket for all basket
             if (isset($values['fields']['_filename'])) {
