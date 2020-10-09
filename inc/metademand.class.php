@@ -1242,15 +1242,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $ticket_exists = false;
                if (empty($parent_fields['id'])) {
                   unset($parent_fields['id']);
-                  // Add files if exist
-                  if (isset($values['files'][$form_metademands_id])
-                      && count($values['files'][$form_metademands_id])) {
-                     foreach ($values['files'][$form_metademands_id] as $files) {
-                        $toUpload                     = PluginMetademandsTicket::uploadTicketDocument(['base64' => $files['base64'],
-                                                                                                       'name'   => $files['name']]);
-                        $parent_fields['_filename'][] = $toUpload['tmp_name'];
-                     }
-                  }
 
                   $input = $this->mergeFields($parent_fields, $parent_ticketfields);
 

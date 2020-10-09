@@ -117,8 +117,6 @@ if (isset($_POST['next'])) {
                   }
                   $_POST['field'] = $basket;
 
-                  $basketline->deleteByCriteria(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
-                                                 'users_id'                          => Session::getLoginUserID()]);
                } else {
                   $KO = true;
                   Session::addMessageAfterRedirect(__("There is no line on the basket", "metademands"), false, ERROR);
@@ -215,20 +213,6 @@ if (isset($_POST['next'])) {
                      $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
                      // Resources step
                      $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
-
-                     // FILE UPLOAD
-                     if (isset($_FILES['filename']['tmp_name'])) {
-                        if (!isset($_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']])) {
-                           foreach ($_FILES['filename']['tmp_name'] as $key => $tmp_name) {
-
-                              if (!empty($tmp_name)) {
-                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['base64'] = base64_encode(file_get_contents($tmp_name));
-                                 $_SESSION['plugin_metademands']['files'][$_POST['form_metademands_id']][$key]['name']   = $_FILES['filename']['name'][$key];
-                              }
-                           }
-                        }
-                        unset($_FILES['filename']);
-                     }
                   }
 
                   if ($KO) {

@@ -1135,9 +1135,11 @@ class PluginMetademandsWizard extends CommonDBTM {
       global $CFG_GLPI;
 
       $metademands = new PluginMetademandsMetademand();
-      if (isset($values['basket'])) {
-         $metademands->getFromDB($metademands_id);
+      $metademands->getFromDB($metademands_id);
 
+      if ($metademands->fields['is_order'] == 1
+          && isset($values['basket'])) {
+         $basketclass = new PluginMetademandsBasketline();
          if ($metademands->fields['create_one_ticket'] == 0) {
             //create one ticket for each basket
             foreach ($values['basket'] as $k => $basket) {
@@ -1156,16 +1158,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                $filename    = [];
                $prefixname  = [];
                $tagname     = [];
-               $basketclass = new PluginMetademandsBasketline();
-
                foreach ($basket as $key => $val) {
                   $line = $k + 1;
 
-                  if ($basketclass->find(["plugin_metademands_metademands_id" => $metademands_id,
-                                          'plugin_metademands_fields_id'      => $key,
-                                          'line'                              => $line,
-                                          'name'                              => "upload"
-                                         ])) {
+                  $check = $basketclass->getFromDBByCrit(["plugin_metademands_metademands_id" => $metademands_id,
+                                                          'plugin_metademands_fields_id'      => $key,
+                                                          'line'                              => $line,
+                                                          'users_id'                          => Session::getLoginUserID(),
+                                                          'name'                              => "upload"
+                                                         ]);
+                  if ($check) {
                      if (!empty($val)) {
                         $files = json_decode($val, 1);
                         foreach ($files as $file) {
@@ -1198,18 +1200,17 @@ class PluginMetademandsWizard extends CommonDBTM {
             $filename    = [];
             $prefixname  = [];
             $tagname     = [];
-            $basketclass = new PluginMetademandsBasketline();
-
             foreach ($values['basket'] as $k => $basket) {
-
                foreach ($basket as $key => $val) {
-                  $line = $k + 1;
-                  if ($basketclass->find(["plugin_metademands_metademands_id" => $metademands_id,
-                                          'plugin_metademands_fields_id'      => $key,
-                                          'line'                              => $line,
-                                          'name'                              => "upload"
-                                         ])) {
-
+                  $line  = $k + 1;
+                  $check = $basketclass->getFromDBByCrit([
+                                                            "plugin_metademands_metademands_id" => $metademands_id,
+                                                            'plugin_metademands_fields_id'      => $key,
+                                                            'line'                              => $line,
+                                                            'users_id'                          => Session::getLoginUserID(),
+                                                            'name'                              => "upload"
+                                                         ]);
+                  if ($check) {
                      if (!empty($val)) {
                         $files = json_decode($val, 1);
                         foreach ($files as $file) {
@@ -1224,6 +1225,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             $values['fields']['_filename']        = $filename;
             $values['fields']['_prefix_filename'] = $prefixname;
             $values['fields']['_tag_filename']    = $tagname;
+
+            $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
+                                           'users_id'                          => Session::getLoginUserID()]);
 
             $result = $metademands->addMetademands($metademands_id, $values, $options);
             Session::addMessageAfterRedirect($result['message']);
@@ -1283,7 +1287,8 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (isset($post[$fieldname][$id])
           && $value['type'] != 'checkbox'
           && $value['type'] != 'radio'
-          && $value['item'] != 'itilcategory') {
+          && $value['item'] != 'itilcategory'
+          && $value['type'] != 'upload') {
 
          if (!self::checkMandatoryFields($value, ['id'    => $id,
                                                   'value' => $post[$fieldname][$id]],
@@ -1297,14 +1302,14 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          $content[$id]['plugin_metademands_fields_id'] = $id;
          if ($on_basket == false) {
-            $content[$id]['value']                        = $post['field_plugin_servicecatalog_itilcategories_id'];
+            $content[$id]['value'] = $post['field_plugin_servicecatalog_itilcategories_id'];
          } else {
-            $content[$id]['value']                        = $post['basket_plugin_servicecatalog_itilcategories_id'];
+            $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id'];
          }
 
-         $content[$id]['value2']                       = "";
-         $content[$id]['item']                         = $value['item'];
-         $content[$id]['type']                         = $value['type'];
+         $content[$id]['value2'] = "";
+         $content[$id]['item']   = $value['item'];
+         $content[$id]['type']   = $value['type'];
 
       } else if ($value['type'] == 'checkbox') {
 
@@ -1321,17 +1326,17 @@ class PluginMetademandsWizard extends CommonDBTM {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
       } else if ($value['type'] == 'upload') {
+
          if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
             $KO = true;
          } else {
-            if (isset($post['_filename']) || isset($post[$id])) {
-               $_SESSION['plugin_metademands']['fields']['_filename'] = $post['_filename'];
-            }
-            if (isset($post['_prefix_filename']) || isset($post[$id])) {
-               $_SESSION['plugin_metademands']['fields']['_prefix_filename'] = $post['_prefix_filename'];
-            }
-            if (isset($post['_tag_filename']) || isset($post[$id])) {
-               $_SESSION['plugin_metademands']['fields']['_tag_filename'] = $post['_tag_filename'];
+
+            if (isset($post['_filename'])) {
+               foreach ($post['_filename'] as $key => $filename) {
+                  $_SESSION['plugin_metademands']['fields']['_prefix_filename'][] = $post['_prefix_filename'][$key];
+                  $_SESSION['plugin_metademands']['fields']['_tag_filename'][]    = $post['_tag_filename'][$key];
+                  $_SESSION['plugin_metademands']['fields']['_filename'][]       = $post['_filename'][$key];
+               }
             }
          }
       }
@@ -1355,6 +1360,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $content[$id]['value'] = json_encode($files);
          }
       }
+
       return ['result' => $KO, 'content' => $content];
    }
 
@@ -1545,6 +1551,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
    /**
     * Used for check if hide child metademands
+    *
     * @param $check_value
     * @param $plugin_metademands_tasks_id
     * @param $metademandtasks_tasks_id
@@ -1568,10 +1575,11 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * Unset values in data & post for hiddens fields
     * Add metademands_hide in Session for hidden fields
+    *
     * @param $data
     * @param $post
     */
-   static function unsetHidden(&$data, &$post){
+   static function unsetHidden(&$data, &$post) {
       foreach ($data as $id => $value) {
          //if field is hidden remove it from Data & Post
          $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
@@ -1581,8 +1589,8 @@ class PluginMetademandsWizard extends CommonDBTM {
             foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
                if (!isset($post[$id]) || $unserialisedCheck[$key] != $post[$id]) {
 
-                  if(isset($post[$hiddenFields])) unset($post[$hiddenFields]) ;
-                  if(isset($data[$hiddenFields])) unset($data[$hiddenFields]);
+                  if (isset($post[$hiddenFields])) unset($post[$hiddenFields]);
+                  if (isset($data[$hiddenFields])) unset($data[$hiddenFields]);
 
                   //If the field is hidden and linked to a sub metademand
                   //Dont show the sub metademand
