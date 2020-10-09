@@ -1379,7 +1379,15 @@ class PluginMetademandsWizard extends CommonDBTM {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
       } else if ($value['type'] == 'upload') {
+         if ($value['is_basket'] == 1 && isset($post[$fieldname][$id])) {
+            $files = json_decode($post[$fieldname][$id], 1);
 
+            foreach ($files as $file) {
+               $post['_filename'][]   = $file['_filename'];
+               $post['_prefix_filename'][] = $file['_prefix_filename'];
+               $post['_tag_filename'][]    = $file['_tag_filename'];
+            }
+         }
          if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => 1], $fieldname, $post)) {
             $KO = true;
          } else {
@@ -1510,9 +1518,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check File upload field
          if ($value['type'] == "upload"
              && $value['is_mandatory']) {
-            Toolbox::logWarning($post);
             if (isset($post['_filename'])) {
-               Toolbox::logWarning($post);
                if (empty($post['_filename'][0])) {
                   $msg[]     = $value['label'];
                   $checkKo[] = 1;
