@@ -1345,7 +1345,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          if (!self::checkMandatoryFields($value, ['id'    => $id,
                                                   'value' => $post[$fieldname][$id]],
-                                         $post[$fieldname])) {
+                                         $fieldname, $post)) {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
@@ -1366,21 +1366,21 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       } else if ($value['type'] == 'checkbox') {
 
-         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $post[$fieldname])) {
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $fieldname, $post)) {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
       } else if ($value['type'] == 'radio') {
 
-         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $post[$fieldname])) {
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $fieldname, $post)) {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
       } else if ($value['type'] == 'upload') {
 
-         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => 1])) {
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => 1], $fieldname, $post)) {
             $KO = true;
          } else {
 
@@ -1424,7 +1424,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @return bool
     */
-   static function checkMandatoryFields($value = [], $fields = [], $all_fields = []) {
+   static function checkMandatoryFields($value = [], $fields = [], $fieldname, $post = []) {
 
       $checkKo             = [];
       $checkKoDateInterval = [];
@@ -1433,13 +1433,16 @@ class PluginMetademandsWizard extends CommonDBTM {
       $msg                 = [];
       $msg2                = [];
       $msg3                = [];
+      $all_fields = $post[$fieldname];
+
       if ($value['type'] != 'parent_field') {
          // Check fields empty
          if ($value['is_mandatory']
              && empty($fields['value'])
              && $value['type'] != 'radio'
              && $value['type'] != 'checkbox'
-             && $value['type'] != 'informations') {
+             && $value['type'] != 'informations'
+             && $value['type'] != 'upload') {
             $msg[]     = $value['label'];
             $checkKo[] = 1;
          }
@@ -1507,8 +1510,10 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check File upload field
          if ($value['type'] == "upload"
              && $value['is_mandatory']) {
-            if (isset($_POST['_filename'])) {
-               if (empty($_POST['_filename'][0])) {
+            Toolbox::logWarning($post);
+            if (isset($post['_filename'])) {
+               Toolbox::logWarning($post);
+               if (empty($post['_filename'][0])) {
                   $msg[]     = $value['label'];
                   $checkKo[] = 1;
                }
@@ -1520,8 +1525,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check File upload field
          if ($value['type'] == "upload"
              && !empty($value["max_upload"])
-             && isset($_POST['_filename'])) {
-            if ($value["max_upload"] < count($_POST['_filename'])) {
+             && isset($post['_filename'])) {
+            if ($value["max_upload"] < count($post['_filename'])) {
                $msg2[]       = $value['label'];
                $checkNbDoc[] = 1;
             }
