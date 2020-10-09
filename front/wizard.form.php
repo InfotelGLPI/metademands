@@ -187,7 +187,8 @@ if (isset($_POST['next'])) {
                            $_POST['field'][$id] = 0;
                         }
                      }
-                     if ($value['type'] == 'informations') {
+                     if ($value['type'] == 'informations'
+                      || $value['type'] == 'title') {
                         if (!isset($_POST['field'][$id])) {
                            $_POST['field'][$id] = 0;
                         }
@@ -366,7 +367,8 @@ if (isset($_POST['next'])) {
                $_POST['field'][$id] = 0;
             }
          }
-         if ($value['type'] == 'informations') {
+         if ($value['type'] == 'informations'
+             || $value['type'] == 'title') {
             if (!isset($_POST['field'][$id])) {
                $_POST['field'][$id] = 0;
             }
@@ -429,7 +431,8 @@ if (isset($_POST['next'])) {
                   $_POST['field_basket_' . $line][$id] = 0;
                }
             }
-            if ($value['type'] == 'informations') {
+            if ($value['type'] == 'informations'
+                || $value['type'] == 'title') {
                if (!isset($_POST['field_basket_' . $line][$id])) {
                   $_POST['field_basket_' . $line][$id] = "";
                }
