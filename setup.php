@@ -50,11 +50,6 @@ function plugin_init_metademands() {
    if (Session::getLoginUserID()) {
       Plugin::registerClass('PluginMetademandsMetademand', ['addtabon' => 'Ticket']);
       Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
-
-      Plugin::registerClass('PluginMetademandsField', ['addtabon' => 'PluginMetademandsMetademand']);
-      Plugin::registerClass('PluginMetademandsTicketField', ['addtabon' => 'PluginMetademandsMetademand']);
-      Plugin::registerClass('PluginMetademandsTask', ['addtabon' => 'PluginMetademandsMetademand']);
-      Plugin::registerClass('PluginMetademandsGroup', ['addtabon' => 'PluginMetademandsMetademand']);
       Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
 
       $PLUGIN_HOOKS['item_show']['metademands']  = ['PluginResourcesResource' =>

@@ -164,7 +164,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $this->addStandardTab('PluginMetademandsField', $ong, $options);
       $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
       $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
-      $this->addStandardTab('PluginMetademandsTask', $ong, $options);
+      if($this->getField('is_order') == 0){
+         $this->addStandardTab('PluginMetademandsTask', $ong, $options);
+      }
       $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
       return $ong;
    }
@@ -447,7 +449,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
       $categories = [];
       if (isset($this->fields['itilcategories_id'])) {
-         if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
+         if(is_array($this->fields['itilcategories_id'])){
+            $categories = json_encode($this->fields['itilcategories_id']);
+         }
+         else if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
             $categories = $this->fields['itilcategories_id'];
          } else {
             $array      = [$this->fields['itilcategories_id']];
