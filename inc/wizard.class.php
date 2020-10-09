@@ -1386,9 +1386,9 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             if (isset($post['_filename'])) {
                foreach ($post['_filename'] as $key => $filename) {
-                  $_SESSION['plugin_metademands']['fields']['_prefix_filename'][] = $post['_prefix_filename'][$key];
-                  $_SESSION['plugin_metademands']['fields']['_tag_filename'][]    = $post['_tag_filename'][$key];
-                  $_SESSION['plugin_metademands']['fields']['_filename'][]       = $post['_filename'][$key];
+                  $_SESSION['plugin_metademands']['fields']['files'][$post['form_metademands_id']]['_prefix_filename'][] = $post['_prefix_filename'][$key];
+                  $_SESSION['plugin_metademands']['fields']['files'][$post['form_metademands_id']]['_tag_filename'][]    = $post['_tag_filename'][$key];
+                  $_SESSION['plugin_metademands']['fields']['files'][$post['form_metademands_id']]['_filename'][]       = $post['_filename'][$key];
                }
             }
          }

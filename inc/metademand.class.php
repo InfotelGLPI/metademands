@@ -1245,14 +1245,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                   $input = $this->mergeFields($parent_fields, $parent_ticketfields);
 
-                  if (isset($values['fields']['_filename'])) {
-                     $input['_filename'] = $values['fields']['_filename'];
+                  if (isset($values['fields']['files'][$form_metademands_id]['_filename'])) {
+                     $input['_filename'] = $values['fields']['files'][$form_metademands_id]['_filename'];
                   }
-                  if (isset($values['fields']['_prefix_filename'])) {
-                     $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
+                  if (isset($values['fields']['files'][$form_metademands_id]['_prefix_filename'])) {
+                     $input['_prefix_filename'] = $values['fields']['files'][$form_metademands_id]['_prefix_filename'];
                   }
-                  if (isset($values['fields']['_tag_filename'])) {
-                     $input['_tag_filename'] = $values['fields']['_tag_filename'];
+                  if (isset($values['fields']['files'][$form_metademands_id]['_tag_filename'])) {
+                     $input['_tag_filename'] = $values['fields']['files'][$form_metademands_id]['_tag_filename'];
                   }
 
                   if ($itilcategory > 0) {
@@ -1349,6 +1349,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
                                           'tickets_id_2' => $ancestor_tickets_id,
                                           'link'         => Ticket_Ticket::SON_OF]);
+                     $ancestor_tickets_id = $parent_tickets_id;
                   }
 
                   // Create sons tickets
