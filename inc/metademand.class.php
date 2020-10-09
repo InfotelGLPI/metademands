@@ -237,7 +237,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
          //retreive all multiple cats from all metademands
          $iterator_cats = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
-         $cats          = $_POST['itilcategories_id'];
+         $cats          = $input['itilcategories_id'];
 
          while ($data = $iterator_cats->next()) {
             if (is_array(json_decode($data['itilcategories_id']))) {
@@ -282,7 +282,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
          //retreive all multiple cats from all metademands
          $iterator_cats               = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
-         $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id', 'FROM' => $this->getTable(), 'WHERE' => ['id' => $_POST['id']]]);
+         $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id', 'FROM' => $this->getTable(), 'WHERE' => ['id' => $input['id']]]);
 
          $number_cats_meta = count($iterator_meta_existing_cats);
          if ($number_cats_meta) {
@@ -294,8 +294,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
             }
          }
 
-         if (count($_POST['itilcategories_id']) >= count($cats)) {
-            foreach ($_POST['itilcategories_id'] as $post_cats) {
+         if (count($input['itilcategories_id']) >= count($cats)) {
+            foreach ($input['itilcategories_id'] as $post_cats) {
                if (in_array($post_cats, $cats)) {
                   unset($cats[array_search($post_cats, $cats)]);
                } else {
@@ -304,7 +304,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             }
 
             while ($data = $iterator_cats->next()) {
-               if (is_array(json_decode($data['itilcategories_id'])) && $_POST['id'] != $data['id']) {
+               if (is_array(json_decode($data['itilcategories_id'])) && $input['id'] != $data['id']) {
                   $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
                }
                if ($cat_already_store) {
