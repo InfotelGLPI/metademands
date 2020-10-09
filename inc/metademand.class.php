@@ -1250,20 +1250,26 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                   $input = $this->mergeFields($parent_fields, $parent_ticketfields);
 
-                  if ($metademand->fields['is_order'] == 0 && isset($values['fields']['files'][$form_metademands_id]['_filename'])) {
-                     $input['_filename'] = $values['fields']['files'][$form_metademands_id]['_filename'];
-                  } else if($values['fields']['_filename']){
-                     $input['_filename'] = $values['fields']['_filename'];
-                  }
-                  if ($metademand->fields['is_order'] == 0 && isset($values['fields']['files'][$form_metademands_id]['_prefix_filename'])) {
-                     $input['_prefix_filename'] = $values['fields']['files'][$form_metademands_id]['_prefix_filename'];
-                  } else if($values['fields']['_prefix_filename']){
-                     $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
-                  }
-                  if (isset($values['fields']['files'][$form_metademands_id]['_tag_filename'])) {
-                     $input['_tag_filename'] = $values['fields']['files'][$form_metademands_id]['_tag_filename'];
-                  } else if($metademand->fields['is_order'] == 0 && $values['fields']['_tag_filename']){
-                     $input['_tag_filename'] = $values['fields']['_tag_filename'];
+                  if ($metademand->fields['is_order'] == 0) {
+                     if (isset($values['fields']['files'][$form_metademands_id]['_filename'])) {
+                        $input['_filename'] = $values['fields']['files'][$form_metademands_id]['_filename'];
+                     }
+                     if (isset($values['fields']['files'][$form_metademands_id]['_prefix_filename'])) {
+                        $input['_prefix_filename'] = $values['fields']['files'][$form_metademands_id]['_prefix_filename'];
+                     }
+                     if (isset($values['fields']['files'][$form_metademands_id]['_tag_filename'])) {
+                        $input['_tag_filename'] = $values['fields']['files'][$form_metademands_id]['_tag_filename'];
+                     }
+                  } else {
+                     if ($values['fields']['_filename']) {
+                        $input['_filename'] = $values['fields']['_filename'];
+                     }
+                     if ($values['fields']['_prefix_filename']) {
+                        $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
+                     }
+                     if ($values['fields']['_tag_filename']) {
+                        $input['_tag_filename'] = $values['fields']['_tag_filename'];
+                     }
                   }
 
                   if ($itilcategory > 0) {
