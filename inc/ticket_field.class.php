@@ -158,25 +158,25 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                $ok = false;
                if (is_array($value)) {
                   foreach ($value as $key => $v) {
-                     if ($key != 0) {
-                        if ($check_value == $key || $check_value == 0) {
+//                     if ($key != 0) {
+                        if ($check_value == $key) {
                            $ok = true;
                         }
-                     }
+//                     }
                   }
                } else if (is_array(json_decode($value, true))) {
                   foreach (json_decode($value, true) as $key => $v) {
-                     if ($key != 0) {
-                        if ($check_value == $key || $check_value == 0) {
+//                     if ($key != 0) {
+                        if ($check_value == $key) {
                            $ok = true;
                         }
-                     }
+//                     }
                   }
                }
                if (!$ok) {
                   return false;
                }
-            } elseif ($check_value != 0) {
+            } else {
                return false;
             }
             break;
