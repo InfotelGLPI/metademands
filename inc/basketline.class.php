@@ -51,6 +51,8 @@ class PluginMetademandsBasketline extends CommonDBTM {
             echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
             echo "<input type='submit' class='submit' id='add_to_basket' name='add_to_basket' value='"
                  . _sx('button', 'Add to basket', 'metademands') . "'>";
+            echo "&nbsp;<input type='submit' class='submit' id='clear_basket' name='clear_basket' value='"
+                 . _sx('button', 'Clear the basket', 'metademands') . "'>";
             echo "</div>";
          }
          $basketline = new self();

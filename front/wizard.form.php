@@ -229,21 +229,7 @@ if (isset($_POST['next'])) {
       }
    }
 
-   if (Session::getCurrentInterface() == 'central') {
-      Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
-   } else {
-      Html::helpHeader(__('Create a demand', 'metademands'));
-   }
-
-   $options = ['step'           => $step,
-               'metademands_id' => $_POST['metademands_id']];
-   $wizard->showWizard($options);
-
-   if (Session::getCurrentInterface() == 'central') {
-      Html::footer();
-   } else {
-      Html::helpFooter();
-   }
+   Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".$step);
 
 } else
    if (isset($_POST['previous'])) {
@@ -323,37 +309,8 @@ if (isset($_POST['next'])) {
       if (isset($_SESSION['metademands_hide'])) {
          unset($_SESSION['metademands_hide']);
       }
-      if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
-      } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
-      }
 
-      $wizard->showWizard($options['step'] = PluginMetademandsMetademand::STEP_INIT);
-
-      if (Session::getCurrentInterface() == 'central') {
-         Html::footer();
-      } else {
-         Html::helpFooter();
-      }
-
-   } else if (isset($_POST['upload_files'])) {
-      if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
-      } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
-      }
-
-      if (!empty($_FILES['filename']['tmp_name'][0])) {
-         $wizard->uploadFiles($_POST);
-      } else {
-         $wizard->showWizard($options['step'] = PluginMetademandsMetademand::STEP_INIT);
-      }
-      if (Session::getCurrentInterface() == 'central') {
-         Html::footer();
-      } else {
-         Html::helpFooter();
-      }
+      Html::redirect($wizard->getFormURL() . "?step=".PluginMetademandsMetademand::STEP_INIT);
 
    } else if (isset($_POST['add_to_basket'])) {
 
@@ -402,22 +359,7 @@ if (isset($_POST['next'])) {
          $basketline = new PluginMetademandsBasketline();
          $basketline->addToBasket($content, $_POST['form_metademands_id']);
       }
-      if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
-      } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
-      }
-
-      $options = ['step'           => $step,
-                  'metademands_id' => $_POST['metademands_id']];
-
-      $wizard->showWizard($options);
-
-      if (Session::getCurrentInterface() == 'central') {
-         Html::footer();
-      } else {
-         Html::helpFooter();
-      }
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".$step);
 
    } else if (isset($_POST['update_basket_line'])) {
 
@@ -467,66 +409,30 @@ if (isset($_POST['next'])) {
          $basketline = new PluginMetademandsBasketline();
          $basketline->updateFromBasket($_POST, $line);
       }
-      if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
-      } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
-      }
 
-      $options = ['step'           => PluginMetademandsMetademand::STEP_SHOW,
-                  'metademands_id' => $_POST['metademands_id']];
-
-      $wizard->showWizard($options);
-
-      if (Session::getCurrentInterface() == 'central') {
-         Html::footer();
-      } else {
-         Html::helpFooter();
-      }
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".PluginMetademandsMetademand::STEP_SHOW);
 
    } else if (isset($_POST['delete_basket_line'])) {
 
       $basketline = new PluginMetademandsBasketline();
       $basketline->deleteFromBasket($_POST);
 
-      if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
-      } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
-      }
-
-      $options = ['step'           => PluginMetademandsMetademand::STEP_SHOW,
-                  'metademands_id' => $_POST['metademands_id']];
-
-      $wizard->showWizard($options);
-
-      if (Session::getCurrentInterface() == 'central') {
-         Html::footer();
-      } else {
-         Html::helpFooter();
-      }
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".PluginMetademandsMetademand::STEP_SHOW);
 
    } else if (isset($_POST['delete_basket_file'])) {
 
       $basketline = new PluginMetademandsBasketline();
       $basketline->deleteFileFromBasket($_POST);
 
-      if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
-      } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
-      }
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".PluginMetademandsMetademand::STEP_SHOW);
 
-      $options = ['step'           => PluginMetademandsMetademand::STEP_SHOW,
-                  'metademands_id' => $_POST['metademands_id']];
+   } else if (isset($_POST['clear_basket'])) {
 
-      $wizard->showWizard($options);
+      $basketline = new PluginMetademandsBasketline();
+      $basketline->deleteByCriteria(['plugin_metademands_metademands_id' => $_POST['metademands_id'],
+                                      'users_id'                          => Session::getLoginUserID()]);
 
-      if (Session::getCurrentInterface() == 'central') {
-         Html::footer();
-      } else {
-         Html::helpFooter();
-      }
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".PluginMetademandsMetademand::STEP_SHOW);
 
    } else {
       if (Session::getCurrentInterface() == 'central') {
