@@ -1759,7 +1759,9 @@ class PluginMetademandsField extends CommonDBChild {
                } else {
                   $name = "check_value[]";
                }
-               $html .= $params['value']::Dropdown(["name" => $name, "value" => $params['check_value'], "display" => $display]);
+               $html .= $params['value']::Dropdown(["name" => $name,
+                                                    "value" => $params['check_value'],
+                                                    "display" => $display]);
             } else {
                $elements[0] = Dropdown::EMPTY_VALUE;
                if (is_array(json_decode($params['custom_values'], true))) {
@@ -1923,6 +1925,34 @@ class PluginMetademandsField extends CommonDBChild {
       return $res;
    }
 
+
+   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param      $idF
+    * @param bool $display
+    *
+    * @return int|string
+    */
+   static function showFieldsDropdown($metademands_id, $selected_value, $idF, $display = true) {
+
+      $fields      = new self();
+      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+      $data        = [Dropdown::EMPTY_VALUE];
+      foreach ($fields_data as $id => $value) {
+         if ($value['item'] != "itilcategory"
+             && $value['item'] != "informations"
+             && $idF != $id) {
+            $data[$id] = urldecode(html_entity_decode($value['label']));
+            //            if (!empty($value['label2'])) {
+            //               $data[$id] .= ' - ' . $value['label2'];
+            //            }
+         }
+      }
+
+      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
+   }
+
    /**
     * @param      $metademands_id
     * @param      $selected_value
@@ -1938,7 +1968,9 @@ class PluginMetademandsField extends CommonDBChild {
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
       $data        = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
-         if ($idF != $id) {
+         if ($value['item'] != "itilcategory"
+             && $value['item'] != "informations"
+             && $idF != $id) {
             $data[$id] = urldecode(html_entity_decode($value['label']));
             //            if (!empty($value['label2'])) {
             //               $data[$id] .= ' - ' . urldecode(html_entity_decode($value['label2']));
@@ -2255,28 +2287,6 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       return $input;
-   }
-
-   /**
-    * @param $field
-    * @param $metademands_id
-    * @param $selected_value
-    */
-   static function showFieldsDropdown($metademands_id, $selected_value, $idF, $display = true) {
-
-      $fields      = new self();
-      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-      $data        = [Dropdown::EMPTY_VALUE];
-      foreach ($fields_data as $id => $value) {
-         if ($idF != $id) {
-            $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
-            //            if (!empty($value['label2'])) {
-            //               $data[$id] .= ' - ' . $value['label2'];
-            //            }
-         }
-      }
-
-      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
    }
 
    /**

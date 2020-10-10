@@ -51,8 +51,6 @@ if (!isset($_POST["check_value"])) {
       $update["to_hide"] = 1;
       $field->update($update);
    }
-
-
 }
 
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown'

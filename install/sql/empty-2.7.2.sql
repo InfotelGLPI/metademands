@@ -90,8 +90,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-    KEY `fields_link` (`fields_link`),
-    KEY `hidden_link` (`hidden_link`)
+    KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
@@ -127,6 +126,7 @@ CREATE TABLE `glpi_plugin_metademands_ticketfields` (
     `is_deletable` int(1) NOT NULL default '1',
     `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
     PRIMARY KEY (`id`),
+    KEY `entities_id` (`entities_id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -180,7 +180,8 @@ CREATE TABLE `glpi_plugin_metademands_tickets_tasks` (
     `parent_tickets_id` int(11) NOT NULL default '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
-    KEY `tickets_id` (`tickets_id`)
+    KEY `tickets_id` (`tickets_id`),
+    KEY `parent_tickets_id` (`parent_tickets_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------------------------------------
@@ -197,7 +198,9 @@ CREATE TABLE `glpi_plugin_metademands_tickets_metademands` (
     `tickettemplates_id` INT(11) NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
-    KEY `tickets_id` (`tickets_id`)
+    KEY `tickets_id` (`tickets_id`),
+    KEY `parent_tickets_id` (`parent_tickets_id`),
+    KEY `tickettemplates_id` (`tickettemplates_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------------------------------------
@@ -279,6 +282,7 @@ CREATE TABLE `glpi_plugin_metademands_tickets_itilapplications` (
     `tickets_id` varchar(255) default NULL,
     `plugin_metademands_itilapplications_id` int(11) NOT NULL default '0',
     PRIMARY KEY (`id`),
+    KEY `tickets_id` (`tickets_id`),
     KEY `plugin_metademands_itilapplications_id` (`plugin_metademands_itilapplications_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -293,6 +297,7 @@ CREATE TABLE `glpi_plugin_metademands_tickets_itilenvironments` (
     `tickets_id` varchar(255) default NULL,
     `plugin_metademands_itilenvironments_id` int(11) NOT NULL default '0',
     PRIMARY KEY (`id`),
+    KEY `tickets_id` (`tickets_id`),
     KEY `plugin_metademands_itilenvironments_id` (`plugin_metademands_itilenvironments_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -308,6 +313,8 @@ CREATE TABLE `glpi_plugin_metademands_metademands_resources` (
     `plugin_resources_contracttypes_id` int(11) NOT NULL default '0',
     `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
     PRIMARY KEY (`id`),
+    KEY `entities_id` (`entities_id`),
+    KEY `plugin_resources_contracttypes_id` (`plugin_resources_contracttypes_id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -349,5 +356,8 @@ CREATE TABLE `glpi_plugin_metademands_basketlines` (
     `value` text COLLATE utf8_unicode_ci,
     `value2` text COLLATE utf8_unicode_ci,
     PRIMARY KEY (`id`),
+    KEY `users_id` (`users_id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
     UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`,`plugin_metademands_fields_id`,`line`,`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

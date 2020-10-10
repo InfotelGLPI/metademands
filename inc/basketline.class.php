@@ -45,7 +45,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
          $metademands = new PluginMetademandsMetademand();
          $metademands->getFromDB($metademands_id);
 
-         if (countElementsInTable("glpi_plugin_metademands_basketlines",
+         if (!$preview && countElementsInTable("glpi_plugin_metademands_basketlines",
                                   ["plugin_metademands_metademands_id" => $metademands->fields['id'],
                                    "users_id"                          => Session::getLoginUserID()])) {
             echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
