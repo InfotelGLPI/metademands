@@ -453,17 +453,6 @@ if (isset($_POST['next'])) {
             $fieldname = 'field_basket_' . $line;
             $checks[]  = PluginMetademandsWizard::checkvalues($value, $id, $_POST, $fieldname, true);
 
-            if ($value['type'] == 'upload') {
-               if (isset($_POST['_filename'])) {
-                  foreach ($_POST['_filename'] as $key => $filename) {
-                     $files[$key]['_prefix_filename'] = $_POST['_prefix_filename'][$key];
-                     $files[$key]['_tag_filename']    = $_POST['_tag_filename'][$key];
-                     $files[$key]['_filename']        = $_POST['_filename'][$key];
-                  }
-
-                  $_POST['field_basket_' . $line][$id] = json_encode($files);
-               }
-            }
          }
       }
       foreach ($checks as $check) {

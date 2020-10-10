@@ -178,6 +178,14 @@ class PluginMetademandsBasketline extends CommonDBTM {
     */
    function updateFromBasket($input, $line) {
 
+      $new_files = [];
+      if (isset($input['_filename']) && !empty($input['_filename'])) {
+         foreach ($input['_filename'] as $key => $filename) {
+            $new_files[$key]['_prefix_filename'] = $input['_prefix_filename'][$key];
+            $new_files[$key]['_tag_filename']    = $input['_tag_filename'][$key];
+            $new_files[$key]['_filename']        = $input['_filename'][$key];
+         }
+      }
       foreach ($input['field_basket_' . $line] as $fields_id => $value) {
 
          //get id from form_metademands_id & $id
@@ -187,17 +195,17 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
          if ($this->fields['name'] != "itilcategory") {
             if ($this->fields['name'] == "upload") {
-               $new_files = [];
-               if (isset($value) && $value != NULL) {
-                  $new_files = json_decode($value, 1);
-               }
+
                $old_files = [];
-               if (isset($this->fields['value']) && $this->fields['value'] != NULL) {
+               if (isset($this->fields['value']) && !empty($this->fields['value'])) {
                   $old_files = json_decode($this->fields['value'], 1);
                }
-               if (is_array($new_files) && count($new_files) > 1) {
+               if (is_array($new_files) && count($new_files) > 0
+               && is_array($old_files) && count($old_files) > 0) {
                   $files = array_merge($old_files, $new_files);
                   $value = json_encode($files);
+               } else {
+                  $value = json_encode($new_files);
                }
 
             } else {
@@ -215,8 +223,8 @@ class PluginMetademandsBasketline extends CommonDBTM {
                                  'name'                              => "itilcategory",
                                  'line'                              => $input['update_basket_line']]);
 
-         $this->update(['value'                        => $input['basket_plugin_servicecatalog_itilcategories_id'],
-                        'id'                           => $this->fields['id']]);
+         $this->update(['value' => $input['basket_plugin_servicecatalog_itilcategories_id'],
+                        'id'    => $this->fields['id']]);
       }
 
 
