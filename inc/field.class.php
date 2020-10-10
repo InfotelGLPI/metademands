@@ -1205,7 +1205,7 @@ class PluginMetademandsField extends CommonDBChild {
                   } elseif (isset($defaults[$key]) && $on_basket == false) {
                      $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
-                  $field .= "<input class='custom-control-input' type='checkbox' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                  $field .= "<input class='custom-control-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                   $nbr++;
                   $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
@@ -1650,12 +1650,12 @@ class PluginMetademandsField extends CommonDBChild {
          $params['task_link'] = $params['task_link'][$nbOpt];
       }
 
-      $params['fields_link'] = self::_unserialize($params['fields_link']);
-      if (!isset($params['fields_link'][$nbOpt])) {
-         $params['fields_link'] = "";
-      } else {
-         $params['fields_link'] = $params['fields_link'][$nbOpt];
-      }
+//      $params['fields_link'] = self::_unserialize($params['fields_link']);
+//      if (!isset($params['fields_link'][$nbOpt])) {
+//         $params['fields_link'] = "";
+//      } else {
+//         $params['fields_link'] = $params['fields_link'][$nbOpt];
+//      }
       $params['hidden_link'] = self::_unserialize($params['hidden_link']);
       if (!isset($params['hidden_link'][$nbOpt])) {
          $params['hidden_link'] = "";
@@ -1804,7 +1804,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 0, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             break;
          case 'parent_field':
@@ -1950,7 +1950,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
       }
 
-      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
+      return Dropdown::showFromArray('fields_link', $data, ['value' => $selected_value, 'display' => $display]);
    }
 
    /**

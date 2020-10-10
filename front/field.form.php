@@ -146,9 +146,6 @@ if (isset($_POST["add"])) {
       $_POST["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
    }
 
-   if (isset($_POST["fields_link"])) {
-      $_POST["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
-   }
    if (isset($_POST["hidden_link"])) {
       $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
    }

@@ -134,14 +134,20 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
     *
     * @return bool
     */
-   static function isCheckValueOK($value, $check_value, $type) {
+   static function isCheckValueOK($value, $check_values, $type) {
+
+      $check_values = PluginMetademandsField::_unserialize($check_values);
+      foreach ($check_values as $check) {
+         $check_value = $check;
+      }
 
       switch ($type) {
          case 'yesno':
          case 'dropdown':
             if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
                return false;
-            } else if ($check_value != $value && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
+            } else if ($check_value != $value
+                       && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
                return false;
             }
             break;
