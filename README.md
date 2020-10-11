@@ -26,6 +26,6 @@ News :
 - [X] Create PDF for your demands
 
 Help us to add these features
-- [] Meta Incidents
-- [] SAve your form for validation
-- [] Translation of assistants
+- [ ] Meta Incidents
+- [ ] SAve your form for validation
+- [ ] Translation of assistants
