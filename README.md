@@ -17,10 +17,15 @@ Characteristics :
 
 - [X] Generate your own assistants
 - [X] Link with the ticket category to launch it automatically
-- [X] Create a father / child ticket
+- [X] Create a father / childs tickets
 - [X] Semi-automatic creation of child tickets
 - [X] Scheduling created tickets
 
 News :
 - [X] Create basket from assistants
 - [X] Create PDF for your demands
+
+Help us to add these features
+- [] Meta Incidents
+- [] SAve your form for validation
+- [] Translation of assistants
