@@ -41,49 +41,25 @@ class PluginMetademandsBasketline extends CommonDBTM {
     */
    static function constructBasket($metademands_id, $line = [], $preview = false) {
 
-      if (count($line) > 0) {
-         $metademands = new PluginMetademandsMetademand();
-         $metademands->getFromDB($metademands_id);
 
-         if (!$preview && countElementsInTable("glpi_plugin_metademands_basketlines",
-                                  ["plugin_metademands_metademands_id" => $metademands->fields['id'],
-                                   "users_id"                          => Session::getLoginUserID()])) {
-            echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-            echo "<input type='submit' class='submit' id='add_to_basket' name='add_to_basket' value='"
-                 . _sx('button', 'Add to basket', 'metademands') . "'>";
-            echo "&nbsp;<input type='submit' class='submit' id='clear_basket' name='clear_basket' value='"
-                 . _sx('button', 'Clear the basket', 'metademands') . "'>";
-            echo "</div>";
-         }
+      if (count($line) > 0) {
+
          $basketline = new self();
          if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
                                                    'users_id'                          => Session::getLoginUserID()])) {
 
-            echo "<table class='table-basket'>";
-            echo "<caption class='basket-title'>" . __('Your basket', 'metademands') . "</caption> ";
-            echo "<tr class='basket-label'>";
-            foreach ($line as $key => $data) {
-               if ($data['item'] == 'informations') {
-                  continue;
-               }
-               if ($data['is_basket'] == 1) {
+            echo "<div class='right-div'>";
 
-                  echo "<th class='basket-th'>";
-                  echo $data['label'];
-                  echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
-                  if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
-                     echo "*";
-                  }
-                  echo "</span>";
-                  echo "</th>";
-               }
-            }
-            $class = "basket-th";
-            //            if ($preview == false) {
-            //               $class = "basket-delete-th";
-            //            }
-            echo "<th class='$class'></th>";
-            echo "</tr>";
+            echo "<div class='form-row'>";
+            echo "<div class='form-group col-md-11'>";
+            echo "<h4 class='bt-title-divider'>" . __('Your basket', 'metademands');
+            echo "&nbsp;<button type='submit' class='pointer clear-basket' name='clear_basket' title='"
+                 . _sx('button', 'Clear the basket', 'metademands') . "'>";
+            echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
+            echo "</button>";
+            echo  "</h4>";
+            echo "</div>";
+            echo "</div>";
 
             $basketLines = [];
             if ($preview == false) {
@@ -94,7 +70,8 @@ class PluginMetademandsBasketline extends CommonDBTM {
                   self::retrieveDatasByType($idline, $fieldlines, $line);
                }
             }
-            echo "</table>";
+
+            echo "</div>";
          }
       }
    }
@@ -106,9 +83,30 @@ class PluginMetademandsBasketline extends CommonDBTM {
     */
    public static function retrieveDatasByType($idline, $values, $fields) {
 
-      echo "<tr class='basket-data'>";
+      echo "<div class='basket-data'>";
 
+      $i = 0;
       foreach ($fields as $k => $v) {
+
+         $i++;
+         $style = "";
+         if ($i == 1) {
+            $style = " style='margin-top:20px;'";
+         }
+         if ($v['item'] == 'informations') {
+            $i--;
+            continue;
+         }
+         echo "<div class='form-row' $style>";
+
+         echo "<div class='form-group basket-title col-md-5'>";
+         echo $v['label'];
+         echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $v['id'] . "'>";
+         if ($v['is_mandatory'] && $v['type'] != 'parent_field') {
+            echo "*";
+         }
+         echo "</span>";
+         echo "</div>";
 
          foreach ($values as $key => $value) {
 
@@ -121,18 +119,29 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
                //TODO $metademands_data ?
                //TODO $itilcategories_id ?
-               echo "<td>" . PluginMetademandsField::getFieldInput([], $v, true, 0, $idline) . "</td>";
+               echo "<div class='form-group basket-title col-md-5'>";
+               echo PluginMetademandsField::getFieldInput([], $v, true, 0, $idline);
+               echo "</div>";
             }
          }
+         echo "</div>";
       }
-      echo "<td width='100px'>";
-      echo "<button type='submit' class='btn update-line-basket' name='update_basket_line' value='$idline'>";
+      echo "<div class='form-row'>";
+      echo "<div class='form-group col-md-5 center'>";
+      echo "<button type='submit' class='btn update-line-basket' name='update_basket_line' value='$idline' title='"
+           . _sx('button', 'Update this line', 'metademands') . "'>";
       echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-      echo "<button type='submit' class='btn delete-line-basket' name='delete_basket_line' value='$idline'>";
+      echo "</button>";
+      echo "</div>";
+      echo "<div class='form-group col-md-5 center'>";
+      echo "<button type='submit' class='btn delete-line-basket' name='delete_basket_line' value='$idline' title='"
+           . _sx('button', 'Delete this line', 'metademands') . "'>";
       echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
       echo "</button>";
-      echo "</td>";
-      echo "</tr>";
+      echo "</div>";
+      echo "</div>";
+
+      echo "</div>";
    }
 
    /**
@@ -203,7 +212,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
                   $old_files = json_decode($this->fields['value'], 1);
                }
                if (is_array($new_files) && count($new_files) > 0
-               && is_array($old_files) && count($old_files) > 0) {
+                   && is_array($old_files) && count($old_files) > 0) {
                   $files = array_merge($old_files, $new_files);
                   $value = json_encode($files);
                } else {
