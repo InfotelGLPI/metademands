@@ -27,5 +27,5 @@ News :
 
 Help us to add these features
 - [ ] Meta Incidents
-- [ ] SAve your form for validation
+- [ ] Save your forms for validation
 - [ ] Translation of assistants
