@@ -532,7 +532,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
 
       $metademands      = new PluginMetademandsMetademand();
-      $metademands_data = $metademands->showMetademands($metademands_id);
+      $metademands_data = $metademands->constructMetademands($metademands_id);
       $metademands->getFromDB($metademands_id);
 
       echo "<div class='md-wizard'>";
@@ -608,6 +608,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<div class=\"bt-feature col-md-12 \">";
                echo "<input type='hidden' name='metademands_id' value='" . $metademands_id . "'>";
                echo "<input type='hidden' name='update_fields'>";
+               //verify if have sons metademand
                if ($step - 1 >= count($metademands_data)) {
                   echo "<input type='hidden' name='create_metademands'>";
                   echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";

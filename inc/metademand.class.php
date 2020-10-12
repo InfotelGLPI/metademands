@@ -263,6 +263,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $input['itilcategories_id'] = '';
          }
       }
+
       return $input;
    }
 
@@ -332,7 +333,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $fields->update(['is_basket' => 1, 'id' => $field['id']]);
             }
          }
-
+         $metademands_data = $this->constructMetademands($this->getID());
+         $metademands_data = array_values($metademands_data);
+         if (count($metademands_data) > 0) {
+            Session::addMessageAfterRedirect(__('There are sub-metademands or this is a sub-metademand. This metademand cannot be in basket mode', 'metademands'), false, ERROR);
+            return false;
+         }
       }
 
       return $input;
@@ -836,7 +842,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTALLOWED);
       }
 
-      $result = $metademands->showMetademands($params['metademands_id']);
+      $result = $metademands->constructMetademands($params['metademands_id']);
 
       $response = [];
       foreach ($result as $step => $values) {
@@ -979,7 +985,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return array
     * @throws \GlpitestSQLError
     */
-   function showMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW) {
+   function constructMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW) {
       global $DB;
 
       $metademands = new self();
@@ -1024,7 +1030,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if ($DB->numrows($result)) {
                while ($data = $DB->fetchAssoc($result)) {
                   $step++;
-                  $forms = $this->showMetademands($data['link_metademands_id'], $forms, $step);
+                  $forms = $this->constructMetademands($data['link_metademands_id'], $forms, $step);
                }
             }
          }
@@ -1098,7 +1104,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $tasklevel = 1;
 
-      $metademands_data = $this->showMetademands($metademands_id);
+      $metademands_data = $this->constructMetademands($metademands_id);
       $this->getFromDB($metademands_id);
 
       $ticket              = new Ticket();
@@ -1171,7 +1177,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                } else if ($metademand->fields['is_order'] == 1) {
                   if ($metademand->fields['create_one_ticket'] == 0) {
                      //create one ticket for each basket
-                     $values_form[0] = $values['basket'];
+                     $values_form[0] = isset($values['basket'])?$values['basket']:[];
                      foreach ($values_form[0] as $id => $value) {
                         if (isset($line['form'][$id]['item'])
                             && $line['form'][$id]['item'] == "itilcategory") {
@@ -1180,7 +1186,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      }
                   } else {
                      //create one ticket for all basket
-                     $values_form = $values['basket'];
+                     $values_form = isset($values['basket'])?$values['basket']:[];
                      foreach ($values_form as $id => $value) {
                         if (isset($line['form'][$id]['item'])
                             && $line['form'][$id]['item'] == "itilcategory") {
@@ -1272,13 +1278,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $input['_tag_filename'] = $values['fields']['files'][$form_metademands_id]['_tag_filename'];
                      }
                   } else {
-                     if ($values['fields']['_filename']) {
+                     if (isset($values['fields']['_filename'])) {
                         $input['_filename'] = $values['fields']['_filename'];
                      }
-                     if ($values['fields']['_prefix_filename']) {
+                     if (isset($values['fields']['_prefix_filename'])) {
                         $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
                      }
-                     if ($values['fields']['_tag_filename']) {
+                     if (isset($values['fields']['_tag_filename'])) {
                         $input['_tag_filename'] = $values['fields']['_tag_filename'];
                      }
                   }
@@ -1302,14 +1308,16 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $docPdf = new PluginMetaDemandsMetaDemandPdf($this->fields['name'],
                                                                   $this->fields['comment']);
                      if ($metademand->fields['is_order'] == 0) {
-                        $values_form['0'] = $values;
+                        $values_form['0'] = isset($values)?$values:[];
                         $docPdf->drawPdf($line['form'], $values_form, false);
                      } elseif ($metademand->fields['is_order'] == 1) {
                         if ($metademand->fields['create_one_ticket'] == 0) {
                            //create one ticket for each basket
-                           $values_form['0'] = $values;
+                           $values_form['0'] = isset($values)?$values:[];
                         } else {
                            //create one ticket for all basket
+                           $baskets = [];
+                           $values['basket'] = isset($values['basket'])?$values['basket']:[];
                            foreach ($values['basket'] as $k => $v) {
                               $baskets[$k]['basket'] = $v;
                            }
@@ -2240,7 +2248,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $this->fields['name']    = addslashes($this->fields['name']);
 
          if ($new_metademands_id = $this->add($this->fields)) {
-            $metademands_data = $this->showMetademands($metademands_id);
+            $metademands_data = $this->constructMetademands($metademands_id);
             if (count($metademands_data)) {
                foreach ($metademands_data as $form_step => $data) {
                   foreach ($data as $form_metademands_id => $line) {
