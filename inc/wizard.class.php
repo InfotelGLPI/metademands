@@ -272,7 +272,8 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
          }
       }
-      $options['resources_id'] = $parameters['resources_id'];
+      $options['resources_id']      = $parameters['resources_id'];
+      $options['itilcategories_id'] = $parameters['itilcategories_id'];
       self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options);
       Html::closeForm();
       echo "</div>";
@@ -309,7 +310,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             break;
 
          default:
-            self::showMetademands($metademands_id, $step, $preview);
+            self::showMetademands($metademands_id, $step, $preview, $options);
             break;
 
       }
@@ -511,13 +512,24 @@ class PluginMetademandsWizard extends CommonDBTM {
    }
 
    /**
-    * @param      $metademands_id
-    * @param      $step
-    * @param bool $preview
+    * @param       $metademands_id
+    * @param       $step
+    * @param bool  $preview
+    *
+    * @param array $options
     *
     * @throws \GlpitestSQLError
     */
-   static function showMetademands($metademands_id, $step, $preview = false) {
+   static function showMetademands($metademands_id, $step, $preview = false, $options = []) {
+
+      $parameters = ['itilcategories_id' => 0];
+
+      // if given parameters, override defaults
+      foreach ($options as $key => $value) {
+         if (isset($parameters[$key])) {
+            $parameters[$key] = $value;
+         }
+      }
 
       $metademands      = new PluginMetademandsMetademand();
       $metademands_data = $metademands->showMetademands($metademands_id);
@@ -560,12 +572,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (!isset($_POST['form_metademands_id']) ||
                          (isset($_POST['form_metademands_id']) && $form_metademands_id != $_POST['form_metademands_id'])) {
                         if (!isset($_SESSION['metademands_hide'][$form_metademands_id])) {
-                           self::constructForm($metademands_data, $line['form'], $preview);
+                           self::constructForm($metademands_data, $line['form'], $preview, $parameters['itilcategories_id']);
                         } else {
                            $step++;
                         }
                      } else {
-                        self::constructForm($metademands_data, $line['form'], $preview);
+                        self::constructForm($metademands_data, $line['form'], $preview, $parameters['itilcategories_id']);
 
                      }
                      if ($metademands->fields['is_order'] == 1) {
@@ -691,8 +703,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                             border-left :3px solid #' . PluginMetademandsField::setColor($data['rank']) . ';
                             border-right :3px solid #' . PluginMetademandsField::setColor($data['rank']);
                }
-//               echo "<div class='bt-feature col-md-12' style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;'>";
-//               echo "</div>";
+               //               echo "<div class='bt-feature col-md-12' style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;'>";
+               //               echo "</div>";
                echo "&nbsp;";
                echo "<div class=\"form-row\" style='$style'>";
                $count = 0;

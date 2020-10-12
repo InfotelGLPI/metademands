@@ -1058,7 +1058,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $userrand = mt_rand();
                   $field    = "";
 
-                  $value = !empty($value) ? $value : 0;
+                  $value = !empty($value) ? $value : Session::getLoginUserID();
                   $field .= User::dropdown(['name'    => $namefield . "[" . $data['id'] . "]",
                                             'entity'  => $_SESSION['glpiactiveentities'],
                                             'right'   => 'all',

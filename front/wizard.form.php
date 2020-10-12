@@ -295,7 +295,8 @@ if (isset($_POST['next'])) {
                unset($_SESSION['son_meta']);
             }
          }
-         $options = ['step' => $_POST['step'], 'metademands_id' => $_POST['metademands_id']];
+         $options = ['step' => $_POST['step'],
+                     'metademands_id' => $_POST['metademands_id']];
          $wizard->showWizard($options);
       }
 
