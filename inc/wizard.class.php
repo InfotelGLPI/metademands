@@ -1231,6 +1231,7 @@ class PluginMetademandsWizard extends CommonDBTM {
    static function createMetademands($metademands_id, $values, $options = []) {
       global $CFG_GLPI;
 
+      $self = new self();
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
 
@@ -1345,7 +1346,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (!empty($options['resources_id'])) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
       } else {
-         Html::back();
+         Html::redirect($self->getFormURL() . "?step=".$step = PluginMetademandsMetademand::STEP_LIST);
       }
    }
 
