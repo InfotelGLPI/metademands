@@ -324,6 +324,17 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $input['itilcategories_id'] = '';
       }
 
+      if (isset($input['is_order']) && $input['is_order'] == 1) {
+         $fields      = new PluginMetademandsField();
+         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $this->getID()]);
+         if (count($fields_data) > 0) {
+            foreach ($fields_data as $field){
+               $fields->update(['is_basket' => 1, 'id' => $field['id']]);
+            }
+         }
+
+      }
+
       return $input;
    }
 

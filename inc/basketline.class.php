@@ -45,7 +45,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
       if (count($line) > 0) {
 
          $basketline = new self();
-         if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
+         if (!$preview && $basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
                                                    'users_id'                          => Session::getLoginUserID()])) {
 
             echo "<div class='right-div'>";
@@ -57,7 +57,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
                  . _sx('button', 'Clear the basket', 'metademands') . "'>";
             echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
             echo "</button>";
-            echo  "</h4>";
+            echo "</h4>";
             echo "</div>";
             echo "</div>";
 
@@ -85,7 +85,26 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
       echo "<div class='basket-data'>";
 
-      $i = 0;
+      $i            = 0;
+
+      //hide empty hidden fields
+//      $hidden_links = [];
+//      foreach ($fields as $k => $v) {
+//         if (!empty($v['hidden_link'])) {
+//            foreach (PluginMetademandsField::_unserialize($v['hidden_link']) as $h => $hidden) {
+//               if ($hidden > 0) {
+//                  foreach ($values as $key => $value) {
+//                     if ($value['plugin_metademands_fields_id'] == $hidden) {
+//                        if (empty($value['value'])) {
+//                           $hidden_links[] = $value['plugin_metademands_fields_id'];
+//                        }
+//                     }
+//                  }
+//               }
+//            }
+//         }
+//      }
+
       foreach ($fields as $k => $v) {
 
          $i++;
@@ -93,10 +112,17 @@ class PluginMetademandsBasketline extends CommonDBTM {
          if ($i == 1) {
             $style = " style='margin-top:20px;'";
          }
-         if ($v['item'] == 'informations') {
+         //hide informations bloc
+//         if ($v['item'] == 'informations') {
+//            $i--;
+//            continue;
+//         }
+         //hide empty hidden fields
+         if (in_array($v['id'], $hidden_links)) {
             $i--;
             continue;
          }
+
          echo "<div class='form-row' $style>";
 
          echo "<div class='form-group basket-title col-md-5'>";
