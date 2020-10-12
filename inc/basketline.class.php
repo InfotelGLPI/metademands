@@ -118,10 +118,10 @@ class PluginMetademandsBasketline extends CommonDBTM {
             continue;
          }
          //hide empty hidden fields
-//         if (in_array($v['id'], $hidden_links)) {
-//            $i--;
-//            continue;
-//         }
+         if (isset($v['is_basket']) && $v['is_basket'] == 0) {
+            $i--;
+            continue;
+         }
 
          echo "<div class='form-row' $style>";
 
