@@ -113,15 +113,15 @@ class PluginMetademandsBasketline extends CommonDBTM {
             $style = " style='margin-top:20px;'";
          }
          //hide informations bloc
-//         if ($v['item'] == 'informations') {
-//            $i--;
-//            continue;
-//         }
-         //hide empty hidden fields
-         if (in_array($v['id'], $hidden_links)) {
+         if ($v['item'] == 'informations') {
             $i--;
             continue;
          }
+         //hide empty hidden fields
+//         if (in_array($v['id'], $hidden_links)) {
+//            $i--;
+//            continue;
+//         }
 
          echo "<div class='form-row' $style>";
 
