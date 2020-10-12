@@ -24,6 +24,10 @@
     </authors>
     <versions>
         <version>
+            <num>2.7.2</num>
+            <compatibility>~9.5</compatibility>
+        </version>
+        <version>
             <num>2.7.1</num>
             <compatibility>~9.5</compatibility>
         </version>
@@ -82,4 +86,7 @@
             <tag>Wizard</tag>
         </en>
     </tags>
+    <screenshots>
+      <screenshot>https://raw.githubusercontent.com/InfotelGLPI/metademands/master/screenshots/basket.png</screenshot>
+   </screenshots>
 </root>
