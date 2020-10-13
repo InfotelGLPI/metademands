@@ -1060,7 +1060,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
                         $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                         foreach ($hidden_link as $key => $fields) {
-                           if ($check_value[$key] == 1) {
+                           if (isset($check_value[$key]) && $check_value[$key] == 1) {
                               $script  .= "
                            if($(this).val().trim().length < 1){
                               $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
