@@ -71,9 +71,8 @@ class PluginMetademandsTicket extends CommonDBTM {
     */
    static function emptyTicket(Ticket $ticket) {
       // Metademand redirection on ticket creation
-
-      if (isset($_REQUEST['tickets_id'])
-          && $_REQUEST['tickets_id'] == 0
+      if (isset($_REQUEST['id'])
+          && $_REQUEST['id'] == 0
           && isset($_REQUEST['type'])
           && isset($_REQUEST['itilcategories_id'])) {
 
@@ -81,6 +80,7 @@ class PluginMetademandsTicket extends CommonDBTM {
          $myticket->fields['id']               = 0;
          $myticket->input['type']              = $_REQUEST['type'];
          $myticket->input['itilcategories_id'] = $_REQUEST['itilcategories_id'];
+
          if ($url = PluginMetademandsMetademand::redirectForm($myticket, 'show')) {
             Html::redirect($url);
          }
