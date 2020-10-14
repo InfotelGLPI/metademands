@@ -1184,6 +1184,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
                               $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                           }else{
+                              if($data['type'] == "dropdown" && $data['item'] == 'user'){
+                                 if( Session::getLoginUserID() == $check_value[$key]){
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 }
+                              }
                            }
                         }
                         $script .= "$.each( tohide, function( key, value ) {
