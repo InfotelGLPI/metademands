@@ -1,3 +1,58 @@
+@media (min-width: 768px) {
+   .left-div {
+      float: none;
+   }
+}
+@media (min-width: 992px) {
+   .left-div {
+      float: none;
+   }
+}
+@media (min-width: 1200px) {
+   .left-div {
+      float: left;
+      width: 550px;
+   }
+}
+@media (min-width: 1400px) {
+   .left-div {
+      float: left;
+      width: 700px;
+   }
+}
+
+@media (min-width: 768px) {
+   .right-div {
+      float: left;
+      width: 768px;
+   }
+}
+@media (min-width: 992px) {
+   .right-div {
+      float: left;
+      width: 992px;
+   }
+}
+
+@media (min-width: 1200px) {
+   .right-div {
+      float: none;
+      width: 600px;
+      margin-left: 550px;
+   }
+}
+
+@media (min-width: 1400px) {
+   .right-div {
+      float: none;
+      margin-left: 700px;
+   }
+}
+
+.middle-div {
+   float: left;
+}
+
 .metademands_tickettask {
    padding:5px;
    border: solid 1px #D5D5D5;
@@ -142,40 +197,54 @@ a.metademand_middle_button{
    vertical-align: middle;
 }
 
-.table-basket {
-   margin-left: auto;
-   margin-right: auto;
-   border: 1px solid #ced4da;
-}
-
-.basket-th {
-   padding: 15px;
-   text-align: center;
-   border-bottom: 1px solid #ced4da;
-}
-
-.basket-delete-th {
-   padding: 15px;
-   border-left: 1px solid #ced4da;
-   background-color: white !important;
-   border-bottom: 1px solid #ced4da;
-}
-
-.basket-label {
-   background-color: #ced4da;
+.basket-data {
+   background-color: #f8f7f3;
+   border: 2px solid #efeeee;
+   margin-bottom: 15px;
 }
 
 .basket-title {
-   margin: 5px 0 5px 3px;
-   font-size: 20px;
+   margin-bottom: 5px!important;
 }
 
-.table-basket td {
-   padding : 15px;
-   text-align: center;
+button.clear-basket {
+   color: #CCC;
+   border: none;
+   background: none;
 }
 
-.delete-line-basket {
-   background-color: whitesmoke !important;
+/*.table-basket {*/
+/*   width: 100%;*/
+/*   border: 1px solid #ced4da;*/
+/*}*/
 
-}
+/*.basket-th {*/
+/*   padding: 10px;*/
+/*   text-align: center;*/
+/*   border-bottom: 1px solid #ced4da;*/
+/*}*/
+
+/*.basket-delete-th {*/
+/*   padding: 10px;*/
+/*   border-left: 1px solid #ced4da;*/
+/*   background-color: white !important;*/
+/*   border-bottom: 1px solid #ced4da;*/
+/*}*/
+
+
+/*.basket-title {*/
+/*   margin: 5px 0 5px 3px;*/
+/*   font-size: 20px;*/
+/*}*/
+
+/*.table-basket td {*/
+/*   padding-left: 10px;*/
+/*   padding-right: 10px;*/
+/*   text-align: center;*/
+/*}*/
+
+/*.update-line-basket,*/
+/*.delete-line-basket {*/
+/*   background-color: #FFF;*/
+/*   border: none;*/
+/*}*/

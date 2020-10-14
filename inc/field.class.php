@@ -122,8 +122,8 @@ class PluginMetademandsField extends CommonDBChild {
 
 
    /**
-    * @param $ID
-    * @param $item
+    * @param       $ID
+    * @param array $options
     *
     * @return bool
     * @throws \GlpitestSQLError
@@ -172,7 +172,7 @@ class PluginMetademandsField extends CommonDBChild {
          echo "</tr>";
       }
 
-      $metademand_fields = new PluginMetademandsField();
+      $metademand_fields = new self();
       $metademand_fields->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
                                            'item'                              => 'itilcategory']);
       $categories = [];
@@ -217,7 +217,7 @@ class PluginMetademandsField extends CommonDBChild {
       // LABEL 2
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
-      echo __('Additional label', 'metademands') . "&nbsp;<span style='color:red' id='show_label2' style='display:none'>&nbsp;*&nbsp;</span>";
+      echo __('Additional label', 'metademands') . "&nbsp;<span id='show_label2' style='color:red;display:none;'>&nbsp;*&nbsp;</span>";
       echo "</td>";
       echo "<td>";
       Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
@@ -448,7 +448,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
-         echo "<th class='center b' colspan='9'>" . __('Form fields', 'metademands') . "</th>";
+         echo "<th class='center b' colspan='10'>" . __('Form fields', 'metademands') . "</th>";
          echo "</tr>";
          echo "<tr class='tab_bg_2'>";
          echo "<th width='10'>";
@@ -462,6 +462,10 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<th class='center b'>" . __('Mandatory field') . "</th>";
          echo "<th class='center b'>" . __('Link a task to the field', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Value to check', 'metademands') . "</th>";
+         $meta = new PluginMetademandsMetademand();
+         if ($meta->getFromDB($plugin_metademands_metademands_id) && $meta->fields['is_order'] == 1) {
+            echo "<th class='center b'>" . __('Display into the basket', 'metademands') . "</th>";
+         }
          echo "<th class='center b'>" . __('Block', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Order', 'metademands') . "</th>";
          echo "</tr>";
@@ -477,7 +481,7 @@ class PluginMetademandsField extends CommonDBChild {
             }
             echo "</td>";
             $name = $value['label'] . (!empty($value['label2']) ? '&nbsp;-&nbsp;' . $value['label2'] : '');
-            echo "<td><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $id . "'>";
+            echo "<td><a href='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $id . "'>";
             if (empty(trim($name))) {
                echo __('ID') . " - " . $id;
             } else {
@@ -487,7 +491,7 @@ class PluginMetademandsField extends CommonDBChild {
             echo "<td>" . self::getFieldTypesName($value['type']);
             //name of parent field
             if ($value['type'] == 'parent_field') {
-               $field = new PluginMetademandsField();
+               $field = new self();
                $field->getFromDB($value['parent_field_id']);
                if (empty(trim($field->fields['label']))) {
                   echo " ( ID - " . $value['parent_field_id'] . ")";
@@ -536,6 +540,10 @@ class PluginMetademandsField extends CommonDBChild {
                echo Dropdown::EMPTY_VALUE;
             }
             echo "</td>";
+            if ($meta->fields['is_order'] == 1) {
+               echo "<td>" . Dropdown::getYesNo($value['is_basket']) . "</td>";
+            }
+
             echo "<td class='center' style='color:white;background-color: #" . self::setColor($value['rank']) . "'>" . $value['rank'] . "</td>";
             echo "<td class='center' style='color:white;background-color: #" . self::setColor($value['rank']) . "'>";
             echo empty($value['order']) ? __('None') : $value['order'];
@@ -930,8 +938,6 @@ class PluginMetademandsField extends CommonDBChild {
    static function getFieldItemsName($value = '') {
       global $PLUGIN_HOOKS;
 
-      $dbu = new DbUtils();
-
       switch ($value) {
          case 'user':
             return __('User');
@@ -973,6 +979,573 @@ class PluginMetademandsField extends CommonDBChild {
       }
    }
 
+
+   /**
+    * Load fields from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginFieldItemsType($plug) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'getFieldItemsType'])) {
+               return $item->getFieldItemsType();
+            }
+         }
+      }
+   }
+
+
+   /**
+    * @param        $data
+    * @param        $metademands_data
+    * @param bool   $preview
+    * @param string $config_link
+    * @param int    $itilcategories_id
+    */
+   static function getFieldType($data, $metademands_data, $preview = false, $config_link = "", $itilcategories_id = 0) {
+      global $PLUGIN_HOOKS;
+
+      $required = "";
+      if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
+         $required = "required";
+      }
+
+      $upload = "";
+      if ($data['type'] == "upload") {
+         $max = "";
+         if ($data["max_upload"] > 0) {
+            $max = "( " . sprintf(__("Maximum number of documents : %s ", "metademands"), $data["max_upload"]) . ")";
+         }
+
+         $upload = "$max (" . Document::getMaxUploadSize() . ")";
+      }
+      if ($data['is_mandatory']) {
+         $required = "style='color:red'";
+      }
+
+      echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
+      echo $data['label'] . " $upload";
+      if ($preview) {
+         echo $config_link;
+      }
+      echo "</label>";
+      echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
+      if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
+         echo "*";
+      }
+      echo "</span>";
+
+      echo "&nbsp;";
+
+      $plugin = new Plugin();
+      //use plugin fields types
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $new_fields = self::getPluginFieldItemsType($plug);
+            if ($plugin->isActivated($plug) && is_array($new_fields)) {
+               if (in_array($data['type'], array_keys($new_fields))) {
+                  $data['type'] = $new_fields[$data['type']];
+               }
+            }
+         }
+      }
+
+      // Input
+      echo "<br>";
+      echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0);
+
+   }
+
+
+   /**
+    * @param      $metademands_data
+    * @param      $data
+    * @param bool $on_basket
+    * @param int  $itilcategories_id
+    *
+    * @param int  $idline
+    *
+    * @return int|mixed|String
+    */
+   static function getFieldInput($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0) {
+
+      $field = '';
+      $value = '';
+      if (isset($data['value'])) {
+         $value = $data['value'];
+      }
+
+      if ($on_basket == false) {
+         $namefield = 'field';
+      } else {
+         $namefield = 'field_basket_' . $idline;
+      }
+
+      switch ($data['type']) {
+         case 'dropdown_multiple' :
+            if (!empty($data['custom_values'])) {
+               $data['custom_values'] = self::_unserialize($data['custom_values']);
+               $defaults              = self::_unserialize($data['default_values']);
+               $default_values        = [];
+               if ($defaults) {
+                  foreach ($defaults as $k => $v) {
+                     if ($v != null) {
+                        $default_values[] = $k;
+                     }
+                  }
+               }
+               ksort($data['custom_values']);
+               $value = is_array($value) ? $value : $default_values;
+               $field = Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $data['custom_values'],
+                                                ['values'   => $value,
+                                                 'width'    => '250px',
+                                                 'multiple' => true,
+                                                 'display'  => false
+                                                ]);
+            }
+            break;
+         case 'dropdown':
+            switch ($data['item']) {
+               case 'other' :
+                  if (!empty($data['custom_values'])) {
+                     $data['custom_values']    = self::_unserialize($data['custom_values']);
+                     $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
+                     ksort($data['custom_values']);
+                     $field = "";
+                     $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]",
+                                                       $data['custom_values'],
+                                                       ['value'   => $value,
+                                                        'width'   => '200px',
+                                                        'display' => false
+                                                       ]);
+                  }
+                  break;
+               case 'user':
+                  $userrand = mt_rand();
+                  $field    = "";
+
+                  $value = !empty($value) ? $value : Session::getLoginUserID();
+                  $field .= User::dropdown(['name'    => $namefield . "[" . $data['id'] . "]",
+                                            'entity'  => $_SESSION['glpiactiveentities'],
+                                            'right'   => 'all',
+                                            'rand'    => $userrand,
+                                            'value'   => $value,
+                                            'display' => false
+                                           ]);
+                  break;
+               case 'itilcategory':
+                  if ($on_basket == false) {
+                     $nameitil = 'field';
+                  } else {
+                     $nameitil = 'basket';
+                  }
+                  $metademand = new PluginMetademandsMetademand();
+                  $metademand->getFromDB($data['plugin_metademands_metademands_id']);
+                  $values = json_decode($metademand->fields['itilcategories_id']);
+                  if (count($values) == 1) {
+                     foreach ($values as $key => $val)
+                        $itilcategories_id = $val;
+                  }
+                  if ($itilcategories_id > 0) {
+                     // itilcat from service catalog
+                     $itilCategory = new ITILCategory();
+                     $itilCategory->getFromDB($itilcategories_id);
+                     $field = "<span>" . $itilCategory->getField('name');
+                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
+                     $field .= "<span>";
+                  } else {
+                     $opt = ['name'      => $nameitil . "_plugin_servicecatalog_itilcategories_id",
+                             'right'     => 'all',
+                             'value'     => $value,
+                             'condition' => ["id" => $values],
+                             'display'   => false];
+
+                     $field = "";
+                     $field .= ITILCategory::dropdown($opt);
+                  }
+                  break;
+               case 'usertitle':
+                  $titlerand = mt_rand();
+                  $field     = "";
+                  $field     .= UserTitle::dropdown(['name'    => $namefield . "[" . $data['id'] . "]",
+                                                     'rand'    => $titlerand,
+                                                     'value'   => $value,
+                                                     'display' => false]);
+                  break;
+               case 'usercategory':
+                  $catrand = mt_rand();
+                  $field   = "";
+                  $field   .= UserCategory::dropdown(['name'    => $namefield . "[" . $data['id'] . "]",
+                                                      'rand'    => $catrand,
+                                                      'value'   => $value,
+                                                      'display' => false]);
+                  break;
+               case 'PluginMetademandsITILApplication' :
+                  $opt   = ['value'  => $value,
+                            'entity' => $_SESSION['glpiactiveentities'],
+                            'name'   => $namefield . "[" . $data['id'] . "],
+                                        'display' => false"];
+                  $field = "";
+                  $field .= PluginMetademandsITILApplication::dropdown($opt);
+                  break;
+               case 'PluginMetademandsITILEnvironment' :
+                  $opt   = ['value'  => $value,
+                            'entity' => $_SESSION['glpiactiveentities'],
+                            'name'   => $namefield . "[" . $data['id'] . "],
+                                        'display' => false"];
+                  $field = "";
+                  $field .= PluginMetademandsITILEnvironment::dropdown($opt);
+                  break;
+               default:
+                  $cond = [];
+                  if (!empty($data['custom_values']) && $data['item'] == 'group') {
+                     $options = self::_unserialize($data['custom_values']);
+                     foreach ($options as $type_group => $val) {
+                        $cond[$type_group] = $val;
+                     }
+                  }
+                  $opt = ['value'     => $value,
+                          'entity'    => $_SESSION['glpiactiveentities'],
+                          'display'   => true,
+                          'name'      => $namefield . "[" . $data['id'] . "]",
+                          'readonly'  => true,
+                          'condition' => $cond,
+                          'display'   => false];
+                  if (!($item = getItemForItemtype($data['item']))) {
+                     break;
+                  }
+                  $container_class = new $data['item']();
+                  $field           = "";
+                  $field           .= $container_class::dropdown($opt);
+                  break;
+            }
+            break;
+         case 'text':
+            $field = "<input type='text' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "' class='form-control form-control-sm' id='" . $namefield . "[" . $data['id'] . "]' placeholder=\"" . $data['comment'] . "\">";
+            break;
+         case 'informations':
+            if ($on_basket == false) {
+               $field = nl2br($data['comment']);
+            }
+            break;
+         case 'link':
+            if (!empty($data['custom_values'])) {
+               $data['custom_values'] = self::_unserialize($data['custom_values']);
+               switch ($data['custom_values'][0]) {
+                  case 'button' :
+                     $btnLabel = __('Link');
+                     if (!empty($data['label2'])) {
+                        $btnLabel = $data['label2'];
+                     }
+                     $field = "<input type='submit' class='submit' value ='$btnLabel' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
+
+                     break;
+                  case 'link_a' :
+                     $field = "<a target='_blank' href ='" . $data['custom_values'][1] . "'>" . $data['custom_values'][1] . "</a>";
+                     break;
+               }
+               $field .= "<input type='hidden' name=" . $namefield . "[" . $data['id'] . "]' value='" . $data['custom_values'][1] . "' >";
+            }
+            //            echo "<input type='hidden' name=''.$namefield.'[" . $data['id'] . "]' value='" . $data['custom_values'] . "'>";
+
+            break;
+         case 'checkbox':
+            if (!empty($data['custom_values'])) {
+               $data['custom_values']  = self::_unserialize($data['custom_values']);
+               $data['comment_values'] = self::_unserialize($data['comment_values']);
+               $defaults               = self::_unserialize($data['default_values']);
+               if (!empty($value)) {
+                  $value = self::_unserialize($value);
+               }
+               $nbr    = 0;
+               $inline = "";
+               if ($data['row_display'] == 1) {
+                  $inline = 'custom-control-inline';
+               }
+               $field = "";
+               foreach ($data['custom_values'] as $key => $label) {
+                  $field   .= "<div class='custom-control custom-checkbox $inline'>";
+                  $checked = "";
+                  if (isset($value[$key])) {
+                     $checked = isset($value[$key]) ? 'checked' : '';
+                  } elseif (isset($defaults[$key]) && $on_basket == false) {
+                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
+                  }
+                  $field .= "<input class='custom-control-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                  $nbr++;
+                  $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
+                  if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
+                     $field .= "&nbsp;<span style='vertical-align: bottom;'>";
+                     $field .= Html::showToolTip($data['comment_values'][$key],
+                                                 ['awesome-class' => 'fa-info-circle',
+                                                  'display'       => false]);
+                     $field .= "</span>";
+                  }
+                  $field .= "</div>";
+               }
+            } else {
+               $checked = $value ? 'checked' : '';
+               $field   = "<input class='custom-control-input' type='checkbox' name='" . $namefield . "[" . $data['id'] . "]' value='checkbox' $checked>";
+            }
+            break;
+
+         case 'radio':
+            if (!empty($data['custom_values'])) {
+               $data['custom_values']  = self::_unserialize($data['custom_values']);
+               $data['comment_values'] = self::_unserialize($data['comment_values']);
+               $defaults               = self::_unserialize($data['default_values']);
+               if ($value != NULL) {
+                  $value = self::_unserialize($value);
+               }
+               $nbr    = 0;
+               $inline = "";
+               if ($data['row_display'] == 1) {
+                  $inline = 'custom-control-inline';
+               }
+               $field = "";
+               foreach ($data['custom_values'] as $key => $label) {
+                  $field .= "<div class='custom-control custom-radio $inline'>";
+
+                  $checked = "";
+                  if ($value != NULL && $value == $key) {
+                     $checked = $value == $key ? 'checked' : '';
+                  } elseif ($value == NULL && isset($defaults[$key]) && $on_basket == false) {
+                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
+                  }
+                  $field .= "<input class='custom-control-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                  $nbr++;
+                  $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
+                  if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
+                     $field .= "&nbsp;<span style='vertical-align: bottom;'>";
+                     $field .= Html::showToolTip($data['comment_values'][$key],
+                                                 ['awesome-class' => 'fa-info-circle',
+                                                  'display'       => false]);
+                     $field .= "</span>";
+                  }
+                  $field .= "</div>";
+               }
+            }
+            break;
+         case 'textarea':
+            $value = Html::cleanPostForTextArea($value);
+            $field = "<textarea class='form-control' rows='3' placeholder=\"" . $data['comment'] . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+            break;
+         case 'datetime_interval':
+         case 'datetime':
+            $field = Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
+                                                                                'display' => false
+            ]);
+            break;
+         case 'number':
+            $data['custom_values'] = self::_unserialize($data['custom_values']);
+            $field                 = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", ['value'   => $value,
+                                                                                                 'min'     => ((isset($data['custom_values']['min']) && $data['custom_values']['min'] != "") ? $data['custom_values']['min'] : 0),
+                                                                                                 'max'     => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 360),
+                                                                                                 'step'    => ((isset($data['custom_values']['step']) && $data['custom_values']['step'] != "") ? $data['custom_values']['step'] : 1),
+                                                                                                 'display' => false
+                                                                                                 //                                                   'toadd' => [0 => __('Infinite')]
+            ]);
+            break;
+         case 'yesno':
+            $option[1] = __('No');
+            $option[2] = __('Yes');
+            $field     = "";
+            $field     .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
+                                                                                                  'display' => false]);
+            break;
+         case 'upload':
+            $arrayFiles = json_decode($value, true);
+            $field      = "";
+            $nb         = 0;
+            if ($arrayFiles != "") {
+               foreach ($arrayFiles as $k => $file) {
+                  $field .= str_replace($file['_prefix_filename'], "", $file['_filename']);
+                  $wiz   = new PluginMetademandsWizard();
+                  $field .= "&nbsp;";
+                  //own showSimpleForm for return (not echo)
+                  $field .= self::showSimpleForm($wiz->getFormURL(), 'delete_basket_file',
+                                                 _x('button', 'Delete permanently'),
+                                                 ['id'                           => $k,
+                                                  'metademands_id'               => $data['plugin_metademands_metademands_id'],
+                                                  'plugin_metademands_fields_id' => $data['id'],
+                                                  'idline'                       => $idline
+                                                 ],
+                                                 'fa-times-circle');
+                  $field .= "<br>";
+                  $nb++;
+               }
+               if ($data["max_upload"] > $nb) {
+                  if ($data["max_upload"] > 1) {
+                     $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                                           'editor_id'     => '',
+                                           'showtitle'     => false,
+                                           'multiple'      => true,
+                                           'display'       => false]);
+                  } else {
+                     $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                                           'editor_id'     => '',
+                                           'showtitle'     => false,
+                                           'display'       => false
+                                          ]);
+                  }
+               }
+            } else {
+               if ($data["max_upload"] > 1) {
+                  $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                                        'editor_id'     => '',
+                                        'showtitle'     => false,
+                                        'multiple'      => true,
+                                        'display'       => false]);
+               } else {
+                  $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                                        'editor_id'     => '',
+                                        'showtitle'     => false,
+                                        'display'       => false
+                                       ]);
+               }
+            }
+
+            $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
+            break;
+
+         case 'parent_field':
+            foreach ($metademands_data as $metademands_data_steps) {
+               foreach ($metademands_data_steps as $line_data) {
+                  foreach ($line_data['form'] as $field_id => $field_value) {
+                     if ($field_id == $data['parent_field_id']) {
+
+                        $value_parent_field = '';
+                        if (isset($_SESSION['plugin_metademands']['fields'][$data['parent_field_id']])) {
+                           $value_parent_field = $_SESSION['plugin_metademands']['fields'][$data['parent_field_id']];
+                        }
+
+                        switch ($field_value['type']) {
+                           case 'dropdown_multiple':
+                              if (!empty($field_value['custom_values'])) {
+                                 $value_parent_field = $field_value['custom_values'][$value_parent_field];
+                              }
+                              break;
+                           case 'dropdown':
+                              if (!empty($field_value['custom_values'])
+                                  && $field_value['item'] == 'other') {
+                                 $value_parent_field = $field_value['custom_values'][$value_parent_field];
+                              } else {
+                                 switch ($field_value['item']) {
+                                    case 'user':
+                                       $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
+                                       $user               = new User();
+                                       $user->getFromDB($value_parent_field);
+                                       $value_parent_field .= $user->getName();
+                                       break;
+                                    default:
+                                       $dbu                = new DbUtils();
+                                       $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
+                                       $value_parent_field .= Dropdown::getDropdownName($dbu->getTableForItemType($field_value['item']),
+                                                                                        $value_parent_field);
+                                       break;
+                                 }
+                              }
+                              break;
+                           case 'checkbox':
+                              if (!empty($field_value['custom_values'])) {
+                                 $field_value['custom_values'] = self::_unserialize($field_value['custom_values']);
+                                 $checkboxes                   = self::_unserialize($value_parent_field);
+
+                                 $custom_checkbox    = [];
+                                 $value_parent_field = "";
+                                 foreach ($field_value['custom_values'] as $key => $label) {
+                                    $checked = isset($checkboxes[$key]) ? 1 : 0;
+                                    if ($checked) {
+                                       $custom_checkbox[]  .= $label;
+                                       $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='checkbox'>";
+
+                                    }
+                                 }
+                                 $value_parent_field .= implode('<br>', $custom_checkbox);
+                              }
+                              break;
+
+                           case 'radio' :
+                              if (!empty($field_value['custom_values'])) {
+                                 $field_value['custom_values'] = self::_unserialize($field_value['custom_values']);
+                                 foreach ($field_value['custom_values'] as $key => $label) {
+                                    if ($value_parent_field == $key) {
+                                       $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$key' >";
+                                       $value_parent_field .= $label;
+                                       break;
+                                    }
+
+                                 }
+                              }
+                              break;
+
+                           case 'datetime':
+                              $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
+                              $value_parent_field .= Html::convDate($value_parent_field);
+
+                              break;
+
+                           case 'datetime_interval':
+                              $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data['parent_field_id'] . "-2"])) {
+                                 $value_parent_field2 = $_SESSION['plugin_metademands']['fields'][$data['parent_field_id'] . "-2"];
+                                 $value_parent_field  .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . $value_parent_field2 . "'>";
+                              } else {
+                                 $value_parent_field2 = 0;
+                              }
+                              $value_parent_field .= Html::convDate($value_parent_field) . " - " . Html::convDate($value_parent_field2);
+                              break;
+                           case 'yesno' :
+                              $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
+                              $value_parent_field .= Dropdown::getYesNo($value_parent_field);
+                              break;
+
+                           default :
+                              $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
+
+                        }
+                        $field = $value_parent_field;
+                        break;
+                     }
+                  }
+               }
+            }
+            break;
+      }
+      if ($on_basket == false) {
+         echo $field;
+      } else {
+         return $field;
+      }
+   }
+
+   /**
+    * @param        $action
+    * @param        $btname
+    * @param        $btlabel
+    * @param array  $fields
+    * @param string $btimage
+    * @param string $btoption
+    * @param string $confirm
+    *
+    * @return string
+    */
+   static function showSimpleForm($action, $btname, $btlabel, array $fields = [], $btimage = '',
+                                  $btoption = '', $confirm = '') {
+
+      return Html::getSimpleForm($action, $btname, $btlabel, $fields, $btimage, $btoption, $confirm);
+   }
 
    /**
     * View options for items or types
@@ -1108,6 +1681,9 @@ class PluginMetademandsField extends CommonDBChild {
       }
    }
 
+   /**
+    * @param $url
+    */
    function addNewOpt($url) {
       global $CFG_GLPI;
       $res = "<script type='text/javascript'>
@@ -1122,6 +1698,14 @@ class PluginMetademandsField extends CommonDBChild {
       echo $res;
    }
 
+   /**
+    * @param $metademands_id
+    * @param $params
+    * @param $nbOpt
+    *
+    * @return string
+    * @throws \GlpitestSQLError
+    */
    function showOptions($metademands_id, $params, $nbOpt) {
       global $PLUGIN_HOOKS;
       $metademands = new PluginMetademandsMetademand();
@@ -1144,12 +1728,12 @@ class PluginMetademandsField extends CommonDBChild {
          $params['task_link'] = $params['task_link'][$nbOpt];
       }
 
-      $params['fields_link'] = self::_unserialize($params['fields_link']);
-      if (!isset($params['fields_link'][$nbOpt])) {
-         $params['fields_link'] = "";
-      } else {
-         $params['fields_link'] = $params['fields_link'][$nbOpt];
-      }
+//      $params['fields_link'] = self::_unserialize($params['fields_link']);
+//      if (!isset($params['fields_link'][$nbOpt])) {
+//         $params['fields_link'] = "";
+//      } else {
+//         $params['fields_link'] = $params['fields_link'][$nbOpt];
+//      }
       $params['hidden_link'] = self::_unserialize($params['hidden_link']);
       if (!isset($params['hidden_link'][$nbOpt])) {
          $params['hidden_link'] = "";
@@ -1187,7 +1771,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             //            // Show field link
             //            $html .= "<tr><td>";
@@ -1253,7 +1837,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             break;
          case 'other':
@@ -1270,7 +1854,9 @@ class PluginMetademandsField extends CommonDBChild {
                } else {
                   $name = "check_value[]";
                }
-               $html .= $params['value']::Dropdown(["name" => $name, "value" => $params['check_value'], "display" => $display]);
+               $html .= $params['value']::Dropdown(["name" => $name,
+                                                    "value" => $params['check_value'],
+                                                    "display" => $display]);
             } else {
                $elements[0] = Dropdown::EMPTY_VALUE;
                if (is_array(json_decode($params['custom_values'], true))) {
@@ -1288,7 +1874,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             break;
          case 'checkbox':
@@ -1313,7 +1899,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 0, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             break;
          case 'parent_field':
@@ -1355,7 +1941,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 1, 0, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 0, 1);
 
 
             break;
@@ -1376,7 +1962,7 @@ class PluginMetademandsField extends CommonDBChild {
             //
             //               $html .= Dropdown::showFromArray("max_upload", $data, array('value' => $params['max_upload'], 'display' => $display));
             //               //            self::showFieldsDropdown("fields_display", $metademands->fields["id"], $params['fields_display']);
-            //               //            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $nbOpt, 0,0,0);
+            //               //            $html .= $this->showLinkHtml($metademands->fields["id"], $params,  0,0,0);
             //               $html .= "</td></tr>";
             //            }
 
@@ -1387,13 +1973,20 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
-    * @param $metademands_id
-    * @param $params
+    * @param     $metademands_id
+    * @param     $params
+    *
+    * @param int $task
+    * @param int $field
+    * @param int $hidden
     *
     * @return string
+    * @throws \GlpitestSQLError
     */
-   function showLinkHtml($metademands_id, $params, $nb, $task = 1, $field = 1, $hidden = 0) {
+
+   function showLinkHtml($metademands_id, $params, $task = 1, $field = 1, $hidden = 0) {
       global $PLUGIN_HOOKS;
+
       $res = "";
 
       // Show task link
@@ -1413,7 +2006,7 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes mandatory', 'metademands') . '</span>';
          $res .= '</td>';
          $res .= "<td>";
-         $res .= self::showFieldsDropdown($metademands_id, $params['fields_link'], false, $this->getID());
+         $res .= self::showFieldsDropdown($metademands_id, $params['fields_link'], $this->getID(), false);
          $res .= "</td></tr>";
       }
       if ($hidden) {
@@ -1422,7 +2015,7 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the field becomes visible', 'metademands') . '</span>';
          $res .= '</td>';
          $res .= "<td>";
-         $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'], false, $this->getID());
+         $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'], $this->getID(), false);
          $res .= "</td></tr>";
       }
 
@@ -1449,18 +2042,57 @@ class PluginMetademandsField extends CommonDBChild {
       return $res;
    }
 
-   static function showHiddenDropdown($metademands_id, $selected_value, $display = true, $idF) {
+
+   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param      $idF
+    * @param bool $display
+    *
+    * @return int|string
+    */
+   static function showFieldsDropdown($metademands_id, $selected_value, $idF, $display = true) {
+
+      $fields      = new self();
+      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+      $data        = [Dropdown::EMPTY_VALUE];
+      foreach ($fields_data as $id => $value) {
+         if ($value['item'] != "itilcategory"
+             && $value['item'] != "informations"
+             && $idF != $id) {
+            $data[$id] = urldecode(html_entity_decode($value['label']));
+            //            if (!empty($value['label2'])) {
+            //               $data[$id] .= ' - ' . $value['label2'];
+            //            }
+         }
+      }
+
+      return Dropdown::showFromArray('fields_link', $data, ['value' => $selected_value, 'display' => $display]);
+   }
+
+   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param bool $display
+    * @param      $idF
+    *
+    * @return int|string
+    */
+   static function showHiddenDropdown($metademands_id, $selected_value, $idF, $display = true) {
 
 
       $fields      = new self();
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
       $data        = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
-         if ($idF != $id) {
+         if ($value['item'] != "itilcategory"
+             && $value['item'] != "informations"
+             && $idF != $id) {
             $data[$id] = urldecode(html_entity_decode($value['label']));
-//            if (!empty($value['label2'])) {
-//               $data[$id] .= ' - ' . urldecode(html_entity_decode($value['label2']));
-//            }
+
+            //            if (!empty($value['label2'])) {
+            //               $data[$id] .= ' - ' . urldecode(html_entity_decode($value['label2']));
+            //            }
          }
 
       }
@@ -1577,7 +2209,11 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<p id='comment_values$key'>";
                      if ($params['value'] == 'checkbox' || $params['value'] == 'radio') {
                         echo " " . __('Comment') . " ";
-                        echo '<input type="text" name="comment_values[' . $key . ']"  value="' . $comment[$key] . '" size="30"/>';
+                        $value_comment = "";
+                        if (isset($comment[$key])) {
+                           $value_comment = $comment[$key];
+                        }
+                        echo '<input type="text" name="comment_values[' . $key . ']"  value="' . $value_comment . '" size="30"/>';
                      }
                      echo '</p>';
                      echo "</td>";
@@ -1772,6 +2408,7 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
+
     * @param $field
     * @param $metademands_id
     * @param $selected_value
@@ -1794,6 +2431,7 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
+
     * Type that could be linked to a metademand
     *
     * @param $all boolean, all type, or only allowed ones
@@ -1822,17 +2460,6 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
-    * @param $rand
-    */
-   static function dropdownMassiveAction($rand) {
-
-      echo "<input type='hidden' name='itemtype' value='PluginMetademandsField'>";
-      echo "<input type='hidden' name='action' value='delete'>";
-      echo "&nbsp;<input type='submit' name='massiveaction' class='submit' value='" . _sx('button', 'Delete permanently') . "' >";
-
-   }
-
-   /**
     * @param $params
     * @param $protocol
     *
@@ -1853,8 +2480,8 @@ class PluginMetademandsField extends CommonDBChild {
          return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
       }
 
-      $metademands = new self();
-      $result      = $metademands->listMetademandsfields($params['metademands_id']);
+      $field  = new self();
+      $result = $field->find(['plugin_metademands_metademands_id' => $params['metademands_id']]);
 
       return $result;
    }
@@ -1865,7 +2492,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return array
     */
    function listMetademandsfields($metademands_id) {
-      $field                 = new PluginMetademandsField();
+      $field                 = new self();
       $listMetademandsFields = $field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       return $listMetademandsFields;
@@ -1882,6 +2509,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return array|bool
     */
    function prepareInputForAdd($input) {
+
       if (!$this->checkMandatoryFields($input)) {
          return false;
       }
@@ -1891,6 +2519,13 @@ class PluginMetademandsField extends CommonDBChild {
       if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
           && $meta->fields['is_order'] == 1) {
          $input['is_basket'] = 1;
+      }
+
+      if (isset($input["type"]) && $input["type"] == "checkbox") {
+         $input["item"] = "checkbox";
+      }
+      if (isset($input["type"]) && $input["type"] == "radio") {
+         $input["item"] = "radio";
       }
 
       return $input;
@@ -1908,17 +2543,16 @@ class PluginMetademandsField extends CommonDBChild {
     */
    function prepareInputForUpdate($input) {
 
+
       if (!$this->checkMandatoryFields($input)) {
          return false;
       }
-
-      //      $data = array_keys($input);
-      //
-      //      foreach($DB->list_fields($this->getTable()) as $field => $values){
-      //         if(!in_array($field, $data)){
-      //            $input[$field] = 0;
-      //         }
-      //      }
+      if (isset($input["type"]) && $input["type"] == "checkbox") {
+         $input["item"] = "checkbox";
+      }
+      if (isset($input["type"]) && $input["type"] == "radio") {
+         $input["item"] = "radio";
+      }
 
       return $input;
    }
@@ -2059,6 +2693,14 @@ class PluginMetademandsField extends CommonDBChild {
          'table'    => $this->getTable(),
          'field'    => 'is_mandatory',
          'name'     => __('Mandatory field'),
+         'datatype' => 'bool'
+      ];
+
+      $tab[] = [
+         'id'       => '820',
+         'table'    => $this->getTable(),
+         'field'    => 'is_basket',
+         'name'     => __('Display into the basket', 'metademands'),
          'datatype' => 'bool'
       ];
 

@@ -41,6 +41,5 @@ if (isset($_POST["value"])) {
       $userid = $_POST["old_value"];
    }
 
-   $wizard = new PluginMetademandsWizard();
-   $wizard->showUserInformations($user);
+   PluginMetademandsWizard::showUserInformations($user);
 }

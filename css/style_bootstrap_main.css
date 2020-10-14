@@ -9,19 +9,25 @@ body {
 }
 @media (min-width: 768px) {
     .bt-container {
-        width: 750px;
+        width: 768px;
     }
 }
 @media (min-width: 992px) {
     .bt-container {
-        width: 970px;
+        width: 992px;
     }
 }
 @media (min-width: 1200px) {
     .bt-container {
-        width: 1170px;
+        width: 1200px;
     }
 }
+@media (min-width: 1400px) {
+    .bt-container {
+        width: 1400px;
+    }
+}
+
 .bt-container-fluid {
     padding-right: 15px;
     padding-left: 15px;

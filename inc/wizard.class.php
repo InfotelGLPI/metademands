@@ -69,9 +69,8 @@ class PluginMetademandsWizard extends CommonDBTM {
 
    /**
     * @param \User $user
-    * @param       $tickets_id
     */
-   function showUserInformations(User $user) {
+   static function showUserInformations(User $user) {
 
       echo __('Name') . "&nbsp;";
       echo $user->getField('realname');
@@ -211,17 +210,18 @@ class PluginMetademandsWizard extends CommonDBTM {
          $user->getFromDB($userid);
 
          // Rights management
-         if (!empty($parameters['tickets_id']) && !Session::haveRight('ticket', UPDATE)) {
-            $this->showMessage(__("You don't have the right to update tickets", 'metademands'), true);
+         if (!empty($parameters['tickets_id'])
+             && !Session::haveRight('ticket', UPDATE)) {
+            self::showMessage(__("You don't have the right to update tickets", 'metademands'), true);
             return false;
             echo "</div>";
             echo "</div>";
             echo "</div>";
 
-         } else if (!self::canCreate() &&
-                    !PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id'])
+         } else if (!self::canCreate()
+                    && !PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id'])
          ) {
-            $this->showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
+            self::showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
             echo "</div>";
             echo "</div>";
             echo "</div>";
@@ -263,7 +263,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
             echo "<span id='show_users_id_requester'>";
-            $this->showUserInformations($user);
+            self::showUserInformations($user);
             echo "</span>";
             echo "</div>";
 
@@ -272,9 +272,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
          }
       }
-
-      $options['resources_id'] = $parameters['resources_id'];
-      $this->showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['itilcategories_id']);
+      $options['resources_id']      = $parameters['resources_id'];
+      $options['itilcategories_id'] = $parameters['itilcategories_id'];
+      self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options);
       Html::closeForm();
       echo "</div>";
       if (!$parameters['preview']) {
@@ -291,26 +291,26 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $itilcategories_id = 0) {
+   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
 
       switch ($step) {
          case PluginMetademandsMetademand::STEP_CREATE:
             $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
-            $this->createMetademands($metademands_id, $values, $options);
+            self::createMetademands($metademands_id, $values, $options);
             break;
 
          case PluginMetademandsMetademand::STEP_LIST:
-            $this->listMetademands($step);
+            self::listMetademands();
             unset($_SESSION['plugin_metademands']);
             break;
 
          case PluginMetademandsMetademand::STEP_INIT:
-            $this->chooseType($step);
+            self::chooseType($step);
             unset($_SESSION['plugin_metademands']);
             break;
 
          default:
-            $this->showMetademands($metademands_id, $step, $preview, $itilcategories_id);
+            self::showMetademands($metademands_id, $step, $preview, $options);
             break;
 
       }
@@ -351,7 +351,7 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param $step
     */
-   function chooseType($step) {
+   static function chooseType($step) {
 
       echo "<div class=\"form-row\">";
       echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
@@ -412,11 +412,9 @@ class PluginMetademandsWizard extends CommonDBTM {
    }
 
    /**
-    * @param $step
-    *
     * @throws \GlpitestSQLError
     */
-   function listMetademands($step) {
+   static function listMetademands() {
       global $CFG_GLPI;
 
       echo Html::css("/plugins/metademands/css/wizard.php");
@@ -489,8 +487,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo __('Request') . "&nbsp;";
          echo "<span id='show_metademands_by_family'>";
 
-         $data[0] = Dropdown::EMPTY_VALUE;
-         $data    = $meta->listMetademands(false, [], $data);
+         $options['empty_value'] = true;
+         $data                   = $meta->listMetademands(false, $options);
 
          Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
          echo "</span>";
@@ -511,76 +509,31 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo '</div>';
          echo '</div>';
       }
-
-
-      //      echo "<div class=\"form-row\">";
-      //      $config = PluginMetademandsConfig::getInstance();
-      //      if ($config['enable_families']) {
-      //
-      //         echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
-      //         // FAMILY
-      //         echo __('Family', 'metademands') . "&nbsp;";
-      //         // Get metademand families
-      //         $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', ['`level`' => 1]);
-      //         if (count($data_categories)) {
-      //            $data_categories = array_keys($data_categories);
-      //         }
-      //
-      //         $itilfamilies_id = [Dropdown::EMPTY_VALUE];
-      //
-      //         foreach ($metademands->listMetademandsCategories() as $value) {
-      //            $ancestors_id = $dbu->getAncestorsOf('glpi_itilcategories', $value);
-      //            $value        = array_shift($ancestors_id);
-      //            if (in_array($value, $data_categories)) {
-      //               $itilfamilies_id[$value] = Dropdown::getDropdownName('glpi_itilcategories', $value);
-      //            }
-      //         }
-      //         asort($itilfamilies_id);
-      //         $rand   = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
-      //         $params = ['family' => '__VALUE__',
-      //                    'step'   => 'metademands'];
-      //
-      //         Ajax::updateItemOnSelectEvent("dropdown_itilfamilies_id$rand", "show_metademands_by_family",
-      //                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownListMetademands.php",
-      //                                       $params);
-      //         echo "</div>";
-      //         echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
-      //      } else {
-      //         echo "<div class=\"bt-feature col-md-12 \">";
-      //      }
-      //      // METADEMAND list
-      //      echo __('Request') . "&nbsp;";
-      //      echo "<span id='show_metademands_by_family'>";
-      //
-      //      $data[0] = Dropdown::EMPTY_VALUE;
-      //      $data    = $metademands->listMetademands(false, [], $data);
-      //
-      //      Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
-      //      echo "</span>";
-      //      echo "</div>";
-      //      echo "</div>";
-      //
-      //      echo "<br/>";
-      //      echo "<div class=\"form-row\">";
-      //      echo "<div class=\"bt-feature col-md-12 right\">";
-      //      echo "<input type='submit' class='submit' name='next' value='" . __('Next') . "'>";
-      //      echo "</div>";
-      //      echo "</div>";
    }
 
    /**
-    * @param      $metademands_id
-    * @param      $step
-    * @param bool $preview
+    * @param       $metademands_id
+    * @param       $step
+    * @param bool  $preview
+    *
+    * @param array $options
     *
     * @throws \GlpitestSQLError
     */
-   function showMetademands($metademands_id, $step, $preview = false, $itilcategories_id = 0) {
+   static function showMetademands($metademands_id, $step, $preview = false, $options = []) {
+
+      $parameters = ['itilcategories_id' => 0];
+
+      // if given parameters, override defaults
+      foreach ($options as $key => $value) {
+         if (isset($parameters[$key])) {
+            $parameters[$key] = $value;
+         }
+      }
 
       $metademands      = new PluginMetademandsMetademand();
-      $metademands_data = $metademands->showMetademands($metademands_id);
+      $metademands_data = $metademands->constructMetademands($metademands_id);
       $metademands->getFromDB($metademands_id);
-      $no_form = false;
 
       echo "<div class='md-wizard'>";
       //      echo "<div width='100%'>";
@@ -602,51 +555,66 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if (count($metademands_data)) {
          if ($step - 1 > count($metademands_data) && !$preview) {
-            $this->showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview);
-
+            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview);
          } else {
+            echo "</div>";
             foreach ($metademands_data as $form_step => $data) {
                if ($form_step == $step) {
                   foreach ($data as $form_metademands_id => $line) {
-                     $no_form = false;
 
+                     if ($metademands->fields['is_order'] == 1) {
+                        if (!$preview && countElementsInTable("glpi_plugin_metademands_basketlines",
+                                                              ["plugin_metademands_metademands_id" => $metademands->fields['id'],
+                                                               "users_id"                          => Session::getLoginUserID()])) {
+                           echo "<div class='left-div'>";
+                        }
+                     }
                      if (!isset($_POST['form_metademands_id']) ||
                          (isset($_POST['form_metademands_id']) && $form_metademands_id != $_POST['form_metademands_id'])) {
                         if (!isset($_SESSION['metademands_hide'][$form_metademands_id])) {
-                           $no_form = false;
-
-                           $this->constructForm($line['form'], $preview, $metademands_data);
+                           self::constructForm($metademands_data, $line['form'], $preview, $parameters['itilcategories_id']);
                         } else {
                            $step++;
                         }
                      } else {
-
-                        $no_form = false;
-
-                        $this->constructForm($line['form'], $preview, $metademands_data);
-
+                        self::constructForm($metademands_data, $line['form'], $preview, $parameters['itilcategories_id']);
 
                      }
-                     if ($metademands->getField('is_order')) {
-                        $this->constructBasket($line['form'], $preview, $metademands_id);
+                     if ($metademands->fields['is_order'] == 1) {
+                        if (!$preview && countElementsInTable("glpi_plugin_metademands_basketlines",
+                                                              ["plugin_metademands_metademands_id" => $metademands->fields['id'],
+                                                               "users_id"                          => Session::getLoginUserID()])) {
+                           echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
+                           echo "<input type='submit' class='submit' id='add_to_basket' name='add_to_basket' value='"
+                                . _sx('button', 'Add to basket', 'metademands') . "'>";
+                           echo "</div>";
+
+                           echo "</div>";
+                        }
+
+                        PluginMetademandsBasketline::constructBasket($metademands_id, $line['form'], $preview);
                      }
                      echo "<input type='hidden' name='form_metademands_id' value='" . $form_metademands_id . "'>";
                   }
                }
             }
-            echo "</div>";
+
             if (!$preview) {
-               echo "<br/>";
+               echo "<div class=\"middle-div bt-container\">";
+               echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;border-width:1px;margin-bottom: 20px;margin-left: -15px;'>";
+               echo "</div>";
                echo "<div class=\"form-row\">";
+
                echo "<div class=\"bt-feature col-md-12 \">";
                echo "<input type='hidden' name='metademands_id' value='" . $metademands_id . "'>";
                echo "<input type='hidden' name='update_fields'>";
+               //verify if have sons metademand
                if ($step - 1 >= count($metademands_data)) {
-                  echo "<input type='hidden' name='add_metademands'>";
+                  echo "<input type='hidden' name='create_metademands'>";
                   echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
                   echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
                   echo "</a>";
-                  if ($metademands->fields['is_order']) {
+                  if ($metademands->fields['is_order'] == 1) {
                      if (!countElementsInTable("glpi_plugin_metademands_basketlines",
                                                ["plugin_metademands_metademands_id" => $metademands->fields['id'],
                                                 "users_id"                          => Session::getLoginUserID()])) {
@@ -663,8 +631,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<input type='submit' class='metademand_next_button submit' name='next' value='" . __('Next') . "'>";
                }
                echo "<input type='submit' class='metademand_previous_button submit' name='previous' value='" . __('Previous') . "'>";
-               echo "</div></div>";
+               echo "</div>";
+               echo "</div>";
+               echo "</div>";
             }
+
+            //            if ($metademands->getField('is_order')) {
+            //               PluginMetademandsBasketline::constructBasket($metademands_id, $line['form'], $preview);
+            //            }
          }
       } else {
          echo "</div>";
@@ -685,10 +659,11 @@ class PluginMetademandsWizard extends CommonDBTM {
 
    /**
     * @param array $line
-    * @param bool  $preview
     * @param       $metademands_data
+    * @param bool  $preview
+    * @param int   $itilcategories_id
     */
-   function constructForm(array $line, $preview = false, $metademands_data, $itilcategories_id = 0) {
+   static function constructForm($metademands_data, $line = [], $preview = false, $itilcategories_id = 0) {
 
       $count   = 0;
       $columns = 2;
@@ -712,7 +687,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          foreach ($line as $key => $data) {
             $config_link = "";
             if ($preview) {
-               $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'><i class='fas fa-wrench'></i></a>";
+               $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
+               $config_link .= "<i class='fas fa-wrench'></i></a>";
             }
             // Manage ranks
             if (isset($keyIndexes[$key])
@@ -728,10 +704,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                             border-left :3px solid #' . PluginMetademandsField::setColor($data['rank']) . ';
                             border-right :3px solid #' . PluginMetademandsField::setColor($data['rank']);
                }
-               echo "<div class='bt-feature col-md-12' 
-                          style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;
-                                 '>";
-               echo "</div>";
+               //               echo "<div class='bt-feature col-md-12' style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;'>";
+               //               echo "</div>";
                echo "&nbsp;";
                echo "<div class=\"form-row\" style='$style'>";
                $count = 0;
@@ -778,7 +752,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<div id-field='field" . $data["id"] . "' class=\"form-group col-md-5\">";
                }
                //see fields
-               self::getFieldType($data, $metademands_data, $preview, $config_link, $itilcategories_id);
+
+               PluginMetademandsField::getFieldType($data, $metademands_data, $preview, $config_link, $itilcategories_id);
+
 
 
                // Label 2 (date interval)
@@ -816,7 +792,6 @@ class PluginMetademandsWizard extends CommonDBTM {
             $count++;
 
             // Next row
-            $style_left_right = "";
             if ($count >= $columns) {
                if ($preview) {
                   $style_left_right = 'border-left :3px solid #' . PluginMetademandsField::setColor($data['rank']) . ';
@@ -827,7 +802,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<div class=\"form-row\" style='$style_left_right'>";
                $count = 0;
             }
-
          }
          echo "</div>";
          if ($preview) {
@@ -844,18 +818,21 @@ class PluginMetademandsWizard extends CommonDBTM {
                //TODO : Check des champs obligatoires liés à d'autres champs
                // base :
                // $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
-               if (is_array(PluginMetademandsField::_unserialize($data['fields_link']))) {
-                  $fields_link = PluginMetademandsField::_unserialize($data['fields_link']);
+               if ($data['fields_link']) {
+                  $fields_link = [$data['fields_link']];
                   $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                   foreach ($fields_link as $key => $fields) {
                      $script .= "metademandWizard.metademand_setMandatoryField(
-                         'metademands_wizard_red" .
-                                $fields_link[$key] . "', 
-                         'field[" . $data['id'] . "]', '" .
-                                $check_value[$key] . "');";
+                         'metademands_wizard_red" . $fields_link[$key] . "', 
+                         'field[" . $data['id'] . "]', 
+                         '" . $check_value[$key] . "', 
+                         '" . $data['item'] . "');";
                   }
                } else {
-                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
+                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 
+                                                                           'field[" . $data['id'] . "]',
+                                                                            '" . $data['check_value'] . "', 
+                                                                            '" . $data['item'] . "');";
                }
                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
             }
@@ -882,8 +859,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                            ";
                            if ($check_value[$key] == $data["custom_values"]) {
                               $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] != $check_value[$key]) {
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                              }
                            } else {
                               $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -924,6 +909,17 @@ class PluginMetademandsWizard extends CommonDBTM {
                            }
                         ";
                               $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                              }
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                 foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                    if ($fieldSession == $check_value[$key]) {
+                                       $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                    }
+                                 }
+                              }
                            }
                         }
 
@@ -961,7 +957,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         //                     $('[name^=\"field[".$data["id"]."]\"]').each()
                         $script .= " if (this.checked){ ";
                         foreach ($hidden_link as $key => $fields) {
-                           $script  .= "
+                           $script .= "
                         
                         
                         
@@ -974,7 +970,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                            tohide[$fields] = false;
                         }
                          ";
+
                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                           if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                               && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                              foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                 if ($fieldSession == $check_value[$key]) {
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 }
+                              }
+                           }
                         }
 
 
@@ -1012,8 +1017,15 @@ class PluginMetademandsWizard extends CommonDBTM {
                            });
                         }";
 
-
                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                           if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                               && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                              foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                 if ($fieldSession == $check_value[$key]) {
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 }
+                              }
+                           }
                         }
 
                         $script .= "$.each( tohide, function( key, value ) {
@@ -1027,16 +1039,17 @@ class PluginMetademandsWizard extends CommonDBTM {
                                    
                                  });";
                         $script .= "}";
-                     } else {
-                        $script .= "if($(this).val() == " . $data['check_value'] . "){
-                           $('[id-field =\"field" . $data['hidden_link'] . "\"]').show();
-                        }else{
-                            $('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();
-                        }
-                         ";
-                        //                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
-                        $script2 = "$('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();";
                      }
+                     //                     else {
+                     //                        $script .= "if($(this).val() == " . $data['check_value'] . "){
+                     //                           $('[id-field =\"field" . $data['hidden_link'] . "\"]').show();
+                     //                        }else{
+                     //                            $('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();
+                     //                        }
+                     //                         ";
+                     //                        //                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
+                     //                        $script2 = "$('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();";
+                     //                     }
                      $script .= "});";
                      echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                      break;
@@ -1049,7 +1062,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
                         $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                         foreach ($hidden_link as $key => $fields) {
-                           if ($check_value[$key] == 1) {
+                           if (isset($check_value[$key]) && $check_value[$key] == 1) {
                               $script  .= "
                            if($(this).val().trim().length < 1){
                               $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
@@ -1059,15 +1072,24 @@ class PluginMetademandsWizard extends CommonDBTM {
                         
                          ";
                               $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                              }
                            } else {
-                              $script  .= "
+                              $script .= "
                            if($(this).val().trim().length < 1){
                                  $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
                               }else{
                                  $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
                               }
                          ";
-                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+
+                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                              }
                            }
 
                         }
@@ -1078,7 +1100,8 @@ class PluginMetademandsWizard extends CommonDBTM {
 
 
                   case 'radio':
-                     $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                     $script2 = "";
+                     $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
                      //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
                      //TODO : Check des champs obligatoires liés à d'autres champs
@@ -1087,7 +1110,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
                         $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
                         $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script2     = "";
                         $script      .= "var tohide = {}";
                         foreach ($hidden_link as $key => $fields) {
                            $script  .= "
@@ -1101,6 +1123,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
                          ";
                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                           if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                               && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                           }
                         }
                         $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
@@ -1112,16 +1138,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                     } else {
-                        $script .= "if($(this).val() == " . $data['check_value'] . "){
-                           $('[id-field =\"field" . $data['hidden_link'] . "\"]').show();
-                        }else{
-                            $('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();
-                        }
-                         ";
-                        //                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
-                        $script2 = "$('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();";
                      }
+                     //                     else {
+                     //                        $script .= "if($(this).val() == " . $data['check_value'] . "){
+                     //                           $('[id-field =\"field" . $data['hidden_link'] . "\"]').show();
+                     //                        }else{
+                     //                            $('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();
+                     //                        }
+                     //                         ";
+                     //                        $script2 = "$('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();";
+                     //                     }
                      $script .= "});";
                      echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                      break;
@@ -1145,7 +1171,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $script2     = "";
                         $script      .= "var tohide = {}";
                         foreach ($hidden_link as $key => $fields) {
-                           $script  .= "
+                           $script .= "
                         if($fields in tohide){
                         
                         }else{
@@ -1155,7 +1181,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                            tohide[$fields] = false;
                         }
                          ";
+
                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                           if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                               && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                           }
                         }
                         $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
@@ -1167,16 +1198,17 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                     } else {
-                        $script .= "if($(this).val() == " . $data['check_value'] . "){
-                           $('[id-field =\"field" . $data['hidden_link'] . "\"]').show();
-                        }else{
-                            $('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();
-                        }
-                         ";
-                        //                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
-                        $script2 = "$('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();";
                      }
+                     //                     else {
+                     //                        $script .= "if($(this).val() == " . $data['check_value'] . "){
+                     //                           $('[id-field =\"field" . $data['hidden_link'] . "\"]').show();
+                     //                        }else{
+                     //                            $('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();
+                     //                        }
+                     //                         ";
+                     //                        //                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
+                     //                        $script2 = "$('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();";
+                     //                     }
                      $script .= "});";
                      echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                      break;
@@ -1193,545 +1225,128 @@ class PluginMetademandsWizard extends CommonDBTM {
 
 
    /**
-    * @param array $line
-    * @param bool  $preview
-    * @param       $metademands_id
-    */
-   function constructBasket($line = [], $preview = false, $metademands_id) {
-
-      if (count($line) > 0) {
-         $metademands = new PluginMetademandsMetademand();
-         $metademands->getFromDB($metademands_id);
-
-         if (countElementsInTable("glpi_plugin_metademands_basketlines",
-                                  ["plugin_metademands_metademands_id" => $metademands->fields['id'],
-                                   "users_id"                          => Session::getLoginUserID()])) {
-            echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-            echo "<input type='submit' class='submit' id='add_to_basket' name='add_to_basket' value='"
-                 . _sx('button', 'Add to basket', 'metademands') . "'>";
-            echo "</div>";
-         }
-         $basketline = new PluginMetademandsBasketline();
-         if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
-                                                   'users_id'                          => Session::getLoginUserID()])) {
-
-            echo "<table class='table-basket'>";;
-            echo "<caption class='basket-title'>" . __('Your basket', 'metademands') . "</caption> ";
-            echo "<tr class='basket-label'>";
-            foreach ($line as $key => $data) {
-               if ($data['item'] == 'informations') {
-                  continue;
-               }
-               if ($data['is_basket'] == 1) {
-                  echo "<th class='basket-th'>" . $data['label'] . "</th>";
-               }
-            }
-            $class = "basket-th";
-            //            if ($preview == false) {
-            //               $class = "basket-delete-th";
-            //            }
-            echo "<th class='$class'></th>";
-            echo "</tr>";
-
-            if ($preview == false) {
-               foreach ($basketlinesFind as $basketLine) {
-                  $basketLines[$basketLine['line']][] = $basketLine;
-               }
-               foreach ($basketLines as $idline => $fieldlines) {
-                  PluginMetademandsBasketline::retrieveDatasByType($idline, $fieldlines, $line);
-               }
-            }
-            echo "</table>";
-         }
-      }
-   }
-
-
-   /**
-    * Load fields from plugins
-    *
-    * @param $plug
-    */
-   static function getPluginFieldItemsType($plug) {
-      global $PLUGIN_HOOKS;
-
-      $dbu = new DbUtils();
-      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-         foreach ($pluginclasses as $pluginclass) {
-            if (!class_exists($pluginclass)) {
-               continue;
-            }
-            $form[$pluginclass] = [];
-            $item               = $dbu->getItemForItemtype($pluginclass);
-            if ($item && is_callable([$item, 'getFieldItemsType'])) {
-               return $item->getFieldItemsType();
-            }
-         }
-      }
-   }
-
-   /**
-    * @param        $data
-    * @param        $metademands_data
-    * @param bool   $preview
-    * @param string $config_link
-    * @param int    $itilcategories_id
-    */
-   function getFieldType($data, $metademands_data, $preview = false, $config_link = "", $itilcategories_id = 0) {
-      global $PLUGIN_HOOKS;
-
-      $value = '';
-      if (isset($data['value'])) {
-         $value = $data['value'];
-      }
-      $required = "";
-      if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
-         $required = "required";
-      }
-
-      $upload = "";
-      if ($data['type'] == "upload") {
-         $upload = "( " . sprintf(__("Maximum number of documents : %s ", "metademands"), $data["max_upload"]) . ") (" . Document::getMaxUploadSize() . ")";
-      }
-      if ($data['is_mandatory']) {
-         $required = "style='color:red'";
-      }
-      $rand = mt_rand();
-
-      //      if ($data['fields_display'] > 0) {
-      //         echo "<span id='metademands_wizard_display" . $rand . $data['fields_display'] . "'>";
-      //      }
-
-      echo "<label  for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
-      echo $data['label'] . " $upload";
-      if ($preview) {
-         echo $config_link;
-      }
-      echo "</label>";
-      echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
-      if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
-         echo "*";
-      }
-      echo "</span>";
-
-      echo "&nbsp;";
-
-      $plugin = new Plugin();
-      //use plugin fields types
-      if (isset($PLUGIN_HOOKS['metademands'])) {
-         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-            $new_fields = self::getPluginFieldItemsType($plug);
-            if ($plugin->isActivated($plug) && is_array($new_fields)) {
-               if (in_array($data['type'], array_keys($new_fields))) {
-                  $data['type'] = $new_fields[$data['type']];
-               }
-            }
-         }
-      }
-
-      // Input
-      switch ($data['type']) {
-         case 'dropdown_multiple' :
-            if (!empty($data['custom_values'])) {
-               $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
-               $defaults              = PluginMetademandsField::_unserialize($data['default_values']);
-               $default_values        = [];
-               if ($defaults) {
-                  foreach ($defaults as $k => $v) {
-                     if ($v != null) {
-                        $default_values[] = $k;
-                     }
-                  }
-               }
-               ksort($data['custom_values']);
-               $value = is_array($value) ? $value : $default_values;
-               Dropdown::showFromArray("field[" . $data['id'] . "]", $data['custom_values'],
-                                       ['values'   => $value,
-                                        'width'    => '250px',
-                                        'multiple' => true
-                                       ]);
-            }
-            break;
-         case 'dropdown':
-            if (!empty($data['custom_values'])
-                && $data['item'] == 'other') {
-               $data['custom_values']    = PluginMetademandsField::_unserialize($data['custom_values']);
-               $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
-               ksort($data['custom_values']);
-               echo "<br>";
-               Dropdown::showFromArray("field[" . $data['id'] . "]", $data['custom_values'],
-                                       ['value' => $value,
-                                        'width' => '200px',
-                                       ]);
-            } else {
-               switch ($data['item']) {
-                  case 'user':
-                     echo "<br>";
-                     User::dropdown(['name'   => "field[" . $data['id'] . "]",
-                                     'entity' => $_SESSION['glpiactiveentities'],
-                                     'right'  => 'all',
-                                     'value'  => $value]);
-                     break;
-                  case 'itilcategory':
-
-                     if ($itilcategories_id > 0) {
-                        // itilcat from service catalog
-                        $itilCategory = new ITILCategory();
-                        $itilCategory->getFromDB($itilcategories_id);
-                        echo "<span>" . $itilCategory->getField('name');
-                        echo "<input type='hidden' name='plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
-                        echo "<span>";
-                     } else {
-                        echo "<br>";
-                        $metademand = new PluginMetademandsMetademand();
-                        $metademand->getFromDB($data['plugin_metademands_metademands_id']);
-                        $values = json_decode($metademand->getField('itilcategories_id'));
-                        $opt    = ['name'      => "field[" . $data['id'] . "]",
-                                   'right'     => 'all',
-                                   'value'     => $value,
-                                   'condition' => ["id" => $values]];
-
-                        ITILCategory::dropdown($opt);
-                     }
-
-
-                     break;
-                  case 'usertitle':
-                     echo "<br>";
-                     $titlerand = mt_rand();
-                     UserTitle::dropdown(['name' => "field[" . $data['id'] . "]", 'rand' => $titlerand]);
-                     break;
-                  case 'usercategory':
-                     echo "<br>";
-                     $catrand = mt_rand();
-                     UserCategory::dropdown(['name' => "field[" . $data['id'] . "]", 'rand' => $catrand]);
-                     break;
-                  case 'PluginMetademandsITILApplication' :
-                     echo "<br>";
-                     $opt = ['value'  => $value,
-                             'entity' => $_SESSION['glpiactiveentities'],
-                             'name'   => "field[" . $data['id'] . "]"];
-                     PluginMetademandsITILApplication::dropdown($opt);
-                     break;
-                  case 'PluginMetademandsITILEnvironment' :
-                     echo "<br>";
-                     $opt = ['value'  => $value,
-                             'entity' => $_SESSION['glpiactiveentities'],
-                             'name'   => "field[" . $data['id'] . "]"];
-                     PluginMetademandsITILEnvironment::dropdown($opt);
-                     break;
-                  default:
-                     $cond = [];
-                     echo "<br>";
-                     if (!empty($data['custom_values']) && $data['item'] == 'group') {
-                        $options = PluginMetademandsField::_unserialize($data['custom_values']);
-                        foreach ($options as $type_group => $value) {
-                           $cond[$type_group] = $value;
-                        }
-                     }
-                     $opt             = ['value'     => $value,
-                                         'entity'    => $_SESSION['glpiactiveentities'],
-                                         'display'   => true,
-                                         'name'      => "field[" . $data['id'] . "]",
-                                         'readonly'  => true,
-                                         'condition' => $cond];
-                     $container_class = new $data['item']();
-                     $container_class::dropdown($opt);
-                     break;
-               }
-            }
-            break;
-         case 'text':
-            echo "<input type='text' name='field[" . $data['id'] . "]' value='" . $value . "' class='form-control form-control-sm' id='field[" . $data['id'] . "]' placeholder=\"" . $data['comment'] . "\">";
-            break;
-         case 'informations':
-            echo nl2br($data['comment']);
-            break;
-         case 'link':
-            if (!empty($data['custom_values'])) {
-               $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
-               switch ($data['custom_values'][0]) {
-                  case 'button' :
-                     $btnLabel = __('Link');
-                     if (!empty($data['label2'])) {
-                        $btnLabel = $data['label2'];
-                     }
-                     echo "<input type='submit' class='submit' value ='$btnLabel' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
-
-                     break;
-                  case 'link_a' :
-                     echo "<a target='_blank' href ='" . $data['custom_values'][1] . "'>" . $data['custom_values'][1] . "</a>";
-                     break;
-               }
-               echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $data['custom_values'][1] . "' >";
-            }
-            //            echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $data['custom_values'] . "'>";
-
-            break;
-         case 'checkbox':
-            if (!empty($data['custom_values'])) {
-               $data['custom_values']  = PluginMetademandsField::_unserialize($data['custom_values']);
-               $data['comment_values'] = PluginMetademandsField::_unserialize($data['comment_values']);
-               $defaults               = PluginMetademandsField::_unserialize($data['default_values']);
-               if (!empty($value)) {
-                  $value = PluginMetademandsField::_unserialize($value);
-               }
-               $nbr    = 0;
-               $inline = "";
-               if ($data['row_display'] == 1) {
-                  $inline = 'custom-control-inline';
-               }
-               foreach ($data['custom_values'] as $key => $label) {
-                  echo "<div class='custom-control custom-checkbox $inline'>";
-                  $checked = "";
-                  if (isset($value[$key])) {
-                     $checked = isset($value[$key]) ? 'checked' : '';
-                  } elseif (isset($defaults[$key])) {
-                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
-                  }
-                  echo "<input class='custom-control-input' type='checkbox' name='field[" . $data['id'] . "][" . $key . "]' key='$key' id='field[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                  $nbr++;
-                  echo "&nbsp;<label class='custom-control-label' for='field[" . $data['id'] . "][" . $key . "]'>$label</label>";
-                  if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
-                     echo "&nbsp;<span style='vertical-align: bottom;'>";
-                     Html::showToolTip($data['comment_values'][$key],
-                                       ['awesome-class' => 'fa-info-circle']);
-                     echo "</span>";
-                  }
-                  echo "</div>";
-               }
-            } else {
-               $checked = $value ? 'checked' : '';
-               echo "<input class='custom-control-input' type='checkbox' name='field[" . $data['id'] . "]' value='checkbox' $checked>";
-            }
-            break;
-
-         case 'radio':
-            if (!empty($data['custom_values'])) {
-               $data['custom_values']  = PluginMetademandsField::_unserialize($data['custom_values']);
-               $data['comment_values'] = PluginMetademandsField::_unserialize($data['comment_values']);
-               $defaults               = PluginMetademandsField::_unserialize($data['default_values']);
-               if ($value != NULL) {
-                  $value = PluginMetademandsField::_unserialize($value);
-               }
-               $nbr    = 0;
-               $inline = "";
-               if ($data['row_display'] == 1) {
-                  $inline = 'custom-control-inline';
-               }
-               foreach ($data['custom_values'] as $key => $label) {
-                  echo "<div class='custom-control custom-radio $inline'>";
-
-                  $checked = "";
-                  if ($value != NULL && $value == $key) {
-                     $checked = $value == $key ? 'checked' : '';
-                  } elseif ($value == NULL && isset($defaults[$key])) {
-                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
-                  }
-                  echo "<input class='custom-control-input' type='radio' name='field[" . $data['id'] . "]' id='field[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                  $nbr++;
-                  echo "&nbsp;<label class='custom-control-label' for='field[" . $data['id'] . "][" . $key . "]'>$label</label>";
-                  if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
-                     echo "&nbsp;<span style='vertical-align: bottom;'>";
-                     Html::showToolTip($data['comment_values'][$key],
-                                       ['awesome-class' => 'fa-info-circle']);
-                     echo "</span>";
-                  }
-                  echo "</div>";
-               }
-            }
-            break;
-         case 'textarea':
-            $value = Html::cleanPostForTextArea($value);
-            echo "<textarea class='form-control' rows='3' placeholder=\"" . $data['comment'] . "\" name='field[" . $data['id'] . "]' id='field[" . $data['id'] . "]'>" . $value . "</textarea>";
-            break;
-         case 'datetime_interval':
-         case 'datetime':
-            Html::showDateField("field[" . $data['id'] . "]", ['value' => $value]);
-            break;
-         case 'number':
-            $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
-            Dropdown::showNumber("field[" . $data['id'] . "]", ['value' => $value,
-                                                                'min'   => (isset($data['custom_values']['min']) ? $data['custom_values']['min'] : 1),
-                                                                'max'   => (isset($data['custom_values']['max']) ? $data['custom_values']['max'] : 360),
-                                                                'step'  => (isset($data['custom_values']['step']) ? $data['custom_values']['step'] : 1),
-                                                                //                                                   'toadd' => [0 => __('Infinite')]
-            ]);
-            break;
-         case 'yesno':
-            $option[1] = __('No');
-            $option[2] = __('Yes');
-            $value     = $data['custom_values'];
-            echo "<br>";
-            Dropdown::showFromArray("field[" . $data['id'] . "]", $option, ['value' => $value]);
-            break;
-         case 'upload':
-            if ($data["max_upload"] > 1) {
-               Html::file(['filecontainer' => 'fileupload_info_ticket',
-                           'editor_id'     => '',
-                           'showtitle'     => false,
-                           'multiple'      => true]);
-            } else {
-               Html::file(['filecontainer' => 'fileupload_info_ticket',
-                           'editor_id'     => '',
-                           'showtitle'     => false
-                          ]);
-            }
-            break;
-
-         case 'parent_field':
-            foreach ($metademands_data as $metademands_data_steps) {
-               foreach ($metademands_data_steps as $line_data) {
-                  foreach ($line_data['form'] as $field_id => $field) {
-                     if ($field_id == $data['parent_field_id']) {
-
-                        $value_parent_field = '';
-                        if (isset($_SESSION['plugin_metademands']['fields'][$data['parent_field_id']])) {
-                           $value_parent_field = $_SESSION['plugin_metademands']['fields'][$data['parent_field_id']];
-                        }
-
-                        switch ($field['type']) {
-                           case 'dropdown_multiple':
-                              if (!empty($field['custom_values'])) {
-                                 $value_parent_field = $field['custom_values'][$value_parent_field];
-                              }
-                              break;
-                           case 'dropdown':
-                              if (!empty($field['custom_values']) && $field['item'] == 'other') {
-                                 $value_parent_field = $field['custom_values'][$value_parent_field];
-                              } else {
-                                 switch ($field['item']) {
-                                    case 'user':
-                                       echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
-                                       $user = new User();
-                                       $user->getFromDB($value_parent_field);
-                                       $value_parent_field = $user->getName();
-                                       break;
-                                    default:
-                                       $dbu = new DbUtils();
-                                       echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
-                                       $value_parent_field = Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
-                                                                                       $value_parent_field);
-                                       break;
-                                 }
-                              }
-                              break;
-                           case 'checkbox':
-                              if (!empty($field['custom_values'])) {
-                                 $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
-                                 $checkboxes             = PluginMetademandsField::_unserialize($value_parent_field);
-
-                                 $custom_checkbox = [];
-                                 foreach ($field['custom_values'] as $key => $label) {
-                                    $checked = isset($checkboxes[$key]) ? 1 : 0;
-                                    if ($checked) {
-                                       $custom_checkbox[] .= $label;
-                                       echo "<input type='hidden' name='field[" . $data['id'] . "][" . $key . "]' value='checkbox'>";
-
-                                    }
-                                 }
-                                 $value_parent_field = implode('<br>', $custom_checkbox);
-                              }
-                              break;
-
-                           case 'radio' :
-                              if (!empty($field['custom_values'])) {
-                                 $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
-                                 foreach ($field['custom_values'] as $key => $label) {
-                                    if ($value_parent_field == $key) {
-                                       echo "<input type='hidden' name='field[" . $data['id'] . "]' value='$key' >";
-                                       $value_parent_field = $label;
-                                       break;
-                                    }
-
-                                 }
-                              }
-                              break;
-
-                           case 'datetime':
-                              echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
-                              $value_parent_field = Html::convDate($value_parent_field);
-
-                              break;
-
-                           case 'datetime_interval':
-                              echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data['parent_field_id'] . "-2"])) {
-                                 $value_parent_field2 = $_SESSION['plugin_metademands']['fields'][$data['parent_field_id'] . "-2"];
-                                 echo "<input type='hidden' name='field[" . $data['id'] . "-2]' value='" . $value_parent_field2 . "'>";
-                              } else {
-                                 $value_parent_field2 = 0;
-                              }
-                              $value_parent_field = Html::convDate($value_parent_field) . " - " . Html::convDate($value_parent_field2);
-                              break;
-                           case 'yesno' :
-                              echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
-                              $value_parent_field = Dropdown::getYesNo($value_parent_field);
-                              break;
-
-                           default :
-                              echo "<input type='hidden' name='field[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
-
-                        }
-                        echo $value_parent_field;
-                        break;
-                     }
-                  }
-               }
-            }
-            break;
-      }
-      //      if ($data['fields_display'] > 0) {
-      //         echo "</span>";
-      //
-      //         //TODO change function by type !
-      //         echo Html::scriptBlock('$(document).ready(function() {
-      //                                    metademand_displayField = function (toupdate, toobserve, check_value) {
-      //
-      //                                          $("#" + toupdate).hide();
-      //                                          $("[name^=\'" + toobserve + "\']").change(function () {
-      //                                              metademand_checkField(toupdate, toobserve, check_value);
-      //                                          });
-      //                                      };
-      //
-      //                                      metademand_checkField = function (toupdate, toobserve, check_value) {
-      ////                                      console.log(check_value)
-      //                                          if (check_value != 0 && ($("[name^=\'" + toobserve + "\']").val() == check_value)
-      //                                             || (check_value == \'NOT_NULL\' && $("[name^=\'" + toobserve + "\']").val() != 0)) {
-      //                                              $("#" + toupdate).show();
-      //                                          } else {
-      //                                              $("#" + toupdate).hide();
-      //                                          }
-      //                                      };});');
-      //
-      //         $field = new PluginMetademandsField();
-      //         $field->getFromDB($data['fields_display']);
-      //         $check_value = (isset($field->fields['check_value']) ? $field->fields['check_value'] : "");
-      //         $script      = "metademand_displayField('metademands_wizard_display" . $rand . $data['fields_display'] . "', 'field[" . $data['fields_display'] . "]', '$check_value');";
-      //         echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-      //      }
-   }
-
-   /**
     * @param       $metademands_id
     * @param       $values
     * @param array $options
     *
     * @throws \GlpitestSQLError
     */
-   function createMetademands($metademands_id, $values, $options = []) {
+   static function createMetademands($metademands_id, $values, $options = []) {
       global $CFG_GLPI;
+
+      $self = new self();
+      $metademands = new PluginMetademandsMetademand();
+      $metademands->getFromDB($metademands_id);
+
+      if ($metademands->fields['is_order'] == 1
+          && isset($values['basket'])) {
+         $basketclass = new PluginMetademandsBasketline();
+         if ($metademands->fields['create_one_ticket'] == 0) {
+            //create one ticket for each basket
+            foreach ($values['basket'] as $k => $basket) {
+               $datas           = [];
+               $datas['basket'] = $basket;
+
+               if (isset($values['fields']['_filename'])) {
+                  unset($values['fields']['_filename']);
+               }
+               if (isset($values['fields']['_prefix_filename'])) {
+                  unset($values['fields']['_prefix_filename']);
+               }
+               if (isset($values['fields']['_tag_filename'])) {
+                  unset($values['fields']['_tag_filename']);
+               }
+               $filename   = [];
+               $prefixname = [];
+               $tagname    = [];
+               foreach ($basket as $key => $val) {
+                  $line = $k + 1;
+
+                  $check = $basketclass->getFromDBByCrit(["plugin_metademands_metademands_id" => $metademands_id,
+                                                          'plugin_metademands_fields_id'      => $key,
+                                                          'line'                              => $line,
+                                                          'users_id'                          => Session::getLoginUserID(),
+                                                          'name'                              => "upload"
+                                                         ]);
+                  if ($check) {
+                     if (!empty($val)) {
+                        $files = json_decode($val, 1);
+                        foreach ($files as $file) {
+                           $filename[]   = $file['_filename'];
+                           $prefixname[] = $file['_prefix_filename'];
+                           $tagname[]    = $file['_tag_filename'];
+                        }
+                     }
+                  }
+               }
+
+               $values['fields']['_filename']        = $filename;
+               $values['fields']['_prefix_filename'] = $prefixname;
+               $values['fields']['_tag_filename']    = $tagname;
+
+               $datas['fields'] = $values['fields'];
+
+
+               $result = $metademands->addMetademands($metademands_id, $datas, $options);
+               Session::addMessageAfterRedirect($result['message']);
+            }
+            $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
+                                            'users_id'                          => Session::getLoginUserID()]);
+         } else {
+            //create one ticket for all basket
+            if (isset($values['fields']['_filename'])) {
+               unset($values['fields']['_filename']);
+            }
+            if (isset($values['fields']['_prefix_filename'])) {
+               unset($values['fields']['_prefix_filename']);
+            }
+            if (isset($values['fields']['_tag_filename'])) {
+               unset($values['fields']['_tag_filename']);
+            }
+            $filename   = [];
+            $prefixname = [];
+            $tagname    = [];
+            foreach ($values['basket'] as $k => $basket) {
+               foreach ($basket as $key => $val) {
+                  $line  = $k + 1;
+                  $check = $basketclass->getFromDBByCrit([
+                                                            "plugin_metademands_metademands_id" => $metademands_id,
+                                                            'plugin_metademands_fields_id'      => $key,
+                                                            'line'                              => $line,
+                                                            'users_id'                          => Session::getLoginUserID(),
+                                                            'name'                              => "upload"
+                                                         ]);
+                  if ($check) {
+                     if (!empty($val)) {
+                        $files = json_decode($val, 1);
+                        foreach ($files as $file) {
+                           $filename[]   = $file['_filename'];
+                           $prefixname[] = $file['_prefix_filename'];
+                           $tagname[]    = $file['_tag_filename'];
+                        }
+                     }
+                  }
+               }
+            }
+            $values['fields']['_filename']        = $filename;
+            $values['fields']['_prefix_filename'] = $prefixname;
+            $values['fields']['_tag_filename']    = $tagname;
+
+            $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
+                                            'users_id'                          => Session::getLoginUserID()]);
+
 
       $metademands = new PluginMetademandsMetademand();
       if (isset($_POST['basket'])) {
          foreach ($_POST['basket'] as $basket) {
             $values['fields'] = $basket;
             $result           = $metademands->addMetademands($metademands_id, $values, $options);
+
             Session::addMessageAfterRedirect($result['message']);
          }
+
       } else {
+         //not in basket
          $result = $metademands->addMetademands($metademands_id, $values, $options);
          Session::addMessageAfterRedirect($result['message']);
       }
@@ -1740,7 +1355,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (!empty($options['resources_id'])) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
       } else {
-         Html::back();
+         Html::redirect($self->getFormURL() . "?step=".$step = PluginMetademandsMetademand::STEP_LIST);
       }
    }
 
@@ -1748,7 +1363,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param      $message
     * @param bool $error
     */
-   function showMessage($message, $error = false) {
+   static function showMessage($message, $error = false) {
       $class = $error ? "style='color:red'" : "";
 
       echo "<br><div class='box'>";
@@ -1762,6 +1377,114 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo "</div>";
    }
 
+   /**
+    * @param       $value
+    * @param       $id
+    * @param       $post
+    * @param       $fieldname
+    * @param false $on_basket
+    *
+    * @return array
+    */
+   static function checkvalues($value, $id, $post, $fieldname, $on_basket = false) {
+
+      $KO      = false;
+      $content = [];
+      if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
+         $value['second_date_ok'] = true;
+         $value['id']             = $id . '-2';
+         $value['label']          = $value['label2'];
+         $data[$id . '-2']        = $value;
+      }
+
+      if (isset($post[$fieldname][$id])
+          && $value['type'] != 'checkbox'
+          && $value['type'] != 'radio'
+          && $value['item'] != 'itilcategory'
+          && $value['type'] != 'upload') {
+
+         if (!self::checkMandatoryFields($value, ['id'    => $id,
+                                                  'value' => $post[$fieldname][$id]],
+                                         $fieldname, $post)) {
+            $KO = true;
+         } else {
+            $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+         }
+
+      } else if ($value['item'] == 'itilcategory') {
+
+         $content[$id]['plugin_metademands_fields_id'] = $id;
+         if ($on_basket == false) {
+            $content[$id]['value'] = $post['field_plugin_servicecatalog_itilcategories_id'];
+         } else {
+            $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id'];
+         }
+
+         $content[$id]['value2'] = "";
+         $content[$id]['item']   = $value['item'];
+         $content[$id]['type']   = $value['type'];
+
+      } else if ($value['type'] == 'checkbox') {
+
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $fieldname, $post)) {
+            $KO = true;
+         } else {
+            $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+         }
+      } else if ($value['type'] == 'radio') {
+
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $fieldname, $post)) {
+            $KO = true;
+         } else {
+            $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+         }
+      } else if ($value['type'] == 'upload') {
+
+         if ($value['is_basket'] == 1
+             && isset($post[$fieldname][$id]) && !empty($post[$fieldname][$id])) {
+            $files = json_decode($post[$fieldname][$id], 1);
+            foreach ($files as $file) {
+               $post['_filename'][]        = $file['_filename'];
+               $post['_prefix_filename'][] = $file['_prefix_filename'];
+               $post['_tag_filename'][]    = $file['_tag_filename'];
+            }
+         }
+         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => 1], $fieldname, $post)) {
+            $KO = true;
+         } else {
+            //not in basket mode
+            if (isset($post['_filename'])) {
+               foreach ($post['_filename'] as $key => $filename) {
+                  $_SESSION['plugin_metademands']['fields']['files'][$post['form_metademands_id']]['_prefix_filename'][] = $post['_prefix_filename'][$key];
+                  $_SESSION['plugin_metademands']['fields']['files'][$post['form_metademands_id']]['_tag_filename'][]    = $post['_tag_filename'][$key];
+                  $_SESSION['plugin_metademands']['fields']['files'][$post['form_metademands_id']]['_filename'][]        = $post['_filename'][$key];
+               }
+            }
+         }
+      }
+      //INFO : not used for update basket
+      if ($value['item'] != 'itilcategory' && $KO === false && isset($post[$fieldname][$id])) {
+         $content[$id]['plugin_metademands_fields_id'] = $id;
+         if ($value['type'] != "upload") {
+            $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];
+         }
+         $content[$id]['value2'] = (isset($post[$fieldname][$id . "-2"])) ? $post[$fieldname][$id . "-2"] : "";
+         $content[$id]['item']   = $value['item'];
+         $content[$id]['type']   = $value['type'];
+
+         if (isset($post['_filename']) && $value['type'] == "upload") {
+            $files = [];
+            foreach ($post['_filename'] as $key => $filename) {
+               $files[$key]['_prefix_filename'] = $post['_prefix_filename'][$key];
+               $files[$key]['_tag_filename']    = $post['_tag_filename'][$key];
+               $files[$key]['_filename']        = $post['_filename'][$key];
+            }
+            $content[$id]['value'] = json_encode($files);
+         }
+      }
+
+      return ['result' => $KO, 'content' => $content];
+   }
 
    /**
     * @param array $value
@@ -1770,7 +1493,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @return bool
     */
-   static function checkMandatoryFields(array $value, $fields = [], $all_fields = []) {
+   static function checkMandatoryFields($value = [], $fields = [], $fieldname, $post = []) {
 
       $checkKo             = [];
       $checkKoDateInterval = [];
@@ -1778,12 +1501,17 @@ class PluginMetademandsWizard extends CommonDBTM {
       $checkRegex          = [];
       $msg                 = [];
       $msg2                = [];
+      $msg3                = [];
+      $all_fields          = $post[$fieldname];
 
       if ($value['type'] != 'parent_field') {
          // Check fields empty
          if ($value['is_mandatory']
              && empty($fields['value'])
-             && $value['type'] != 'radio') {
+             && $value['type'] != 'radio'
+             && $value['type'] != 'checkbox'
+             && $value['type'] != 'informations'
+             && $value['type'] != 'upload') {
             $msg[]     = $value['label'];
             $checkKo[] = 1;
          }
@@ -1801,8 +1529,18 @@ class PluginMetademandsWizard extends CommonDBTM {
             $checkKo[] = 1;
 
          }
+         //radio
+         if ($value['type'] == 'radio'
+             && $value['is_mandatory']) {
+            if ($fields['value'] == NULL) {
+               $msg[]     = $value['label'];
+               $checkKo[] = 1;
+            }
+         }
 
-         if ($value['type'] == 'radio' && $value['is_mandatory']) {
+         //checkbox
+         if ($value['type'] == 'checkbox'
+             && $value['is_mandatory']) {
             if ($fields['value'] == NULL) {
                $msg[]     = $value['label'];
                $checkKo[] = 1;
@@ -1841,8 +1579,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check File upload field
          if ($value['type'] == "upload"
              && $value['is_mandatory']) {
-            if (isset($_POST['_filename'])) {
-               if (empty($_POST['_filename'][0])) {
+            if (isset($post['_filename'])) {
+               if (empty($post['_filename'][0])) {
                   $msg[]     = $value['label'];
                   $checkKo[] = 1;
                }
@@ -1852,15 +1590,18 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
          }
          // Check File upload field
-         if ($value['type'] == "upload" && !empty($value["max_upload"]) && isset($_POST['_filename'])) {
-            if ($value["max_upload"] < count($_POST['_filename'])) {
+         if ($value['type'] == "upload"
+             && !empty($value["max_upload"])
+             && isset($post['_filename'])) {
+            if ($value["max_upload"] < count($post['_filename'])) {
                $msg2[]       = $value['label'];
                $checkNbDoc[] = 1;
             }
          }
 
          // Check text with regex
-         if ($value['type'] == "text" && !empty($value["regex"])) {
+         if ($value['type'] == "text"
+             && !empty($value["regex"])) {
 
             if (!preg_match(($value['regex']), $fields['value'])) {
                $msg3[]       = $value['label'];
@@ -1920,7 +1661,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                $raquo = "";
             }
          }
-         $selected = "";
 
          echo "<option value='" . $id . "' $class " . ($params['value'] == $id ? 'selected' : '') . " >" . str_repeat("&nbsp;&nbsp;&nbsp;", $level) . $raquo;
 
@@ -1934,15 +1674,65 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo "</select>";
    }
 
-   function checkValueOk($check_value, $plugin_metademands_tasks_id, $metademandtasks_tasks_id, $id, $value) {
-      if (isset($_POST['field'][$id])
+   /**
+    * Used for check if hide child metademands
+    *
+    * @param $check_value
+    * @param $plugin_metademands_tasks_id
+    * @param $metademandtasks_tasks_id
+    * @param $id
+    * @param $value
+    */
+   function checkValueOk($check_value, $plugin_metademands_tasks_id, $metademandtasks_tasks_id, $id, $value, $post) {
+
+      if (isset($post[$id])
           && $check_value != null
           && in_array($plugin_metademands_tasks_id, $metademandtasks_tasks_id)) {
-         if (!PluginMetademandsTicket_Field::isCheckValueOK($_POST['field'][$id], $check_value, $value['type'])) {
+
+         if (!PluginMetademandsTicket_Field::isCheckValueOK($post[$id], $check_value, $value['type'])) {
             $metademandToHide                                   = array_keys($metademandtasks_tasks_id, $plugin_metademands_tasks_id);
             $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
             unset($_SESSION['son_meta'][$metademandToHide[0]]);
          }
       }
    }
+
+   /**
+    * Unset values in data & post for hiddens fields
+    * Add metademands_hide in Session for hidden fields
+    *
+    * @param $data
+    * @param $post
+    */
+   static function unsetHidden(&$data, &$post) {
+      foreach ($data as $id => $value) {
+         //if field is hidden remove it from Data & Post
+         $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
+         $unserialisedHiddenLink = PluginMetademandsField::_unserialize($value['hidden_link']);
+         $unserialisedTaskChild  = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
+         if (is_array($unserialisedCheck) && is_array($unserialisedHiddenLink)) {
+            foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
+               if (!isset($post[$id]) || $unserialisedCheck[$key] != $post[$id]) {
+
+                  if (isset($post[$hiddenFields])) unset($post[$hiddenFields]);
+                  if (isset($data[$hiddenFields])) unset($data[$hiddenFields]);
+
+                  //If the field is hidden and linked to a sub metademand
+                  //Dont show the sub metademand
+                  if (is_array($unserialisedTaskChild)) {
+                     foreach ($unserialisedTaskChild as $child) {
+                        if ($child != 0) {
+                           $metaTask = new PluginMetademandsMetademandTask();
+                           $metaTask->getFromDB($child);
+                           $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
+                           $_SESSION['metademands_hide'][$idChild] = $idChild;
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+
 }

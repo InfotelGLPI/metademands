@@ -468,7 +468,9 @@ class PluginMetademandsTicketField extends CommonDBChild {
                                      'condition' => ['is_assign' => 1]]);
             break;
          case 'status':
-            Ticket::dropdownStatus('ticketfield[' . $field_id . ']', $value, 2);
+            $opt = ['name' => 'ticketfield[' . $field_id . ']',
+                    'value' => $value];
+            Ticket::dropdownStatus($opt);
             break;
          case 'itemtype':
             $dev_user_id  = 0;

@@ -27,163 +27,160 @@
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginMetademandsBasketline
+ */
 class PluginMetademandsBasketline extends CommonDBTM {
 
    static $rightname = 'plugin_metademands';
 
    /**
+    * @param array $line
+    * @param bool  $preview
+    * @param       $metademands_id
+    */
+   static function constructBasket($metademands_id, $line = [], $preview = false) {
+
+
+      if (count($line) > 0) {
+
+         $basketline = new self();
+         if (!$preview && $basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
+                                                   'users_id'                          => Session::getLoginUserID()])) {
+
+            echo "<div class='right-div'>";
+
+            echo "<div class='form-row'>";
+            echo "<div class='form-group col-md-11'>";
+            echo "<h4 class='bt-title-divider'>" . __('Your basket', 'metademands');
+            echo "&nbsp;<button type='submit' class='pointer clear-basket' name='clear_basket' title='"
+                 . _sx('button', 'Clear the basket', 'metademands') . "'>";
+            echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
+            echo "</button>";
+            echo "</h4>";
+            echo "</div>";
+            echo "</div>";
+
+            $basketLines = [];
+            if ($preview == false) {
+               foreach ($basketlinesFind as $basketLine) {
+                  $basketLines[$basketLine['line']][] = $basketLine;
+               }
+               foreach ($basketLines as $idline => $fieldlines) {
+                  self::retrieveDatasByType($idline, $fieldlines, $line);
+               }
+            }
+
+            echo "</div>";
+         }
+      }
+   }
+
+   /**
+    * @param $idline
     * @param $values
+    * @param $fields
     */
    public static function retrieveDatasByType($idline, $values, $fields) {
 
-      echo "<tr class='basket-data'>";
+      echo "<div class='basket-data'>";
+
+      $i            = 0;
+
+      //hide empty hidden fields
+//      $hidden_links = [];
+//      foreach ($fields as $k => $v) {
+//         if (!empty($v['hidden_link'])) {
+//            foreach (PluginMetademandsField::_unserialize($v['hidden_link']) as $h => $hidden) {
+//               if ($hidden > 0) {
+//                  foreach ($values as $key => $value) {
+//                     if ($value['plugin_metademands_fields_id'] == $hidden) {
+//                        if (empty($value['value'])) {
+//                           $hidden_links[] = $value['plugin_metademands_fields_id'];
+//                        }
+//                     }
+//                  }
+//               }
+//            }
+//         }
+//      }
 
       foreach ($fields as $k => $v) {
+
+         $i++;
+         $style = "";
+         if ($i == 1) {
+            $style = " style='margin-top:20px;'";
+         }
+         //hide informations bloc
+         if ($v['item'] == 'informations') {
+            $i--;
+            continue;
+         }
+
+         //hide empty hidden fields
+         //         if (in_array($v['id'], $hidden_links)) {
+         //            $i--;
+         //            continue;
+         //         }
+
+         if (isset($v['is_basket']) && $v['is_basket'] == 0) {
+            $i--;
+            continue;
+         }
+
+         echo "<div class='form-row' $style>";
+
+         echo "<div class='form-group basket-title col-md-5'>";
+         echo $v['label'];
+         echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $v['id'] . "'>";
+         if ($v['is_mandatory'] && $v['type'] != 'parent_field') {
+            echo "*";
+         }
+         echo "</span>";
+         echo "</div>";
 
          foreach ($values as $key => $value) {
 
             if ($v['id'] == $value['plugin_metademands_fields_id']) {
 
-               switch ($v['type']) {
-
-                  case 'id' :
-                  case 'line' :
-                  case 'plugin_metademands_metademands_id':
-                  case 'plugin_metademands_fields_id':
-                  case 'link':
-                  case 'informations':
-                     break;
-
-                  case 'text':
-                  case 'textarea':
-                  case 'number':
-                     $display = $value['value'];
-                     echo "<td>" . $display . "</td>";
-                     break;
-
-                  case 'upload':
-                     $arrayFiles = json_decode($value['value'], true);
-                     echo "<td>";
-                     if ($arrayFiles != "") {
-                        foreach ($arrayFiles as $file) {
-                           echo str_replace($file['_prefix_filename'], "", $file['_filename']) . "<br />";
-                        }
-                     }
-                     echo "</td>";
-                     break;
-
-                  case 'dropdown':
-                     $display = "";
-                     switch ($v['item']) {
-                        case 'user':
-                           $display = getUserName($value['value']);
-                           break;
-                        case 'other':
-                           if (!empty($v['custom_values']) && isset ($v['custom_values'])) {
-                              $v['custom_values'] = PluginMetademandsField::_unserialize($v['custom_values']);
-                              $display            = ($value['value'] != 0) ? $v['custom_values'][$value['value']] : ' ';
-                           }
-                           break;
-                        //others
-                        default:
-                           $display = Dropdown::getDropdownName(getTableForItemType($v['item']), $value['value']);
-                           $display = ($display == '&nbsp;') ? ' ' : $display;
-                           break;
-                     }
-                     echo "<td>" . $display . "</td>";
-                     break;
-
-                  case 'yesno':
-                     $display = "";
-                     if ($value['value'] == 1) {
-                        $display = __('No');
-                     } else if ($value['value'] == 2) {
-                        $display = __('Yes');
-                     }
-                     echo "<td>" . $display . "</td>";
-                     break;
-
-                  case 'dropdown_multiple':
-                     $display = " ";
-                     if (!empty($v['custom_values'])) {
-                        $custom_values = PluginMetademandsField::_unserialize($v['custom_values']);
-                        $values_fields = PluginMetademandsField::_unserialize($value['value']);
-                        $parseValue    = [];
-                        if (is_array($values_fields)
-                            && count($values_fields) > 0) {
-                           foreach ($values_fields as $key => $val) {
-                              array_push($parseValue, $custom_values[$val]);
-                           }
-                        }
-                        $display = implode(', ', $parseValue);
-                     }
-                     echo "<td>" . $display . "</td>";
-                     break;
-
-                  case 'checkbox':
-                     $display = " ";
-                     if (!empty($v['custom_values'])) {
-                        $custom_values   = PluginMetademandsField::_unserialize($v['custom_values']);
-                        $values_fields   = PluginMetademandsField::_unserialize($value['value']);
-                        $custom_checkbox = [];
-                        foreach ($custom_values as $key => $val) {
-                           $checked = isset($values_fields[$key]) ? 1 : 0;
-                           if ($checked) {
-                              $custom_checkbox[] .= $val;
-                           }
-                        }
-                        $display = implode(', ', $custom_checkbox);
-                     }
-                     echo "<td>" . $display . "</td>";
-                     break;
-
-                  case 'radio' :
-                     $display = " ";
-                     if (!empty($v['custom_values'])) {
-                        $custom_values = PluginMetademandsField::_unserialize($v['custom_values']);
-                        $values_fields = PluginMetademandsField::_unserialize($value['value']);
-                        //specific for radio
-                        if ($value['value'] != "") {
-                           foreach ($custom_values as $key => $val) {
-                              if ($values_fields == $key) {
-                                 $display = $custom_values[$key];
-                              }
-                           }
-                        }
-                     }
-                     echo "<td>" . $display . "</td>";
-                     break;
-
-                  case 'datetime':
-                     echo "<td>" . Html::convDate($value['value']) . "</td>";
-                     break;
-
-                  case 'datetime_interval':
-                     $interval = " ";
-                     $display  = Html::convDate($value['value']);
-                     $display2 = Html::convDate($value['value2']);
-                     if (!empty($value['value'])) {
-                        $interval = $display . " / " . $display2;
-                     }
-                     echo "<td>" . $interval . "</td>";
-                     break;
-                  default :
-                     echo "<td>" . $value['value'] . "</td>";
-                     break;
+               $v['value'] = '';
+               if (isset($value['value'])) {
+                  $v['value'] = $value['value'];
                }
+
+               //TODO $metademands_data ?
+               //TODO $itilcategories_id ?
+               echo "<div class='form-group basket-title col-md-5'>";
+               echo PluginMetademandsField::getFieldInput([], $v, true, 0, $idline);
+               echo "</div>";
             }
          }
+         echo "</div>";
       }
-      echo "<td>";
-      echo "<button type='submit' class='btn btn-default' name='deletebasketline' value='$idline' class='delete-line-basket'>";
+      echo "<div class='form-row'>";
+      echo "<div class='form-group col-md-5 center'>";
+      echo "<button type='submit' class='btn update-line-basket' name='update_basket_line' value='$idline' title='"
+           . _sx('button', 'Update this line', 'metademands') . "'>";
+      echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+      echo "</button>";
+      echo "</div>";
+      echo "<div class='form-group col-md-5 center'>";
+      echo "<button type='submit' class='btn delete-line-basket' name='delete_basket_line' value='$idline' title='"
+           . _sx('button', 'Delete this line', 'metademands') . "'>";
       echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
       echo "</button>";
-      echo "</td>";
-      echo "</tr>";
+      echo "</div>";
+      echo "</div>";
+
+      echo "</div>";
    }
 
    /**
     * @param $content
+    * @param $plugin_metademands_metademands_id
+    *
+    * @throws \GlpitestSQLError
     */
    function addToBasket($content, $plugin_metademands_metademands_id) {
       global $DB;
@@ -191,7 +188,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
       $query  = "SELECT MAX(`line`)
                 FROM `" . $this->getTable() . "`
                 WHERE `plugin_metademands_metademands_id` = $plugin_metademands_metademands_id 
-                AND `users_id` = ".Session::getLoginUserID()."";
+                AND `users_id` = " . Session::getLoginUserID() . "";
       $result = $DB->query($query);
 
       $line = $DB->result($result, 0, 0) + 1;
@@ -206,8 +203,9 @@ class PluginMetademandsBasketline extends CommonDBTM {
          if ($values['type'] == "dropdown_multiple") {
             $name = $values['type'];
          }
+
          $this->add(['name'                              => $name,
-                     'value'                             => $values['value'],
+                     'value'                             => isset($values['value']) ? $values['value'] : NULL,
                      'value2'                            => $values['value2'],
                      'line'                              => $line,
                      'plugin_metademands_fields_id'      => $values['plugin_metademands_fields_id'],
@@ -219,11 +217,87 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
    /**
     * @param $input
+    * @param $line
+    */
+   function updateFromBasket($input, $line) {
+
+      $new_files = [];
+      if (isset($input['_filename']) && !empty($input['_filename'])) {
+         foreach ($input['_filename'] as $key => $filename) {
+            $new_files[$key]['_prefix_filename'] = $input['_prefix_filename'][$key];
+            $new_files[$key]['_tag_filename']    = $input['_tag_filename'][$key];
+            $new_files[$key]['_filename']        = $input['_filename'][$key];
+         }
+      }
+      foreach ($input['field_basket_' . $line] as $fields_id => $value) {
+
+         //get id from form_metademands_id & $id
+         $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
+                                 'plugin_metademands_fields_id'      => $fields_id,
+                                 'line'                              => $input['update_basket_line']]);
+
+         if ($this->fields['name'] != "itilcategory") {
+            if ($this->fields['name'] == "upload") {
+
+               $old_files = [];
+               if (isset($this->fields['value']) && !empty($this->fields['value'])) {
+                  $old_files = json_decode($this->fields['value'], 1);
+               }
+               if (is_array($new_files) && count($new_files) > 0
+                   && is_array($old_files) && count($old_files) > 0) {
+                  $files = array_merge($old_files, $new_files);
+                  $value = json_encode($files);
+               } else {
+                  $value = json_encode($new_files);
+               }
+
+            } else {
+               $value = is_array($value) ? PluginMetademandsField::_serialize($value) : $value;
+            }
+
+            $this->update(['plugin_metademands_fields_id' => $fields_id,
+                           'value'                        => $value,
+                           'id'                           => $this->fields['id']]);
+         }
+      }
+      if (isset($input['basket_plugin_servicecatalog_itilcategories_id'])) {
+
+         $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
+                                 'name'                              => "itilcategory",
+                                 'line'                              => $input['update_basket_line']]);
+
+         $this->update(['value' => $input['basket_plugin_servicecatalog_itilcategories_id'],
+                        'id'    => $this->fields['id']]);
+      }
+
+
+      Session::addMessageAfterRedirect(__("The line has been updated", "metademands"), false, INFO);
+   }
+
+   /**
+    * @param $input
     */
    function deleteFromBasket($input) {
 
-      $this->deleteByCriteria(['line' => $input['deletebasketline'],
+      $this->deleteByCriteria(['line'     => $input['delete_basket_line'],
                                'users_id' => Session::getLoginUserID()]);
       Session::addMessageAfterRedirect(__("The line has been deleted", "metademands"), false, INFO);
+   }
+
+   /**
+    * @param $input
+    */
+   function deleteFileFromBasket($input) {
+
+      $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['metademands_id'],
+                              'plugin_metademands_fields_id'      => $input['plugin_metademands_fields_id'],
+                              'line'                              => $input['idline']]);
+
+      $files = json_decode($this->fields['value'], 1);
+      unset($files[$input['id']]);
+      $files = json_encode($files);
+      $this->update(['plugin_metademands_fields_id' => $input['plugin_metademands_fields_id'],
+                     'value'                        => $files,
+                     'id'                           => $this->fields['id']]);
    }
 }

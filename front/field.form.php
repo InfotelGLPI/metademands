@@ -51,8 +51,6 @@ if (!isset($_POST["check_value"])) {
       $update["to_hide"] = 1;
       $field->update($update);
    }
-
-
 }
 
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
@@ -104,6 +102,11 @@ if (isset($_POST["add"])) {
    Html::back();
 
 } else if (isset($_POST["update"])) {
+
+   if ($_POST["type"] == 'checkbox'
+       || $_POST["type"] == 'radio') {
+      $_POST["item"] = 0;
+   }
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])
        && ($_POST["item"] == 'other'
            || $_POST["type"] == 'checkbox'
@@ -143,9 +146,6 @@ if (isset($_POST["add"])) {
       $_POST["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
    }
 
-   if (isset($_POST["fields_link"])) {
-      $_POST["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
-   }
    if (isset($_POST["hidden_link"])) {
       $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
    }

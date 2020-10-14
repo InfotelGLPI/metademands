@@ -71,9 +71,8 @@ class PluginMetademandsTicket extends CommonDBTM {
     */
    static function emptyTicket(Ticket $ticket) {
       // Metademand redirection on ticket creation
-
-      if (isset($_REQUEST['tickets_id'])
-          && $_REQUEST['tickets_id'] == 0
+      if (isset($_REQUEST['id'])
+          && $_REQUEST['id'] == 0
           && isset($_REQUEST['type'])
           && isset($_REQUEST['itilcategories_id'])) {
 
@@ -81,22 +80,11 @@ class PluginMetademandsTicket extends CommonDBTM {
          $myticket->fields['id']               = 0;
          $myticket->input['type']              = $_REQUEST['type'];
          $myticket->input['itilcategories_id'] = $_REQUEST['itilcategories_id'];
+
          if ($url = PluginMetademandsMetademand::redirectForm($myticket, 'show')) {
             Html::redirect($url);
          }
       }
-   }
-
-   /**
-    * @param int $size
-    * @param     $idDiv
-    */
-   static function showDocumentAddButton($size = 25, $idDiv) {
-      echo "<script type='text/javascript'>var nbfiles=1;</script>";
-      echo "<span id='addfilebutton' class='fas fa-plus pointer' title=\"" . __s('Add') . "\" onClick=\"
-                           var row = " . Html::jsGetElementbyID('uploadfiles' . $idDiv) . ";
-                           row.append('<br><input type=\'file\' name=\'filename[]\' size=\'$size\'>');
-                           nbfiles++;\"" . __s('Add') . "</span>";
    }
 
 
@@ -136,40 +124,15 @@ class PluginMetademandsTicket extends CommonDBTM {
       $config_data = PluginMetademandsConfig::getInstance();
 
       if (isset($ticket->input['itilcategories_id']) && $config_data['simpleticket_to_metademand']) {
-         $type = $ticket->fields["type"];
-         if (isset($ticket->input['type'])) {
-            $type = $ticket->input["type"];
-         }
 
          $dbu = new DbUtils();
          if (!empty($ticket->input["itilcategories_id"])) {
-            $cats = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-                                              ["`itilcategories_id`" => $ticket->input["itilcategories_id"],
-                                               "`type`"              => $type]);
-
-            // Metademand category found : redirection to wizard
-            if (!empty($cats)) {
-               $data = $dbu->getAllDataFromTable('glpi_plugin_metademands_tickets_metademands',
-                                                 ["`tickets_id`" => $ticket->input["id"]]);
-
-               if (empty($data)) {
-                  $meta = reset($cats);
-
-                  // Redirect if not linked to a resource contract type
-                  //                  if (!countElementsInTable("glpi_plugin_metademands_metademands_resources", "`plugin_metademands_metademands_id`='".$meta["id"]."'")) {
-                  //                     Html::redirect($CFG_GLPI["root_doc"]."/plugins/metademands/front/wizard.form.php?metademands_id=".$meta["id"]."&tickets_id=".$ticket->fields["id"]."&step=2");
-                  //                  }
-               }
-
-               // Metademand category not found : if is ticket is meta, convert it to simple ticket
-            } else {
-               $data = $dbu->getAllDataFromTable('glpi_plugin_metademands_tickets_metademands',
-                                                 ["`tickets_id`" => $ticket->input["id"]]);
-               if (!empty($data)) {
-                  $data       = reset($data);
-                  $metademand = new PluginMetademandsMetademand();
-                  $metademand->convertMetademandToTicket($ticket, $data['plugin_metademands_metademands_id']);
-               }
+            $data = $dbu->getAllDataFromTable('glpi_plugin_metademands_tickets_metademands',
+                                              ["`tickets_id`" => $ticket->input["id"]]);
+            if (!empty($data)) {
+               $data       = reset($data);
+               $metademand = new PluginMetademandsMetademand();
+               $metademand->convertMetademandToTicket($ticket, $data['plugin_metademands_metademands_id']);
             }
          }
       }
@@ -311,13 +274,9 @@ class PluginMetademandsTicket extends CommonDBTM {
          $task_data = [];
          $task      = new PluginMetademandsTask();
 
-         $parent_tasks_id     = [];
          $parent_tickets_id[] = $tickets_id;
          foreach ($ticket_task_data as $values) {
             $parent_tickets_id[] = $values['tickets_id'];
-            if (isset($values['tasks_id'])) {
-               $parent_tasks_id[] = $values['tasks_id'];
-            }
          }
 
          // Search tasks linked to a created ticket
@@ -711,7 +670,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       if ($tickets_id) {
          $ticket->getFromDB($tickets_id);
       } else {
-         $ticket->getEmpty($tickets_id);
+         $ticket->getEmpty();
       }
 
       foreach ($ticket->fields as $key => $val) {
@@ -872,7 +831,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       if ($tickets_id) {
          $ticket->getFromDB($tickets_id);
       } else {
-         $ticket->getEmpty($tickets_id);
+         $ticket->getEmpty();
       }
 
       if (!isset($input['entities_id'])) {
@@ -1056,7 +1015,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
       ob_start();
-      self::showFormHelpdesk(Session::getLoginUserID(), $params['ticket_template'], $params['values']);
+      self::showFormHelpdesk($params['ticket_template'], $params['values']);
       $result = ob_get_clean();
 
       $response = [$result];
@@ -1074,7 +1033,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     *
     * @return bool (print the helpdesk)
     */
-   static function showFormHelpdesk($ID, $ticket_template = false, $values = []) {
+   static function showFormHelpdesk($ticket_template = false, $values = []) {
       global $CFG_GLPI;
 
       if (!Session::haveRight("ticket", Create)) {
@@ -1094,7 +1053,7 @@ class PluginMetademandsTicket extends CommonDBTM {
 
       $tt = new TicketTemplate();
       if ($ticket_template) {
-         $tt->getFromDBWithDatas($ticket_template, true);
+         $tt->getFromDBWithData($ticket_template, true);
       } else {
          $tt->getEmpty();
       }
@@ -1197,7 +1156,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @param $document_name name of the document into glpi
     *
     * @return array or an Error
-*/
+    */
    static function uploadDocument($params, $filename, $document_name) {
 
       $files   = [];
