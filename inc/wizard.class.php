@@ -752,9 +752,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<div id-field='field" . $data["id"] . "' class=\"form-group col-md-5\">";
                }
                //see fields
-
                PluginMetademandsField::getFieldType($data, $metademands_data, $preview, $config_link, $itilcategories_id);
-
 
 
                // Label 2 (date interval)
@@ -1335,13 +1333,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
                                             'users_id'                          => Session::getLoginUserID()]);
 
-
-      $metademands = new PluginMetademandsMetademand();
-      if (isset($_POST['basket'])) {
-         foreach ($_POST['basket'] as $basket) {
-            $values['fields'] = $basket;
-            $result           = $metademands->addMetademands($metademands_id, $values, $options);
-
+            $result = $metademands->addMetademands($metademands_id, $values, $options);
             Session::addMessageAfterRedirect($result['message']);
          }
 

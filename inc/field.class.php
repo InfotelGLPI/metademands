@@ -2023,11 +2023,9 @@ class PluginMetademandsField extends CommonDBChild {
       if (isset($PLUGIN_HOOKS['metademands'])) {
          $plugin = new Plugin();
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-            $p = [];
+            $p = $params;
             $p["plugin_metademands_fields_id"] = $this->getID();
             $p["plugin_metademands_metademands_id"] = $metademands_id;
-            $p["checklist_in"] = $params['checklist_in'];
-            $p["checklist_out"] = $params['checklist_out'];
             $p["hidden"] = $hidden;
 
 
@@ -2407,28 +2405,28 @@ class PluginMetademandsField extends CommonDBChild {
       return $input;
    }
 
-   /**
-
-    * @param $field
-    * @param $metademands_id
-    * @param $selected_value
-    */
-   static function showFieldsDropdown($metademands_id, $selected_value, $display = true, $idF) {
-
-      $fields      = new self();
-      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-      $data        = [Dropdown::EMPTY_VALUE];
-      foreach ($fields_data as $id => $value) {
-         if ($idF != $id) {
-            $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
-//            if (!empty($value['label2'])) {
-//               $data[$id] .= ' - ' . $value['label2'];
-//            }
-         }
-      }
-
-      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
-   }
+//   /**
+//
+//    * @param $field
+//    * @param $metademands_id
+//    * @param $selected_value
+//    */
+//   static function showFieldsDropdown($metademands_id, $selected_value, $display = true, $idF) {
+//
+//      $fields      = new self();
+//      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+//      $data        = [Dropdown::EMPTY_VALUE];
+//      foreach ($fields_data as $id => $value) {
+//         if ($idF != $id) {
+//            $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
+////            if (!empty($value['label2'])) {
+////               $data[$id] .= ' - ' . $value['label2'];
+////            }
+//         }
+//      }
+//
+//      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
+//   }
 
    /**
 
