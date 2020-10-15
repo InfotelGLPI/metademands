@@ -12,7 +12,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `id` int(11) NOT NULL AUTO_INCREMENT, -- id metademands
     `name` varchar(255) default NULL, -- name metademands
     `entities_id` int(11) NOT NULL default '0', -- entites_id
-    `create_one_ticket` int(1) NOT NULL default '0', -- is_recursive
+    `is_recursive` int(1) NOT NULL default '0', -- is_recursive
     `is_active` tinyint(1) NOT NULL DEFAULT '1',
     `comment` text COLLATE utf8_unicode_ci default NULL,
     `type` int(11) NOT NULL default '0', -- metademand type : Incident, demand
