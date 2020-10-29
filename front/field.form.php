@@ -149,6 +149,9 @@ if (isset($_POST["add"])) {
    if (isset($_POST["hidden_link"])) {
       $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
    }
+   if (isset($_POST["hidden_block"])) {
+      $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
+   }
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
 

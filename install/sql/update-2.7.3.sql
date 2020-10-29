@@ -1,3 +1,4 @@
+
 DROP TABLE IF EXISTS `glpi_plugin_metademands_fieldtranslations`;
 CREATE TABLE `glpi_plugin_metademands_fieldtranslations`
 (
@@ -12,3 +13,5 @@ CREATE TABLE `glpi_plugin_metademands_fieldtranslations`
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1; 
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `hidden_block` VARCHAR(255) NULL AFTER `hidden_link`;
+

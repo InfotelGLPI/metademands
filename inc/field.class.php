@@ -284,6 +284,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'regex'          => $this->fields['regex'],
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'    => $this->fields['hidden_link'],
+                     'hidden_block'    => $this->fields['hidden_block'],
                      'custom_values'  => $this->fields['custom_values'],
                      'comment_values' => $this->fields['comment_values'],
                      'default_values' => $this->fields['default_values'],
@@ -341,6 +342,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'regex'          => $this->fields['regex'],
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'    => $this->fields['hidden_link'],
+                     'hidden_block'    => $this->fields['hidden_block'],
                      'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
                      'custom_values'  => $this->fields["custom_values"],
                      'comment_values' => $this->fields["comment_values"],
@@ -394,6 +396,7 @@ class PluginMetademandsField extends CommonDBChild {
                          'max_upload'     => $this->fields['max_upload'],
                          'regex'          => $this->fields['regex'],
                          'hidden_link'    => $this->fields['hidden_link'],
+                         'hidden_block'    => $this->fields['hidden_block'],
                          //                         'fields_display' => $this->fields['fields_display'],
                          'item'           => $this->fields['item'],
                          'type'           => $this->fields['type'],
@@ -1408,6 +1411,7 @@ class PluginMetademandsField extends CommonDBChild {
          case 'yesno':
             $option[1] = __('No');
             $option[2] = __('Yes');
+            $value = self::_unserialize($data['custom_values']);
             $field     = "";
             $field     .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
                                                                                                   'display' => false]);
@@ -1799,6 +1803,13 @@ class PluginMetademandsField extends CommonDBChild {
          $params['hidden_link'] = $params['hidden_link'][$nbOpt];
       }
 
+      $params['hidden_block'] = self::_unserialize($params['hidden_block']);
+      if (!isset($params['hidden_block'][$nbOpt])) {
+         $params['hidden_block'] = "";
+      } else {
+         $params['hidden_block'] = $params['hidden_block'][$nbOpt];
+      }
+
       //Hook to get values saves from plugin
       if (isset($PLUGIN_HOOKS['metademands'])) {
          $plugin = new Plugin();
@@ -2075,6 +2086,15 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= "<td>";
          $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'], $this->getID(), false);
          $res .= "</td></tr>";
+
+
+         $res .= "<tr><td>";
+         $res .= __('Link a hidden block', 'metademands');
+         $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the block becomes visible', 'metademands') . '</span>';
+         $res .= '</td>';
+         $res .= "<td>";
+         $res .= self::showHiddenBlockDropdown($metademands_id, $params['hidden_block'], $this->getID(), false);
+         $res .= "</td></tr>";
       }
 
       //Hook to print new options from plugins
@@ -2156,6 +2176,26 @@ class PluginMetademandsField extends CommonDBChild {
       return Dropdown::showFromArray('hidden_link[]', $data, ['value' => $selected_value, 'display' => $display]);
    }
 
+   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param bool $display
+    * @param      $idF
+    *
+    * @return int|string
+    */
+   static function showHiddenBlockDropdown($metademands_id, $selected_value, $idF, $display = true) {
+
+
+      $fields      = new self();
+      $fields->getFromDB($idF);
+
+      return Dropdown::showNumber('hidden_block[]', ['value' => $selected_value,
+                                                    'display' => $display,
+                                                    'used'=>[$fields->getField('rank')],
+                                                    'min'   => 0,
+                                                    'max'   => 10]);
+   }
 
    /**
     * View custom values for items or types
