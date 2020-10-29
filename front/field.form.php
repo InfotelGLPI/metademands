@@ -155,6 +155,18 @@ if (isset($_POST["add"])) {
    if ($field->update($_POST)) {
       $field->recalculateOrder($_POST);
       PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
+
+      //Hook to add and update values add from plugins
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         $plugin = new Plugin();
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $p = $_POST;
+
+
+            $new_res = PluginMetademandsField::getPluginSaveOptions($plug,$p);
+         }
+      }
+
    }
 
    Html::back();

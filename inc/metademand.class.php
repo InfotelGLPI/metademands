@@ -1144,7 +1144,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @throws \GlpitestSQLError
     */
    function addMetademands($metademands_id, $values, $options = []) {
-      global $DB;
+      global $DB, $PLUGIN_HOOKS;
 
       $tasklevel = 1;
 
@@ -1347,6 +1347,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $ticket->add($input);
+                  //Hook to do action after ticket creation with metademands
+                  if (isset($PLUGIN_HOOKS['metademands'])) {
+                     $plugin = new Plugin();
+                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        $p = [];
+                        $p["options"] = $options;
+                        $p["values"] = $values;
+                        $p["line"] = $line;
+
+                        $new_res = PluginMetademandsMetademand::getPluginAfterCreateTicket($plug,$p);
+                     }
+                  }
+
                   if ($docitem == null && $config['create_pdf']) {
                      //Génération du document PDF
                      $docPdf = new PluginMetaDemandsMetaDemandPdf($this->fields['name'],
@@ -2583,6 +2596,34 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
    function displayHeader() {
       Html::header(__('Configure demands', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand", "metademand");
+   }
+
+   /**
+    * Action after ticket creation with metademands
+    *
+    * @param $plug
+    */
+   static function getPluginAfterCreateTicket($plug,$params) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         if(Plugin::isPluginActive($plug)){
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+               if (!class_exists($pluginclass)) {
+                  continue;
+               }
+               $form[$pluginclass] = [];
+               $item               = $dbu->getItemForItemtype($pluginclass);
+               if ($item && is_callable([$item, 'afterCreateTicket'])) {
+                  return $item->afterCreateTicket($params);
+               }
+            }
+         }
+
+      }
    }
 
 }

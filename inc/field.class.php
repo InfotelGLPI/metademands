@@ -790,6 +790,83 @@ class PluginMetademandsField extends CommonDBChild {
       }
    }
 
+   /**
+    * Load data options saves from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginParamsOptions($plug,$params) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'getParamsOptions'])) {
+               return $item->getParamsOptions($params);
+            }
+         }
+      }
+   }
+
+   /**
+    * show options fields from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginShowOptions($plug,$params) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+         foreach ($pluginclasses as $pluginclass) {
+            if (!class_exists($pluginclass)) {
+               continue;
+            }
+            $form[$pluginclass] = [];
+            $item               = $dbu->getItemForItemtype($pluginclass);
+            if ($item && is_callable([$item, 'showOptions'])) {
+               return $item->showOptions($params);
+            }
+         }
+      }
+   }
+
+   /**
+    * saves data fields option from plugins
+    *
+    * @param $plug
+    */
+   static function getPluginSaveOptions($plug,$params) {
+      global $PLUGIN_HOOKS;
+
+      $dbu = new DbUtils();
+      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+         if(Plugin::isPluginActive($plug)){
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+               if (!class_exists($pluginclass)) {
+                  continue;
+               }
+               $form[$pluginclass] = [];
+               $item               = $dbu->getItemForItemtype($pluginclass);
+               if ($item && is_callable([$item, 'saveOptions'])) {
+                  return $item->saveOptions($params);
+               }
+            }
+         }
+
+      }
+   }
 
    /**
     * Show field item dropdown
@@ -1630,6 +1707,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @throws \GlpitestSQLError
     */
    function showOptions($metademands_id, $params, $nbOpt) {
+      global $PLUGIN_HOOKS;
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
 
@@ -1661,6 +1739,23 @@ class PluginMetademandsField extends CommonDBChild {
          $params['hidden_link'] = "";
       } else {
          $params['hidden_link'] = $params['hidden_link'][$nbOpt];
+      }
+
+      //Hook to get values saves from plugin
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         $plugin = new Plugin();
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $p = [];
+            $p["plugin_metademands_fields_id"] = $this->getID();
+            $p["plugin_metademands_metademands_id"] = $metademands_id;
+            $p["nbOpt"] = $nbOpt;
+
+            $new_params = self::getPluginParamsOptions($plug,$p);
+            if ($plugin->isActivated($plug)
+                && is_array($new_params)) {
+               $params = array_merge($params,$new_params);
+            }
+         }
       }
 
 
@@ -1888,7 +1983,9 @@ class PluginMetademandsField extends CommonDBChild {
     * @return string
     * @throws \GlpitestSQLError
     */
+
    function showLinkHtml($metademands_id, $params, $task = 1, $field = 1, $hidden = 0) {
+      global $PLUGIN_HOOKS;
 
       $res = "";
 
@@ -1920,6 +2017,24 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= "<td>";
          $res .= self::showHiddenDropdown($metademands_id, $params['hidden_link'], $this->getID(), false);
          $res .= "</td></tr>";
+      }
+
+      //Hook to print new options from plugins
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         $plugin = new Plugin();
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $p = $params;
+            $p["plugin_metademands_fields_id"] = $this->getID();
+            $p["plugin_metademands_metademands_id"] = $metademands_id;
+            $p["hidden"] = $hidden;
+
+
+            $new_res = self::getPluginShowOptions($plug,$p);
+            if ($plugin->isActivated($plug)
+                && !empty($new_res)) {
+              $res .= $new_res;
+            }
+         }
       }
 
       return $res;
@@ -1972,6 +2087,7 @@ class PluginMetademandsField extends CommonDBChild {
              && $value['item'] != "informations"
              && $idF != $id) {
             $data[$id] = urldecode(html_entity_decode($value['label']));
+
             //            if (!empty($value['label2'])) {
             //               $data[$id] .= ' - ' . urldecode(html_entity_decode($value['label2']));
             //            }
@@ -2289,7 +2405,31 @@ class PluginMetademandsField extends CommonDBChild {
       return $input;
    }
 
+//   /**
+//
+//    * @param $field
+//    * @param $metademands_id
+//    * @param $selected_value
+//    */
+//   static function showFieldsDropdown($metademands_id, $selected_value, $display = true, $idF) {
+//
+//      $fields      = new self();
+//      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+//      $data        = [Dropdown::EMPTY_VALUE];
+//      foreach ($fields_data as $id => $value) {
+//         if ($idF != $id) {
+//            $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
+////            if (!empty($value['label2'])) {
+////               $data[$id] .= ' - ' . $value['label2'];
+////            }
+//         }
+//      }
+//
+//      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
+//   }
+
    /**
+
     * Type that could be linked to a metademand
     *
     * @param $all boolean, all type, or only allowed ones
