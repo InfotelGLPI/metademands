@@ -120,6 +120,21 @@ class PluginMetademandsField extends CommonDBChild {
       return true;
    }
 
+   /**
+    * @param array $options
+    *
+    * @return array
+    * @see CommonGLPI::defineTabs()
+    */
+   function defineTabs($options = []) {
+
+      $ong = [];
+      $this->addDefaultFormTab($ong);
+      $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
+
+      return $ong;
+   }
+
 
    /**
     * @param       $ID
@@ -1037,8 +1052,11 @@ class PluginMetademandsField extends CommonDBChild {
          $required = "style='color:red'";
       }
 
+      if (empty($label = self::displayField($data['id'], 'label'))) {
+         $label = $data['label'];
+      }
       echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
-      echo $data['label'] . " $upload";
+      echo $label . " $upload";
       if ($preview) {
          echo $config_link;
       }
@@ -1099,6 +1117,11 @@ class PluginMetademandsField extends CommonDBChild {
          case 'dropdown_multiple' :
             if (!empty($data['custom_values'])) {
                $data['custom_values'] = self::_unserialize($data['custom_values']);
+               foreach ( $data['custom_values'] as $k => $val){
+                  if(!empty($ret = self::displayField($data["id"],"custom".$k))){
+                     $data['custom_values'][$k] = $ret;
+                  }
+               }
                $defaults              = self::_unserialize($data['default_values']);
                $default_values        = [];
                if ($defaults) {
@@ -1123,6 +1146,11 @@ class PluginMetademandsField extends CommonDBChild {
                case 'other' :
                   if (!empty($data['custom_values'])) {
                      $data['custom_values']    = self::_unserialize($data['custom_values']);
+                     foreach ( $data['custom_values'] as $k => $val){
+                        if(!empty($ret = self::displayField($data["id"],"custom".$k))){
+                           $data['custom_values'][$k] = $ret;
+                        }
+                     }
                      $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
                      ksort($data['custom_values']);
                      $field = "";
@@ -1214,6 +1242,11 @@ class PluginMetademandsField extends CommonDBChild {
                   $cond = [];
                   if (!empty($data['custom_values']) && $data['item'] == 'group') {
                      $options = self::_unserialize($data['custom_values']);
+                     foreach ( $options as $k => $val){
+                        if(!empty($ret = self::displayField($data["id"],"custom".$k))){
+                           $options[$k] = $ret;
+                        }
+                     }
                      foreach ($options as $type_group => $val) {
                         $cond[$type_group] = $val;
                      }
@@ -1245,6 +1278,11 @@ class PluginMetademandsField extends CommonDBChild {
          case 'link':
             if (!empty($data['custom_values'])) {
                $data['custom_values'] = self::_unserialize($data['custom_values']);
+               foreach ( $data['custom_values'] as $k => $val){
+                  if(!empty($ret = self::displayField($data["id"],"custom".$k))){
+                     $data['custom_values'][$k] = $ret;
+                  }
+               }
                switch ($data['custom_values'][0]) {
                   case 'button' :
                      $btnLabel = __('Link');
@@ -1266,6 +1304,11 @@ class PluginMetademandsField extends CommonDBChild {
          case 'checkbox':
             if (!empty($data['custom_values'])) {
                $data['custom_values']  = self::_unserialize($data['custom_values']);
+               foreach ( $data['custom_values'] as $k => $val){
+                  if(!empty($ret = self::displayField($data["id"],"custom".$k))){
+                     $data['custom_values'][$k] = $ret;
+                  }
+               }
                $data['comment_values'] = self::_unserialize($data['comment_values']);
                $defaults               = self::_unserialize($data['default_values']);
                if (!empty($value)) {
@@ -1306,6 +1349,11 @@ class PluginMetademandsField extends CommonDBChild {
          case 'radio':
             if (!empty($data['custom_values'])) {
                $data['custom_values']  = self::_unserialize($data['custom_values']);
+               foreach ( $data['custom_values'] as $k => $val){
+                  if(!empty($ret = self::displayField($data["id"],"custom".$k))){
+                     $data['custom_values'][$k] = $ret;
+                  }
+               }
                $data['comment_values'] = self::_unserialize($data['comment_values']);
                $defaults               = self::_unserialize($data['default_values']);
                if ($value != NULL) {
@@ -1464,6 +1512,11 @@ class PluginMetademandsField extends CommonDBChild {
                            case 'checkbox':
                               if (!empty($field_value['custom_values'])) {
                                  $field_value['custom_values'] = self::_unserialize($field_value['custom_values']);
+                                 foreach ( $field_value['custom_values'] as $k => $val){
+                                    if(!empty($ret = self::displayField($field_value["id"],"custom".$k))){
+                                       $field_value['custom_values'][$k] = $ret;
+                                    }
+                                 }
                                  $checkboxes                   = self::_unserialize($value_parent_field);
 
                                  $custom_checkbox    = [];
@@ -1483,6 +1536,11 @@ class PluginMetademandsField extends CommonDBChild {
                            case 'radio' :
                               if (!empty($field_value['custom_values'])) {
                                  $field_value['custom_values'] = self::_unserialize($field_value['custom_values']);
+                                 foreach ( $field_value['custom_values'] as $k => $val){
+                                    if(!empty($ret = self::displayField($field_value["id"],"custom".$k))){
+                                       $field_value['custom_values'][$k] = $ret;
+                                    }
+                                 }
                                  foreach ($field_value['custom_values'] as $key => $label) {
                                     if ($value_parent_field == $key) {
                                        $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$key' >";
@@ -2709,6 +2767,7 @@ class PluginMetademandsField extends CommonDBChild {
          'table' => $this->getTable(),
          'field' => 'label',
          'name'  => __('Label'),
+         'datatype'   => 'text'
       ];
 
       $tab[] = [
@@ -2716,6 +2775,7 @@ class PluginMetademandsField extends CommonDBChild {
          'table' => $this->getTable(),
          'field' => 'label2',
          'name'  => __('Additional label', 'metademands'),
+         'datatype'   => 'text'
       ];
 
       $tab[] = [
@@ -2871,4 +2931,38 @@ class PluginMetademandsField extends CommonDBChild {
          $count++;
       }
    }
+
+
+
+   /**
+    * Returns the translation of the field
+    *
+    * @param type  $item
+    * @param type  $field
+    *
+    * @return type
+    * @global type $DB
+    *
+    */
+   static function displayField($id, $field) {
+      global $DB;
+
+      // Make new database object and fill variables
+      $iterator = $DB->request([
+                                  'FROM'  => 'glpi_plugin_metademands_fieldtranslations',
+                                  'WHERE' => [
+                                     'itemtype' => PluginMetademandsField::getType(),
+                                     'items_id' => $id,
+                                     'field'    => $field,
+                                     'language' => $_SESSION['glpilanguage']
+                                  ]]);
+
+      if (count($iterator)) {
+         while ($data = $iterator->next()) {
+            return $data['value'];
+         }
+      }
+      return "";
+   }
+
 }
