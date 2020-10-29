@@ -395,7 +395,7 @@ if (isset($_POST['next'])) {
                   $_POST['field_basket_' . $line][$id] = "";
                }
             }
-            if ($value['item'] == 'itiltry') {
+            if ($value['item'] == 'itilcategory') {
                $_POST['field_basket_' . $line][$id] = isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
             }
             $fieldname = 'field_basket_' . $line;
