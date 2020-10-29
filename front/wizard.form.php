@@ -213,6 +213,8 @@ if (isset($_POST['next'])) {
                      $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
                      // Resources step
                      $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
+                     $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+
                   }
 
                   if ($KO) {
