@@ -130,7 +130,7 @@ function plugin_metademands_install() {
    }
 
    //version 2.7.3
-   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_bloc")) {
+   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_block")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.3.sql");
    }
 
