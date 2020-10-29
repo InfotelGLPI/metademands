@@ -214,7 +214,7 @@ if (isset($_POST['next'])) {
                      // Resources step
                      $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
 
-                    //Category id if have categoty field
+                    //Category id if have category field
                      $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
 
 
@@ -395,7 +395,7 @@ if (isset($_POST['next'])) {
                   $_POST['field_basket_' . $line][$id] = "";
                }
             }
-            if ($value['item'] == 'itilcategory') {
+            if ($value['item'] == 'itiltry') {
                $_POST['field_basket_' . $line][$id] = isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
             }
             $fieldname = 'field_basket_' . $line;
