@@ -57,7 +57,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
    const STEP_SHOW   = 2;
    const STEP_CREATE = "create_metademands";
 
-   var     $dohistory = false;
+   var     $dohistory = true;
    private $config;
 
    function __construct() {
@@ -168,6 +168,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $this->addStandardTab('PluginMetademandsTask', $ong, $options);
       }
       $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
+      if (Session::getCurrentInterface() == 'central') {
+         $this->addStandardTab('Log', $ong, $options);
+      }
       return $ong;
    }
 
