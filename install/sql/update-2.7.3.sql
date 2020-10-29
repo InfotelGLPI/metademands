@@ -1,0 +1,1 @@
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `hidden_bloc` VARCHAR(255) NULL AFTER `hidden_link`;
