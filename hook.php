@@ -132,7 +132,38 @@ function plugin_metademands_install() {
    //version 2.7.3
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_block")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.3.sql");
+
+      $field = new PluginMetademandsField();
+      $fields = $field->find(['type'=>"dropdown","item"=>"user"]);
+      foreach ($fields as $f){
+         $f["item"] = "User";
+         $field->update($f);
+      }
+      $fields = $field->find(['type'=>"dropdown","item"=>"usertitle"]);
+      foreach ($fields as $f){
+         $f["item"] = "UserTitle";
+         $field->update($f);
+      }
+      $fields = $field->find(['type'=>"dropdown","item"=>"usercategory"]);
+      foreach ($fields as $f){
+         $f["item"] = "UserCategory";
+         $field->update($f);
+      }
+      $fields = $field->find(['type'=>"dropdown","item"=>"group"]);
+      foreach ($fields as $f){
+         $f["item"] = "Group";
+         $field->update($f);
+      }
+      $fields = $field->find(['type'=>"dropdown","item"=>"location"]);
+      foreach ($fields as $f){
+         $f["item"] = "Location";
+         $field->update($f);
+      }
+
+
+
    }
+   
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    PluginMetademandsProfile::initProfile();
