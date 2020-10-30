@@ -246,7 +246,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $cats          = $input['itilcategories_id'];
 
          while ($data = $iterator_cats->next()) {
-            if (is_array(json_decode($data['itilcategories_id']))) {
+            if (is_array(json_decode($data['itilcategories_id'])) && is_array($cats)) {
                $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
             }
             if ($cat_already_store) {
@@ -2603,7 +2603,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $forbidden = parent::getForbiddenStandardMassiveAction();
 
       $forbidden[] = 'merge';
-
+      $forbidden[] = 'clone';
       return $forbidden;
    }
 

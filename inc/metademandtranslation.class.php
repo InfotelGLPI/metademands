@@ -309,7 +309,7 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
              && ($field['field'] == 'name')
              && ($field['table'] == $dbu->getTableForItemType(get_class($item)))
              || (isset($field['datatype'])
-                 && in_array($field['datatype'], ['text', 'string']))) {
+                 && in_array($field['datatype'], ['text', 'string']) && ($field['field'] != 'icon'))) {
             $options[$field['field']] = $field['name'];
          }
       }
