@@ -2362,6 +2362,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $this->fields['name']    = addslashes($this->fields['name']);
 
          if ($new_metademands_id = $this->add($this->fields)) {
+            $translationMeta = new PluginMetademandsMetademandTranslation();
+            $translationsMeta = $translationMeta->find(['itemtype'=>"PluginMetademandsMetademand","items_id"=>$metademands_id]);
+            foreach ($translationsMeta as $tr){
+               $translationMeta->getFromDB($tr['id']);
+               $translationMeta->clone(["items_id"=>$new_metademands_id]);
+            }
             $metademands_data = $this->constructMetademands($metademands_id);
             if (count($metademands_data)) {
                foreach ($metademands_data as $form_step => $data) {
@@ -2370,13 +2376,20 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         if ($form_metademands_id == $metademands_id) {
                            // Add metademand fields
                            foreach ($line['form'] as $values) {
+                              $id = $values['id'];
                               unset($values['id']);
                               $values['plugin_metademands_metademands_id'] = $new_metademands_id;
                               $values['name']                             = addslashes($values['name']);
                               $values['label2']                            = addslashes($values['label2']);
                               $values['comment']                           = addslashes($values['comment']);
 
-                              $fields->add($values);
+                              $newID = $fields->add($values);
+                              $translation = new PluginMetademandsFieldTranslation();
+                              $translations = $translation->find(['itemtype'=>"PluginMetademandsField","items_id"=>$id]);
+                              foreach ($translations as $tr){
+                                 $translation->getFromDB($tr['id']);
+                                 $translation->clone(["items_id"=>$newID]);
+                              }
                            }
 
                            // Add metademand group
