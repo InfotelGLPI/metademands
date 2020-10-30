@@ -212,7 +212,7 @@ class PluginMetademandsField extends CommonDBChild {
       // LABEL
       echo "<td>" . __('Label') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "label", ['value' => stripslashes($this->fields["label"])]);
+      Html::autocompletionTextField($this, "name", ['value' => stripslashes($this->fields["name"])]);
       if ($ID > 0) {
          echo "<input type='hidden' name='entities_id' value='" . $this->fields["entities_id"] . "'>";
          echo "<input type='hidden' name='is_recursive' value='" . $this->fields["is_recursive"] . "'>";
