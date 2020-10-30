@@ -181,7 +181,12 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
          }
          echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
+         if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(),'name'))) {
+            echo $meta->getName();
+         }else{
+            echo $n;
+         }
+//         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
          if (Session::haveRight('plugin_metademands', UPDATE)) {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'><i class='fas fa-wrench'></i></a>";
          }
@@ -441,9 +446,20 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
                echo "</div>";
                echo "<br><p>";
-               echo $meta->getName();
+               ;
+               if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(),'name'))) {
+                  echo $meta->getName();
+               }else{
+                  echo $n;
+               }
+
                echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-               echo $meta->fields['comment'];
+               if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(),'comment'))) {
+                  echo $meta->fields['comment'];
+               }else{
+                  echo $comm;
+               }
+
                echo "</span></em>";
                echo "</p></div></a>";
             }

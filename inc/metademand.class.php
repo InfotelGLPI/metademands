@@ -164,6 +164,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $this->addStandardTab('PluginMetademandsField', $ong, $options);
       $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
       $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
+      $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
       if ($this->getField('is_order') == 0) {
          $this->addStandardTab('PluginMetademandsTask', $ong, $options);
       }
@@ -1014,7 +1015,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                                   ["plugin_metademands_metademands_id" => $data['id']])) {
-                     $meta_data[$data['id']] = $data['name'] . ' (' . $data['entities_name'] . ')';
+                     if (empty($name = PluginMetademandsMetademand::displayField($data['id'],'name'))) {
+                        $name = $data['name'];
+                     }
+                     $meta_data[$data['id']] = $name . ' (' . $data['entities_name'] . ')';
                   }
                }
             }
@@ -1247,9 +1251,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
                   $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                }
+               if (empty($n = PluginMetademandsMetademand::displayField($form_metademands_id,'name'))) {
+                  $n = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
+               }
 
                $parent_fields['name'] = self::$PARENT_PREFIX .
-                                        Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
+                                        $n;
                $parent_fields['type'] = $this->fields['type'];
 
                $parent_fields['entities_id'] = $_SESSION['glpiactive_entity'];
@@ -1367,8 +1374,15 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   if ($docitem == null && $config['create_pdf']) {
                      //document PDF Generation
                      //TODO TO Tranlate
-                     $docPdf = new PluginMetaDemandsMetaDemandPdf($this->fields['name'],
-                                                                  $this->fields['comment']);
+                     if (empty($n = PluginMetademandsMetademand::displayField($this->getID(),'name'))) {
+                        $n =  $this->getName();
+                     }
+
+                     if (empty($comm = PluginMetademandsMetademand::displayField($this->getID(),'comment'))) {
+                        $comm =  $this->getField("comment");
+                     }
+                     $docPdf = new PluginMetaDemandsMetaDemandPdf($n,
+                                                                  $comm);
                      if ($metademand->fields['is_order'] == 0) {
                         $values_form['0'] = isset($values) ? $values : [];
                         $docPdf->drawPdf($line['form'], $values_form, false);
@@ -1390,7 +1404,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      }
                      $docPdf->Close();
                      //TODO TO Tranlate
-                     $name    = PluginMetaDemandsMetaDemandPdf::cleanTitle($metademand->fields['name']);
+                     $name    = PluginMetaDemandsMetaDemandPdf::cleanTitle($n);
                      $docitem = $docPdf->addDocument($name, $ticket->getID(), $_SESSION['glpiactive_entity']);
                   }
 
@@ -1551,7 +1565,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $parent_fields_id  = 0;
 
       foreach ($values_form as $k => $values) {
-         $name              = Dropdown::getDropdownName($this->getTable(), $metademands_id);
+         if (empty($name = PluginMetademandsMetademand::displayField($metademands_id,'name'))) {
+            $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
+         }
+
          $result['content'] .= "<table style='width: 100%;border-style: dashed;'>"; // class='mticket'
          $result['content'] .= "<tr><th colspan='2' style='background-color: #ccc;'>" . $name . "</th></tr>";
          if (!empty($options['resources_id'])) {
@@ -2664,6 +2681,37 @@ class PluginMetademandsMetademand extends CommonDropdown {
          }
 
       }
+   }
+
+   /**
+    * Returns the translation of the field
+    *
+    * @param type  $item
+    * @param type  $field
+    *
+    * @return type
+    * @global type $DB
+    *
+    */
+   static function displayField($id, $field) {
+      global $DB;
+
+      // Make new database object and fill variables
+      $iterator = $DB->request([
+                                  'FROM'  => 'glpi_plugin_metademands_metademandtranslations',
+                                  'WHERE' => [
+                                     'itemtype' => self::getType(),
+                                     'items_id' => $id,
+                                     'field'    => $field,
+                                     'language' => $_SESSION['glpilanguage']
+                                  ]]);
+
+      if (count($iterator)) {
+         while ($data = $iterator->next()) {
+            return $data['value'];
+         }
+      }
+      return "";
    }
 
 }

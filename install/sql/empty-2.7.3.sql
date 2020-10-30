@@ -69,7 +69,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `check_value` varchar(255) default NULL,
     `rank` int(1) NOT NULL default '0',
     `order` int(1) NOT NULL default '0',
-    `label` varchar(255) default NULL,
+    `name` varchar(255) default NULL,
     `label2` varchar(255) default NULL,
     `type` varchar(255) default NULL,
     `item` varchar(255) default NULL,
