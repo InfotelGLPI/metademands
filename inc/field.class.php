@@ -1052,7 +1052,7 @@ class PluginMetademandsField extends CommonDBChild {
          $required = "style='color:red'";
       }
 
-      if (empty($label = self::displayField($data['id'], 'label'))) {
+      if (empty($label = self::displayField($data['id'], 'name'))) {
          $label = $data['label'];
       }
       echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
@@ -1111,6 +1111,14 @@ class PluginMetademandsField extends CommonDBChild {
          $namefield = 'field';
       } else {
          $namefield = 'field_basket_' . $idline;
+      }
+
+      if (empty($comment = self::displayField($data['id'], 'comment'))) {
+         $comment = $data['comment'];
+      }
+
+      if (empty($label2 = self::displayField($data['id'], 'label2'))) {
+         $label2 = $data['label2'];
       }
 
       switch ($data['type']) {
@@ -1268,11 +1276,12 @@ class PluginMetademandsField extends CommonDBChild {
             }
             break;
          case 'text':
-            $field = "<input type='text' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "' class='form-control form-control-sm' id='" . $namefield . "[" . $data['id'] . "]' placeholder=\"" . $data['comment'] . "\">";
+            $field = "<input type='text' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "' 
+            class='form-control form-control-sm' id='" . $namefield . "[" . $data['id'] . "]' placeholder=\"" . $comment . "\">";
             break;
          case 'informations':
             if ($on_basket == false) {
-               $field = nl2br($data['comment']);
+               $field = nl2br($comment);
             }
             break;
          case 'link':
@@ -1286,8 +1295,8 @@ class PluginMetademandsField extends CommonDBChild {
                switch ($data['custom_values'][0]) {
                   case 'button' :
                      $btnLabel = __('Link');
-                     if (!empty($data['label2'])) {
-                        $btnLabel = $data['label2'];
+                     if (!empty($label2)) {
+                        $btnLabel = $label2;
                      }
                      $field = "<input type='submit' class='submit' value ='$btnLabel' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
 
@@ -1390,7 +1399,7 @@ class PluginMetademandsField extends CommonDBChild {
             break;
          case 'textarea':
             $value = Html::cleanPostForTextArea($value);
-            $field = "<textarea class='form-control' rows='3' placeholder=\"" . $data['comment'] . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+            $field = "<textarea class='form-control' rows='3' placeholder=\"" . $comment . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
             break;
          case 'datetime_interval':
          case 'datetime':
@@ -2763,14 +2772,6 @@ class PluginMetademandsField extends CommonDBChild {
       ];
 
       $tab[] = [
-         'id'    => '816',
-         'table' => $this->getTable(),
-         'field' => 'label',
-         'name'  => __('Label'),
-         'datatype'   => 'text'
-      ];
-
-      $tab[] = [
          'id'    => '817',
          'table' => $this->getTable(),
          'field' => 'label2',
@@ -2951,7 +2952,7 @@ class PluginMetademandsField extends CommonDBChild {
       $iterator = $DB->request([
                                   'FROM'  => 'glpi_plugin_metademands_fieldtranslations',
                                   'WHERE' => [
-                                     'itemtype' => PluginMetademandsField::getType(),
+                                     'itemtype' => self::getType(),
                                      'items_id' => $id,
                                      'field'    => $field,
                                      'language' => $_SESSION['glpilanguage']

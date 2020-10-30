@@ -1118,6 +1118,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          if (isset($value['metademands_id'])) {
             $son_metademands_ticket = new Ticket();
             $son_metademands_ticket->getFromDB($value['tickets_id']);
+            //TODO To translate ?
             $son_metademands_ticket->input = $son_metademands_ticket->fields;
             $this->convertMetademandToTicket($son_metademands_ticket, $value['metademands_id']);
             $son_metademands_ticket->fields["name"] = addslashes(str_replace(self::$PARENT_PREFIX, '', $ticket->input["name"]));
@@ -1126,6 +1127,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             // Try to convert name
             $son_ticket = new Ticket();
             $son_ticket->getFromDB($value['tickets_id']);
+            //TODO To translate ?
             $son_ticket->fields["name"] = addslashes(str_replace(self::$SON_PREFIX, '', $son_ticket->fields["name"]));
             $son_ticket->updateInDB(['name']);
 
@@ -1352,19 +1354,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $parent_tickets_id = $ticket->add($input);
                   //Hook to do action after ticket creation with metademands
                   if (isset($PLUGIN_HOOKS['metademands'])) {
-                     $plugin = new Plugin();
                      foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                        $p = [];
+                        $p            = [];
                         $p["options"] = $options;
-                        $p["values"] = $values;
-                        $p["line"] = $line;
+                        $p["values"]  = $values;
+                        $p["line"]    = $line;
 
-                        $new_res = PluginMetademandsMetademand::getPluginAfterCreateTicket($plug,$p);
+                        $new_res = PluginMetademandsMetademand::getPluginAfterCreateTicket($plug, $p);
                      }
                   }
 
                   if ($docitem == null && $config['create_pdf']) {
-                     //Génération du document PDF
+                     //document PDF Generation
+                     //TODO TO Tranlate
                      $docPdf = new PluginMetaDemandsMetaDemandPdf($this->fields['name'],
                                                                   $this->fields['comment']);
                      if ($metademand->fields['is_order'] == 0) {
@@ -1387,6 +1389,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $docPdf->drawPdf($line['form'], $values_form, true);
                      }
                      $docPdf->Close();
+                     //TODO TO Tranlate
                      $name    = PluginMetaDemandsMetaDemandPdf::cleanTitle($metademand->fields['name']);
                      $docitem = $docPdf->addDocument($name, $ticket->getID(), $_SESSION['glpiactive_entity']);
                   }
@@ -1599,8 +1602,15 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $style_title = "class='title'";
       //      $style_title = "style='background-color: #cccccc;'";
-      $label  = Toolbox::stripslashes_deep($field['label']);
-      $label2 = Toolbox::stripslashes_deep($field['label2']);
+
+      if (empty($label = PluginMetademandsField::displayField($field['id'], 'name'))) {
+         $label  = Toolbox::stripslashes_deep($field['label']);
+      }
+      if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2'))) {
+         $label2 = Toolbox::stripslashes_deep($field['label2']);
+      }
+      //TODO To translate Custom values ?
+
       if ((!empty($field['value']) || $field['value'] == "0") && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'radio') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
          //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
@@ -1627,9 +1637,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
             case 'dropdown':
                if (!empty($field['custom_values'])
                    && $field['item'] == 'other') {
-                  $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
-                  if (isset($field['custom_values'][$field['value']])) {
-                     $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $field['custom_values'][$field['value']] . "</td>";
+                  $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                  foreach ($custom_values as $k => $val) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                        $custom_values[$k] = $ret;
+                     }
+                  }
+                  if (isset($custom_values[$field['value']])) {
+                     $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $custom_values[$field['value']] . "</td>";
                   }
                } else {
                   switch ($field['item']) {
@@ -1681,11 +1696,16 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'dropdown_multiple':
                if (!empty($field['custom_values'])) {
-                  $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
+                  $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                  foreach ($custom_values as $k => $val) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                        $custom_values[$k] = $ret;
+                     }
+                  }
                   $field['value']         = PluginMetademandsField::_unserialize($field['value']);
                   $parseValue             = [];
                   foreach ($field['value'] as $value) {
-                     array_push($parseValue, $field['custom_values'][$value]);
+                     array_push($parseValue, $custom_values[$value]);
                   }
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                }
@@ -1704,13 +1724,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'checkbox':
                if (!empty($field['custom_values'])) {
-                  $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
+                  $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                  foreach ($custom_values as $k => $val) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                        $custom_values[$k] = $ret;
+                     }
+                  }
                   if (!empty($field['value'])) {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
                   $custom_checkbox   = [];
                   $result['content'] .= "<td $style_title>" . $label . "</td>";
-                  foreach ($field['custom_values'] as $key => $val) {
+                  foreach ($custom_values as $key => $val) {
                      $checked = isset($field['value'][$key]) ? 1 : 0;
                      if ($checked) {
                         $custom_checkbox[] .= $val;
@@ -1725,13 +1750,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'radio':
                if (!empty($field['custom_values'])) {
-                  $field['custom_values'] = PluginMetademandsField::_unserialize($field['custom_values']);
+                  $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                  foreach ($custom_values as $k => $val) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                        $custom_values[$k] = $ret;
+                     }
+                  }
                   if ($field['value'] != "") {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
                   $result['content'] .= "<td $style_title>" . $label . "</td>";
                   $custom_radio      = "";
-                  foreach ($field['custom_values'] as $key => $val) {
+                  foreach ($custom_values as $key => $val) {
                      if ($field['value'] == $key) {
                         $custom_radio = $val;
                      }
@@ -1769,7 +1799,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $metademand_field = new PluginMetademandsField();
                if (isset($field['parent_field_id']) && $metademand_field->getFromDB($field['parent_field_id'])) {
                   $parent_field                  = $field;
-                  $parent_field['custom_values'] = $metademand_field->fields['custom_values'];
+                  $custom_values = PluginMetademandsField::_unserialize($metademand_field->fields['custom_values']);
+                  foreach ($custom_values as $k => $val) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["parent_field_id"], "custom" . $k))) {
+                        $custom_values[$k] = $ret;
+                     }
+                  }
+                  $parent_field['custom_values'] = $custom_values;
                   $parent_field['type']          = $metademand_field->fields['type'];
                   $parent_field['item']          = $metademand_field->fields['item'];
 
@@ -2304,6 +2340,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $this->getFromDB($metademands_id);
          unset($this->fields['id']);
          unset($this->fields['itilcategories_id']);
+
+         //TODO To translate ?
          $this->fields['comment'] = addslashes($this->fields['comment']);
          $this->fields['name']    = addslashes($this->fields['name']);
 
@@ -2606,12 +2644,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @param $plug
     */
-   static function getPluginAfterCreateTicket($plug,$params) {
+   static function getPluginAfterCreateTicket($plug, $params) {
       global $PLUGIN_HOOKS;
 
       $dbu = new DbUtils();
       if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-         if(Plugin::isPluginActive($plug)){
+         if (Plugin::isPluginActive($plug)) {
             $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
 
             foreach ($pluginclasses as $pluginclass) {

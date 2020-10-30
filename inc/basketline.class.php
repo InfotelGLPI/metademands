@@ -132,7 +132,10 @@ class PluginMetademandsBasketline extends CommonDBTM {
          echo "<div class='form-row' $style>";
 
          echo "<div class='form-group basket-title col-md-5'>";
-         echo $v['label'];
+         if (empty($label = PluginMetademandsField::displayField($v['id'], 'name'))) {
+            $label = $v['label'];
+         }
+         echo $label;
          echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $v['id'] . "'>";
          if ($v['is_mandatory'] && $v['type'] != 'parent_field') {
             echo "*";

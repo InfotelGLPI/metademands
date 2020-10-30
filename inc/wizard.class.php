@@ -728,16 +728,26 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<div bloc-id='bloc" . $data["rank"] . "' class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid; width: 100%'>";
                echo "<h4 class=\"bt-title-divider\" style='color:" . $data['color'] . ";'>";
 
-               echo $data['label'];
+               if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
+                  $label = $data['label'];
+               }
+
+               echo $label;
                echo $config_link;
                if (isset($data['label2']) && !empty($data['label2'])) {
                   echo "&nbsp;";
-                  Html::showToolTip($data['label2'],
+                  if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                     $label2 = $data['label2'];
+                  }
+                  Html::showToolTip($label2,
                                     ['awesome-class' => 'fa-info-circle']);
                }
                echo "</h4>";
                if (!empty($data['comment'])) {
-                  echo "<label><i>" . $data['comment'] . "</i></label>";
+                  if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
+                     $comment = $data['comment'];
+                  }
+                  echo "<label><i>" . $comment. "</i></label>";
                }
 
                echo "</div>";
@@ -762,7 +772,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                      $required = "required";
                   }
                   echo "<div class=\"form-group col-md-5\">";
-                  echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label col-form-label-sm'>" . $data['label2'] . "</label>";
+                  if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                     $label2 = $data['label2'];
+                  }
+                  echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label col-form-label-sm'>" . $label2 . "</label>";
                   $value2 = '';
                   if (isset($data['value-2'])) {
                      $value2 = $data['value-2'];

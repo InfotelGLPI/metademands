@@ -191,12 +191,12 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             echo Dropdown::getLanguageName($data['language']);
             echo "</td><td $onhover>";
             $searchOption = $item->getSearchOptionByField('field', $data['field']);
-            if(empty($searchOption)){
-               if(isset($item->fields["custom_values"])&&!empty($item->fields["custom_values"])){
+            if (empty($searchOption)) {
+               if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
                   $custom = PluginMetademandsField::_unserialize($item->fields["custom_values"]);
 
-                  foreach ($custom as $key => $val){
-                     if("custom".$key == $data["field"]){
+                  foreach ($custom as $key => $val) {
+                     if ("custom" . $key == $data["field"]) {
                         $searchOption['name'] = $val;
                      }
 
@@ -264,7 +264,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
                     'items_id' => $item->getID()];
          Ajax::updateItemOnSelectEvent("dropdown_language$rand",
                                        "span_fields",
-                                       $CFG_GLPI["root_doc"] . "/plugins/servicecatalog/ajax/updateTranslationFields.php",
+                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updateTranslationFields.php",
                                        $params);
       }
       echo "</td><td colspan='2'>&nbsp;</td></tr>";
@@ -300,6 +300,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
     */
    static function dropdownFields(CommonDBTM $item, $language = '', $value = '') {
       global $DB;
+
       $options = [];
       foreach ($item->rawSearchOptions() as $id => $field) {
          //Can only translate name, and fields whose datatype is text or string
@@ -312,12 +313,13 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             $options[$field['field']] = $field['name'];
          }
       }
-      if(isset($item->fields["custom_values"])&&!empty($item->fields["custom_values"])){
+      if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
          $custom = PluginMetademandsField::_unserialize($item->fields["custom_values"]);
-         foreach ($custom as $key => $val){
-            $options["custom".$key] = $val;
+         if (is_array($custom)) {
+            foreach ($custom as $key => $val) {
+               $options["custom" . $key] = $val;
+            }
          }
-
       }
 
       $used = [];
