@@ -2966,4 +2966,20 @@ class PluginMetademandsField extends CommonDBChild {
       return "";
    }
 
+
+   /**
+    * @return array
+    */
+   /**
+    * @return array
+    */
+   function getForbiddenStandardMassiveAction() {
+      $forbidden = parent::getForbiddenStandardMassiveAction();
+
+      $forbidden[] = 'merge';
+
+      $forbidden[] = 'clone';
+      return $forbidden;
+   }
+
 }
