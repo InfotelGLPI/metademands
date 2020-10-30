@@ -12,6 +12,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldtranslations`
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
+
 DROP TABLE IF EXISTS `glpi_plugin_metademands_metademandtranslations`;
 CREATE TABLE `glpi_plugin_metademands_metademandtranslations`
 (
@@ -27,5 +28,7 @@ CREATE TABLE `glpi_plugin_metademands_metademandtranslations`
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
 
-ALTER TABLE `glpi_plugin_metademands_fields` ADD `hidden_block` VARCHAR(255) NULL AFTER `hidden_link`;
-ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `label` `name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `glpi_plugin_metademands_fields`
+    ADD `hidden_block` VARCHAR(255) NULL AFTER `hidden_link`;
+ALTER TABLE `glpi_plugin_metademands_fields`
+    CHANGE `label` `name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
