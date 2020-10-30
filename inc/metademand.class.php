@@ -1604,12 +1604,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       //      $style_title = "style='background-color: #cccccc;'";
 
       if (empty($label = PluginMetademandsField::displayField($field['id'], 'name'))) {
-         $label  = Toolbox::stripslashes_deep($field['label']);
+         $label  = Toolbox::stripslashes_deep($field['name']);
       }
       if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2'))) {
          $label2 = Toolbox::stripslashes_deep($field['label2']);
       }
-      //TODO To translate Custom values ?
 
       if ((!empty($field['value']) || $field['value'] == "0") && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'radio') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
@@ -2356,7 +2355,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                            foreach ($line['form'] as $values) {
                               unset($values['id']);
                               $values['plugin_metademands_metademands_id'] = $new_metademands_id;
-                              $values['label']                             = addslashes($values['label']);
+                              $values['name']                             = addslashes($values['name']);
                               $values['label2']                            = addslashes($values['label2']);
                               $values['comment']                           = addslashes($values['comment']);
 

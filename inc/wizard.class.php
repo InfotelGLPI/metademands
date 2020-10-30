@@ -729,7 +729,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<h4 class=\"bt-title-divider\" style='color:" . $data['color'] . ";'>";
 
                if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
-                  $label = $data['label'];
+                  $label = $data['name'];
                }
 
                echo $label;
@@ -1761,7 +1761,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
          $value['second_date_ok'] = true;
          $value['id']             = $id . '-2';
-         $value['label']          = $value['label2'];
+         $value['name']          = $value['label2'];
          $data[$id . '-2']        = $value;
       }
 
@@ -1863,6 +1863,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     */
    static function checkMandatoryFields($value = [], $fields = [], $fieldname, $post = []) {
 
+      //TODO To Translate ?
       $checkKo             = [];
       $checkKoDateInterval = [];
       $checkNbDoc          = [];
@@ -1880,7 +1881,7 @@ class PluginMetademandsWizard extends CommonDBTM {
              && $value['type'] != 'checkbox'
              && $value['type'] != 'informations'
              && $value['type'] != 'upload') {
-            $msg[]     = $value['label'];
+            $msg[]     = $value['name'];
             $checkKo[] = 1;
          }
 
@@ -1893,7 +1894,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             $field = new PluginMetademandsField();
             $field->getFromDB($value['fields_link']);
-            $msg[]     = $field->fields['label'] . ' ' . $field->fields['label2'];
+            $msg[]     = $field->fields['name'] . ' ' . $field->fields['label2'];
             $checkKo[] = 1;
 
          }
@@ -1901,7 +1902,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          if ($value['type'] == 'radio'
              && $value['is_mandatory']) {
             if ($fields['value'] == NULL) {
-               $msg[]     = $value['label'];
+               $msg[]     = $value['name'];
                $checkKo[] = 1;
             }
          }
@@ -1910,7 +1911,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          if ($value['type'] == 'checkbox'
              && $value['is_mandatory']) {
             if ($fields['value'] == NULL) {
-               $msg[]     = $value['label'];
+               $msg[]     = $value['name'];
                $checkKo[] = 1;
             }
          }
@@ -1922,7 +1923,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             // date Null
             if ($value['is_mandatory']
                 && $fields['value'] == 'NULL') {
-               $msg[]     = $value['label'];
+               $msg[]     = $value['name'];
                $checkKo[] = 1;
             }
             // date not < today
@@ -1930,7 +1931,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                 && !empty($fields['value'])
                 && !empty($value['check_value'])
                 && !(strtotime($fields['value']) >= strtotime(date('Y-m-d')))) {
-               $msg[]     = sprintf(__("Date %s cannot be less than today's date", 'metademands'), $value['label']);
+               $msg[]     = sprintf(__("Date %s cannot be less than today's date", 'metademands'), $value['name']);
                $checkKo[] = 1;
             }
          }
@@ -1939,7 +1940,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          if ($value['type'] == "datetime_interval"
              && isset($all_fields[$fields['id'] . '-2'])) {
             if (strtotime($fields['value']) > strtotime($all_fields[$fields['id'] . '-2'])) {
-               $msg[]                 = sprintf(__('Date %1$s cannot be greater than date %2$s', 'metademands'), $value['label'], $value['label2']);
+               $msg[]                 = sprintf(__('Date %1$s cannot be greater than date %2$s', 'metademands'), $value['name'], $value['label2']);
                $checkKoDateInterval[] = 1;
             }
          }
@@ -1949,11 +1950,11 @@ class PluginMetademandsWizard extends CommonDBTM {
              && $value['is_mandatory']) {
             if (isset($post['_filename'])) {
                if (empty($post['_filename'][0])) {
-                  $msg[]     = $value['label'];
+                  $msg[]     = $value['name'];
                   $checkKo[] = 1;
                }
             } else {
-               $msg[]     = $value['label'];
+               $msg[]     = $value['name'];
                $checkKo[] = 1;
             }
          }
@@ -1962,7 +1963,7 @@ class PluginMetademandsWizard extends CommonDBTM {
              && !empty($value["max_upload"])
              && isset($post['_filename'])) {
             if ($value["max_upload"] < count($post['_filename'])) {
-               $msg2[]       = $value['label'];
+               $msg2[]       = $value['name'];
                $checkNbDoc[] = 1;
             }
          }
@@ -1972,7 +1973,7 @@ class PluginMetademandsWizard extends CommonDBTM {
              && !empty($value["regex"])) {
 
             if (!preg_match(($value['regex']), $fields['value'])) {
-               $msg3[]       = $value['label'];
+               $msg3[]       = $value['name'];
                $checkRegex[] = 1;
             }
          }

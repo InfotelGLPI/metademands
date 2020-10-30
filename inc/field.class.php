@@ -498,7 +498,7 @@ class PluginMetademandsField extends CommonDBChild {
                Html::showMassiveActionCheckBox(__CLASS__, $id);
             }
             echo "</td>";
-            $name = $value['label'] . (!empty($value['label2']) ? '&nbsp;-&nbsp;' . $value['label2'] : '');
+            $name = $value['name'] . (!empty($value['label2']) ? '&nbsp;-&nbsp;' . $value['label2'] : '');
             echo "<td><a href='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $id . "'>";
             if (empty(trim($name))) {
                echo __('ID') . " - " . $id;
@@ -511,10 +511,10 @@ class PluginMetademandsField extends CommonDBChild {
             if ($value['type'] == 'parent_field') {
                $field = new self();
                $field->getFromDB($value['parent_field_id']);
-               if (empty(trim($field->fields['label']))) {
+               if (empty(trim($field->fields['name']))) {
                   echo " ( ID - " . $value['parent_field_id'] . ")";
                } else {
-                  echo " (" . $field->fields['label'] . ")";
+                  echo " (" . $field->fields['name'] . ")";
                }
             }
             echo "</td>";
@@ -626,7 +626,7 @@ class PluginMetademandsField extends CommonDBChild {
                                 ['NOT' => ['type' => ['parent_field', 'upload']]]];
                $datas_fields = $field->find($condition, ['rank', 'order']);
                foreach ($datas_fields as $data_field) {
-                  $list_fields[$data_field['id']] = $data_field['label'];
+                  $list_fields[$data_field['id']] = $data_field['name'];
                }
             }
 
@@ -1053,7 +1053,7 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       if (empty($label = self::displayField($data['id'], 'name'))) {
-         $label = $data['label'];
+         $label = $data['name'];
       }
       echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
       echo $label . " $upload";
@@ -2000,7 +2000,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $datas_fields = $this->find($condition, ['rank', 'order']);
                   //formatting the name to display (Name of metademand - Father's Field Label - type)
                   foreach ($datas_fields as $data_field) {
-                     $fields[$data_field['id']] = $name_metademand . " - " . $data_field['label'] . " - " . self::getFieldTypesName($data_field['type']);
+                     $fields[$data_field['id']] = $name_metademand . " - " . $data_field['name'] . " - " . self::getFieldTypesName($data_field['type']);
                   }
                }
             }
@@ -2145,7 +2145,7 @@ class PluginMetademandsField extends CommonDBChild {
          if ($value['item'] != "itilcategory"
              && $value['item'] != "informations"
              && $idF != $id) {
-            $data[$id] = urldecode(html_entity_decode($value['label']));
+            $data[$id] = urldecode(html_entity_decode($value['name']));
             //            if (!empty($value['label2'])) {
             //               $data[$id] .= ' - ' . $value['label2'];
             //            }
@@ -2173,7 +2173,7 @@ class PluginMetademandsField extends CommonDBChild {
          if ($value['item'] != "itilcategory"
              && $value['item'] != "informations"
              && $idF != $id) {
-            $data[$id] = urldecode(html_entity_decode($value['label']));
+            $data[$id] = urldecode(html_entity_decode($value['name']));
 
             //            if (!empty($value['label2'])) {
             //               $data[$id] .= ' - ' . urldecode(html_entity_decode($value['label2']));
@@ -2693,7 +2693,7 @@ class PluginMetademandsField extends CommonDBChild {
       $msg     = [];
       $checkKo = false;
 
-      $mandatory_fields = ['label'  => __('Label'),
+      $mandatory_fields = ['name'  => __('Label'),
                            'label2' => __('Additional label', 'metademands'),
                            'type'   => __('Type'),
                            'item'   => __('Object', 'metademands')];
@@ -2872,7 +2872,7 @@ class PluginMetademandsField extends CommonDBChild {
       $order = [Dropdown::EMPTY_VALUE];
 
       foreach ($this->find($restrict, ['order']) as $id => $values) {
-         $order[$id] = $values['label'];
+         $order[$id] = $values['name'];
          if (!empty($values['label2'])) {
             $order[$id] .= ' - ' . $values['label2'];
          }

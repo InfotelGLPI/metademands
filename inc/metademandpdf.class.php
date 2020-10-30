@@ -380,8 +380,8 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                $fielCount++;
             }
 
-            if (!empty($elt['label'])) {
-               $widths[] = $this->GetStringWidth($elt['label']);
+            if (!empty($elt['name'])) {
+               $widths[] = $this->GetStringWidth($elt['name']);
             }
          }
          $max_width         = max($widths);
@@ -407,9 +407,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                }
 
                $label = "";
-               if (!empty($elt['label'])) {
+               if (!empty($elt['name'])) {
                   if (empty($label = PluginMetademandsField::displayField($elt['id'], 'name'))) {
-                     $label = Toolbox::stripslashes_deep($elt['label']);
+                     $label = Toolbox::stripslashes_deep($elt['name']);
                   }
                   $label = str_replace("’", "'", $label);
                   $label = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label));
