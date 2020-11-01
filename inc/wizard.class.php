@@ -192,7 +192,10 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "</h4>";
          if ($meta->getFromDB($parameters['metademands_id'])) {
-            echo "<label><i>" . nl2br($meta->fields['comment']) . "</i></label>";
+            if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(),'comment'))) {
+               $comment = $meta->fields['comment'];
+            }
+            echo "<label><i>" . nl2br($comment) . "</i></label>";
          }
          echo "</div></div>";
 
