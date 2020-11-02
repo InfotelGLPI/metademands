@@ -45,6 +45,12 @@ switch ($_POST['step']) {
                                  $_POST['previous_fields_id'],
                                  $_POST["metademands_id"]);
       break;
+   case 'object':
+      if($_POST["type"] == "dropdown" || $_POST["type"] == "dropdown_object" ){
+         PluginMetademandsField::dropdownFieldItems("item", ['value' => $_POST['item'],'rand'=>$_POST["rand"]],$_POST["type"]);
+      }
+
+      break;
    default:
       $fields = new PluginMetademandsField();
       $fields->getEditValue(PluginMetademandsField::_unserialize(stripslashes($_POST['custom_values'])),

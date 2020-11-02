@@ -490,6 +490,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      break;
 
                   case 'dropdown':
+                  case 'dropdown_object':
                      $value = " ";
                      switch ($elt['item']) {
                         case 'user':

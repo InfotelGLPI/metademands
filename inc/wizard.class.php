@@ -1187,6 +1187,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                   case 'group':
                   case 'dropdown':
+                  case 'dropdown_object':
                   case 'other':
                      $script = "$('[name=\"field[" . $data["id"] . "]\"]').change(function() {";
                      //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
@@ -1549,6 +1550,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                   case 'group':
                   case 'dropdown':
+                  case 'dropdown_object':
                   case 'other':
                      $script = "$('[name=\"field[" . $data["id"] . "]\"]').change(function() {";
                      //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";

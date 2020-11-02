@@ -1653,6 +1653,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $result['content'] .= "<th colspan='2' style='background-color: #ccc;'>" . $label . "</th>";
                break;
             case 'dropdown':
+            case 'dropdown_object':
                if (!empty($field['custom_values'])
                    && $field['item'] == 'other') {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);

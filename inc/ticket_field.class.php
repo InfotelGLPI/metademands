@@ -145,6 +145,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
          switch ($type) {
             case 'yesno':
             case 'dropdown':
+            case 'dropdown_object':
                if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
                   return false;
                } else if ($check_value != $value

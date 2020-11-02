@@ -41,7 +41,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $types = ['PluginMetademandsMetademand'];
 
-   static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
+   static $field_types = ['', 'dropdown','dropdown_object', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
    static $list_items  = ['', 'other', 'ITILCategory_Metademands',
                           'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
@@ -293,6 +293,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'change_type'    => 1];
       Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", $CFG_GLPI["root_doc"] .
                                                                                 "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
+
+
       echo "</td>";
 
       // ORDER
@@ -324,7 +326,26 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<span id='show_item' style='display:none'>";
       $randItem = self::dropdownFieldItems("item", ['value' => $this->fields["item"]],$this->fields["type"]);
       echo "</span>";
-
+      $paramsType = ['value'          => '__VALUE__',
+                     'type'           => '__VALUE__',
+                     'item'           => $this->fields['item'],
+                     'task_link'      => $this->fields['plugin_metademands_tasks_id'],
+                     'fields_link'    => $this->fields['fields_link'],
+                     'max_upload'     => $this->fields['max_upload'],
+                     'regex'          => $this->fields['regex'],
+                     //                     'fields_display' => $this->fields['fields_display'],
+                     'hidden_link'    => $this->fields['hidden_link'],
+                     'hidden_block'    => $this->fields['hidden_block'],
+                     'custom_values'  => $this->fields['custom_values'],
+                     'comment_values' => $this->fields['comment_values'],
+                     'default_values' => $this->fields['default_values'],
+                     'check_value'    => $this->fields['check_value'],
+                     'step'           => 'object',
+                     'rand'           => $randItem,
+                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                     'change_type'    => 1];
+      Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", $CFG_GLPI["root_doc"] .
+                                                                                "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
       echo "<span id='show_item_title' style='display:none'>";
       //      echo Html::script('/lib/jqueryplugins/spectrum-colorpicker/spectrum.js');
       //      echo Html::css('lib/jqueryplugins/spectrum-colorpicker/spectrum.min.css');
@@ -354,6 +375,7 @@ class PluginMetademandsField extends CommonDBChild {
       $params = ['id'                 => 'dropdown_type' . $randType,
                  'to_change'          => 'dropdown_item' . $randItem,
                  'value'              => 'dropdown',
+                 'value2'              => 'dropdown_object',
                  'current_item'       => $this->fields['item'],
                  'current_type'       => $this->fields['type'],
                  'titleDisplay'       => 'show_item_object',
@@ -547,6 +569,7 @@ class PluginMetademandsField extends CommonDBChild {
                         echo Dropdown::getYesNo($value['check_value'] - 1);
                         break;
                      case 'dropdown':
+                     case 'dropdown_object':
                      case'checkbox':
                      case 'radio':
                         echo __('Not null value', 'metademands');
@@ -661,6 +684,8 @@ class PluginMetademandsField extends CommonDBChild {
       switch ($value) {
          case 'dropdown':
             return __('Dropdown', 'metademands');
+         case 'dropdown_object':
+            return __('Glpi Object', 'metademands');
          case 'dropdown_multiple':
             return __('Dropdown multiple', 'metademands');
          case 'text':
@@ -896,7 +921,7 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @return dropdown of items
     */
-   static function dropdownFieldItems($name, $param = [],$typeFiled) {
+   static function dropdownFieldItems($name, $param = [],$typefield) {
       global $PLUGIN_HOOKS;
 
       $p = [];
@@ -918,7 +943,7 @@ class PluginMetademandsField extends CommonDBChild {
 //         }
 //      }
 
-      switch ($type_fields){
+      switch ($typefield){
          case "dropdown":
             $options = array_merge_recursive([],Dropdown::getStandardDropdownItemTypes());
             return Dropdown::showFromArray($name, $options, $p);
@@ -1173,6 +1198,7 @@ class PluginMetademandsField extends CommonDBChild {
             }
             break;
          case 'dropdown':
+         case 'dropdown_object':
             switch ($data['item']) {
                case 'other' :
                   if (!empty($data['custom_values'])) {
@@ -1505,6 +1531,7 @@ class PluginMetademandsField extends CommonDBChild {
                               }
                               break;
                            case 'dropdown':
+                           case 'dropdown_object':
                               if (!empty($field_value['custom_values'])
                                   && $field_value['item'] == 'other') {
                                  $value_parent_field = $field_value['custom_values'][$value_parent_field];
@@ -1644,7 +1671,7 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'other', 'checkbox', 'radio', 'dropdown_multiple','dropdown',
+      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'other', 'checkbox', 'radio', 'dropdown_multiple','dropdown','dropdown_object',
                         'parent_field', 'number', 'text', 'textarea', 'upload', 'ITILCategory_Metademands',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
       $new_fields    = [];
@@ -1929,6 +1956,7 @@ class PluginMetademandsField extends CommonDBChild {
 //            break;
          case 'other':
          case 'dropdown':
+         case 'dropdown_object':
          case 'dropdown_multiple':
          $html .= "<tr><td>";
          $html .= __('Value to check', 'metademands');
@@ -2270,6 +2298,7 @@ class PluginMetademandsField extends CommonDBChild {
             case 'other':
             case 'dropdown_multiple':
             case 'dropdown':
+            case 'dropdown_object':
                echo "<tr>";
                if (is_array($values) && !empty($values)) {
                   foreach ($values as $key => $value) {
@@ -2733,7 +2762,7 @@ class PluginMetademandsField extends CommonDBChild {
       foreach ($input as $key => $value) {
          if (array_key_exists($key, $mandatory_fields)) {
             if (empty($value)) {
-               if (($key == 'item' && $input['type'] == 'dropdown')
+               if (($key == 'item' && ($input['type'] == 'dropdown' || $input['type'] == 'dropdown_object'))
                    || ($key == 'label2' && $input['type'] == 'datetime_interval')) {
                   $msg[]   = $mandatory_fields[$key];
                   $checkKo = true;
