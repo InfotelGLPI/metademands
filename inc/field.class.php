@@ -43,7 +43,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
-   static $list_items  = ['', 'user', 'usertitle', 'usercategory', 'group', 'location', 'other', 'itilcategory',
+   static $list_items  = ['', 'other', 'itilcategory',
                           'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'appliance'];
 
    static $not_null = 'NOT_NULL';
@@ -384,9 +384,10 @@ class PluginMetademandsField extends CommonDBChild {
       // SHOW SPECIFIC VALUES
       echo "<td colspan='4'>";
       echo "<div id='show_values'>";
-      if ($this->fields['type'] == 'dropdown') {
-         $this->fields['type'] = $this->fields['item'];
-      }
+      $this->fields["dropdown"] = false;
+//      if ($this->fields['type'] == 'dropdown') {
+//         $this->fields['type'] = $this->fields['item'];
+//      }
       $paramTypeField = ['value'          => $this->fields['type'],
                          'custom_values'  => $this->fields['custom_values'],
                          'comment_values' => $this->fields['comment_values'],
@@ -401,6 +402,7 @@ class PluginMetademandsField extends CommonDBChild {
                          'item'           => $this->fields['item'],
                          'type'           => $this->fields['type'],
                          'check_value'    => $this->fields['check_value'],
+                         'drop'    =>  $this->fields["dropdown"],
                          'metademands_id' => $this->fields["plugin_metademands_metademands_id"]];
 
       $this->getEditValue(self::_unserialize($this->fields['custom_values']),
@@ -907,14 +909,14 @@ class PluginMetademandsField extends CommonDBChild {
 
       $type_fields = self::$list_items;
 
-      if (isset($PLUGIN_HOOKS['metademands'])) {
-         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-            $new_fields = self::addPluginDropdownFieldItems($plug);
-            if ($plugin->isActivated($plug) && is_array($new_fields)) {
-               $type_fields = array_merge($type_fields, $new_fields);
-            }
-         }
-      }
+//      if (isset($PLUGIN_HOOKS['metademands'])) {
+//         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+//            $new_fields = self::addPluginDropdownFieldItems($plug);
+//            if ($plugin->isActivated($plug) && is_array($new_fields)) {
+//               $type_fields = array_merge($type_fields, $new_fields);
+//            }
+//         }
+//      }
 
       if ($data['enable_application_environment'] == 0) {
          if (($key = array_search('PluginMetademandsITILApplication', $type_fields)) !== false) {
@@ -942,6 +944,18 @@ class PluginMetademandsField extends CommonDBChild {
             $options[$items] = self::getFieldItemsName($items);
          }
       }
+
+      if (isset($PLUGIN_HOOKS['metademands'])) {
+         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+            $new_fields = self::addPluginDropdownFieldItems($plug);
+            if ($plugin->isActivated($plug) && is_array($new_fields)) {
+               $options = array_merge_recursive($options, $new_fields);
+            }
+         }
+      }
+      $options = array_merge_recursive($options,Dropdown::getStandardDropdownItemTypes());
+      $options = array_merge_recursive($options,self::getGlpiObject());
+
       return Dropdown::showFromArray($name, $options, $p);
 
    }
@@ -992,6 +1006,11 @@ class PluginMetademandsField extends CommonDBChild {
                      return Dropdown::EMPTY_VALUE;
                   }
                }
+            }
+            $dbu = new DbUtils();
+            $item               = $dbu->getItemForItemtype($value);
+            if ($item && is_callable([$item, 'getTypeName'])) {
+               return $item::getTypeName();
             }
             return Dropdown::EMPTY_VALUE;
       }
@@ -1192,7 +1211,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $metademand = new PluginMetademandsMetademand();
                   $metademand->getFromDB($data['plugin_metademands_metademands_id']);
                   $values = json_decode($metademand->fields['itilcategories_id']);
-                  if (count($values) == 1) {
+                  if (!empty($values) && count($values) == 1) {
                      foreach ($values as $key => $val)
                         $itilcategories_id = $val;
                   }
@@ -1638,7 +1657,7 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group',
-                        'location', 'other', 'checkbox', 'radio', 'dropdown_multiple',
+                        'location', 'other', 'checkbox', 'radio', 'dropdown_multiple','dropdown',
                         'parent_field', 'number', 'text', 'textarea', 'upload', 'itilcategory',
                         'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'appliance'];
       $new_fields    = [];
@@ -1667,6 +1686,9 @@ class PluginMetademandsField extends CommonDBChild {
          $metademands = new PluginMetademandsMetademand();
          $metademands->getFromDB($options['metademands_id']);
          if (in_array($params['value'], $new_fields)) {
+            $params['value'] = $params['type'];
+         }
+         if($params["type"] === "dropdown" && $params["value"] != "other"){
             $params['value'] = $params['type'];
          }
          if (isset($params['value'])) {
@@ -1873,81 +1895,103 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "<input type='checkbox' name='check_value' value='1' $checked>";
             $html .= "</td></tr>";
             break;
-         case 'user':
-         case 'usertitle':
-         case 'usercategory':
-         case 'group':
-         case 'location':
-         case 'PluginResourcesResource':
-         case 'PluginMetademandsITILApplication':
-         case 'PluginMetademandsITILEnvironment':
-            // Value to check
-            $html .= "<tr><td>";
-            $html .= __('Value to check', 'metademands');
-            $html .= " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
-            $html .= '</td>';
-            $html .= '<td>';
-            if (class_exists($params['value'])) {
-               //               if($params['value'] == 'group' || $params['value'] == 'usertitle'|| $params['value'] == 'usercategory'){
-               //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
-               //               } else{
-               $name = "check_value[]";
-               //               }
-               $html .= $params['value']::Dropdown(["name"    => $name,
-                                                    "value"   => $params['check_value'],
-                                                    "display" => $display,
-                                                    "addicon" => false]);
-            } else {
-               $elements[0] = Dropdown::EMPTY_VALUE;
-               if (is_array(json_decode($params['custom_values'], true))) {
-                  $elements += json_decode($params['custom_values'], true);
-                  //                  $elements = html_entity_decode();
-               }
-               foreach ($elements as $key => $val) {
-                  $elements[$key] = urldecode($val);
-               }
-               $html .= Dropdown::showFromArray("check_value[]",
-                                                $elements,
-                                                ['value'   => $params['check_value'],
-                                                 'display' => $display]);
-            }
-
-            $html .= "</td>";
-            $html .= "</tr>";
-
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
-
-            break;
+//         case 'user':
+//         case 'usertitle':
+//         case 'usercategory':
+//         case 'group':
+//         case 'location':
+//         case 'PluginResourcesResource':
+//         case 'PluginMetademandsITILApplication':
+//         case 'PluginMetademandsITILEnvironment':
+//            // Value to check
+//            $html .= "<tr><td>";
+//            $html .= __('Value to check', 'metademands');
+//            $html .= " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+//            $html .= '</td>';
+//            $html .= '<td>';
+//            if (class_exists($params['value'])) {
+//               //               if($params['value'] == 'group' || $params['value'] == 'usertitle'|| $params['value'] == 'usercategory'){
+//               //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
+//               //               } else{
+//               $name = "check_value[]";
+//               //               }
+//               $html .= $params['value']::Dropdown(["name"    => $name,
+//                                                    "value"   => $params['check_value'],
+//                                                    "display" => $display,
+//                                                    "addicon" => false]);
+//            } else {
+//               $elements[0] = Dropdown::EMPTY_VALUE;
+//               if (is_array(json_decode($params['custom_values'], true))) {
+//                  $elements += json_decode($params['custom_values'], true);
+//                  //                  $elements = html_entity_decode();
+//               }
+//               foreach ($elements as $key => $val) {
+//                  $elements[$key] = urldecode($val);
+//               }
+//               $html .= Dropdown::showFromArray("check_value[]",
+//                                                $elements,
+//                                                ['value'   => $params['check_value'],
+//                                                 'display' => $display]);
+//            }
+//
+//            $html .= "</td>";
+//            $html .= "</tr>";
+//
+//            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
+//
+//            break;
          case 'other':
          case 'dropdown':
          case 'dropdown_multiple':
-            $html .= "<tr><td>";
-            $html .= __('Value to check', 'metademands');
-            $html .= " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
-            $html .= '</td>';
-            $html .= '<td>';
-            if (class_exists($params['value'])) {
-               if ($params['value'] == 'group') {
-                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
-               } else {
+         $html .= "<tr><td>";
+         $html .= __('Value to check', 'metademands');
+         $html .= " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+         $html .= '</td>';
+         $html .= '<td>';
+            switch ($params["item"]){
+               case 'itilcategory':
+                  $metademand = new PluginMetademandsMetademand();
+                  $metademand->getFromDB($metademands_id);
+                  $values = json_decode($metademand->fields['itilcategories_id']);
+
                   $name = "check_value[]";
-               }
-               $html .= $params['value']::Dropdown(["name" => $name,
-                                                    "value" => $params['check_value'],
-                                                    "display" => $display]);
-            } else {
-               $elements[0] = Dropdown::EMPTY_VALUE;
-               if (is_array(json_decode($params['custom_values'], true))) {
-                  $elements += json_decode($params['custom_values'], true);
-               }
-               foreach ($elements as $key => $val) {
-                  $elements[$key] = urldecode($val);
-               }
-               $html .= Dropdown::showFromArray("check_value[]",
-                                                $elements,
-                                                ['value'   => $params['check_value'],
-                                                 'display' => $display]);
+                     $opt = ['name'      =>$name,
+                             'right'     => 'all',
+                             'value'     => $params['check_value'],
+                             'condition' => ["id" => $values],
+                             'display'   => false];
+
+
+                  $html .= ITILCategory::dropdown($opt);
+
+                  break;
+               default:
+                  if (class_exists($params['value'])) {
+                     //               if ($params['value'] == 'group') {
+                     //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
+                     //               } else {
+                     $name = "check_value[]";
+                     //               }
+                     $html .= $params['item']::Dropdown(["name" => $name,
+                                                         "value" => $params['check_value'],
+                                                         "display" => $display]);
+                  } else {
+                     $elements[0] = Dropdown::EMPTY_VALUE;
+                     if (is_array(json_decode($params['custom_values'], true))) {
+                        $elements += json_decode($params['custom_values'], true);
+                     }
+                     foreach ($elements as $key => $val) {
+                        $elements[$key] = urldecode($val);
+                     }
+                     $html .= Dropdown::showFromArray("check_value[]",
+                                                      $elements,
+                                                      ['value'   => $params['check_value'],
+                                                       'display' => $display]);
+                  }
+                  break;
             }
+
+
 
             $html .= "</td>";
             $html .= "</tr>";
@@ -2980,6 +3024,52 @@ class PluginMetademandsField extends CommonDBChild {
 
       $forbidden[] = 'clone';
       return $forbidden;
+   }
+
+   static function getGlpiObject(){
+      $optgroup = [
+         __("Assets") => [
+            Computer::class         => Computer::getTypeName(2),
+            Monitor::class          => Monitor::getTypeName(2),
+            Software::class         => Software::getTypeName(2),
+            Networkequipment::class => Networkequipment::getTypeName(2),
+            Peripheral::class       => Peripheral::getTypeName(2),
+            Printer::class          => Printer::getTypeName(2),
+            Cartridgeitem::class    => Cartridgeitem::getTypeName(2),
+            Consumableitem::class   => Consumableitem::getTypeName(2),
+            Phone::class            => Phone::getTypeName(2),
+            Line::class             => Line::getTypeName(2)],
+         __("Assistance") => [
+            Ticket::class           => Ticket::getTypeName(2),
+            Problem::class          => Problem::getTypeName(2),
+            TicketRecurrent::class  => TicketRecurrent::getTypeName(2)],
+         __("Management") => [
+            Budget::class           => Budget::getTypeName(2),
+            Supplier::class         => Supplier::getTypeName(2),
+            Contact::class          => Contact::getTypeName(2),
+            Contract::class         => Contract::getTypeName(2),
+            Document::class         => Document::getTypeName(2),
+            Project::class          => Project::getTypeName(2)],
+         __("Tools") => [
+            Reminder::class         => __("Notes"),
+            RSSFeed::class          => __("RSS feed")],
+         __("Administration") => [
+            User::class             => User::getTypeName(2),
+            Group::class            => Group::getTypeName(2),
+            Entity::class           => Entity::getTypeName(2),
+            Profile::class          => Profile::getTypeName(2)],
+      ];
+      if (class_exists(PassiveDCEquipment::class)) {
+         // Does not exists in GLPI 9.4
+         $optgroup['Assets'][PassiveDCEquipment::class] = PassiveDCEquipment::getTypeName(2);
+      }
+      $plugin = new Plugin();
+      if ($plugin->isActivated('appliances')) {
+         $optgroup[__("Assets")][PluginAppliancesAppliance::class] = PluginAppliancesAppliance::getTypeName(2);
+      }
+
+      return $optgroup;
+
    }
 
 }
