@@ -88,7 +88,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
 
       $dbu = new DbUtils();
       if (!$withtemplate) {
-         if ($item->getType() == 'PluginMetademandsMetademand' && $item->fields['type'] != Ticket::INCIDENT_TYPE) {
+         if ($item->getType() == 'PluginMetademandsMetademand') {
             if ($_SESSION['glpishow_count_on_tabs']) {
                return self::createTabEntry(self::getTypeName(),
                                            $dbu->countElementsInTable($this->getTable(),
@@ -627,9 +627,11 @@ class PluginMetademandsTask extends CommonTreeDropdown {
 
          $type  = Ticket::DEMAND_TYPE;
          $dbu   = new DbUtils();
+         $meta = new PluginMetademandsMetademand();
+         $meta->getFromDB($input["plugin_metademands_metademands_id"]);
          $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
                                             ["`itilcategories_id`" => $input["itilcategories_id"],
-                                             "`type`"              => $type]);
+                                             "`type`"              => $meta->getField("type")]);
 
          if (!empty($metas)) {
             $input = [];

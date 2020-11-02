@@ -131,7 +131,7 @@ function plugin_metademands_install() {
 
    //version 2.7.3
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_block")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.3.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.4.sql");
 
       $field = new PluginMetademandsField();
       $fields = $field->find(['type'=>"dropdown","item"=>"user"]);
@@ -163,7 +163,7 @@ function plugin_metademands_install() {
 
 
    }
-   
+
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    PluginMetademandsProfile::initProfile();
