@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once(GLPI_ROOT . "/plugins/metademands/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/empty-2.7.3.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/empty-2.7.4.sql");
    }
 
    if (!$DB->tableExists("glpi_plugin_metademands_itilapplications") || !$DB->tableExists("glpi_plugin_metademands_itilenvironments")) {
@@ -129,9 +129,10 @@ function plugin_metademands_install() {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.2.sql");
    }
 
-   //version 2.7.3
+   //version 2.7.4
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_block")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.4.sql");
+
 
       $field = new PluginMetademandsField();
       $fields = $field->find(['type'=>"dropdown","item"=>"user"]);
@@ -159,8 +160,6 @@ function plugin_metademands_install() {
          $f["item"] = "Location";
          $field->update($f);
       }
-
-
 
    }
 
@@ -197,7 +196,9 @@ function plugin_metademands_uninstall() {
               "glpi_plugin_metademands_fields",
               "glpi_plugin_metademands_tasks",
               "glpi_plugin_metademands_metademands",
-              "glpi_plugin_metademands_basketlines"];
+              "glpi_plugin_metademands_basketlines",
+              "glpi_plugin_metademands_fieldtranslations",
+              "glpi_plugin_metademands_metademandtranslations"];
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
