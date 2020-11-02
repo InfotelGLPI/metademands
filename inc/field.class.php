@@ -1008,7 +1008,7 @@ class PluginMetademandsField extends CommonDBChild {
                }
             }
             $dbu = new DbUtils();
-            if ($value$item = $dbu->getItemForItemtype($value)) {
+            if ($value!= 0 && $item = $dbu->getItemForItemtype($value)) {
                if (is_callable([$item, 'getTypeName'])) {
                   return $item::getTypeName();
                }
