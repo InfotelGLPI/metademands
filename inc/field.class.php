@@ -43,8 +43,8 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $field_types = ['', 'dropdown', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
-   static $list_items  = ['', 'other', 'itilcategory',
-                          'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'appliance'];
+   static $list_items  = ['', 'other', 'ITILCategory_Metademands',
+                          'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
 
    static $not_null = 'NOT_NULL';
 
@@ -189,7 +189,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       $metademand_fields = new self();
       $metademand_fields->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-                                           'item'                              => 'itilcategory']);
+                                           'item'                              => 'ITILCategory_Metademands']);
       $categories = [];
       if (isset($metademand->fields['itilcategories_id'])) {
          if (is_array(json_decode($metademand->fields['itilcategories_id'], true))) {
@@ -971,26 +971,15 @@ class PluginMetademandsField extends CommonDBChild {
       global $PLUGIN_HOOKS;
 
       switch ($value) {
-         case 'user':
-            return __('User');
-         case 'usertitle':
-            return __('User') . ' - ' . _x('person', 'Title');
-         case 'usercategory':
-            return __('User') . ' - ' . __('Category');
-         case 'group':
-            return __('Group');
-         case 'location':
-            return __('Location');
-         case 'other':
+		 case 'other':
             return __('Other');
-         case 'itilcategory':
+         case 'ITILCategory_Metademands':
             return __('Category of the metademand', 'metademands');
          case 'PluginMetademandsITILApplication' :
             return PluginMetademandsITILApplication::getTypeName();
          case 'PluginMetademandsITILEnvironment' :
             return PluginMetademandsITILEnvironment::getTypeName();
-         case 'appliance' :
-            return __('Appliance');
+
          default:
             if (isset($PLUGIN_HOOKS['metademands'])) {
                $plugin = new Plugin();
@@ -1008,9 +997,11 @@ class PluginMetademandsField extends CommonDBChild {
                }
             }
             $dbu = new DbUtils();
-            if ($value!= 0 && $item = $dbu->getItemForItemtype($value)) {
-               if (is_callable([$item, 'getTypeName'])) {
-                  return $item::getTypeName();
+            if (!is_numeric($value)) {
+               if ($item = $dbu->getItemForItemtype($value)) {
+                  if (is_callable([$item, 'getTypeName'])) {
+                     return $item::getTypeName();
+                  }
                }
             }
             return Dropdown::EMPTY_VALUE;
@@ -1190,7 +1181,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                        ]);
                   }
                   break;
-               case 'user':
+               case 'User':
                   $userrand = mt_rand();
                   $field    = "";
 
@@ -1203,7 +1194,7 @@ class PluginMetademandsField extends CommonDBChild {
                                             'display' => false
                                            ]);
                   break;
-               case 'itilcategory':
+               case 'ITILCategory_Meta':
                   if ($on_basket == false) {
                      $nameitil = 'field';
                   } else {
@@ -1233,22 +1224,6 @@ class PluginMetademandsField extends CommonDBChild {
                      $field = "";
                      $field .= ITILCategory::dropdown($opt);
                   }
-                  break;
-               case 'usertitle':
-                  $titlerand = mt_rand();
-                  $field     = "";
-                  $field     .= UserTitle::dropdown(['name'    => $namefield . "[" . $data['id'] . "]",
-                                                     'rand'    => $titlerand,
-                                                     'value'   => $value,
-                                                     'display' => false]);
-                  break;
-               case 'usercategory':
-                  $catrand = mt_rand();
-                  $field   = "";
-                  $field   .= UserCategory::dropdown(['name'    => $namefield . "[" . $data['id'] . "]",
-                                                      'rand'    => $catrand,
-                                                      'value'   => $value,
-                                                      'display' => false]);
                   break;
                case 'PluginMetademandsITILApplication' :
                   $opt   = ['value'  => $value,
@@ -1657,10 +1632,9 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'user', 'usertitle', 'usercategory', 'group',
-                        'location', 'other', 'checkbox', 'radio', 'dropdown_multiple','dropdown',
-                        'parent_field', 'number', 'text', 'textarea', 'upload', 'itilcategory',
-                        'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment', 'appliance'];
+      $allowed_types = ['yesno', 'datetime', 'datetime_interval', 'other', 'checkbox', 'radio', 'dropdown_multiple','dropdown',
+                        'parent_field', 'number', 'text', 'textarea', 'upload', 'ITILCategory_META',
+                        'PluginMetademandsITILApplication', 'PluginMetademandsITILEnvironment'];
       $new_fields    = [];
 
       $plugin = new Plugin();
@@ -1689,7 +1663,7 @@ class PluginMetademandsField extends CommonDBChild {
          if (in_array($params['value'], $new_fields)) {
             $params['value'] = $params['type'];
          }
-         if($params["type"] === "dropdown" && $params["value"] != "other"){
+         if($params["type"] === "dropdown" ){
             $params['value'] = $params['type'];
          }
          if (isset($params['value'])) {
@@ -1950,7 +1924,7 @@ class PluginMetademandsField extends CommonDBChild {
          $html .= '</td>';
          $html .= '<td>';
             switch ($params["item"]){
-               case 'itilcategory':
+               case 'ITILCategory_Metademands':
                   $metademand = new PluginMetademandsMetademand();
                   $metademand->getFromDB($metademands_id);
                   $values = json_decode($metademand->fields['itilcategories_id']);
@@ -1967,7 +1941,8 @@ class PluginMetademandsField extends CommonDBChild {
 
                   break;
                default:
-                  if (class_exists($params['value'])) {
+                  $dbu = new DbUtils();
+                  if ($item = $dbu->getItemForItemtype($params["item"])) {
                      //               if ($params['value'] == 'group') {
                      //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
                      //               } else {
@@ -2187,7 +2162,7 @@ class PluginMetademandsField extends CommonDBChild {
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
       $data        = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
-         if ($value['item'] != "itilcategory"
+         if ($value['item'] != "ITILCategory_Metademands"
              && $value['item'] != "informations"
              && $idF != $id) {
             $data[$id] = urldecode(html_entity_decode($value['name']));
@@ -2215,7 +2190,7 @@ class PluginMetademandsField extends CommonDBChild {
       $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
       $data        = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
-         if ($value['item'] != "itilcategory"
+         if ($value['item'] != "ITILCategory_Metademands"
              && $value['item'] != "informations"
              && $idF != $id) {
             $data[$id] = urldecode(html_entity_decode($value['name']));
@@ -2273,7 +2248,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       $allowed_types = ['other', 'checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple'];
 
-      if (in_array($params['value'], $allowed_types)) {
+      if (in_array($params['value'], $allowed_types) || in_array($params['item'], $allowed_types)) {
          echo "<table width='100%' class='metademands_show_values'>";
          echo "<tr><th colspan='4'>" . __('Custom values', 'metademands') . "</th></tr>";
          echo "<tr><td>";
@@ -3050,7 +3025,8 @@ class PluginMetademandsField extends CommonDBChild {
             Contact::class          => Contact::getTypeName(2),
             Contract::class         => Contract::getTypeName(2),
             Document::class         => Document::getTypeName(2),
-            Project::class          => Project::getTypeName(2)],
+            Project::class          => Project::getTypeName(2),
+            Appliance::class          => Appliance::getTypeName(2)],
          __("Tools") => [
             Reminder::class         => __("Notes"),
             RSSFeed::class          => __("RSS feed")],
@@ -3064,10 +3040,7 @@ class PluginMetademandsField extends CommonDBChild {
          // Does not exists in GLPI 9.4
          $optgroup['Assets'][PassiveDCEquipment::class] = PassiveDCEquipment::getTypeName(2);
       }
-      $plugin = new Plugin();
-      if ($plugin->isActivated('appliances')) {
-         $optgroup[__("Assets")][PluginAppliancesAppliance::class] = PluginAppliancesAppliance::getTypeName(2);
-      }
+
 
       return $optgroup;
 

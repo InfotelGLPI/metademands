@@ -239,7 +239,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
                                  'plugin_metademands_fields_id'      => $fields_id,
                                  'line'                              => $input['update_basket_line']]);
 
-         if ($this->fields['name'] != "itilcategory") {
+         if ($this->fields['name'] != "ITILCategory_Metademands") {
             if ($this->fields['name'] == "upload") {
 
                $old_files = [];
@@ -266,7 +266,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
       if (isset($input['basket_plugin_servicecatalog_itilcategories_id'])) {
 
          $this->getFromDBByCrit(["plugin_metademands_metademands_id" => $input['form_metademands_id'],
-                                 'name'                              => "itilcategory",
+                                 'name'                              => "ITILCategory_Metademands",
                                  'line'                              => $input['update_basket_line']]);
 
          $this->update(['value' => $input['basket_plugin_servicecatalog_itilcategories_id'],
