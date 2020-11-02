@@ -1008,9 +1008,10 @@ class PluginMetademandsField extends CommonDBChild {
                }
             }
             $dbu = new DbUtils();
-            $item               = $dbu->getItemForItemtype($value);
-            if ($item && is_callable([$item, 'getTypeName'])) {
-               return $item::getTypeName();
+            if ($value$item = $dbu->getItemForItemtype($value)) {
+               if (is_callable([$item, 'getTypeName'])) {
+                  return $item::getTypeName();
+               }
             }
             return Dropdown::EMPTY_VALUE;
       }
