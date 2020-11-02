@@ -192,7 +192,10 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "</h4>";
          if ($meta->getFromDB($parameters['metademands_id'])) {
-            echo "<label><i>" . nl2br($meta->fields['comment']) . "</i></label>";
+            if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(),'comment'))) {
+               $comment = $meta->fields['comment'];
+            }
+            echo "<label><i>" . nl2br($comment) . "</i></label>";
          }
          echo "</div></div>";
 
@@ -408,7 +411,10 @@ class PluginMetademandsWizard extends CommonDBTM {
       if ($DB->numrows($result)) {
          while ($data = $DB->fetchAssoc($result)) {
             //         if (PluginMetademandsGroup::isUserHaveRight($data['id'])) {
-            $metademands[$data['id']] = $data['name'];
+            if (empty($name = PluginMetademandsMetademand::displayField($data['id'],'name'))) {
+               $name = $data['name'];
+            }
+            $metademands[$data['id']] = $name;
             //         }
 
          }
@@ -637,7 +643,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         echo "<input type='submit' class='submit metademand_next_button' id='add_to_basket' name='add_to_basket' value='"
                              . _sx('button', 'Add to basket', 'metademands') . "'>";
                      } else {
-                        echo "<input type='submit' class='submit metademand_next_button' name='next' value='" . _sx('button', 'Post') . "'>";
+                        echo "<input type='submit' class='submit metademand_next_button' name='next' value='" . _sx('button', 'Validate your basket', 'metademands') . "'>";
                      }
                   } else {
                      echo "<input type='submit' class='submit metademand_next_button' name='next' value='" . _sx('button', 'Post') . "'>";

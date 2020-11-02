@@ -179,12 +179,18 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
                echo "</a><br>";
                echo "<a class='bt-buttons center' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW."'>";
                echo "<p style=\"margin-top:0px\">";
-               echo $meta->getName();
+               if (empty($name = PluginMetademandsMetademand::displayField($id,'name'))) {
+                  $name = $meta->getName();
+               }
+               echo $name;
                echo "<br>";
 
                echo "<em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                if (!empty($meta->fields['comment'])) {
-                  echo $meta->fields['comment'];
+                  if (empty($comment = PluginMetademandsMetademand::displayField($id,'comment'))) {
+                     $comment = $meta->fields['comment'];
+                  }
+                  echo $comment;
                }
                echo "</span></em>";
 
@@ -205,9 +211,15 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
                echo "</a>";
                echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW."'>";
                echo "<p>";
-               echo Html::resume_text($meta->getName(), 30);
+               if (empty($name = PluginMetademandsMetademand::displayField($id,'name'))) {
+                  $name = $meta->getName();
+               }
+               echo Html::resume_text($name, 30);
                echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-               echo $meta->fields['comment'];
+               if (empty($comment = PluginMetademandsMetademand::displayField($id,'comment'))) {
+                  $comment = $meta->fields['comment'];
+               }
+               echo $comment;
                echo "</span></em>";
                echo "</p></a></li>";
             }
