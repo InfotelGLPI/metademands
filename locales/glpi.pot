@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-03 12:16+0000\n"
+"POT-Creation-Date: 2020-11-03 13:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,7 +104,7 @@ msgstr ""
 msgid "Please add a type category field"
 msgstr ""
 
-#: inc/field.class.php:234 inc/field.class.php:2676 inc/field.class.php:2759
+#: inc/field.class.php:234 inc/field.class.php:2740 inc/field.class.php:2823
 msgid "Additional label"
 msgstr ""
 
@@ -112,7 +112,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/field.class.php:256 inc/field.class.php:511 inc/field.class.php:2741
+#: inc/field.class.php:256 inc/field.class.php:511 inc/field.class.php:2805
 msgid "Block"
 msgstr ""
 
@@ -120,12 +120,12 @@ msgstr ""
 msgid "Display field after"
 msgstr ""
 
-#: inc/field.class.php:316 inc/field.class.php:503 inc/field.class.php:2678
+#: inc/field.class.php:316 inc/field.class.php:503 inc/field.class.php:2742
 #: inc/task.class.php:272
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:396 inc/field.class.php:509 inc/field.class.php:2783
+#: inc/field.class.php:396 inc/field.class.php:509 inc/field.class.php:2847
 msgid "Display into the basket"
 msgstr ""
 
@@ -142,7 +142,7 @@ msgstr ""
 msgid "Value to check"
 msgstr ""
 
-#: inc/field.class.php:512 inc/field.class.php:2750
+#: inc/field.class.php:512 inc/field.class.php:2814
 msgid "Order"
 msgstr ""
 
@@ -270,22 +270,23 @@ msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/field.class.php:2214
+#: inc/field.class.php:2215
 msgid "Custom values"
 msgstr ""
 
-#: inc/field.class.php:2238 inc/field.class.php:2267 inc/field.class.php:2308
-#: inc/field.class.php:2334 inc/field.class.php:2350 inc/field.class.php:2450
+#: inc/field.class.php:2238 inc/field.class.php:2267 inc/field.class.php:2302
+#: inc/field.class.php:2331 inc/field.class.php:2372 inc/field.class.php:2398
+#: inc/field.class.php:2414 inc/field.class.php:2514
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/field.class.php:2375
+#: inc/field.class.php:2439
 msgid "Button Type"
 msgstr ""
 
-#: inc/field.class.php:2382
+#: inc/field.class.php:2446
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
