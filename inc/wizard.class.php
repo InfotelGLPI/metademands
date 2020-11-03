@@ -473,38 +473,38 @@ class PluginMetademandsWizard extends CommonDBTM {
       } else {
          echo "<div class=\"bt-row\">";
          $config = PluginMetademandsConfig::getInstance();
-         if ($config['enable_families']) {
-
-            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
-            // FAMILY
-            echo __('Family', 'metademands') . "&nbsp;";
-            // Get metademand families
-            $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', ['`level`' => 1]);
-            if (count($data_categories)) {
-               $data_categories = array_keys($data_categories);
-            }
-
-            $itilfamilies_id = [Dropdown::EMPTY_VALUE];
-            foreach ($meta->listMetademandsCategories() as $value) {
-               $ancestors_id = $dbu->getAncestorsOf('glpi_itilcategories', $value);
-               $value        = array_shift($ancestors_id);
-               if (in_array($value, $data_categories)) {
-                  $itilfamilies_id[$value] = Dropdown::getDropdownName('glpi_itilcategories', $value);
-               }
-            }
-            asort($itilfamilies_id);
-            $rand   = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
-            $params = ['family' => '__VALUE__',
-                       'step'   => 'metademands'];
-
-            Ajax::updateItemOnSelectEvent("dropdown_itilfamilies_id$rand", "show_metademands_by_family",
-                                          $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownListMetademands.php",
-                                          $params);
-            echo "</div>";
-            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
-         } else {
+//         if ($config['enable_families']) {
+//
+//            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
+//            // FAMILY
+//            echo __('Family', 'metademands') . "&nbsp;";
+//            // Get metademand families
+//            $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', ['`level`' => 1]);
+//            if (count($data_categories)) {
+//               $data_categories = array_keys($data_categories);
+//            }
+//
+//            $itilfamilies_id = [Dropdown::EMPTY_VALUE];
+//            foreach ($meta->listMetademandsCategories() as $value) {
+//               $ancestors_id = $dbu->getAncestorsOf('glpi_itilcategories', $value);
+//               $value        = array_shift($ancestors_id);
+//               if (in_array($value, $data_categories)) {
+//                  $itilfamilies_id[$value] = Dropdown::getDropdownName('glpi_itilcategories', $value);
+//               }
+//            }
+//            asort($itilfamilies_id);
+//            $rand   = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
+//            $params = ['family' => '__VALUE__',
+//                       'step'   => 'metademands'];
+//
+//            Ajax::updateItemOnSelectEvent("dropdown_itilfamilies_id$rand", "show_metademands_by_family",
+//                                          $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownListMetademands.php",
+//                                          $params);
+//            echo "</div>";
+//            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
+//         } else {
             echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
-         }
+//         }
          // METADEMAND list
          echo __('Request') . "&nbsp;";
          echo "<span id='show_metademands_by_family'>";
@@ -907,11 +907,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                      }
                      $script .= "});";
                      echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-
-
-                     //                  case 'PluginResourcesResource':
-                     //                  case 'PluginMetademandsITILApplication':
-                     //                  case 'PluginMetademandsITILEnvironment':
 
                      break;
                   case 'dropdown_multiple':

@@ -476,8 +476,6 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                        `glpi_plugin_metademands_tasks`.`completename` as tasks_completename, 
                        `glpi_plugin_metademands_tasks`.`level`,
                        `glpi_plugin_metademands_tickettasks`.`itilcategories_id`,
-                       `glpi_plugin_metademands_tickettasks`.`plugin_metademands_itilapplications_id`,
-                       `glpi_plugin_metademands_tickettasks`.`plugin_metademands_itilenvironments_id`,
                        `glpi_plugin_metademands_tickettasks`.`content`,
                        `glpi_plugin_metademands_tickettasks`.`status`,
                        `glpi_plugin_metademands_tickettasks`.`actiontime`,

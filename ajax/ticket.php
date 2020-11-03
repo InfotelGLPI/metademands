@@ -37,42 +37,23 @@ if (!isset($_POST['tickets_id'])) {
 }
 
 switch ($_POST['action']) {
-   case 'setTicketLinkFields':
-      $tickets = new Ticket();
-      $tickets->getFromDB($_POST['tickets_id']);
-      if (!isset($tickets->fields['entities_id'])) {
-         $tickets->fields['entities_id'] = $_SESSION['glpiactive_entity'];
-      }
-
-      $parent_groups_tickets_data = $tickets->getGroups(CommonITILActor::ASSIGN);
-
-      if (!empty($parent_groups_tickets_data)) {
-         $_SESSION["saveInput"]['Ticket']['_groups_id_requester'] = $parent_groups_tickets_data[0]['groups_id'];
-      }
-      $_SESSION["saveInput"]['Ticket']['entities_id'] = $tickets->fields['entities_id'];
-      $_SESSION["saveInput"]['Ticket']['_link']       = ['tickets_id_2' => $_POST['tickets_id'], 'link' => ''];
-
-      echo true;
-      break;
-
-   case 'getApplicationEnvironment':
-      $ticket = new PluginMetademandsTicket();
-      $ticket->getApplicationEnvironment($_POST['tickets_id'], $_POST);
-      break;
-
-   case 'getFamily':
-      $ticket = new PluginMetademandsTicket();
-      $ticket->getFamily($_POST['tickets_id'], $_POST);
-      break;
-
-   case 'getHelpdeskFamily':
-      $ticket = new PluginMetademandsTicket();
-      $ticket->getHelpdeskFamily($_POST['tickets_id'], $_POST);
-      break;
-
-   case 'getHelpdeskApplicationEnvironment':
-      $ticket = new PluginMetademandsTicket();
-      $ticket->getHelpdeskApplicationEnvironment($_POST['tickets_id'], $_POST);
-      break;
+//   case 'setTicketLinkFields':
+//      $tickets = new Ticket();
+//      $tickets->getFromDB($_POST['tickets_id']);
+//      if (!isset($tickets->fields['entities_id'])) {
+//         $tickets->fields['entities_id'] = $_SESSION['glpiactive_entity'];
+//      }
+//
+//      $parent_groups_tickets_data = $tickets->getGroups(CommonITILActor::ASSIGN);
+//
+//      if (!empty($parent_groups_tickets_data)) {
+//         $_SESSION["saveInput"]['Ticket']['_groups_id_requester'] = $parent_groups_tickets_data[0]['groups_id'];
+//      }
+//      $_SESSION["saveInput"]['Ticket']['entities_id'] = $tickets->fields['entities_id'];
+//      $_SESSION["saveInput"]['Ticket']['_link']       = ['tickets_id_2' => $_POST['tickets_id'], 'link' => ''];
+//
+//      echo true;
+//      break;
+//
 
 }

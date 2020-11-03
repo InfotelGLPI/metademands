@@ -82,8 +82,6 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       // Default values
       $values = ['itilcategories_id'                      => 0,
                  'type'                                   => Ticket::DEMAND_TYPE,
-                 'plugin_metademands_itilapplications_id' => 0,
-                 'plugin_metademands_itilenvironments_id' => 0,
                  'parent_tasks_id'                        => 0,
                  'plugin_metademands_tasks_id'            => 0,
                  'content'                                => '',
@@ -149,7 +147,6 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "<td colspan='4'></td>";
 
       echo "</tr>";
-      $metademands_ticket->getApplicationEnvironment(0, $values);
 
       if ($canchangeorder) {
          echo "<tr class='tab_bg_1'>";
@@ -360,16 +357,16 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "<input type='hidden' name='_tickettemplates_id' value='" . $tt->fields['id'] . "'>";
       echo "<input type='hidden' name='showForMetademands' value='1'>";
       echo "<input type='hidden' name='displayType' value='0'>";
-      $config          = PluginMetademandsConfig::getInstance();
-      $options         = ['config' => $config, 'root_doc' => $CFG_GLPI['root_doc']];
-      $options['lang'] = ['category' => __('Category')];
-      echo Html::scriptBlock(" if ($(\"input[name='itilcategories_id']\") != undefined) {
-                                    var object = $(document).metademandAdditionalFields(" . json_encode($options) . ");
-                                    
-                                    if (object.params['config'].enable_families) {
-                                        object.metademands_loadFamilies(0, 0, \"form_ticket\");
-                                    }
-                                }");
+//      $config          = PluginMetademandsConfig::getInstance();
+//      $options         = ['config' => $config, 'root_doc' => $CFG_GLPI['root_doc']];
+//      $options['lang'] = ['category' => __('Category')];
+//      echo Html::scriptBlock(" if ($(\"input[name='itilcategories_id']\") != undefined) {
+//                                    var object = $(document).metademandAdditionalFields(" . json_encode($options) . ");
+//
+//                                    if (object.params['config'].enable_families) {
+//                                        object.metademands_loadFamilies(0, 0, \"form_ticket\");
+//                                    }
+//                                }");
       echo "</td>";
       echo "</tr>";
       echo "</table>";
@@ -441,35 +438,6 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       $this->showFormButtons($options);
 
       return true;
-   }
-
-
-   /**
-    * @param array $input
-    *
-    * @return array
-    */
-   /**
-    * @param array $input
-    *
-    * @return array
-    */
-   function prepareInputForAdd($input) {
-
-      //Aplication/Environment interaction control
-      if ((isset($input['itilapplications_id']))
-          && (isset($input['itilenvironments_id']))) {
-
-         if (($input['itilapplications_id'] == 0 || $input['itilapplications_id'] == 1)
-             && $input['itilenvironments_id'] != ITILEnvironment::NO_OBJECT) {
-            $input['itilenvironments_id'] = ITILEnvironment::NO_OBJECT;
-         } else if (($input['itilapplications_id'] != 0 && $input['itilapplications_id'] != 1)
-                    && $input['itilenvironments_id'] == ITILEnvironment::NO_OBJECT) {
-            $input['itilenvironments_id'] = 0;
-         }
-      }
-
-      return $input;
    }
 
    /**
@@ -545,17 +513,6 @@ class PluginMetademandsTicketTask extends CommonDBTM {
    function prepareInputForUpdate($input) {
 
       $this->getFromDB($input['id']);
-
-      //Aplication/Environment interaction control
-      //if(isset($input['itilapplications_id']) && $input['itilenvironments_id']){
-      //   if(($input['itilapplications_id'] == 0 || $input['itilapplications_id'] == 1)
-      //           && $input['itilenvironments_id'] != ITILEnvironment::NO_OBJECT){
-      //      $input['itilenvironments_id'] = ITILEnvironment::NO_OBJECT;
-      //   } elseif(($input['itilapplications_id'] != 0 && $input['itilapplications_id'] != 1)
-      //           && $input['itilenvironments_id'] == ITILEnvironment::NO_OBJECT){
-      //      $input['itilenvironments_id'] =  0;
-      //   }
-      //}
 
       // Cannot update a used metademand category
       if (isset($input['itilcategories_id'])) {

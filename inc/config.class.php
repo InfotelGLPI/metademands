@@ -85,10 +85,10 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
 
       echo "<td>";
-      echo __('Enable application and environment', 'metademands');
+      echo __("Enable display metademands via icons",'metademands');
       echo "</td>";
       echo "<td>";
-      Dropdown::showYesNo('enable_application_environment', $config['enable_application_environment']);
+      Dropdown::showYesNo("display_type",$config['display_type']);
       echo "</td>";
       echo "</tr>";
 
@@ -126,12 +126,6 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>";
-      echo __('Enable family field', 'metademands');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showYesNo('enable_families', $config['enable_families']);
-      echo "</td>";
 
       echo "<td>";
       echo __('Childs tickets get parent content', 'metademands');
@@ -139,15 +133,7 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "<td>";
       Dropdown::showYesNo('childs_parent_content', $config['childs_parent_content']);
       echo "</td>";
-      echo "</tr>";
 
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>";
-      echo __("Enable display metademands via icons",'metademands');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showYesNo("display_type",$config['display_type']);
-      echo "</td>";
       echo "<td colspan='2'></td>";
       echo "</tr>";
 
@@ -195,5 +181,4 @@ class PluginMetademandsConfig extends CommonDBTM {
 
       return false;
    }
-
 }

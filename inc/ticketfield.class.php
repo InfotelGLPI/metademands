@@ -415,19 +415,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $ticket = new Ticket();
 
       switch ($name) {
-         case 'itilapplications_id':
-            // Permit to set application when creating ticket without update right
-            $opt = ['name'   => 'ticketfield[' . $field_id . ']',
-                    'entity' => $_SESSION['glpiactive_entity'],
-                    'value'  => $value];
-            Dropdown::show('ITILApplication', $opt);
-            break;
-         case 'itilenvironments_id':
-            $opt = ['name'   => 'ticketfield[' . $field_id . ']',
-                    'entity' => $_SESSION['glpiactive_entity'],
-                    'value'  => $value];
-            Dropdown::show('ITILEnvironment', $opt);
-            break;
          case '_users_id_requester':
             $params = ['name'  => 'ticketfield[' . $field_id . ']',
                        'value' => $value,

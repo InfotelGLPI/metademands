@@ -32,3 +32,12 @@ ALTER TABLE `glpi_plugin_metademands_fields`
     ADD `hidden_block` VARCHAR(255) NULL AFTER `hidden_link`;
 ALTER TABLE `glpi_plugin_metademands_fields`
     CHANGE `label` `name` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+
+ALTER TABLE `glpi_plugin_metademands_configs` DROP `enable_application_environment`;
+ALTER TABLE `glpi_plugin_metademands_configs` DROP `enable_families`;
+DROP TABLE IF EXISTS `glpi_plugin_metademands_tickets_itilapplications`;
+DROP TABLE IF EXISTS `glpi_plugin_metademands_tickets_itilenvironments`;
+DROP TABLE IF EXISTS `glpi_plugin_metademands_itilenvironments`;
+DROP TABLE IF EXISTS `glpi_plugin_metademands_itilapplications`;
+ALTER TABLE `glpi_plugin_metademands_tickettasks` DROP `plugin_metademands_itilapplications_id`;
+ALTER TABLE `glpi_plugin_metademands_tickettasks` DROP `plugin_metademands_itilenvironments_id`;

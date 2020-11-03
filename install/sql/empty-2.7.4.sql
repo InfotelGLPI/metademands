@@ -141,8 +141,6 @@ CREATE TABLE `glpi_plugin_metademands_tickettasks` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `content` text COLLATE utf8_unicode_ci default NULL,
     `itilcategories_id` int(11) default '0',
-    `plugin_metademands_itilapplications_id` int(11) default '0',
-    `plugin_metademands_itilenvironments_id` int(11) default '0',
     `type` int(11) NOT NULL default '0',
     `status` varchar(255) default NULL,
     `actiontime` int(11) NOT NULL default '0',
@@ -156,8 +154,6 @@ CREATE TABLE `glpi_plugin_metademands_tickettasks` (
     `plugin_metademands_tasks_id` int(11) NOT NULL default '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
-    KEY `plugin_metademands_itilapplications_id` (`plugin_metademands_itilapplications_id`),
-    KEY `plugin_metademands_itilenvironments_id` (`plugin_metademands_itilenvironments_id`),
     KEY `itilcategories_id` (`itilcategories_id`),
     KEY `groups_id_assign` (`groups_id_assign`),
     KEY `users_id_assign` (`users_id_assign`),
@@ -234,73 +230,6 @@ CREATE TABLE `glpi_plugin_metademands_groups` (
     KEY (`groups_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
--- ----------------------------------------------------------
---
--- Structure de la table 'glpi_plugin_metademands_itilapplications'
---
--- ----------------------------------------------------------
-DROP TABLE IF EXISTS `glpi_plugin_metademands_itilapplications`;
-CREATE TABLE `glpi_plugin_metademands_itilapplications` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) default NULL,
-    `entities_id` int(11) NOT NULL default '0', -- entites_id
-    `is_recursive` int(1) NOT NULL default '0', -- is_recursive
-    `comment` text COLLATE utf8_unicode_ci default NULL,
-    `is_critical` int(1) NOT NULL default '0',
-    PRIMARY KEY (`id`),
-    KEY `entities_id` (`entities_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-INSERT INTO `glpi_plugin_metademands_itilapplications` (`id` ,`name` ,`entities_id` ,`is_recursive`,`comment`, `is_critical`) VALUES ('1', 'Aucune', '0', '1', '', '0');
-
--- ----------------------------------------------------------
---
--- Structure de la table 'glpi_plugin_metademands_itilenvironments'
---
--- ----------------------------------------------------------
-DROP TABLE IF EXISTS `glpi_plugin_metademands_itilenvironments`;
-CREATE TABLE `glpi_plugin_metademands_itilenvironments` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) default NULL,
-    `entities_id` int(11) NOT NULL default '0', -- entites_id
-    `is_recursive` int(1) NOT NULL default '0', -- is_recursive
-    `comment` text COLLATE utf8_unicode_ci default NULL,
-    `is_outproduction` tinyint(1) NOT NULL default '0',
-    PRIMARY KEY (`id`),
-    KEY `entities_id` (`entities_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-INSERT INTO `glpi_plugin_metademands_itilenvironments` (`id` ,`name` ,`entities_id` ,`is_recursive`,`comment`, `is_outproduction`) VALUES ('1', 'Sans objet', '0', '1', '', '0');
-
--- ----------------------------------------------------------
---
--- Structure de la table 'glpi_plugin_metademands_tickets_itilapplications'
---
--- ----------------------------------------------------------
-DROP TABLE IF EXISTS `glpi_plugin_metademands_tickets_itilapplications`;
-CREATE TABLE `glpi_plugin_metademands_tickets_itilapplications` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `tickets_id` varchar(255) default NULL,
-    `plugin_metademands_itilapplications_id` int(11) NOT NULL default '0',
-    PRIMARY KEY (`id`),
-    KEY `tickets_id` (`tickets_id`),
-    KEY `plugin_metademands_itilapplications_id` (`plugin_metademands_itilapplications_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- ----------------------------------------------------------
---
--- Structure de la table 'glpi_plugin_metademands_tickets_itilenvironments'
---
--- ----------------------------------------------------------
-DROP TABLE IF EXISTS `glpi_plugin_metademands_tickets_itilenvironments`;
-CREATE TABLE `glpi_plugin_metademands_tickets_itilenvironments` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `tickets_id` varchar(255) default NULL,
-    `plugin_metademands_itilenvironments_id` int(11) NOT NULL default '0',
-    PRIMARY KEY (`id`),
-    KEY `tickets_id` (`tickets_id`),
-    KEY `plugin_metademands_itilenvironments_id` (`plugin_metademands_itilenvironments_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 --
@@ -328,8 +257,6 @@ DROP TABLE IF EXISTS `glpi_plugin_metademands_configs`;
 CREATE TABLE `glpi_plugin_metademands_configs` (
    `id` int(11) NOT NULL auto_increment,
    `simpleticket_to_metademand` tinyint(1) default '0',
-   `enable_application_environment` tinyint(1) default '0',
-   `enable_families` tinyint(1) default '0',
    `parent_ticket_tag` varchar(255) default NULL,
    `son_ticket_tag` varchar(255) default NULL,
    `create_pdf` tinyint(1) default '0',

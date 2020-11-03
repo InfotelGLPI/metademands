@@ -40,11 +40,8 @@ function plugin_metademands_install() {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/empty-2.7.4.sql");
    }
 
-   if (!$DB->tableExists("glpi_plugin_metademands_itilapplications") || !$DB->tableExists("glpi_plugin_metademands_itilenvironments")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.0.0.sql");
-   }
-
-   if ($DB->tableExists("glpi_plugin_metademands_profiles") && !$DB->fieldExists("glpi_plugin_metademands_profiles", "requester")) {
+   if ($DB->tableExists("glpi_plugin_metademands_profiles")
+       && !$DB->fieldExists("glpi_plugin_metademands_profiles", "requester")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.0.1.sql");
    }
 
@@ -58,11 +55,6 @@ function plugin_metademands_install() {
 
    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "create_pdf")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.1.4.sql");
-   }
-
-   if (!$DB->fieldExists("glpi_plugin_metademands_itilenvironments", "is_outproduction")) {
-      include(GLPI_ROOT . "/plugins/metademands/install/update214_225.php");
-      update214to225();
    }
 
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "color")) {
@@ -133,7 +125,6 @@ function plugin_metademands_install() {
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_block")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.4.sql");
 
-
       $field = new PluginMetademandsField();
       $fields = $field->find(['type'=>"dropdown","item"=>"user"]);
       foreach ($fields as $f){
@@ -179,9 +170,7 @@ function plugin_metademands_install() {
          $f["type"] = "dropdown_object";
          $field->update($f);
       }
-
    }
-
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    PluginMetademandsProfile::initProfile();
@@ -222,10 +211,6 @@ function plugin_metademands_uninstall() {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
 
-   if (class_exists('PluginDatainjectionModel')) {
-      PluginDatainjectionModel::clean(['itemtype' => 'PluginMetademandsITILApplication']);
-   }
-
    include_once(GLPI_ROOT . "/plugins/metademands/inc/profile.class.php");
 
    PluginMetademandsProfile::removeRightsFromSession();
@@ -234,66 +219,21 @@ function plugin_metademands_uninstall() {
    return true;
 }
 
-/**
- * @param $itemtype
- *
- * @return array
- */
-function plugin_metademands_getAddSearchOptions($itemtype) {
-   if ($itemtype == 'Ticket') {
-      $config = new PluginMetademandsConfig();
-      $data   = $config->getConfigFromDB();
-      if ($data['enable_application_environment']) {
-         $itilapplication = new PluginMetademandsITILApplication();
-         $tab1            = $itilapplication->getAddSearchOptions();
-
-         $itilenvironment = new PluginMetademandsITILEnvironment();
-         $tab2            = $itilenvironment->getAddSearchOptions();
-
-         return array_replace($tab1, $tab2);
-      }
-   }
-}
-
-/**
- * @param $itemtype
- * @param $ref_table
- * @param $new_table
- * @param $linkfield
- * @param $already_link_tables
- *
- * @return string
- */
-function plugin_metademands_addLeftJoin($itemtype, $ref_table, $new_table, $linkfield, $already_link_tables) {
-   if ($itemtype == 'Ticket' && $new_table == 'glpi_plugin_metademands_itilapplications') {
-      return " LEFT JOIN `glpi_plugin_metademands_tickets_itilapplications` "
-             . "   ON (`glpi_plugin_metademands_tickets_itilapplications`.`tickets_id` = `glpi_tickets`.`id`)"
-             . " LEFT JOIN `glpi_plugin_metademands_itilapplications` "
-             . "   ON (`glpi_plugin_metademands_itilapplications`.`id` = `glpi_plugin_metademands_tickets_itilapplications`.`plugin_metademands_itilapplications_id`)";
-   } else if ($itemtype == 'Ticket' && $new_table == 'glpi_plugin_metademands_itilenvironments') {
-      return " LEFT JOIN `glpi_plugin_metademands_tickets_itilenvironments` "
-             . "   ON (`glpi_plugin_metademands_tickets_itilenvironments`.`tickets_id` = `glpi_tickets`.`id`)"
-             . " LEFT JOIN `glpi_plugin_metademands_itilenvironments` "
-             . "   ON (`glpi_plugin_metademands_itilenvironments`.`id` = `glpi_plugin_metademands_tickets_itilenvironments`.`plugin_metademands_itilenvironments_id`)";
-   }
-}
-
 // Define Dropdown tables to be manage in GLPI
 /**
  * @return array
  */
-function plugin_metademands_getDropdown() {
-
-   $plugin = new Plugin();
-
-   if ($plugin->isActivated("metademands")) {
-      return ['PluginMetademandsMetademand'      => PluginMetademandsMetademand::getTypeName(2),
-              'PluginMetademandsITILApplication' => PluginMetademandsITILApplication::getTypeName(2),
-              'PluginMetademandsITILEnvironment' => PluginMetademandsITILEnvironment::getTypeName(2)];
-   } else {
-      return [];
-   }
-}
+//function plugin_metademands_getDropdown() {
+//
+//   $plugin = new Plugin();
+//
+//   if ($plugin->isActivated("metademands")) {
+//      return ['PluginMetademandsMetademand'      => PluginMetademandsMetademand::getTypeName(2),
+//      ];
+//   } else {
+//      return [];
+//   }
+//}
 
 // Hook done on purge item case
 /**
@@ -338,11 +278,6 @@ function plugin_pre_item_purge_metademands($item) {
          $temp = new PluginMetademandsTicket_Field();
          $temp->deleteByCriteria(['tickets_id' => $item->getField('id')], 1);
 
-         $temp = new PluginMetademandsTicket_ITILApplication();
-         $temp->deleteByCriteria(['tickets_id' => $item->getField('id')], 1);
-
-         $temp = new PluginMetademandsTicket_ITILEnvironment();
-         $temp->deleteByCriteria(['tickets_id' => $item->getField('id')], 1);
          break;
 
       case 'Group' :
@@ -386,8 +321,6 @@ function plugin_metademands_getDatabaseRelations() {
    if ($plugin->isActivated("metademands")) {
       return ["glpi_entities" => ["glpi_plugin_metademands_metademands"           => "entities_id",
                                   "glpi_plugin_metademands_fields"                => "entities_id",
-                                  "glpi_plugin_metademands_itilapplications"      => "entities_id",
-                                  "glpi_plugin_metademands_itilenvironments"      => "entities_id",
                                   "glpi_plugin_metademands_metademands_resources" => "entities_id",
                                   "glpi_plugin_metademands_ticketfields"          => "entities_id",
                                   "glpi_plugin_metademands_tasks"                 => "entities_id"],
@@ -402,8 +335,7 @@ function plugin_metademands_getDatabaseRelations() {
               "glpi_tickets" => ["glpi_plugin_metademands_tickets_fields"           => "tickets_id",
                                  "glpi_plugin_metademands_tickets_tasks"            => "tickets_id",
                                  "glpi_plugin_metademands_tickets_metademands"      => "tickets_id",
-                                 "glpi_plugin_metademands_tickets_itilapplications" => "tickets_id",
-                                 "glpi_plugin_metademands_tickets_itilenvironments" => "tickets_id"],
+              ],
 
               "glpi_plugin_metademands_fields" => ["glpi_plugin_metademands_tickets_fields" => "plugin_metademands_fields_id"],
 
@@ -411,10 +343,6 @@ function plugin_metademands_getDatabaseRelations() {
                                                   "glpi_plugin_metademands_tickettasks"     => "plugin_metademands_tasks_id",
                                                   "glpi_plugin_metademands_tickets_tasks"   => "plugin_metademands_tasks_id",
                                                   "glpi_plugin_metademands_metademandtasks" => "plugin_metademands_tasks_id"],
-
-              "glpi_plugin_metademands_itilapplications" => ["glpi_plugin_metademands_tickets_itilapplications" => "plugin_metademands_itilapplications_id"],
-
-              "glpi_plugin_metademands_itilenvironments" => ["glpi_plugin_metademands_tickets_itilenvironments" => "plugin_metademands_itilenvironments_id"],
       ];
    } else {
       return [];
@@ -438,39 +366,6 @@ function plugin_metademands_MassiveActionsProcess($data) {
    return $res;
 }
 
-/**
- * @param $options
- *
- * @return array
- */
-/**
- * @param $options
- *
- * @return array
- */
-function plugin_metademands_getRuleActions($options) {
-   if ($options['rule_itemtype'] == 'RuleTicket') {
-      $ticket = new PluginMetademandsTicket();
-      return $ticket->addRuleFields();
-   }
-}
-
-/**
- * @param $options
- *
- * @return array
- */
-/**
- * @param $options
- *
- * @return array
- */
-function plugin_metademands_getRuleCriteria($options) {
-   if ($options['rule_itemtype'] == 'RuleTicket') {
-      $ticket = new PluginMetademandsTicket();
-      return $ticket->addRuleFields();
-   }
-}
 
 function plugin_metademands_registerMethods() {
    global $WEBSERVICES_METHOD;
@@ -490,12 +385,6 @@ function plugin_metademands_registerMethods() {
    $WEBSERVICES_METHOD['metademands.isMandatoryFields']
       = ['PluginMetademandsTicket', 'methodIsMandatoryFields'];
 
-}
-
-function plugin_datainjection_populate_metademands() {
-   global $INJECTABLE_TYPES;
-
-   $INJECTABLE_TYPES['PluginMetademandsITILApplicationInjection'] = 'metademands';
 }
 
 /**

@@ -1204,12 +1204,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $metademands_fields = new PluginMetademandsField();
                   if ($metademands_fields->getFromDB($id)) {
                      switch ($metademands_fields->fields['item']) {
-                        case 'PluginMetademandsITILEnvironment':
-                           $parent_fields['plugin_metademands_itilenvironments_id'] = $datav;
-                           break;
-                        case 'PluginMetademandsITILApplication':
-                           $parent_fields['plugin_metademands_itilapplications_id'] = $datav;
-                           break;
                         case 'ITILCategory_Metademands':
                            $parent_fields['itilcategories_id'] = $datav;
                            if ($itilcategory > 0) {
@@ -1679,24 +1673,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                                                                         $field['value']);
                         $result['content'] .= "</td>";
                         break;
-                     //                     case strpos($field['item'], 'PluginLdapfields'):
-                     //                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                     //                        $classname         = new $field['item']();
-                     //                        $classname->getFromDB($field['value']);
-                     //                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
-                     //                        break;
-//                     case PluginMetademandsITILEnvironment::class:
-//                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-//                        $classname         = new PluginMetademandsITILEnvironment();
-//                        $classname->getFromDB($field['value']);
-//                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
-//                        break;
-//                     case PluginMetademandsITILApplication::class:
-//                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-//                        $classname         = new PluginMetademandsITILApplication();
-//                        $classname->getFromDB($field['value']);
-//                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
-//                        break;
                      default:
                         $dbu               = new DbUtils();
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>";
