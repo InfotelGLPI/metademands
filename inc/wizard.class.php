@@ -1187,10 +1187,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                   case 'group':
                   case 'dropdown':
-                  case 'user':
-                  case 'usertitle':
-                  case 'usercategory':
-                  case 'location':
+                  case 'dropdown_object':
                   case 'other':
                      $script = "$('[name=\"field[" . $data["id"] . "]\"]').change(function() {";
                      //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
@@ -1553,10 +1550,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                   case 'group':
                   case 'dropdown':
-                  case 'user':
-                  case 'usertitle':
-                  case 'usercategory':
-                  case 'location':
+                  case 'dropdown_object':
                   case 'other':
                      $script = "$('[name=\"field[" . $data["id"] . "]\"]').change(function() {";
                      //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
@@ -1790,7 +1784,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (isset($post[$fieldname][$id])
           && $value['type'] != 'checkbox'
           && $value['type'] != 'radio'
-          && $value['item'] != 'itilcategory'
+          && $value['item'] != 'ITILCategory_Metademands'
           && $value['type'] != 'upload') {
 
          if (!self::checkMandatoryFields($value, ['id'    => $id,
@@ -1801,7 +1795,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
 
-      } else if ($value['item'] == 'itilcategory') {
+      } else if ($value['item'] == 'ITILCategory_Metademands') {
 
          $content[$id]['plugin_metademands_fields_id'] = $id;
          if ($on_basket == false) {
@@ -1853,7 +1847,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
       }
       //INFO : not used for update basket
-      if ($value['item'] != 'itilcategory' && $KO === false && isset($post[$fieldname][$id])) {
+      if ($value['item'] != 'ITILCategory_Metademands' && $KO === false && isset($post[$fieldname][$id])) {
          $content[$id]['plugin_metademands_fields_id'] = $id;
          if ($value['type'] != "upload") {
             $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];

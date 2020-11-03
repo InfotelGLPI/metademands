@@ -1209,7 +1209,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         case 'PluginMetademandsITILApplication':
                            $parent_fields['plugin_metademands_itilapplications_id'] = $datav;
                            break;
-                        case 'itilcategory':
+                        case 'ITILCategory_Metademands':
                            $parent_fields['itilcategories_id'] = $datav;
                            if ($itilcategory > 0) {
                               $parent_fields['itilcategories_id'] = $itilcategory;
@@ -1232,7 +1232,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $values_form[0] = isset($values['basket']) ? $values['basket'] : [];
                      foreach ($values_form[0] as $id => $value) {
                         if (isset($line['form'][$id]['item'])
-                            && $line['form'][$id]['item'] == "itilcategory") {
+                            && $line['form'][$id]['item'] == "ITILCategory_Metademands") {
                            $itilcategory = $value;
                         }
                      }
@@ -1241,7 +1241,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $values_form = isset($values['basket']) ? $values['basket'] : [];
                      foreach ($values_form as $id => $value) {
                         if (isset($line['form'][$id]['item'])
-                            && $line['form'][$id]['item'] == "itilcategory") {
+                            && $line['form'][$id]['item'] == "ITILCategory_Metademands") {
                            $itilcategory = $value;
                         }
                      }
@@ -1653,6 +1653,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $result['content'] .= "<th colspan='2' style='background-color: #ccc;'>" . $label . "</th>";
                break;
             case 'dropdown':
+            case 'dropdown_object':
                if (!empty($field['custom_values'])
                    && $field['item'] == 'other') {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
@@ -1666,19 +1667,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                } else {
                   switch ($field['item']) {
-                     case 'user':
+                     case 'User':
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
                         $user              = new User();
                         $user->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $user->getName() . "</td>";
                         break;
-                     case 'usertitle':
+                     case 'UserTitle':
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
                         $usert             = new UserTitle();
                         $usert->getFromDB($field['value']);
                         $result['content'] .= "<td>" . $usert->getName() . "</td>";
                         break;
-                     case 'usercategory':
+                     case 'UserCategory':
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
                         $userc             = new UserCategory();
                         $userc->getFromDB($field['value']);
