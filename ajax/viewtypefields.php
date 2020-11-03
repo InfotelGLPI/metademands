@@ -46,8 +46,26 @@ switch ($_POST['step']) {
                                  $_POST["metademands_id"]);
       break;
    case 'object':
+      global $CFG_GLPI;
       if($_POST["type"] == "dropdown" || $_POST["type"] == "dropdown_object" ){
-         PluginMetademandsField::dropdownFieldItems("item", ['value' => $_POST['item'],'rand'=>$_POST["rand"]],$_POST["type"]);
+         $randItem = PluginMetademandsField::dropdownFieldItems("item", ['value' => $_POST['item'],'rand'=>$_POST["rand"]],$_POST["type"]);
+         $paramsItem = ['value'          => '__VALUE__',
+                        'item'           => '__VALUE__',
+                        'type'           => $_POST['type'],
+                        'task_link'      => $_POST['task_link'],
+                        'fields_link'    => $_POST['fields_link'],
+                        'max_upload'     => $_POST['max_upload'],
+                        'regex'          => $_POST['regex'],
+                        //                     'fields_display' => $this->fields['fields_display'],
+                        'hidden_link'    => $_POST['hidden_link'],
+                        'hidden_block'    => $_POST['hidden_block'],
+                        'metademands_id' => $_POST["metademands_id"],
+                        'custom_values'  => $_POST["custom_values"],
+                        'comment_values' => $_POST["comment_values"],
+                        'default_values' => $_POST["default_values"],
+                        'check_value'    => $_POST['check_value']];
+         Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", $CFG_GLPI["root_doc"] .
+                                                                                   "/plugins/metademands/ajax/viewtypefields.php?id=" . $_POST['metademands_id'], $paramsItem);
       }
 
       break;

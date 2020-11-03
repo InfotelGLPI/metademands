@@ -138,6 +138,7 @@ function plugin_metademands_install() {
       $fields = $field->find(['type'=>"dropdown","item"=>"user"]);
       foreach ($fields as $f){
          $f["item"] = "User";
+         $f["type"] = "dropdown_object";
          $field->update($f);
       }
       $fields = $field->find(['type'=>"dropdown","item"=>"usertitle"]);
@@ -153,11 +154,29 @@ function plugin_metademands_install() {
       $fields = $field->find(['type'=>"dropdown","item"=>"group"]);
       foreach ($fields as $f){
          $f["item"] = "Group";
+         $f["type"] = "dropdown_object";
          $field->update($f);
       }
       $fields = $field->find(['type'=>"dropdown","item"=>"location"]);
       foreach ($fields as $f){
          $f["item"] = "Location";
+         $field->update($f);
+      }
+      $fields = $field->find(['type'=>"dropdown","item"=>"appliance"]);
+      foreach ($fields as $f){
+         $f["item"] = "Appliance";
+         $f["type"] = "dropdown_object";
+         $field->update($f);
+      }
+      $fields = $field->find(['type'=>"dropdown","item"=>"itilcategory"]);
+      foreach ($fields as $f){
+         $f["item"] = "ITILCategory_Metademands";
+         $f["type"] = "dropdown_object";
+         $field->update($f);
+      }
+      $fields = $field->find(['type'=>"dropdown","item"=>"PluginResourcesResource"]);
+      foreach ($fields as $f){
+         $f["type"] = "dropdown_object";
          $field->update($f);
       }
 
