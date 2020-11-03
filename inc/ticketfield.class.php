@@ -153,7 +153,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          echo "<th colspan='6'>";
          echo __('Synchronise with ticket template', 'metademands') . " ";
          $ticket = new Ticket();
-         $tt     = $ticket->getITILTemplateToUse(0, Ticket::DEMAND_TYPE, $item->fields['itilcategories_id'], $item->fields['entities_id']);
+         $tt     = $ticket->getITILTemplateToUse(0, $meta->getField("type"), $item->fields['itilcategories_id'], $item->fields['entities_id']);
          echo $tt->getLink();
          echo "</th>";
          echo "</tr>";
@@ -489,10 +489,13 @@ class PluginMetademandsTicketField extends CommonDBChild {
     */
    static function updateMandatoryTicketFields($input) {
       if (isset($input['itilcategories_id']) && isset($input['entities_id']) && isset($input['id'])) {
+         $meta = new PluginMetademandsMetademand();
+         $meta->getFromDB($input['id']);
+         $type = $meta->getField('type');
          // Add mandatory ticket fields
-         self::addTemplateFields($input['id'], $input['itilcategories_id'], Ticket::DEMAND_TYPE, $input['entities_id']);
+         self::addTemplateFields($input['id'], $input['itilcategories_id'], $type, $input['entities_id']);
          // Add predefined ticket fields
-         self::addTemplateFields($input['id'], $input['itilcategories_id'], Ticket::DEMAND_TYPE, $input['entities_id'], 'predefined');
+         self::addTemplateFields($input['id'], $input['itilcategories_id'], $type, $input['entities_id'], 'predefined');
       }
 
       return true;
@@ -505,7 +508,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @param \ITILCategory $itilcategory
     */
    static function update_category_mandatoryFields(ITILCategory $itilcategory) {
-      $type    = Ticket::DEMAND_TYPE;
+
       $categid = 0;
       if (isset($itilcategory->fields['id'])) {
          $categid = $itilcategory->fields['id'];
@@ -515,7 +518,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $metademands_data = $metademands->find(['entities_id'       => $_SESSION['glpiactive_entity'],
                                               'itilcategories_id' => $categid]);
       foreach ($metademands_data as $id => $value) {
-         self::addTemplateFields($id, $categid, $type, $value['entities_id']);
+         self::addTemplateFields($id, $categid, $value['type'], $value['entities_id']);
       }
    }
 
@@ -526,7 +529,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @param \ITILCategory $itilcategory
     */
    static function update_category_predefinedFields(ITILCategory $itilcategory) {
-      $type    = Ticket::DEMAND_TYPE;
+
       $categid = 0;
       if (isset($itilcategory->fields['id'])) {
          $categid = $itilcategory->fields['id'];
@@ -535,7 +538,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $metademands_data = $metademands->find(['entities_id'       => $_SESSION['glpiactive_entity'],
                                               'itilcategories_id' => $categid]);
       foreach ($metademands_data as $id => $value) {
-         self::addTemplateFields($id, $categid, $type, $value['entities_id'], 'predefined');
+         self::addTemplateFields($id, $categid, $value['type'], $value['entities_id'], 'predefined');
       }
    }
 
@@ -589,13 +592,13 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $ticketField = new PluginMetademandsTicketField();
       $metademands = new PluginMetademandsMetademand();
 
-      $type = Ticket::DEMAND_TYPE;
+
 
       $metademands_data = $metademands->find();
       foreach ($metademands_data as $id => $value) {
          // Search for the metademand template
          $ticket     = new Ticket();
-         $meta_tt    = $ticket->getITILTemplateToUse(0, $type, $value['itilcategories_id'], $value['entities_id']);
+         $meta_tt    = $ticket->getITILTemplateToUse(0, $value['type'], $value['itilcategories_id'], $value['entities_id']);
          $fieldsname = $meta_tt->getAllowedFields(true);
 
          // Template of metademand found
@@ -632,6 +635,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
                   $ticketField->add(['num'                               => $ttp->fields['num'],
                                      'value'                             => $default_value,
                                      'is_deletable'                      => 0,
+                                     'type'                              => $value['type'],
                                      'is_mandatory'                      => 1,
                                      'entities_id'                       => $value['entities_id'],
                                      'plugin_metademands_metademands_id' => $id]);
@@ -658,7 +662,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $metademands_data = $metademands->find();
       foreach ($metademands_data as $id => $value) {
          $ticket = new Ticket();
-         $tt     = $ticket->getITILTemplateToUse(0, Ticket::DEMAND_TYPE, $value['itilcategories_id'], $value['entities_id']);
+         $tt     = $ticket->getITILTemplateToUse(0, $value['type'], $value['itilcategories_id'], $value['entities_id']);
 
          if ($tt->fields['id'] == $ttp->fields['tickettemplates_id']) {
             $fieldsname = $tt->getAllowedFields(true);

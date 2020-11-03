@@ -106,7 +106,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       // Clean text fields
       $values['name']    = stripslashes($values['name']);
       $values['content'] = Html::cleanPostForTextArea($values['content']);
-      $values['type']    = Ticket::DEMAND_TYPE;
+      $values['type']    = $metademands->getField("type");
 
       // Get Template
       $tt = $ticket->getITILTemplateToUse(false, $values['type'], $values['itilcategories_id'], $values['entities_id']);
@@ -429,7 +429,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved, $input);
       echo "<input type='hidden' name='plugin_metademands_tasks_id' value='" . $this->fields['plugin_metademands_tasks_id'] . "'>";
       echo "<input type='hidden' name='_tickettemplates_id' value='" . $tt->fields['id'] . "'>";
-      echo "<input type='hidden' name='type' value='" . Ticket::DEMAND_TYPE . "'>";
+      echo "<input type='hidden' name='type' value='" . $metademands->fields['type'] . "'>";
       echo "<input type='hidden' name='entities_id' value='" . $metademands->fields['entities_id'] . "'>";
       echo "<div><table class='tab_cadre_fixe'>";
 
@@ -453,7 +453,10 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          $_SESSION["metademandsHelpdeskSaved"] = $input;
       }
 
-      $type    = Ticket::DEMAND_TYPE;
+      $meta = new PluginMetademandsMetademand();
+      $meta->getFromDB($input["plugin_metademands_metademands_id"]);
+
+      $type    = $meta->getField("type");
       $categid = 0;
       if (isset($input['itilcategories_id'])) {
          $categid = $input['itilcategories_id'];
