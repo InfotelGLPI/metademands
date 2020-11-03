@@ -88,7 +88,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
 
       $dbu = new DbUtils();
       if (!$withtemplate) {
-         if ($item->getType() == 'PluginMetademandsMetademand' && $item->fields['type'] != Ticket::INCIDENT_TYPE) {
+         if ($item->getType() == 'PluginMetademandsMetademand') {
             if ($_SESSION['glpishow_count_on_tabs']) {
                return self::createTabEntry(self::getTypeName(),
                                            $dbu->countElementsInTable($this->getTable(),
@@ -497,7 +497,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
 
       if (count($params['condition']) > 0) {
          foreach ($params['condition'] as $cond => $value) {
-            $query .= " AND " . $cond . " = ".$value;
+            $query .= " AND " . $cond . " = " . $value;
          }
       }
 
@@ -623,11 +623,12 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       // cannot update a used metademand category
       if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
 
-         $type  = Ticket::DEMAND_TYPE;
-         $dbu   = new DbUtils();
+         $dbu  = new DbUtils();
+         $meta = new PluginMetademandsMetademand();
+         $meta->getFromDB($input["plugin_metademands_metademands_id"]);
          $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
                                             ["`itilcategories_id`" => $input["itilcategories_id"],
-                                             "`type`"              => $type]);
+                                             "`type`"              => $meta->getField("type")]);
 
          if (!empty($metas)) {
             $input = [];
