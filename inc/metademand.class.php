@@ -1649,6 +1649,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'dropdown':
             case 'dropdown_object':
+            case 'dropdown_meta':
                if (!empty($field['custom_values'])
                    && $field['item'] == 'other') {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);

@@ -162,7 +162,13 @@ function plugin_metademands_install() {
       $fields = $field->find(['type'=>"dropdown","item"=>"itilcategory"]);
       foreach ($fields as $f){
          $f["item"] = "ITILCategory_Metademands";
-         $f["type"] = "dropdown_object";
+         $f["type"] = "dropdown_meta";
+         $field->update($f);
+      }
+      $fields = $field->find(['type'=>"dropdown","item"=>"other"]);
+      foreach ($fields as $f){
+         $f["item"] = "other";
+         $f["type"] = "dropdown_meta";
          $field->update($f);
       }
       $fields = $field->find(['type'=>"dropdown","item"=>"PluginResourcesResource"]);

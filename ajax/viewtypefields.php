@@ -47,7 +47,7 @@ switch ($_POST['step']) {
       break;
    case 'object':
       global $CFG_GLPI;
-      if($_POST["type"] == "dropdown" || $_POST["type"] == "dropdown_object" ){
+      if($_POST["type"] == "dropdown" || $_POST["type"] == "dropdown_object" || $_POST["type"] == "dropdown_meta"){
          $randItem = PluginMetademandsField::dropdownFieldItems("item", ['value' => $_POST['item'],'rand'=>$_POST["rand"]],$_POST["type"]);
          $paramsItem = ['value'          => '__VALUE__',
                         'item'           => '__VALUE__',
