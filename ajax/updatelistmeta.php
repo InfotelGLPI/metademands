@@ -27,53 +27,19 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-if(isset($_POST["type"])){
+if (isset($_POST["type"])) {
    global $CFG_GLPI;
-   if(isset($_POST["action"]) && $_POST["action"] == "dropdown") {
-
+   if (isset($_POST["action"]) && $_POST["action"] == "dropdown") {
 
       $meta   = new PluginMetademandsMetademand();
       $config = PluginMetademandsConfig::getInstance();
-      $return = "";
-      if ($config['enable_families']) {
-
-         $return .= "<div  class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
-         // FAMILY
-         $return .= __('Family', 'metademands') . "&nbsp;";
-         // Get metademand families
-         $data_categories = $dbu->getAllDataFromTable('glpi_itilcategories', ['`level`' => 1]);
-         if (count($data_categories)) {
-            $data_categories = array_keys($data_categories);
-         }
-
-         $itilfamilies_id = [Dropdown::EMPTY_VALUE];
-         foreach ($meta->listMetademandsCategories([], $_POST["type"]) as $value) {
-            $ancestors_id = $dbu->getAncestorsOf('glpi_itilcategories', $value);
-            $value        = array_shift($ancestors_id);
-            if (in_array($value, $data_categories)) {
-               $itilfamilies_id[$value] = Dropdown::getDropdownName('glpi_itilcategories', $value);
-            }
-         }
-         asort($itilfamilies_id);
-         $rand   = Dropdown::showFromArray('itilfamilies_id', $itilfamilies_id, ['width' => 150]);
-         $params = ['family' => '__VALUE__',
-                    'step'   => 'metademands'];
-
-         //TODO MOdifier pour avoir un return ou un affichage
-         $return .= Ajax::updateItemOnSelectEvent("dropdown_itilfamilies_id$rand", "show_metademands_by_family",
-                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownListMetademands.php",
-                                       $params,false);
-         $return .= "</div>";
-         $return .= "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6 \">";
-      } else {
-         $return .= "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
-      }
+      $return = "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
       // METADEMAND list
       $return .= Ticket::getTicketTypeName($_POST["type"]);
       $return .= "<span id='show_metademands_by_family'>";
@@ -85,9 +51,10 @@ if(isset($_POST["type"])){
       $return .= "</span>";
       $return .= "</div>";
       echo $return;
-   }else if(isset($_POST["action"]) && $_POST["action"] == "icon"){
-      $return = "";
-      $metademands = PluginMetademandsWizard::selectMetademands("",$_POST["type"]);
+   } else if (isset($_POST["action"])
+              && $_POST["action"] == "icon") {
+      $return      = "";
+      $metademands = PluginMetademandsWizard::selectMetademands("", $_POST["type"]);
       foreach ($metademands as $id => $name) {
 
          $meta = new PluginMetademandsMetademand();
@@ -97,7 +64,7 @@ if(isset($_POST["type"])){
             $return .= '<div class="btnsc-normal" >';
             $fasize = "fa-6x";
             $return .= "<div class='center'>";
-            $icon = "fa-share-alt";
+            $icon   = "fa-share-alt";
             if (!empty($meta->fields['icon'])) {
                $icon = $meta->fields['icon'];
             }
@@ -114,6 +81,5 @@ if(isset($_POST["type"])){
       echo $return;
    }
 }
-
 
 Html::ajaxFooter();
