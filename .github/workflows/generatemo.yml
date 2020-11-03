@@ -1,5 +1,4 @@
-
-name: PHP Composer
+name: Generate MO
 on:
   push:
     branches: [ master ]
@@ -30,11 +29,9 @@ jobs:
     - name: Commit changes
       uses: EndBug/add-and-commit@v5.1.0
       with:
-        author_name: ales-infotel
-        author_email: alban.lesellier@infotel.com
+       
         message: "Generate mo"
     - name: Push changes
  
       uses: actions-go/push@v1
   
-
