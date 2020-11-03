@@ -2207,13 +2207,77 @@ class PluginMetademandsField extends CommonDBChild {
          $params[$key] = $value;
       }
 
-      $allowed_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_meta', 'dropdown_multiple'];
-
-      if (in_array($params['value'], $allowed_types) || in_array($params['item'], $allowed_types)) {
+      $allowed_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple'];
+      $allowed_item = ['other'];
+      if (in_array($params['value'], $allowed_types)
+          || in_array($params['item'], $allowed_item)) {
          echo "<table width='100%' class='metademands_show_values'>";
          echo "<tr><th colspan='4'>" . __('Custom values', 'metademands') . "</th></tr>";
          echo "<tr><td>";
          echo '<table width=\'100%\' class="tab_cadre">';
+
+         switch ($params['item']) {
+            case 'other':
+               echo "<tr>";
+               if (is_array($values) && !empty($values)) {
+                  foreach ($values as $key => $value) {
+                     echo "<tr>";
+
+                     echo "<td>";
+                     echo "<p id='custom_values$key'>";
+                     echo __('Value') . " " . $key . " ";
+                     echo '<input type="text" name="custom_values[' . $key . ']"  value="' . $value . '" size="30"/>';
+                     echo '</p>';
+                     echo "</td>";
+
+                     echo "<td>";
+                     echo "<p id='default_values$key'>";
+                     $display_default = false;
+                     if ($params['value'] == 'dropdown_multiple') {
+                        $display_default = true;
+                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                        $checked = "";
+                        if (isset($default[$key])
+                            && $default[$key] == 1) {
+                           $checked = "checked";
+                        }
+                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
+                     }
+                     echo '</p>';
+                     echo "</td>";
+
+                     echo "</tr>";
+                  }
+                  echo "<tr>";
+                  echo "<td colspan='4' align='right' id='show_custom_fields'>";
+                  self::initCustomValue(max(array_keys($values)), false, $display_default);
+                  echo "</td>";
+                  echo "</tr>";
+               } else {
+                  echo "<tr>";
+
+                  echo "<td>";
+                  echo __('Value') . " 1 ";
+                  echo '<input type="text" name="custom_values[1]"  value="" size="30"/>';
+                  echo "</td>";
+                  echo "<td>";
+                  $display_default = false;
+                  if ($params['value'] == 'dropdown_multiple') {
+                     $display_default = true;
+                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
+                     echo "</td>";
+                  }
+                  echo "</tr>";
+
+                  echo "<tr>";
+                  echo "<td colspan='2' align='right' id='show_custom_fields'>";
+                  self::initCustomValue(1, false, $display_default);
+                  echo "</td>";
+                  echo "</tr>";
+               }
+               break;
+         }
 
          switch ($params['value']) {
             case 'dropdown_multiple':
