@@ -119,7 +119,6 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "<table class='tab_cadre_fixe' id='mainformtable'>";
       $metademands_ticket = new PluginMetademandsTicket();
       echo "<tr class='tab_bg_1'>";
-      $metademands_ticket->getFamily(0, $values);
 
       echo "<th>" . sprintf(__('%1$s%2$s'), __('Category'),
                             $tt->getMandatoryMark('itilcategories_id')) . "</th>";
