@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-03 12:12+0000\n"
+"POT-Creation-Date: 2020-11-03 12:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -315,7 +315,7 @@ msgid "Configure demands"
 msgstr ""
 
 #: inc/metademand.class.php:253 inc/metademand.class.php:318
-#: inc/task.class.php:634 inc/tickettask.class.php:530
+#: inc/task.class.php:634 inc/tickettask.class.php:533
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -445,7 +445,7 @@ msgstr ""
 msgid "Select the advanced request"
 msgstr ""
 
-#: inc/servicecatalog.class.php:233 inc/wizard.class.php:530
+#: inc/servicecatalog.class.php:233 inc/wizard.class.php:557
 msgid "No advanced request found"
 msgstr ""
 
@@ -543,32 +543,32 @@ msgstr ""
 msgid "Step %d - Ticket type choice"
 msgstr ""
 
-#: inc/wizard.class.php:611 inc/wizard.class.php:644
+#: inc/wizard.class.php:638 inc/wizard.class.php:671
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:646
+#: inc/wizard.class.php:673
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1945
+#: inc/wizard.class.php:1972
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:1954
+#: inc/wizard.class.php:1981
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:1999
+#: inc/wizard.class.php:2026
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2003
+#: inc/wizard.class.php:2030
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
