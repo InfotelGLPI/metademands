@@ -493,8 +493,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                   case 'dropdown_object':
                      $value = " ";
                      switch ($elt['item']) {
-                        case 'user':
+                        case 'User':
                            $value = $dbu->getUserName($fields[$elt['id']]);
+                           break;
+                        case 'ITILCategory_Metademands':
+                           $value = Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'), $fields[$elt['id']]);
+                           $value = ($value == '&nbsp;') ? ' ' : $value;
                            break;
                         case 'other':
                            if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {

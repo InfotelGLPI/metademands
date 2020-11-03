@@ -339,7 +339,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
          }
          $metademands_data = $this->constructMetademands($this->getID());
          $metademands_data = array_values($metademands_data);
-         if (count($metademands_data) > 0) {
+         if (is_array($metademands_data['tasks'])
+             && count($metademands_data['tasks']) > 0) {
             Session::addMessageAfterRedirect(__('There are sub-metademands or this is a sub-metademand. This metademand cannot be in basket mode', 'metademands'), false, ERROR);
             return false;
          }
@@ -1669,21 +1670,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   switch ($field['item']) {
                      case 'User':
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $user              = new User();
-                        $user->getFromDB($field['value']);
-                        $result['content'] .= "<td>" . $user->getName() . "</td>";
+                        $result['content'] .= "<td>" . getUserName($field['value']) . "</td>";
                         break;
-                     case 'UserTitle':
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $usert             = new UserTitle();
-                        $usert->getFromDB($field['value']);
-                        $result['content'] .= "<td>" . $usert->getName() . "</td>";
-                        break;
-                     case 'UserCategory':
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $userc             = new UserCategory();
-                        $userc->getFromDB($field['value']);
-                        $result['content'] .= "<td>" . $userc->getName() . "</td>";
+                     case 'ITILCategory_Metademands':
+                        $dbu               = new DbUtils();
+                        $result['content'] .= "<td $style_title>" . $label . "</td><td>";
+                        $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
+                                                                        $field['value']);
+                        $result['content'] .= "</td>";
                         break;
                      //                     case strpos($field['item'], 'PluginLdapfields'):
                      //                        $result['content'] .= "<td $style_title>" . $label . "</td>";
@@ -1691,18 +1685,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      //                        $classname->getFromDB($field['value']);
                      //                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
                      //                        break;
-                     case PluginMetademandsITILEnvironment::class:
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $classname         = new PluginMetademandsITILEnvironment();
-                        $classname->getFromDB($field['value']);
-                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
-                        break;
-                     case PluginMetademandsITILApplication::class:
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $classname         = new PluginMetademandsITILApplication();
-                        $classname->getFromDB($field['value']);
-                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
-                        break;
+//                     case PluginMetademandsITILEnvironment::class:
+//                        $result['content'] .= "<td $style_title>" . $label . "</td>";
+//                        $classname         = new PluginMetademandsITILEnvironment();
+//                        $classname->getFromDB($field['value']);
+//                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
+//                        break;
+//                     case PluginMetademandsITILApplication::class:
+//                        $result['content'] .= "<td $style_title>" . $label . "</td>";
+//                        $classname         = new PluginMetademandsITILApplication();
+//                        $classname->getFromDB($field['value']);
+//                        $result['content'] .= "<td>" . $classname->getName() . "</td>";
+//                        break;
                      default:
                         $dbu               = new DbUtils();
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>";
