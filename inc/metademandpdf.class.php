@@ -501,6 +501,18 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                            $value = Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'), $fields[$elt['id']]);
                            $value = ($value == '&nbsp;') ? ' ' : $value;
                            break;
+                        case 'mydevices':
+                           $dbu               = new DbUtils();
+                           $splitter = explode("_", $fields[$elt['id']]);
+                           if (count($splitter) == 2) {
+                              $itemtype = $splitter[0];
+                              $items_id = $splitter[1];
+                           }
+                           if ($itemtype && $items_id) {
+                              $value = Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
+                                                                              $items_id);
+                           }
+                           break;
                         case 'other':
                            if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
                               $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);

@@ -257,12 +257,20 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<script type='text/javascript' >\n";
                echo "function showRequester$rand() {\n";
                $params = ['value'      => '__VALUE__',
-                          'old_value'  => $userid,
-                          'tickets_id' => $parameters['tickets_id']];
+                          'old_value'  => $userid];
                Ajax::updateItemJsCode("show_users_id_requester",
                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardUser.php",
                                       $params,
                                       "dropdown__users_id_requester$rand");
+
+               $params = ['value'      => '__VALUE__',
+                          'old_value'  => $userid,
+                          'metademands_id' => $parameters['metademands_id']];
+               Ajax::updateItemJsCode("show_items_id_requester",
+                                      $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardItems.php",
+                                      $params,
+                                      "dropdown__users_id_requester$rand");
+
                echo "}";
                echo "</script>\n";
                echo "</div>";

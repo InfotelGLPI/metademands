@@ -27,19 +27,35 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
 Session::checkLoginUser();
 
 if (isset($_POST["value"])) {
-   $userid = $_POST["value"];
-   $user = new User();
-   $user->getFromDB($userid);
-//   if (!$user->can($userid, READ)
-//       && ($userid != Session::getLoginUserID())) {
-//      $userid = $_POST["old_value"];
-//   }
-   PluginMetademandsWizard::showUserInformations($user);
+   $userid         = $_POST["value"];
+   $metademands_id = $_POST["metademands_id"];
+   $rand           = mt_rand();
+
+   $condition    = ['plugin_metademands_metademands_id' => $metademands_id,
+                    'type'                              => 'dropdown_meta',
+                    'item'                              => 'mydevices'
+   ];
+   $field        = new PluginMetademandsField();
+   $datas_fields = $field->find($condition, [], 1);
+   Toolbox::logWarning($datas_fields);
+
+   $name = "";
+   foreach ($datas_fields as $data_field) {
+//      if ($data_field['is_basket'] == false) {
+         $namefield = 'field';
+         $name = $namefield . "[" . $data_field['id'] . "]";
+//      } else {
+//         $namefield = 'field_basket_' . $idline;
+//      }
+   }
+   $p = ['rand' => $rand,
+         'name' => $name];
+   PluginMetademandsField::dropdownMyDevices($userid, $_SESSION['glpiactiveentities'], 0, 0, $p);
 }

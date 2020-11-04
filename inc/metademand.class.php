@@ -1207,7 +1207,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      }
                   }
                }
-
                if ($metademand->fields['is_order'] == 0) {
                   if (count($line['form'])
                       && isset($values['fields'])) {
@@ -1618,7 +1617,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $label2 = Toolbox::stripslashes_deep($field['label2']);
       }
 
-      if ((!empty($field['value']) || $field['value'] == "0") && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'radio') {
+      if ((!empty($field['value']) || $field['value'] == "0")
+          && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'radio') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
          //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
          //            $result['content'] .= "<tr>";
@@ -1666,6 +1666,20 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>";
                         $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
                                                                         $field['value']);
+                        $result['content'] .= "</td>";
+                        break;
+                     case 'mydevices':
+                        $dbu               = new DbUtils();
+                        $result['content'] .= "<td $style_title>" . $label . "</td><td>";
+                        $splitter = explode("_", $field['value']);
+                        if (count($splitter) == 2) {
+                           $itemtype = $splitter[0];
+                           $items_id = $splitter[1];
+                        }
+                        if ($itemtype && $items_id) {
+                           $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
+                                                                           $items_id);
+                        }
                         $result['content'] .= "</td>";
                         break;
                      default:

@@ -40,11 +40,15 @@ if (!isset($_POST["check_value"])) {
    $_POST["check_value"] = "";
 } else {
    $field->getFromDB($_POST["id"]);
-   foreach (PluginMetademandsField::_unserialize($field->fields["hidden_link"]) as $hidden_link) {
-      $update["id"]      = $hidden_link;
-      $update["to_hide"] = 0;
-      $field->update($update);
+   $hidden_kinks = PluginMetademandsField::_unserialize($field->fields["hidden_link"]);
+   if (is_array($hidden_kinks)) {
+      foreach ($hidden_kinks as $hidden_link) {
+         $update["id"]      = $hidden_link;
+         $update["to_hide"] = 0;
+         $field->update($update);
+      }
    }
+
    foreach ($_POST["hidden_link"] as $idField) {
       $update            = [];
       $update["id"]      = $idField;
