@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-03 13:57+0000\n"
+"POT-Creation-Date: 2020-11-03 14:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -316,7 +316,7 @@ msgid "Configure demands"
 msgstr ""
 
 #: inc/metademand.class.php:253 inc/metademand.class.php:318
-#: inc/task.class.php:635 inc/tickettask.class.php:533
+#: inc/task.class.php:635 inc/tickettask.class.php:532
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -498,11 +498,11 @@ msgstr ""
 msgid "Predefined value in template"
 msgstr ""
 
-#: inc/tickettask.class.php:153
+#: inc/tickettask.class.php:152
 msgid "Create after the task"
 msgstr ""
 
-#: inc/tickettask.class.php:169
+#: inc/tickettask.class.php:168
 msgid "Actors"
 msgstr ""
 
