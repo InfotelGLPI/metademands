@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-04 11:19+0000\n"
+"POT-Creation-Date: 2020-11-05 08:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgid "There is no line on the basket"
 msgstr ""
 
 #: front/wizard.form.php:245 front/wizard.form.php:247
-#: front/wizard.form.php:445 front/wizard.form.php:448
+#: front/wizard.form.php:451 front/wizard.form.php:454
 msgid "Create a demand"
 msgstr ""
 
@@ -90,6 +90,30 @@ msgstr ""
 
 #: inc/config.class.php:131
 msgid "Childs tickets get parent content"
+msgstr ""
+
+#: inc/config.class.php:138
+msgid "Display metademands list into ServiceCatalog plugin"
+msgstr ""
+
+#: inc/config.class.php:147
+msgid "Configuration of the Service Catalog plugin"
+msgstr ""
+
+#: inc/config.class.php:150
+msgid "Title for Service Catalog widget"
+msgstr ""
+
+#: inc/config.class.php:161
+msgid "Comment for Service Catalog widget"
+msgstr ""
+
+#: inc/config.class.php:173
+msgid "Icon for Service Catalog widget"
+msgstr ""
+
+#: inc/config.class.php:174
+msgid "Example : "
 msgstr ""
 
 #: inc/field.class.php:69 inc/ticket_field.class.php:55
@@ -434,20 +458,12 @@ msgstr[1] ""
 msgid "Right to update the requester of a meta-demand"
 msgstr ""
 
-#: inc/servicecatalog.class.php:57
+#: inc/servicecatalog.class.php:69
 msgid "Create a"
 msgstr ""
 
-#: inc/servicecatalog.class.php:57
+#: inc/servicecatalog.class.php:69
 msgid "advanced request"
-msgstr ""
-
-#: inc/servicecatalog.class.php:98
-msgid "Select the advanced request"
-msgstr ""
-
-#: inc/servicecatalog.class.php:233 inc/wizard.class.php:531
-msgid "No advanced request found"
 msgstr ""
 
 #: inc/task.class.php:157
@@ -544,32 +560,36 @@ msgstr ""
 msgid "Step %d - Ticket type choice"
 msgstr ""
 
-#: inc/wizard.class.php:612 inc/wizard.class.php:645
+#: inc/wizard.class.php:546
+msgid "No advanced request found"
+msgstr ""
+
+#: inc/wizard.class.php:627 inc/wizard.class.php:660
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:647
+#: inc/wizard.class.php:662
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1946
+#: inc/wizard.class.php:1961
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:1955
+#: inc/wizard.class.php:1970
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2000
+#: inc/wizard.class.php:2015
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2004
+#: inc/wizard.class.php:2019
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
