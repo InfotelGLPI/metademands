@@ -63,18 +63,18 @@ class PluginMetademandsConfig extends CommonDBTM {
    /**
     * @return bool
     */
-   function showForm () {
+   function showForm() {
       if (!$this->canCreate() || !$this->canView()) {
          return false;
       }
 
       $config = PluginMetademandsConfig::getInstance();
 
-      echo "<form name='form' method='post' action='".Toolbox::getItemTypeFormURL('PluginMetademandsConfig')."'>";
+      echo "<form name='form' method='post' action='" . Toolbox::getItemTypeFormURL('PluginMetademandsConfig') . "'>";
 
       echo "<div align='center'><table class='tab_cadre_fixe'>";
 
-      echo "<tr><th colspan='6'>".__('Configuration of the meta-demand plugin', 'metademands')."</th></tr>";
+      echo "<tr><th colspan='6'>" . __('Configuration of the meta-demand plugin', 'metademands') . "</th></tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
@@ -85,10 +85,10 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
 
       echo "<td>";
-      echo __("Enable display metademands via icons",'metademands');
+      echo __("Enable display metademands via icons", 'metademands');
       echo "</td>";
       echo "<td>";
-      Dropdown::showYesNo("display_type",$config['display_type']);
+      Dropdown::showYesNo("display_type", $config['display_type']);
       echo "</td>";
       echo "</tr>";
 
@@ -134,11 +134,62 @@ class PluginMetademandsConfig extends CommonDBTM {
       Dropdown::showYesNo('childs_parent_content', $config['childs_parent_content']);
       echo "</td>";
 
-      echo "<td colspan='2'></td>";
+      echo "<td>";
+      echo __('Display metademands list into ServiceCatalog plugin', 'metademands');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showYesNo('display_buttonlist_servicecatalog', $config['display_buttonlist_servicecatalog']);
+      echo "</td>";
       echo "</tr>";
 
+      if ($config['display_buttonlist_servicecatalog'] == 1) {
+
+         echo "<tr><th colspan='6'>" . __('Configuration of the Service Catalog plugin', 'metademands') . "</th></tr>";
+
+         echo "<tr class='tab_bg_1'>";
+         echo "<td colspan='2'>" . __('Title for Service Catalog widget', 'metademands') . "</td>";
+         echo "<td colspan='2'>";
+         Html::textarea(['name'            => 'title_servicecatalog',
+                         'value'           => $config['title_servicecatalog'],
+                         'enable_richtext' => false,
+                         'cols'            => 80,
+                         'rows'            => 3]);
+         echo "</td>";
+         echo "</tr>";
+
+         echo "<tr class='tab_bg_1'>";
+         echo "<td colspan='2'>" . __('Comment for Service Catalog widget', 'metademands') . "</td>";
+         echo "<td colspan='2'>";
+         Html::textarea(['name'            => 'comment_servicecatalog',
+                         'value'           => $config['comment_servicecatalog'],
+                         'enable_richtext' => false,
+                         'cols'            => 80,
+                         'rows'            => 3]);
+         echo "</td>";
+         echo "</tr>";
+
+         echo "<tr class='tab_bg_1'>";
+         echo "<td colspan='2'>";
+         echo __('Icon for Service Catalog widget', 'metademands');
+         echo "<br>" . __('Example : ', 'metademands') . "fas fa-share-alt";
+         echo "</td>";
+         echo "<td colspan='2'>";
+         $opt = [
+            'value'     => $config['fa_servicecatalog'],
+            'maxlength' => 250,
+            'size'      => 80,
+         ];
+         echo Html::input('fa_servicecatalog', $opt);
+         if (isset($config['fa_servicecatalog'])
+             && !empty($config['fa_servicecatalog'])) {
+            $icon = $config['fa_servicecatalog'];
+            echo "<br><br><i class='fas-sc sc-fa-color $icon fa-3x' ></i>";
+         }
+         echo "</td>";
+         echo "</tr>";
+      }
       echo "<tr><td class='tab_bg_2 center' colspan='6'><input type=\"submit\" name=\"update_config\" class=\"submit\"
-         value=\""._sx('button', 'Update')."\" ></td></tr>";
+         value=\"" . _sx('button', 'Update') . "\" ></td></tr>";
 
       echo "</table></div>";
       Html::closeForm();
@@ -173,7 +224,7 @@ class PluginMetademandsConfig extends CommonDBTM {
       if (isset($options['where'])) {
          $where = $options['where'];
       }
-      $dbu = new DbUtils();
+      $dbu        = new DbUtils();
       $dataConfig = $dbu->getAllDataFromTable($table, $where);
       if (count($dataConfig) > 0) {
          return array_shift($dataConfig);

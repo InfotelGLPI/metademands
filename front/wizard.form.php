@@ -291,7 +291,13 @@ if (isset($_POST['next'])) {
          if ($plugin->isActivated('servicecatalog')
              && $_POST['step'] == PluginMetademandsMetademand::STEP_LIST
              && Session::haveRight("plugin_servicecatalog", READ)) {
-            Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=metademands");
+            $config = new PluginMetademandsConfig();
+            $config->getFromDB(1);
+            if ($config->getField('display_buttonlist_servicecatalog') == 1) {
+               Html::redirect($wizard->getFormURL() . "?step=".PluginMetademandsMetademand::STEP_INIT);
+            } else {
+               Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
+            }
          } else if ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW) {
             if (isset($_SESSION['metademands_hide'])) {
                unset($_SESSION['metademands_hide']);

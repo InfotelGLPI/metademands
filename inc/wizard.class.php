@@ -451,10 +451,25 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
 
+//         foreach ($data as $type => $typename) {
+//
+//            echo "<a class='bt-buttons' href=''>";
+//            echo '<div class="btnsc-normal" >';
+//            $fasize = "fa-6x";
+//            echo "<div class='center'>";
+//            $icon = "fa-share-alt";
+//            echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
+//            echo "</div>";
+//            echo "<br><p>";;
+//            echo $typename;
+//            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+//            echo "</span></em>";
+//            echo "</p></div></a>";
+//         }
          echo "<div style='margin-bottom: 10px'>";
-
          $rand = Dropdown::showFromArray("type", $data, ["value" => Ticket::DEMAND_TYPE]);
          echo "</div>";
+
          $params = ['type' => '__VALUE__', "action" => "icon"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",

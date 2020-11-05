@@ -44,16 +44,11 @@ if (isset($_POST["value"])) {
    ];
    $field        = new PluginMetademandsField();
    $datas_fields = $field->find($condition, [], 1);
-   Toolbox::logWarning($datas_fields);
 
    $name = "";
    foreach ($datas_fields as $data_field) {
-//      if ($data_field['is_basket'] == false) {
          $namefield = 'field';
          $name = $namefield . "[" . $data_field['id'] . "]";
-//      } else {
-//         $namefield = 'field_basket_' . $idline;
-//      }
    }
    $p = ['rand' => $rand,
          'name' => $name];

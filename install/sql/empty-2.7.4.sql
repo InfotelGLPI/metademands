@@ -263,6 +263,10 @@ CREATE TABLE `glpi_plugin_metademands_configs` (
    `show_requester_informations` tinyint(1) default 0,
    `childs_parent_content` tinyint(1) default 0,
    `display_type` tinyint(1) default 1,
+   `display_buttonlist_servicecatalog` tinyint(1) default 1,
+   `title_servicecatalog`     varchar(255)          DEFAULT NULL,
+   `comment_servicecatalog`   TEXT                  DEFAULT NULL,
+   `fa_servicecatalog`        varchar(100) NOT NULL DEFAULT 'fas fa-share-alt',
    PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
