@@ -445,7 +445,6 @@ class PluginMetademandsWizard extends CommonDBTM {
       $config      = new PluginMetademandsConfig();
       $config->getFromDB(1);
       $meta = new PluginMetademandsMetademand();
-      $dbu  = new DbUtils();
       if ($config->getField('display_type') == 1) {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);

@@ -203,7 +203,9 @@ class PluginMetademandsBasketline extends CommonDBTM {
          }
          //TODO drop if empty datas ??
          $name = $values['item'];
-         if ($values['type'] == "dropdown_multiple") {
+         if ($values['type'] != "dropdown_object"
+             && $values['type'] != "dropdown"
+             && $values['type'] != "dropdown_meta") {
             $name = $values['type'];
          }
 

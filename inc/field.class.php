@@ -1257,7 +1257,7 @@ class PluginMetademandsField extends CommonDBChild {
                         $items_id = $splitter[1];
                      }
                      $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "' >";
-                     if ($itemtype && $items_id) {
+                     if (isset($itemtype) && isset($items_id)) {
                         $field    .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
                                                                         $items_id);
                      }
@@ -1437,7 +1437,6 @@ class PluginMetademandsField extends CommonDBChild {
          case 'yesno':
             $option[1] = __('No');
             $option[2] = __('Yes');
-            $value     = self::_unserialize($data['custom_values']);
             $field     = "";
             $field     .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
                                                                                                   'display' => false]);
