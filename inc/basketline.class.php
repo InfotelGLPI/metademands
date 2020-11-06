@@ -46,7 +46,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
          $basketline = new self();
          if (!$preview && $basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
-                                                   'users_id'                          => Session::getLoginUserID()])) {
+                                                                'users_id'                          => Session::getLoginUserID()])) {
 
             echo "<div class='right-div'>";
 
@@ -85,25 +85,25 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
       echo "<div class='basket-data'>";
 
-      $i            = 0;
+      $i = 0;
 
       //hide empty hidden fields
-//      $hidden_links = [];
-//      foreach ($fields as $k => $v) {
-//         if (!empty($v['hidden_link'])) {
-//            foreach (PluginMetademandsField::_unserialize($v['hidden_link']) as $h => $hidden) {
-//               if ($hidden > 0) {
-//                  foreach ($values as $key => $value) {
-//                     if ($value['plugin_metademands_fields_id'] == $hidden) {
-//                        if (empty($value['value'])) {
-//                           $hidden_links[] = $value['plugin_metademands_fields_id'];
-//                        }
-//                     }
-//                  }
-//               }
-//            }
-//         }
-//      }
+      //      $hidden_links = [];
+      //      foreach ($fields as $k => $v) {
+      //         if (!empty($v['hidden_link'])) {
+      //            foreach (PluginMetademandsField::_unserialize($v['hidden_link']) as $h => $hidden) {
+      //               if ($hidden > 0) {
+      //                  foreach ($values as $key => $value) {
+      //                     if ($value['plugin_metademands_fields_id'] == $hidden) {
+      //                        if (empty($value['value'])) {
+      //                           $hidden_links[] = $value['plugin_metademands_fields_id'];
+      //                        }
+      //                     }
+      //                  }
+      //               }
+      //            }
+      //         }
+      //      }
 
       foreach ($fields as $k => $v) {
 
@@ -203,9 +203,11 @@ class PluginMetademandsBasketline extends CommonDBTM {
          }
          //TODO drop if empty datas ??
          $name = $values['item'];
+
          if ($values['type'] != "dropdown_object"
              && $values['type'] != "dropdown"
-             && $values['type'] != "dropdown_meta") {
+             && $values['type'] != "dropdown_meta"
+             && strpos($values['item'],'plugin_') === false) {
             $name = $values['type'];
          }
 

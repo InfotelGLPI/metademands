@@ -557,7 +557,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . _n('Type', 'Types', 1) . "</td>";
       echo "<td>";
+      $opt = [
+         'value' => $this->fields['type'],
+      ];
       $rand = Ticket::dropdownType('type', $opt);
+
       $params = ['type'            => '__VALUE__',
                  'entity_restrict' => $this->fields['entities_id'],
                  'value'           => $this->fields['itilcategories_id'],

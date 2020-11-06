@@ -25,8 +25,9 @@ News :
 - [X] Create basket from assistants
 - [X] Create PDF for your demands
 - [X] Translation of assistants
+- [X] Meta Incidents
 
 Help us to add these features
-- [ ] Meta Incidents
+
 - [ ] Save your forms for validation
 

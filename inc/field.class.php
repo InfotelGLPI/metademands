@@ -403,7 +403,12 @@ class PluginMetademandsField extends CommonDBChild {
       if ($metademand->fields['is_order'] == 1) {
          echo "<td>" . __('Display into the basket', 'metademands') . "</td>";
          echo "<td>";
-         Dropdown::showYesNo("is_basket", $this->fields["is_basket"]);
+         if ($ID > 0) {
+            $value =  $this->fields["is_basket"];
+         } else {
+            $value = 1;
+         }
+         Dropdown::showYesNo("is_basket", $value);
          echo "</td>";
       } else {
          echo "<td colspan='2'></td>";
