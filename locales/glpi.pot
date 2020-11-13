@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-06 08:54+0000\n"
+"POT-Creation-Date: 2020-11-13 14:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,12 +24,12 @@ msgid_plural "Meta-Demands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: front/wizard.form.php:122
+#: front/wizard.form.php:124
 msgid "There is no line on the basket"
 msgstr ""
 
-#: front/wizard.form.php:245 front/wizard.form.php:247
-#: front/wizard.form.php:451 front/wizard.form.php:454
+#: front/wizard.form.php:247 front/wizard.form.php:249
+#: front/wizard.form.php:453 front/wizard.form.php:456
 msgid "Create a demand"
 msgstr ""
 
