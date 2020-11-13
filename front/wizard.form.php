@@ -73,7 +73,6 @@ if (isset($_GET['id'])) {
 
 if (isset($_POST['next'])) {
    $KO              = false;
-   $onlybasketdatas = false;
    $step            = $_POST['step'] + 1;
    if (isset($_POST['update_fields'])) {
       if ($metademands->canCreate()
@@ -83,14 +82,17 @@ if (isset($_POST['next'])) {
          $data  = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
          $metademands->getFromDB($_POST['form_metademands_id']);
          $plugin = new Plugin();
-         if ($plugin->isActivated('orderprojects') && $metademands->fields['is_order'] == 1) {
+         $meta = [];
+         if ($plugin->isActivated('orderprojects')
+             && $metademands->fields['is_order'] == 1) {
             $orderprojects   = new PluginOrderprojectsMetademand();
-            $onlybasketdatas = true;
             $meta            = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
-            if ($meta) {
-               $orderprojects->createFromMetademands($_POST);
-               Html::back();
-            }
+         }
+
+         if (count($meta) == 1) {
+            $orderprojects->createFromMetademands($_POST);
+            Html::back();
+
          } else {
 
             $nblines = 0;
@@ -146,7 +148,7 @@ if (isset($_POST['next'])) {
                   $_POST['field'] = $post;
 
                   foreach ($data as $id => $value) {
-                     if(!isset($post[$id])){
+                     if (!isset($post[$id])) {
                         $post[$id] = [];
                      }
                      //Permit to launch child metademand on check value
@@ -214,7 +216,7 @@ if (isset($_POST['next'])) {
                      // Resources step
                      $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
 
-                    //Category id if have category field
+                     //Category id if have category field
                      $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
 
 
@@ -234,7 +236,7 @@ if (isset($_POST['next'])) {
       }
    }
 
-   Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".$step);
+   Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
 
 } else
    if (isset($_POST['previous'])) {
@@ -294,7 +296,7 @@ if (isset($_POST['next'])) {
             $config = new PluginMetademandsConfig();
             $config->getFromDB(1);
             if ($config->getField('display_buttonlist_servicecatalog') == 1) {
-               Html::redirect($wizard->getFormURL() . "?step=".PluginMetademandsMetademand::STEP_INIT);
+               Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
             } else {
                Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
             }
@@ -306,7 +308,7 @@ if (isset($_POST['next'])) {
                unset($_SESSION['son_meta']);
             }
          }
-         $options = ['step' => $_POST['step'],
+         $options = ['step'           => $_POST['step'],
                      'metademands_id' => $_POST['metademands_id']];
          $wizard->showWizard($options);
       }
@@ -322,7 +324,7 @@ if (isset($_POST['next'])) {
          unset($_SESSION['metademands_hide']);
       }
 
-      Html::redirect($wizard->getFormURL() . "?step=".PluginMetademandsMetademand::STEP_INIT);
+      Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
 
    } else if (isset($_POST['add_to_basket'])) {
 
@@ -371,7 +373,7 @@ if (isset($_POST['next'])) {
          $basketline = new PluginMetademandsBasketline();
          $basketline->addToBasket($content, $_POST['form_metademands_id']);
       }
-      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".$step);
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
 
    } else if (isset($_POST['update_basket_line'])) {
 
@@ -422,29 +424,29 @@ if (isset($_POST['next'])) {
          $basketline->updateFromBasket($_POST, $line);
       }
 
-      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".PluginMetademandsMetademand::STEP_SHOW);
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
 
    } else if (isset($_POST['delete_basket_line'])) {
 
       $basketline = new PluginMetademandsBasketline();
       $basketline->deleteFromBasket($_POST);
 
-      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".PluginMetademandsMetademand::STEP_SHOW);
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
 
    } else if (isset($_POST['delete_basket_file'])) {
 
       $basketline = new PluginMetademandsBasketline();
       $basketline->deleteFileFromBasket($_POST);
 
-      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".PluginMetademandsMetademand::STEP_SHOW);
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
 
    } else if (isset($_POST['clear_basket'])) {
 
       $basketline = new PluginMetademandsBasketline();
       $basketline->deleteByCriteria(['plugin_metademands_metademands_id' => $_POST['metademands_id'],
-                                      'users_id'                          => Session::getLoginUserID()]);
+                                     'users_id'                          => Session::getLoginUserID()]);
 
-      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id']."&step=".PluginMetademandsMetademand::STEP_SHOW);
+      Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
 
    } else {
       if (Session::getCurrentInterface() == 'central') {
