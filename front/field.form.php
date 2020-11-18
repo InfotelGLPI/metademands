@@ -57,8 +57,8 @@ if (!isset($_POST["check_value"])) {
    }
 }
 
-if (isset($_POST['type']) && $_POST['type'] == 'dropdown'
-    && isset($_POST['item']) && $_POST['item'] == 'group') {
+if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
+    && isset($_POST['item']) && $_POST['item'] == 'Group') {
    if ($_POST['is_assign'] > 0) {
       $custom_values['is_assign'] = $_POST['is_assign'];
    }
@@ -115,7 +115,7 @@ if (isset($_POST["add"])) {
        && ($_POST["item"] == 'other'
            || $_POST["type"] == 'checkbox'
            || $_POST["type"] == 'radio'
-           || $_POST['item'] == 'group'
+           || $_POST['item'] == 'Group'
            || $_POST['type'] == 'number')) {
       $comment_values = "";
       $custom_values  = "";
@@ -168,8 +168,6 @@ if (isset($_POST["add"])) {
          $plugin = new Plugin();
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
             $p = $_POST;
-
-
             $new_res = PluginMetademandsField::getPluginSaveOptions($plug,$p);
          }
       }
