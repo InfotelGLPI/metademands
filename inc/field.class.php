@@ -1261,7 +1261,6 @@ class PluginMetademandsField extends CommonDBChild {
                         $cond[$type_group] = $value;
                      }
                   }
-                  Toolbox::logWarning($cond);
                   $field .= Group::dropdown(['name'    => $namefield . "[" . $data['id'] . "]",
                                              'entity'   => $_SESSION['glpiactiveentities'],
                                             'value'   => $value,
