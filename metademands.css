@@ -50,7 +50,7 @@
 }
 
 .middle-div {
-   float: left;
+   /*float: left;*/
 }
 
 .metademands_tickettask {
@@ -136,6 +136,12 @@
 a.metademand_middle_button{
    position: absolute;
    left: 50%;
+}
+
+@media (max-width: 768px) {
+   a.metademand_middle_button{
+      left:unset;
+   }
 }
 
 .metademand_next_button{

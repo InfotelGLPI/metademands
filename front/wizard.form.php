@@ -246,7 +246,12 @@ if (isset($_POST['next'])) {
       if (Session::getCurrentInterface() == 'central') {
          Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
       } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
+         $plugin = new Plugin();
+         if ($plugin->isActivated('servicecatalog')) {
+            PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a demand', 'metademands'));
+         } else {
+            Html::helpHeader(__('Create a demand', 'metademands'));
+         }
       }
 
       // Resource previous wizard steps
@@ -453,7 +458,13 @@ if (isset($_POST['next'])) {
          Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
 
       } else {
-         Html::helpHeader(__('Create a demand', 'metademands'));
+         $plugin = new Plugin();
+         if ($plugin->isActivated('servicecatalog')) {
+            PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a demand', 'metademands'));
+         } else {
+            Html::helpHeader(__('Create a demand', 'metademands'));
+         }
+
       }
 
       if (isset($_SESSION['metademands_hide'])) {
@@ -468,6 +479,13 @@ if (isset($_POST['next'])) {
                   'itilcategories_id' => $_GET['itilcategories_id']];
 
       $wizard->showWizard($options);
+
+      if (Session::getCurrentInterface() != 'central'
+          && $plugin->isActivated('servicecatalog')) {
+
+         PluginServicecatalogMain::showNavBarFooter('metademands');
+      }
+
 
       if (Session::getCurrentInterface() == 'central') {
          Html::footer();

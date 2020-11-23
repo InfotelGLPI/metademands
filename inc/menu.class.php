@@ -48,44 +48,6 @@ class PluginMetademandsMenu extends CommonDBTM {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
 
-   function showMenu() {
-      global $CFG_GLPI;
-
-      echo "<div align='center'>";
-      echo "<table class='tab_cadre' cellpadding='5' height='150'>";
-      echo "<tr>";
-      echo "<th colspan='2'>" . PluginMetademandsMetademand::getTypeName(2) . "</th>";
-      echo "</tr>";
-      echo "<tr class='tab_bg_1' style='background-color:white;'>";
-
-      //Enter Metademand
-      $metademands = new PluginMetademandsMetademand();
-      $data        = $metademands->listMetademands(true);
-
-      if (count($data)) {
-         echo "<td class='center'>";
-         echo "<a href='".$CFG_GLPI['root_doc'] . "/plugins/metademands/wizard.form.php?step=".PluginMetademandsMetademand::STEP_LIST."'>";
-         echo "<i class='fas fa-share-alt fa-5x' style='color:#000' title=\"" . __('Enter a demand', 'metademands') . "\"></i><br>";
-         echo "<br>" . __('Enter a demand', 'metademands') . "</a>";
-         echo "</td>";
-      } else {
-         echo "<td class='center'>";
-         echo __('No metademands available', 'metademands');
-         echo "</td>";
-      }
-      if ($this->canCreate()) {
-         //Configure metademand
-         echo "<td class='center'>";
-         echo "<a href='".$CFG_GLPI['root_doc'] . "/plugins/metademands/front/metademand.php'>";
-         echo "<i class='fas fa-cogs fa-5x' style='color:#000' title=\"" . __('Configure demands', 'metademands') . "\"></i><br>";
-         echo "<br>" . __('Configure demands', 'metademands') . "</a>";
-         echo "</td>";
-      }
-
-      echo "</tr>";
-      echo "</table></div>";
-   }
-
    static function removeRightsFromSession() {
       if (isset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMetademand'])) {
          unset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMetademand']);

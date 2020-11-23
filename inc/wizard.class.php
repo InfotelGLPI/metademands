@@ -157,7 +157,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Wizard title
          echo "<div class=\"form-row\">";
          echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
-         echo "<h4 class=\"bt-title-divider\">";
+         echo "<h4 class=\"bt-title-divider\"><span>";
          $icon = "fa-share-alt";
          $meta = new PluginMetademandsMetademand();
          if ($meta->getFromDB($parameters['metademands_id'])) {
@@ -167,13 +167,13 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "<i class='fa-2x fas $icon'></i>&nbsp;";
          echo __('Demand choice', 'metademands');
-         echo "</h4></div></div>";
+         echo "</span></h4></div></div>";
 
       } else if ($parameters['step'] >= PluginMetademandsMetademand::STEP_LIST) {
          // Wizard title
          echo "<div class=\"form-row\">";
          echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
-         echo "<h4 class=\"bt-title-divider\">";
+         echo "<h4 class=\"bt-title-divider\"><span>";
          $meta = new PluginMetademandsMetademand();
          if ($meta->getFromDB($parameters['metademands_id'])) {
             if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
@@ -190,7 +190,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          if (Session::haveRight('plugin_metademands', UPDATE)) {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'><i class='fas fa-wrench'></i></a>";
          }
-         echo "</h4>";
+         echo "</span></h4>";
          if ($meta->getFromDB($parameters['metademands_id'])) {
             if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
                $comment = $meta->fields['comment'];
@@ -239,9 +239,9 @@ class PluginMetademandsWizard extends CommonDBTM {
          if ($config['show_requester_informations']) {
             echo "<div class=\"form-row\">";
             echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
-            echo "<h4 class=\"bt-title-divider\">";
+            echo "<h4 class=\"bt-title-divider\"><span>";
             echo __('General informations', 'metademands');
-            echo "</h4></div>";
+            echo "</span></h4></div>";
 
             // If profile have right on requester update
             if ($this->canUpdateRequester() && empty($parameters['tickets_id'])) {
@@ -371,9 +371,9 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       echo "<div class=\"form-row\">";
       echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;'>";
-      echo "<h4 class=\"bt-title-divider\">";
+      echo "<h4 class=\"bt-title-divider\"><span>";
       echo sprintf(__('Step %d - Ticket type choice', 'metademands'), $step);
-      echo "</h4>";
+      echo "</span></h4>";
       echo "</div>";
       echo "</div>";
 
@@ -474,7 +474,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                        "listmeta",
                                        $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updateListMeta.php",
                                        $params);
-         echo "<div id='listmeta'>";
+         echo "<div id='listmeta' >";
          foreach ($metademands as $id => $name) {
 
             $meta = new PluginMetademandsMetademand();
@@ -490,7 +490,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
                echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
                echo "</div>";
-               echo "<br><p>";;
+
+               echo "<br><p>";
                if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
                   echo $meta->getName();
                } else {
@@ -503,12 +504,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                } else {
                   echo $comm;
                }
-
                echo "</span></em>";
+
                echo "</p></div></a>";
             }
          }
-         echo "<div>";
+         echo "</div>";
       } else {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
@@ -543,7 +544,6 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo '<div class="bt-feature bt-col-sm-5 bt-col-md-2">';
          echo '<h5 class="bt-title">';
          echo '<span class="de-em">' . __('No advanced request found', 'metademands') . '</span></h5></a>';
-         echo '</div>';
          echo '</div>';
       }
    }
@@ -638,7 +638,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             if (!$preview) {
                echo "<div class=\"middle-div bt-container\">";
-               echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;border-width:1px;margin-bottom: 20px;margin-left: -15px;'>";
+               echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;border-width:1px;margin-top: 10px;margin-bottom: 20px;margin-left: -15px;'>";
                echo "</div>";
                echo "<div class=\"form-row\">";
 
@@ -743,7 +743,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
                //               echo "<div class='bt-feature col-md-12' style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;'>";
                //               echo "</div>";
-               echo "&nbsp;";
+//               echo "&nbsp;";
                echo "<div class=\"form-row\" style='$style'>";
                $count = 0;
             }
@@ -763,7 +763,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             // Title field
             if ($data['type'] == 'title') {
                echo "<div bloc-id='bloc" . $data["rank"] . "' class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid; width: 100%'>";
-               echo "<h4 class=\"bt-title-divider\" style='color:" . $data['color'] . ";'>";
+               echo "<h4 class=\"bt-title-divider\" style='color:" . $data['color'] . ";'><span>";
 
                if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
                   $label = $data['name'];
@@ -779,7 +779,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   Html::showToolTip($label2,
                                     ['awesome-class' => 'fa-info-circle']);
                }
-               echo "</h4>";
+               echo "</span></h4>";
                if (!empty($data['comment'])) {
                   if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
                      $comment = $data['comment'];
