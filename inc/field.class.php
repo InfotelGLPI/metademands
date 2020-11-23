@@ -1287,6 +1287,7 @@ class PluginMetademandsField extends CommonDBChild {
                      $itilCategory = new ITILCategory();
                      $itilCategory->getFromDB($itilcategories_id);
                      $field = "<span>" . $itilCategory->getField('name');
+                     $field .= "<input type='hidden' name='" . $nameitil . "_type' value='" . $metademand->fields['type'] . "' >";
                      $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
                      $field .= "<span>";
                   } else {

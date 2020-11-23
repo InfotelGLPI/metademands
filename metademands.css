@@ -140,7 +140,7 @@ a.metademand_middle_button{
 
 @media (max-width: 768px) {
    a.metademand_middle_button{
-      left:unset;
+      display: none;
    }
 }
 
