@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-18 13:30+0000\n"
+"POT-Creation-Date: 2020-11-23 08:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,8 +28,9 @@ msgstr[1] ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: front/wizard.form.php:247 front/wizard.form.php:249
-#: front/wizard.form.php:453 front/wizard.form.php:456
+#: front/wizard.form.php:247 front/wizard.form.php:251
+#: front/wizard.form.php:253 front/wizard.form.php:458
+#: front/wizard.form.php:463 front/wizard.form.php:465
 msgid "Create a demand"
 msgstr ""
 
@@ -326,19 +327,6 @@ msgstr ""
 msgid "Groups allowed to enter a demand"
 msgstr ""
 
-#: inc/menu.class.php:68 inc/menu.class.php:69
-msgid "Enter a demand"
-msgstr ""
-
-#: inc/menu.class.php:73
-msgid "No metademands available"
-msgstr ""
-
-#: inc/menu.class.php:80 inc/menu.class.php:81 inc/metademand.class.php:2630
-#: inc/metademand.class.php:2654
-msgid "Configure demands"
-msgstr ""
-
 #: inc/metademand.class.php:253 inc/metademand.class.php:318
 #: inc/task.class.php:635 inc/tickettask.class.php:532
 msgid "The category is related to a demand. Thank you to select another"
@@ -422,6 +410,10 @@ msgstr ""
 
 #: inc/metademand.class.php:2301
 msgid "Coming"
+msgstr ""
+
+#: inc/metademand.class.php:2630 inc/metademand.class.php:2654
+msgid "Configure demands"
 msgstr ""
 
 #: inc/metademand_resource.class.php:50
@@ -560,7 +552,7 @@ msgstr ""
 msgid "Step %d - Ticket type choice"
 msgstr ""
 
-#: inc/wizard.class.php:545
+#: inc/wizard.class.php:546
 msgid "No advanced request found"
 msgstr ""
 
