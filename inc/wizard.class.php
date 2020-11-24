@@ -256,15 +256,15 @@ class PluginMetademandsWizard extends CommonDBTM {
                                'on_change' => "showRequester$rand()"]);
                echo "<script type='text/javascript' >\n";
                echo "function showRequester$rand() {\n";
-               $params = ['value'      => '__VALUE__',
-                          'old_value'  => $userid];
+               $params = ['value'     => '__VALUE__',
+                          'old_value' => $userid];
                Ajax::updateItemJsCode("show_users_id_requester",
                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardUser.php",
                                       $params,
                                       "dropdown__users_id_requester$rand");
 
-               $params = ['value'      => '__VALUE__',
-                          'old_value'  => $userid,
+               $params = ['value'          => '__VALUE__',
+                          'old_value'      => $userid,
                           'metademands_id' => $parameters['metademands_id']];
                Ajax::updateItemJsCode("show_items_id_requester",
                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardItems.php",
@@ -408,14 +408,14 @@ class PluginMetademandsWizard extends CommonDBTM {
    static function selectMetademands($limit = "", $type = Ticket::DEMAND_TYPE) {
       global $DB;
 
-      $dbu         = new DbUtils();
-      $query       = "SELECT `id`,`name`
+      $dbu   = new DbUtils();
+      $query = "SELECT `id`,`name`
                    FROM `glpi_plugin_metademands_metademands`
                    WHERE (is_order = 1  OR `glpi_plugin_metademands_metademands`.`itilcategories_id` <> '')
                    AND type = $type    
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
-                     . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
-      $query       .= "AND is_active ORDER BY `name` $limit";
+               . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
+      $query .= "AND is_active ORDER BY `name` $limit";
 
       $metademands = [];
       $result      = $DB->query($query);
@@ -450,21 +450,21 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
 
-//         foreach ($data as $type => $typename) {
-//
-//            echo "<a class='bt-buttons' href=''>";
-//            echo '<div class="btnsc-normal" >';
-//            $fasize = "fa-6x";
-//            echo "<div class='center'>";
-//            $icon = "fa-share-alt";
-//            echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
-//            echo "</div>";
-//            echo "<br><p>";;
-//            echo $typename;
-//            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-//            echo "</span></em>";
-//            echo "</p></div></a>";
-//         }
+         //         foreach ($data as $type => $typename) {
+         //
+         //            echo "<a class='bt-buttons' href=''>";
+         //            echo '<div class="btnsc-normal" >';
+         //            $fasize = "fa-6x";
+         //            echo "<div class='center'>";
+         //            $icon = "fa-share-alt";
+         //            echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
+         //            echo "</div>";
+         //            echo "<br><p>";;
+         //            echo $typename;
+         //            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+         //            echo "</span></em>";
+         //            echo "</p></div></a>";
+         //         }
          echo "<div style='margin-bottom: 10px'>";
          $rand = Dropdown::showFromArray("type", $data, ["value" => Ticket::DEMAND_TYPE]);
          echo "</div>";
@@ -743,7 +743,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
                //               echo "<div class='bt-feature col-md-12' style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;'>";
                //               echo "</div>";
-//               echo "&nbsp;";
+               //               echo "&nbsp;";
                echo "<div class=\"form-row\" style='$style'>";
                $count = 0;
             }
@@ -1744,12 +1744,22 @@ class PluginMetademandsWizard extends CommonDBTM {
          $result = $metademands->addMetademands($metademands_id, $values, $options);
          Session::addMessageAfterRedirect($result['message']);
       }
+      $itilcategories_id = isset($_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id']) ? $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] : 0;
       unset($_SESSION['plugin_metademands']);
 
       if (!empty($options['resources_id'])) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
       } else {
-         Html::redirect($self->getFormURL() . "?step=" . $step = PluginMetademandsMetademand::STEP_LIST);
+
+         $plugin = new Plugin();
+         if ($plugin->isActivated('servicecatalog')
+             && Session::haveRight("plugin_servicecatalog", READ)
+             && $itilcategories_id > 0) {
+            $type = $metademands->fields['type'];
+            Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=$type&level=1");
+         } else {
+            Html::redirect($self->getFormURL() . "?step=" . $step = PluginMetademandsMetademand::STEP_LIST);
+         }
       }
    }
 

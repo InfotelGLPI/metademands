@@ -508,7 +508,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                               $itemtype = $splitter[0];
                               $items_id = $splitter[1];
                            }
-                           if ($itemtype && $items_id) {
+                           if (isset($itemtype) && isset($items_id)) {
                               $value = Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
                                                                               $items_id);
                            }

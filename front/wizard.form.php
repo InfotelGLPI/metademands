@@ -218,8 +218,9 @@ if (isset($_POST['next'])) {
 
                      //Category id if have category field
                      $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
-
-
+                     $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
+                        (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] ==0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
+                     $_SESSION['plugin_metademands']['field_type'] = $metademands->fields['type'];
                   }
 
                   if ($KO) {
@@ -303,7 +304,7 @@ if (isset($_POST['next'])) {
             if ($config->getField('display_buttonlist_servicecatalog') == 1
              && !isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
                Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
-            } else {
+            } else if (isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
                $type = $_POST['field_type'];
                Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=$type&level=1");
             }
