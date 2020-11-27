@@ -130,7 +130,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo Html::script("/plugins/metademands/lib/bootstrap/3.2.0/js/bootstrap.min.js");
       echo "<div id ='content'>";
       if (!$parameters['preview']) {
-         echo "<div class='bt-container metademands_wizard_rank' > ";
+         echo "<div class='bt-container-fluid metademands_wizard_rank' > ";
       }
       $style = "";
       if ($parameters['preview']) {
@@ -637,7 +637,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
 
             if (!$preview) {
-               echo "<div class=\"middle-div bt-container\">";
+               echo "<div class=\"middle-div bt-container-fluid\">";
                echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;border-width:1px;margin-top: 10px;margin-bottom: 20px;margin-left: -15px;'>";
                echo "</div>";
                echo "<div class=\"form-row\">";
