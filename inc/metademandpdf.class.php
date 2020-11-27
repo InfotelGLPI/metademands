@@ -277,7 +277,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     * @param string $fontColor
     * @param string $link
     */
-   function MultiCellValue($w, $h, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 10, $fontColor = '', $type, $label, $values, $link = '') {
+   function MultiCellValue($w, $h, $type, $label, $values, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 10, $fontColor = '', $link = '') {
 
       if (empty($size)) {
          $size = $this->font_size;
@@ -391,7 +391,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          $dbu = new DbUtils();
 
          if ($i > 0) {
-            $this->MultiCellValue($this->title_width, $this->linebreak_height, 'TB', 'C', '', 0, '', 'black', 'linebreak', '', '');
+            $this->MultiCellValue($this->title_width, $this->linebreak_height, 'linebreak', '', '', 'TB', 'C', '', 0, '', 'black');
          }
 
          foreach ($newForm as $key => $elt) {
@@ -418,12 +418,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                switch ($elt['type']) {
                   case 'title':
                      // Draw line
-                     $this->MultiCellValue($this->title_width, $this->line_height, 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black', $elt['type'], $label, '');
+                     $this->MultiCellValue($this->title_width, $this->line_height, $elt['type'], $label, '', 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black');
                      break;
 
                   case 'linebreak':
                      // Draw line
-                     $this->MultiCellValue($this->title_width, $this->linebreak_height, 'TB', 'C', '', 0, '', 'black', $elt['type'], '', '');
+                     $this->MultiCellValue($this->title_width, $this->linebreak_height, $elt['type'], '', '', 'TB', 'C', '', 0, '', 'black');
                      break;
 
                   case 'text':
@@ -431,7 +431,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $value = $fields[$elt['id']];
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
-                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
                   case 'textarea':
@@ -439,7 +439,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $value = Html::cleanPostForTextArea($value);
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
-                     $this->MultiCellValue($this->title_width, $this->multiline_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
                   case 'link':
@@ -450,7 +450,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      //                  }
                      //                  $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      //                  // Draw line
-                     //                  $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, '', $value);
+                     //                  $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, '', $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
                   case 'upload':
@@ -468,7 +468,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                            $value = implode(', ', $value);
                            $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                            // Draw line
-                           $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                           $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                         }
                      } else {
                         $value = [];
@@ -485,7 +485,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $value = implode(', ', $value);
                         $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                         // Draw line
-                        $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                        $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      }
                      break;
 
@@ -502,7 +502,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                            $value = ($value == '&nbsp;') ? ' ' : $value;
                            break;
                         case 'mydevices':
-                           $dbu               = new DbUtils();
+                           $dbu      = new DbUtils();
                            $splitter = explode("_", $fields[$elt['id']]);
                            if (count($splitter) == 2) {
                               $itemtype = $splitter[0];
@@ -510,7 +510,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                            }
                            if (isset($itemtype) && isset($items_id)) {
                               $value = Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
-                                                                              $items_id);
+                                                                 $items_id);
                            }
                            break;
                         case 'other':
@@ -532,7 +532,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      }
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
-                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
                   case 'yesno':
@@ -542,7 +542,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      }
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
-                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
                   case 'dropdown_multiple':
@@ -564,7 +564,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $value = implode(', ', $parseValue);
                         $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                         // Draw line
-                        $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                        $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      }
                      break;
 
@@ -589,7 +589,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $value = implode(', ', $custom_checkbox);
                         $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                         // Draw line
-                        $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                        $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      }
                      break;
 
@@ -602,7 +602,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                               $custom_values[$k] = $ret;
                            }
                         }
-                        $values        = PluginMetademandsField::_unserialize($fields[$elt['id']]);
+                        $values = PluginMetademandsField::_unserialize($fields[$elt['id']]);
                         foreach ($custom_values as $k => $v) {
                            if ($values == $k) {
                               $value = $custom_values[$k];
@@ -610,7 +610,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         }
                         $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                         // Draw line
-                        $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                        $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      }
                      break;
 
@@ -618,7 +618,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $value = Html::convDate($fields[$elt['id']]);
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
-                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
                   case 'datetime_interval':
@@ -635,8 +635,8 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $label2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label2));
                      }
                      // Draw line
-                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label, $value);
-                     $this->MultiCellValue($this->value_width, $this->line_height, 'LRBT', 'L', '', 0, '', 'black', $elt['type'], $label2, $value2);
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label2, $value2, 'LRBT', 'L', '', 0, '', 'black');
                      break;
                }
             }

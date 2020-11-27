@@ -557,7 +557,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . _n('Type', 'Types', 1) . "</td>";
       echo "<td>";
-      $opt = [
+      $opt  = [
          'value' => $this->fields['type'],
       ];
       $rand = Ticket::dropdownType('type', $opt);
@@ -1463,10 +1463,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   if (isset($line['tasks'])
                       && is_array($line['tasks'])
                       && count($line['tasks'])) {
-                     if (!$this->createSonsTickets($line['tasks'], $parent_tickets_id, $tasklevel,
+                     if (!$this->createSonsTickets($parent_tickets_id,
                                                    $this->mergeFields($parent_fields,
                                                                       $parent_ticketfields),
-                                                   $parent_tickets_id)) {
+                                                   $parent_tickets_id, $line['tasks'], $tasklevel)) {
                         $KO[] = 1;
                      }
                   }
@@ -1675,7 +1675,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      case 'mydevices':
                         $dbu               = new DbUtils();
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>";
-                        $splitter = explode("_", $field['value']);
+                        $splitter          = explode("_", $field['value']);
                         if (count($splitter) == 2) {
                            $itemtype = $splitter[0];
                            $items_id = $splitter[1];
@@ -1895,7 +1895,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @throws \GlpitestSQLError
     * @throws \GlpitestSQLError
     */
-   private function createSonsTickets($tickettasks_data = [], $parent_tickets_id, $tasklevel = 1, $parent_fields, $ancestor_tickets_id) {
+   private function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1) {
 
       $ticket_ticket = new Ticket_Ticket();
       $ticket_task   = new PluginMetademandsTicket_Task();
@@ -1926,9 +1926,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
             }
 
             // Add son ticket
-            $son_ticket_data['_disablenotif'] = true;
-            $son_ticket_data['name']          = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
-            $son_ticket_data['type']          = $parent_fields['type'];
+            $son_ticket_data['_disablenotif']      = true;
+            $son_ticket_data['name']               = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
+            $son_ticket_data['type']               = $parent_fields['type'];
             $son_ticket_data['entities_id']        = $parent_fields['entities_id'];
             $son_ticket_data['users_id_recipient'] = 0;
             $son_ticket_data['_auto_import']       = 1;
@@ -2035,7 +2035,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $ticket->fields['_groups_id_assign'] = $parent_groups_tickets_data['groups_id'];
                      }
 
-                     $this->createSonsTickets($tasks_data, $tickets_data['id'], $data['parent_level'] + 1, $ticket->fields, $tickets_found[0]['tickets_id']);
+                     $this->createSonsTickets($ticket->fields, $data['parent_level'] + 1, $tickets_found[0]['tickets_id'], $tasks_data, $tickets_data['id']);
                   }
                }
             }

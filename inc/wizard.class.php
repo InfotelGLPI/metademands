@@ -1807,9 +1807,9 @@ class PluginMetademandsWizard extends CommonDBTM {
           && $value['item'] != 'ITILCategory_Metademands'
           && $value['type'] != 'upload') {
 
-         if (!self::checkMandatoryFields($value, ['id'    => $id,
-                                                  'value' => $post[$fieldname][$id]],
-                                         $fieldname, $post)) {
+         if (!self::checkMandatoryFields($fieldname, $value, ['id'    => $id,
+                                                              'value' => $post[$fieldname][$id]],
+                                         $post)) {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
@@ -1830,14 +1830,14 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       } else if ($value['type'] == 'checkbox') {
 
-         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $fieldname, $post)) {
+         if (!self::checkMandatoryFields($fieldname, $value, ['id' => $id, 'value' => $post[$fieldname][$id]], $post)) {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
       } else if ($value['type'] == 'radio') {
 
-         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => $post[$fieldname][$id]], $fieldname, $post)) {
+         if (!self::checkMandatoryFields($fieldname, $value, ['id' => $id, 'value' => $post[$fieldname][$id]], $post)) {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
@@ -1853,7 +1853,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                $post['_tag_filename'][]    = $file['_tag_filename'];
             }
          }
-         if (!self::checkMandatoryFields($value, ['id' => $id, 'value' => 1], $fieldname, $post)) {
+         if (!self::checkMandatoryFields($fieldname, $value, ['id' => $id, 'value' => 1], $post)) {
             $KO = true;
          } else {
             //not in basket mode
@@ -1893,11 +1893,12 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param array $value
     * @param array $fields
-    * @param array $all_fields
+    * @param       $fieldname
+    * @param array $post
     *
     * @return bool
     */
-   static function checkMandatoryFields($value = [], $fields = [], $fieldname, $post = []) {
+   static function checkMandatoryFields($fieldname, $value = [], $fields = [], $post = []) {
 
       //TODO To Translate ?
       $checkKo             = [];

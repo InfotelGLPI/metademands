@@ -331,7 +331,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
       echo "<td>";
       echo "<span id='show_item' style='display:none'>";
-      $randItem = self::dropdownFieldItems("item", ['value' => $this->fields["item"]], $this->fields["type"]);
+      $randItem = self::dropdownFieldItems("item", $this->fields["type"], ['value' => $this->fields["item"]]);
       echo "</span>";
       $paramsType = ['value'          => '__VALUE__',
                      'type'           => '__VALUE__',
@@ -977,7 +977,7 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @return dropdown of items
     */
-   static function dropdownFieldItems($name, $param = [], $typefield) {
+   static function dropdownFieldItems($name, $typefield, $param = []) {
       global $PLUGIN_HOOKS;
 
       $p = [];
