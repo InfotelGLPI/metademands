@@ -31,6 +31,11 @@ div[class^="btnsc"] {
    background: #cccccc1f!important;
 }
 
+@media (max-width: 768px) {
+div[class^="btnsc"] {
+width: 200px;
+}
+}
 
 div[class^="btnsc"]:hover {
    opacity: 0.9;

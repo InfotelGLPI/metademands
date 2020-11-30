@@ -331,7 +331,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
       echo "<td>";
       echo "<span id='show_item' style='display:none'>";
-      $randItem = self::dropdownFieldItems("item", ['value' => $this->fields["item"]], $this->fields["type"]);
+      $randItem = self::dropdownFieldItems("item", $this->fields["type"], ['value' => $this->fields["item"]]);
       echo "</span>";
       $paramsType = ['value'          => '__VALUE__',
                      'type'           => '__VALUE__',
@@ -977,7 +977,7 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @return dropdown of items
     */
-   static function dropdownFieldItems($name, $param = [], $typefield) {
+   static function dropdownFieldItems($name, $typefield, $param = []) {
       global $PLUGIN_HOOKS;
 
       $p = [];
@@ -1287,6 +1287,7 @@ class PluginMetademandsField extends CommonDBChild {
                      $itilCategory = new ITILCategory();
                      $itilCategory->getFromDB($itilcategories_id);
                      $field = "<span>" . $itilCategory->getField('name');
+                     $field .= "<input type='hidden' name='" . $nameitil . "_type' value='" . $metademand->fields['type'] . "' >";
                      $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
                      $field .= "<span>";
                   } else {

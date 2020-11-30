@@ -9,7 +9,7 @@ body {
 }
 @media (min-width: 768px) {
     .bt-container {
-        width: 768px;
+        width: 600px;
     }
 }
 @media (min-width: 992px) {
@@ -24,7 +24,7 @@ body {
 }
 @media (min-width: 1400px) {
     .bt-container {
-        width: 1400px;
+        width: 1300px;
     }
 }
 
@@ -97,7 +97,7 @@ body {
 }
 
 .bt-title-divider {
-    /*background: #fff url("../img/bg_divider.png") repeat-x scroll left center;*/
+    /*background: #fff url("../pics/bg_divider.png") repeat-x scroll left center;*/
     margin-bottom: 0.5em;
     margin-top: 0.5em;
     padding: 0;
@@ -851,7 +851,7 @@ h4 small {
 }
 
 .bt-features .bt-feature {
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -871,7 +871,7 @@ h4 small {
 /*}*/
 @media (min-width: 768px) {
     .bt-features .bt-feature {
-        margin-bottom: 1em;
+        margin-bottom: 5px;
     }
     .bt-features .feature.tab-pane {
         padding-left: 15px;

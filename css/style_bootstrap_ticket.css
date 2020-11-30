@@ -106,11 +106,11 @@ optgroup {
 
 /*test*/
 .col {
-    -ms-flex-preferred-size: 0;
-    flex-basis: 0;
-    -ms-flex-positive: 1;
-    flex-grow: 1;
-    max-width: 100%;
+    /*-ms-flex-preferred-size: 0;*/
+    /*flex-basis: 0;*/
+    /*-ms-flex-positive: 1;*/
+    /*flex-grow: 1;*/
+    /*max-width: 70%;*/
 }
 
 .col-auto {
@@ -1891,7 +1891,7 @@ a.label:focus {
     padding: 10px 15px;
     margin-bottom: -1px;
     background-color: #fff;
-    border: 1px solid #ddd;
+    /*border: 1px solid #ddd;*/
 }
 .list-group-item:first-child {
     border-top-left-radius: 4px;
