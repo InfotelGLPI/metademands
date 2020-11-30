@@ -1754,8 +1754,12 @@ class PluginMetademandsField extends CommonDBChild {
          if ($params["type"] === "dropdown") {
             $params['value'] = $params['type'];
          }
+         $address = isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:"";
+         if((isset($_SESSION['glpilayout']) && in_array($_SESSION['glpilayout'], ['vsplit','classic']))){
+            $address = $_SERVER['REQUEST_URI'];
+         }
          if (isset($params['value'])) {
-            if (strpos($_SERVER['HTTP_REFERER'], 'field.form.php') > 0) {
+            if (strpos($address, 'field.form.php') > 0) {
                echo "<div id='show_type_fields'>";
                echo "<table width='100%' class='metademands_show_values'>";
                echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "</th></tr>";
@@ -1767,8 +1771,8 @@ class PluginMetademandsField extends CommonDBChild {
                $url = 'field.form.php?id=' . $_GET['id'];
                // Multi criterias
 
-               if (strpos($_SERVER['HTTP_REFERER'], 'nbOpt=') > 0) {
-                  $nb = substr($_SERVER['HTTP_REFERER'], strpos($_SERVER['HTTP_REFERER'], 'nbOpt=') + 6);
+               if (strpos($address, 'nbOpt=') > 0) {
+                  $nb = substr($address, strpos($address, 'nbOpt=') + 6);
                } else if (is_array(self::_unserialize($this->getField('check_value')))) {
                   foreach (self::_unserialize($this->getField('check_value')) as $elem) {
                      $nb++;

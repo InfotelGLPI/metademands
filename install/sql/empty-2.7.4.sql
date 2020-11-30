@@ -16,7 +16,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `is_active` tinyint(1) NOT NULL DEFAULT '1',
     `comment` text COLLATE utf8_unicode_ci default NULL,
     `type` int(11) NOT NULL default '0', -- metademand type : Incident, demand
-    `itilcategories_id` int(11) NOT NULL default '0', -- references itilcategories glpi
+    `itilcategories_id` varchar(255) NOT NULL default '[]', -- references itilcategories glpi
     `icon` varchar(255) default NULL,
     `is_order` tinyint(1) default 0,
     `create_one_ticket` tinyint(1) NOT NULL default '0', -- create_one_ticket
@@ -309,3 +309,17 @@ CREATE TABLE `glpi_plugin_metademands_fieldtranslations`
   COLLATE = utf8_unicode_ci
   AUTO_INCREMENT = 1;
 
+DROP TABLE IF EXISTS `glpi_plugin_metademands_metademandtranslations`;
+CREATE TABLE `glpi_plugin_metademands_metademandtranslations`
+(
+    `id`       int(11) NOT NULL AUTO_INCREMENT,
+    `items_id` int(11) NOT NULL                     DEFAULT '0',
+    `itemtype` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `language` varchar(5) COLLATE utf8_unicode_ci   DEFAULT NULL,
+    `field`    varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
+    `value`    text COLLATE utf8_unicode_ci         DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
