@@ -1931,6 +1931,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $son_ticket_data['type']               = $parent_fields['type'];
             $son_ticket_data['entities_id']        = $parent_fields['entities_id'];
             $son_ticket_data['users_id_recipient'] = 0;
+            $son_ticket_data['_users_id_requester'] = $parent_fields['_users_id_requester'];
             $son_ticket_data['_auto_import']       = 1;
             $son_ticket_data['status']             = Ticket::INCOMING;
 
