@@ -1698,18 +1698,32 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'dropdown_multiple':
                if (!empty($field['custom_values'])) {
-                  $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
-                  foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
-                        $custom_values[$k] = $ret;
+                  if($field['item'] != "other"){
+                     $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                     foreach ($custom_values as $k => $val) {
+                           $custom_values[$k] = $field["item"]::getFriendlyNameById($k);
                      }
+                     $field['value'] = PluginMetademandsField::_unserialize($field['value']);
+                     $parseValue     = [];
+                     foreach ($field['value'] as $value) {
+                        array_push($parseValue, $custom_values[$value]);
+                     }
+                     $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
+                  }else{
+                     $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                     foreach ($custom_values as $k => $val) {
+                        if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                           $custom_values[$k] = $ret;
+                        }
+                     }
+                     $field['value'] = PluginMetademandsField::_unserialize($field['value']);
+                     $parseValue     = [];
+                     foreach ($field['value'] as $value) {
+                        array_push($parseValue, $custom_values[$value]);
+                     }
+                     $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                   }
-                  $field['value'] = PluginMetademandsField::_unserialize($field['value']);
-                  $parseValue     = [];
-                  foreach ($field['value'] as $value) {
-                     array_push($parseValue, $custom_values[$value]);
-                  }
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
+
                }
 
                break;
