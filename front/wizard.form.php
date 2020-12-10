@@ -307,6 +307,8 @@ if (isset($_POST['next'])) {
             } else if (isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
                $type = $_POST['field_type'];
                Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=$type&level=1");
+            } else {
+               Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
             }
          } else if ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW) {
             if (isset($_SESSION['metademands_hide'])) {
@@ -319,6 +321,12 @@ if (isset($_POST['next'])) {
          $options = ['step'           => $_POST['step'],
                      'metademands_id' => $_POST['metademands_id']];
          $wizard->showWizard($options);
+      }
+
+      if (Session::getCurrentInterface() != 'central'
+          && $plugin->isActivated('servicecatalog')) {
+
+         PluginServicecatalogMain::showNavBarFooter('metademands');
       }
 
       if (Session::getCurrentInterface() == 'central') {
