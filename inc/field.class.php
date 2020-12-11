@@ -47,7 +47,7 @@ class PluginMetademandsField extends CommonDBChild {
    static $types = ['PluginMetademandsMetademand'];
 
    static $dropdown_meta_items = ['', 'other', 'ITILCategory_Metademands', 'mydevices'];
-   static $dropdown_multiple_items = ['', 'other', 'Appliance'];
+   static $dropdown_multiple_items = ['other', 'Appliance'];
 
    static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
                           'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
@@ -1273,7 +1273,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $name = $namefield . "[" . $data['id'] . "][]";
                   $css = Html::css("/plugins/metademands/css/doubleform.css");
                   $field = "$css
-                           <div class=\"row\">
+                           <div class=\"form-row\">
                                <div class=\"zone\">
                                    <select name=\"from\" id=\"multiselect".$data["id"]."\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
 
@@ -1318,8 +1318,8 @@ class PluginMetademandsField extends CommonDBChild {
                               jQuery(document).ready(function($) {
                                   $('#multiselect".$data["id"]."').multiselect({
         search: {
-            left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"Search...\" />',
-            right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"Search...\" />',
+            lleft: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"".__('Search')."...\" />',
+            right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"".__('Search')."...\" />',
         },
         fireSearch: function(value) {
             return value.length > 2;
@@ -2437,7 +2437,9 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<tr><th colspan='4'>" . __('Custom values', 'metademands') . "</th></tr>";
          echo "<tr><td>";
          echo '<table width=\'100%\' class="tab_cadre">';
-
+         if($params["value"] == "dropdown_multiple" && empty($params["item"])){
+            $params["item"] = "other";
+         }
          switch ($params['item']) {
             case 'other':
                echo "<tr>";
@@ -2503,7 +2505,7 @@ class PluginMetademandsField extends CommonDBChild {
 
          switch ($params['value']) {
             case 'dropdown_multiple':
-               if ($params["item"] != "other") {
+               if ($params["item"] != "other" && !empty($params["item"])) {
                   $item = new $params['item'];
 
                   $items = $item->find([],["name ASC"]);

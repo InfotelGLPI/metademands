@@ -550,8 +550,12 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      if (!empty($elt['custom_values'])) {
                         $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
                         foreach ($custom_values as $k => $val) {
-                           if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
-                              $custom_values[$k] = $ret;
+                           if($elt['item'] != "other"){
+                              $custom_values[$k] = $elt["item"]::getFriendlyNameById($k);
+                           }else{
+                              if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
+                                 $custom_values[$k] = $ret;
+                              }
                            }
                         }
                         $values     = $fields[$elt['id']];
