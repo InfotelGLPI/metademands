@@ -1271,7 +1271,8 @@ class PluginMetademandsField extends CommonDBChild {
                $value = is_array($value) ? $value : $default_values;
                if($data["display_type"] != self::CLASSIC_DISPLAY){
                   $name = $namefield . "[" . $data['id'] . "][]";
-                  $field = "<link href=\"../css/doubleform.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\">
+                  $css = Html::css("/plugins/metademands/css/doubleform.css");
+                  $field = "$css
                            <div class=\"row\">
                                <div class=\"zone\">
                                    <select name=\"from\" id=\"multiselect".$data["id"]."\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";

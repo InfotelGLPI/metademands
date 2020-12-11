@@ -637,7 +637,6 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
 
             if (!$preview) {
-               echo "<link href=\"../lib/multiselect/css/multiselect.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\">";
 
                echo "<div class=\"middle-div bt-container-fluid\">";
                echo "<div class=\"bt-feature col-md-12 \" style='border-bottom: #CCC;border-bottom-style: solid;border-width:1px;margin-top: 10px;margin-bottom: 20px;margin-left: -15px;'>";
@@ -929,7 +928,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   case 'dropdown_multiple':
                      if($data["display_type"] == PluginMetademandsField::CLASSIC_DISPLAY){
                         $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     $script .='console.log("okkk");';
+
                         $script2 = "";
                         if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
                            $hidden_link  = PluginMetademandsField::_unserialize($data['hidden_link']);
@@ -998,7 +997,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                      }else{
                         $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
-                        $script .='console.log("okkk");';
+
                         $script2 = "";
                         if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
                            $hidden_link  = PluginMetademandsField::_unserialize($data['hidden_link']);
@@ -1021,7 +1020,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               if ($fields != 0) {
                                  $script  .= " 
                            if($(value).attr('value') == '$fields'){
-                           console.log($fields);
+                           
                               tohide[" . $hidden_link[$key] . "] = false;
                            }
                         ";
@@ -1040,7 +1039,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                            }
 
-                           $script .= "}); console.log(tohide);";
+                           $script .= "});";
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
