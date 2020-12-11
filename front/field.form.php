@@ -115,6 +115,7 @@ if (isset($_POST["add"])) {
        && ($_POST["item"] == 'other'
            || $_POST["type"] == 'checkbox'
            || $_POST["type"] == 'radio'
+           || $_POST["type"] == 'dropdown_multiple'
            || $_POST['item'] == 'Group'
            || $_POST['type'] == 'number')) {
       $comment_values = "";

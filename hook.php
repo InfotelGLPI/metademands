@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once(GLPI_ROOT . "/plugins/metademands/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/empty-2.7.4.sql");
+      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/empty-2.7.5.sql");
    }
 
    if ($DB->tableExists("glpi_plugin_metademands_profiles")
@@ -176,6 +176,11 @@ function plugin_metademands_install() {
          $f["type"] = "dropdown_object";
          $field->update($f);
       }
+   }
+
+   //version 2.7.5
+   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "display_type")) {
+      $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.5.sql");
    }
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);

@@ -47,7 +47,7 @@ switch ($_POST['step']) {
       break;
    case 'object':
       global $CFG_GLPI;
-      if($_POST["type"] == "dropdown" || $_POST["type"] == "dropdown_object" || $_POST["type"] == "dropdown_meta"){
+      if($_POST["type"] == "dropdown" || $_POST["type"] == "dropdown_object" || $_POST["type"] == "dropdown_meta" || $_POST["type"] == "dropdown_multiple"){
          $randItem = PluginMetademandsField::dropdownFieldItems("item",$_POST["type"], ['value' => $_POST['item'],'rand'=>$_POST["rand"]]);
          $paramsItem = ['value'          => '__VALUE__',
                         'item'           => '__VALUE__',
@@ -56,6 +56,7 @@ switch ($_POST['step']) {
                         'fields_link'    => $_POST['fields_link'],
                         'max_upload'     => $_POST['max_upload'],
                         'regex'          => $_POST['regex'],
+                        'display_type'          => $_POST['display_type'],
                         //                     'fields_display' => $this->fields['fields_display'],
                         'hidden_link'    => $_POST['hidden_link'],
                         'hidden_block'    => $_POST['hidden_block'],
