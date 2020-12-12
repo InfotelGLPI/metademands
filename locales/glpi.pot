@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-12 11:15+0000\n"
+"POT-Creation-Date: 2020-12-12 16:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,13 +24,13 @@ msgid_plural "Meta-Demands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: front/wizard.form.php:124
+#: front/wizard.form.php:120
 msgid "There is no line on the basket"
 msgstr ""
 
-#: front/wizard.form.php:248 front/wizard.form.php:252
-#: front/wizard.form.php:254 front/wizard.form.php:469
-#: front/wizard.form.php:474 front/wizard.form.php:476
+#: front/wizard.form.php:244 front/wizard.form.php:248
+#: front/wizard.form.php:250 front/wizard.form.php:470
+#: front/wizard.form.php:475 front/wizard.form.php:477
 msgid "Create a demand"
 msgstr ""
 
@@ -550,54 +550,54 @@ msgstr ""
 msgid "General informations"
 msgstr ""
 
-#: inc/wizard.class.php:345
+#: inc/wizard.class.php:347
 msgid "Add documents on the demand"
 msgstr ""
 
-#: inc/wizard.class.php:354
+#: inc/wizard.class.php:356
 msgid "Added document"
 msgstr ""
 
-#: inc/wizard.class.php:359
+#: inc/wizard.class.php:361
 msgctxt "button"
 msgid "Finish"
 msgstr ""
 
-#: inc/wizard.class.php:375
+#: inc/wizard.class.php:377
 #, php-format
 msgid "Step %d - Ticket type choice"
 msgstr ""
 
-#: inc/wizard.class.php:546
+#: inc/wizard.class.php:548
 msgid "No advanced request found"
 msgstr ""
 
-#: inc/wizard.class.php:626 inc/wizard.class.php:660
+#: inc/wizard.class.php:628 inc/wizard.class.php:662
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:662
+#: inc/wizard.class.php:664
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2049
+#: inc/wizard.class.php:2054
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2058
+#: inc/wizard.class.php:2063
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2103
+#: inc/wizard.class.php:2108
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2107
+#: inc/wizard.class.php:2112
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
