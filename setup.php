@@ -37,7 +37,7 @@ function plugin_init_metademands() {
    $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'changeProfile'];
    $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js'];
    $PLUGIN_HOOKS["javascript"]['metademands']     = ["/plugins/metademands/scripts/metademands.js"];
-   $PLUGIN_HOOKS['add_css']['metademands']        = ['metademands.css'];
+   $PLUGIN_HOOKS['add_css']['metademands']        = ['/css/metademands.css'];
 
 //   if ((strpos($_SERVER['REQUEST_URI'], "ticket.form.php") !== false)
 //       || strpos($_SERVER['REQUEST_URI'], "helpdesk.public.php?create_ticket=1") !== false

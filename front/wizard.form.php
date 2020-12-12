@@ -56,10 +56,6 @@ if (empty($_GET['resources_step'])) {
    $_GET['resources_step'] = '';
 }
 
-if (empty($_GET['itilcategories_id'])) {
-   $_GET['itilcategories_id'] = '';
-}
-
 if (empty($_GET['step'])) {
    $_GET['step'] = PluginMetademandsMetademand::STEP_LIST;
 }
@@ -72,8 +68,8 @@ if (isset($_GET['id'])) {
 }
 
 if (isset($_POST['next'])) {
-   $KO              = false;
-   $step            = $_POST['step'] + 1;
+   $KO   = false;
+   $step = $_POST['step'] + 1;
    if (isset($_POST['update_fields'])) {
       if ($metademands->canCreate()
           || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
@@ -82,11 +78,11 @@ if (isset($_POST['next'])) {
          $data  = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
          $metademands->getFromDB($_POST['form_metademands_id']);
          $plugin = new Plugin();
-         $meta = [];
+         $meta   = [];
          if ($plugin->isActivated('orderprojects')
              && $metademands->fields['is_order'] == 1) {
-            $orderprojects   = new PluginOrderprojectsMetademand();
-            $meta            = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+            $orderprojects = new PluginOrderprojectsMetademand();
+            $meta          = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
          }
 
          if (count($meta) == 1) {
@@ -219,8 +215,8 @@ if (isset($_POST['next'])) {
                      //Category id if have category field
                      $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
                      $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
-                        (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] ==0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
-                     $_SESSION['plugin_metademands']['field_type'] = $metademands->fields['type'];
+                        (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
+                     $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
                   }
 
                   if ($KO) {
@@ -254,6 +250,10 @@ if (isset($_POST['next'])) {
             Html::helpHeader(__('Create a demand', 'metademands'));
          }
       }
+
+      $itilcategories = isset($_SESSION['servicecatalog']['sc_itilcategories_id']) ? $_SESSION['servicecatalog']['sc_itilcategories_id'] : 0;
+      $metademands->getFromDB($_POST['form_metademands_id']);
+      $type = $metademands->fields['type'];
 
       // Resource previous wizard steps
       if ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW
@@ -299,16 +299,15 @@ if (isset($_POST['next'])) {
          if ($plugin->isActivated('servicecatalog')
              && $_POST['step'] == PluginMetademandsMetademand::STEP_LIST
              && Session::haveRight("plugin_servicecatalog", READ)) {
-            $config = new PluginMetademandsConfig();
-            $config->getFromDB(1);
-            if ($config->getField('display_buttonlist_servicecatalog') == 1
-             && !isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
-               Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
-            } else if (isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
-               $type = $_POST['field_type'];
+            if ($itilcategories == 0) {
+               if (isset($_SERVER['HTTP_REFERER'])
+                   && strpos($_SERVER['HTTP_REFERER'], "wizard.form.php") !== false) {
+                  Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
+               } else {
+                  Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
+               }
+            } else if ($itilcategories > 0) {
                Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=$type&level=1");
-            } else {
-               Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
             }
          } else if ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW) {
             if (isset($_SESSION['metademands_hide'])) {
@@ -318,8 +317,10 @@ if (isset($_POST['next'])) {
                unset($_SESSION['son_meta']);
             }
          }
-         $options = ['step'           => $_POST['step'],
-                     'metademands_id' => $_POST['metademands_id']];
+
+         $options = ['step'              => $_POST['step'],
+                     'metademands_id'    => $_POST['metademands_id'],
+                     'itilcategories_id' => $itilcategories];
          $wizard->showWizard($options);
       }
 
@@ -481,13 +482,20 @@ if (isset($_POST['next'])) {
       if (isset($_SESSION['metademands_hide'])) {
          unset($_SESSION['metademands_hide']);
       }
+      $itilcategories_id = 0;
+      if (isset($_GET['itilcategories_id']) && $_GET['itilcategories_id'] > 0) {
+         $itilcategories_id = $_GET['itilcategories_id'];
+      }
+      if (!isset($_GET['itilcategories_id']) && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+         $itilcategories_id = $_SESSION['servicecatalog']['sc_itilcategories_id'];
+      }
       $options = ['step'              => $_GET['step'],
                   'metademands_id'    => $_GET['metademands_id'],
                   'preview'           => false,
                   'tickets_id'        => $_GET['tickets_id'],
                   'resources_id'      => $_GET['resources_id'],
                   'resources_step'    => $_GET['resources_step'],
-                  'itilcategories_id' => $_GET['itilcategories_id']];
+                  'itilcategories_id' => $itilcategories_id];
 
       $wizard->showWizard($options);
 

@@ -112,7 +112,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $parameters[$key] = $value;
          }
       }
-
+      $_SESSION['servicecatalog']['sc_itilcategories_id'] = $parameters['itilcategories_id'];
       // Retrieve session values
       if (isset($_SESSION['plugin_metademands']['fields']['tickets_id'])) {
          $parameters['tickets_id'] = $_SESSION['plugin_metademands']['fields']['tickets_id'];
@@ -318,11 +318,13 @@ class PluginMetademandsWizard extends CommonDBTM {
          case PluginMetademandsMetademand::STEP_LIST:
             self::listMetademands();
             unset($_SESSION['plugin_metademands']);
+            unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
             break;
 
          case PluginMetademandsMetademand::STEP_INIT:
             self::chooseType($step);
             unset($_SESSION['plugin_metademands']);
+            unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
             break;
 
          default:
@@ -1822,7 +1824,10 @@ class PluginMetademandsWizard extends CommonDBTM {
          $result = $metademands->addMetademands($metademands_id, $values, $options);
          Session::addMessageAfterRedirect($result['message']);
       }
-      $itilcategories_id = isset($_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id']) ? $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] : 0;
+
+      $itilcategories_id = isset($_SESSION['servicecatalog']['sc_itilcategories_id']) ?
+         $_SESSION['servicecatalog']['sc_itilcategories_id'] : 0;
+
       unset($_SESSION['plugin_metademands']);
 
       if (!empty($options['resources_id'])) {
