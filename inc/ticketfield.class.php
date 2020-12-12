@@ -153,7 +153,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          echo "<th colspan='6'>";
          echo __('Synchronise with ticket template', 'metademands') . " ";
          $ticket = new Ticket();
-         $tt     = $ticket->getITILTemplateToUse(0, $meta->getField("type"), $item->fields['itilcategories_id'], $item->fields['entities_id']);
+         $tt     = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $item->fields['itilcategories_id'], $item->fields['entities_id']);
          echo $tt->getLink();
          echo "</th>";
          echo "</tr>";

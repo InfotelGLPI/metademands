@@ -472,7 +472,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $params = ['type' => '__VALUE__', "action" => "icon"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",
-                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updateListMeta.php",
+                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updatelistmeta.php",
                                        $params);
          echo "<div id='listmeta' >";
          foreach ($metademands as $id => $name) {
@@ -520,7 +520,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $params = ['type' => '__VALUE__', "action" => "dropdown"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",
-                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updateListMeta.php",
+                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updatelistmeta.php",
                                        $params);
          echo "<div id='listmeta' class=\"bt-row\">";
          echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
