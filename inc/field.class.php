@@ -1318,7 +1318,7 @@ class PluginMetademandsField extends CommonDBChild {
                               jQuery(document).ready(function($) {
                                   $('#multiselect".$data["id"]."').multiselect({
         search: {
-            lleft: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"".__('Search')."...\" />',
+            left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"".__('Search')."...\" />',
             right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"".__('Search')."...\" />',
         },
         fireSearch: function(value) {
