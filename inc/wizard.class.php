@@ -1948,6 +1948,19 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
             }
          }
+      } else if ($value['type'] == 'dropdown_multiple') {
+
+         if(!isset($post[$fieldname][$id])){
+            if (!self::checkMandatoryFields($fieldname, $value, ['id'    => $id,
+                                                                 'value' => []],
+                                            $post)) {
+               $KO = true;
+            } else {
+               $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+            }
+         }
+
+
       }
       //INFO : not used for update basket
       if ($value['item'] != 'ITILCategory_Metademands' && $KO === false && isset($post[$fieldname][$id])) {
