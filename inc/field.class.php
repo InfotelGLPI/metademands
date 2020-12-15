@@ -2742,7 +2742,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return string
     */
    static function _serialize($input) {
-      if ($input != null) {
+      if ($input != null || $input == []) {
          foreach ($input as &$value) {
             $value = urlencode(Html::cleanPostForTextArea($value));
          }

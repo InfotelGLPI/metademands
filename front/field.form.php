@@ -119,8 +119,8 @@ if (isset($_POST["add"])) {
            || $_POST['item'] == 'Group'
            || $_POST['type'] == 'number')) {
       $comment_values = "";
-      $custom_values  = "";
-      $default_values = "";
+      $custom_values  = [];
+      $default_values = [];
       if (isset($_POST['custom_values'])) {
          $custom_values = $_POST['custom_values'];
       }
