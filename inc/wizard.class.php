@@ -757,13 +757,31 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          // Color
          if ($preview) {
+            $rank = $line[$keys[0]]['rank'];
+            $color = PluginMetademandsField::setColor($rank);
             $style = 'padding-top:5px; 
-                      border-top :3px solid #' . PluginMetademandsField::setColor($line[$keys[0]]['rank']) . ';
-                      border-left :3px solid #' . PluginMetademandsField::setColor($line[$keys[0]]['rank']) . ';
-                      border-right :3px solid #' . PluginMetademandsField::setColor($line[$keys[0]]['rank']);
-         }
+                      border-top :3px solid #' . $color . ';
+                      border-left :3px solid #' . $color . ';
+                      border-right :3px solid #' . $color;
+            echo '<style type="text/css">
+                       .preview-md-';
+            echo $rank;
+            echo ':before {
+                         content: attr(data-title);
+                         background: #';
+            echo $color.";";
+            echo 'position: absolute;
+                               padding: 0 20px;
+                               color: #fff;
+                               right: 0;
+                               top: 0;
+                           }
+                          </style>';
 
-         echo "<div class=\"form-row\" style='$style'>";
+            echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
+         } else {
+            echo "<div class=\"form-row\" style='$style'>";
+         }
 
          foreach ($line as $key => $data) {
             $config_link = "";
@@ -777,18 +795,31 @@ class PluginMetademandsWizard extends CommonDBTM {
                 && $data['rank'] != $line[$keys[$keyIndexes[$key] - 1]]['rank']) {
                echo "</div>";
                if ($preview) {
-                  echo "<div class=\"form-row\" style='border-bottom: 3px solid #" . PluginMetademandsField::setColor($data['rank'] - 1) . ";' >";
-                  echo "</div>";
-
+                  $rank = $data['rank'];
+                  $color = PluginMetademandsField::setColor($data['rank']);
+                  echo '<style type="text/css">
+                       .preview-md-';
+                  echo $rank;
+                  echo ':before {
+                         content: attr(data-title);
+                         background: #';
+                        echo $color.";";
+                        echo 'position: absolute;
+                               padding: 0 20px;
+                               color: #fff;
+                               right: 0;
+                               top: 0;
+                           }
+                          </style>';
                   $style = 'padding-top:5px; 
-                            border-top :3px solid #' . PluginMetademandsField::setColor($data['rank']) . ';
-                            border-left :3px solid #' . PluginMetademandsField::setColor($data['rank']) . ';
-                            border-right :3px solid #' . PluginMetademandsField::setColor($data['rank']);
+                            border-top :3px solid #' . $color . ';
+                            border-left :3px solid #' . $color . ';
+                            border-right :3px solid #' . $color;
+                  echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
+               } else {
+                  echo "<div class=\"form-row\" style='$style'>";
                }
-               //               echo "<div class='bt-feature col-md-12' style='border-bottom: #EBEBEB;border-bottom-style: dashed;border-width:1px;'>";
-               //               echo "</div>";
-               //               echo "&nbsp;";
-               echo "<div class=\"form-row\" style='$style'>";
+
                $count = 0;
             }
 
@@ -904,8 +935,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             // Next row
             if ($count >= $columns) {
                if ($preview) {
-                  $style_left_right = 'border-left :3px solid #' . PluginMetademandsField::setColor($data['rank']) . ';
-                                       border-right :3px solid #' . PluginMetademandsField::setColor($data['rank']);
+                  $color = PluginMetademandsField::setColor($data['rank']);
+                  $style_left_right = 'border-left :3px solid #' . $color . ';
+                                       border-right :3px solid #' . $color;
                }
 
                echo "</div>";
@@ -915,7 +947,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "</div>";
          if ($preview) {
-            echo "<div class=\"form-row\" style='border-bottom: 3px solid #" . PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']) . ";' >";
+            $color = PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']);
+            echo "<div class=\"form-row\" style='border-bottom: 3px solid #" . $color . ";' >";
             echo "</div>";
          }
 
