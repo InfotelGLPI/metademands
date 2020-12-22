@@ -569,6 +569,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         }
                         $values     = $fields[$elt['id']];
                         $parseValue = [];
+                        if(!empty($values) && !is_array($values)){
+                           $values = json_decode($values);
+                        }
                         if (is_array($values) && count($values)) {
                            foreach ($values as $k => $v) {
                               array_push($parseValue, $custom_values[$v]);
