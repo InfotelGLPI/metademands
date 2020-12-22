@@ -871,7 +871,7 @@ h4 small {
 /*}*/
 @media (min-width: 768px) {
     .bt-features .bt-feature {
-        margin-bottom: 5px;
+        margin-bottom: 15px;
     }
     .bt-features .feature.tab-pane {
         padding-left: 15px;

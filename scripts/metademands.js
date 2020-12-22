@@ -68,7 +68,7 @@
             if (params.titleDisplay != undefined) {
                document.getElementById(params.titleDisplay_title).style.display = "none";
             }
-         } else if (item.value == params.value_title) {
+         } else if (item.value == params.value_title || item.value == params.value_informations) {
             document.getElementById(params.valueDisplay).style.display = "none";
             if (params.titleDisplay != undefined) {
                document.getElementById(params.titleDisplay).style.display = "none";

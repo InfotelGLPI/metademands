@@ -436,7 +436,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
                   case 'textarea':
                      $value = $fields[$elt['id']];
-                     $value = Html::cleanPostForTextArea($value);
+                     $value = Html::cleanPostForTextArea(Html::clean($value));
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
                      $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');

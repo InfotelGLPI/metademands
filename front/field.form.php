@@ -207,6 +207,7 @@ if (isset($_POST["add"])) {
 } else {
    $field->checkGlobal(READ);
    Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");
+   Html::requireJs('tinymce');
    $field->display(['id' => $_GET["id"]]);
    Html::footer();
 }

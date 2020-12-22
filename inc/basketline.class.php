@@ -113,7 +113,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             $style = " style='margin-top:20px;'";
          }
          //hide informations bloc
-         if ($v['item'] == 'informations') {
+         if ($v['item'] == 'informations' || $v['type'] == 'informations') {
             $i--;
             continue;
          }

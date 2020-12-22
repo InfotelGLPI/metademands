@@ -411,7 +411,7 @@ if (isset($_POST['next'])) {
             }
             if ($value['type'] == 'checkbox') {
                if (!isset($_POST['field_basket_' . $line][$id])) {
-                  $_POST['field_basket_' . $line][$id] = 0;
+                  $_POST['field_basket_' . $line][$id] = "";
                }
             }
             if ($value['type'] == 'informations'
