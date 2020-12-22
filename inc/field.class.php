@@ -165,7 +165,8 @@ class PluginMetademandsField extends CommonDBChild {
       if (!$this->cancreate()) {
          return false;
       }
-
+      Html::requireJs('tinymce');
+      
       $metademand = new PluginMetademandsMetademand();
 
       if ($ID > 0) {

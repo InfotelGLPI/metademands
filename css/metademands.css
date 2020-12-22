@@ -63,7 +63,8 @@
 @media (min-width: 1600px) {
     .right-div {
         float: none;
-        margin-left: 700px;
+        width: 700px;
+        margin-left: 750px;
     }
 }
 
@@ -250,7 +251,7 @@ a.metademand_middle_button {
 
 @media (min-width: 1600px) {
     .basket-data {
-        min-width: 700px;
+        min-width: 750px;
     }
 }
 
@@ -305,4 +306,9 @@ button.clear-basket {
 .titlespeech {
     margin-right: 5px;
     font-weight: bold;
+}
+
+.preview-md {
+    position: relative;
+    padding: 30px 10px;
 }
