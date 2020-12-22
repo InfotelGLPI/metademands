@@ -376,33 +376,33 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param $file_data
     */
-   function uploadFiles($file_data) {
-
-      echo "<div class=\"form-row\">";
-      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-      echo "<form name='wizard_form' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "' enctype='multipart/form-data'>";
-      echo "<h1>";
-      echo __('Add documents on the demand', 'metademands');
-      echo "</h1>";
-
-      $ticket = new Ticket();
-      $ticket->getFromDB($file_data['tickets_id']);
-
-      $docadded = $ticket->addFiles($file_data['tickets_id'], 0);
-      if (count($docadded) > 0) {
-         foreach ($docadded as $name) {
-            echo __('Added document', 'metademands') . " $name";
-         }
-      }
-      echo "</div>";
-      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-      echo "<input type='submit' class='submit' name='return' value='" . _sx('button', 'Finish', 'metademands') . "'>";
-      echo "</div>";
-
-      Html::closeForm();
-      echo "</div>";
-      echo "</div>";
-   }
+//   function uploadFiles($file_data) {
+//
+//      echo "<div class=\"form-row\">";
+//      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
+//      echo "<form name='wizard_form' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "' enctype='multipart/form-data'>";
+//      echo "<h1>";
+//      echo __('Add documents on the demand', 'metademands');
+//      echo "</h1>";
+//
+//      $ticket = new Ticket();
+//      $ticket->getFromDB($file_data['tickets_id']);
+//
+//      $docadded = $ticket->addFiles($file_data['tickets_id'], 0);
+//      if (count($docadded) > 0) {
+//         foreach ($docadded as $name) {
+//            echo __('Added document', 'metademands') . " $name";
+//         }
+//      }
+//      echo "</div>";
+//      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
+//      echo "<input type='submit' class='submit' name='return' value='" . _sx('button', 'Finish', 'metademands') . "'>";
+//      echo "</div>";
+//
+//      Html::closeForm();
+//      echo "</div>";
+//      echo "</div>";
+//   }
 
    /**
     * @param $step
@@ -807,7 +807,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             // Title field
             if ($data['type'] == 'title') {
                echo "<div bloc-id='bloc" . $data["rank"] . "' class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
-               echo "<h4 class=\"bt-title-divider\" style='color:" . $data['color'] . ";'><span>";
+               echo "<h4 class=\"bt-title-divider\"><span style='color:" . $data['color'] . ";'>";
 
                if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
                   $label = $data['name'];
