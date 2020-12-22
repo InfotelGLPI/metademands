@@ -49,10 +49,10 @@ class PluginMetademandsField extends CommonDBChild {
    static $dropdown_meta_items     = ['', 'other', 'ITILCategory_Metademands', 'urgency', 'impact', 'priority', 'mydevices'];
    static $dropdown_multiple_items = ['other', 'Appliance'];
 
-   static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
-                          'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
+   static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'date', 'datetime', 'informations',
+                          'date_interval','datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
 
-   static $allowed_options_types = ['yesno', 'datetime', 'datetime_interval', 'checkbox', 'radio', 'dropdown_multiple', 'dropdown', 'dropdown_object',
+   static $allowed_options_types = ['yesno', 'date', 'datetime', 'date_interval','datetime_interval', 'checkbox', 'radio', 'dropdown_multiple', 'dropdown', 'dropdown_object',
                                     'parent_field', 'number', 'text', 'textarea', 'upload'];
    static $allowed_options_items = ['other'];
 
@@ -166,7 +166,7 @@ class PluginMetademandsField extends CommonDBChild {
          return false;
       }
       Html::requireJs('tinymce');
-      
+
       $metademand = new PluginMetademandsMetademand();
 
       if ($ID > 0) {
@@ -255,7 +255,7 @@ class PluginMetademandsField extends CommonDBChild {
                       'enable_richtext' => true,
                       'cols'            => 50,
                       'rows'            => 3]);
-//      Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
+      //      Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
       echo "</td>";
 
       echo "<td>" . __('Comments') . "</td>";
@@ -380,7 +380,7 @@ class PluginMetademandsField extends CommonDBChild {
       //      echo Html::script('/lib/jqueryplugins/spectrum-colorpicker/spectrum.js');
       //      echo Html::css('lib/jqueryplugins/spectrum-colorpicker/spectrum.min.css');
       //      Html::requireJs('colorpicker');
-//      $rand = mt_rand();
+      //      $rand = mt_rand();
       Html::showColorField('color', ['value' => $this->fields["color"]]);
       echo "</span>";
 
@@ -443,6 +443,7 @@ class PluginMetademandsField extends CommonDBChild {
       }
       echo "</tr>";
 
+      echo "<tr class='tab_bg_1'>";
       if ($this->fields['type'] == "dropdown_object"
           && $this->fields["item"] == "Group") {
 
@@ -451,36 +452,121 @@ class PluginMetademandsField extends CommonDBChild {
          $is_watcher    = isset($custom_values['is_watcher']) ? $custom_values['is_watcher'] : 0;
          $is_requester  = isset($custom_values['is_requester']) ? $custom_values['is_requester'] : 0;
          // Assigned group
-         echo "<tr class='tab_bg_1'><td>";
+         echo "<td>";
          echo __('Assigned');
-         echo '</td>';
+         echo "</td>";
          echo "<td>";
          Dropdown::showYesNo('is_assign', $is_assign);
          echo "</td>";
-         echo "<td colspan='2'></td>";
-         echo "</tr>";
 
          // Watcher group
-         echo "<tr class='tab_bg_1'><td>";
+         echo "<td>";
          echo __('Watcher');
-         echo '</td>';
+         echo "</td>";
          echo "<td>";
          Dropdown::showYesNo('is_watcher', $is_watcher);
          echo "</td>";
-         echo "<td colspan='2'></td>";
-         echo "</tr>";
 
          // Requester group
-         echo "<tr class='tab_bg_1'><td>";
+         echo "<td>";
          echo __('Requester');
-         echo '</td>';
+         echo "</td>";
          echo "<td>";
          Dropdown::showYesNo('is_requester', $is_requester);
          echo "</td>";
-         echo "<td colspan='2'></td>";
-         echo "</tr>";
 
+      } else {
+         echo "<td colspan='2'></td>";
       }
+      //TODO permit linked items_id / itemtype
+      if ($ID > 0 && $this->fields['type'] != "title"
+          && $this->fields['type'] != "informations") {
+         echo "<td>";
+         echo __('Use this field as a ticket field', 'metademands');
+         echo "</td>";
+         echo "<td>";
+         $ticket_fields[0] = Dropdown::EMPTY_VALUE;
+         $searchOption     = Search::getOptions('Ticket');
+         $tt               = new TicketTemplate();
+         $allowed_fields   = $tt->getAllowedFields(true, true);
+         unset($allowed_fields[-2]);
+
+         //      Array ( [1] => name [21] => content [12] => status [10] => urgency [11] => impact [3] => priority
+         //      [15] => date [4] => _users_id_requester [71] => _groups_id_requester [5] => _users_id_assign
+         //      [8] => _groups_id_assign [6] => _suppliers_id_assign [66] => _users_id_observer [65] => _groups_id_observer
+         //      [7] => itilcategories_id [131] => itemtype [13] => items_id [142] => _documents_id [175] => _tasktemplates_id [9] => requesttypes_id
+         //      [83] => locations_id [37] => slas_id_tto [30] => slas_id_ttr [190] => olas_id_tto [191] => olas_id_ttr [18] => time_to_resolve
+         //      [155] => time_to_own [180] => internal_time_to_resolve [185] => internal_time_to_own [45] => actiontime [52] => global_validation [14] => type )
+         //         $granted_fields = [
+         //            4,
+         //            71,
+         //            66,
+         //            65,
+         //            'urgency',
+         //            'impact',
+         //            'priority',
+         //            'locations_id',
+         //            'requesttypes_id',
+         //            'itemtype',
+         //            'items_id',
+         //            'time_to_resolve',
+         //         ];
+         $granted_fields = [];
+         if ($this->fields['type'] == "dropdown_object"
+             && $this->fields["item"] == "User") {
+            $granted_fields = [
+               4,
+               66,
+            ];
+         }
+         if ($this->fields['type'] == "dropdown_object"
+             && $this->fields["item"] == "Group") {
+            $granted_fields = [
+               71,
+               65,
+            ];
+         }
+
+         if ($this->fields['type'] == "dropdown"
+             && $this->fields["item"] == "Location") {
+            $granted_fields = [
+               'locations_id',
+            ];
+         }
+
+         if ($this->fields['type'] == "dropdown"
+             && $this->fields["item"] == "RequestType") {
+            $granted_fields = [
+               'requesttypes_id',
+            ];
+         }
+
+         if ($this->fields['type'] == "dropdown_meta"
+             && ($this->fields["item"] == "urgency" || $this->fields["item"] == "impact" || $this->fields["item"] == "priority")) {
+            $granted_fields = [
+               $this->fields["item"]
+            ];
+         }
+
+         if ($this->fields['type'] == "date"
+             || $this->fields["type"] == "datetime") {
+            $granted_fields = [
+               'time_to_resolve'
+            ];
+         }
+
+         foreach ($allowed_fields as $id => $value) {
+            if (in_array($searchOption[$id]['linkfield'], $granted_fields) || in_array($id, $granted_fields)) {
+               $ticket_fields[$id] = $searchOption[$id]['name'];
+            }
+         }
+         Dropdown::showFromArray('used_by_ticket', $ticket_fields,
+                                 ['value' => $this->fields["used_by_ticket"]]);
+         echo "</td>";
+      } else {
+         echo "<td colspan='2'></td>";
+      }
+      echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
       // SHOW SPECIFIC VALUES
@@ -572,7 +658,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
-         echo "<th class='center b' colspan='10'>" . __('Form fields', 'metademands') . "</th>";
+         echo "<th class='center b' colspan='11'>" . __('Form fields', 'metademands') . "</th>";
          echo "</tr>";
          echo "<tr class='tab_bg_2'>";
          echo "<th width='10'>";
@@ -590,6 +676,7 @@ class PluginMetademandsField extends CommonDBChild {
          if ($meta->getFromDB($plugin_metademands_metademands_id) && $meta->fields['is_order'] == 1) {
             echo "<th class='center b'>" . __('Display into the basket', 'metademands') . "</th>";
          }
+         echo "<th class='center b'>" . __('Use this field as a ticket field', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Block', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Order', 'metademands') . "</th>";
          echo "</tr>";
@@ -669,6 +756,13 @@ class PluginMetademandsField extends CommonDBChild {
             if ($meta->fields['is_order'] == 1) {
                echo "<td>" . Dropdown::getYesNo($value['is_basket']) . "</td>";
             }
+            echo "<td>";
+
+            $searchOption = Search::getOptions('Ticket');
+            if (isset($searchOption[$value['used_by_ticket']]['name'])) {
+               echo $searchOption[$value['used_by_ticket']]['name'];
+            }
+            echo "</td>";
 
             echo "<td class='center' style='color:white;background-color: #" . self::setColor($value['rank']) . "'>" . $value['rank'] . "</td>";
             echo "<td class='center' style='color:white;background-color: #" . self::setColor($value['rank']) . "'>";
@@ -779,10 +873,14 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Checkbox', 'metademands');
          case 'textarea':
             return __('Textarea', 'metademands');
-         case 'datetime':
+         case 'date':
             return __('Date', 'metademands');
-         case 'datetime_interval':
+         case 'datetime':
+            return __('Date & Hour', 'metademands');
+         case 'date_interval':
             return __('Date interval', 'metademands');
+         case 'datetime_interval':
+            return __('Date & Hour interval', 'metademands');
          case 'yesno'   :
             return __('Yes / No', 'metademands');
          case 'upload'  :
@@ -1301,13 +1399,13 @@ class PluginMetademandsField extends CommonDBChild {
                $default_values = [];
                if ($defaults) {
                   foreach ($defaults as $k => $v) {
-                     if ($v != null) {
+                     if ($v == 1) {
                         $default_values[] = $k;
                      }
                   }
                }
                ksort($data['custom_values']);
-               if(!empty($value) && !is_array($value)){
+               if (!empty($value) && !is_array($value)) {
                   $value = json_decode($value);
                }
                $value = is_array($value) ? $value : $default_values;
@@ -1332,7 +1430,7 @@ class PluginMetademandsField extends CommonDBChild {
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
                                </div>";
-                               
+
                   $field .= "<div class=\"zone\">
                                    <select name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                   foreach ($data['custom_values'] as $k => $val) {
@@ -1344,7 +1442,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $field .= "</select></div>";
 
                   $field .= "</div>";
-                           
+
                   $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.min.js\" type=\"text/javascript\"></script>
                            <script type=\"text/javascript\">
                            jQuery(document).ready(function($) {
@@ -1477,46 +1575,46 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   break;
                case 'urgency':
-                  $field    = "";
-                  $ticket     = new Ticket();
+                  $field  = "";
+                  $ticket = new Ticket();
                   if ($itilcategories_id > 0) {
                      $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                      if (isset($meta_tt->predefined['urgency'])) {
-                        $default_value = $meta_tt->predefined['urgency'];
+                        $default_value    = $meta_tt->predefined['urgency'];
                         $options['value'] = $default_value;
                      }
                   }
-                  $options['name']  = $namefield . "[" . $data['id'] . "]";
+                  $options['name']    = $namefield . "[" . $data['id'] . "]";
                   $options['display'] = false;
-                  $field .= Ticket::dropdownUrgency($options);
+                  $field              .= Ticket::dropdownUrgency($options);
                   break;
                case 'impact':
-                  $field    = "";
-                  $ticket     = new Ticket();
+                  $field  = "";
+                  $ticket = new Ticket();
                   if ($itilcategories_id > 0) {
                      $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                      if (isset($meta_tt->predefined['impact'])) {
-                        $default_value = $meta_tt->predefined['impact'];
+                        $default_value    = $meta_tt->predefined['impact'];
                         $options['value'] = $default_value;
                      }
                   }
-                  $options['name']  = $namefield . "[" . $data['id'] . "]";
+                  $options['name']    = $namefield . "[" . $data['id'] . "]";
                   $options['display'] = false;
-                  $field .= Ticket::dropdownImpact($options);
+                  $field              .= Ticket::dropdownImpact($options);
                   break;
                case 'priority':
-                  $field    = "";
-                  $ticket     = new Ticket();
+                  $field  = "";
+                  $ticket = new Ticket();
                   if ($itilcategories_id > 0) {
                      $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                      if (isset($meta_tt->predefined['priority'])) {
-                        $default_value = $meta_tt->predefined['priority'];
+                        $default_value    = $meta_tt->predefined['priority'];
                         $options['value'] = $default_value;
                      }
                   }
-                  $options['name']  = $namefield . "[" . $data['id'] . "]";
+                  $options['name']    = $namefield . "[" . $data['id'] . "]";
                   $options['display'] = false;
-                  $field .= Ticket::dropdownPriority($options);
+                  $field              .= Ticket::dropdownPriority($options);
                   break;
                default:
                   $cond = [];
@@ -1683,10 +1781,16 @@ class PluginMetademandsField extends CommonDBChild {
 
             //            $field = "<textarea class='form-control' rows='3' placeholder=\"" . $comment . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
             break;
-         case 'datetime_interval':
-         case 'datetime':
+         case 'date':
+         case 'date_interval':
             $field = Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
                                                                                 'display' => false
+            ]);
+            break;
+         case 'datetime_interval':
+         case 'datetime':
+            $field = Html::showDateTimeField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
+                                                                                    'display' => false
             ]);
             break;
          case 'number':
@@ -1844,10 +1948,25 @@ class PluginMetademandsField extends CommonDBChild {
                               }
                               break;
 
-                           case 'datetime':
+                           case 'date':
                               $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
                               $value_parent_field .= Html::convDate($value_parent_field);
+                              break;
 
+                           case 'datetime':
+                              $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
+                              $value_parent_field .= Html::convDateTime($value_parent_field);
+                              break;
+
+                           case 'date_interval':
+                              $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data['parent_field_id'] . "-2"])) {
+                                 $value_parent_field2 = $_SESSION['plugin_metademands']['fields'][$data['parent_field_id'] . "-2"];
+                                 $value_parent_field  .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . $value_parent_field2 . "'>";
+                              } else {
+                                 $value_parent_field2 = 0;
+                              }
+                              $value_parent_field .= Html::convDate($value_parent_field) . " - " . Html::convDate($value_parent_field2);
                               break;
 
                            case 'datetime_interval':
@@ -1858,7 +1977,7 @@ class PluginMetademandsField extends CommonDBChild {
                               } else {
                                  $value_parent_field2 = 0;
                               }
-                              $value_parent_field .= Html::convDate($value_parent_field) . " - " . Html::convDate($value_parent_field2);
+                              $value_parent_field .= Html::convDateTime($value_parent_field) . " - " . Html::convDateTime($value_parent_field2);
                               break;
                            case 'yesno' :
                               $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value_parent_field . "'>";
@@ -2159,7 +2278,9 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1);
 
             break;
+         case 'date' :
          case 'datetime' :
+         case 'date_interval' :
          case 'datetime_interval' :
             $html .= "<tr><td>";
             $html .= __('Day greater or equal to now', 'metademands');
@@ -2456,7 +2577,7 @@ class PluginMetademandsField extends CommonDBChild {
       $data        = [Dropdown::EMPTY_VALUE];
       foreach ($fields_data as $id => $value) {
          if ($value['item'] != "ITILCategory_Metademands"
-//             && $value['item'] != "informations"
+             //             && $value['item'] != "informations"
              && $idF != $id) {
             $data[$id] = urldecode(html_entity_decode($value['name']));
 
@@ -2489,7 +2610,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                      'used'    => [$fields->getField('rank')],
                                                      'min'     => 1,
                                                      'max'     => 10,
-                                                     'toadd' => [0 => Dropdown::EMPTY_VALUE]]);
+                                                     'toadd'   => [0 => Dropdown::EMPTY_VALUE]]);
    }
 
    /**
@@ -2547,19 +2668,25 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "</td>";
 
                      echo "<td>";
-                     echo "<p id='default_values$key'>";
+                     //                     echo "<p id='default_values$key'>";
                      $display_default = false;
                      if ($params['value'] == 'dropdown_multiple') {
                         $display_default = true;
-                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                        //                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                         $checked = "";
-                        if (isset($default[$key])
-                            && $default[$key] == 1) {
-                           $checked = "checked";
-                        }
-                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
+                        //                        if (isset($default[$key])
+                        //                            && $default[$key] == 1) {
+                        //                           $checked = "checked";
+                        //                        }
+                        //                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
+                        echo "<p id='default_values$key'>";
+                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                        $name  = "default_values[" . $key . "]";
+                        $value = (isset($default[$key]) ? $default[$key] : 0);
+                        Dropdown::showYesNo($name, $value);
+                        echo '</p>';
                      }
-                     echo '</p>';
+                     //                     echo '</p>';
                      echo "</td>";
 
                      echo "</tr>";
@@ -2580,8 +2707,14 @@ class PluginMetademandsField extends CommonDBChild {
                   $display_default = false;
                   if ($params['value'] == 'dropdown_multiple') {
                      $display_default = true;
+                     //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                     //                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
+                     echo "<p id='default_values1'>";
                      echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
+                     $name  = "default_values[1]";
+                     $value = 1;
+                     Dropdown::showYesNo($name, $value);
+                     echo '</p>';
                      echo "</td>";
                   }
                   echo "</tr>";
@@ -2615,18 +2748,24 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "</td>";
 
                      echo "<td>";
+                     //                     echo "<p id='default_values$key'>";
+                     //
+                     //
+                     //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                     //                     $checked = "";
+                     //                     if (isset($default[$key])
+                     //                         && $default[$key] == 1) {
+                     //                        $checked = "checked";
+                     //                     }
+                     //                     echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
                      echo "<p id='default_values$key'>";
-
-
                      echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                     $checked = "";
-                     if (isset($default[$key])
-                         && $default[$key] == 1) {
-                        $checked = "checked";
-                     }
-                     echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
-
+                     $name  = "default_values[" . $key . "]";
+                     $value = (isset($default[$key]) ? $default[$key] : 0);
+                     Dropdown::showYesNo($name, $value);
                      echo '</p>';
+
+                     //                     echo '</p>';
                      echo "</td>";
                      echo "<td>";
                      echo "<p id='present_values$key'>";
@@ -2704,7 +2843,12 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "<td>";
                   echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                   echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
-
+                  echo "<p id='default_values$key'>";
+                  echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                  $name  = "default_values[" . $key . "]";
+                  $value = (isset($default[$key]) ? $default[$key] : 0);
+                  Dropdown::showYesNo($name, $value);
+                  echo '</p>';
                   echo "</td>";
                   echo "</tr>";
 
@@ -2819,7 +2963,10 @@ class PluginMetademandsField extends CommonDBChild {
       echo '<p id=\'default_values' . $valueId . '\'>';
       if ($display_default) {
          echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-         echo '<input type="checkbox" name="default_values[' . $valueId . ']"  value="1"/>';
+         //         echo '<input type="checkbox" name="default_values[' . $valueId . ']"  value="1"/>';
+         $name  = "default_values[" . $valueId . "]";
+         $value = 0;
+         Dropdown::showYesNo($name, $value);
       }
       echo '</p>';
       echo "</td>";
@@ -3054,7 +3201,7 @@ class PluginMetademandsField extends CommonDBChild {
                if (($key == 'item' && ($input['type'] == 'dropdown'
                                        || $input['type'] == 'dropdown_object'
                                        || $input['type'] == 'dropdown_meta'))
-                   || ($key == 'label2' && $input['type'] == 'datetime_interval')) {
+                   || ($key == 'label2' && ($input['type'] == 'date_interval' || $input['type'] == 'datetime_interval'))) {
                   $msg[]   = $mandatory_fields[$key];
                   $checkKo = true;
                } else if ($key != 'item' && $key != 'label2') {

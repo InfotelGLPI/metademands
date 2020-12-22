@@ -884,13 +884,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                PluginMetademandsField::getFieldType($data, $metademands_data, $preview, $config_link, $itilcategories_id);
 
                // Label 2 (date interval)
-               if (!empty($data['label2']) && $data['type'] != 'link') {
+               if (!empty($data['label2'])
+                   && $data['type'] != 'link') {
                   $required = "";
                   if ($data['is_mandatory']) {
                      $required = "required";
                   }
 
-                  if ($data['type'] == 'datetime_interval') {
+                  if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
                      echo "</div><div class=\"form-group col-md-5\">";
                   } else {
                      echo "<div class=\"form-group metademands_wizard_label2\">";
@@ -899,7 +900,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
 
                   }
-                  if ($data['type'] != 'datetime_interval') {
+                  if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
                      echo "<label class='col-form-label col-form-label-sm'>" . $label2 . "</label>";
                   } else {
                      echo "<label  $required for='field[" . $data['id'] . "-2]' class='col-form-label col-form-label-sm'>" . $label2 . "</label>";
@@ -910,12 +911,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
 
                   switch ($data['type']) {
-                     case 'datetime_interval':
+                     case 'date_interval':
                         Html::showDateField("field[" . $data['id'] . "-2]", ['value' => $value2]);
                         $count++; // If date interval : pass to next line
                         break;
+                     case 'datetime_interval':
+                        Html::showDateTimeField("field[" . $data['id'] . "-2]", ['value' => $value2]);
+                        $count++; // If date interval : pass to next line
+                        break;
                   }
-                  if ($data['type'] != 'datetime_interval') {
+                  if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
                      echo "</div>";
                   }
                }
@@ -925,7 +930,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             // If next field is date interval : pass to next line
             if (isset($keyIndexes[$key])
                 && isset($keys[$keyIndexes[$key] + 1])
-                && $line[$keys[$keyIndexes[$key] + 1]]['type'] == 'datetime_interval') {
+                && ($line[$keys[$keyIndexes[$key] + 1]]['type'] == 'datetime_interval' || $line[$keys[$keyIndexes[$key] + 1]]['type'] == 'date_interval')) {
                $count++;
 
             }
@@ -2141,7 +2146,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       $KO      = false;
       $content = [];
-      if ($value['type'] == 'datetime_interval' && !isset($value['second_date_ok'])) {
+      if (($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval') && !isset($value['second_date_ok'])) {
          $value['second_date_ok'] = true;
          $value['id']             = $id . '-2';
          $value['name']           = $value['label2'];
@@ -2316,6 +2321,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check date
          if ($value['type'] == "date"
              || $value['type'] == "datetime"
+             || $value['type'] == "date_interval"
              || $value['type'] == "datetime_interval") {
             // date Null
             if ($value['is_mandatory']
@@ -2334,7 +2340,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
          // Check date interval is right
-         if ($value['type'] == "datetime_interval"
+         if (($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval')
              && isset($all_fields[$fields['id'] . '-2'])) {
             if (strtotime($fields['value']) > strtotime($all_fields[$fields['id'] . '-2'])) {
                $msg[]                 = sprintf(__('Date %1$s cannot be greater than date %2$s', 'metademands'), $value['name'], $value['label2']);

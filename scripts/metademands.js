@@ -40,7 +40,7 @@
             object.metademands_show_field(params);
 
             // If datetime interval, show label2
-            if (item.value == 'datetime_interval') {
+            if (item.value == 'datetime_interval' || item.value == 'date_interval') {
                document.getElementById('show_label2').style.display = "inline";
             } else {
                document.getElementById('show_label2').style.display = "none";
@@ -91,7 +91,7 @@
          }
 
          // If datetime interval, show label2
-         if (item.value == 'datetime_interval') {
+         if (item.value == 'datetime_interval' || item.value == 'date_interval') {
             document.getElementById('show_label2').style.display = "inline";
          } else {
             document.getElementById('show_label2').style.display = "none";

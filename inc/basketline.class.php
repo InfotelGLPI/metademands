@@ -160,8 +160,6 @@ class PluginMetademandsBasketline extends CommonDBTM {
                   $v['value'] = $value['value'];
                }
 
-               //TODO $metademands_data ?
-               //TODO $itilcategories_id ?
                echo "<div class='form-group basket-title col-md-5'>";
                echo PluginMetademandsField::getFieldInput([], $v, true, 0, $idline);
                echo "</div>";

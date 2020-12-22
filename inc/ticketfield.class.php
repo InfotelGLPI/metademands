@@ -41,8 +41,11 @@ class PluginMetademandsTicketField extends CommonDBChild {
 
    //4 => requester
    //71 => requester group
-   static $used_fields = ['content', 'itilcategories_id', 'type', 'time_to_resolve', 'itemtype',
-                          'items_id', '_groups_id_requester', '_users_id_requester', 'slas_id', 4, 71];
+   static $used_fields = [
+      'content', 'itilcategories_id', 'type', 'status',
+      'time_to_resolve', 'itemtype',
+                          'items_id', '_groups_id_requester', '_users_id_requester', 'slas_id', 4, 71
+   ];
 
    static $types = ['PluginMetademandsMetademand'];
 
@@ -727,7 +730,8 @@ class PluginMetademandsTicketField extends CommonDBChild {
       }
 
       $forbidden[] = 'update';
-
+      $forbidden[] = 'clone';
+      $forbidden[] = 'add_transfer_list';
       return $forbidden;
    }
 

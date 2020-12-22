@@ -630,16 +630,41 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      }
                      break;
 
-                  case 'datetime':
+                  case 'date':
                      $value = Html::convDate($fields[$elt['id']]);
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
-                  case 'datetime_interval':
+                  case 'datetime':
+                     $value = Html::convDateTime($fields[$elt['id']]);
+                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                     break;
+
+                  case 'date_interval':
                      $value  = Html::convDate($fields[$elt['id']]);
                      $value2 = Html::convDate($fields[$elt['id'] . "-2"]);
+                     $value  = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                     $value2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value2));
+                     if (!empty($elt['label2'])) {
+                        //                        $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
+                        if (empty($label2 = PluginMetademandsField::displayField($elt['id'], 'label2'))) {
+                           $label2 = Toolbox::stripslashes_deep($elt['label2']);
+                        }
+                        $label2 = str_replace("’", "'", $label2);
+                        $label2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label2));
+                     }
+                     // Draw line
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                     $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label2, $value2, 'LRBT', 'L', '', 0, '', 'black');
+                     break;
+
+                  case 'datetime_interval':
+                     $value  = Html::convDateTime($fields[$elt['id']]);
+                     $value2 = Html::convDateTime($fields[$elt['id'] . "-2"]);
                      $value  = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      $value2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value2));
                      if (!empty($elt['label2'])) {

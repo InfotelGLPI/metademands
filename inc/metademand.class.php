@@ -1242,6 +1242,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
                   $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                }
+
                if (empty($n = PluginMetademandsMetademand::displayField($form_metademands_id, 'name'))) {
                   $n = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                }
@@ -1262,6 +1263,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
 
                // Requester user field
+               //TODO Add options ?
                if (isset($values['fields']['_users_id_requester'])) {
                   $parent_fields['_users_id_requester'] = $values['fields']['_users_id_requester'];
                   if ($values['fields']['_users_id_requester'] != Session::getLoginUserID()) {
@@ -1280,34 +1282,63 @@ class PluginMetademandsMetademand extends CommonDropdown {
                                                                                   => (($email == "") ? 0 : $default_use_notif),
                                                               'alternative_email' => ['']];
 
-               // If requester is different of connected user : Force his requester group on ticket
-               if (isset($parent_fields['_users_id_requester'])
-                   && $parent_fields['_users_id_requester'] != Session::getLoginUserID()) {
-                  $query  = "SELECT `glpi_groups`.`id` AS _groups_id_requester
-                           FROM `glpi_groups_users`
-                           LEFT JOIN `glpi_groups`
-                             ON (`glpi_groups_users`.`groups_id` = `glpi_groups`.`id`)
-                           WHERE `glpi_groups_users`.`users_id` = " . $parent_fields['_users_id_requester'] . "
-                           AND `glpi_groups`.`is_requester` = 1
-                           LIMIT 1";
-                  $result = $DB->query($query);
-                  if ($DB->numrows($result)) {
-                     $groups_id_requester                   = $DB->result($result, 0, '_groups_id_requester');
-                     $parent_fields['_groups_id_requester'] = $groups_id_requester;
-                  }
-               }
-               // Affect requester group to son metademand
-               if ($form_metademands_id != $metademands_id) {
-                  $groups_id_assign = PluginMetademandsTicket::getUsedActors($ancestor_tickets_id,
-                                                                             CommonITILActor::ASSIGN,
-                                                                             'groups_id');
-                  if (count($groups_id_assign)) {
-                     $parent_fields['_groups_id_requester'] = $groups_id_assign[0];
+
+               // Get predefined ticket fields
+               //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
+               $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory);
+
+               $list_fields  = $line['form'];
+               $searchOption = Search::getOptions('Ticket');
+               foreach ($list_fields as $id => $fields_values) {
+                  if ($fields_values['used_by_ticket'] > 0) {
+                     foreach ($values_form as $k => $v) {
+                        if (isset($v[$id])) {
+                           $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
+                           if ($fields_values['used_by_ticket'] == 4) {
+                              $name = "_users_id_requester";
+                           }
+                           if ($fields_values['used_by_ticket'] == 71) {
+                              $name = "_groups_id_requester";
+                           }
+                           if ($fields_values['used_by_ticket'] == 66) {
+                              $name = "_users_id_observer";
+                           }
+                           if ($fields_values['used_by_ticket'] == 65) {
+                              $name = "_groups_id_observer";
+                           }
+                           $parent_fields[$name] = $v[$id];
+                        }
+                     }
                   }
                }
 
-               // Get predefined ticket fields
-               $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory);
+               // If requester is different of connected user : Force his requester group on ticket
+               //TODO Add options ?
+               //               if (isset($parent_fields['_users_id_requester'])
+               //                   && $parent_fields['_users_id_requester'] != Session::getLoginUserID()) {
+               //                  $query  = "SELECT `glpi_groups`.`id` AS _groups_id_requester
+               //                           FROM `glpi_groups_users`
+               //                           LEFT JOIN `glpi_groups`
+               //                             ON (`glpi_groups_users`.`groups_id` = `glpi_groups`.`id`)
+               //                           WHERE `glpi_groups_users`.`users_id` = " . $parent_fields['_users_id_requester'] . "
+               //                           AND `glpi_groups`.`is_requester` = 1
+               //                           LIMIT 1";
+               //                  $result = $DB->query($query);
+               //                  if ($DB->numrows($result)) {
+               //                     $groups_id_requester                   = $DB->result($result, 0, '_groups_id_requester');
+               //                     $parent_fields['_groups_id_requester'] = $groups_id_requester;
+               //                  }
+               //               }
+               // Affect requester group to son metademand
+               //               if ($form_metademands_id != $metademands_id) {
+               //                  $groups_id_assign = PluginMetademandsTicket::getUsedActors($ancestor_tickets_id,
+               //                                                                             CommonITILActor::ASSIGN,
+               //                                                                             'groups_id');
+               //                  if (count($groups_id_assign)) {
+               //                     $parent_fields['_groups_id_requester'] = $groups_id_assign[0];
+               //                  }
+               //               }
+               //END TODO Add options
 
                // Case of simple ticket convertion
                // Ticket does not exist : ADD
@@ -1579,7 +1610,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                $field['value'] = $values[$fields_id];
             }
             $field['value2'] = '';
-            if ($field['type'] == 'datetime_interval' && isset($values[$fields_id . '-2'])) {
+            if (($field['type'] == 'date_interval' || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
                $field['value2'] = $values[$fields_id . '-2'];
             }
             if ($nb % 2 == 0) {
@@ -1710,10 +1741,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'dropdown_multiple':
                if (!empty($field['custom_values'])) {
-                  if($field['item'] != "other"){
+                  if ($field['item'] != "other") {
                      $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                      foreach ($custom_values as $k => $val) {
-                           $custom_values[$k] = $field["item"]::getFriendlyNameById($k);
+                        $custom_values[$k] = $field["item"]::getFriendlyNameById($k);
                      }
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                      $parseValue     = [];
@@ -1721,7 +1752,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         array_push($parseValue, $custom_values[$value]);
                      }
                      $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
-                  }else{
+                  } else {
                      $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                      foreach ($custom_values as $k => $val) {
                         if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
@@ -1804,12 +1835,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
             case 'textarea':
                $result['content'] .= $label . ' : ' . $field['value'];
                break;
-            case 'datetime':
+            case 'date':
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
                break;
-            case 'datetime_interval':
+            case 'datetime':
+               $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td>";
+               break;
+            case 'date_interval':
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td></tr>";
                $result['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
+               break;
+            case 'datetime_interval':
+               $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td></tr>";
+               $result['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDateTime($field['value2']) . "</td>";
                break;
             case 'number':
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $field['value'] . "</td>";
@@ -1883,14 +1921,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return array
     */
    function formatTicketFields($metademands_id, $itilcategory) {
-      $result = [];
+      $result              = [];
       $ticket_field        = new PluginMetademandsTicketField();
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
       $ticket = new Ticket();
-      $meta    = new PluginMetademandsMetademand();
+      $meta   = new PluginMetademandsMetademand();
       $meta->getFromDB($metademands_id);
-      $tt     = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $itilcategory, $meta->fields['entities_id']);
+      $tt = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $itilcategory, $meta->fields['entities_id']);
 
       if (count($parent_ticketfields)) {
          $allowed_fields = $tt->getAllowedFields(true, true);
@@ -1951,14 +1989,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
             }
 
             // Add son ticket
-            $son_ticket_data['_disablenotif']      = true;
-            $son_ticket_data['name']               = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
-            $son_ticket_data['type']               = $parent_fields['type'];
-            $son_ticket_data['entities_id']        = $parent_fields['entities_id'];
-            $son_ticket_data['users_id_recipient'] = 0;
+            $son_ticket_data['_disablenotif']       = true;
+            $son_ticket_data['name']                = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
+            $son_ticket_data['type']                = $parent_fields['type'];
+            $son_ticket_data['entities_id']         = $parent_fields['entities_id'];
+            $son_ticket_data['users_id_recipient']  = 0;
             $son_ticket_data['_users_id_requester'] = $parent_fields['_users_id_requester'];
-            $son_ticket_data['_auto_import']       = 1;
-            $son_ticket_data['status']             = Ticket::INCOMING;
+            $son_ticket_data['_auto_import']        = 1;
+            $son_ticket_data['status']              = Ticket::INCOMING;
 
             $content = '';
             if (!empty($son_ticket_data['content'])) {
