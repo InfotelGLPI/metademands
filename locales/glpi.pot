@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-22 08:15+0000\n"
+"POT-Creation-Date: 2020-12-22 08:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -568,19 +568,6 @@ msgstr ""
 
 #: inc/wizard.class.php:280
 msgid "General informations"
-msgstr ""
-
-#: inc/wizard.class.php:385
-msgid "Add documents on the demand"
-msgstr ""
-
-#: inc/wizard.class.php:394
-msgid "Added document"
-msgstr ""
-
-#: inc/wizard.class.php:399
-msgctxt "button"
-msgid "Finish"
 msgstr ""
 
 #: inc/wizard.class.php:415
