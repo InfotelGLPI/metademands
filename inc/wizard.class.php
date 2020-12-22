@@ -1109,9 +1109,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $check_value    = array_flip($check_value);
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
-                                 $idc    = $check_value[$k];
-                                 $idv    = $hidden_link[$idc];
-                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                 if(isset($check_value[$k])){
+                                    $idc    = $check_value[$k];
+                                    if(isset($hidden_link[$idc])){
+                                       $idv    = $hidden_link[$idc];
+                                       $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                    }
+                                 }
+
                               }
                            }
                         }
@@ -1186,9 +1191,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $check_value    = array_flip($check_value);
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
-                                 $idc    = $check_value[$k];
-                                 $idv    = $hidden_link[$idc];
-                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                 if(isset($check_value[$k])){
+                                    $idc    = $check_value[$k];
+                                    if(isset($hidden_link[$idc])){
+                                       $idv    = $hidden_link[$idc];
+                                       $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                    }
+                                 }
+
                               }
                            }
                         }
