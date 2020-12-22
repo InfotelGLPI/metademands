@@ -46,7 +46,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $types = ['PluginMetademandsMetademand'];
 
-   static $dropdown_meta_items     = ['', 'other', 'ITILCategory_Metademands', 'mydevices'];
+   static $dropdown_meta_items     = ['', 'other', 'ITILCategory_Metademands', 'urgency', 'impact', 'priority', 'mydevices'];
    static $dropdown_multiple_items = ['other', 'Appliance'];
 
    static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'datetime', 'informations',
@@ -1108,6 +1108,12 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Category of the metademand', 'metademands');
          case 'mydevices':
             return __('My devices');
+         case 'urgency':
+            return __('Urgency');
+         case 'impact':
+            return __('Impact');
+         case 'priority':
+            return __('Priority');
          default:
             if (isset($PLUGIN_HOOKS['metademands'])) {
                $plugin = new Plugin();
@@ -1251,6 +1257,9 @@ class PluginMetademandsField extends CommonDBChild {
     * @return int|mixed|String
     */
    static function getFieldInput($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0) {
+
+      $metademand = new PluginMetademandsMetademand();
+      $metademand->getFromDB($data['plugin_metademands_metademands_id']);
 
       $field = '';
       $value = '';
@@ -1419,8 +1428,6 @@ class PluginMetademandsField extends CommonDBChild {
                   } else {
                      $nameitil = 'basket';
                   }
-                  $metademand = new PluginMetademandsMetademand();
-                  $metademand->getFromDB($data['plugin_metademands_metademands_id']);
                   $values = json_decode($metademand->fields['itilcategories_id']);
                   if (!empty($values) && count($values) == 1) {
                      foreach ($values as $key => $val)
@@ -1467,6 +1474,48 @@ class PluginMetademandsField extends CommonDBChild {
                                                             $items_id);
                      }
                   }
+                  break;
+               case 'urgency':
+                  $field    = "";
+                  $ticket     = new Ticket();
+                  if ($itilcategories_id > 0) {
+                     $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
+                     if (isset($meta_tt->predefined['urgency'])) {
+                        $default_value = $meta_tt->predefined['urgency'];
+                        $options['value'] = $default_value;
+                     }
+                  }
+                  $options['name']  = $namefield . "[" . $data['id'] . "]";
+                  $options['display'] = false;
+                  $field .= Ticket::dropdownUrgency($options);
+                  break;
+               case 'impact':
+                  $field    = "";
+                  $ticket     = new Ticket();
+                  if ($itilcategories_id > 0) {
+                     $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
+                     if (isset($meta_tt->predefined['impact'])) {
+                        $default_value = $meta_tt->predefined['impact'];
+                        $options['value'] = $default_value;
+                     }
+                  }
+                  $options['name']  = $namefield . "[" . $data['id'] . "]";
+                  $options['display'] = false;
+                  $field .= Ticket::dropdownImpact($options);
+                  break;
+               case 'priority':
+                  $field    = "";
+                  $ticket     = new Ticket();
+                  if ($itilcategories_id > 0) {
+                     $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
+                     if (isset($meta_tt->predefined['priority'])) {
+                        $default_value = $meta_tt->predefined['priority'];
+                        $options['value'] = $default_value;
+                     }
+                  }
+                  $options['name']  = $namefield . "[" . $data['id'] . "]";
+                  $options['display'] = false;
+                  $field .= Ticket::dropdownPriority($options);
                   break;
                default:
                   $cond = [];

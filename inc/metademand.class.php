@@ -1307,7 +1307,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
 
                // Get predefined ticket fields
-               $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $metademand->getField('tickettemplates_id'));
+               $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory);
 
                // Case of simple ticket convertion
                // Ticket does not exist : ADD
@@ -1686,6 +1686,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         }
                         $result['content'] .= "</td>";
                         break;
+                     case 'urgency':
+                        $result['content'] .= "<td $style_title>" . $label . "</td>";
+                        $result['content'] .= "<td>" . Ticket::getUrgencyName($field['value']) . "</td>";
+                        break;
+                     case 'impact':
+                        $result['content'] .= "<td $style_title>" . $label . "</td>";
+                        $result['content'] .= "<td>" . Ticket::getImpactName($field['value']) . "</td>";
+                        break;
+                     case 'priority':
+                        $result['content'] .= "<td $style_title>" . $label . "</td>";
+                        $result['content'] .= "<td>" . Ticket::getPriorityName($field['value']) . "</td>";
+                        break;
                      default:
                         $dbu               = new DbUtils();
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>";
@@ -1870,16 +1882,16 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @return array
     */
-   function formatTicketFields($metademands_id, $tickettemplates_id) {
+   function formatTicketFields($metademands_id, $itilcategory) {
       $result = [];
-
       $ticket_field        = new PluginMetademandsTicketField();
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
-      $tt = new TicketTemplate();
-      if ($tickettemplates_id != 0) {
-         $tt->getFromDB($tickettemplates_id);
-      }
+      $ticket = new Ticket();
+      $meta    = new PluginMetademandsMetademand();
+      $meta->getFromDB($metademands_id);
+      $tt     = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $itilcategory, $meta->fields['entities_id']);
+
       if (count($parent_ticketfields)) {
          $allowed_fields = $tt->getAllowedFields(true, true);
          foreach ($parent_ticketfields as $value) {
@@ -1894,7 +1906,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
             }
          }
       }
-
       return $result;
    }
 

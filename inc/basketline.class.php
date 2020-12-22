@@ -113,7 +113,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             $style = " style='margin-top:20px;'";
          }
          //hide informations bloc
-         if ($v['item'] == 'informations' || $v['type'] == 'informations') {
+         if ($v['type'] == 'informations') {
             $i--;
             continue;
          }
@@ -132,6 +132,10 @@ class PluginMetademandsBasketline extends CommonDBTM {
          echo "<div class='form-row' $style>";
 
          echo "<div class='form-group basket-title col-md-5'>";
+         if ($v['type'] == 'title') {
+            echo "<h5><span style='color:" . $v['color'] . ";'>";
+         }
+
          if (empty($label = PluginMetademandsField::displayField($v['id'], 'name'))) {
             $label = $v['name'];
          }
@@ -141,6 +145,10 @@ class PluginMetademandsBasketline extends CommonDBTM {
             echo "*";
          }
          echo "</span>";
+         if ($v['type'] == 'title') {
+            echo "</span>";
+            echo "</h5>";
+         }
          echo "</div>";
 
          foreach ($values as $key => $value) {

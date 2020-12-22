@@ -29,6 +29,12 @@
    }
 }
 
+@media (min-width: 1600px) {
+   .zone {
+      width: 40%;
+   }
+}
+
 .searchCol{
    margin: 10px;
    height: 20px;

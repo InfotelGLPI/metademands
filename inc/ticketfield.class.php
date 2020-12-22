@@ -246,13 +246,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @param $canedit
     * @param $tt
     */
-   /**
-    * @param $ticketfield_data
-    * @param $fields
-    * @param $searchOption
-    * @param $canedit
-    * @param $tt
-    */
    private function listFields($ticketfield_data, $fields, $searchOption, $canedit, $tt) {
 
       $ticket = new Ticket();
@@ -291,29 +284,32 @@ class PluginMetademandsTicketField extends CommonDBChild {
 
          $fieldnames = $tt->getAllowedFields(true);
          foreach ($ticketfield_data as $id => $value) {
-            if (!in_array($searchOption[$value['num']]['linkfield'], self::$used_fields) && !in_array($value['num'], self::$used_fields)) {
+            if (!in_array($searchOption[$value['num']]['linkfield'], self::$used_fields)
+                && !in_array($value['num'], self::$used_fields)) {
                Session::addToNavigateListItems($this->getType(), $id);
                echo "<tr class='tab_bg_1'>";
                echo "<td width='10'>";
-               $predefined = false;
-               if (isset($tt->predefined[$fieldnames[$value['num']]])) {
-                  $predefined = true;
-               }
+//               $predefined = false;
+//               if (isset($tt->predefined[$fieldnames[$value['num']]])) {
+//                  $predefined = true;
+//               }
 
                if ($canedit) {
                   Html::showMassiveActionCheckBox(__CLASS__, $id);
                }
                echo "</td>";
                echo "<td>";
-               if (!$predefined) {
+//               if (!$predefined) {
                   echo "<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsTicketField') . "?id=" . $id . "'>" . $fields[$value['num']] . "</a> ";
-               } else {
-                  echo $fields[$value['num']] . " (" . __('Predefined value in template', 'metademands') . " " . $tt->getLink() . ") ";
-               }
+//               } else {
+//                  echo $fields[$value['num']] . " (" . __('Predefined value in template', 'metademands') . " " . $tt->getLink() . ") ";
+//               }
                echo $tt->getMandatoryMark($fieldnames[$value['num']]);
                echo "</td>";
                echo "<td>";
+               $display_datas = [];
                $display_datas[$searchOption[$value['num']]['field']] = $value['value'];
+
                echo $ticket->getValueToDisplay($searchOption[$value['num']], $display_datas, $display_options);
                echo "</td>";
                echo "</tr>";
@@ -405,11 +401,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @param $name
     * @param $value
     */
-   /**
-    * @param $field_id
-    * @param $name
-    * @param $value
-    */
    static function getSpecificTicketFields($field_id, $name, $value) {
 
       $ticket = new Ticket();
@@ -482,11 +473,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
     *
     * @return bool
     */
-   /**
-    * @param $input
-    *
-    * @return bool
-    */
    static function updateMandatoryTicketFields($input) {
       if (isset($input['itilcategories_id']) && isset($input['entities_id']) && isset($input['id'])) {
          $meta = new PluginMetademandsMetademand();
@@ -501,9 +487,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       return true;
    }
 
-   /**
-    * @param \ITILCategory $itilcategory
-    */
+
    /**
     * @param \ITILCategory $itilcategory
     */
@@ -522,9 +506,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       }
    }
 
-   /**
-    * @param \ITILCategory $itilcategory
-    */
+
    /**
     * @param \ITILCategory $itilcategory
     */
@@ -545,16 +527,10 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * @param \TicketTemplateMandatoryField $ttp
     */
-   /**
-    * @param \TicketTemplateMandatoryField $ttp
-    */
    static function post_add_mandatoryField(TicketTemplateMandatoryField $ttp) {
       self::addFieldsFromTemplate($ttp);
    }
 
-   /**
-    * @param \TicketTemplatePredefinedField $ttp
-    */
    /**
     * @param \TicketTemplatePredefinedField $ttp
     */
@@ -565,16 +541,10 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * @param \TicketTemplateMandatoryField $ttp
     */
-   /**
-    * @param \TicketTemplateMandatoryField $ttp
-    */
    static function post_delete_mandatoryField(TicketTemplateMandatoryField $ttp) {
       self::deleteFieldsFromTemplate($ttp);
    }
 
-   /**
-    * @param \TicketTemplatePredefinedField $ttp
-    */
    /**
     * @param \TicketTemplatePredefinedField $ttp
     */
@@ -585,14 +555,9 @@ class PluginMetademandsTicketField extends CommonDBChild {
    /**
     * @param $ttp
     */
-   /**
-    * @param $ttp
-    */
    static function addFieldsFromTemplate($ttp) {
       $ticketField = new PluginMetademandsTicketField();
       $metademands = new PluginMetademandsMetademand();
-
-
 
       $metademands_data = $metademands->find();
       foreach ($metademands_data as $id => $value) {
@@ -603,7 +568,8 @@ class PluginMetademandsTicketField extends CommonDBChild {
 
          // Template of metademand found
          if ($meta_tt->fields['id'] == $ttp->fields['tickettemplates_id']) {
-            if (!in_array($fieldsname[$ttp->fields['num']], self::$used_fields) && $ttp->fields['num'] != -2) {
+            if (!in_array($fieldsname[$ttp->fields['num']], self::$used_fields)
+                && $ttp->fields['num'] != -2) {
                $used        = false;
                $fields_data = $ticketField->find(['plugin_metademands_metademands_id' => $id]);
                foreach ($fields_data as $fields_value) {
@@ -651,10 +617,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @param        $ttp
     * @param string $templatetype
     */
-   /**
-    * @param        $ttp
-    * @param string $templatetype
-    */
    static function deleteFieldsFromTemplate($ttp, $templatetype = 'mandatory') {
       $ticketField = new PluginMetademandsTicketField();
       $metademands = new PluginMetademandsMetademand();
@@ -682,13 +644,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
       }
    }
 
-   /**
-    * @param        $metademands_id
-    * @param        $categid
-    * @param        $type
-    * @param        $entity
-    * @param string $templatetype
-    */
    /**
     * @param        $metademands_id
     * @param        $categid
@@ -740,7 +695,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
                if (isset($tt->predefined[$key])) {
                   $default_value = $tt->predefined[$key];
                }
-               $default_value = json_encode($default_value);
+//               $default_value = json_encode($default_value);
                if (!$used) {
                   $ticketField->add(['value'                             => $default_value,
                                      'num'                               => $num,
@@ -758,9 +713,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
       }
    }
 
-   /**
-    * @return array
-    */
    /**
     * @return array
     */

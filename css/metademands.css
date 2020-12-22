@@ -248,6 +248,13 @@ a.metademand_middle_button {
     margin-bottom: 15px;
 }
 
+@media (min-width: 1600px) {
+    .basket-data {
+        min-width: 700px;
+    }
+}
+
+
 .basket-title {
     margin-bottom: 5px !important;
 }

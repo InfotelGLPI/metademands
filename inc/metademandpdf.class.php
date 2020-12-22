@@ -513,6 +513,15 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                                                                  $items_id);
                            }
                            break;
+                        case 'urgency':
+                           $value = Ticket::getUrgencyName($fields[$elt['id']]);
+                           break;
+                        case 'impact':
+                           $value = Ticket::getImpactName($fields[$elt['id']]);
+                           break;
+                        case 'priority':
+                           $value = Ticket::getPriorityName($fields[$elt['id']]);
+                           break;
                         case 'other':
                            if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
                               $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
