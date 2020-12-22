@@ -1297,6 +1297,9 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                }
                ksort($data['custom_values']);
+               if(!empty($value) && !is_array($value)){
+                  $value = json_decode($value);
+               }
                $value = is_array($value) ? $value : $default_values;
                if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                   $name  = $namefield . "[" . $data['id'] . "][]";
@@ -1304,26 +1307,26 @@ class PluginMetademandsField extends CommonDBChild {
                   $field = "$css
                            <div class=\"form-row\">";
                   $field .= "<div class=\"zone\">
-                                   <select name=\"from\" id=\"multiselect" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+                                   <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
 
                   foreach ($data['custom_values'] as $k => $val) {
-                     if (!in_array($k, $default_values)) {
+                     if (!in_array($k, $value)) {
                         $field .= "<option value=\"$k\" >$val</option>";
                      }
                   }
                   $field .= "</select></div>";
 
                   $field .= " <div class=\"centralCol\">
-                                   <button type=\"button\" id=\"multiselect" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
-                                   <button type=\"button\" id=\"multiselect" . $data["id"] . "_leftAll\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
                                </div>";
                                
                   $field .= "<div class=\"zone\">
-                                   <select name=\"$name\" id=\"multiselect" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+                                   <select name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                   foreach ($data['custom_values'] as $k => $val) {
-                     if (in_array($k, $default_values)) {
+                     if (in_array($k, $value)) {
                         $field .= "<option value=\"$k\" >$val</option>";
                      }
                   }
@@ -1335,7 +1338,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.min.js\" type=\"text/javascript\"></script>
                            <script type=\"text/javascript\">
                            jQuery(document).ready(function($) {
-                                  $('#multiselect" . $data["id"] . "').multiselect({
+                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
                                       search: {
                                           left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
                                           right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
