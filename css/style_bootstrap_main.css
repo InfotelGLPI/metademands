@@ -104,7 +104,7 @@ body {
     text-align: left;
 }
 .bt-title-divider span {
-    background: #fff none repeat scroll 0 0;
+    /*background: #fff none repeat scroll 0 0;*/
     padding-right: 0.5em;
 }
 .bt-title-divider small {

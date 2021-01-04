@@ -451,33 +451,31 @@ class PluginMetademandsField extends CommonDBChild {
          $is_assign     = isset($custom_values['is_assign']) ? $custom_values['is_assign'] : 0;
          $is_watcher    = isset($custom_values['is_watcher']) ? $custom_values['is_watcher'] : 0;
          $is_requester  = isset($custom_values['is_requester']) ? $custom_values['is_requester'] : 0;
-         // Assigned group
+
+         echo "<td></td>";
+
          echo "<td>";
          echo __('Assigned');
-         echo "</td>";
-         echo "<td>";
+         echo "&nbsp;";
+         // Assigned group
          Dropdown::showYesNo('is_assign', $is_assign);
-         echo "</td>";
-
-         // Watcher group
-         echo "<td>";
+         echo "<br>";
          echo __('Watcher');
-         echo "</td>";
-         echo "<td>";
+         echo "&nbsp;";
+         // Watcher group
          Dropdown::showYesNo('is_watcher', $is_watcher);
-         echo "</td>";
-
-         // Requester group
-         echo "<td>";
+         echo "<br>";
          echo __('Requester');
-         echo "</td>";
-         echo "<td>";
+         echo "&nbsp;";
+         // Requester group
          Dropdown::showYesNo('is_requester', $is_requester);
          echo "</td>";
+
 
       } else {
          echo "<td colspan='2'></td>";
       }
+
       //TODO permit linked items_id / itemtype
       if ($ID > 0 && $this->fields['type'] != "title"
           && $this->fields['type'] != "informations") {
@@ -1618,7 +1616,7 @@ class PluginMetademandsField extends CommonDBChild {
                   break;
                default:
                   $cond = [];
-                  if (!empty($data['custom_values']) && $data['item'] == 'group') {
+                  if (!empty($data['custom_values']) && $data['item'] == 'Group') {
                      $options = self::_unserialize($data['custom_values']);
                      foreach ($options as $k => $val) {
                         if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
@@ -1631,7 +1629,6 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   $opt = ['value'     => $value,
                           'entity'    => $_SESSION['glpiactiveentities'],
-                          'display'   => true,
                           'name'      => $namefield . "[" . $data['id'] . "]",
                           'readonly'  => true,
                           'condition' => $cond,
@@ -2241,7 +2238,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       $params['hidden_block'] = self::_unserialize($params['hidden_block']);
       if (!isset($params['hidden_block'][$nbOpt])) {
-         $params['hidden_block'] = "";
+         $params['hidden_block'] = 0;
       } else {
          $params['hidden_block'] = $params['hidden_block'][$nbOpt];
       }
@@ -2841,8 +2838,8 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '<input type="text" name="comment_values[0]"  value="" size="30"/>';
                   echo "</td>";
                   echo "<td>";
-                  echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                  echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
+//                  echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+//                  echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
                   echo "<p id='default_values$key'>";
                   echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                   $name  = "default_values[" . $key . "]";

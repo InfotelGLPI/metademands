@@ -1595,11 +1595,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
          }
 
          $result['content'] .= "<table style='width: 100%;border-style: dashed;'>"; // class='mticket'
-         $result['content'] .= "<tr><th colspan='2' style='background-color: #ccc;'>" . $name . "</th></tr>";
+         $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
          if (!empty($options['resources_id'])) {
             $resource = new PluginResourcesResource();
             $resource->getFromDB($options['resources_id']);
-            $result['content'] .= "<tr><th colspan='2' style='background-color: #ccc;'>" . $resource->fields['name'] . " " . $resource->fields['firstname'] . "</th></tr>";
+            $result['content'] .= "<tr><th colspan='2'>" . $resource->fields['name'] . " " . $resource->fields['firstname'] . "</th></tr>";
          }
          //      $result['content'] .= "</table>";
          $nb = 0;
@@ -1674,7 +1674,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
          switch ($field['type']) {
             case 'title' :
-               $result['content'] .= "<th colspan='2' style='background-color: #ccc;'>" . $label . "</th>";
+               $result['content'] .= "<th colspan='2'>" . $label . "</th>";
                break;
             case 'dropdown':
             case 'dropdown_object':
@@ -2000,7 +2000,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
             $content = '';
             if (!empty($son_ticket_data['content'])) {
-               $content = "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2' style='background-color: #ccc;'>" . __('Child Ticket', 'metademands') .
+               $content = "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                           "</th></tr><tr><td colspan='2'>" . $son_ticket_data['content'];
                $content .= "</td></tr></table><br>";
             }
@@ -2009,7 +2009,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if ($config->getField('childs_parent_content') == 1) {
                if (!empty($parent_fields['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                  $content .= "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2' style='background-color: #ccc;'>" . __('Parent tickets', 'metademands') .
+                  $content .= "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
                               "</th></tr><tr><td colspan='2'>" . $parent_fields['content'];
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "</td></tr></table><br>";
