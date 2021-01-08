@@ -20,7 +20,7 @@
 @media (min-width: 1400px) {
     .left-div {
         float: left;
-        width: 620px;
+        width: 550px;
     }
 }
 
@@ -56,7 +56,7 @@
 @media (min-width: 1400px) {
     .right-div {
         float: none;
-        margin-left: 620px;
+        margin-left: 550px;
     }
 }
 
