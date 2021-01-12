@@ -84,7 +84,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return bool|int
     */
    static function canView() {
-      return Session::haveRight(self::$rightname, UPDATE);
+      return Session::haveRight(self::$rightname, READ);
    }
 
    /**
