@@ -1659,9 +1659,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc     = $check_value[$k];
-                              $idv     = $hidden_block[$idc];
-                              $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              if(isset($check_value[$k])){
+                                 $idc     = $check_value[$k];
+                                 $idv     = $hidden_block[$idc];
+                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              }
+
+
                            }
                         }
                      }
