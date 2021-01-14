@@ -376,33 +376,33 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param $file_data
     */
-//   function uploadFiles($file_data) {
-//
-//      echo "<div class=\"form-row\">";
-//      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-//      echo "<form name='wizard_form' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "' enctype='multipart/form-data'>";
-//      echo "<h1>";
-//      echo __('Add documents on the demand', 'metademands');
-//      echo "</h1>";
-//
-//      $ticket = new Ticket();
-//      $ticket->getFromDB($file_data['tickets_id']);
-//
-//      $docadded = $ticket->addFiles($file_data['tickets_id'], 0);
-//      if (count($docadded) > 0) {
-//         foreach ($docadded as $name) {
-//            echo __('Added document', 'metademands') . " $name";
-//         }
-//      }
-//      echo "</div>";
-//      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-//      echo "<input type='submit' class='submit' name='return' value='" . _sx('button', 'Finish', 'metademands') . "'>";
-//      echo "</div>";
-//
-//      Html::closeForm();
-//      echo "</div>";
-//      echo "</div>";
-//   }
+   //   function uploadFiles($file_data) {
+   //
+   //      echo "<div class=\"form-row\">";
+   //      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
+   //      echo "<form name='wizard_form' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "' enctype='multipart/form-data'>";
+   //      echo "<h1>";
+   //      echo __('Add documents on the demand', 'metademands');
+   //      echo "</h1>";
+   //
+   //      $ticket = new Ticket();
+   //      $ticket->getFromDB($file_data['tickets_id']);
+   //
+   //      $docadded = $ticket->addFiles($file_data['tickets_id'], 0);
+   //      if (count($docadded) > 0) {
+   //         foreach ($docadded as $name) {
+   //            echo __('Added document', 'metademands') . " $name";
+   //         }
+   //      }
+   //      echo "</div>";
+   //      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
+   //      echo "<input type='submit' class='submit' name='return' value='" . _sx('button', 'Finish', 'metademands') . "'>";
+   //      echo "</div>";
+   //
+   //      Html::closeForm();
+   //      echo "</div>";
+   //      echo "</div>";
+   //   }
 
    /**
     * @param $step
@@ -757,7 +757,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          // Color
          if ($preview) {
-            $rank = $line[$keys[0]]['rank'];
+            $rank  = $line[$keys[0]]['rank'];
             $color = PluginMetademandsField::setColor($rank);
             $style = 'padding-top:5px; 
                       border-top :3px solid #' . $color . ';
@@ -769,7 +769,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo ':before {
                          content: attr(data-title);
                          background: #';
-            echo $color.";";
+            echo $color . ";";
             echo 'position: absolute;
                                padding: 0 20px;
                                color: #fff;
@@ -795,7 +795,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                 && $data['rank'] != $line[$keys[$keyIndexes[$key] - 1]]['rank']) {
                echo "</div>";
                if ($preview) {
-                  $rank = $data['rank'];
+                  $rank  = $data['rank'];
                   $color = PluginMetademandsField::setColor($data['rank']);
                   echo '<style type="text/css">
                        .preview-md-';
@@ -803,8 +803,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo ':before {
                          content: attr(data-title);
                          background: #';
-                        echo $color.";";
-                        echo 'position: absolute;
+                  echo $color . ";";
+                  echo 'position: absolute;
                                padding: 0 20px;
                                color: #fff;
                                right: 0;
@@ -940,7 +940,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             // Next row
             if ($count >= $columns) {
                if ($preview) {
-                  $color = PluginMetademandsField::setColor($data['rank']);
+                  $color            = PluginMetademandsField::setColor($data['rank']);
                   $style_left_right = 'border-left :3px solid #' . $color . ';
                                        border-right :3px solid #' . $color;
                }
@@ -1029,9 +1029,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc    = $check_value[$k];
-                              $idv    = $hidden_link[$idc];
-                              $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                              if ($idv > 0) {
+                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1114,14 +1116,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $check_value    = array_flip($check_value);
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
-                                 if(isset($check_value[$k])){
-                                    $idc    = $check_value[$k];
-                                    if(isset($hidden_link[$idc])){
-                                       $idv    = $hidden_link[$idc];
-                                       $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                    }
+                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                                 if ($idv > 0) {
+                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
                                  }
-
                               }
                            }
                         }
@@ -1196,14 +1195,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $check_value    = array_flip($check_value);
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
-                                 if(isset($check_value[$k])){
-                                    $idc    = $check_value[$k];
-                                    if(isset($hidden_link[$idc])){
-                                       $idv    = $hidden_link[$idc];
-                                       $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                    }
+                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                                 if ($idv > 0) {
+                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
                                  }
-
                               }
                            }
                         }
@@ -1321,9 +1317,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc    = $check_value[$k];
-                              $idv    = $hidden_link[$idc];
-                              $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                              if ($idv > 0) {
+                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1379,9 +1377,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc    = $check_value[$k];
-                              $idv    = $hidden_link[$idc];
-                              $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                              if ($idv > 0) {
+                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1448,9 +1448,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc    = $check_value[$k];
-                              $idv    = $hidden_link[$idc];
-                              $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                              if ($idv > 0) {
+                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1526,9 +1528,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc    = $check_value[$k];
-                              $idv    = $hidden_link[$idc];
-                              $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                              if ($idv > 0) {
+                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1580,9 +1584,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc     = $check_value[$k];
-                              $idv     = $hidden_block[$idc];
-                              $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              if(isset($check_value[$k])) {
+                                 $idc     = $check_value[$k];
+                                 $idv     = $hidden_block[$idc];
+                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1664,8 +1670,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                                  $idv     = $hidden_block[$idc];
                                  $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
                               }
-
-
                            }
                         }
                      }
@@ -1778,9 +1782,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc     = $check_value[$k];
-                              $idv     = $hidden_block[$idc];
-                              $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              if(isset($check_value[$k])) {
+                                 $idc     = $check_value[$k];
+                                 $idv     = $hidden_block[$idc];
+                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1838,9 +1844,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc     = $check_value[$k];
-                              $idv     = $hidden_block[$idc];
-                              $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              if(isset($check_value[$k])) {
+                                 $idc     = $check_value[$k];
+                                 $idv     = $hidden_block[$idc];
+                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1898,9 +1906,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc     = $check_value[$k];
-                              $idv     = $hidden_block[$idc];
-                              $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              if(isset($check_value[$k])) {
+                                 $idc     = $check_value[$k];
+                                 $idv     = $hidden_block[$idc];
+                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -1966,9 +1976,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value    = array_flip($check_value);
                         foreach ($default_values as $k => $v) {
                            if ($v == 1) {
-                              $idc     = $check_value[$k];
-                              $idv     = $hidden_block[$idc];
-                              $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              if(isset($check_value[$k])) {
+                                 $idc     = $check_value[$k];
+                                 $idv     = $hidden_block[$idc];
+                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                              }
                            }
                         }
                      }
@@ -2233,7 +2245,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
       } else if ($value['type'] == 'dropdown_multiple') {
 
-         if(!isset($post[$fieldname][$id])){
+         if (!isset($post[$fieldname][$id])) {
             if (!self::checkMandatoryFields($fieldname, $value, ['id'    => $id,
                                                                  'value' => []],
                                             $post)) {

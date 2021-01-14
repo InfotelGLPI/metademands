@@ -1494,7 +1494,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   if (isset($line['tasks'])
                       && is_array($line['tasks'])
                       && count($line['tasks'])) {
-                     $line['tasks'] = $this->checkTaskAllowed($metademands_id,$values,$line['tasks']);
+                     $line['tasks'] = $this->checkTaskAllowed($metademands_id, $values, $line['tasks']);
                      if (!$this->createSonsTickets($parent_tickets_id,
                                                    $this->mergeFields($parent_fields,
                                                                       $parent_ticketfields),
@@ -2778,37 +2778,38 @@ class PluginMetademandsMetademand extends CommonDropdown {
       return "";
    }
 
-   public function checkTaskAllowed($metademands_id,$values,$tasks){
-      $in = [];
-      $out = [];
-      $field = new PluginMetademandsField();
-      $fields = $field->find(["plugin_metademands_metademands_id"=>$metademands_id]);
-      foreach ($fields as $f){
+   public function checkTaskAllowed($metademands_id, $values, $tasks) {
+      $in     = [];
+      $out    = [];
+      $field  = new PluginMetademandsField();
+      $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
+      foreach ($fields as $f) {
          $check_values = PluginMetademandsField::_unserialize($f['check_value']);
          $tasks_fields = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
-         foreach ($check_values as $id => $check){
-            if($check != "0"){
-               if(isset($values["fields"][$f['id']])){
-                  if(is_array($values["fields"][$f['id']])){
-                     if(in_array($check,$values["fields"][$f['id']])){
-                        $in[] = $tasks_fields[$id];
-                     }else {
-                        $out[] =  $tasks_fields[$id];
-                     }
-                  }else{
-                     if($check == $values["fields"][$f['id']]){
-                        $in[] = $tasks_fields[$id];
-                     }else {
-                        $out[] =  $tasks_fields[$id];
+         if (is_array($check_values)) {
+            foreach ($check_values as $id => $check) {
+               if ($check != "0") {
+                  if (isset($values["fields"][$f['id']])) {
+                     if (is_array($values["fields"][$f['id']])) {
+                        if (in_array($check, $values["fields"][$f['id']])) {
+                           $in[] = $tasks_fields[$id];
+                        } else {
+                           $out[] = $tasks_fields[$id];
+                        }
+                     } else {
+                        if ($check == $values["fields"][$f['id']]) {
+                           $in[] = $tasks_fields[$id];
+                        } else {
+                           $out[] = $tasks_fields[$id];
+                        }
                      }
                   }
                }
             }
          }
       }
-      $toremove = [];
-      foreach ($out as $o){
-         if(!in_array($o,$in)){
+      foreach ($out as $o) {
+         if (!in_array($o, $in)) {
             unset($tasks[$o]);
          }
       }
