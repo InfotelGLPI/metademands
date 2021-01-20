@@ -1507,8 +1507,8 @@ class PluginMetademandsField extends CommonDBChild {
                   $cond  = [];
                   if (!empty($data['custom_values'])) {
                      $options = PluginMetademandsField::_unserialize($data['custom_values']);
-                     foreach ($options as $type_group => $value) {
-                        $cond[$type_group] = $value;
+                     foreach ($options as $type_group => $values) {
+                        $cond[$type_group] = $values;
                      }
                   }
                   $field .= Group::dropdown(['name'      => $namefield . "[" . $data['id'] . "]",
