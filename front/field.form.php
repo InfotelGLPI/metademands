@@ -150,7 +150,9 @@ if (isset($_POST["add"])) {
    if (isset($_POST["plugin_metademands_tasks_id"])) {
       $_POST["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
    }
-
+   if (isset($_POST["fields_link"])) {
+      $_POST["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
+   }
    if (isset($_POST["hidden_link"])) {
       $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
    }
@@ -172,10 +174,41 @@ if (isset($_POST["add"])) {
             $new_res = PluginMetademandsField::getPluginSaveOptions($plug,$p);
          }
       }
-
    }
 
-   Html::back();
+   Html::redirect($field->getFormURL() . "?id=" . $_POST["id"]);
+
+}  else if (isset($_POST["clear_option"])) {
+   // Check update rights for fields
+   $ids = $_POST['option'];
+
+   foreach ($ids as $k => $v) {
+      unset($_POST["check_value"][$k]);
+      unset($_POST["plugin_metademands_tasks_id"][$k]);
+      unset($_POST["fields_link"][$k]);
+      unset($_POST["hidden_link"][$k]);
+      unset($_POST["hidden_block"][$k]);
+   }
+   $input["id"] = $_POST["id"];
+   if (isset($_POST["check_value"])) {
+      $input["check_value"] = PluginMetademandsField::_serialize($_POST["check_value"]);
+   }
+   if (isset($_POST["plugin_metademands_tasks_id"])) {
+      $input["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
+   }
+   if (isset($_POST["fields_link"])) {
+      $input["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
+   }
+   if (isset($_POST["hidden_link"])) {
+      $input["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
+   }
+   if (isset($_POST["hidden_block"])) {
+      $input["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
+   }
+
+   $field->check(-1, UPDATE, $_POST);
+   $field->update($input);
+   Html::redirect($field->getFormURL() . "?id=" . $input["id"]);
 
 } else if (isset($_POST["purge"])) {
    // Check update rights for fields
