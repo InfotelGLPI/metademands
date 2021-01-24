@@ -1484,6 +1484,19 @@ class PluginMetademandsField extends CommonDBChild {
                            $data['custom_values'][$k] = $ret;
                         }
                      }
+
+                     $defaults       = self::_unserialize($data['default_values']);
+
+                     $default_values = "";
+                     if ($defaults) {
+                        foreach ($defaults as $k => $v) {
+                           if ($v == 1) {
+                              $default_values = $k;
+                           }
+                        }
+                     }
+                     $value = !empty($value) ? $value : $default_values;
+
                      $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
                      ksort($data['custom_values']);
                      $field = "";
@@ -2695,7 +2708,7 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<td>";
                      //                     echo "<p id='default_values$key'>";
                      $display_default = false;
-                     if ($params['value'] == 'dropdown_multiple') {
+//                     if ($params['value'] == 'dropdown_multiple') {
                         $display_default = true;
                         //                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                         $checked = "";
@@ -2710,7 +2723,7 @@ class PluginMetademandsField extends CommonDBChild {
                         $value = (isset($default[$key]) ? $default[$key] : 0);
                         Dropdown::showYesNo($name, $value);
                         echo '</p>';
-                     }
+//                     }
                      //                     echo '</p>';
                      echo "</td>";
 
@@ -2730,7 +2743,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</td>";
                   echo "<td>";
                   $display_default = false;
-                  if ($params['value'] == 'dropdown_multiple') {
+//                  if ($params['value'] == 'dropdown_multiple') {
                      $display_default = true;
                      //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                      //                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
@@ -2741,7 +2754,7 @@ class PluginMetademandsField extends CommonDBChild {
                      Dropdown::showYesNo($name, $value);
                      echo '</p>';
                      echo "</td>";
-                  }
+//                  }
                   echo "</tr>";
 
                   echo "<tr>";
