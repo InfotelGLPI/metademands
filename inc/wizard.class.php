@@ -959,7 +959,9 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          // Fields linked
          foreach ($line as $data) {
-            if (!empty($data['fields_link']) && is_array(PluginMetademandsField::_unserialize($data['fields_link']))) {
+            if (!empty($data['fields_link'])
+                && is_array(PluginMetademandsField::_unserialize($data['fields_link']))) {
+
                $script = "var metademandWizard = $(document).metademandWizard();";
                //               $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
                //               echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
@@ -970,18 +972,22 @@ class PluginMetademandsWizard extends CommonDBTM {
                   $fields_link = PluginMetademandsField::_unserialize($data['fields_link']);
                   $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                   foreach ($fields_link as $key => $fields) {
-                     $script .= "metademandWizard.metademand_setMandatoryField(
+                     if (isset($check_value[$key])){
+                        $script .= "metademandWizard.metademand_setMandatoryField(
                          'metademands_wizard_red" . $fields_link[$key] . "', 
                          'field[" . $data['id'] . "]', 
                          '" . $check_value[$key] . "', 
                          '" . $data['item'] . "');";
+                     }
+
                   }
-               } else {
-                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 
-                                                                           'field[" . $data['id'] . "]',
-                                                                            '" . $data['check_value'] . "', 
-                                                                            '" . $data['item'] . "');";
                }
+//               else {
+//                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "',
+//                                                                           'field[" . $data['id'] . "]',
+//                                                                            '" . $data['check_value'] . "',
+//                                                                            '" . $data['item'] . "');";
+//               }
                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
             }
          }

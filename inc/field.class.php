@@ -2092,7 +2092,7 @@ class PluginMetademandsField extends CommonDBChild {
                echo "<div id='show_type_fields'>";
                echo "<table width='100%' class='metademands_show_values'>";
                echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "</th></tr>";
-               echo "<i class='fa fa-plus' id='addNewOpt' ></i>";
+               echo "<i class='fa fa-plus' id='addNewOpt' class='pointer'></i>";
                echo "</th></tr></thead><tbody>";
 
                //               echo "<tr>";
@@ -2101,7 +2101,9 @@ class PluginMetademandsField extends CommonDBChild {
                // Multi criterias
 
                $opts = [];
-               if (isset($params['check_value']) && !empty($params['check_value'])) {
+               if (isset($params['check_value'])
+                   && !empty($params['check_value'])
+                   && $params['check_value'] != self::$not_null) {
                   $opts = self::_unserialize($params['check_value']);
                }
                if (strpos($address, 'nbOpt=') > 0) {
