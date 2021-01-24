@@ -186,7 +186,7 @@ function plugin_metademands_install() {
       while ($data = $DB->fetchArray($result)) {
          if ($data['Field'] == 'fields_link' && $data['Type'] == 'int(11)') {
             include(GLPI_ROOT . "/plugins/metademands/install/update274_275.php");
-            update275_276();
+            update274_275();
          }
       }
    }
