@@ -37,7 +37,7 @@ if (empty($_GET["id"])) {
 $field = new PluginMetademandsField();
 
 if (!isset($_POST["check_value"])) {
-   $_POST["check_value"] = "";
+   $_POST["check_value"] = [];
 } else {
    $field->getFromDB($_POST["id"]);
    $hidden_kinks = PluginMetademandsField::_unserialize($field->fields["hidden_link"]);

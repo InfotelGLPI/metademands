@@ -2048,7 +2048,7 @@ class PluginMetademandsField extends CommonDBChild {
       global $PLUGIN_HOOKS;
 
       $params['value']       = 0;
-      $params['check_value'] = 0;
+      $params['check_value'] = [];
 
 
       foreach ($options as $key => $value) {
@@ -2176,6 +2176,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</table>";
                   echo "</td></tr>";
                }
+
                if (count($opts) == 0) {
                   echo $this->addNewOpt($url);
                } else {
@@ -2309,7 +2310,7 @@ class PluginMetademandsField extends CommonDBChild {
             if (isset($params['check_value']) && !empty($params['check_value'])) {
                $checked = 'checked';
             }
-            $html .= "<input type='checkbox' name='check_value' value='1' $checked>";
+            $html .= "<input type='checkbox' name='check_value' value='[1]' $checked>";
             $html .= "</td></tr>";
             break;
 
