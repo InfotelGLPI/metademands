@@ -125,54 +125,54 @@ function plugin_metademands_install() {
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_block")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.4.sql");
 
-      $field = new PluginMetademandsField();
-      $fields = $field->find(['type'=>"dropdown","item"=>"user"]);
-      foreach ($fields as $f){
+      $field  = new PluginMetademandsField();
+      $fields = $field->find(['type' => "dropdown", "item" => "user"]);
+      foreach ($fields as $f) {
          $f["item"] = "User";
          $f["type"] = "dropdown_object";
          $field->update($f);
       }
-      $fields = $field->find(['type'=>"dropdown","item"=>"usertitle"]);
-      foreach ($fields as $f){
+      $fields = $field->find(['type' => "dropdown", "item" => "usertitle"]);
+      foreach ($fields as $f) {
          $f["item"] = "UserTitle";
          $field->update($f);
       }
-      $fields = $field->find(['type'=>"dropdown","item"=>"usercategory"]);
-      foreach ($fields as $f){
+      $fields = $field->find(['type' => "dropdown", "item" => "usercategory"]);
+      foreach ($fields as $f) {
          $f["item"] = "UserCategory";
          $field->update($f);
       }
-      $fields = $field->find(['type'=>"dropdown","item"=>"group"]);
-      foreach ($fields as $f){
+      $fields = $field->find(['type' => "dropdown", "item" => "group"]);
+      foreach ($fields as $f) {
          $f["item"] = "Group";
          $f["type"] = "dropdown_object";
          $field->update($f);
       }
-      $fields = $field->find(['type'=>"dropdown","item"=>"location"]);
-      foreach ($fields as $f){
+      $fields = $field->find(['type' => "dropdown", "item" => "location"]);
+      foreach ($fields as $f) {
          $f["item"] = "Location";
          $field->update($f);
       }
-      $fields = $field->find(['type'=>"dropdown","item"=>"appliance"]);
-      foreach ($fields as $f){
+      $fields = $field->find(['type' => "dropdown", "item" => "appliance"]);
+      foreach ($fields as $f) {
          $f["item"] = "Appliance";
          $f["type"] = "dropdown_object";
          $field->update($f);
       }
-      $fields = $field->find(['type'=>"dropdown","item"=>"itilcategory"]);
-      foreach ($fields as $f){
+      $fields = $field->find(['type' => "dropdown", "item" => "itilcategory"]);
+      foreach ($fields as $f) {
          $f["item"] = "ITILCategory_Metademands";
          $f["type"] = "dropdown_meta";
          $field->update($f);
       }
-      $fields = $field->find(['type'=>"dropdown","item"=>"other"]);
-      foreach ($fields as $f){
+      $fields = $field->find(['type' => "dropdown", "item" => "other"]);
+      foreach ($fields as $f) {
          $f["item"] = "other";
          $f["type"] = "dropdown_meta";
          $field->update($f);
       }
-      $fields = $field->find(['type'=>"dropdown","item"=>"PluginResourcesResource"]);
-      foreach ($fields as $f){
+      $fields = $field->find(['type' => "dropdown", "item" => "PluginResourcesResource"]);
+      foreach ($fields as $f) {
          $f["type"] = "dropdown_object";
          $field->update($f);
       }
@@ -181,6 +181,14 @@ function plugin_metademands_install() {
    //version 2.7.5
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "display_type")) {
       $DB->runFile(GLPI_ROOT . "/plugins/metademands/install/sql/update-2.7.5.sql");
+      $sql    = "SHOW COLUMNS FROM `glpi_plugin_metademands_fields`";
+      $result = $DB->query($sql);
+      while ($data = $DB->fetchArray($result)) {
+         if ($data['Field'] == 'fields_link' && $data['Type'] == 'int(11)') {
+            include(GLPI_ROOT . "/plugins/metademands/install/update274_275.php");
+            update274_275();
+         }
+      }
    }
 
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
@@ -343,9 +351,9 @@ function plugin_metademands_getDatabaseRelations() {
                                                         "glpi_plugin_metademands_tasks"                 => "plugin_metademands_metademands_id",
                                                         "glpi_plugin_metademands_metademands_resources" => "plugin_metademands_metademands_id"],
 
-              "glpi_tickets" => ["glpi_plugin_metademands_tickets_fields"           => "tickets_id",
-                                 "glpi_plugin_metademands_tickets_tasks"            => "tickets_id",
-                                 "glpi_plugin_metademands_tickets_metademands"      => "tickets_id",
+              "glpi_tickets" => ["glpi_plugin_metademands_tickets_fields"      => "tickets_id",
+                                 "glpi_plugin_metademands_tickets_tasks"       => "tickets_id",
+                                 "glpi_plugin_metademands_tickets_metademands" => "tickets_id",
               ],
 
               "glpi_plugin_metademands_fields" => ["glpi_plugin_metademands_tickets_fields" => "plugin_metademands_fields_id"],

@@ -959,7 +959,9 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          // Fields linked
          foreach ($line as $data) {
-            if (!empty($data['fields_link'])) {
+            if (!empty($data['fields_link'])
+                && is_array(PluginMetademandsField::_unserialize($data['fields_link']))) {
+
                $script = "var metademandWizard = $(document).metademandWizard();";
                //               $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
                //               echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
@@ -967,21 +969,25 @@ class PluginMetademandsWizard extends CommonDBTM {
                // base :
                // $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 'field[" . $data['id'] . "]', '" . $data['check_value'] . "');";
                if ($data['fields_link']) {
-                  $fields_link = [$data['fields_link']];
+                  $fields_link = PluginMetademandsField::_unserialize($data['fields_link']);
                   $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                   foreach ($fields_link as $key => $fields) {
-                     $script .= "metademandWizard.metademand_setMandatoryField(
+                     if (isset($check_value[$key])){
+                        $script .= "metademandWizard.metademand_setMandatoryField(
                          'metademands_wizard_red" . $fields_link[$key] . "', 
                          'field[" . $data['id'] . "]', 
                          '" . $check_value[$key] . "', 
                          '" . $data['item'] . "');";
+                     }
+
                   }
-               } else {
-                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "', 
-                                                                           'field[" . $data['id'] . "]',
-                                                                            '" . $data['check_value'] . "', 
-                                                                            '" . $data['item'] . "');";
                }
+//               else {
+//                  $script .= "metademandWizard.metademand_setMandatoryField('metademands_wizard_red" . $data['fields_link'] . "',
+//                                                                           'field[" . $data['id'] . "]',
+//                                                                            '" . $data['check_value'] . "',
+//                                                                            '" . $data['item'] . "');";
+//               }
                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
             }
          }
@@ -1332,6 +1338,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   case 'textarea':
                      $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
                      $script2 = "";
+
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
                         $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
                         $check_value = PluginMetademandsField::_unserialize($data['check_value']);
@@ -2251,6 +2258,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                             $post)) {
                $KO = true;
                $_SESSION['plugin_metademands']['fields'][$id] = [];
+
             } else {
                $_SESSION['plugin_metademands']['fields'][$id] = [];
             }
@@ -2324,10 +2332,17 @@ class PluginMetademandsWizard extends CommonDBTM {
          ) {
 
             $field = new PluginMetademandsField();
-            $field->getFromDB($value['fields_link']);
-            $msg[]     = $field->fields['name'] . ' ' . $field->fields['label2'];
-            $checkKo[] = 1;
+            $fields_links       = PluginMetademandsField::_unserialize($value['fields_link']);
 
+            if (is_array($fields_links)) {
+               foreach ($fields_links as $k => $fields_link) {
+                  if ($fields_link > 0) {
+                     $field->getFromDB($fields_link);
+                     $msg[]     = $field->fields['name'] . ' ' . $field->fields['label2'];
+                     $checkKo[] = 1;
+                  }
+               }
+            }
          }
          //radio
          if ($value['type'] == 'radio'

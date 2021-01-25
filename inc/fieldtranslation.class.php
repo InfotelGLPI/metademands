@@ -339,7 +339,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             }
          }
       }
-      //$used = array();
+      //$used = [];
       return Dropdown::showFromArray('field', $options, ['value' => $value,
                                                          'used'  => $used]);
    }
