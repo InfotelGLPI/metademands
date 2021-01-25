@@ -680,6 +680,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
 
       echo "</tr>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
+      Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
+      echo "</td>";
+      echo "<td colspan='2'>";
+      echo "</td>";
+      echo "</tr>";
 
       $this->showFormButtons($options);
 
@@ -1495,12 +1502,24 @@ class PluginMetademandsMetademand extends CommonDropdown {
                       && is_array($line['tasks'])
                       && count($line['tasks'])) {
                      $line['tasks'] = $this->checkTaskAllowed($metademands_id, $values, $line['tasks']);
-                     if (!$this->createSonsTickets($parent_tickets_id,
-                                                   $this->mergeFields($parent_fields,
-                                                                      $parent_ticketfields),
-                                                   $parent_tickets_id, $line['tasks'], $tasklevel)) {
-                        $KO[] = 1;
+                     if($this->fields["validation_subticket"] == 0){
+                        if (!$this->createSonsTickets($parent_tickets_id,
+                                                      $this->mergeFields($parent_fields,
+                                                                         $parent_ticketfields),
+                                                      $parent_tickets_id, $line['tasks'], $tasklevel)) {
+                           $KO[] = 1;
+                        }
+                     }else{
+                        $metaValid = new PluginMetademandsMetademandValidation();
+                        $paramIn["tickets_id"] = $parent_tickets_id;
+                        $paramIn["plugin_metademands_id"] = $metademands_id;
+                        $paramIn["users_id"] = 0;
+                        $paramIn["validate"] = 0;
+                        $paramIn["date"] = date("Y-m-d H:i:s");
+                        $paramIn["tickets_to_create"] = json_encode($line['tasks']);
+                        $metaValid->add($paramIn);
                      }
+
                   }
 
                   // Case of simple ticket convertion
@@ -1959,7 +1978,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @throws \GlpitestSQLError
     * @throws \GlpitestSQLError
     */
-   private function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1) {
+    function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1) {
 
       $ticket_ticket = new Ticket_Ticket();
       $ticket_task   = new PluginMetademandsTicket_Task();
@@ -2100,7 +2119,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $ticket->fields['_groups_id_assign'] = $parent_groups_tickets_data['groups_id'];
                      }
 
-                     $this->createSonsTickets($ticket->fields, $data['parent_level'] + 1, $tickets_found[0]['tickets_id'], $tasks_data, $tickets_data['id']);
+                     $this->createSonsTickets($tickets_data['id'],$ticket->fields,$tickets_found[0]['tickets_id'] , $tasks_data , $data['parent_level'] + 1);
                   }
                }
             }

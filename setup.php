@@ -128,6 +128,7 @@ function plugin_init_metademands() {
 
    // Import webservice
    $PLUGIN_HOOKS['webservices']['metademands']   = 'plugin_metademands_registerMethods';
+   $PLUGIN_HOOKS['timeline_actions']['metademands']   = 'plugin_metademands_timeline_actions';
    $PLUGIN_HOOKS['plugin_datainjection_populate']['metademands'] = 'plugin_datainjection_populate_metademands';
 
 }

@@ -2250,9 +2250,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                                  'value' => []],
                                             $post)) {
                $KO = true;
+               $_SESSION['plugin_metademands']['fields'][$id] = [];
             } else {
-               $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+               $_SESSION['plugin_metademands']['fields'][$id] = [];
             }
+         } else {
+            $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
 
 
