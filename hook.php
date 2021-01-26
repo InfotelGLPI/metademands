@@ -406,6 +406,36 @@ function plugin_metademands_registerMethods() {
 
 }
 
+function plugin_metademands_timeline_actions($data){
+   global $CFG_GLPI;
+   $metaValidation = new PluginMetademandsMetademandValidation();
+   if($metaValidation->getFromDBByCrit(['tickets_id'=>$data['item']->fields['id']])){
+      $rand = $data['rand'];
+      echo "<script type='text/javascript' >\n
+//      $(document).ready(function() {
+//                $('.ajax_box').show();
+//      });
+      function viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
+
+      $params = ['action'     => 'viewsubitem',
+                 'type'       => 'itemtype',
+                 'tickets_id'  => $data['item']->fields['id'],
+                 'id'         => -1];
+      $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
+                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/timeline.php",
+                                       $params, "", false);
+      echo str_replace("\"itemtype\"", "itemtype", $out);
+      echo "};
+      ";
+
+      echo "</script>\n";
+      echo "<li class='solution' onclick='".
+           "javascript:viewAddMetaValidation".$data['item']->fields['id']."$rand(\"Solution\");'>"
+           ."<i class='fa fa-thumbs-up'></i>".__('Metademand validation', 'metademands')."</li>";
+   }
+
+
+}
 /**
  * @return bool
  * @throws \GlpitestSQLError
