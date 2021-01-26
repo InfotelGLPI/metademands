@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-26 15:49+0000\n"
+"POT-Creation-Date: 2021-01-26 17:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -134,6 +134,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:200 inc/metademandValidation.class.php:170
+#: inc/metademandvalidation.class.php:170
 msgid "Add a field"
 msgstr ""
 
@@ -414,53 +415,53 @@ msgstr ""
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:1560
+#: inc/metademand.class.php:1559
 msgid "Demand add failed"
 msgstr ""
 
-#: inc/metademand.class.php:1563
+#: inc/metademand.class.php:1562
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:1565
+#: inc/metademand.class.php:1564
 #, php-format
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr ""
 
-#: inc/metademand.class.php:2023
+#: inc/metademand.class.php:2022
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:2032
+#: inc/metademand.class.php:2031
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2165
+#: inc/metademand.class.php:2164
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:2179
+#: inc/metademand.class.php:2178
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2186 inc/metademand.class.php:2315
+#: inc/metademand.class.php:2185 inc/metademand.class.php:2314
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:2308
+#: inc/metademand.class.php:2307
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2385
+#: inc/metademand.class.php:2384
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:2714 inc/metademand.class.php:2738
+#: inc/metademand.class.php:2713 inc/metademand.class.php:2737
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademandValidation.class.php:51
+#: inc/metademandValidation.class.php:51 inc/metademandvalidation.class.php:51
 msgid "Metademands validation"
 msgstr ""
 
@@ -621,22 +622,22 @@ msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2336
+#: inc/wizard.class.php:2345
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2345
+#: inc/wizard.class.php:2354
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2390
+#: inc/wizard.class.php:2399
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2394
+#: inc/wizard.class.php:2403
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""

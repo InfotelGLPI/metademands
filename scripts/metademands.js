@@ -164,6 +164,7 @@
        * @param  check_value : value to check
        */
       this.metademand_setMandatoryField = function (toupdate, toobserve, check_value, type) {
+         console.log(check_value);
          object.metademand_checkEmptyField(toupdate, toobserve, check_value, type);
 
          if (type == 'checkbox') {
@@ -194,11 +195,18 @@
             obs = $("[name='" + toobserve + "']");
          }
          // const zerodiff = (currentValue) => currentValue == 0;
-         if ( (!Array.isArray(check_value) &&
-            check_value != 0 &&
-            obs.val() == check_value) || (Array.isArray(check_value) &&
+         console.log(check_value);
+         console.log(check_value.includes(parseInt(obs.val(),10)));
+         console.log(obs.val());
+         var op1 = (!Array.isArray(check_value) &&
+             check_value != 0 &&
+             obs.val() == check_value);
+         var op2 = (Array.isArray(check_value) &&
              obs.val() != 0 &&
-             obs.val() in check_value)
+             check_value.includes(parseInt(obs.val(),10)));
+         console.log(op1);
+         console.log(op2);
+         if (  op1|| op2
             //  ||
             // check_value == 'NOT_NULL' &&
             // $("[name='" + toobserve + "']").val() != 0
