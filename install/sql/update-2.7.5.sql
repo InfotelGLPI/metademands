@@ -4,6 +4,8 @@ ALTER TABLE `glpi_plugin_metademands_fields` ADD `fields_link` varchar(255) NOT 
 
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `validation_subticket` TINYINT(1) NOT NULL DEFAULT '0';
 
+ALTER TABLE `glpi_plugin_metademands_tickets_metademands` ADD `status` TINYINT(1) NOT NULL DEFAULT '1'  AFTER `tickettemplates_id`;
+
 DROP TABLE IF EXISTS `glpi_plugin_metademands_metademandvalidations`;
 CREATE TABLE `glpi_plugin_metademands_metademandvalidations`
 (

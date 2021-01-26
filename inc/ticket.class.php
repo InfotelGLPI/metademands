@@ -95,14 +95,76 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    static function post_update_ticket(Ticket $ticket) {
+      global $DB;
+
       $metademand = new PluginMetademandsMetademand();
+      $ticket_metademand = new PluginMetademandsTicket_Metademand();
+      $ticket_task       = new PluginMetademandsMetademandTask();
+
+      $ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $ticket->getID()]);
 
       if ($ticket->fields['status'] == Ticket::SOLVED
           || $ticket->fields['status'] == Ticket::CLOSED) {
-         $metademand->addSonTickets($ticket->fields);
+         $metademand->addSonTickets($ticket->fields, $ticket_metademand);
       }
 
+      self::manageMetademandStatusOnUpdateTicket($ticket_metademand, $DB, $ticket);
+
       return $ticket;
+   }
+
+   static function manageMetademandStatusOnUpdateTicket($ticket_metademand, $DB, $ticket) {
+
+      $parent_ticket     = false;
+
+      //parent or child
+      if (count($ticket_metademand->fields) > 0) {
+         $parent_ticket = true;
+      } else {
+         $parent_ticket_son = $DB->request(['SELECT' => ['parent_tickets_id'],
+            'FROM' => 'glpi_plugin_metademands_tickets_tasks',
+            'WHERE' => ['tickets_id' => $ticket->getID()]]);
+
+         if ($parent_ticket_son->numrows() != 0 ) {
+            foreach ($parent_ticket_son as $par_t) {
+               $get_running_sons_ticket =
+                  " SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`, `glpi_tickets`.`status` FROM `glpi_plugin_metademands_tickets_tasks`
+                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` = 
+                        `glpi_plugin_metademands_tickets_tasks`.`tickets_id` WHERE 
+                            `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` = " . $par_t['parent_tickets_id'] ;
+
+               $results_sons_ticket = $DB->query($get_running_sons_ticket);
+
+               $counterClosed = 0;
+
+               while ($row = $DB->fetchArray($results_sons_ticket)) {
+                  if ($row['status'] == Ticket::CLOSED || $row['status'] == Ticket::SOLVED) {
+                     $counterClosed ++;
+                  }
+               }
+
+               $ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $par_t['parent_tickets_id']]);
+
+               //manage reopen or refused solution for parent
+
+               if ($counterClosed == $results_sons_ticket->num_rows) {
+                  $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::TO_CLOSED]);
+               } elseif ($counterClosed < $results_sons_ticket->num_rows) {
+                  $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+               }
+            }
+         }
+
+      }
+
+      //reopen or refused solution for parent with no sons
+      if ($parent_ticket) {
+         if ($ticket->getField('status') != Ticket::SOLVED
+            && $ticket->getField('status') != Ticket::CLOSED
+            && $ticket_metademand->getField('status') == PluginMetademandsTicket_Metademand::CLOSED) {
+            $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+         }
+      }
    }
 
    /**

@@ -39,6 +39,9 @@ function plugin_init_metademands() {
    $PLUGIN_HOOKS["javascript"]['metademands']     = ["/plugins/metademands/scripts/metademands.js"];
    $PLUGIN_HOOKS['add_css']['metademands']        = ['/css/metademands.css'];
 
+   // add minidashboard
+   $PLUGIN_HOOKS['dashboard_cards']['metademands'] = ['PluginMetademandsMetademand', 'getMetademandDashboards'];
+
 //   if ((strpos($_SERVER['REQUEST_URI'], "ticket.form.php") !== false)
 //       || strpos($_SERVER['REQUEST_URI'], "helpdesk.public.php?create_ticket=1") !== false
 //       || strpos($_SERVER['REQUEST_URI'], "tracking.injector.php") !== false) {

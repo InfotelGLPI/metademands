@@ -1482,7 +1482,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   // Metademands - ticket relation
                   $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
                                            'parent_tickets_id'                 => $ancestor_tickets_id,
-                                           'plugin_metademands_metademands_id' => $form_metademands_id]);
+                                           'plugin_metademands_metademands_id' => $form_metademands_id,
+                                           'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
 
                   // Save all form values of the ticket
                   if (count($line['form']) && isset($values['fields'])) {
@@ -2073,7 +2074,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     *
     * @throws \GlpitestSQLError
     */
-   function addSonTickets($tickets_data) {
+   function addSonTickets($tickets_data, $ticket_metademand) {
       global $DB;
 
       $ticket_task    = new PluginMetademandsTicket_Task();
@@ -2122,6 +2123,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $this->createSonsTickets($tickets_data['id'],$ticket->fields,$tickets_found[0]['tickets_id'] , $tasks_data , $data['parent_level'] + 1);
                   }
                }
+            }
+         } else {
+            if (count($ticket_metademand->fields) > 0) {
+               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::CLOSED]);
             }
          }
       }
@@ -2833,6 +2838,202 @@ class PluginMetademandsMetademand extends CommonDropdown {
          }
       }
       return $tasks;
+   }
+
+   static function getMetademandDashboards() {
+
+      $cards["count_running_metademands"] = [
+         'widgettype' => ['bigNumber'],
+         'itemtype'   => "\\PluginMetademandsMetademand",
+         'group'      => __('Assistance'),
+         'label'      => __("Running metademands", "metademands"),
+         'provider'   => "PluginMetademandsMetademand::getRunningMetademands",
+         'filters'    => [
+            'dates', 'dates_mod', 'itilcategory',
+            'group_tech', 'user_tech', 'requesttype', 'location'
+         ]
+      ];
+
+      $cards["count_metademands_to_be_closed"] = [
+         'widgettype' => ['bigNumber'],
+         'itemtype'   => "\\PluginMetademandsMetademand",
+         'group'      => __('Assistance'),
+         'label'      => __("Metademands to be closed", "metademands"),
+         'provider'   => "PluginMetademandsMetademand::getMetademandsToBeClosed",
+         'filters'    => [
+            'dates', 'dates_mod', 'itilcategory',
+            'group_tech', 'user_tech', 'requesttype', 'location'
+         ]
+      ];
+
+      $cards["count_metademands_need_validation"] = [
+         'widgettype' => ['bigNumber'],
+         'itemtype'   => "\\PluginMetademandsMetademand",
+         'group'      => __('Assistance'),
+         'label'      => __("Metademands to be validated", "metademands"),
+         'provider'   => "PluginMetademandsMetademand::getMetademandsToBeValidated",
+         'filters'    => [
+            'dates', 'dates_mod', 'itilcategory',
+            'group_tech', 'user_tech', 'requesttype', 'location'
+         ]
+      ];
+
+      return $cards;
+
+   }
+
+   public static function getRunningMetademands(array $params = []): array {
+
+      $DB  = DBConnection::getReadConnection();
+      $dbu = new DbUtils();
+
+      $default_params = [
+         'label'         => __("Running metademands", 'metademands'),
+         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'apply_filters' => [],
+      ];
+
+      $get_running_parents_tickets_meta =
+         "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_plugin_metademands_tickets_metademands`
+                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                                    " . PluginMetademandsTicket_Metademand::RUNNING . " " .
+         $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+
+
+      $total_running_parents_meta = $DB->query($get_running_parents_tickets_meta);
+
+      $total_running = 0;
+      while ($row = $DB->fetchArray($total_running_parents_meta)) {
+         $total_running = $row['total_running'];
+      }
+
+
+      $s_criteria = [
+         'criteria' => [
+            [
+               'link'       => 'AND',
+               'field'      => 1000, // status
+               'searchtype' => 'equals',
+               'value'      => PluginMetademandsTicket_Metademand::RUNNING
+            ]
+         ],
+         'reset' => 'reset'
+      ];
+
+      $url = Ticket::getSearchURL()."?".Toolbox::append_params($s_criteria);
+
+
+      return [
+         'number'     => $total_running,
+         'url'        => $url,
+         'label'      => $default_params['label'],
+         'icon'       => $default_params['icon'],
+         's_criteria' => $s_criteria,
+         'itemtype'   => 'Ticket',
+      ];
+   }
+
+   public static function getMetademandsToBeClosed(array $params = []): array {
+
+      $DB  = DBConnection::getReadConnection();
+      $dbu = new DbUtils();
+
+      $default_params = [
+         'label'         => __("Metademands to be closed", 'metademands'),
+         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'apply_filters' => [],
+      ];
+
+      $get_closed_parents_tickets_meta =
+         "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_to_closed' FROM `glpi_plugin_metademands_tickets_metademands`
+                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                                    " . PluginMetademandsTicket_Metademand::TO_CLOSED . " " .
+         $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+
+
+      $results_closed_parents = $DB->query($get_closed_parents_tickets_meta);
+
+      $total_closed = 0;
+      while ($row = $DB->fetchArray($results_closed_parents)) {
+         $total_closed = $row['total_to_closed'];
+      }
+
+
+      $s_criteria = [
+         'criteria' => [
+            [
+               'link'       => 'AND',
+               'field'      => 1000, // status
+               'searchtype' => 'equals',
+               'value'      => PluginMetademandsTicket_Metademand::TO_CLOSED
+            ]
+         ],
+         'reset' => 'reset'
+      ];
+
+      $url = Ticket::getSearchURL()."?".Toolbox::append_params($s_criteria);
+
+      return [
+         'number'     => $total_closed,
+         'url'        => $url,
+         'label'      => $default_params['label'],
+         'icon'       => $default_params['icon'],
+         's_criteria' => $s_criteria,
+         'itemtype'   => 'Ticket',
+      ];
+
+   }
+
+   public static function getMetademandsToBeValidated(array $params = []): array {
+
+      $DB  = DBConnection::getReadConnection();
+      $dbu = new DbUtils();
+
+      $default_params = [
+         'label'         => __("Metademands to be validated", 'metademands'),
+         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'apply_filters' => [],
+      ];
+
+      $get_to_validated_meta =
+         "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated' FROM `glpi_plugin_metademands_metademandvalidations`
+                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id` WHERE
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_metademandvalidations`.`validate` = 0 " .
+         $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+
+
+      $results_meta_to_validated = $DB->query($get_to_validated_meta);
+
+      $total_to_validated = 0;
+      while ($row = $DB->fetchArray($results_meta_to_validated)) {
+         $total_to_validated = $row['total_to_validated'];
+      }
+
+
+      $s_criteria = [
+         'criteria' => [
+            [
+               'link'       => 'AND',
+               'field'      => 1001, // status
+               'searchtype' => 'equals',
+               'value'      => 0
+            ]
+         ],
+         'reset' => 'reset'
+      ];
+
+      $url = Ticket::getSearchURL()."?".Toolbox::append_params($s_criteria);
+
+      return [
+         'number'     => $total_to_validated,
+         'url'        => $url,
+         'label'      => $default_params['label'],
+         'icon'       => $default_params['icon'],
+         's_criteria' => $s_criteria,
+         'itemtype'   => 'Ticket',
+      ];
    }
 
 }

@@ -191,6 +191,13 @@ function plugin_metademands_install() {
       }
    }
 
+   if ($DB->fieldExists("glpi_plugin_metademands_tickets_metademands", "status")) {
+      include(GLPI_ROOT . "/plugins/metademands/install/migrateExistingMetaWithNewStatus.php");
+      migrateAllExistingMetademandsWithNewStatus();
+   }
+
+
+
    PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
    PluginMetademandsProfile::initProfile();
    $DB->query("DROP TABLE IF EXISTS `glpi_plugin_metademands_profiles`;");
@@ -463,4 +470,35 @@ function dbMyISAM() {
       }
    }
    return $myISAM;
+}
+
+// Define search option for types of the plugins
+/**
+ * @param $itemtype
+ *
+ * @return array
+ */
+function plugin_metademands_getAddSearchOptions($itemtype) {
+
+   $sopt = [];
+
+   if ($itemtype == "Ticket") {
+      if (Session::haveRight("plugin_metademands", READ)) {
+         $sopt[1000]['table']         = 'glpi_plugin_metademands_tickets_metademands';
+         $sopt[1000]['field']         = 'status';
+         $sopt[1000]['name']          = PluginMetademandsTicket_Metademand::getTypeName(1);
+         $sopt[1000]['datatype']      = "number";
+         $sopt[1000]['joinparams']    = ['jointype' => 'child'];
+         $sopt[1000]['massiveaction'] = false;
+
+         $sopt[1001]['table']         = 'glpi_plugin_metademands_metademandvalidations';
+         $sopt[1001]['field']         = 'validate';
+         $sopt[1001]['name']          = PluginMetademandsMetademandValidation::getTypeName(1);
+         $sopt[1001]['datatype']      = "number";
+         $sopt[1001]['joinparams']    = ['jointype' => 'child'];
+         $sopt[1001]['massiveaction'] = false;
+
+      }
+   }
+   return $sopt;
 }

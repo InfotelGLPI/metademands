@@ -39,6 +39,9 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
    static $types = ['PluginMetademandsMetademand'];
 
    static $rightname = 'plugin_metademands';
+   const RUNNING   = 1;
+   const TO_CLOSED = 2;
+   const CLOSED    = 3;
 
    /**
     * functions mandatory
