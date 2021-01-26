@@ -1408,7 +1408,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
                         $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
                         $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script      .= "var tohide = {}";
+                        $script      .= "var tohide = {};";
                         foreach ($hidden_link as $key => $fields) {
                            $script  .= "
                         if($fields in tohide){
@@ -1480,7 +1480,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
                         $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                         $script2     = "";
-                        $script      .= "var tohide = {}";
+                        $script      .= "var tohide = {};";
                         foreach ($hidden_link as $key => $fields) {
                            $script .= "
                         if($fields in tohide){
@@ -1874,7 +1874,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
                         $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
                         $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script       .= "var tohide = {}";
+                        $script       .= "var tohide = {};";
                         foreach ($hidden_block as $key => $fields) {
                            $script  .= "
                         if($fields in tohide){
@@ -1938,7 +1938,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
                         $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
                         $script2      = "";
-                        $script       .= "var tohide = {}";
+                        $script       .= "var tohide = {};";
                         foreach ($hidden_block as $key => $fields) {
                            $script .= "
                         if($fields in tohide){

@@ -730,17 +730,38 @@ class PluginMetademandsField extends CommonDBChild {
             echo !empty($name) ? $name : Dropdown::EMPTY_VALUE;
             echo "</td>";
             echo "<td>";
-            if (!empty($value['plugin_metademands_tasks_id'])) {
-               $plugin_metademands_tasks_id = self::_unserialize($value['plugin_metademands_tasks_id']);
-               if (is_array($plugin_metademands_tasks_id)) {
-                  if (count($plugin_metademands_tasks_id) > 0) {
+            if (!empty($value['check_value'])) {
+               $check_value = self::_unserialize($value['check_value']);
+               if (is_array($check_value)) {
+                  if (count($check_value) > 1) {
                      echo __('Multiples', 'metademands');
+                  } else if (count($check_value) > 0) {
+                     switch ($value['type']) {
+                        case 'yesno':
+                           foreach ($check_value as $key => $val) {
+                              echo Dropdown::getYesNo($val);
+                           }
+                           break;
+                        case 'dropdown':
+                        case 'dropdown_object':
+                        case 'dropdown_meta':
+                        case'checkbox':
+                        case 'radio':
+                           echo __('Defined value', 'metademands');
+                           break;
+                        default:
+                           echo Dropdown::EMPTY_VALUE;
+                           break;
+                     }
+                  } else {
+                     echo Dropdown::EMPTY_VALUE;
                   }
                } else {
                   switch ($value['type']) {
-                     case 'yesno':
-                        echo Dropdown::getYesNo($value['check_value'] - 1);
-                        break;
+                     case 'date':
+                     case 'datetime':
+                     case 'date_interval':
+                     case 'datetime_interval':
                      case 'dropdown':
                      case 'dropdown_object':
                      case 'dropdown_meta':
