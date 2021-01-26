@@ -966,6 +966,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                if ($data['fields_link']) {
                   $fields_link = PluginMetademandsField::_unserialize($data['fields_link']);
                   $check_value = PluginMetademandsField::_unserialize($data['check_value']);
+                  $fields_link2 = $fields_link;
                   if (count($fields_link) > 0) {
 
                      foreach ($fields_link as $key => $fields) {
@@ -974,8 +975,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script = "var metademandWizard$rand = $(document).metademandWizard();";
                            $script .= "metademandWizard$rand.metademand_setMandatoryField(
                          'metademands_wizard_red" . $fields_link[$key] . "', 
-                         'field[" . $data['id'] . "]', 
-                         '" . $check_value[$key] . "', 
+                         'field[" . $data['id'] . "]',[".$check_value[$key];
+                           foreach ($fields_link2 as $key2 => $fields2){
+                              if($key  != $key2){
+                                 if($fields_link[$key] == $fields_link[$key2]){
+                                    $script .= ",".$check_value[$key2];
+                                 }
+                              }
+                           }
+
+                           $script.= "], 
                          '" . $data['item'] . "');";
                         }
                      }
