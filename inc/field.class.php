@@ -2197,7 +2197,9 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</table>";
                   echo "</td></tr>";
                }
-
+               if(empty($opts)){
+                  $opts = [];
+               }
                if (count($opts) == 0) {
                   echo $this->addNewOpt($url);
                } else {

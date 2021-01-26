@@ -193,9 +193,12 @@
          } else {
             obs = $("[name='" + toobserve + "']");
          }
-         if (
+         // const zerodiff = (currentValue) => currentValue == 0;
+         if ( (!Array.isArray(check_value) &&
             check_value != 0 &&
-            obs.val() == check_value
+            obs.val() == check_value) || (Array.isArray(check_value) &&
+             obs.val() != 0 &&
+             obs.val() in check_value)
             //  ||
             // check_value == 'NOT_NULL' &&
             // $("[name='" + toobserve + "']").val() != 0

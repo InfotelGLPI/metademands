@@ -22,9 +22,9 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `create_one_ticket` tinyint(1) NOT NULL default '0', -- create_one_ticket
     `date_creation` datetime DEFAULT NULL,
     `date_mod` datetime DEFAULT NULL,
+    `validation_subticket` TINYINT(1) NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 
 -- ----------------------------------------------------------
 --
@@ -77,7 +77,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `plugin_metademands_fields_id` int(11) NOT NULL default '0',
     `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
     `plugin_metademands_tasks_id` VARCHAR(255) DEFAULT NULL ,
-    `fields_link` int(11) NOT NULL default '0',
+    `fields_link` varchar(255) NOT NULL default '0',
     `hidden_link` varchar(255) NOT NULL default '0',
     `hidden_block` varchar(255) NOT NULL default '0',
     `max_upload` INT(11) NOT NULL DEFAULT 0,
@@ -320,6 +320,24 @@ CREATE TABLE `glpi_plugin_metademands_metademandtranslations`
     `language` varchar(5) COLLATE utf8_unicode_ci   DEFAULT NULL,
     `field`    varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
     `value`    text COLLATE utf8_unicode_ci         DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci
+  AUTO_INCREMENT = 1;
+
+
+
+DROP TABLE IF EXISTS `glpi_plugin_metademands_metademandvalidations`;
+CREATE TABLE `glpi_plugin_metademands_metademandvalidations`
+(
+    `id`       int(11) NOT NULL AUTO_INCREMENT,
+    `tickets_id` int(11) NOT NULL                     DEFAULT '0',
+    `plugin_metademands_id` int(11) NOT NULL                     DEFAULT '0',
+    `users_id` int(11) NOT NULL                     DEFAULT '0',
+    `validate` tinyint(1) NOT NULL                     DEFAULT '0',
+    `date` timestamp NOT NULL,
+    `tickets_to_create` text NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
