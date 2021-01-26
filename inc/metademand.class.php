@@ -1957,7 +1957,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                 && (!in_array($allowed_fields[$value['num']], PluginMetademandsTicketField::$used_fields))) {
                $value['item'] = $allowed_fields[$value['num']];
                if ($value['item'] == 'name') {
-                  $result[$value['item']] = $value['value'];
+                  $result[$value['item']] = self::$PARENT_PREFIX .$value['value'];
                } else {
                   $result[$value['item']] = json_decode($value['value'], true);
                }
