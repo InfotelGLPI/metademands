@@ -283,7 +283,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          echo "</tr>";
       }
 
-      if ($this->fields["users_id"] == 0 || $this->fields["validate"] == 2) {
+      if ($this->fields["users_id"] == 0 || $this->fields["validate"] == self::TASK_CREATION) {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='4' class='center'>";
          echo "<input type='submit' class='submit' name='btnAddAll' id='btnAddAll' ";
