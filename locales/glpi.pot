@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-27 10:59+0000\n"
+"POT-Creation-Date: 2021-01-27 13:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:439 inc/metademandValidation.class.php:253
+#: hook.php:440 inc/metademandValidation.class.php:253
 #: inc/metademandvalidation.class.php:253
 msgid "Metademand validation"
 msgstr ""
@@ -430,39 +430,43 @@ msgstr ""
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2182
+#: inc/metademand.class.php:2163
+msgid "Metademand need a validation "
+msgstr ""
+
+#: inc/metademand.class.php:2189
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:2196
+#: inc/metademand.class.php:2203
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2203 inc/metademand.class.php:2332
+#: inc/metademand.class.php:2210 inc/metademand.class.php:2339
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:2325
+#: inc/metademand.class.php:2332
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2402
+#: inc/metademand.class.php:2409
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:2731 inc/metademand.class.php:2755
+#: inc/metademand.class.php:2738 inc/metademand.class.php:2762
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:2861 inc/metademand.class.php:2903
+#: inc/metademand.class.php:2868 inc/metademand.class.php:2910
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:2873 inc/metademand.class.php:2955
+#: inc/metademand.class.php:2880 inc/metademand.class.php:2962
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:2885 inc/metademand.class.php:3007
+#: inc/metademand.class.php:2892 inc/metademand.class.php:3014
 msgid "Metademands to be validated"
 msgstr ""
 
