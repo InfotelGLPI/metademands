@@ -2156,7 +2156,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
       if (!$this->canView()) {
          return false;
       }
-
+      $metaValidation = new PluginMetademandsMetademandValidation();
+      if($metaValidation->getFromDBByCrit(['tickets_id'=>$ticket->fields['id']])){
+         if($metaValidation->fields['validate'] == 0){
+            echo "<div align='center'><table class='tab_cadre_fixe'>";
+            echo "<tr><th colspan='6'>" . __('Metademand need a validation ', 'metademands') . "</th></tr>";
+            echo "</table></div>";
+         }
+      }
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
       $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
       $tickets_found          = [];
