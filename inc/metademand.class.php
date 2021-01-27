@@ -1517,7 +1517,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $paramIn["users_id"]              = 0;
                         $paramIn["validate"]              = 0;
                         $paramIn["date"]                  = date("Y-m-d H:i:s");
-                        $paramIn["tickets_to_create"]     = json_encode($line['tasks']);
+                        $tasks                            = $line['tasks'];
+                        foreach ($tasks as $key => $val){
+                           $tasks[$key]['tickettasks_name'] = urlencode($val['tickettasks_name']);
+                           $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
+                           $tasks[$key]['content'] = urlencode($val['content']);
+                        }
+                        $paramIn["tickets_to_create"]     = json_encode($tasks);
                         $metaValid->add($paramIn);
                      }
                   }
@@ -2079,6 +2085,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $ticket_task    = new PluginMetademandsTicket_Task();
       $ticket         = new Ticket();
       $groups_tickets = new Group_Ticket();
+      $users_tickets = new Ticket_User();
 
       // We can add task if one is not already present for ticket
       $search_ticket = $ticket_task->find(['parent_tickets_id' => $tickets_data['id']]);
@@ -2117,6 +2124,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      if (count($parent_groups_tickets_data)) {
                         $parent_groups_tickets_data          = reset($parent_groups_tickets_data);
                         $ticket->fields['_groups_id_assign'] = $parent_groups_tickets_data['groups_id'];
+                     }
+                     $parent_groups_tickets_data = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'], 'type' => CommonITILActor::ASSIGN]);
+
+                     if (count($parent_groups_tickets_data)) {
+                        $parent_groups_tickets_data          = reset($parent_groups_tickets_data);
+                        $ticket->fields['_users_id_assign'] = $parent_groups_tickets_data['users_id'];
                      }
 
                      $this->createSonsTickets($tickets_data['id'], $ticket->fields, $tickets_found[0]['tickets_id'], $tasks_data, $data['parent_level'] + 1);
