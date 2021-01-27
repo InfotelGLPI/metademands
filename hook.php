@@ -189,9 +189,6 @@ function plugin_metademands_install() {
             update274_275();
          }
       }
-   }
-
-   if (!$DB->fieldExists("glpi_plugin_metademands_tickets_metademands", "status")) {
       include(GLPI_ROOT . "/plugins/metademands/install/migrateExistingMetaWithNewStatus.php");
       migrateAllExistingMetademandsWithNewStatus();
    }

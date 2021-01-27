@@ -851,7 +851,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                      $label2 = $data['label2'];
                   }
-                  Html::showToolTip($label2,
+                  Html::showToolTip(Html::clean($label2),
                                     ['awesome-class' => 'fa-info-circle']);
                }
                echo "</span></h4>";
@@ -859,6 +859,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
                      $comment = $data['comment'];
                   }
+                  $comment = htmlspecialchars_decode(stripslashes($comment));
                   echo "<label><i>" . $comment . "</i></label>";
                }
 
