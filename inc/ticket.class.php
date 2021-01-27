@@ -351,7 +351,7 @@ class PluginMetademandsTicket extends CommonDBTM {
                                                 ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]);
                   }
 
-                  $count++;
+
                   foreach ($tasks as $k => $v) {
                      foreach ($v as $taskchild) {
                         $task_data[] = ['tasks_name' => $taskchild['tickettasks_name'],
@@ -359,9 +359,11 @@ class PluginMetademandsTicket extends CommonDBTM {
                                         'tickets_id' => 0,
                                         'tasks_id'   => $taskchild['tasks_id'],
                                         'type'       => PluginMetademandsTask::TICKET_TYPE];
+                        $count++;
                      }
                   }
                }
+               $count++;
             }
          }
 
