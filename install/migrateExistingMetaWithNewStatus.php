@@ -70,13 +70,12 @@ function migrateAllExistingMetademandsWithNewStatus() {
    global $DB;
    $dbu = new DbUtils();
 
-   $ticket_metademand     = new PluginMetademandsTicket_Metademand();
+   $ticket_metademand = new PluginMetademandsTicket_Metademand();
 
    //Migrate existing metademands status for mini-dashboards
    migrateAllRunningAndToBeClosedMetademands($DB, $dbu, $ticket_metademand);
    migrateAllClosedMetademands($DB, $dbu, $ticket_metademand);
 }
-
 
 
 function migrateAllRunningAndToBeClosedMetademands($DB, $dbu, $ticket_metademand) {

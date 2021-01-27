@@ -39,8 +39,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
    static $rightname = 'plugin_metademands';
 
-   const TASK_CREATION       = 2; // waiting
-   const TICKET_CREATION     = 1; // waiting
+   const TASK_CREATION   = 2; // waiting
+   const TICKET_CREATION = 1; // waiting
 
    /**
     * functions mandatory
@@ -78,17 +78,17 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
     */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
-//      if (!$withtemplate) {
-//         if ($item->getType() == 'PluginMetademandsMetademand') {
-//            if ($_SESSION['glpishow_count_on_tabs']) {
-//               $dbu = new DbUtils();
-//               return self::createTabEntry(self::getTypeName(),
-//                                           $dbu->countElementsInTable($this->getTable(),
-//                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
-//            }
-//            return self::getTypeName();
-//         }
-//      }
+      //      if (!$withtemplate) {
+      //         if ($item->getType() == 'PluginMetademandsMetademand') {
+      //            if ($_SESSION['glpishow_count_on_tabs']) {
+      //               $dbu = new DbUtils();
+      //               return self::createTabEntry(self::getTypeName(),
+      //                                           $dbu->countElementsInTable($this->getTable(),
+      //                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
+      //            }
+      //            return self::getTypeName();
+      //         }
+      //      }
       return '';
    }
 
@@ -106,9 +106,9 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $field = new self();
 
-//      if (in_array($item->getType(), self::getTypes(true))) {
-//         $field->showForm(0, ["item" => $item]);
-//      }
+      //      if (in_array($item->getType(), self::getTypes(true))) {
+      //         $field->showForm(0, ["item" => $item]);
+      //      }
       return true;
    }
 
@@ -122,7 +122,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
       $ong = [];
       $this->addDefaultFormTab($ong);
-//      $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
+      //      $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
 
       return $ong;
    }
@@ -161,8 +161,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       }
 
 
-
-
       if ($ID > 0) {
          $this->showFormHeader(['colspan' => 2]);
       } else {
@@ -196,18 +194,18 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       return true;
    }
 
-   function validateMeta($params){
-      $ticket_id      = $params["tickets_id"];
-      $inputVal       = [];
+   function validateMeta($params) {
+      $ticket_id = $params["tickets_id"];
+      $inputVal  = [];
 
       $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
       $meta_tasks = json_decode($this->fields["tickets_to_create"], true);
-      foreach ($meta_tasks as $key => $val){
-         $meta_tasks[$key]['tickettasks_name'] = urldecode($val['tickettasks_name']);
+      foreach ($meta_tasks as $key => $val) {
+         $meta_tasks[$key]['tickettasks_name']   = urldecode($val['tickettasks_name']);
          $meta_tasks[$key]['tasks_completename'] = urldecode($val['tasks_completename']);
-         $meta_tasks[$key]['content'] = urldecode($val['content']);
+         $meta_tasks[$key]['content']            = urldecode($val['content']);
       }
-      $ticket     = new Ticket();
+      $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
       $ticket->fields["_users_id_requester"] = Session::getLoginUserID();
       $users                                 = $ticket->getUsers(CommonITILActor::REQUESTER);
@@ -241,9 +239,10 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $this->update($inputVal);
    }
 
-   function viewValidation($params){
+   function viewValidation($params) {
       global $CFG_GLPI;
-      $ticket_id      = $params["tickets_id"];
+
+      $ticket_id = $params["tickets_id"];
       $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
       echo "<form name='form_raz' id='form_raz' method='post' action='" . $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/timeline.php" . "' >";
       echo "<input type='hidden' name='action' id='action_validationMeta' value='validationMeta' />";
@@ -257,17 +256,17 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       if ($this->fields["users_id"] == 0) {
          echo "<td>" . __('Create sub-tickets', 'metademands') . "</td><td>";
-         echo  "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 1 . "]' value='1' checked>";
+         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 1 . "]' value='1' checked>";
          echo "</td>";
          echo "<td>" . __('Create tasks', 'metademands') . "</td><td>";
-         echo  "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0'>";
+         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0'>";
          echo "</td>";
       } else if ($this->fields["users_id"] != 0 && $this->fields["validate"] == self::TASK_CREATION) {
          echo "<td>" . __('Create sub-tickets', 'metademands') . "</td><td>";
-         echo  "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 1 . "]' value='1' checked>";
+         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 1 . "]' value='1' checked>";
          echo "</td>";
          echo "<td>" . __('Create tasks', 'metademands') . "</td><td>";
-         echo  "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0' disabled>";
+         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0' disabled>";
          echo "</td>";
       } else {
          echo "<td colspan='4'>" . __('Sub-tickets are already created', 'metademands') . "</td>";
@@ -279,7 +278,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='4'>";
          $user = new User();
-         echo sprintf(__('Validate by %s on %s','metademands'), User::getFriendlyNameById($this->fields["users_id"]), Html::convDateTime($this->fields["date"]));
+         echo sprintf(__('Validated by %s on %s', 'metademands'), User::getFriendlyNameById($this->fields["users_id"]), Html::convDateTime($this->fields["date"]));
          echo "</td>";
          echo "</tr>";
       }
@@ -293,27 +292,27 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          echo "</td>";
          echo "</tr>";
       }
-//      foreach ($data['custom_values'] as $key => $label) {
-//         $field .= "<div class='custom-control custom-radio $inline'>";
-//
-//         $checked = "";
-//         if ($value != NULL && $value == $key) {
-//            $checked = $value == $key ? 'checked' : '';
-//         } elseif ($value == NULL && isset($defaults[$key]) && $on_basket == false) {
-//            $checked = ($defaults[$key] == 1) ? 'checked' : '';
-//         }
-//         $field .= "<input class='custom-control-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-//         $nbr++;
-//         $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
-//         if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
-//            $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-//            $field .= Html::showToolTip($data['comment_values'][$key],
-//                                        ['awesome-class' => 'fa-info-circle',
-//                                         'display'       => false]);
-//            $field .= "</span>";
-//         }
-//         $field .= "</div>";
-//      }
+      //      foreach ($data['custom_values'] as $key => $label) {
+      //         $field .= "<div class='custom-control custom-radio $inline'>";
+      //
+      //         $checked = "";
+      //         if ($value != NULL && $value == $key) {
+      //            $checked = $value == $key ? 'checked' : '';
+      //         } elseif ($value == NULL && isset($defaults[$key]) && $on_basket == false) {
+      //            $checked = ($defaults[$key] == 1) ? 'checked' : '';
+      //         }
+      //         $field .= "<input class='custom-control-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+      //         $nbr++;
+      //         $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
+      //         if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
+      //            $field .= "&nbsp;<span style='vertical-align: bottom;'>";
+      //            $field .= Html::showToolTip($data['comment_values'][$key],
+      //                                        ['awesome-class' => 'fa-info-circle',
+      //                                         'display'       => false]);
+      //            $field .= "</span>";
+      //         }
+      //         $field .= "</div>";
+      //      }
       Html::closeForm();
    }
 
