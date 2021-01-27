@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-27 10:44+0000\n"
+"POT-Creation-Date: 2021-01-27 10:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:441 inc/metademandValidation.class.php:254
-#: inc/metademandvalidation.class.php:254
+#: hook.php:439 inc/metademandValidation.class.php:253
+#: inc/metademandvalidation.class.php:253
 msgid "Metademand validation"
 msgstr ""
 
@@ -126,8 +126,8 @@ msgstr ""
 msgid "Wizard creation"
 msgstr ""
 
-#: inc/field.class.php:200 inc/metademandValidation.class.php:173
-#: inc/metademandvalidation.class.php:173
+#: inc/field.class.php:200 inc/metademandValidation.class.php:171
+#: inc/metademandvalidation.class.php:171
 msgid "Add a field"
 msgstr ""
 
@@ -470,33 +470,33 @@ msgstr ""
 msgid "Metademands validation"
 msgstr ""
 
-#: inc/metademandValidation.class.php:259
-#: inc/metademandValidation.class.php:266
-#: inc/metademandvalidation.class.php:259
-#: inc/metademandvalidation.class.php:266
+#: inc/metademandValidation.class.php:258
+#: inc/metademandValidation.class.php:265
+#: inc/metademandvalidation.class.php:258
+#: inc/metademandvalidation.class.php:265
 msgid "Create sub-tickets"
 msgstr ""
 
-#: inc/metademandValidation.class.php:262
-#: inc/metademandValidation.class.php:269
-#: inc/metademandvalidation.class.php:262
-#: inc/metademandvalidation.class.php:269
+#: inc/metademandValidation.class.php:261
+#: inc/metademandValidation.class.php:268
+#: inc/metademandvalidation.class.php:261
+#: inc/metademandvalidation.class.php:268
 msgid "Create tasks"
 msgstr ""
 
-#: inc/metademandValidation.class.php:273
-#: inc/metademandvalidation.class.php:273
+#: inc/metademandValidation.class.php:272
+#: inc/metademandvalidation.class.php:272
 msgid "Sub-tickets are already created"
 msgstr ""
 
-#: inc/metademandValidation.class.php:282
-#: inc/metademandvalidation.class.php:282
+#: inc/metademandValidation.class.php:281
+#: inc/metademandvalidation.class.php:281
 #, php-format
-msgid "Validate by %s on %s"
+msgid "Validated by %s on %s"
 msgstr ""
 
-#: inc/metademandValidation.class.php:292
-#: inc/metademandvalidation.class.php:292
+#: inc/metademandValidation.class.php:291
+#: inc/metademandvalidation.class.php:291
 msgid "Validate metademands"
 msgstr ""
 
