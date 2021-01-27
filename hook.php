@@ -230,7 +230,8 @@ function plugin_metademands_uninstall() {
               "glpi_plugin_metademands_metademands",
               "glpi_plugin_metademands_basketlines",
               "glpi_plugin_metademands_fieldtranslations",
-              "glpi_plugin_metademands_metademandtranslations"];
+              "glpi_plugin_metademands_metademandtranslations",
+              "glpi_plugin_metademands_metademandvalidations"];
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
