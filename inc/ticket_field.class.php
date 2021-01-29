@@ -105,22 +105,48 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
       $tasks  = is_array($tasks_id) ? implode(",", $tasks_id) : $tasks_id;
       $query  = "SELECT `glpi_plugin_metademands_fields`.`check_value`,
                        `glpi_plugin_metademands_fields`.`type`,
+                       `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id`,
                        `glpi_plugin_metademands_tickets_fields`.`value` as field_value
                FROM `glpi_plugin_metademands_tickets_fields`
-               LEFT JOIN `glpi_plugin_metademands_fields`
+               RIGHT JOIN `glpi_plugin_metademands_fields`
                   ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_tickets_fields`.`plugin_metademands_fields_id`)
-               WHERE `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id` IN (" . $tasks . ") 
                AND `glpi_plugin_metademands_tickets_fields`.`tickets_id` = " . $parent_tickets_id;
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
          while ($data = $DB->fetchAssoc($result)) {
-            $test    = self::isCheckValueOK(PluginMetademandsField::_unserialize($data['field_value']), $data['check_value'], $data['type']);
-            $check[] = ($test == false) ? 0 : 1;
+            $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($data['plugin_metademands_tasks_id']);
+            $check_values = PluginMetademandsField::_unserialize($data['check_value']);
+            if(is_array($tasks_id)) {
+               foreach ($tasks_id as $task) {
+                  if (is_array($plugin_metademands_tasks_id) && is_array($check_values) && in_array($task, $plugin_metademands_tasks_id)) {
+                     foreach ($plugin_metademands_tasks_id as $key => $task_id){
+                        if($task == $task_id){
+                           $test    = self::isCheckValueOKFieldsLinks(PluginMetademandsField::_unserialize($data['field_value']), $check_values[$key], $data['type']);
+                           $check[] = ($test == false) ? 0 : 1;
+                        }
+                     }
+
+                  }
+               }
+            }else{
+               if (is_array($plugin_metademands_tasks_id) && is_array($check_values) && in_array($tasks_id, $plugin_metademands_tasks_id)) {
+                  foreach ($plugin_metademands_tasks_id as $key => $task_id){
+                     if($tasks_id == $task_id){
+                        $test    = self::isCheckValueOKFieldsLinks(PluginMetademandsField::_unserialize($data['field_value']), $check_values[$key], $data['type']);
+                        $check[] = ($test == false) ? 0 : 1;
+                     }
+                  }
+
+               }
+            }
+
          }
       }
 
-      if (in_array(0, $check)) {
+      if (in_array(1, $check)) {
+         return true;
+      }else if(in_array(0, $check)){
          return false;
       }
 
@@ -165,6 +191,9 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                case 'checkbox':
                   if (!empty($value)) {
                      $ok = false;
+                     if($check_value == -1){
+                        $ok = true;
+                     }
                      if (is_array($value)) {
                         foreach ($value as $key => $v) {
                            //                     if ($key != 0) {
@@ -195,6 +224,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                   }
                   break;
                case 'text':
+               case 'textarea':
                   if (($check_value == 2 && $value != "")) {
                      return false;
                   } elseif ($check_value == 1 && $value == "") {
@@ -209,6 +239,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                      return false;
                   }
                   break;
+
                default:
                   if ($check_value == PluginMetademandsField::$not_null && empty($value)) {
                      return false;
@@ -217,6 +248,94 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
             }
          }
       }
+      return true;
+   }
+
+   static function isCheckValueOKFieldsLinks($value, $check_value, $type) {
+
+
+
+         if (isset($check_value)) {
+            switch ($type) {
+               case 'yesno':
+               case 'dropdown':
+               case 'dropdown_object':
+               case 'dropdown_meta':
+                  if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
+                     return false;
+                  } else if ($check_value != $value
+                             && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
+                     return false;
+                  }
+                  break;
+               case 'radio':
+                  if (empty($value) && $value != 0) {
+                     return false;
+                  } else if ($check_value != $value) {
+                     return false;
+                  }
+                  break;
+
+               case 'checkbox':
+                  if (!empty($value)) {
+                     $ok = false;
+                     if($check_value == -1){
+                        $ok = true;
+                     }
+                     if (is_array($value)) {
+                        foreach ($value as $key => $v) {
+                           //                     if ($key != 0) {
+                           if ($check_value == $key) {
+                              $ok = true;
+                           }
+                           //                     }
+                        }
+                     } else if (is_array(json_decode($value, true))) {
+                        foreach (json_decode($value, true) as $key => $v) {
+                           //                     if ($key != 0) {
+                           if ($check_value == $key) {
+                              $ok = true;
+                           }
+                           //                     }
+                        }
+                     }
+                     if (!$ok) {
+                        return false;
+                     }
+                  } else {
+                     return false;
+                  }
+                  break;
+               case 'link':
+                  if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value))) {
+                     return false;
+                  }
+                  break;
+               case 'text':
+               case 'textarea':
+                  if (($check_value == 2 && $value != "")) {
+                     return false;
+                  } elseif ($check_value == 1 && $value == "") {
+                     return false;
+                  }
+                  break;
+               case 'dropdown_multiple':
+                  if (empty($value)) {
+                     $value = [];
+                  }
+                  if ($check_value == PluginMetademandsField::$not_null && is_array($value) && count($value) == 0) {
+                     return false;
+                  }
+                  break;
+
+               default:
+                  if ($check_value == PluginMetademandsField::$not_null && empty($value)) {
+                     return false;
+                  }
+                  break;
+            }
+         }
+
       return true;
    }
 

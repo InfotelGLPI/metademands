@@ -1480,7 +1480,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
 
                   // Metademands - ticket relation
-                  $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
+                  $ticket_metademand_id = $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
                                            'parent_tickets_id'                 => $ancestor_tickets_id,
                                            'plugin_metademands_metademands_id' => $form_metademands_id,
                                            'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
@@ -1502,7 +1502,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   if (isset($line['tasks'])
                       && is_array($line['tasks'])
                       && count($line['tasks'])) {
-                     $line['tasks'] = $this->checkTaskAllowed($metademands_id, $values, $line['tasks']);
+//                     $line['tasks'] = $this->checkTaskAllowed($metademands_id, $values, $line['tasks']);
+
                      if ($this->fields["validation_subticket"] == 0) {
                         if (!$this->createSonsTickets($parent_tickets_id,
                                                       $this->mergeFields($parent_fields,
@@ -2832,6 +2833,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
          if (is_array($check_values)) {
             foreach ($check_values as $id => $check) {
                if ($check != "0") {
+                  switch ($f['type']){
+
+                  }
                   if (isset($values["fields"][$f['id']])) {
                      if (is_array($values["fields"][$f['id']])) {
                         if (in_array($check, $values["fields"][$f['id']])) {
