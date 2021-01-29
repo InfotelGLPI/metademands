@@ -243,6 +243,16 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
       echo "</tr>";
 
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>";
+      echo __('Hide title', 'metademands');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showYesNo('hide_title', ($this->fields['hide_title']));
+      echo "</td>";
+      echo "<td colspan='2'></td>";
+      echo "</tr>";
+
       // LABEL 2
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
@@ -258,6 +268,7 @@ class PluginMetademandsField extends CommonDBChild {
       //      Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
       echo "</td>";
 
+      // COMMENT
       echo "<td>" . __('Comments') . "</td>";
       echo "<td>";
       $comment = Html::cleanPostForTextArea($this->fields['comment']);
@@ -271,7 +282,6 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
       echo "</tr>";
 
-      // COMMENT
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
       echo __('Takes the whole row', 'metademands');
@@ -1324,47 +1334,54 @@ class PluginMetademandsField extends CommonDBChild {
       if (empty($label = self::displayField($data['id'], 'name'))) {
          $label = $data['name'];
       }
-      echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
-      echo $label . " $upload";
-      if ($preview) {
-         echo $config_link;
-      }
-      echo "</label>";
 
-      if (empty($comment = self::displayField($data['id'], 'comment'))) {
-         $comment = $data['comment'];
-      }
-      if ($data['type'] != "title"
-          && $data['type'] != "informations"
-          && $data['type'] != "text"
-          && !empty($comment)) {
+      if ($data['hide_title'] == 0) {
+         echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
+         echo $label . " $upload";
+         if ($preview) {
+            echo $config_link;
+         }
+         echo "</label>";
+
+         if (empty($comment = self::displayField($data['id'], 'comment'))) {
+            $comment = $data['comment'];
+         }
+         if ($data['type'] != "title"
+             && $data['type'] != "informations"
+             && $data['type'] != "text"
+             && !empty($comment)) {
+            echo "&nbsp;";
+            echo Html::showToolTip(Html::clean($comment), ['display' => false]);
+         }
+         echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
+         if ($data['is_mandatory']
+             && $data['type'] != 'parent_field') {
+            echo "*";
+         }
+         echo "</span>";
+
          echo "&nbsp;";
-         echo Html::showToolTip(Html::clean($comment), ['display' => false]);
-      }
-      echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
-      if ($data['is_mandatory']
-          && $data['type'] != 'parent_field') {
-         echo "*";
-      }
-      echo "</span>";
 
-      echo "&nbsp;";
-
-      $plugin = new Plugin();
-      //use plugin fields types
-      if (isset($PLUGIN_HOOKS['metademands'])) {
-         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-            $new_fields = self::getPluginFieldItemsType($plug);
-            if ($plugin->isActivated($plug) && is_array($new_fields)) {
-               if (in_array($data['type'], array_keys($new_fields))) {
-                  $data['type'] = $new_fields[$data['type']];
+         $plugin = new Plugin();
+         //use plugin fields types
+         if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+               $new_fields = self::getPluginFieldItemsType($plug);
+               if ($plugin->isActivated($plug) && is_array($new_fields)) {
+                  if (in_array($data['type'], array_keys($new_fields))) {
+                     $data['type'] = $new_fields[$data['type']];
+                  }
                }
             }
          }
-      }
 
-      // Input
-      echo "<br>";
+         // Input
+         echo "<br>";
+      } else {
+         if ($preview) {
+            echo $config_link;
+         }
+      }
       echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0);
 
    }
@@ -1506,7 +1523,7 @@ class PluginMetademandsField extends CommonDBChild {
                         }
                      }
 
-                     $defaults       = self::_unserialize($data['default_values']);
+                     $defaults = self::_unserialize($data['default_values']);
 
                      $default_values = "";
                      if ($defaults) {
@@ -2197,7 +2214,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</table>";
                   echo "</td></tr>";
                }
-               if(empty($opts)){
+               if (empty($opts)) {
                   $opts = [];
                }
                if (count($opts) == 0) {
@@ -2732,22 +2749,22 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<td>";
                      //                     echo "<p id='default_values$key'>";
                      $display_default = false;
-//                     if ($params['value'] == 'dropdown_multiple') {
-                        $display_default = true;
-                        //                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                        $checked = "";
-                        //                        if (isset($default[$key])
-                        //                            && $default[$key] == 1) {
-                        //                           $checked = "checked";
-                        //                        }
-                        //                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
-                        echo "<p id='default_values$key'>";
-                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                        $name  = "default_values[" . $key . "]";
-                        $value = (isset($default[$key]) ? $default[$key] : 0);
-                        Dropdown::showYesNo($name, $value);
-                        echo '</p>';
-//                     }
+                     //                     if ($params['value'] == 'dropdown_multiple') {
+                     $display_default = true;
+                     //                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                     $checked = "";
+                     //                        if (isset($default[$key])
+                     //                            && $default[$key] == 1) {
+                     //                           $checked = "checked";
+                     //                        }
+                     //                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
+                     echo "<p id='default_values$key'>";
+                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                     $name  = "default_values[" . $key . "]";
+                     $value = (isset($default[$key]) ? $default[$key] : 0);
+                     Dropdown::showYesNo($name, $value);
+                     echo '</p>';
+                     //                     }
                      //                     echo '</p>';
                      echo "</td>";
 
@@ -2767,18 +2784,18 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</td>";
                   echo "<td>";
                   $display_default = false;
-//                  if ($params['value'] == 'dropdown_multiple') {
-                     $display_default = true;
-                     //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                     //                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
-                     echo "<p id='default_values1'>";
-                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                     $name  = "default_values[1]";
-                     $value = 1;
-                     Dropdown::showYesNo($name, $value);
-                     echo '</p>';
-                     echo "</td>";
-//                  }
+                  //                  if ($params['value'] == 'dropdown_multiple') {
+                  $display_default = true;
+                  //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                  //                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
+                  echo "<p id='default_values1'>";
+                  echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                  $name  = "default_values[1]";
+                  $value = 1;
+                  Dropdown::showYesNo($name, $value);
+                  echo '</p>';
+                  echo "</td>";
+                  //                  }
                   echo "</tr>";
 
                   echo "<tr>";

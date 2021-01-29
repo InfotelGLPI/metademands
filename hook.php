@@ -189,9 +189,6 @@ function plugin_metademands_install() {
             update274_275();
          }
       }
-   }
-
-   if (!$DB->fieldExists("glpi_plugin_metademands_tickets_metademands", "status")) {
       include(GLPI_ROOT . "/plugins/metademands/install/migrateExistingMetaWithNewStatus.php");
       migrateAllExistingMetademandsWithNewStatus();
    }
@@ -412,10 +409,10 @@ function plugin_metademands_registerMethods() {
 
 }
 
-function plugin_metademands_timeline_actions($data){
+function plugin_metademands_timeline_actions($data) {
    global $CFG_GLPI;
    $metaValidation = new PluginMetademandsMetademandValidation();
-   if($metaValidation->getFromDBByCrit(['tickets_id'=>$data['item']->fields['id']])){
+   if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']])) {
       $rand = $data['rand'];
       echo "<script type='text/javascript' >\n
 //      $(document).ready(function() {
@@ -425,7 +422,7 @@ function plugin_metademands_timeline_actions($data){
 
       $params = ['action'     => 'viewsubitem',
                  'type'       => 'itemtype',
-                 'tickets_id'  => $data['item']->fields['id'],
+                 'tickets_id' => $data['item']->fields['id'],
                  'id'         => -1];
       $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
                                        $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/timeline.php",
@@ -435,41 +432,14 @@ function plugin_metademands_timeline_actions($data){
       ";
 
       echo "</script>\n";
-      echo "<li class='solution' onclick='".
-           "javascript:viewAddMetaValidation".$data['item']->fields['id']."$rand(\"Solution\");'>"
-           ."<i class='fa fa-thumbs-up'></i>".__('Metademand validation', 'metademands')."</li>";
+      echo "<li class='metavalidation' onclick='" .
+           "javascript:viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(\"Solution\");'>"
+           . "<i class='fa fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
    }
 
 
 }
-/**
- * @return bool
- * @throws \GlpitestSQLError
- */
-/**
- * @return bool
- * @throws \GlpitestSQLError
- */
-function dbMyISAM() {
-   global $DB;
 
-   $query  = "SELECT TABLE_NAME,ENGINE FROM information_schema.TABLES
-             WHERE TABLE_SCHEMA = '$DB->dbdefault' 
-             AND ENGINE='MyISAM'";
-   $myISAM = false;
-   if ($result = $DB->query($query)) {
-      if ($DB->numrows($result) > 0) {
-         while ($data = $DB->fetchAssoc($result)) {
-            if ($data['TABLE_NAME'] == "glpi_itilcategories" ||
-                $data['TABLE_NAME'] == "glpi_tickets" ||
-                $data['TABLE_NAME'] == "glpi_groups") {
-               $myISAM = true;
-            }
-         }
-      }
-   }
-   return $myISAM;
-}
 
 // Define search option for types of the plugins
 /**
@@ -480,24 +450,40 @@ function dbMyISAM() {
 function plugin_metademands_getAddSearchOptions($itemtype) {
 
    $sopt = [];
-
    if ($itemtype == "Ticket") {
       if (Session::haveRight("plugin_metademands", READ)) {
-         $sopt[1000]['table']         = 'glpi_plugin_metademands_tickets_metademands';
-         $sopt[1000]['field']         = 'status';
-         $sopt[1000]['name']          = PluginMetademandsTicket_Metademand::getTypeName(1);
-         $sopt[1000]['datatype']      = "number";
-         $sopt[1000]['joinparams']    = ['jointype' => 'child'];
-         $sopt[1000]['massiveaction'] = false;
+         $sopt[9500]['table']         = 'glpi_plugin_metademands_tickets_metademands';
+         $sopt[9500]['field']         = 'status';
+         $sopt[9500]['name']          = __('Metademand status', 'metademands');
+         $sopt[9500]['datatype']      = "specific";
+         $sopt[9500]['searchtype']    = "equals";
+         $sopt[9500]['joinparams']    = ['jointype'  => 'child'];
+         $sopt[9500]['massiveaction'] = false;
 
-         $sopt[1001]['table']         = 'glpi_plugin_metademands_metademandvalidations';
-         $sopt[1001]['field']         = 'validate';
-         $sopt[1001]['name']          = PluginMetademandsMetademandValidation::getTypeName(1);
-         $sopt[1001]['datatype']      = "number";
-         $sopt[1001]['joinparams']    = ['jointype' => 'child'];
-         $sopt[1001]['massiveaction'] = false;
-
+         $sopt[9501]['table']         = 'glpi_plugin_metademands_metademandvalidations';
+         $sopt[9501]['field']         = 'validate';
+         $sopt[9501]['name']          = PluginMetademandsMetademandValidation::getTypeName(1);
+         $sopt[9501]['datatype']      = "specific";
+         $sopt[9501]['searchtype']    = "equals";
+         $sopt[9501]['joinparams']    = ['jointype'  => 'child'];
+         $sopt[9501]['massiveaction'] = false;
       }
    }
    return $sopt;
+}
+
+
+function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype) {
+
+   $searchopt = &Search::getOptions($type);
+   $table     = $searchopt[$ID]["table"];
+   $field     = $searchopt[$ID]["field"];
+
+   switch ($table.".".$field) {
+      case "glpi_plugin_metademands_tickets_metademands.status":
+         return $link." `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
+      case "glpi_plugin_metademands_metademandvalidations.validate":
+         return $link." `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val'";
+   }
+   return "";
 }

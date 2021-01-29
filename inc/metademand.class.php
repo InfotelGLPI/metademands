@@ -2936,7 +2936,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'criteria' => [
             [
                'link'       => 'AND',
-               'field'      => 1000, // status
+               'field'      => 9500, // status
                'searchtype' => 'equals',
                'value'      => PluginMetademandsTicket_Metademand::RUNNING
             ]
@@ -2956,6 +2956,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'itemtype'   => 'Ticket',
       ];
    }
+
 
    public static function getMetademandsToBeClosed(array $params = []): array {
 
@@ -2988,7 +2989,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'criteria' => [
             [
                'link'       => 'AND',
-               'field'      => 1000, // status
+               'field'      => 9500, // status
                'searchtype' => 'equals',
                'value'      => PluginMetademandsTicket_Metademand::TO_CLOSED
             ]
@@ -3039,7 +3040,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'criteria' => [
             [
                'link'       => 'AND',
-               'field'      => 1001, // status
+               'field'      => 9501, // validation status
                'searchtype' => 'equals',
                'value'      => 0
             ]

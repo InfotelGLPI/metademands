@@ -73,7 +73,8 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     * Display tab for each users
     *
     * @param CommonGLPI $item
-    * @param int $withtemplate
+    * @param int        $withtemplate
+    *
     * @return array|string
     */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
@@ -96,9 +97,11 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     * Display content for each users
     *
     * @static
+    *
     * @param CommonGLPI $item
-    * @param int $tabnum
-    * @param int $withtemplate
+    * @param int        $tabnum
+    * @param int        $withtemplate
+    *
     * @return bool|true
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
@@ -108,5 +111,86 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
          $field->showPluginFromItems($item);
       }
       return true;
+   }
+
+   /**
+    * @param $field
+    * @param $name (default '')
+    * @param $values (default '')
+    * @param $options   array
+    *
+    * @return string
+    * *@since version 0.84
+    *
+    */
+   static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []) {
+
+      if (!is_array($values)) {
+         $values = [$field => $values];
+      }
+      $options['display'] = false;
+
+      switch ($field) {
+         case 'status' :
+            $options['name']      = $name;
+            $options['value']     = $values[$field];
+//            $options['withmajor'] = 1;
+            return self::dropdownStatus($options);
+            break;
+      }
+      return parent::getSpecificValueToSelect($field, $name, $values, $options);
+   }
+
+
+   /**
+    * @param array $options
+    *
+    * @return int|string
+    */
+   static function dropdownStatus(array $options = []) {
+
+      $p['name']     = 'status';
+      $p['value']    = 0;
+      $p['showtype'] = 'normal';
+      $p['display']  = true;
+
+      if (is_array($options) && count($options)) {
+         foreach ($options as $key => $val) {
+            $p[$key] = $val;
+         }
+      }
+
+      $values                  = [];
+      $values[0]               = static::getStatusName(0);
+      $values[self::RUNNING]   = static::getStatusName(self::RUNNING);
+      $values[self::TO_CLOSED] = static::getStatusName(self::TO_CLOSED);
+      $values[self::CLOSED]    = static::getStatusName(self::CLOSED);
+
+      return Dropdown::showFromArray($p['name'], $values, $p);
+   }
+
+
+   /**
+    * @param $value
+    *
+    * @return string
+    */
+   static function getStatusName($value) {
+
+      switch ($value) {
+
+         case self::RUNNING :
+            return _x('status', 'In progress', 'metademands');
+
+         case self::TO_CLOSED :
+            return _x('status', 'To close', 'metademands');
+
+         case self::CLOSED :
+            return _x('status', 'Closed', 'metademands');
+
+         default :
+            // Return $value if not define
+            return Dropdown::EMPTY_VALUE;
+      }
    }
 }
