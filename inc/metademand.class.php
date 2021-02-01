@@ -2173,6 +2173,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          $ticket_metademand_data = reset($ticket_metademand_data);
          $tickets_found          = PluginMetademandsTicket::getSonTickets($ticket->fields['id'],
                                                                           $ticket_metademand_data['plugin_metademands_metademands_id']);
+
       } else {
          $ticket_task      = new PluginMetademandsTicket_Task();
          $ticket_task_data = $ticket_task->find(['tickets_id' => $ticket->fields['id']]);

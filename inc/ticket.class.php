@@ -306,6 +306,7 @@ class PluginMetademandsTicket extends CommonDBTM {
             $data['type']       = PluginMetademandsTask::TICKET_TYPE;
             $ticket_task_data[] = $data;
             $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive);
+
          }
       }
 
@@ -313,7 +314,6 @@ class PluginMetademandsTicket extends CommonDBTM {
       if (!empty($metademands_id)) {
          $task_data = [];
          $task      = new PluginMetademandsTask();
-
          $parent_tickets_id[] = $tickets_id;
          foreach ($ticket_task_data as $values) {
             $parent_tickets_id[] = $values['tickets_id'];
@@ -341,7 +341,7 @@ class PluginMetademandsTicket extends CommonDBTM {
          if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {
                $data['type']      = PluginMetademandsTask::TICKET_TYPE;
-               $task_data[$count] = $data;
+               $task_data[$data['tasks_id']] = $data;
                // If child task exists : son ticket creation
                $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
                if ($child_tasks_data !== false) {
@@ -354,12 +354,15 @@ class PluginMetademandsTicket extends CommonDBTM {
 
                   foreach ($tasks as $k => $v) {
                      foreach ($v as $taskchild) {
-                        $task_data[] = ['tasks_name' => $taskchild['tickettasks_name'],
-                                        'level'      => $taskchild['level'],
-                                        'tickets_id' => 0,
-                                        'tasks_id'   => $taskchild['tasks_id'],
-                                        'type'       => PluginMetademandsTask::TICKET_TYPE];
-                        $count++;
+                        if(PluginMetademandsTicket_Field::checkTicketCreation($taskchild['tasks_id'],$tickets_id)){
+                           $task_data[$taskchild['tasks_id']] = ['tasks_name' => $taskchild['tickettasks_name'],
+                                                                 'level'      => $taskchild['level'],
+                                                                 'tickets_id' => 0,
+                                                                 'tasks_id'   => $taskchild['tasks_id'],
+                                                                 'type'       => PluginMetademandsTask::TICKET_TYPE];
+                           $count++;
+                        }
+
                      }
                   }
                }
