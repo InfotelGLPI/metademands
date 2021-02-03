@@ -412,7 +412,7 @@ function plugin_metademands_registerMethods() {
 function plugin_metademands_timeline_actions($data) {
    global $CFG_GLPI;
    $metaValidation = new PluginMetademandsMetademandValidation();
-   if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']])) {
+   if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']]) && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
       $rand = $data['rand'];
       echo "<script type='text/javascript' >\n
 //      $(document).ready(function() {

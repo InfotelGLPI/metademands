@@ -1861,6 +1861,9 @@ class PluginMetademandsField extends CommonDBChild {
          case 'yesno':
             $option[1] = __('No');
             $option[2] = __('Yes');
+            if($value == ""){
+               $value = $data['custom_values'];
+            }
             $field     = "";
             $field     .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
                                                                                                   'display' => false]);

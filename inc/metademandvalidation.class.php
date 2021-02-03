@@ -250,28 +250,28 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       echo "<input type='hidden' name='tickets_id' id='action_validationMeta' value='$ticket_id' />";
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr class='tab_bg_1'>";
-      echo "<th colspan='4'>";
+      echo "<th colspan='2'>";
       echo __("Metademand validation", 'metademands');
       echo "</th>";
       echo "</tr>";
       echo "<tr class='tab_bg_1 center'>";
       if ($this->fields["users_id"] == 0) {
-         echo "<td>" . __('Create sub-tickets', 'metademands') . "</td><td>";
+         echo "<td>" . __('Create sub-tickets', 'metademands') . " &nbsp;";
          echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 1 . "]' value='1' checked>";
          echo "</td>";
-         echo "<td>" . __('Create tasks', 'metademands') . "</td><td>";
+         echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
          echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0'>";
          echo "</td>";
       } else if ($this->fields["users_id"] != 0
                  && $this->fields["validate"] == self::TASK_CREATION) {
-         echo "<td>" . __('Create sub-tickets', 'metademands') . "</td><td>";
+         echo "<td>" . __('Create sub-tickets', 'metademands') . "&nbsp;";
          echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 1 . "]' value='1' checked>";
          echo "</td>";
-         echo "<td>" . __('Create tasks', 'metademands') . "</td><td>";
+         echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
          echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0' disabled>";
          echo "</td>";
       } else {
-         echo "<td colspan='4'>" . __('Sub-tickets are created', 'metademands') . "</td>";
+         echo "<td colspan='2'>" . __('Sub-tickets are created', 'metademands') . "</td>";
 
 
       }
@@ -287,7 +287,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       if ($this->fields["users_id"] == 0
           || $this->fields["validate"] == self::TASK_CREATION) {
          echo "<tr class='tab_bg_1'>";
-         echo "<td colspan='4' class='center'>";
+         echo "<td colspan='2' class='center'>";
          echo "<input type='submit' class='submit' name='btnAddAll' id='btnAddAll' ";
 
          echo "value='" . __("Validate metademands", 'metademands') . "' />";
