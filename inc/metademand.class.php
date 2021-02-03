@@ -2466,6 +2466,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
             }
             $metademands_data = $this->constructMetademands($metademands_id);
             if (count($metademands_data)) {
+               $associated_fields = [];
+               $associated_tasks = [];
                foreach ($metademands_data as $form_step => $data) {
                   foreach ($data as $form_metademands_id => $line) {
                      if (count($line['form'])) {
@@ -2480,6 +2482,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                               $values['comment']                           = addslashes($values['comment']);
 
                               $newID        = $fields->add($values);
+                              $associated_fields[$id] = $newID;
                               $translation  = new PluginMetademandsFieldTranslation();
                               $translations = $translation->find(['itemtype' => "PluginMetademandsField", "items_id" => $id]);
                               foreach ($translations as $tr) {
@@ -2515,7 +2518,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                            $tasks->fields['completename']                      = addslashes($tasks->fields['completename']);
                            $tasks->fields['comment']                           = addslashes($tasks->fields['comment']);
                            unset($tasks->fields['id']);
+
                            $new_tasks_id                      = $tasks->add($tasks->fields);
+                           $associated_tasks[$values['tasks_id']] = $new_tasks_id;
                            $parent_tasks[$values['tasks_id']] = $new_tasks_id;
 
                            // Ticket tasks
@@ -2535,15 +2540,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   }
                }
             }
+            $associated_fields[0]  =0;
+            $associated_tasks[0]   =0;
             // Add metademand task
             $tasks_data = $tasks->find(['plugin_metademands_metademands_id' => $metademands_id,
                                         'type'                              => PluginMetademandsTask::METADEMAND_TYPE]);
             if (count($tasks_data)) {
                foreach ($tasks_data as $values) {
                   $metademandtasks_data = $metademandtasks->find(['plugin_metademands_tasks_id' => $values['id']]);
+                  $id = $values['id'];
                   unset($values['id']);
                   $values['plugin_metademands_metademands_id'] = $new_metademands_id;
                   $new_tasks_id                                = $tasks->add($values);
+                  $associated_tasks[$id] = $new_tasks_id;
                   if (count($metademandtasks_data)) {
                      foreach ($metademandtasks_data as $data) {
                         $metademandtasks->add(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
@@ -2553,6 +2562,36 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
             }
 
+            $newFields = $fields->find(['plugin_metademands_metademands_id'=>$new_metademands_id]);
+            foreach ($newFields as $newField){
+               $input['plugin_metademands_fields_id'] = $associated_fields[$newField["plugin_metademands_fields_id"]];
+               $tasksold = PluginMetademandsField::_unserialize($newField['plugin_metademands_tasks_id']);
+               $tasksnew = [];
+               if(is_array($tasksold)){
+                  foreach ($tasksold as $k => $t){
+                     $tasksnew[$k] = isset($associated_tasks[$t])?$associated_tasks[$t]:0;
+                  }
+               }
+               $input['plugin_metademands_tasks_id'] = PluginMetademandsField::_serialize($tasksnew);
+               $fieldslinksold = PluginMetademandsField::_unserialize($newField['fields_link']);
+               $fieldslinksnew = [];
+               if(is_array($fieldslinksold)){
+                  foreach ($fieldslinksold as $k => $t){
+                     $fieldslinksnew[$k] = isset($associated_fields[$t])?$associated_fields[$t]:0;
+                  }
+               }
+               $input['fields_link'] = PluginMetademandsField::_serialize($fieldslinksnew);
+               $hiddenlinksold = PluginMetademandsField::_unserialize($newField['hidden_link']);
+               $hiddenlinksnew = [];
+               if(is_array($hiddenlinksold)){
+                  foreach ($hiddenlinksold as $k => $t){
+                     $hiddenlinksnew[$k] = isset($associated_fields[$t])?$associated_fields[$t]:0;
+                  }
+               }
+               $input['hidden_link'] = PluginMetademandsField::_serialize($hiddenlinksnew);
+               $input['id'] = $newField['id'];
+               $fields->update($input);
+            }
             // Add ticket fields
             $ticketfields_data = $ticketfields->find(['plugin_metademands_metademands_id' => $metademands_id]);
             if (count($ticketfields_data)) {
