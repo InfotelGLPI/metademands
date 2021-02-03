@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-03 10:09+0000\n"
+"POT-Creation-Date: 2021-02-03 13:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -461,19 +461,19 @@ msgstr ""
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:2740 inc/metademand.class.php:2764
+#: inc/metademand.class.php:2779 inc/metademand.class.php:2803
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:2873 inc/metademand.class.php:2915
+#: inc/metademand.class.php:2912 inc/metademand.class.php:2954
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:2885 inc/metademand.class.php:2968
+#: inc/metademand.class.php:2924 inc/metademand.class.php:3007
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:2897 inc/metademand.class.php:3020
+#: inc/metademand.class.php:2936 inc/metademand.class.php:3059
 msgid "Metademands to be validated"
 msgstr ""
 
