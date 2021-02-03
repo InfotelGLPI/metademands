@@ -271,7 +271,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0' disabled>";
          echo "</td>";
       } else {
-         echo "<td colspan='4'>" . __('Sub-tickets are already created', 'metademands') . "</td>";
+         echo "<td colspan='4'>" . __('Sub-tickets are created', 'metademands') . "</td>";
 
 
       }

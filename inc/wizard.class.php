@@ -1458,7 +1458,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   case 'dropdown':
                   case 'dropdown_object':
                   case 'dropdown_meta':
-                     $script = "$('[name=\"field[" . $data["id"] . "]\"]').change(function() { console.log($(this).val());";
+                     $script = "$('[name=\"field[" . $data["id"] . "]\"]').change(function() {";
                      //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
@@ -1475,8 +1475,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
                         if($(this).val() != 0 && ($(this).val() == $check_value[$key] || $check_value[$key] == 0 ) ){
                            tohide[$fields] = false;
-                        }
-                         console.log(tohide);";
+                        }";
 
                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
@@ -1492,12 +1491,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
                         $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                    console.log(true);
-                                    console.log(key);
                                      $('[id-field =\"field'+key+'\"]').hide();
                                  
                                     }else{
-                                    console.log(false);
                                     $('[id-field =\"field'+key+'\"]').show();
                                    
                                     }

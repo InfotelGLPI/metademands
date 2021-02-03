@@ -1493,6 +1493,7 @@ class PluginMetademandsField extends CommonDBChild {
                                           left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
                                           right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
                                       },
+                                      keepRenderingSort: true,
                                       fireSearch: function(value) {
                                           return value.length > 2;
                                       }
