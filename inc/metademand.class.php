@@ -2564,7 +2564,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
             $newFields = $fields->find(['plugin_metademands_metademands_id'=>$new_metademands_id]);
             foreach ($newFields as $newField){
-               $input['plugin_metademands_fields_id'] = $associated_fields[$newField["plugin_metademands_fields_id"]];
+               $input['plugin_metademands_fields_id'] = isset($associated_fields[$newField["plugin_metademands_fields_id"]]);
                $tasksold = PluginMetademandsField::_unserialize($newField['plugin_metademands_tasks_id']);
                $tasksnew = [];
                if(is_array($tasksold)){
