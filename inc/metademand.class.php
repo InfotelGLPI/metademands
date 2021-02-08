@@ -1652,6 +1652,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if (($field['type'] == 'date_interval' || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
                $field['value2'] = $values[$fields_id . '-2'];
             }
+            if($field['type'] == 'radio' && empty($field['value'])){
+               continue;
+            }
             if ($nb % 2 == 0) {
                $result['content'] .= "<tr class='even'>";
             } else {
@@ -1860,7 +1863,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $result['content'] .= "<td $style_title>" . $label . "</td>";
                   $custom_radio      = "";
                   foreach ($custom_values as $key => $val) {
-                     if ($field['value'] == $key) {
+                     if ($field['value'] == $key && $field['value'] != "") {
                         $custom_radio = $val;
                      }
                   }
@@ -2026,6 +2029,51 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $parent_fields['_' . $field] = $parent_fields[$field];
                }
             }
+
+             if(!isset($this->fields['id'])){
+                  $ticket_meta = new PluginMetademandsTicket_Metademand();
+                  $ticket_meta->getFromDBByCrit(['tickets_id'=>$ancestor_tickets_id]);
+                  $this->getFromDB($ticket_meta->fields['plugin_metademands_metademands_id']);
+             }
+
+            $values_form = [];
+            $ticket_field = new PluginMetademandsTicket_Field();
+            $fields = $ticket_field->find(['tickets_id'=>$ancestor_tickets_id]);
+            foreach ($fields as $f){
+               $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
+            }
+             $metademands_data = $this->constructMetademands($this->getID());
+            if (count($metademands_data)) {
+               foreach ($metademands_data as $form_step => $data) {
+                  foreach ($data as $form_metademands_id => $line) {
+                     $list_fields  = $line['form'];
+                     $searchOption = Search::getOptions('Ticket');
+                     foreach ($list_fields as $id => $fields_values) {
+                        if ($fields_values['used_by_ticket'] > 0 && $fields_values['used_by_child'] == 1) {
+//                           foreach ($values_form as $k => $v) {
+                              if (isset($values_form[$id])) {
+                                 $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
+                                 if ($fields_values['used_by_ticket'] == 4) {
+                                    $name = "_users_id_requester";
+                                 }
+                                 if ($fields_values['used_by_ticket'] == 71) {
+                                    $name = "_groups_id_requester";
+                                 }
+                                 if ($fields_values['used_by_ticket'] == 66) {
+                                    $name = "_users_id_observer";
+                                 }
+                                 if ($fields_values['used_by_ticket'] == 65) {
+                                    $name = "_groups_id_observer";
+                                 }
+                                 $son_ticket_data[$name] = $values_form[$id];
+                              }
+//                           }
+                        }
+                     }
+                  }
+               }
+            }
+
 
             // Add son ticket
             $son_ticket_data['_disablenotif']       = true;

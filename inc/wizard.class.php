@@ -2520,7 +2520,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                if(!isset($toKeep[$hiddenFields])){
                   $toKeep[$hiddenFields] = false;
                }
-               $test    = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
+               if(isset($post[$id])){
+                  $test    = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
+               }else{
+                  $test = false;
+               }
+
                if($test == true){
                   $toKeep[$hiddenFields] = true;
                   if ($unserialisedTaskChild[$key] != 0) {

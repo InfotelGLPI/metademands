@@ -571,10 +571,39 @@ class PluginMetademandsField extends CommonDBChild {
          Dropdown::showFromArray('used_by_ticket', $ticket_fields,
                                  ['value' => $this->fields["used_by_ticket"]]);
          echo "</td>";
+
       } else {
          echo "<td colspan='2'></td>";
       }
       echo "</tr>";
+
+
+
+      if ($ID > 0 && (($this->fields['type'] == "dropdown_object"
+                          && ($this->fields["item"] == "User" || $this->fields["item"] == "Group"))
+                      || ($this->fields['type'] == "dropdown"
+                          && ($this->fields["item"] == "Location" || $this->fields["item"] == "RequestType"))
+                      || ($this->fields['type'] == "dropdown_meta"
+                          && ($this->fields["item"] == "urgency" || $this->fields["item"] == "impact" || $this->fields["item"] == "priority"))
+                      || $this->fields['type'] == "date"
+                      || $this->fields["type"] == "datetime"
+                     )
+   )
+         {
+         echo "<tr>";
+         echo "<td colspan='2'>";
+         echo "</td>";
+         echo "<td>";
+         echo __('Use this field for child ticket field', 'metademands');
+         echo "</td>";
+         echo "<td>";
+          Dropdown::showYesNo('used_by_child',$this->fields['used_by_child']);
+         echo "</td>";
+         echo "</tr>";
+      } else {
+         Html::hidden('used_by_child',['value'=>0]);
+      }
+
 
       echo "<tr class='tab_bg_1'>";
       // SHOW SPECIFIC VALUES

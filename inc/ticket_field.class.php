@@ -106,6 +106,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
       $query  = "SELECT `glpi_plugin_metademands_fields`.`check_value`,
                        `glpi_plugin_metademands_fields`.`type`,
                        `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id`,
+                       `glpi_plugin_metademands_tickets_fields`.`plugin_metademands_fields_id`,
                        `glpi_plugin_metademands_tickets_fields`.`value` as field_value
                FROM `glpi_plugin_metademands_tickets_fields`
                RIGHT JOIN `glpi_plugin_metademands_fields`
@@ -115,6 +116,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
 
       if ($DB->numrows($result)) {
          while ($data = $DB->fetchAssoc($result)) {
+
             $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($data['plugin_metademands_tasks_id']);
             $check_values = PluginMetademandsField::_unserialize($data['check_value']);
             if(is_array($tasks_id)) {
@@ -269,9 +271,9 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                   }
                   break;
                case 'radio':
-                  if (empty($value) && $value != 0) {
+                  if (empty($value) && $value !== 0) {
                      return false;
-                  } else if ($check_value != $value) {
+                  } else if ($check_value !== $value) {
                      return false;
                   }
                   break;
