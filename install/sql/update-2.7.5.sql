@@ -4,6 +4,8 @@ ALTER TABLE `glpi_plugin_metademands_fields`
     ADD `used_by_ticket` INT(11) NOT NULL DEFAULT '0' AFTER `display_type`;
 ALTER TABLE `glpi_plugin_metademands_fields`
     ADD `hide_title` TINYINT(1) NOT NULL DEFAULT '0';
+ALTER TABLE `glpi_plugin_metademands_fields`
+    ADD `used_by_child` TINYINT(1) NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_metademands`
     ADD `validation_subticket` TINYINT(1) NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_tickets_metademands`

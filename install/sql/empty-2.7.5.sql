@@ -91,6 +91,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `date_mod` datetime DEFAULT NULL,
     `display_type` int(11) DEFAULT 0,
     `used_by_ticket` INT(11) NOT NULL DEFAULT '0',
+    `used_by_child` tinyint(1) default 0,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
