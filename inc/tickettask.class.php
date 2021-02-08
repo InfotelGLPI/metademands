@@ -453,52 +453,55 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       }
 
       $meta = new PluginMetademandsMetademand();
-      $meta->getFromDB($input["plugin_metademands_metademands_id"]);
+      if (isset($input["plugin_metademands_metademands_id"])) {
+         $meta->getFromDB($input["plugin_metademands_metademands_id"]);
 
-      $type    = $meta->getField("type");
-      $categid = 0;
-      if (isset($input['itilcategories_id'])) {
-         $categid = $input['itilcategories_id'];
-      }
+         $type    = $meta->getField("type");
+         $categid = 0;
+         if (isset($input['itilcategories_id'])) {
+            $categid = $input['itilcategories_id'];
+         }
 
-      // Get Template
-      $ticket = new Ticket();
-      $tt     = $ticket->getITILTemplateToUse(false, $type, $categid, $input['entities_id']);
+         // Get Template
+         $ticket = new Ticket();
+         $tt     = $ticket->getITILTemplateToUse(false, $type, $categid, $input['entities_id']);
 
-      $message           = '';
-      $mandatory_missing = [];
+         $message           = '';
+         $mandatory_missing = [];
 
-      if (count($tt->mandatory)) {
-         $fieldsname = $tt->getAllowedFieldsNames(true);
-         foreach ($tt->mandatory as $key => $val) {
-            if (isset($input[$key]) &&
-                (empty($input[$key]) || $input[$key] == 'NULL')
-                && (!in_array($key, PluginMetademandsTicketField::$used_fields))) {
-               $mandatory_missing[$key] = $fieldsname[$val];
+         if (count($tt->mandatory)) {
+            $fieldsname = $tt->getAllowedFieldsNames(true);
+            foreach ($tt->mandatory as $key => $val) {
+               if (isset($input[$key]) &&
+                   (empty($input[$key]) || $input[$key] == 'NULL')
+                   && (!in_array($key, PluginMetademandsTicketField::$used_fields))) {
+                  $mandatory_missing[$key] = $fieldsname[$val];
+               }
+            }
+
+            if (count($mandatory_missing)) {
+               if (empty($customMessage)) {
+                  $message = __('Mandatory field') . "&nbsp;" . implode(", ", $mandatory_missing);
+               } else {
+                  $message = $customMessage . "&nbsp;:&nbsp;" . implode(", ", $mandatory_missing);
+               }
+               if ($showMessage) {
+                  Session::addMessageAfterRedirect($message, false, ERROR);
+               }
+               if (!$webserviceMode) {
+                  return false;
+               }
             }
          }
 
-         if (count($mandatory_missing)) {
-            if (empty($customMessage)) {
-               $message = __('Mandatory field') . "&nbsp;" . implode(", ", $mandatory_missing);
-            } else {
-               $message = $customMessage . "&nbsp;:&nbsp;" . implode(", ", $mandatory_missing);
-            }
-            if ($showMessage) {
-               Session::addMessageAfterRedirect($message, false, ERROR);
-            }
-            if (!$webserviceMode) {
-               return false;
-            }
-         }
+         unset($_SESSION["metademandsHelpdeskSaved"]);
       }
-
-      unset($_SESSION["metademandsHelpdeskSaved"]);
-
       if (!$webserviceMode) {
          return true;
       } else {
-         return ['ticket_template' => $tt->fields['id'], 'mandatory_fields' => $mandatory_missing, 'message' => $message];
+         return ['ticket_template' => $tt->fields['id'],
+                 'mandatory_fields' => $mandatory_missing,
+                 'message' => $message];
       }
    }
 

@@ -296,7 +296,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<td>";
       $randRank   = Dropdown::showNumber('rank', ['value' => $this->fields["rank"],
                                                   'min'   => 1,
-                                                  'max'   => 10]);
+                                                  'max'   => 20]);
       $paramsRank = ['rank'               => '__VALUE__',
                      'step'               => 'order',
                      'fields_id'          => $this->fields['id'],
@@ -465,20 +465,20 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<td></td>";
 
          echo "<td>";
-         echo __('Assigned');
+         echo __('Requester');
          echo "&nbsp;";
          // Assigned group
-         Dropdown::showYesNo('is_assign', $is_assign);
+         Dropdown::showYesNo('is_requester', $is_requester);
          echo "<br>";
          echo __('Watcher');
          echo "&nbsp;";
          // Watcher group
          Dropdown::showYesNo('is_watcher', $is_watcher);
          echo "<br>";
-         echo __('Requester');
+         echo __('Assigned');
          echo "&nbsp;";
          // Requester group
-         Dropdown::showYesNo('is_requester', $is_requester);
+         Dropdown::showYesNo('is_assign', $is_assign);
          echo "</td>";
 
 
@@ -1861,12 +1861,12 @@ class PluginMetademandsField extends CommonDBChild {
          case 'yesno':
             $option[1] = __('No');
             $option[2] = __('Yes');
-            if($value == ""){
+            if ($value == "") {
                $value = $data['custom_values'];
             }
-            $field     = "";
-            $field     .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
-                                                                                                  'display' => false]);
+            $field = "";
+            $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
+                                                                                              'display' => false]);
             break;
          case 'upload':
             $arrayFiles = json_decode($value, true);
@@ -2221,9 +2221,9 @@ class PluginMetademandsField extends CommonDBChild {
                if (empty($opts)) {
                   $opts = [];
                }
-               if (count($opts) == 0) {
+               if (is_array($opts) && count($opts) == 0) {
                   echo $this->addNewOpt($url);
-               } else {
+               } else if (is_array($opts) && count($opts) > 0) {
                   echo "<tr><td>";
                   foreach ($opts as $k => $opt) {
                      echo "<table class='metademands_show_custom_fields'>";
@@ -2233,8 +2233,10 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   echo "</td></tr>";
                }
+               if (is_array($opts)) {
+                  echo "<input type='hidden' id='nbOptions' value='" . count($opts) . "' />";
+               }
 
-               echo "<input type='hidden' id='nbOptions' value='" . count($opts) . "' />";
                echo "</tbody></table>";
                echo "</div>";
             }
@@ -2634,7 +2636,7 @@ class PluginMetademandsField extends CommonDBChild {
          if ($value['item'] != "ITILCategory_Metademands"
              && $value['item'] != "informations"
              && $idF != $id) {
-            $data[$id] = urldecode(html_entity_decode($value['name']));
+            $data[$id] = $value['rank'] . " - " . urldecode(html_entity_decode($value['name']));
             //            if (!empty($value['label2'])) {
             //               $data[$id] .= ' - ' . $value['label2'];
             //            }
@@ -2662,7 +2664,7 @@ class PluginMetademandsField extends CommonDBChild {
          if ($value['item'] != "ITILCategory_Metademands"
              //             && $value['item'] != "informations"
              && $idF != $id) {
-            $data[$id] = urldecode(html_entity_decode($value['name']));
+            $data[$id] = $value['rank'] . " - " . urldecode(html_entity_decode($value['name']));
 
             //            if (!empty($value['label2'])) {
             //               $data[$id] .= ' - ' . urldecode(html_entity_decode($value['label2']));
@@ -2692,7 +2694,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                      'display' => $display,
                                                      'used'    => [$fields->getField('rank')],
                                                      'min'     => 1,
-                                                     'max'     => 10,
+                                                     'max'     => 20,
                                                      'toadd'   => [0 => Dropdown::EMPTY_VALUE]]);
    }
 
@@ -3559,7 +3561,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       $forbidden[] = 'merge';
 
-      $forbidden[] = 'clone';
+      //      $forbidden[] = 'clone';
       return $forbidden;
    }
 

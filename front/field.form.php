@@ -37,7 +37,7 @@ if (empty($_GET["id"])) {
 $field = new PluginMetademandsField();
 
 if (!isset($_POST["check_value"])) {
-   $_POST["check_value"] = [];
+   $_POST["check_value"] = PluginMetademandsField::_serialize([]);
 } else {
    $field->getFromDB($_POST["id"]);
    $hidden_kinks = PluginMetademandsField::_unserialize($field->fields["hidden_link"]);
@@ -59,13 +59,13 @@ if (!isset($_POST["check_value"])) {
 
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
     && isset($_POST['item']) && $_POST['item'] == 'Group') {
-   if ($_POST['is_assign'] > 0) {
+   if (isset($_POST['is_assign']) && $_POST['is_assign'] > 0) {
       $custom_values['is_assign'] = $_POST['is_assign'];
    }
-   if ($_POST['is_watcher'] > 0) {
+   if (isset($_POST['is_watcher']) && $_POST['is_watcher'] > 0) {
       $custom_values['is_watcher'] = $_POST['is_watcher'];
    }
-   if ($_POST['is_requester'] > 0) {
+   if (isset($_POST['is_requester']) && $_POST['is_requester'] > 0) {
       $custom_values['is_requester'] = $_POST['is_requester'];
    }
    $_POST['custom_values'] = $custom_values;
@@ -159,11 +159,12 @@ if (isset($_POST["add"])) {
    if (isset($_POST["hidden_block"])) {
       $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
-   // Check update rights for fields
-   $field->check(-1, UPDATE, $_POST);
+
    if(!isset($_POST['item'])){
       $_POST['item'] ="";
    }
+   // Check update rights for fields
+   $field->check(-1, UPDATE, $_POST);
    if ($field->update($_POST)) {
       $field->recalculateOrder($_POST);
       PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
