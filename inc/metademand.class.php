@@ -1527,6 +1527,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $paramIn["tickets_to_create"]     = json_encode($tasks);
                         $metaValid->add($paramIn);
                      }
+                  }else{
+                     if ($this->fields["validation_subticket"] == 1) {
+                        $metaValid                        = new PluginMetademandsMetademandValidation();
+                        $paramIn["tickets_id"]            = $parent_tickets_id;
+                        $paramIn["plugin_metademands_id"] = $metademands_id;
+                        $paramIn["users_id"]              = 0;
+                        $paramIn["validate"]              = PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK;
+                        $paramIn["date"]                  = date("Y-m-d H:i:s");
+
+                        $paramIn["tickets_to_create"]     = "";
+                        $metaValid->add($paramIn);
+                     }
                   }
 
                   // Case of simple ticket convertion
