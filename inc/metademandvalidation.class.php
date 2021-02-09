@@ -234,7 +234,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
                if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $ticket_id)) {
                   $ticket_task             = new TicketTask();
                   $input                   = [];
-                  $input['content']        = $meta_task['tickettasks_name'] . " " . $meta_task['content'];
+                  $input['content']        = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
                   $input['tickets_id']     = $ticket_id;
                   $input['groups_id_tech'] = $params["group_to_assign"];
                   $ticket_task->add($input);
