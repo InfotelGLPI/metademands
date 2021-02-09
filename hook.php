@@ -275,6 +275,9 @@ function plugin_pre_item_purge_metademands($item) {
 
          $temp = new PluginMetademandsTicketField();
          $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $item->getField('id')], 1);
+
+         $temp = new PluginMetademandsMetademandValidation();
+         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $item->getField('id')], 1);
          break;
 
       case 'PluginMetademandsTask' :
