@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-09 16:10+0000\n"
+"POT-Creation-Date: 2021-02-09 17:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -538,23 +538,23 @@ msgstr ""
 msgid "Validate metademands"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:433
+#: inc/metademandvalidation.class.php:456
 msgid "To validate"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:436
+#: inc/metademandvalidation.class.php:458
 msgid "Child tickets created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:439
+#: inc/metademandvalidation.class.php:460
 msgid "Tasks created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:441
+#: inc/metademandvalidation.class.php:462
 msgid "To validate without child"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:443
+#: inc/metademandvalidation.class.php:464
 msgid "Validate without child"
 msgstr ""
 
@@ -610,17 +610,17 @@ msgid ""
 "resolved"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:183
+#: inc/ticket_metademand.class.php:206
 msgctxt "status"
 msgid "In progress"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:186
+#: inc/ticket_metademand.class.php:209
 msgctxt "status"
 msgid "To close"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:189
+#: inc/ticket_metademand.class.php:212
 msgctxt "status"
 msgid "Closed"
 msgstr ""
