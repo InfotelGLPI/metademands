@@ -141,6 +141,29 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
       return parent::getSpecificValueToSelect($field, $name, $values, $options);
    }
 
+   /**
+    * display a value according to a field
+    *
+    * @param $field     String         name of the field
+    * @param $values    String / Array with the value to display
+    * @param $options   Array          of option
+    *
+    * @return a string
+    **@since version 0.83
+    *
+    */
+   static function getSpecificValueToDisplay($field, $values, array $options = []) {
+
+      if (!is_array($values)) {
+         $values = [$field => $values];
+      }
+      switch ($field) {
+         case 'status':
+            return self::getStatusName($values[$field]);
+      }
+      return parent::getSpecificValueToDisplay($field, $values, $options);
+   }
+
 
    /**
     * @param array $options
