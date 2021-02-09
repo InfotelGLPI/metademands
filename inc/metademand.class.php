@@ -3124,7 +3124,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $get_to_validated_meta =
          "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated' FROM `glpi_plugin_metademands_metademandvalidations`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (0,-1)" .
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (".PluginMetademandsMetademandValidation::TO_VALIDATE.",".PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK.")" .
          $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
