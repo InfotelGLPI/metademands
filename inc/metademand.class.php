@@ -1514,7 +1514,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      } else {
                         $metaValid                        = new PluginMetademandsMetademandValidation();
                         $paramIn["tickets_id"]            = $parent_tickets_id;
-                        $paramIn["plugin_metademands_id"] = $metademands_id;
+                        $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
                         $paramIn["users_id"]              = 0;
                         $paramIn["validate"]              = 0;
                         $paramIn["date"]                  = date("Y-m-d H:i:s");
@@ -1531,7 +1531,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      if ($this->fields["validation_subticket"] == 1) {
                         $metaValid                        = new PluginMetademandsMetademandValidation();
                         $paramIn["tickets_id"]            = $parent_tickets_id;
-                        $paramIn["plugin_metademands_id"] = $metademands_id;
+                        $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
                         $paramIn["users_id"]              = 0;
                         $paramIn["validate"]              = PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK;
                         $paramIn["date"]                  = date("Y-m-d H:i:s");
@@ -1652,7 +1652,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if (($field['type'] == 'date_interval' || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
                $field['value2'] = $values[$fields_id . '-2'];
             }
-            if($field['type'] == 'radio' && empty($field['value'])){
+            if($field['type'] == 'radio' && $field['value'] === ""){
                continue;
             }
             if ($nb % 2 == 0) {
@@ -3124,7 +3124,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $get_to_validated_meta =
          "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated' FROM `glpi_plugin_metademands_metademandvalidations`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_metademandvalidations`.`validate` = 0 " .
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (0,-1)" .
          $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
@@ -3138,12 +3138,18 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $s_criteria = [
          'criteria' => [
-            [
-               'link'       => 'AND',
+           0 => [
+               'link'       => 'OR',
                'field'      => 9501, // validation status
                'searchtype' => 'equals',
-               'value'      => 0
-            ]
+               'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE
+            ],
+           1 => [
+              'link'       => 'OR',
+              'field'      => 9501, // validation status
+              'searchtype' => 'equals',
+              'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK
+           ]
          ],
          'reset' => 'reset'
       ];

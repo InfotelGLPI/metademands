@@ -32,16 +32,16 @@ if (!defined('GLPI_ROOT')) {
 }
 
 /**
- * Class PluginMetademandsField
+ * Class PluginMetademandsMetademandValidation
  */
 class PluginMetademandsMetademandValidation extends CommonDBTM {
 
 
    static $rightname = 'plugin_metademands';
 
-   const VALIDATE_WITHOUT_TASK  = 3; // task_created
+   const VALIDATE_WITHOUT_TASK  = 3; // meta validate without task
    const TASK_CREATION   = 2; // task_created
-   const TICKET_CREATION = 1; // tickets_frated
+   const TICKET_CREATION = 1; // tickets_created
    const TO_VALIDATE     = 0; // waiting
    const TO_VALIDATE_WITHOUTTASK     = -1; // waiting without ticket
 
@@ -203,11 +203,14 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
       $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
       $meta_tasks = json_decode($this->fields["tickets_to_create"], true);
-      foreach ($meta_tasks as $key => $val) {
-         $meta_tasks[$key]['tickettasks_name']   = urldecode($val['tickettasks_name']);
-         $meta_tasks[$key]['tasks_completename'] = urldecode($val['tasks_completename']);
-         $meta_tasks[$key]['content']            = urldecode($val['content']);
+      if(is_array($meta_tasks)){
+         foreach ($meta_tasks as $key => $val) {
+            $meta_tasks[$key]['tickettasks_name']   = urldecode($val['tickettasks_name']);
+            $meta_tasks[$key]['tasks_completename'] = urldecode($val['tasks_completename']);
+            $meta_tasks[$key]['content']            = urldecode($val['content']);
+         }
       }
+
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
       $ticket->fields["_users_id_requester"] = Session::getLoginUserID();
@@ -226,16 +229,17 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          }
          $inputVal['validate'] = self::TICKET_CREATION;
       } else if($params["create_subticket"] == 0) {
-         foreach ($meta_tasks as $meta_task) {
-            if(PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $ticket_id)){
-               $ticket_task         = new TicketTask();
-               $input               = [];
-               $input['content']    = $meta_task['tickettasks_name'] . " " . $meta_task['content'];
-               $input['tickets_id'] = $ticket_id;
-               $input['groups_id_tech'] = $params["group_to_assign"];
-               $ticket_task->add($input);
+         if(is_array($meta_tasks)){
+            foreach ($meta_tasks as $meta_task) {
+               if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $ticket_id)) {
+                  $ticket_task             = new TicketTask();
+                  $input                   = [];
+                  $input['content']        = $meta_task['tickettasks_name'] . " " . $meta_task['content'];
+                  $input['tickets_id']     = $ticket_id;
+                  $input['groups_id_tech'] = $params["group_to_assign"];
+                  $ticket_task->add($input);
+               }
             }
-
          }
          $input = [];
          $input['id'] = $ticket_id;
@@ -279,10 +283,10 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       echo "<tr class='tab_bg_1 center'>";
       if ($this->fields["users_id"] == 0 && $this->fields["validate"] == self::TO_VALIDATE) {
          echo "<td>" . __('Create sub-tickets', 'metademands') . " &nbsp;";
-         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket' value='1' checked>";
+         echo "<input  type='radio' name='create_subticket' id='create_subticket' value='1' checked>";
          echo "</td>";
          echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
-         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket2' value='0'>";
+         echo "<input  type='radio' name='create_subticket' id='create_subticket2' value='0'>";
          echo "</td>";
          echo "</tr>";
          echo "<tr class='tab_bg_1 center' id='to_update_group'>";
@@ -291,7 +295,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          Ajax::updateItemOnEvent('create_subticket2','to_update_group',$CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/displayGroupField.php",["create_subticket"=>'__VALUE__','tickets_id' => $ticket_id]);
       } else if ($this->fields["users_id"] == 0 && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
          echo "<td colspan='2'>" . __('Attribute ticket to ', 'metademands') . " &nbsp;";
-         Html::hidden("create_subticket",["value"=>2]);
+         echo Html::hidden("create_subticket",["value"=>2]);
          foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
             $group = $d['groups_id'];
          }
@@ -307,9 +311,11 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 //         echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
 //         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0' disabled>";
 //         echo "</td>";
-      } else {
-         echo "<td colspan='2'>" . __('Sub-tickets are created', 'metademands') . "</td>";
+      }else if ($this->fields["users_id"] != 0
+                && $this->fields["validate"] == self::VALIDATE_WITHOUT_TASK) {
 
+      }  else {
+         echo "<td colspan='2'>" . __('Sub-tickets are created', 'metademands') . "</td>";
 
       }
       echo "</tr>";
@@ -404,9 +410,11 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
       $values = [];
       //      $values[0]               = static::getStatusName(0);
+      $values[self::TO_VALIDATE_WITHOUTTASK]     = static::getStatusName(self::TO_VALIDATE_WITHOUTTASK);
       $values[self::TO_VALIDATE]     = static::getStatusName(self::TO_VALIDATE);
       $values[self::TICKET_CREATION] = static::getStatusName(self::TICKET_CREATION);
       $values[self::TASK_CREATION]   = static::getStatusName(self::TASK_CREATION);
+      $values[self::VALIDATE_WITHOUT_TASK]   = static::getStatusName(self::VALIDATE_WITHOUT_TASK);
 
       return Dropdown::showFromArray($p['name'], $values, $p);
    }
@@ -429,7 +437,10 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
          case self::TASK_CREATION :
             return __('Tasks created', 'metademands');
-
+         case self::TO_VALIDATE_WITHOUTTASK :
+            return __('To validate without child', 'metademands');
+         case self::VALIDATE_WITHOUT_TASK :
+            return __('Validate without child', 'metademands');
          default :
             // Return $value if not define
             return Dropdown::EMPTY_VALUE;

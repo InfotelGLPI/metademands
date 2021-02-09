@@ -2513,6 +2513,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          //if field is hidden remove it from Data & Post
          $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
          $unserialisedHiddenLink = PluginMetademandsField::_unserialize($value['hidden_link']);
+         //$unserialisedHiddenBloc = PluginMetademandsField::_unserialize($value['hidden_block']);
          $unserialisedTaskChild  = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
          if (is_array($unserialisedCheck) && is_array($unserialisedHiddenLink)) {
             $toKeep = [];
@@ -2561,6 +2562,8 @@ class PluginMetademandsWizard extends CommonDBTM {
 //                  }
 //               }
             }
+           // if(is_array($unserialisedHiddenBloc)){
+           // }
             foreach ($toKeep as $k => $v){
                if($v == false){
                   if (isset($post[$k])) unset($post[$k]);
