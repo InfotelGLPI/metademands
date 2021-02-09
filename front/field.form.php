@@ -144,7 +144,7 @@ if (isset($_POST["add"])) {
       $_POST["value"] = PluginMetademandsField::_serialize($_POST["value"]);
    }
 
-   if (isset($_POST["check_value"])) {
+   if (isset($_POST["check_value"]) && is_array($_POST["check_value"])) {
       $_POST["check_value"] = PluginMetademandsField::_serialize($_POST["check_value"]);
    }
    if (isset($_POST["plugin_metademands_tasks_id"])) {

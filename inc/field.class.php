@@ -590,7 +590,7 @@ class PluginMetademandsField extends CommonDBChild {
                      )
    )
          {
-         echo "<tr>";
+         echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2'>";
          echo "</td>";
          echo "<td>";
