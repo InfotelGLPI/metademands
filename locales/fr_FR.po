@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-09 08:34+0000\n"
+"POT-Creation-Date: 2021-02-10 11:48+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2021\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -22,12 +22,12 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: hook.php:437 inc/metademandvalidation.class.php:57
+#: hook.php:440 inc/metademandvalidation.class.php:57
 #: inc/metademandvalidation.class.php:280
 msgid "Metademand validation"
 msgstr "Validation de la métademande"
 
-#: hook.php:457
+#: hook.php:460
 msgid "Metademand status"
 msgstr "Statut de la métademande"
 
@@ -441,65 +441,65 @@ msgstr "champ mise à jour sur la demande"
 msgid "field delete on demand"
 msgstr "champ supprimé sur la demande"
 
-#: inc/metademand.class.php:1579
+#: inc/metademand.class.php:1582
 msgid "Demand add failed"
 msgstr "Echec de l'ajout de la demande"
 
-#: inc/metademand.class.php:1582
+#: inc/metademand.class.php:1585
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr "Demande \"%s\" ajouté avec succès"
 
-#: inc/metademand.class.php:1584
+#: inc/metademand.class.php:1587
 #, php-format
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr "Ticket \"%s\" modifié en méta-demande avec succès"
 
-#: inc/metademand.class.php:2090
+#: inc/metademand.class.php:2094
 msgid "Child Ticket"
 msgstr "Ticket enfant"
 
-#: inc/metademand.class.php:2099
+#: inc/metademand.class.php:2103
 msgid "Parent tickets"
 msgstr "Tickets parents"
 
-#: inc/metademand.class.php:2224
-msgid "Metademand need a validation "
+#: inc/metademand.class.php:2228
+msgid "Metademand need a validation"
 msgstr "La métademande est en attente de validation"
 
-#: inc/metademand.class.php:2251
+#: inc/metademand.class.php:2255
 msgid "Demand followup"
 msgstr "Suivi de la demande"
 
-#: inc/metademand.class.php:2265
+#: inc/metademand.class.php:2269
 msgid "Existent tickets"
 msgstr "Tickets existants"
 
-#: inc/metademand.class.php:2272 inc/metademand.class.php:2401
+#: inc/metademand.class.php:2276 inc/metademand.class.php:2405
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: inc/metademand.class.php:2394
+#: inc/metademand.class.php:2398
 msgid "Next tickets"
 msgstr "Prochains tickets"
 
-#: inc/metademand.class.php:2471
+#: inc/metademand.class.php:2475
 msgid "Coming"
 msgstr "A venir"
 
-#: inc/metademand.class.php:2839 inc/metademand.class.php:2863
+#: inc/metademand.class.php:2843 inc/metademand.class.php:2867
 msgid "Configure demands"
 msgstr "Configurer les demandes"
 
-#: inc/metademand.class.php:2972 inc/metademand.class.php:3014
+#: inc/metademand.class.php:2976 inc/metademand.class.php:3018
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: inc/metademand.class.php:2984 inc/metademand.class.php:3067
+#: inc/metademand.class.php:2988 inc/metademand.class.php:3071
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: inc/metademand.class.php:2996 inc/metademand.class.php:3119
+#: inc/metademand.class.php:3000 inc/metademand.class.php:3123
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
@@ -556,23 +556,23 @@ msgstr "Validé par %s le %s"
 msgid "Validate metademands"
 msgstr "Valider la métademande"
 
-#: inc/metademandvalidation.class.php:433
+#: inc/metademandvalidation.class.php:456
 msgid "To validate"
 msgstr "A valider"
 
-#: inc/metademandvalidation.class.php:436
+#: inc/metademandvalidation.class.php:458
 msgid "Child tickets created"
 msgstr "Tickets enfants créés"
 
-#: inc/metademandvalidation.class.php:439
+#: inc/metademandvalidation.class.php:460
 msgid "Tasks created"
 msgstr "Tâches créées"
 
-#: inc/metademandvalidation.class.php:441
+#: inc/metademandvalidation.class.php:462
 msgid "To validate without child"
 msgstr "A valider sans tickets enfants"
 
-#: inc/metademandvalidation.class.php:443
+#: inc/metademandvalidation.class.php:464
 msgid "Validate without child"
 msgstr "Validé sans tickets enfants"
 
@@ -622,7 +622,7 @@ msgstr "Racine"
 msgid "Linked ticket"
 msgstr "Ticket lié"
 
-#: inc/ticket.class.php:236
+#: inc/ticket.class.php:267
 msgid ""
 "The demand cannot be resolved or closed until all child tickets are not "
 "resolved"
@@ -630,17 +630,17 @@ msgstr ""
 "La demande ne peut être résolue ou close tant que tous les tickets enfants "
 "ne sont pas résolus"
 
-#: inc/ticket_metademand.class.php:183
+#: inc/ticket_metademand.class.php:206
 msgctxt "status"
 msgid "In progress"
 msgstr "En cours"
 
-#: inc/ticket_metademand.class.php:186
+#: inc/ticket_metademand.class.php:209
 msgctxt "status"
 msgid "To close"
 msgstr "A clore"
 
-#: inc/ticket_metademand.class.php:189
+#: inc/ticket_metademand.class.php:212
 msgctxt "status"
 msgid "Closed"
 msgstr "Clos"
