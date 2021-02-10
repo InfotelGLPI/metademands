@@ -578,18 +578,16 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</tr>";
 
 
-
       if ($ID > 0 && (($this->fields['type'] == "dropdown_object"
-                          && ($this->fields["item"] == "User" || $this->fields["item"] == "Group"))
+                       && ($this->fields["item"] == "User" || $this->fields["item"] == "Group"))
                       || ($this->fields['type'] == "dropdown"
                           && ($this->fields["item"] == "Location" || $this->fields["item"] == "RequestType"))
                       || ($this->fields['type'] == "dropdown_meta"
                           && ($this->fields["item"] == "urgency" || $this->fields["item"] == "impact" || $this->fields["item"] == "priority"))
                       || $this->fields['type'] == "date"
                       || $this->fields["type"] == "datetime"
-                     )
-   )
-         {
+         )
+      ) {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2'>";
          echo "</td>";
@@ -597,11 +595,11 @@ class PluginMetademandsField extends CommonDBChild {
          echo __('Use this field for child ticket field', 'metademands');
          echo "</td>";
          echo "<td>";
-          Dropdown::showYesNo('used_by_child',$this->fields['used_by_child']);
+         Dropdown::showYesNo('used_by_child', $this->fields['used_by_child']);
          echo "</td>";
          echo "</tr>";
       } else {
-         Html::hidden('used_by_child',['value'=>0]);
+         Html::hidden('used_by_child', ['value' => 0]);
       }
 
 
@@ -1427,7 +1425,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @return int|mixed|String
     */
    static function getFieldInput($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0) {
-
+      global $CFG_GLPI;
       $metademand = new PluginMetademandsMetademand();
       $metademand->getFromDB($data['plugin_metademands_metademands_id']);
 
@@ -1580,14 +1578,56 @@ class PluginMetademandsField extends CommonDBChild {
                   $userrand = mt_rand();
                   $field    = "";
 
+                  $paramsloc
+                     = ['value'          => '__VALUE__',
+                        'id_fielduser'   => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+
+                  $toupdate[] = ['value_fieldname'
+                                              => 'value',
+                                 'to_update'  => "location_user",
+                                 'url'        => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ulocationUpdate.php",
+                                 'moreparams' => $paramsloc];
+
+                  $field .= "<script type='text/javascript'>";
+                  $field .= "$(function() {";
+                  Ajax::updateItemJsCode("location_user",
+                                         $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ulocationUpdate.php",
+                                         $paramsloc,
+                                         $namefield . "[" . $data['id'] . "]", false);
+                  $field .= "});</script>";
+
+
+                  $paramsgroup
+                     = ['value'          => '__VALUE__',
+                        'id_fielduser'   => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+
+                  $toupdate[] = ['value_fieldname'
+                                              => 'value',
+                                 'to_update'  => "group_user",
+                                 'url'        => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ugroupUpdate.php",
+                                 'moreparams' => $paramsgroup];
+
+                  $field .= "<script type='text/javascript'>";
+                  $field .= "$(function() {";
+                  Ajax::updateItemJsCode("group_user",
+                                         $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ugroupUpdate.php",
+                                         $paramsgroup,
+                                         $namefield . "[" . $data['id'] . "]", false);
+                  $field .= "});</script>";
+
+
                   $value = !empty($value) ? $value : Session::getLoginUserID();
-                  $field .= User::dropdown(['name'    => $namefield . "[" . $data['id'] . "]",
-                                            'entity'  => $_SESSION['glpiactiveentities'],
-                                            'right'   => 'all',
-                                            'rand'    => $userrand,
-                                            'value'   => $value,
-                                            'display' => false
+                  $field .= User::dropdown(['name'     => $namefield . "[" . $data['id'] . "]",
+                                            'entity'   => $_SESSION['glpiactiveentities'],
+                                            'right'    => 'all',
+                                            'rand'     => $userrand,
+                                            'value'    => $value,
+                                            'display'  => false,
+                                            'toupdate' => $toupdate
                                            ]);
+
                   break;
                case 'Group':
                   $field = "";
@@ -1598,13 +1638,12 @@ class PluginMetademandsField extends CommonDBChild {
                         $cond[$type_group] = $values;
                      }
                   }
-                  $field .= Group::dropdown(['name'      => $namefield . "[" . $data['id'] . "]",
-                                             'entity'    => $_SESSION['glpiactiveentities'],
-                                             'value'     => $value,
-                                             'readonly'  => true,
-                                             'condition' => $cond,
-                                             'display'   => false
-                                            ]);
+                  echo "<div id='group_user' class=\"input-group\">";
+                  $_POST['value']     = Session::getLoginUserID();
+                  $_POST['field']     = $namefield . "[" . $data['id'] . "]";
+                  $_POST['groups_id'] = $value;
+                  include(GLPI_ROOT . "/plugins/metademands/ajax/ugroupUpdate.php");
+                  echo "</div>";
                   break;
                case 'ITILCategory_Metademands':
                   if ($on_basket == false) {
@@ -1723,10 +1762,18 @@ class PluginMetademandsField extends CommonDBChild {
                   if (!($item = getItemForItemtype($data['item']))) {
                      break;
                   }
-                  $container_class = new $data['item']();
-                  $field           = "";
-                  $field           .= $container_class::dropdown($opt);
-
+                  if ($data['item'] == "Location") {
+                     echo "<div id='location_user' class=\"input-group\">";
+                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
+                     $_POST['value']        = Session::getLoginUserID();
+                     $_POST['locations_id'] = $value;
+                     include(GLPI_ROOT . "/plugins/metademands/ajax/ulocationUpdate.php");
+                     echo "</div>";
+                  } else {
+                     $container_class = new $data['item']();
+                     $field           = "";
+                     $field           .= $container_class::dropdown($opt);
+                  }
                   break;
             }
             break;
@@ -2088,6 +2135,42 @@ class PluginMetademandsField extends CommonDBChild {
       } else {
          return $field;
       }
+   }
+
+
+   /**
+    * @param        $entity
+    * @param        $userid
+    * @param string $filter
+    * @param bool   $first
+    *
+    * @return array|int|mixed
+    */
+   static function getUserGroup($entity, $userid, $filter = '', $first = true) {
+      global $DB;
+
+      $dbu = new DbUtils();
+
+      $where = '';
+      if ($filter) {
+         $where = $filter;
+      }
+      $query = ['FIELDS'     => ['glpi_groups' => ['id']],
+                'FROM'       => 'glpi_groups_users',
+                'INNER JOIN' => ['glpi_groups' => ['FKEY' => ['glpi_groups'       => 'id',
+                                                              'glpi_groups_users' => 'groups_id']]],
+                'WHERE'      => ['users_id' => $userid,
+                                 $dbu->getEntitiesRestrictCriteria('glpi_groups', '', $entity, true),
+                                 $where]];
+
+      $rep = [];
+      foreach ($DB->request($query) as $data) {
+         if ($first) {
+            return $data['id'];
+         }
+         $rep[] = $data['id'];
+      }
+      return ($first ? 0 : $rep);
    }
 
    /**
