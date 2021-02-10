@@ -391,6 +391,29 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
 
    /**
+    * display a value according to a field
+    *
+    * @param $field     String         name of the field
+    * @param $values    String / Array with the value to display
+    * @param $options   Array          of option
+    *
+    * @return a string
+    **@since version 0.83
+    *
+    */
+   static function getSpecificValueToDisplay($field, $values, array $options = []) {
+
+      if (!is_array($values)) {
+         $values = [$field => $values];
+      }
+      switch ($field) {
+         case 'validate':
+            return self::getStatusName($values[$field]);
+      }
+      return parent::getSpecificValueToDisplay($field, $values, $options);
+   }
+
+   /**
     * @param array $options
     *
     * @return int|string
@@ -431,10 +454,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
          case self::TO_VALIDATE :
             return __('To validate', 'metademands');
-
          case self::TICKET_CREATION :
             return __('Child tickets created', 'metademands');
-
          case self::TASK_CREATION :
             return __('Tasks created', 'metademands');
          case self::TO_VALIDATE_WITHOUTTASK :
@@ -446,5 +467,4 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
             return Dropdown::EMPTY_VALUE;
       }
    }
-
 }
