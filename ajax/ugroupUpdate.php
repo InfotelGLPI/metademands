@@ -38,6 +38,15 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
 }
 
 Session::checkLoginUser();
+$fieldGroup = new PluginMetademandsField();
+if(!isset($_POST['fields_id'])){
+   $fieldGroup->getFromDBByCrit(['link_to_user'=>$_POST['id_fielduser'],'type'=>"dropdown_object",'item'=>Group::getType()]);
+
+   $_POST["field"] = "field[".$fieldGroup->fields['id']."]";
+}else{
+   $fieldGroup->getFromDB($_POST['fields_id']);
+}
+
 
 //chercher les champs de la meta avec param : updatefromthisfield
 $groups_id = 0;
@@ -53,6 +62,12 @@ if ((isset($_POST['value']) && ($_POST["value"] > 0))) {
 }
 //TODO retrieve from field
 $cond = [];
+if (!empty($fieldGroup->fields['custom_values'])) {
+   $options = PluginMetademandsField::_unserialize($fieldGroup->fields['custom_values']);
+   foreach ($options as $type_group => $values) {
+      $cond[$type_group] = $values;
+   }
+}
 
 Group::dropdown(['name'      => $_POST["field"],
                  'entity'    => $_SESSION['glpiactiveentities'],
