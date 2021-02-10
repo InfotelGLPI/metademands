@@ -39,12 +39,11 @@ if (strpos($_SERVER['PHP_SELF'], "ulocationUpdate.php")) {
 
 Session::checkLoginUser();
 $fieldUser = new PluginMetademandsField();
-if(!isset($_POST['fields_id'])){
-   $fieldUser->getFromDBByCrit(['link_to_user'=>$_POST['id_fielduser'],'type'=>"dropdown",'item'=>Location::getType()]);
+if (!isset($_POST['fields_id'])) {
+   $fieldUser->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'], 'type' => "dropdown", 'item' => Location::getType()]);
 
-   $_POST["field"] = "field[".$fieldUser->fields['id']."]";
+   $_POST["field"] = "field[" . $fieldUser->fields['id'] . "]";
 }
-
 
 
 $locations_id = 0;
@@ -56,7 +55,7 @@ if ((isset($_POST['value']) && ($_POST["value"] > 0))) {
    }
 
 }
-Location::dropdown(['name' => $_POST["field"],
+Location::dropdown(['name'  => $_POST["field"],
                     'value' => $locations_id]);
 
 $_POST['name'] = "location_user";

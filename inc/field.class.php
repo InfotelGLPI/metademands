@@ -329,7 +329,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'default_values' => $this->fields['default_values'],
                      'check_value'    => $this->fields['check_value'],
                      'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                     'link_to_user' => $this->fields["link_to_user"],
+                     'link_to_user'   => $this->fields["link_to_user"],
                      'change_type'    => 1];
       Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", $CFG_GLPI["root_doc"] .
                                                                                 "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
@@ -384,7 +384,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'step'           => 'object',
                      'rand'           => $randItem,
                      'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                     'link_to_user' => $this->fields["link_to_user"],
+                     'link_to_user'   => $this->fields["link_to_user"],
                      'change_type'    => 1];
       Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", $CFG_GLPI["root_doc"] .
                                                                               "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
@@ -411,7 +411,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'custom_values'  => $this->fields["custom_values"],
                      'comment_values' => $this->fields["comment_values"],
                      'default_values' => $this->fields["default_values"],
-                     'link_to_user' => $this->fields["link_to_user"],
+                     'link_to_user'   => $this->fields["link_to_user"],
                      'check_value'    => $this->fields['check_value']];
       Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", $CFG_GLPI["root_doc"] .
                                                                                 "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
@@ -608,7 +608,7 @@ class PluginMetademandsField extends CommonDBChild {
       if ($ID > 0 && (($this->fields['type'] == "dropdown_object"
                        && $this->fields["item"] == "Group")
                       || ($this->fields['type'] == "dropdown"
-                          && $this->fields["item"] == "Location" )
+                          && $this->fields["item"] == "Location")
          )
       ) {
          echo "<tr class='tab_bg_1'>";
@@ -618,14 +618,14 @@ class PluginMetademandsField extends CommonDBChild {
          echo __('Link this to a user field', 'metademands');
          echo "</td>";
          echo "<td>";
-         $arrayAvailable = [];
+         $arrayAvailable    = [];
          $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
-         $field = new PluginMetademandsField();
-         $fields = $field->find(["plugin_metademands_metademands_id"=>$this->fields['plugin_metademands_metademands_id'],'type'=>"dropdown_object","item"=>User::getType()]);
-         foreach ($fields as $f){
+         $field             = new PluginMetademandsField();
+         $fields            = $field->find(["plugin_metademands_metademands_id" => $this->fields['plugin_metademands_metademands_id'], 'type' => "dropdown_object", "item" => User::getType()]);
+         foreach ($fields as $f) {
             $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
          }
-         Dropdown::showFromArray('link_to_user',$arrayAvailable, ['value'=>$this->fields['link_to_user']]);
+         Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $this->fields['link_to_user']]);
          echo "</td>";
          echo "</tr>";
       } else {
@@ -657,7 +657,7 @@ class PluginMetademandsField extends CommonDBChild {
                          'type'           => $this->fields['type'],
                          'check_value'    => $this->fields['check_value'],
                          'drop'           => $this->fields["dropdown"],
-                         'link_to_user'           => $this->fields["link_to_user"],
+                         'link_to_user'   => $this->fields["link_to_user"],
                          'metademands_id' => $this->fields["plugin_metademands_metademands_id"]];
 
       $this->getEditValue(self::_unserialize($this->fields['custom_values']),
@@ -1615,15 +1615,15 @@ class PluginMetademandsField extends CommonDBChild {
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
                   $toupdate[] = ['value_fieldname'
-                                              => 'value',
-                                 'id_fielduser'   => $data['id'],
-                                 'to_update'  => "location_user".$data['id'],
-                                 'url'        => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ulocationUpdate.php",
-                                 'moreparams' => $paramsloc];
+                                                => 'value',
+                                 'id_fielduser' => $data['id'],
+                                 'to_update'    => "location_user" . $data['id'],
+                                 'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ulocationUpdate.php",
+                                 'moreparams'   => $paramsloc];
 
                   $field .= "<script type='text/javascript'>";
                   $field .= "$(function() {";
-                  Ajax::updateItemJsCode("location_user".$data['id'],
+                  Ajax::updateItemJsCode("location_user" . $data['id'],
                                          $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ulocationUpdate.php",
                                          $paramsloc,
                                          $namefield . "[" . $data['id'] . "]", false);
@@ -1636,15 +1636,15 @@ class PluginMetademandsField extends CommonDBChild {
                         'metademands_id' => $data['plugin_metademands_metademands_id']];
 
                   $toupdate[] = ['value_fieldname'
-                                              => 'value',
-                                 'id_fielduser'   => $data['id'],
-                                 'to_update'  => "group_user".$data['id'],
-                                 'url'        => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ugroupUpdate.php",
-                                 'moreparams' => $paramsgroup];
+                                                => 'value',
+                                 'id_fielduser' => $data['id'],
+                                 'to_update'    => "group_user" . $data['id'],
+                                 'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ugroupUpdate.php",
+                                 'moreparams'   => $paramsgroup];
 
                   $field .= "<script type='text/javascript'>";
                   $field .= "$(function() {";
-                  Ajax::updateItemJsCode("group_user".$data['id'],
+                  Ajax::updateItemJsCode("group_user" . $data['id'],
                                          $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ugroupUpdate.php",
                                          $paramsgroup,
                                          $namefield . "[" . $data['id'] . "]", false);
@@ -1671,7 +1671,7 @@ class PluginMetademandsField extends CommonDBChild {
                         $cond[$type_group] = $values;
                      }
                   }
-                  echo "<div id='group_user".$data['link_to_user']."' class=\"input-group\">";
+                  echo "<div id='group_user" . $data['link_to_user'] . "' class=\"input-group\">";
                   $_POST['value']     = Session::getLoginUserID();
                   $_POST['field']     = $namefield . "[" . $data['id'] . "]";
                   $_POST['groups_id'] = $value;
@@ -1797,11 +1797,11 @@ class PluginMetademandsField extends CommonDBChild {
                      break;
                   }
                   if ($data['item'] == "Location") {
-                     echo "<div id='location_user".$data['link_to_user']."' class=\"input-group\">";
+                     echo "<div id='location_user" . $data['link_to_user'] . "' class=\"input-group\">";
                      $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                      $_POST['value']        = Session::getLoginUserID();
                      $_POST['locations_id'] = $value;
-                     $_POST['fields_id'] = $data['id'];
+                     $_POST['fields_id']    = $data['id'];
                      include(GLPI_ROOT . "/plugins/metademands/ajax/ulocationUpdate.php");
                      echo "</div>";
                   } else {

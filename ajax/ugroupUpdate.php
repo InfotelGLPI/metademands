@@ -39,11 +39,11 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
 
 Session::checkLoginUser();
 $fieldGroup = new PluginMetademandsField();
-if(!isset($_POST['fields_id'])){
-   $fieldGroup->getFromDBByCrit(['link_to_user'=>$_POST['id_fielduser'],'type'=>"dropdown_object",'item'=>Group::getType()]);
+if (!isset($_POST['fields_id'])) {
+   $fieldGroup->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'], 'type' => "dropdown_object", 'item' => Group::getType()]);
 
-   $_POST["field"] = "field[".$fieldGroup->fields['id']."]";
-}else{
+   $_POST["field"] = "field[" . $fieldGroup->fields['id'] . "]";
+} else {
    $fieldGroup->getFromDB($_POST['fields_id']);
 }
 
