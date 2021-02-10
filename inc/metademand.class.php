@@ -1519,7 +1519,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $paramIn["tickets_id"]                        = $parent_tickets_id;
                         $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
                         $paramIn["users_id"]                          = 0;
-                        $paramIn["validate"]                          = 0;
+                        $paramIn["validate"]                          = PluginMetademandsMetademandValidation::TO_VALIDATE;
                         $paramIn["date"]                              = date("Y-m-d H:i:s");
                         $tasks                                        = $line['tasks'];
                         foreach ($tasks as $key => $val) {
@@ -2223,9 +2223,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
       $metaValidation = new PluginMetademandsMetademandValidation();
       if ($metaValidation->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])) {
-         if ($metaValidation->fields['validate'] == 0) {
+         if ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE) {
             echo "<div align='center'><table class='tab_cadre_fixe'>";
-            echo "<tr><th colspan='6'>" . __('Metademand need a validation ', 'metademands') . "</th></tr>";
+            echo "<tr><th colspan='6'>" . __('Metademand need a validation', 'metademands') . "</th></tr>";
             echo "</table></div>";
          }
       }
