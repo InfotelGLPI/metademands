@@ -1672,10 +1672,14 @@ class PluginMetademandsField extends CommonDBChild {
                      }
                   }
                   echo "<div id='group_user" . $data['link_to_user'] . "' class=\"input-group\">";
-                  $_POST['value']     = Session::getLoginUserID();
-                  $_POST['field']     = $namefield . "[" . $data['id'] . "]";
-                  $_POST['groups_id'] = $value;
-                  $_POST['fields_id'] = $data['id'];
+                  $_POST['field']        = $namefield . "[" . $data['id'] . "]";
+                  if ($data['link_to_user'] > 0) {
+                     $_POST['groups_id']    = $value;
+                     $_POST['value']        = Session::getLoginUserID();
+                     $_POST['id_fielduser'] = $data['link_to_user'];
+                     $_POST['fields_id']    = $data['id'];
+                  }
+
                   include(GLPI_ROOT . "/plugins/metademands/ajax/ugroupUpdate.php");
                   echo "</div>";
                   break;
@@ -1799,9 +1803,12 @@ class PluginMetademandsField extends CommonDBChild {
                   if ($data['item'] == "Location") {
                      echo "<div id='location_user" . $data['link_to_user'] . "' class=\"input-group\">";
                      $_POST['field']        = $namefield . "[" . $data['id'] . "]";
-                     $_POST['value']        = Session::getLoginUserID();
-                     $_POST['locations_id'] = $value;
-                     $_POST['fields_id']    = $data['id'];
+                     if ($data['link_to_user'] > 0) {
+                        $_POST['locations_id'] = $value;
+                        $_POST['value']        = Session::getLoginUserID();
+                        $_POST['id_fielduser'] = $data['link_to_user'];
+                        $_POST['fields_id']    = $data['id'];
+                     }
                      include(GLPI_ROOT . "/plugins/metademands/ajax/ulocationUpdate.php");
                      echo "</div>";
                   } else {
