@@ -1505,6 +1505,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      //                     $line['tasks'] = $this->checkTaskAllowed($metademands_id, $values, $line['tasks']);
 
                      if ($this->fields["validation_subticket"] == 0) {
+                        $ticket2 = new Ticket();
+                        $ticket2->getFromDB($parent_tickets_id);
+                        $parent_fields["requesttypes_id"] = $ticket2->fields['requesttypes_id'];
                         if (!$this->createSonsTickets($parent_tickets_id,
                                                       $this->mergeFields($parent_fields,
                                                                          $parent_ticketfields),
@@ -2081,7 +2084,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $son_ticket_data['type']                = $parent_fields['type'];
             $son_ticket_data['entities_id']         = $parent_fields['entities_id'];
             $son_ticket_data['users_id_recipient']  = 0;
-            $son_ticket_data['_users_id_requester'] = $parent_fields['_users_id_requester'];
+            $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester'])?$parent_fields['_users_id_requester']:0;
+            $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
             $son_ticket_data['_auto_import']        = 1;
             $son_ticket_data['status']              = Ticket::INCOMING;
 
