@@ -121,7 +121,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       if (count($ticket_metademand->fields) > 0) {
          $parent_ticket = true;
       } else {
-         $ticket_parent_id = self::getTikcetIDOfMetademand($ticket->getID());
+         $ticket_parent_id = self::getTicketIDOfMetademand($ticket->getID());
          $meta_to_not_close = self::childTicketsOpen($ticket_parent_id);
          if($ticket_metademand->getFromDBByCrit(['parent_tickets_id'=>$ticket_parent_id])){
             $validationmeta = new PluginMetademandsMetademandValidation();
@@ -152,7 +152,12 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
    }
 
-   static function getTikcetIDOfMetademand($ticket_id){
+   /**
+    * @param $ticket_id
+    *
+    * @return mixed
+    */
+   static function getTicketIDOfMetademand($ticket_id){
       $ticket_task = new PluginMetademandsTicket_Task();
       if($ticket_task->getFromDBByCrit(['tickets_id'=>$ticket_id])){
          while ($ticket_task->fields['level'] != 1){
@@ -165,6 +170,11 @@ class PluginMetademandsTicket extends CommonDBTM {
 
    }
 
+   /**
+    * @param $tickets_id
+    *
+    * @return bool
+    */
    static function childTicketsOpen($tickets_id){
       $ticket_task = new PluginMetademandsTicket_Task();
       $ticket_tasks = $ticket_task->find(['parent_tickets_id'=>$tickets_id]);
