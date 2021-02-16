@@ -72,19 +72,11 @@ class PluginMetademandsWizard extends CommonDBTM {
     */
    static function showUserInformations(User $user) {
 
-      echo __('Name') . "&nbsp;";
-      echo $user->getField('realname');
-      echo " / ";
-      echo __('First name') . "&nbsp;";
-      echo $user->getField('firstname');
-      echo " / ";
-      echo __('Login') . "&nbsp;";
-      echo $user->getField('name');
-      if (!empty($user->getField('phone'))) {
-         echo " / ";
-         echo __('Phone') . "&nbsp;";
-         echo $user->getField('phone');
-      }
+      echo "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                    ";
+      $infos = getUserName($user->getID(), 2);
+      echo $infos['comment'];
+      echo "</p>";
    }
 
    /**
@@ -273,57 +265,57 @@ class PluginMetademandsWizard extends CommonDBTM {
             return false;
          }
 
-         if ($config['show_requester_informations']) {
-            echo "<div class=\"form-row\">";
-            echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
-            echo "<h4 class=\"bt-title-divider\"><span>";
-            echo __('General informations', 'metademands');
-            echo "</span></h4></div>";
-
-            // If profile have right on requester update
-            if ($this->canUpdateRequester() && empty($parameters['tickets_id'])) {
-               $rand = mt_rand();
-
-               echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-               echo __('Requester') . '&nbsp;:&nbsp;';
-               User::dropdown(['name'      => "_users_id_requester",
-                               'value'     => $userid,
-                               'right'     => 'all',
-                               'rand'      => $rand,
-                               'on_change' => "showRequester$rand()"]);
-               echo "<script type='text/javascript' >\n";
-               echo "function showRequester$rand() {\n";
-               $params = ['value'     => '__VALUE__',
-                          'old_value' => $userid];
-               Ajax::updateItemJsCode("show_users_id_requester",
-                                      $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardUser.php",
-                                      $params,
-                                      "dropdown__users_id_requester$rand");
-
-               $params = ['value'          => '__VALUE__',
-                          'old_value'      => $userid,
-                          'metademands_id' => $parameters['metademands_id']];
-               Ajax::updateItemJsCode("show_items_id_requester",
-                                      $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardItems.php",
-                                      $params,
-                                      "dropdown__users_id_requester$rand");
-
-               echo "}";
-               echo "</script>\n";
-               echo "</div>";
-            } else {
-               echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
-            }
-            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-            echo "<span id='show_users_id_requester'>";
-            self::showUserInformations($user);
-            echo "</span>";
-            echo "</div>";
-
-            echo "</div>";
-         } else {
-            echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
-         }
+         //         if ($config['show_requester_informations']) {
+         //            echo "<div class=\"form-row\">";
+         //            echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
+         //            echo "<h4 class=\"bt-title-divider\"><span>";
+         //            echo __('General informations', 'metademands');
+         //            echo "</span></h4></div>";
+         //
+         //            // If profile have right on requester update
+         //            if ($this->canUpdateRequester() && empty($parameters['tickets_id'])) {
+         //               $rand = mt_rand();
+         //
+         //               echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
+         //               echo __('Requester') . '&nbsp;:&nbsp;';
+         //               User::dropdown(['name'      => "_users_id_requester",
+         //                               'value'     => $userid,
+         //                               'right'     => 'all',
+         //                               'rand'      => $rand,
+         //                               'on_change' => "showRequester$rand()"]);
+         //               echo "<script type='text/javascript' >\n";
+         //               echo "function showRequester$rand() {\n";
+         //               $params = ['value'     => '__VALUE__',
+         //                          'old_value' => $userid];
+         //               Ajax::updateItemJsCode("show_users_id_requester",
+         //                                      $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardUser.php",
+         //                                      $params,
+         //                                      "dropdown__users_id_requester$rand");
+         //
+         //               $params = ['value'          => '__VALUE__',
+         //                          'old_value'      => $userid,
+         //                          'metademands_id' => $parameters['metademands_id']];
+         //               Ajax::updateItemJsCode("show_items_id_requester",
+         //                                      $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardItems.php",
+         //                                      $params,
+         //                                      "dropdown__users_id_requester$rand");
+         //
+         //               echo "}";
+         //               echo "</script>\n";
+         //               echo "</div>";
+         //            } else {
+         //               echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
+         //            }
+         //            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
+         //            echo "<span id='show_users_id_requester'>";
+         //            self::showUserInformations($user);
+         //            echo "</span>";
+         //            echo "</div>";
+         //
+         //            echo "</div>";
+         //         } else {
+         echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
+         //         }
 
       }
       $options['resources_id']      = $parameters['resources_id'];
@@ -976,7 +968,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "var metademandWizard$rand = $(document).metademandWizard();";
                            $script .= "metademandWizard$rand.metademand_setMandatoryField(
                          'metademands_wizard_red" . $fields_link[$key] . "', 
-                         'field[" . $data['id'] . "]',[" . $check_value[$key];
+                         'field[" . $data['id'] . "]',[";
+                           if ($check_value[$key] > 0) {
+                              $script .= $check_value[$key];
+                           }
                            foreach ($fields_link2 as $key2 => $fields2) {
                               if ($key != $key2) {
                                  if ($fields_link[$key] == $fields_link[$key2]) {
@@ -985,8 +980,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                            }
 
-                           $script .= "], 
-                         '" . $data['item'] . "');";
+                           $script .= "], '" . $data['item'] . "');";
                         }
                      }
                   }
@@ -2514,28 +2508,28 @@ class PluginMetademandsWizard extends CommonDBTM {
          $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
          $unserialisedHiddenLink = PluginMetademandsField::_unserialize($value['hidden_link']);
          //$unserialisedHiddenBloc = PluginMetademandsField::_unserialize($value['hidden_block']);
-         $unserialisedTaskChild  = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
+         $unserialisedTaskChild = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
          if (is_array($unserialisedCheck) && is_array($unserialisedHiddenLink)) {
             $toKeep = [];
             foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
-               if(!isset($toKeep[$hiddenFields])){
+               if (!isset($toKeep[$hiddenFields])) {
                   $toKeep[$hiddenFields] = false;
                }
-               if(isset($post[$id])){
-                  $test    = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
-               }else{
+               if (isset($post[$id])) {
+                  $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
+               } else {
                   $test = false;
                }
 
-               if($test == true){
+               if ($test == true) {
                   $toKeep[$hiddenFields] = true;
                   if ($unserialisedTaskChild[$key] != 0) {
                      $metaTask = new PluginMetademandsMetademandTask();
                      $metaTask->getFromDB($unserialisedTaskChild[$key]);
-                     $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
+                     $idChild = $metaTask->getField('plugin_metademands_metademands_id');
                      unset($_SESSION['metademands_hide'][$idChild]);
                   }
-               }else{
+               } else {
                   if ($unserialisedTaskChild[$key] != 0) {
                      $metaTask = new PluginMetademandsMetademandTask();
                      $metaTask->getFromDB($unserialisedTaskChild[$key]);
@@ -2543,29 +2537,29 @@ class PluginMetademandsWizard extends CommonDBTM {
                      $_SESSION['metademands_hide'][$idChild] = $idChild;
                   }
                }
-//               if (!isset($post[$id]) || ((!is_array($post[$id]) && $unserialisedCheck[$key] != $post[$id]) || (is_array($post[$id]) && !in_array($unserialisedCheck[$key], $post[$id])))) {
-//
-//                  if (isset($post[$hiddenFields])) unset($post[$hiddenFields]);
-//                  if (isset($data[$hiddenFields])) unset($data[$hiddenFields]);
-//
-//                  //If the field is hidden and linked to a sub metademand
-//                  //Dont show the sub metademand
-//                  if (is_array($unserialisedTaskChild)) {
-//                     foreach ($unserialisedTaskChild as $child) {
-//                        if ($child != 0) {
-//                           $metaTask = new PluginMetademandsMetademandTask();
-//                           $metaTask->getFromDB($child);
-//                           $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
-//                           $_SESSION['metademands_hide'][$idChild] = $idChild;
-//                        }
-//                     }
-//                  }
-//               }
+               //               if (!isset($post[$id]) || ((!is_array($post[$id]) && $unserialisedCheck[$key] != $post[$id]) || (is_array($post[$id]) && !in_array($unserialisedCheck[$key], $post[$id])))) {
+               //
+               //                  if (isset($post[$hiddenFields])) unset($post[$hiddenFields]);
+               //                  if (isset($data[$hiddenFields])) unset($data[$hiddenFields]);
+               //
+               //                  //If the field is hidden and linked to a sub metademand
+               //                  //Dont show the sub metademand
+               //                  if (is_array($unserialisedTaskChild)) {
+               //                     foreach ($unserialisedTaskChild as $child) {
+               //                        if ($child != 0) {
+               //                           $metaTask = new PluginMetademandsMetademandTask();
+               //                           $metaTask->getFromDB($child);
+               //                           $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
+               //                           $_SESSION['metademands_hide'][$idChild] = $idChild;
+               //                        }
+               //                     }
+               //                  }
+               //               }
             }
-           // if(is_array($unserialisedHiddenBloc)){
-           // }
-            foreach ($toKeep as $k => $v){
-               if($v == false){
+            // if(is_array($unserialisedHiddenBloc)){
+            // }
+            foreach ($toKeep as $k => $v) {
+               if ($v == false) {
                   if (isset($post[$k])) unset($post[$k]);
                   if (isset($data[$k])) unset($data[$k]);
                }

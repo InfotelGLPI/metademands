@@ -69,9 +69,8 @@ if (isset($_POST['value']) && $_POST["value"] > 0
                                                         $_POST["value"],
                                                         true);
    }
-
 }
-print_r($_POST["field"]);
+
 Group::dropdown(['name'      => $_POST["field"],
                  'entity'    => $_SESSION['glpiactiveentities'],
                  'value'     => $groups_id,

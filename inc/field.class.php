@@ -1609,6 +1609,26 @@ class PluginMetademandsField extends CommonDBChild {
                   $userrand = mt_rand();
                   $field    = "";
 
+                  $paramstooltip
+                     = ['value'          => '__VALUE__',
+                        'id_fielduser'   => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+
+                  $toupdate[] = ['value_fieldname'
+                                                => 'value',
+                                 'id_fielduser' => $data['id'],
+                                 'to_update'    => "tooltip_user",
+                                 'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
+                                 'moreparams'   => $paramstooltip];
+
+                  $field .= "<script type='text/javascript'>";
+                  $field .= "$(function() {";
+                  Ajax::updateItemJsCode("tooltip_user",
+                                         $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
+                                         $paramstooltip,
+                                         $namefield . "[" . $data['id'] . "]", false);
+                  $field .= "});</script>";
+
                   $paramsloc
                      = ['value'          => '__VALUE__',
                         'id_fielduser'   => $data['id'],
@@ -1651,15 +1671,22 @@ class PluginMetademandsField extends CommonDBChild {
                   $field .= "});</script>";
 
 
-                  $value = !empty($value) ? $value : Session::getLoginUserID();
-                  $field .= User::dropdown(['name'     => $namefield . "[" . $data['id'] . "]",
-                                            'entity'   => $_SESSION['glpiactiveentities'],
-                                            'right'    => 'all',
-                                            'rand'     => $userrand,
-                                            'value'    => $value,
-                                            'display'  => false,
-                                            'toupdate' => $toupdate
-                                           ]);
+                  $value  = !empty($value) ? $value : Session::getLoginUserID();
+                  echo User::dropdown(['name'     => $namefield . "[" . $data['id'] . "]",
+                                             'entity'   => $_SESSION['glpiactiveentities'],
+                                             'right'    => 'all',
+                                             'rand'     => $userrand,
+                                             'value'    => $value,
+                                             'display'  => false,
+                                             'toupdate' => $toupdate
+                                            ]);
+                  $config = PluginMetademandsConfig::getInstance();
+                  if ($config['show_requester_informations']) {
+                     echo "<div id='tooltip_user' class=\"input-group\">";
+                     $_POST['value'] = Session::getLoginUserID();
+                     include(GLPI_ROOT . "/plugins/metademands/ajax/utooltipUpdate.php");
+                     echo "</div>";
+                  }
 
                   break;
                case 'Group':
@@ -1672,7 +1699,7 @@ class PluginMetademandsField extends CommonDBChild {
                      }
                   }
                   echo "<div id='group_user" . $data['link_to_user'] . "' class=\"input-group\">";
-                  $_POST['field']        = $namefield . "[" . $data['id'] . "]";
+                  $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                   if ($data['link_to_user'] > 0) {
                      $_POST['groups_id']    = $value;
                      $_POST['value']        = Session::getLoginUserID();
@@ -1802,7 +1829,7 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   if ($data['item'] == "Location") {
                      echo "<div id='location_user" . $data['link_to_user'] . "' class=\"input-group\">";
-                     $_POST['field']        = $namefield . "[" . $data['id'] . "]";
+                     $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                      if ($data['link_to_user'] > 0) {
                         $_POST['locations_id'] = $value;
                         $_POST['value']        = Session::getLoginUserID();
