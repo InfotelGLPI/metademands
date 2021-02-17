@@ -36,6 +36,10 @@ if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
 
 Session::checkLoginUser();
 
+if(isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])){
+   $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
+}
+
 $user = new User();
 if ($user->getFromDB($_POST["value"])) {
    PluginMetademandsWizard::showUserInformations($user);

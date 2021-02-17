@@ -1684,6 +1684,8 @@ class PluginMetademandsField extends CommonDBChild {
                   if ($config['show_requester_informations']) {
                      echo "<div id='tooltip_user' class=\"input-group\">";
                      $_POST['value'] = Session::getLoginUserID();
+                     $_POST['id_fielduser'] =  $data['id'];
+                     $_POST['value'] = Session::getLoginUserID();
                      include(GLPI_ROOT . "/plugins/metademands/ajax/utooltipUpdate.php");
                      echo "</div>";
                   }
