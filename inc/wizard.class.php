@@ -76,6 +76,18 @@ class PluginMetademandsWizard extends CommonDBTM {
                     ";
       $infos = getUserName($user->getID(), 2);
       echo $infos['comment'];
+
+      $cond['is_requester'] = 1;
+      $groups               = PluginMetademandsField::getUserGroup($_SESSION['glpiactiveentities'],
+                                                                   $user->getID(),
+                                                                   $cond,
+                                                                   false);
+      if (count($groups) > 0) {
+         echo "<b>"._n('Group', 'Groups', count($groups))."</b> :<br>";
+         foreach ($groups as $group) {
+            echo Dropdown::getDropdownName("glpi_groups", $group) . "<br>";
+         }
+      }
       echo "</p>";
    }
 
