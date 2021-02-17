@@ -1636,7 +1636,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
          }
 
-         $result['content'] .= "<table style='width: 100%;border-style: dashed;'>"; // class='mticket'
+         $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;border-style: dashed;'>"; // class='mticket'
          $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
          if (!empty($options['resources_id'])) {
             $resource = new PluginResourcesResource();
