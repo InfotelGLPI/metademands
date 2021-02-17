@@ -47,6 +47,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 
       $_POST["field"] = "field[" . $fieldGroup->fields['id'] . "]";
    } else {
+      if(isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])){
+         $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
+      }
+
       $fieldGroup->getFromDB($_POST['fields_id']);
    }
 

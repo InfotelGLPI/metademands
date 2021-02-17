@@ -43,6 +43,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                                    'item'         => Location::getType()]);
 
       $_POST["field"] = "field[" . $fieldUser->fields['id'] . "]";
+   }else{
+      if(isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])){
+         $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
+      }
    }
 }
 
