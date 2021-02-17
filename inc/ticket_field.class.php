@@ -273,7 +273,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                case 'radio':
                   if (empty($value) && $value !== 0) {
                      return false;
-                  } else if ($check_value !== $value) {
+                  } else if ($check_value !== strval($value)) {
                      return false;
                   }
                   break;
@@ -325,7 +325,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                   if (empty($value)) {
                      $value = [];
                   }
-                  if ($check_value == PluginMetademandsField::$not_null && is_array($value) && count($value) == 0) {
+                  if ($check_value == 0 && is_array($value) && count($value) == 0) {
                      return false;
                   }
                   break;
