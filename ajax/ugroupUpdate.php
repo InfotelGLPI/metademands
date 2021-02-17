@@ -67,6 +67,7 @@ if (isset($_POST['value']) && $_POST["value"] > 0
    if ($user->getFromDB($_POST["value"])) {
       $groups_id = PluginMetademandsField::getUserGroup($_SESSION['glpiactiveentities'],
                                                         $_POST["value"],
+                                                        $cond,
                                                         true);
    }
 }

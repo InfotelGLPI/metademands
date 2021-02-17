@@ -2215,22 +2215,23 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @return array|int|mixed
     */
-   static function getUserGroup($entity, $userid, $filter = '', $first = true) {
+   static function getUserGroup($entity, $userid, $cond = '', $first = true) {
       global $DB;
 
       $dbu = new DbUtils();
 
-      $where = '';
-      if ($filter) {
-         $where = $filter;
+      $where = [];
+      if ($cond) {
+         $where = $cond;
       }
+
       $query = ['FIELDS'     => ['glpi_groups' => ['id']],
                 'FROM'       => 'glpi_groups_users',
                 'INNER JOIN' => ['glpi_groups' => ['FKEY' => ['glpi_groups'       => 'id',
                                                               'glpi_groups_users' => 'groups_id']]],
                 'WHERE'      => ['users_id' => $userid,
                                  $dbu->getEntitiesRestrictCriteria('glpi_groups', '', $entity, true),
-                                 $where]];
+                                 ] + $where];
 
       $rep = [];
       foreach ($DB->request($query) as $data) {
