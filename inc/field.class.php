@@ -1617,13 +1617,13 @@ class PluginMetademandsField extends CommonDBChild {
                   $toupdate[] = ['value_fieldname'
                                                 => 'value',
                                  'id_fielduser' => $data['id'],
-                                 'to_update'    => "tooltip_user",
+                                 'to_update'    => "tooltip_user" . $data['id'],
                                  'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
                                  'moreparams'   => $paramstooltip];
 
                   $field .= "<script type='text/javascript'>";
                   $field .= "$(function() {";
-                  Ajax::updateItemJsCode("tooltip_user",
+                  Ajax::updateItemJsCode("tooltip_user" . $data['id'],
                                          $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
                                          $paramstooltip,
                                          $namefield . "[" . $data['id'] . "]", false);
@@ -1682,7 +1682,7 @@ class PluginMetademandsField extends CommonDBChild {
                                             ]);
                   $config = PluginMetademandsConfig::getInstance();
                   if ($config['show_requester_informations']) {
-                     echo "<div id='tooltip_user' class=\"input-group\">";
+                     echo "<div id='tooltip_user" . $data['id'] . "' class=\"input-group\">";
                      $_POST['value'] = Session::getLoginUserID();
                      $_POST['id_fielduser'] =  $data['id'];
                      $_POST['value'] = Session::getLoginUserID();
