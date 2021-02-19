@@ -605,6 +605,20 @@ class PluginMetademandsField extends CommonDBChild {
          Html::hidden('used_by_child', ['value' => 0]);
       }
 
+      if ($ID > 0 && ($this->fields['type'] == "dropdown_object"
+                       && $this->fields["item"] == "User")) {
+         echo "<tr class='tab_bg_1'>";
+         echo "<td colspan='2'>";
+         echo "</td>";
+         echo "<td>";
+         echo __('Use id of requester by default', 'metademands');
+         echo "</td>";
+         echo "<td>";
+         Dropdown::showYesNo('default_use_id_requester', $this->fields['default_use_id_requester']);
+         echo "</td>";
+         echo "</tr>";
+      }
+
       if ($ID > 0 && (($this->fields['type'] == "dropdown_object"
                        && $this->fields["item"] == "Group")
                       || ($this->fields['type'] == "dropdown"
@@ -1670,8 +1684,9 @@ class PluginMetademandsField extends CommonDBChild {
                                          $namefield . "[" . $data['id'] . "]", false);
                   $field .= "});</script>";
 
-
-                  $value  = !empty($value) ? $value : Session::getLoginUserID();
+                  if(empty($value)){
+                     $value  = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                  }
                   echo User::dropdown(['name'     => $namefield . "[" . $data['id'] . "]",
                                              'entity'   => $_SESSION['glpiactiveentities'],
                                              'right'    => 'all',
