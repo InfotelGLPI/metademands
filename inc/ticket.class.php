@@ -222,7 +222,7 @@ class PluginMetademandsTicket extends CommonDBTM {
          if (!empty($ticket->input["itilcategories_id"])) {
             $data = $dbu->getAllDataFromTable('glpi_plugin_metademands_tickets_metademands',
                                               ["`tickets_id`" => $ticket->input["id"]]);
-            if (!empty($data)) {
+            if (!empty($data) && $ticket->input['itilcategories_id'] != $ticket->fields['itilcategories_id']) {
                $data       = reset($data);
                $metademand = new PluginMetademandsMetademand();
                $metademand->convertMetademandToTicket($ticket, $data['plugin_metademands_metademands_id']);
