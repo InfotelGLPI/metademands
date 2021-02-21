@@ -59,6 +59,11 @@ if (isset($_POST['value']) && $_POST["value"] > 0
    }
 }
 
+if(isset($_POST['fields_id'])
+   && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])){
+   $locations_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
+}
+
 Location::dropdown(['name'  => $_POST["field"],
                     'value' => $locations_id]);
 

@@ -63,8 +63,8 @@ class PluginMetademandsMetademand extends CommonDropdown {
    function __construct() {
       $config              = PluginMetademandsConfig::getInstance();
       $this->config        = $config;
-      self::$PARENT_PREFIX = $config['parent_ticket_tag'] . '&nbsp;';
-      self::$SON_PREFIX    = $config['son_ticket_tag'] . '&nbsp;';
+      self::$PARENT_PREFIX = $config['parent_ticket_tag'] . ' ';
+      self::$SON_PREFIX    = $config['son_ticket_tag'] . ' ';
    }
 
    /**
@@ -2081,6 +2081,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             // Add son ticket
             $son_ticket_data['_disablenotif']       = true;
             $son_ticket_data['name']                = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
+            $son_ticket_data['name']                = trim($son_ticket_data['name']);
             $son_ticket_data['type']                = $parent_fields['type'];
             $son_ticket_data['entities_id']         = $parent_fields['entities_id'];
             $son_ticket_data['users_id_recipient']  = isset($parent_fields['users_id_recipient'])?$parent_fields['users_id_recipient']:0;
@@ -2091,7 +2092,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
             $content = '';
             if (!empty($son_ticket_data['content'])) {
-               $content = "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
+               $content = "<table class='tab_cadre_fixe' style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                           "</th></tr><tr><td colspan='2'>" . $son_ticket_data['content'];
                $content .= "</td></tr></table><br>";
             }
@@ -2100,7 +2101,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if ($config->getField('childs_parent_content') == 1) {
                if (!empty($parent_fields['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                  $content .= "<table style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
+                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
                               "</th></tr><tr><td colspan='2'>" . $parent_fields['content'];
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "</td></tr></table><br>";

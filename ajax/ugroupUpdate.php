@@ -76,6 +76,11 @@ if (isset($_POST['value']) && $_POST["value"] > 0
    }
 }
 
+if(isset($_POST['fields_id'])
+   && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])){
+   $groups_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
+}
+
 Group::dropdown(['name'      => $_POST["field"],
                  'entity'    => $_SESSION['glpiactiveentities'],
                  'value'     => $groups_id,
