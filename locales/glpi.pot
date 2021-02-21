@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-02-19 15:32+0000\n"
+"POT-Creation-Date: 2021-02-21 10:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -445,51 +445,51 @@ msgstr ""
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr ""
 
-#: inc/metademand.class.php:2094
+#: inc/metademand.class.php:2095
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:2103
+#: inc/metademand.class.php:2104
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2228
+#: inc/metademand.class.php:2229
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:2255
+#: inc/metademand.class.php:2256
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:2269
+#: inc/metademand.class.php:2270
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2276 inc/metademand.class.php:2405
+#: inc/metademand.class.php:2277 inc/metademand.class.php:2406
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:2398
+#: inc/metademand.class.php:2399
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2475
+#: inc/metademand.class.php:2476
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:2843 inc/metademand.class.php:2867
+#: inc/metademand.class.php:2844 inc/metademand.class.php:2868
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:2976 inc/metademand.class.php:3018
+#: inc/metademand.class.php:2977 inc/metademand.class.php:3019
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:2988 inc/metademand.class.php:3071
+#: inc/metademand.class.php:2989 inc/metademand.class.php:3072
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3000 inc/metademand.class.php:3123
+#: inc/metademand.class.php:3001 inc/metademand.class.php:3124
 msgid "Metademands to be validated"
 msgstr ""
 
