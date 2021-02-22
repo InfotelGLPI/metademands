@@ -28,7 +28,7 @@
  */
 
 $AJAX_INCLUDE = 1;
-if (strpos($_SERVER['PHP_SELF'], "ulocationUpdate.php")) {
+if (strpos($_SERVER['PHP_SELF'], "umydevicesUpdate.php")) {
    include('../../../inc/includes.php');
    header("Content-Type: text/html; charset=UTF-8");
    Html::header_nocache();
@@ -39,10 +39,11 @@ $fieldUser = new PluginMetademandsField();
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
       if ($fieldUser->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'],
-                                       'type'         => "dropdown",
-                                       'item'         => Location::getType()])) {
+                                       'type'         => "dropdown_meta",
+                                       'item'         => "mydevices"])) {
          $_POST["field"] = "field[" . $fieldUser->fields['id'] . "]";
       }
+
    } else {
       if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
          $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
@@ -50,23 +51,25 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    }
 }
 
-$locations_id = 0;
-if (isset($_POST['value']) && $_POST["value"] > 0
-    && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
-   $user = new User();
+$users_id = 0;
+
+$user = new User();
+if (isset($_POST['value']) && $_POST["value"] > 0) {
    if ($user->getFromDB($_POST["value"])) {
-      $locations_id = $user->fields['locations_id'];
+      $users_id = $_POST['value'];
    }
 }
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])) {
-   $locations_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
+   $users_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
 }
 
-Location::dropdown(['name'  => $_POST["field"],
-                    'value' => $locations_id]);
+$rand = mt_rand();
+$p    = ['rand' => $rand,
+         'name' => $_POST["field"]];
+PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p);
 
-$_POST['name'] = "location_user";
+$_POST['name'] = "mydevices_user";
 $_POST['rand'] = "";
 Ajax::commonDropdownUpdateItem($_POST);

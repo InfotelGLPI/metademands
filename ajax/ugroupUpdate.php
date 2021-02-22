@@ -41,13 +41,13 @@ $cond       = [];
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
-      $fieldGroup->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'],
-                                    'type'         => "dropdown_object",
-                                    'item'         => Group::getType()]);
-
-      $_POST["field"] = "field[" . $fieldGroup->fields['id'] . "]";
+      if ($fieldGroup->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'],
+                                        'type'         => "dropdown_object",
+                                        'item'         => Group::getType()])) {
+         $_POST["field"] = "field[" . $fieldGroup->fields['id'] . "]";
+      }
    } else {
-      if(isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])){
+      if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
          $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
       }
 
@@ -76,8 +76,8 @@ if (isset($_POST['value']) && $_POST["value"] > 0
    }
 }
 
-if(isset($_POST['fields_id'])
-   && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])){
+if (isset($_POST['fields_id'])
+    && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])) {
    $groups_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
 }
 

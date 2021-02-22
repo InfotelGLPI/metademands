@@ -606,7 +606,7 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       if ($ID > 0 && ($this->fields['type'] == "dropdown_object"
-                       && $this->fields["item"] == "User")) {
+                      && $this->fields["item"] == "User")) {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2'>";
          echo "</td>";
@@ -623,6 +623,8 @@ class PluginMetademandsField extends CommonDBChild {
                        && $this->fields["item"] == "Group")
                       || ($this->fields['type'] == "dropdown"
                           && $this->fields["item"] == "Location")
+                      || ($this->fields['type'] == "dropdown_meta"
+                          && $this->fields["item"] == "mydevices")
          )
       ) {
          echo "<tr class='tab_bg_1'>";
@@ -634,8 +636,10 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<td>";
          $arrayAvailable    = [];
          $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
-         $field             = new PluginMetademandsField();
-         $fields            = $field->find(["plugin_metademands_metademands_id" => $this->fields['plugin_metademands_metademands_id'], 'type' => "dropdown_object", "item" => User::getType()]);
+         $field             = new self();
+         $fields            = $field->find(["plugin_metademands_metademands_id" => $this->fields['plugin_metademands_metademands_id'],
+                                            'type' => "dropdown_object",
+                                            "item" => User::getType()]);
          foreach ($fields as $f) {
             $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
          }
@@ -1684,23 +1688,42 @@ class PluginMetademandsField extends CommonDBChild {
                                          $namefield . "[" . $data['id'] . "]", false);
                   $field .= "});</script>";
 
-                  if(empty($value)){
-                     $value  = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                  $paramsdev
+                     = ['value'          => '__VALUE__',
+                        'id_fielduser'   => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+
+                  $toupdate[] = ['value_fieldname'
+                                                => 'value',
+                                 'id_fielduser' => $data['id'],
+                                 'to_update'    => "mydevices_user" . $data['id'],
+                                 'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/umydevicesUpdate.php",
+                                 'moreparams'   => $paramsdev];
+
+                  $field .= "<script type='text/javascript'>";
+                  $field .= "$(function() {";
+                  Ajax::updateItemJsCode("mydevices_user" . $data['id'],
+                                         $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/umydevicesUpdate.php",
+                                         $paramsdev,
+                                         $namefield . "[" . $data['id'] . "]", false);
+                  $field .= "});</script>";
+
+                  if (empty($value)) {
+                     $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                   }
                   echo User::dropdown(['name'     => $namefield . "[" . $data['id'] . "]",
-                                             'entity'   => $_SESSION['glpiactiveentities'],
-                                             'right'    => 'all',
-                                             'rand'     => $userrand,
-                                             'value'    => $value,
-                                             'display'  => false,
-                                             'toupdate' => $toupdate
-                                            ]);
+                                       'entity'   => $_SESSION['glpiactiveentities'],
+                                       'right'    => 'all',
+                                       'rand'     => $userrand,
+                                       'value'    => $value,
+                                       'display'  => false,
+                                       'toupdate' => $toupdate
+                                      ]);
                   $config = PluginMetademandsConfig::getInstance();
                   if ($config['show_requester_informations']) {
                      echo "<div id='tooltip_user" . $data['id'] . "' class=\"input-group\">";
-                     $_POST['value'] = Session::getLoginUserID();
-                     $_POST['id_fielduser'] =  $data['id'];
-                     $_POST['value'] = Session::getLoginUserID();
+                     $_POST['value']        = $value;
+                     $_POST['id_fielduser'] = $data['id'];
                      include(GLPI_ROOT . "/plugins/metademands/ajax/utooltipUpdate.php");
                      echo "</div>";
                   }
@@ -1717,9 +1740,15 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   echo "<div id='group_user" . $data['link_to_user'] . "' class=\"input-group\">";
                   $_POST['field'] = $namefield . "[" . $data['id'] . "]";
+
                   if ($data['link_to_user'] > 0) {
-                     $_POST['groups_id']    = $value;
-                     $_POST['value']        = Session::getLoginUserID();
+                     $_POST['groups_id'] = $value;
+                     $fieldUser = new self();
+                     $fieldUser->getFromDBByCrit(['id' => $data['link_to_user'],
+                                                   'type'         => "dropdown_object",
+                                                   'item'         => User::getType()]);
+
+                     $_POST['value'] = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                      $_POST['id_fielduser'] = $data['link_to_user'];
                      $_POST['fields_id']    = $data['id'];
                   }
@@ -1759,13 +1788,25 @@ class PluginMetademandsField extends CommonDBChild {
                   break;
                case 'mydevices':
                   if ($on_basket == false) {
-                     $rand = mt_rand();
-                     $p    = ['rand' => $rand,
-                              'name' => $namefield . "[" . $data['id'] . "]"];
                      // My items
+                     //TODO : used_by_ticket -> link with item's ticket
                      $field    = "";
-                     $users_id = Session::getLoginUserID();
-                     $field    .= self::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p);
+                     echo "<div id='mydevices_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                     $_POST['field'] = $namefield . "[" . $data['id'] . "]";
+//                     $users_id = 0;
+                     if ($data['link_to_user'] > 0) {
+                        $fieldUser = new self();
+                        $fieldUser->getFromDBByCrit(['id' => $data['link_to_user'],
+                                                     'type'         => "dropdown_object",
+                                                     'item'         => User::getType()]);
+
+                        $_POST['value'] = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                        $_POST['id_fielduser'] = $data['link_to_user'];
+                        $_POST['fields_id']    = $data['id'];
+                     }
+                     include(GLPI_ROOT . "/plugins/metademands/ajax/umydevicesUpdate.php");
+                     echo "</div>";
+
                   } else {
                      $dbu      = new DbUtils();
                      $splitter = explode("_", $value);
@@ -1849,7 +1890,12 @@ class PluginMetademandsField extends CommonDBChild {
                      $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                      if ($data['link_to_user'] > 0) {
                         $_POST['locations_id'] = $value;
-                        $_POST['value']        = Session::getLoginUserID();
+                        $fieldUser = new self();
+                        $fieldUser->getFromDBByCrit(['id' => $data['link_to_user'],
+                                                     'type'         => "dropdown_object",
+                                                     'item'         => User::getType()]);
+
+                        $_POST['value'] = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id']    = $data['id'];
                      }
@@ -2248,7 +2294,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                               'glpi_groups_users' => 'groups_id']]],
                 'WHERE'      => ['users_id' => $userid,
                                  $dbu->getEntitiesRestrictCriteria('glpi_groups', '', $entity, true),
-                                 ] + $where];
+                                ] + $where];
 
       $rep = [];
       foreach ($DB->request($query) as $data) {
@@ -3831,10 +3877,10 @@ class PluginMetademandsField extends CommonDBChild {
       foreach ($options as $key => $val) {
          $params[$key] = $val;
       }
-
-      if ($userID == 0) {
-         $userID = Session::getLoginUserID();
-      }
+//
+//      if ($userID == 0) {
+//         $userID = Session::getLoginUserID();
+//      }
 
       $rand        = $params['rand'];
       $already_add = $params['used'];

@@ -41,8 +41,10 @@ if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
 }
 
 $user = new User();
-if ($user->getFromDB($_POST["value"])) {
-   PluginMetademandsWizard::showUserInformations($user);
+if (isset($_POST['value']) && $_POST["value"] > 0) {
+   if ($user->getFromDB($_POST["value"])) {
+      PluginMetademandsWizard::showUserInformations($user);
+   }
 }
 
 $_POST['name'] = "tooltip_user";
