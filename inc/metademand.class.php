@@ -1314,6 +1314,19 @@ class PluginMetademandsMetademand extends CommonDropdown {
                               $name = "_groups_id_observer";
                            }
                            $parent_fields[$name] = $v[$id];
+
+                           if ($fields_values['used_by_ticket'] == 13) {
+
+                              if ($fields_values['type'] == "dropdown_meta"
+                                   && $fields_values["item"] == "mydevices") {
+                                 $item = explode('_', $v[$id]);
+                                 $parent_fields["items_id"] = [$item[0] => [$item[1]]];
+                              }
+                              if ($fields_values['type'] == "dropdown_object"
+                              && Ticket::isPossibleToAssignType($fields_values["item"])) {
+                                 $parent_fields["items_id"] = [$fields_values["item"] => [$v[$id]]];
+                              }
+                           }
                         }
                      }
                   }
@@ -2084,9 +2097,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $son_ticket_data['name']                = trim($son_ticket_data['name']);
             $son_ticket_data['type']                = $parent_fields['type'];
             $son_ticket_data['entities_id']         = $parent_fields['entities_id'];
-            $son_ticket_data['users_id_recipient']  = isset($parent_fields['users_id_recipient'])?$parent_fields['users_id_recipient']:0;
-            $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester'])?$parent_fields['_users_id_requester']:0;
-            $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
+            $son_ticket_data['users_id_recipient']  = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
+            $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
+            $son_ticket_data['requesttypes_id']     = $parent_fields['requesttypes_id'];
             $son_ticket_data['_auto_import']        = 1;
             $son_ticket_data['status']              = Ticket::INCOMING;
 
@@ -3129,7 +3142,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $get_to_validated_meta =
          "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated' FROM `glpi_plugin_metademands_metademandvalidations`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (".PluginMetademandsMetademandValidation::TO_VALIDATE.",".PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK.")" .
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (" . PluginMetademandsMetademandValidation::TO_VALIDATE . "," . PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK . ")" .
          $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 

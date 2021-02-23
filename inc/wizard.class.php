@@ -72,8 +72,8 @@ class PluginMetademandsWizard extends CommonDBTM {
     */
    static function showUserInformations(User $user) {
 
-      echo "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    ";
+      echo "<span class='speech'>";
+      echo "<button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>";
       $infos = getUserName($user->getID(), 2);
       echo $infos['comment'];
 
@@ -83,12 +83,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                                    $cond,
                                                                    false);
       if (count($groups) > 0) {
-         echo "<b>"._n('Group', 'Groups', count($groups))."</b> :<br>";
+         echo "<b>" . _n('Group', 'Groups', count($groups)) . "</b> :<br>";
          foreach ($groups as $group) {
             echo Dropdown::getDropdownName("glpi_groups", $group) . "<br>";
          }
       }
-      echo "</p>";
+      echo "</span>";
    }
 
    /**
@@ -2412,13 +2412,12 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check text with regex
          if ($value['type'] == "text"
              && !empty($value["regex"])) {
-            if((!empty($fields['value']) && $value['is_mandatory'] == 0) || $value['is_mandatory'] == 1){
+            if ((!empty($fields['value']) && $value['is_mandatory'] == 0) || $value['is_mandatory'] == 1) {
                if (!preg_match(($value['regex']), $fields['value'])) {
                   $msg3[]       = $value['name'];
                   $checkRegex[] = 1;
                }
             }
-
          }
 
       }

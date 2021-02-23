@@ -566,6 +566,15 @@ class PluginMetademandsField extends CommonDBChild {
             ];
          }
 
+         if (($this->fields['type'] == "dropdown_meta"
+             && $this->fields["item"] == "mydevices")
+         || ($this->fields['type'] == "dropdown_object"
+             && Ticket::isPossibleToAssignType($this->fields["item"]))) {
+            $granted_fields = [
+               13
+            ];
+         }
+
          foreach ($allowed_fields as $id => $value) {
             if (in_array($searchOption[$id]['linkfield'], $granted_fields) || in_array($id, $granted_fields)) {
                $ticket_fields[$id] = $searchOption[$id]['name'];
@@ -3810,6 +3819,9 @@ class PluginMetademandsField extends CommonDBChild {
       return $forbidden;
    }
 
+   /**
+    * @return array[]
+    */
    static function getGlpiObject() {
       $optgroup = [
          __("Assets")         => [
