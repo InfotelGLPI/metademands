@@ -2412,11 +2412,13 @@ class PluginMetademandsWizard extends CommonDBTM {
          // Check text with regex
          if ($value['type'] == "text"
              && !empty($value["regex"])) {
-
-            if (!preg_match(($value['regex']), $fields['value'])) {
-               $msg3[]       = $value['name'];
-               $checkRegex[] = 1;
+            if((!empty($fields['value']) && $value['is_mandatory'] == 0) || $value['is_mandatory'] == 1){
+               if (!preg_match(($value['regex']), $fields['value'])) {
+                  $msg3[]       = $value['name'];
+                  $checkRegex[] = 1;
+               }
             }
+
          }
 
       }
