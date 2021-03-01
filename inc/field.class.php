@@ -2596,7 +2596,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1, $optid);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $optid, 1, 1, 1);
             break;
          case 'date' :
          case 'datetime' :
@@ -2711,7 +2711,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1, $optid);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $optid, 1, 1, 1);
 
             break;
          case 'checkbox':
@@ -2736,7 +2736,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 1, 1, $optid);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $optid, 1, 1, 1);
 
             break;
          case 'parent_field':
@@ -2778,7 +2778,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, 1, 0, 1, $optid);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $optid, 1, 0, 1);
             break;
 
          case 'upload':
@@ -2792,7 +2792,7 @@ class PluginMetademandsField extends CommonDBChild {
    /**
     * @param     $metademands_id
     * @param     $params
-    *
+    * @param     $opt
     * @param int $task
     * @param int $field
     * @param int $hidden
@@ -2801,7 +2801,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @throws \GlpitestSQLError
     */
 
-   function showLinkHtml($metademands_id, $params, $task = 1, $field = 1, $hidden = 0, $opt) {
+   function showLinkHtml($metademands_id, $params, $opt, $task = 1, $field = 1, $hidden = 0) {
       global $PLUGIN_HOOKS;
 
       $res = "";
