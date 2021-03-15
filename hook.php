@@ -609,9 +609,9 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
          $options['criteria'][1]['link']       = 'AND';
          $metademands = new PluginMetademandsTicket_Metademand();
          if($metademands->getFromDBByCrit(['tickets_id'=>$data['id']])){
-            $out = "<a href=\"".$CFG_GLPI["root_doc"]."/front/ticket.php?".
+            $out = "<a class='vsubmit' href=\"".$CFG_GLPI["root_doc"]."/front/ticket.php?".
                    Toolbox::append_params($options, '&amp;')."\">".
-                   __('Children tickets of metademands')."</a>";
+                   __('Children tickets of metademands', 'metademands')."</a>";
             return $out;
          }
 
