@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-11 16:35+0000\n"
+"POT-Creation-Date: 2021-03-15 13:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,6 +25,10 @@ msgstr ""
 
 #: hook.php:460
 msgid "Metademand status"
+msgstr ""
+
+#: hook.php:476
+msgid "Group child ticket"
 msgstr ""
 
 #: setup.php:147 inc/metademand.class.php:80 inc/profile.class.php:175
@@ -385,7 +389,7 @@ msgid "Groups allowed to enter a demand"
 msgstr ""
 
 #: inc/metademand.class.php:253 inc/metademand.class.php:318
-#: inc/task.class.php:635 inc/tickettask.class.php:535
+#: inc/task.class.php:635 inc/tickettask.class.php:566
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -395,102 +399,106 @@ msgid ""
 "cannot be in basket mode"
 msgstr ""
 
-#: inc/metademand.class.php:431 inc/metademand.class.php:665
+#: inc/metademand.class.php:431 inc/metademand.class.php:668
 msgid "Use as basket"
 msgstr ""
 
-#: inc/metademand.class.php:439 inc/metademand.class.php:670
+#: inc/metademand.class.php:439 inc/metademand.class.php:673
 msgid "Create one ticket for all lines of the basket"
 msgstr ""
 
-#: inc/metademand.class.php:654 inc/metademand.class.php:791
+#: inc/metademand.class.php:657 inc/metademand.class.php:794
 msgid "Example"
 msgstr ""
 
-#: inc/metademand.class.php:674
+#: inc/metademand.class.php:677
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 
-#: inc/metademand.class.php:684
+#: inc/metademand.class.php:687
 msgid "Need validation to create subticket"
 msgstr ""
 
-#: inc/metademand.class.php:705
+#: inc/metademand.class.php:708
 msgid "Tasks level cannot be changed as unresolved related tickets exist"
 msgstr ""
 
-#: inc/metademand.class.php:813
+#: inc/metademand.class.php:816
 msgid "field add on demand"
 msgstr ""
 
-#: inc/metademand.class.php:815
+#: inc/metademand.class.php:818
 msgid "field update on demand"
 msgstr ""
 
-#: inc/metademand.class.php:817
+#: inc/metademand.class.php:820
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:1595
+#: inc/metademand.class.php:1598
 msgid "Demand add failed"
 msgstr ""
 
-#: inc/metademand.class.php:1598
+#: inc/metademand.class.php:1601
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:1600
+#: inc/metademand.class.php:1603
 #, php-format
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr ""
 
-#: inc/metademand.class.php:2108
+#: inc/metademand.class.php:2131
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:2117
+#: inc/metademand.class.php:2140
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2242
+#: inc/metademand.class.php:2265
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:2269
+#: inc/metademand.class.php:2292
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:2283
+#: inc/metademand.class.php:2306
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2290 inc/metademand.class.php:2419
+#: inc/metademand.class.php:2313 inc/metademand.class.php:2442
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:2412
+#: inc/metademand.class.php:2435
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2489
+#: inc/metademand.class.php:2512
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:2857 inc/metademand.class.php:2881
+#: inc/metademand.class.php:2880 inc/metademand.class.php:2904
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:2990 inc/metademand.class.php:3032
+#: inc/metademand.class.php:3013 inc/metademand.class.php:3069
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:3002 inc/metademand.class.php:3085
+#: inc/metademand.class.php:3025 inc/metademand.class.php:3190
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3014 inc/metademand.class.php:3137
+#: inc/metademand.class.php:3037 inc/metademand.class.php:3242
 msgid "Metademands to be validated"
+msgstr ""
+
+#: inc/metademand.class.php:3049 inc/metademand.class.php:3121
+msgid "Tickets of running metademands of my groups"
 msgstr ""
 
 #: inc/metademand_resource.class.php:50
@@ -618,17 +626,17 @@ msgid ""
 "resolved"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:206
+#: inc/ticket_metademand.class.php:207
 msgctxt "status"
 msgid "In progress"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:209
+#: inc/ticket_metademand.class.php:210
 msgctxt "status"
 msgid "To close"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:212
+#: inc/ticket_metademand.class.php:213
 msgctxt "status"
 msgid "Closed"
 msgstr ""
@@ -643,11 +651,16 @@ msgstr[1] ""
 msgid "Synchronise with ticket template"
 msgstr ""
 
-#: inc/tickettask.class.php:152
+#: inc/tickettask.class.php:136
+#, php-format
+msgid "Block %s"
+msgstr ""
+
+#: inc/tickettask.class.php:183
 msgid "Create after the task"
 msgstr ""
 
-#: inc/tickettask.class.php:168
+#: inc/tickettask.class.php:199
 msgid "Actors"
 msgstr ""
 
