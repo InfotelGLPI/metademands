@@ -1636,26 +1636,27 @@ class PluginMetademandsField extends CommonDBChild {
                   $userrand = mt_rand();
                   $field    = "";
 
-                  $paramstooltip
-                     = ['value'          => '__VALUE__',
-                        'id_fielduser'   => $data['id'],
-                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+                  if ($on_basket == false) {
+                     $paramstooltip
+                        = ['value'          => '__VALUE__',
+                           'id_fielduser'   => $data['id'],
+                           'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                  $toupdate[] = ['value_fieldname'
-                                                => 'value',
-                                 'id_fielduser' => $data['id'],
-                                 'to_update'    => "tooltip_user" . $data['id'],
-                                 'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
-                                 'moreparams'   => $paramstooltip];
+                     $toupdate[] = ['value_fieldname'
+                                                   => 'value',
+                                    'id_fielduser' => $data['id'],
+                                    'to_update'    => "tooltip_user" . $data['id'],
+                                    'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
+                                    'moreparams'   => $paramstooltip];
 
-                  $field .= "<script type='text/javascript'>";
-                  $field .= "$(function() {";
-                  Ajax::updateItemJsCode("tooltip_user" . $data['id'],
-                                         $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
-                                         $paramstooltip,
-                                         $namefield . "[" . $data['id'] . "]", false);
-                  $field .= "});</script>";
-
+                     $field .= "<script type='text/javascript'>";
+                     $field .= "$(function() {";
+                     Ajax::updateItemJsCode("tooltip_user" . $data['id'],
+                                            $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
+                                            $paramstooltip,
+                                            $namefield . "[" . $data['id'] . "]", false);
+                     $field .= "});</script>";
+                  }
                   $paramsloc
                      = ['value'          => '__VALUE__',
                         'id_fielduser'   => $data['id'],
@@ -1729,7 +1730,7 @@ class PluginMetademandsField extends CommonDBChild {
                                        'toupdate' => $toupdate
                                       ]);
                   $config = PluginMetademandsConfig::getInstance();
-                  if ($config['show_requester_informations']) {
+                  if ($config['show_requester_informations'] && $on_basket == false) {
                      echo "<div id='tooltip_user" . $data['id'] . "' class=\"input-group\">";
                      $_POST['value']        = $value;
                      $_POST['id_fielduser'] = $data['id'];
