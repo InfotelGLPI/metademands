@@ -483,7 +483,7 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
 
          $sopt[9503]['table']         = 'glpi_plugin_metademands_tickets_tasks';
          $sopt[9503]['field']         = 'tickets_id';
-         $sopt[9503]['name']          = __('Link to metademands');
+         $sopt[9503]['name']          = __('Link to metademands','metademands');
          $sopt[9503]['datatype']      = "specific";
          $sopt[9503]['searchtype']    = "";
 //         $sopt[9503]['forcegroupby']    = true;
