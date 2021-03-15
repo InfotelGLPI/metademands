@@ -47,7 +47,7 @@ function plugin_init_metademands() {
 //       || strpos($_SERVER['REQUEST_URI'], "tracking.injector.php") !== false) {
 //      $PLUGIN_HOOKS['add_javascript']['metademands'][] = 'scripts/metademands_load_scripts.js';
 //   }
-
+   $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
    $plugin = new Plugin();
 
    if (Session::getLoginUserID()) {

@@ -86,6 +86,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                  'plugin_metademands_tasks_id'            => 0,
                  'content'                                => '',
                  'name'                                   => '',
+                 'block_use'                                   => '',
                  'entities_id'                            => 0];
 
       // Init values
@@ -93,6 +94,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          $values[$key] = $val;
       }
 
+//      $values['block_use'] = json_decode($values['block_use']);
       $ticket = new Ticket();
 
       // Restore saved value or override with page parameter
@@ -102,7 +104,10 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          }
          unset($_SESSION["metademandsHelpdeskSaved"]);
       }
-
+      $values['block_use'] = json_decode($values['block_use']);
+      if($values['block_use'] == null){
+         $values['block_use'] = [];
+      }
       // Clean text fields
       $values['name']    = stripslashes($values['name']);
       $values['content'] = Html::cleanPostForTextArea($values['content']);
@@ -117,6 +122,32 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       echo "<div>";
       echo "<table class='tab_cadre_fixe' id='mainformtable'>";
+
+      echo "<tr class='tab_bg_1'>";
+
+      echo "<th>" . sprintf(__('%1$s'), __('Block to use')) . "</th>";
+      echo "<td>";
+      $metademands;
+      $field = new PluginMetademandsField();
+      $fields = $field->find(["plugin_metademands_metademands_id"=>$metademands_id]);
+      $blocks = [];
+      foreach($fields as $f){
+         if(!isset($blocks[$f['rank']])){
+            $blocks[$f['rank']] = sprintf(__("Block %s",'metademands'),$f["rank"]);
+         }
+      }
+
+      Dropdown::showFromArray('block_use', $blocks,
+                              ['values'   => $values['block_use'],
+                               'width'    => '100%',
+                               'multiple' => true,
+                               'entity'   => $_SESSION['glpiactiveentities']]);
+
+      echo "</td>";
+      echo "<td colspan='4'></td>";
+
+      echo "</tr>";
+
       $metademands_ticket = new PluginMetademandsTicket();
       echo "<tr class='tab_bg_1'>";
 

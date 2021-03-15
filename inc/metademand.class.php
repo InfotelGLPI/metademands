@@ -506,8 +506,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
             }
             return $display;
+            break;
          case 'type':
             return Ticket::getTicketTypeName($values[$field]);
+            break;
+
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }
@@ -2020,6 +2023,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $ticket_ticket = new Ticket_Ticket();
       $ticket_task   = new PluginMetademandsTicket_Task();
+      $task   = new PluginMetademandsTask();
       $ticket        = new Ticket();
       $KO            = [];
 
@@ -2057,6 +2061,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $fields       = $ticket_field->find(['tickets_id' => $ancestor_tickets_id]);
             foreach ($fields as $f) {
                $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
+               if($values_form[$f['plugin_metademands_fields_id']] === null){
+                  $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
+               }
             }
             $metademands_data = $this->constructMetademands($this->getID());
             if (count($metademands_data)) {
@@ -2064,6 +2071,22 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   foreach ($data as $form_metademands_id => $line) {
                      $list_fields  = $line['form'];
                      $searchOption = Search::getOptions('Ticket');
+                     $task->getFromDB($son_ticket_data['tasks_id']);
+                     $blocks = json_decode($task->fields["block_use"]);
+                     if(!empty($blocks)) {
+
+
+                        foreach ($line['form'] as $i => $l) {
+                           if (!in_array($l['rank'], $blocks)) {
+                              unset($line['form'][$i]);
+                              unset($values_form[$i]);
+                           }
+                        }
+                        $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form]);
+                        $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
+                     }else{
+                        $parent_fields_content['content'] = $parent_fields['content'];
+                     }
                      foreach ($list_fields as $id => $fields_values) {
                         if ($fields_values['used_by_ticket'] > 0 && $fields_values['used_by_child'] == 1) {
                            //                           foreach ($values_form as $k => $v) {
@@ -2112,10 +2135,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $config = new PluginMetademandsConfig();
             $config->getFromDB(1);
             if ($config->getField('childs_parent_content') == 1) {
-               if (!empty($parent_fields['content'])) {
+               if (!empty( $parent_fields_content['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "<table class='tab_cadre_fixe' style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
-                              "</th></tr><tr><td colspan='2'>" . $parent_fields['content'];
+                              "</th></tr><tr><td colspan='2'>" .  $parent_fields_content['content'];
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "</td></tr></table><br>";
                   //}
@@ -3019,6 +3042,20 @@ class PluginMetademandsMetademand extends CommonDropdown {
          ]
       ];
 
+      $cards["count_running_metademands_my_group_children"] = [
+         'widgettype' => ['bigNumber'],
+         'itemtype'   => "\\PluginMetademandsMetademand",
+         'group'      => __('Assistance'),
+         'label'      => __("Tickets of running metademands of my groups", "metademands"),
+         'provider'   => "PluginMetademandsMetademand::getRunningMetademandsAndMygroups",
+         'filters'    => [
+            'dates', 'dates_mod', 'itilcategory',
+            'group_tech', 'user_tech', 'requesttype', 'location'
+         ]
+      ];
+
+
+
       return $cards;
 
    }
@@ -3057,6 +3094,74 @@ class PluginMetademandsMetademand extends CommonDropdown {
                'field'      => 9500, // status
                'searchtype' => 'equals',
                'value'      => PluginMetademandsTicket_Metademand::RUNNING
+            ]
+         ],
+         'reset'    => 'reset'
+      ];
+
+      $url = Ticket::getSearchURL() . "?" . Toolbox::append_params($s_criteria);
+
+
+      return [
+         'number'     => $total_running,
+         'url'        => $url,
+         'label'      => $default_params['label'],
+         'icon'       => $default_params['icon'],
+         's_criteria' => $s_criteria,
+         'itemtype'   => 'Ticket',
+      ];
+   }
+
+   public static function getRunningMetademandsAndMygroups(array $params = []): array {
+
+      $DB  = DBConnection::getReadConnection();
+      $dbu = new DbUtils();
+
+      $default_params = [
+         'label'         => __("Tickets of running metademands of my groups", 'metademands'),
+         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'apply_filters' => [],
+      ];
+
+      $get_running_parents_tickets_meta =
+         "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_tickets`
+                        LEFT JOIN `glpi_plugin_metademands_tickets_metademands` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
+                         LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
+                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` ) 
+                         LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                                    " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('".implode("','",
+                                                                                                                                      $_SESSION['glpigroups'])."'))  " .
+         $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
+
+
+      $total_running_parents_meta = $DB->query($get_running_parents_tickets_meta);
+
+      $total_running = 0;
+      while ($row = $DB->fetchArray($total_running_parents_meta)) {
+         $total_running = $row['total_running'];
+      }
+
+
+      $s_criteria = [
+         'criteria' => [
+            [
+               'link'       => 'AND',
+               'field'      => 9500, // status
+               'searchtype' => 'equals',
+               'value'      => PluginMetademandsTicket_Metademand::RUNNING
+            ],
+            [
+               'link'       => 'AND',
+               'field'      => 9502, // status
+               'searchtype' => 'equals',
+               'value'      => "mygroups"
+            ],
+            [
+               'link'       => 'AND',
+               'field'      => 12, // status
+               'searchtype' => 'equals',
+               'value'      => "notold"
             ]
          ],
          'reset'    => 'reset'
@@ -3183,5 +3288,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'itemtype'   => 'Ticket',
       ];
    }
+
+
 
 }

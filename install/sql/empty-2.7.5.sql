@@ -44,6 +44,7 @@ CREATE TABLE `glpi_plugin_metademands_tasks` (
     `sons_cache` text COLLATE utf8_unicode_ci default NULL,
     `plugin_metademands_tasks_id` int(11) NOT NULL default '0',
     `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
+    `block_use` VARCHAR (255) NOT NULL DEFAULT '[]',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),

@@ -107,4 +107,56 @@ class PluginMetademandsTicket_Task extends CommonDBTM {
       return true;
    }
 
+   /**
+    * @param $field
+    * @param $name (default '')
+    * @param $values (default '')
+    * @param $options   array
+    *
+    * @return string
+    **@since version 0.84
+    *
+    */
+   static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []) {
+
+      if (!is_array($values)) {
+         $values = [$field => $values];
+      }
+      $options['display'] = false;
+      $options['toadd'] = ['mygroups' => __('My groups')];
+      $options['name'] = $name;
+      switch ($field) {
+         case 'id':
+           return Group::dropdown($options);
+            break;
+
+      }
+
+      return parent::getSpecificValueToSelect($field, $name, $values, $options);
+   }
+
+   /**
+    * display a value according to a field
+    *
+    * @param $field     String         name of the field
+    * @param $values    String / Array with the value to display
+    * @param $options   Array          of option
+    *
+    * @return a string
+    **@since version 0.83
+    *
+    */
+   static function getSpecificValueToDisplay($field, $values, array $options = []) {
+
+      if (!is_array($values)) {
+         $values = [$field => $values];
+      }
+      switch ($field) {
+//         case 'id':
+//            return "okkk";
+//            break;
+      }
+      return parent::getSpecificValueToDisplay($field, $values, $options);
+   }
+
 }

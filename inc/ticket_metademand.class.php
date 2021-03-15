@@ -160,6 +160,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
       switch ($field) {
          case 'status':
             return self::getStatusName($values[$field]);
+            break;
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }

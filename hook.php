@@ -470,6 +470,27 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
          $sopt[9501]['searchtype']    = "equals";
          $sopt[9501]['joinparams']    = ['jointype'  => 'child'];
          $sopt[9501]['massiveaction'] = false;
+
+         $sopt[9502]['table']         = 'glpi_plugin_metademands_tickets_tasks';
+         $sopt[9502]['field']         = 'id';
+         $sopt[9502]['name']          = __("Group child ticket",'metademands');
+         $sopt[9502]['datatype']      = "specific";
+         $sopt[9502]['searchtype']    = "equals";
+         $sopt[9502]['forcegroupby']    = true;
+         //         $sopt[9502]['linkfield']     = 'parent_tickets_id';
+         $sopt[9502]['joinparams']    = ['jointype'  => 'child','linkfield'=>'parent_tickets_id'];
+         $sopt[9502]['massiveaction'] = false;
+
+         $sopt[9503]['table']         = 'glpi_plugin_metademands_tickets_tasks';
+         $sopt[9503]['field']         = 'tickets_id';
+         $sopt[9503]['name']          = __('Link to metademands');
+         $sopt[9503]['datatype']      = "specific";
+         $sopt[9503]['searchtype']    = "";
+//         $sopt[9503]['forcegroupby']    = true;
+         //         $sopt[9502]['linkfield']     = 'parent_tickets_id';
+         $sopt[9503]['joinparams']    = ['jointype'  => 'child','linkfield'=>'parent_tickets_id'];
+//         $sopt[9503]['joinparams']    = ['jointype'  => 'child'];
+         $sopt[9503]['massiveaction'] = false;
       }
    }
    return $sopt;
@@ -487,6 +508,114 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
          return $link." `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
       case "glpi_plugin_metademands_metademandvalidations.validate":
          return $link." `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val'";
+      case "glpi_plugin_metademands_tickets_tasks.id":
+         switch ($searchtype) {
+            case 'equals' :
+               if($val === '0'){
+                  return " $link 1=1";
+               }
+               if($val == 'mygroups'){
+                  return " $link (`glpi_groups_metademands`.`id` IN ('".implode("','",
+                                                                                $_SESSION['glpigroups'])."')) ";
+               }else{
+                  return " $link (`glpi_groups_metademands`.`id` IN ('".$val."')) ";
+               }
+               break;
+
+
+            case 'notequals' :
+               return " $link (`glpi_groups_metademands`.`id` NOT IN ('".implode("','",
+                                                                                 $_SESSION['glpigroups'])."')) ";
+               break;
+            case 'contains' :
+               return " $link 1=1";
+               break;
+         }
+
+
+         break;
+      case "glpi_plugin_metademands_tickets_tasks.tickets_id":
+         return " $link 1=1";
+
+         break;
    }
+   return "";
+}
+
+/**
+ * @param $type
+ * @param $ref_table
+ * @param $new_table
+ * @param $linkfield
+ * @param $already_link_tables
+ *
+ * @return \Left|string
+ */
+function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$already_link_tables) {
+
+   // Rename table for meta left join
+   $AS = "";
+   $AS_device = "";
+   $nt = "glpi_plugin_resources_resources";
+   $nt_device = "glpi_plugin_resources_resources_items";
+   // Multiple link possibilies case
+   if ($new_table == "glpi_plugin_metademands_tickets_tasks" || $new_table == "glpi_plugin_resources_managers" || $new_table == "glpi_plugin_resources_recipients" || $new_table == "glpi_plugin_resources_recipients_leaving") {
+      $AS = " AS ".$new_table;
+      $AS_device = " AS glpi_plugin_resources_resources_items_".$linkfield;
+      $nt.="_".$linkfield;
+      $nt_device.="_".$linkfield;
+   }
+
+   switch ($new_table) {
+      //
+      case "glpi_plugin_metademands_tickets_tasks" :
+         return "LEFT JOIN `glpi_plugin_metademands_tickets_tasks` $AS ON (`$ref_table`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
+          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` ) 
+          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )";
+         break;
+
+   }
+   return "";
+}
+
+function plugin_metademands_addSelect($type, $ID, $num) {
+   $searchopt = &Search::getOptions($type);
+   $table     = $searchopt[$ID]["table"];
+   $field     = $searchopt[$ID]["field"];
+
+   if ($table == "glpi_plugin_metademands_tickets_tasks"
+       && $type == "Ticket") {
+      return " GROUP_CONCAT(DISTINCT CONCAT(IFNULL(`glpi_groups_metademands`.`completename`, '__NULL__'), '$#$',`glpi_groups_metademands`.`id`)
+   ORDER BY `glpi_groups_metademands`.`id` SEPARATOR '$$##$$') AS `ITEM_$num`, ";
+      //      return "$table.$field, ";
+   } else {
+      return "";
+   }
+}
+
+function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = "") {
+   global $CFG_GLPI;
+   switch ($field) {
+      case 9503:
+         $out = $data['id'];
+         $options['criteria'][0]['field']      = 50; // status
+         $options['criteria'][0]['searchtype'] = 'equals';
+         $options['criteria'][0]['value']      = $data['id'];
+         $options['criteria'][0]['link']       = 'AND';
+
+         $options['criteria'][1]['field']      = 8; // groups_id
+         $options['criteria'][1]['searchtype'] = 'equals';
+         $options['criteria'][1]['value']      = 'mygroups';
+         $options['criteria'][1]['link']       = 'AND';
+         $metademands = new PluginMetademandsTicket_Metademand();
+         if($metademands->getFromDBByCrit(['tickets_id'=>$data['id']])){
+            $out = "<a href=\"".$CFG_GLPI["root_doc"]."/front/ticket.php?".
+                   Toolbox::append_params($options, '&amp;')."\">".
+                   __('Children tickets of metademands')."</a>";
+            return $out;
+         }
+
+   }
+
    return "";
 }

@@ -44,7 +44,7 @@ if (isset($_POST["update"])) {
       $tasks_id    = $_POST['plugin_metademands_tasks_id'];
       $parent_task = isset($_POST['parent_tasks_id']) ? $_POST['parent_tasks_id'] : 0;
 
-      $task->update(['id' => $tasks_id, 'name' => $_POST['name'], 'plugin_metademands_tasks_id' => $parent_task]);
+      $task->update(['id' => $tasks_id, 'name' => $_POST['name'], 'plugin_metademands_tasks_id' => $parent_task,'block_use' => json_encode($_POST['block_use'])]);
    }
    //   PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
    Html::back();
