@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 11:16+0000\n"
+"POT-Creation-Date: 2021-03-17 11:34+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2021\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -520,13 +520,9 @@ msgstr "Métademandes à clore"
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: inc/metademand.class.php:3049
+#: inc/metademand.class.php:3049 inc/metademand.class.php:3121
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
-
-#: inc/metademand.class.php:3121
-msgid "Tickets of running metademands of my groups"
-msgstr "Tickets de mes groupes des metademandes en cours"
 
 #: inc/metademand_resource.class.php:50
 msgid "Link with a metademand"
