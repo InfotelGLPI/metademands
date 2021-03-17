@@ -125,7 +125,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<th>" . sprintf(__('%1$s'), __('Block to use')) . "</th>";
+      echo "<th>" . sprintf(__('%1$s'), __('Block to use','metademands')) . "</th>";
       echo "<td>";
       $metademands;
       $field = new PluginMetademandsField();
