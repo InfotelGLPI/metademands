@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 08:25+0000\n"
+"POT-Creation-Date: 2021-03-17 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -493,15 +493,19 @@ msgstr ""
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:3025 inc/metademand.class.php:3190
+#: inc/metademand.class.php:3025 inc/metademand.class.php:3191
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3037 inc/metademand.class.php:3242
+#: inc/metademand.class.php:3037 inc/metademand.class.php:3243
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:3049 inc/metademand.class.php:3121
+#: inc/metademand.class.php:3049
+msgid "Running metademands with tickets of my groups"
+msgstr ""
+
+#: inc/metademand.class.php:3121
 msgid "Tickets of running metademands of my groups"
 msgstr ""
 
