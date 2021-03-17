@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 16:54+0000\n"
+"POT-Creation-Date: 2021-03-17 11:16+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2021\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -38,10 +38,6 @@ msgstr "Groupe des tickets enfants"
 #: hook.php:486
 msgid "Link to metademands"
 msgstr "Lié à une métademande"
-
-#: hook.php:614
-msgid "Children tickets of metademands"
-msgstr "Tickets enfants de la métademande"
 
 #: setup.php:147 inc/metademand.class.php:80 inc/profile.class.php:175
 msgid "Meta-Demand"
@@ -516,15 +512,19 @@ msgstr "Configurer les demandes"
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: inc/metademand.class.php:3025 inc/metademand.class.php:3190
+#: inc/metademand.class.php:3025 inc/metademand.class.php:3191
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: inc/metademand.class.php:3037 inc/metademand.class.php:3242
+#: inc/metademand.class.php:3037 inc/metademand.class.php:3243
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: inc/metademand.class.php:3049 inc/metademand.class.php:3121
+#: inc/metademand.class.php:3049
+msgid "Running metademands with tickets of my groups"
+msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
+
+#: inc/metademand.class.php:3121
 msgid "Tickets of running metademands of my groups"
 msgstr "Tickets de mes groupes des metademandes en cours"
 
