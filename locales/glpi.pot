@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-17 11:34+0000\n"
+"POT-Creation-Date: 2021-03-17 11:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -653,6 +653,10 @@ msgstr[1] ""
 
 #: inc/ticketfield.class.php:157 inc/ticketfield.class.php:165
 msgid "Synchronise with ticket template"
+msgstr ""
+
+#: inc/tickettask.class.php:128
+msgid "Block to use"
 msgstr ""
 
 #: inc/tickettask.class.php:136
