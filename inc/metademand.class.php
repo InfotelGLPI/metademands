@@ -3046,7 +3046,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'widgettype' => ['bigNumber'],
          'itemtype'   => "\\PluginMetademandsMetademand",
          'group'      => __('Assistance'),
-         'label'      => __("Tickets of running metademands of my groups", "metademands"),
+         'label'      => __("Running metademands with tickets of my groups", "metademands"),
          'provider'   => "PluginMetademandsMetademand::getRunningMetademandsAndMygroups",
          'filters'    => [
             'dates', 'dates_mod', 'itilcategory',
@@ -3124,10 +3124,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
       ];
 
       $get_running_parents_tickets_meta =
-         "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_tickets`
+         "SELECT COUNT(DISTINCT(`glpi_plugin_metademands_tickets_metademands`.`id`)) as 'total_running' FROM `glpi_tickets`
                         LEFT JOIN `glpi_plugin_metademands_tickets_metademands` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
                          LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` ) 
+                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands 
+                             ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` AND `glpi_groups_tickets_metademands`.`type` = '".CommonITILActor::ASSIGN."') 
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
                             `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
                                     " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('".implode("','",
@@ -3288,7 +3289,4 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'itemtype'   => 'Ticket',
       ];
    }
-
-
-
 }
