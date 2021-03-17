@@ -3118,7 +3118,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $dbu = new DbUtils();
 
       $default_params = [
-         'label'         => __("Tickets of running metademands of my groups", 'metademands'),
+         'label'         => __("Running metademands with tickets of my groups", "metademands"),
          'icon'          => PluginMetademandsMetademand::getIcon(),
          'apply_filters' => [],
       ];
