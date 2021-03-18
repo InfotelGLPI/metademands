@@ -609,11 +609,36 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
          $options['criteria'][1]['link']       = 'AND';
          $metademands = new PluginMetademandsTicket_Metademand();
          if($metademands->getFromDBByCrit(['tickets_id'=>$data['id']])){
-            $out = "<a href=\"".$CFG_GLPI["root_doc"]."/front/ticket.php?".
-                   Toolbox::append_params($options, '&amp;')."\"><i class='center fas fa-share-alt fa-2x'></i></a>";
-            return $out;
-         }
+            $DB  = DBConnection::getReadConnection();
+            $dbu = new DbUtils();
+            $get_running_parents_tickets_meta =
+               "SELECT  COUNT( DISTINCT `glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_running' FROM `glpi_tickets`
+                        LEFT JOIN `glpi_plugin_metademands_tickets_metademands` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
+                         LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
+                         LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` ) 
+                         LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                                    " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('".implode("','",
+                                                                                                                                           $_SESSION['glpigroups'])."')) AND  `glpi_tickets`.`id` =  ".$data['id'] .
+               $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
+
+            $total_running_parents_meta = $DB->query($get_running_parents_tickets_meta);
+
+            $total_running = 0;
+            while ($row = $DB->fetchArray($total_running_parents_meta)) {
+               $total_running = $row['total_running'];
+            }
+            if ($total_running > 0) {
+               $out = "<a href=\"".$CFG_GLPI["root_doc"]."/front/ticket.php?".
+                      Toolbox::append_params($options, '&amp;')."\"><i class='center fas fa-share-alt fa-2x'></i></a>";
+               return $out;
+            } else {
+               return " ";
+            }
+         }
+         return " ";
+         break;
    }
 
    return "";

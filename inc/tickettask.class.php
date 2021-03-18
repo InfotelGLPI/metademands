@@ -133,9 +133,10 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       $blocks = [];
       foreach($fields as $f){
          if(!isset($blocks[$f['rank']])){
-            $blocks[$f['rank']] = sprintf(__("Block %s",'metademands'),$f["rank"]);
+            $blocks[intval($f['rank'])] = sprintf(__("Block %s",'metademands'),$f["rank"]);
          }
       }
+      ksort($blocks);
 
       Dropdown::showFromArray('block_use', $blocks,
                               ['values'   => $values['block_use'],

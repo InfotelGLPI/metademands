@@ -1882,7 +1882,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $result['content'] .= "<td $style_title>" . $label . "</td>";
                   $custom_radio      = "";
                   foreach ($custom_values as $key => $val) {
-                     if ($field['value'] == $key && $field['value'] != "") {
+                     if ($field['value'] == $key && $field['value'] !== "") {
                         $custom_radio = $val;
                      }
                   }
