@@ -313,7 +313,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
-         echo "<th class='center b' colspan='7'>" . __('Tasks', 'metademands') . "</th>";
+         echo "<th class='center b' colspan='9'>" . __('Tasks', 'metademands') . "</th>";
          echo "</tr>";
 
          echo "<tr class='tab_bg_2'>";
@@ -328,6 +328,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          echo "<th class='center b'>" . __('Category') . "</th>";
          echo "<th class='center b'>" . __('Assigned to') . "</th>";
          echo "<th class='center b' colspan='2'>" . __('Level', 'metademands') . "</th>";
+         echo "<th class='center b'>" . __('Block to use','metademands') . "</th>";
          echo "</tr>";
          foreach ($tasks as $value) {
             echo "<tr class='tab_bg_1'>";
@@ -427,6 +428,24 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                         <div class='center'>" . __('Root', 'metademands') . "</div>
                      </td>";
             }
+
+            $blocks = json_decode($value['block_use']);
+            if(!empty($blocks)){
+               $blocktext ="";
+               $i = 0;
+               foreach ($blocks as $block){
+                  if($i != 0){
+                     $blocktext .=" <br>";
+                  }
+                  $blocktext .= sprintf(__("Block %s",'metademands'),$block);
+                  $i++;
+               }
+            }else {
+               $blocktext = __('All');
+            }
+            echo "<td>";
+            echo $blocktext;
+            echo "</td>";
             echo "</tr>";
 
          }
@@ -475,6 +494,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                        `glpi_plugin_metademands_tasks`.`id` as tasks_id,
                        `glpi_plugin_metademands_tasks`.`completename` as tasks_completename, 
                        `glpi_plugin_metademands_tasks`.`level`,
+                       `glpi_plugin_metademands_tasks`.`block_use`,
                        `glpi_plugin_metademands_tickettasks`.`itilcategories_id`,
                        `glpi_plugin_metademands_tickettasks`.`content`,
                        `glpi_plugin_metademands_tickettasks`.`status`,
@@ -753,6 +773,91 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       $forbidden[] = 'update';
 
       return $forbidden;
+   }
+
+   function getSpecificMassiveActions($checkitem = null) {
+
+      $isadmin = static::canUpdate();
+      $actions = parent::getSpecificMassiveActions($checkitem);
+
+      if ($isadmin) {
+         $actions['PluginMetademandsTask' . MassiveAction::CLASS_ACTION_SEPARATOR . 'updateBlock']   = _x('button', 'Update block to use','metademands');
+      }
+
+      return $actions;
+   }
+
+   /**
+    * @param MassiveAction $ma
+    *
+    * @return bool|false
+    */
+   /**
+    * @param MassiveAction $ma
+    *
+    * @return bool|false
+    */
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+
+         case "updateBlock" :
+            $blocks = [];
+            for($i =1; $i<=20; $i++){
+               if(!isset($blocks[$i])){
+                  $blocks[$i] = sprintf(__("Block %s",'metademands'),$i);
+               }
+            }
+            ksort($blocks);
+
+            Dropdown::showFromArray('block_use', $blocks,
+                                    [
+                                     'width'    => '100%',
+                                     'multiple' => true,
+                                     ]);
+            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+            return true;
+            break;
+
+      }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+   /**
+    * @param MassiveAction $ma
+    * @param CommonDBTM    $item
+    * @param array         $ids
+    *
+    * @return nothing|void
+    * @since version 0.85
+    *
+    * @see CommonDBTM::processMassiveActionsForOneItemtype()
+    *
+    */
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                       array $ids) {
+
+      $task = new PluginMetademandsTask();
+      $dbu          = new DbUtils();
+
+      switch ($ma->getAction()) {
+         case "updateBlock":
+            $input = $ma->getInput();
+            foreach ($ma->items as $itemtype => $myitem) {
+               foreach ($myitem as $key => $value) {
+
+                     $myvalue['block_use'] = json_encode($input['block_use']);
+                     $myvalue['id']                    = $key;
+                     if ($task->update($myvalue)) {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
+                     } else {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                     }
+
+               }
+            }
+            break;
+      }
    }
 
 }

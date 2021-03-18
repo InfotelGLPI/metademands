@@ -619,7 +619,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
                             `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
                                     " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('".implode("','",
-                                                                                                                                           $_SESSION['glpigroups'])."')) AND  `glpi_tickets`.`id` =  ".$data['id'] .
+                                                                                                                                           $_SESSION['glpigroups'])."')) AND  `glpi_tickets`.`id` =  ".$data['id'] ." ".
                $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
