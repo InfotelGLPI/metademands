@@ -132,9 +132,9 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                   }
                }
             }else{
-               if (is_array($plugin_metademands_tasks_id) && is_array($check_values) && in_array($tasks_id, $plugin_metademands_tasks_id)) {
-                  foreach ($plugin_metademands_tasks_id as $key => $task_id){
-                     if($tasks_id == $task_id){
+               if (is_array($plugin_metademands_tasks_id) && is_array($check_values) && !empty($check_values) && in_array($tasks_id, $plugin_metademands_tasks_id)) {
+                  foreach ($plugin_metademands_tasks_id as $key => $task_id) {
+                     if ($tasks_id == $task_id) {
                         $test    = self::isCheckValueOKFieldsLinks(PluginMetademandsField::_unserialize($data['field_value']), $check_values[$key], $data['type']);
                         $check[] = ($test == false) ? 0 : 1;
                      }

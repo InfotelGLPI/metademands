@@ -759,9 +759,11 @@ class PluginMetademandsWizard extends CommonDBTM {
          $keys             = array_keys($line);
          $keyIndexes       = array_flip($keys);
 
+         $rank  = $line[$keys[0]]['rank'];
+         echo "<div bloc-id='bloc" . $rank . "'>";
          // Color
          if ($preview) {
-            $rank  = $line[$keys[0]]['rank'];
+
             $color = PluginMetademandsField::setColor($rank);
             $style = 'padding-top:5px; 
                       border-top :3px solid #' . $color . ';
@@ -786,8 +788,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          } else {
             echo "<div class=\"form-row\" style='$style'>";
          }
-
          foreach ($line as $key => $data) {
+
             $config_link = "";
             if ($preview) {
                $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
@@ -798,6 +800,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                 && isset($keys[$keyIndexes[$key] - 1])
                 && $data['rank'] != $line[$keys[$keyIndexes[$key] - 1]]['rank']) {
                echo "</div>";
+               echo "</div>";
+               echo "<div bloc-id='bloc" . $data["rank"] . "'>";
                if ($preview) {
                   $rank  = $data['rank'];
                   $color = PluginMetademandsField::setColor($data['rank']);
@@ -841,7 +845,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             // Title field
             if ($data['type'] == 'title') {
-               echo "<div bloc-id='bloc" . $data["rank"] . "' class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
+               echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
                echo "<h4 class=\"bt-title-divider\"><span style='color:" . $data['color'] . ";'>";
 
                if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
@@ -880,10 +884,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                   $class = "metademands_wizard_informations";
                }
                if ($data['row_display'] == 1) {
-                  echo "<div bloc-id='bloc" . $data["rank"] . "' id-field='field" . $data["id"] . "' $style class=\"form-group col-md-11 $class\">";
+                  echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-11 $class\">";
                   $count++;
                } else {
-                  echo "<div bloc-id='bloc" . $data["rank"] . "' id-field='field" . $data["id"] . "' $style class=\"form-group col-md-5 $class\">";
+                  echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-5 $class\">";
                }
                //see fields
                PluginMetademandsField::getFieldType($data, $metademands_data, $preview, $config_link, $itilcategories_id);
@@ -955,6 +959,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                $count = 0;
             }
          }
+         echo "</div>";
          echo "</div>";
          if ($preview) {
             $color = PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']);
@@ -1669,7 +1674,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               if (isset($check_value[$k])) {
                                  $idc     = $check_value[$k];
                                  $idv     = $hidden_block[$idc];
-                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                    $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
                               }
                            }
                         }
@@ -2528,7 +2533,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                if (!isset($toKeep[$hiddenFields])) {
                   $toKeep[$hiddenFields] = false;
                }
-               if (isset($post[$id])) {
+               if (isset($post[$id]) && isset($unserialisedCheck[$key])) {
                   $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
                } else {
                   $test = false;
