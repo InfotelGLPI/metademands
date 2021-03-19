@@ -8,12 +8,9 @@ ALTER TABLE `glpi_plugin_metademands_fields`
     ADD `used_by_child` TINYINT(1) NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_fields`
     ADD `link_to_user` INT(11) NOT NULL DEFAULT '0';
-ALTER TABLE `glpi_plugin_metademands_metademands`
-    ADD `validation_subticket` TINYINT(1) NOT NULL DEFAULT '0';
-ALTER TABLE `glpi_plugin_metademands_tickets_metademands`
-    ADD `status` TINYINT(1) NOT NULL DEFAULT '1' AFTER `tickettemplates_id`;
-ALTER TABLE `glpi_plugin_metademands_fields`
-    ADD `default_use_id_requester` TINYINT(1) NOT NULL DEFAULT '1';
+ALTER TABLE `glpi_plugin_metademands_metademands` ADD `validation_subticket` TINYINT(1) NOT NULL DEFAULT '0';
+ALTER TABLE `glpi_plugin_metademands_tickets_metademands` ADD `status` TINYINT(1) NOT NULL DEFAULT '1' AFTER `tickettemplates_id`;
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `default_use_id_requester` TINYINT(1) NOT NULL DEFAULT '1';
 ALTER TABLE `glpi_plugin_metademands_tasks`
     ADD `block_use` VARCHAR (255) NOT NULL DEFAULT '[]';
 

@@ -271,7 +271,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                   }
                   break;
                case 'radio':
-                  if (empty($value) && $value !== 0) {
+                  if (is_null($value)) {
                      return false;
                   } else if ($check_value !== strval($value)) {
                      return false;
