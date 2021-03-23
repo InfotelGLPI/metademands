@@ -42,7 +42,12 @@ if (isset($_POST["add"])) {
       // Check update rights for clients
       $task->check(-1, UPDATE, $_POST);
       $_POST['plugin_metademands_tasks_id'] = isset($_POST['parent_tasks_id']) ? $_POST['parent_tasks_id'] : 0;
-      $_POST['block_use'] = json_encode($_POST['block_use']);
+
+      if($_POST['block_use'] == ''){
+         $_POST['block_use'] = json_encode([]);
+      } else{
+         $_POST['block_use'] = json_encode($_POST['block_use']);
+      }
       $_POST['type'] = $_POST['taskType'];
       if ($tickettask->isMandatoryField($_POST) && $tasks_id = $task->add($_POST)) {
          if ($_POST['taskType'] == PluginMetademandsTask::TICKET_TYPE) {
