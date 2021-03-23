@@ -313,24 +313,26 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<td>";
       $randType   = self::dropdownFieldTypes("type", ['value'          => $this->fields["type"],
                                                       'metademands_id' => $this->fields["plugin_metademands_metademands_id"]]);
-      $paramsType = ['value'          => '__VALUE__',
-                     'type'           => '__VALUE__',
-                     'item'           => $this->fields['item'],
-                     'task_link'      => $this->fields['plugin_metademands_tasks_id'],
-                     'fields_link'    => $this->fields['fields_link'],
-                     'max_upload'     => $this->fields['max_upload'],
-                     'regex'          => $this->fields['regex'],
-                     'display_type'   => $this->fields['display_type'],
+      $paramsType = ['value'                 => '__VALUE__',
+                     'type'                  => '__VALUE__',
+                     'item'                  => $this->fields['item'],
+                     'task_link'             => $this->fields['plugin_metademands_tasks_id'],
+                     'fields_link'           => $this->fields['fields_link'],
+                     'max_upload'            => $this->fields['max_upload'],
+                     'regex'                 => $this->fields['regex'],
+                     'use_date_now'          => $this->fields['use_date_now'],
+                     'additional_number_day' => $this->fields['additional_number_day'],
+                     'display_type'          => $this->fields['display_type'],
                      //                     'fields_display' => $this->fields['fields_display'],
-                     'hidden_link'    => $this->fields['hidden_link'],
-                     'hidden_block'   => $this->fields['hidden_block'],
-                     'custom_values'  => $this->fields['custom_values'],
-                     'comment_values' => $this->fields['comment_values'],
-                     'default_values' => $this->fields['default_values'],
-                     'check_value'    => $this->fields['check_value'],
-                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                     'link_to_user'   => $this->fields["link_to_user"],
-                     'change_type'    => 1];
+                     'hidden_link'           => $this->fields['hidden_link'],
+                     'hidden_block'          => $this->fields['hidden_block'],
+                     'custom_values'         => $this->fields['custom_values'],
+                     'comment_values'        => $this->fields['comment_values'],
+                     'default_values'        => $this->fields['default_values'],
+                     'check_value'           => $this->fields['check_value'],
+                     'metademands_id'        => $this->fields["plugin_metademands_metademands_id"],
+                     'link_to_user'          => $this->fields["link_to_user"],
+                     'change_type'           => 1];
       Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", $CFG_GLPI["root_doc"] .
                                                                                 "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
 
@@ -373,6 +375,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'fields_link'    => $this->fields['fields_link'],
                      'max_upload'     => $this->fields['max_upload'],
                      'regex'          => $this->fields['regex'],
+                     'use_date_now'          => $this->fields['use_date_now'],
+                     'additional_number_day' => $this->fields['additional_number_day'],
                      'display_type'   => $this->fields['display_type'],
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'    => $this->fields['hidden_link'],
@@ -403,6 +407,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'fields_link'    => $this->fields['fields_link'],
                      'max_upload'     => $this->fields['max_upload'],
                      'regex'          => $this->fields['regex'],
+                     'use_date_now'          => $this->fields['use_date_now'],
+                     'additional_number_day' => $this->fields['additional_number_day'],
                      'display_type'   => $this->fields['display_type'],
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'    => $this->fields['hidden_link'],
@@ -676,6 +682,8 @@ class PluginMetademandsField extends CommonDBChild {
                          'fields_link'    => $this->fields['fields_link'],
                          'max_upload'     => $this->fields['max_upload'],
                          'regex'          => $this->fields['regex'],
+                         'use_date_now'          => $this->fields['use_date_now'],
+                         'additional_number_day' => $this->fields['additional_number_day'],
                          'display_type'   => $this->fields['display_type'],
                          'hidden_link'    => $this->fields['hidden_link'],
                          'hidden_block'   => $this->fields['hidden_block'],
@@ -1419,7 +1427,28 @@ class PluginMetademandsField extends CommonDBChild {
       if (empty($label = self::displayField($data['id'], 'name'))) {
          $label = $data['name'];
       }
+      if($data["use_date_now"] == true) {
+         if (
+            $data["type"] == 'date' ||
+            $data["type"] == 'date_interval'
+         ) {
+            $date = date("Y-m-d");
 
+
+            $addDays = $data['additional_number_day'];
+
+            $data['value'] = date('Y-m-d', strtotime($date . " + $addDays days"));
+         }
+         if (
+            $data["type"] == 'datetime' ||
+            $data["type"] == 'datetime_interval'
+         ) {
+            $addDays = $data['additional_number_day'];
+            $startDate = time();
+            $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
+
+         }
+      }
       if ($data['hide_title'] == 0) {
          echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label col-form-label-sm'>";
          echo $label . " $upload";
@@ -2455,6 +2484,42 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</table>";
                   echo "</td></tr>";
                }
+
+               if (
+                  $params["value"] == 'date' ||
+                  $params["value"] == 'datetime' ||
+                  $params["value"] == 'date_interval' ||
+                  $params["value"] == 'datetime_interval'
+               ) {
+
+                  echo "<tr><td>";
+                  echo "<table class='metademands_show_custom_fields'>";
+                  echo "<tr><td>";
+                  echo __('Default date now', 'metademands');
+                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+
+                  Dropdown::showYesNo('use_date_now',$params['use_date_now']);
+                  echo "</td></tr>";
+
+                  echo "<tr><td>";
+                  echo __('Additional number day to the default date', 'metademands');
+                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                  echo '</td>';
+                  echo "<td>";
+                  $optionNumber = [
+                     'value' => $params['additional_number_day'],
+                     'min' => 0,
+                     'max' => 100,
+                  ];
+
+                  Dropdown::showNumber('additional_number_day',$optionNumber);
+                  echo "</td></tr>";
+
+                  echo "</table>";
+                  echo "</td></tr>";
+               }
                if ($params["type"] == 'dropdown_multiple') {
 
                   $disp                              = [];
@@ -2613,6 +2678,8 @@ class PluginMetademandsField extends CommonDBChild {
             }
             $html .= "<input type='checkbox' name='check_value' value='[1]' $checked>";
             $html .= "</td></tr>";
+
+
             break;
 
          case 'dropdown':

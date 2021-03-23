@@ -95,6 +95,8 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `used_by_child` tinyint(1) default 0,
     `link_to_user` INT(11) default 0,
     `default_use_id_requester` tinyint(1) DEFAULT '1',
+    `use_date_now` tinyint(1) default 0,
+    `additional_number_day` INT(11) default 0,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),

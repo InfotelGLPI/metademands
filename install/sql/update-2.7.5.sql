@@ -36,4 +36,7 @@ CREATE TABLE `glpi_plugin_metademands_metademandvalidations`
 ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `comment` `comment` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `label2` `label2` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL;
 
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `additional_number_day` INT(11) NOT NULL DEFAULT '0' AFTER `default_use_id_requester`;
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `use_date_now` TINYINT(1) NOT NULL DEFAULT '0' AFTER `additional_number_day`;
+
 
