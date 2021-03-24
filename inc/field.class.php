@@ -368,28 +368,28 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<span id='show_item' style='display:none'>";
       $randItem = self::dropdownFieldItems("item", $this->fields["type"], ['value' => $this->fields["item"]]);
       echo "</span>";
-      $paramsType = ['value'          => '__VALUE__',
-                     'type'           => '__VALUE__',
-                     'item'           => $this->fields['item'],
-                     'task_link'      => $this->fields['plugin_metademands_tasks_id'],
-                     'fields_link'    => $this->fields['fields_link'],
-                     'max_upload'     => $this->fields['max_upload'],
-                     'regex'          => $this->fields['regex'],
+      $paramsType = ['value'                 => '__VALUE__',
+                     'type'                  => '__VALUE__',
+                     'item'                  => $this->fields['item'],
+                     'task_link'             => $this->fields['plugin_metademands_tasks_id'],
+                     'fields_link'           => $this->fields['fields_link'],
+                     'max_upload'            => $this->fields['max_upload'],
+                     'regex'                 => $this->fields['regex'],
                      'use_date_now'          => $this->fields['use_date_now'],
                      'additional_number_day' => $this->fields['additional_number_day'],
-                     'display_type'   => $this->fields['display_type'],
+                     'display_type'          => $this->fields['display_type'],
                      //                     'fields_display' => $this->fields['fields_display'],
-                     'hidden_link'    => $this->fields['hidden_link'],
-                     'hidden_block'   => $this->fields['hidden_block'],
-                     'custom_values'  => $this->fields['custom_values'],
-                     'comment_values' => $this->fields['comment_values'],
-                     'default_values' => $this->fields['default_values'],
-                     'check_value'    => $this->fields['check_value'],
-                     'step'           => 'object',
-                     'rand'           => $randItem,
-                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                     'link_to_user'   => $this->fields["link_to_user"],
-                     'change_type'    => 1];
+                     'hidden_link'           => $this->fields['hidden_link'],
+                     'hidden_block'          => $this->fields['hidden_block'],
+                     'custom_values'         => $this->fields['custom_values'],
+                     'comment_values'        => $this->fields['comment_values'],
+                     'default_values'        => $this->fields['default_values'],
+                     'check_value'           => $this->fields['check_value'],
+                     'step'                  => 'object',
+                     'rand'                  => $randItem,
+                     'metademands_id'        => $this->fields["plugin_metademands_metademands_id"],
+                     'link_to_user'          => $this->fields["link_to_user"],
+                     'change_type'           => 1];
       Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", $CFG_GLPI["root_doc"] .
                                                                               "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
       echo "<span id='show_item_title' style='display:none'>";
@@ -400,25 +400,25 @@ class PluginMetademandsField extends CommonDBChild {
       Html::showColorField('color', ['value' => $this->fields["color"]]);
       echo "</span>";
 
-      $paramsItem = ['value'          => '__VALUE__',
-                     'item'           => '__VALUE__',
-                     'type'           => $this->fields['type'],
-                     'task_link'      => $this->fields['plugin_metademands_tasks_id'],
-                     'fields_link'    => $this->fields['fields_link'],
-                     'max_upload'     => $this->fields['max_upload'],
-                     'regex'          => $this->fields['regex'],
+      $paramsItem = ['value'                 => '__VALUE__',
+                     'item'                  => '__VALUE__',
+                     'type'                  => $this->fields['type'],
+                     'task_link'             => $this->fields['plugin_metademands_tasks_id'],
+                     'fields_link'           => $this->fields['fields_link'],
+                     'max_upload'            => $this->fields['max_upload'],
+                     'regex'                 => $this->fields['regex'],
                      'use_date_now'          => $this->fields['use_date_now'],
                      'additional_number_day' => $this->fields['additional_number_day'],
-                     'display_type'   => $this->fields['display_type'],
+                     'display_type'          => $this->fields['display_type'],
                      //                     'fields_display' => $this->fields['fields_display'],
-                     'hidden_link'    => $this->fields['hidden_link'],
-                     'hidden_block'   => $this->fields['hidden_block'],
-                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                     'custom_values'  => $this->fields["custom_values"],
-                     'comment_values' => $this->fields["comment_values"],
-                     'default_values' => $this->fields["default_values"],
-                     'link_to_user'   => $this->fields["link_to_user"],
-                     'check_value'    => $this->fields['check_value']];
+                     'hidden_link'           => $this->fields['hidden_link'],
+                     'hidden_block'          => $this->fields['hidden_block'],
+                     'metademands_id'        => $this->fields["plugin_metademands_metademands_id"],
+                     'custom_values'         => $this->fields["custom_values"],
+                     'comment_values'        => $this->fields["comment_values"],
+                     'default_values'        => $this->fields["default_values"],
+                     'link_to_user'          => $this->fields["link_to_user"],
+                     'check_value'           => $this->fields['check_value']];
       Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", $CFG_GLPI["root_doc"] .
                                                                                 "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
 
@@ -573,9 +573,9 @@ class PluginMetademandsField extends CommonDBChild {
          }
 
          if (($this->fields['type'] == "dropdown_meta"
-             && $this->fields["item"] == "mydevices")
-         || ($this->fields['type'] == "dropdown_object"
-             && Ticket::isPossibleToAssignType($this->fields["item"]))) {
+              && $this->fields["item"] == "mydevices")
+             || ($this->fields['type'] == "dropdown_object"
+                 && Ticket::isPossibleToAssignType($this->fields["item"]))) {
             $granted_fields = [
                13
             ];
@@ -653,8 +653,8 @@ class PluginMetademandsField extends CommonDBChild {
          $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
          $field             = new self();
          $fields            = $field->find(["plugin_metademands_metademands_id" => $this->fields['plugin_metademands_metademands_id'],
-                                            'type' => "dropdown_object",
-                                            "item" => User::getType()]);
+                                            'type'                              => "dropdown_object",
+                                            "item"                              => User::getType()]);
          foreach ($fields as $f) {
             $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
          }
@@ -674,26 +674,26 @@ class PluginMetademandsField extends CommonDBChild {
       //      if ($this->fields['type'] == 'dropdown') {
       //         $this->fields['type'] = $this->fields['item'];
       //      }
-      $paramTypeField = ['value'          => $this->fields['type'],
-                         'custom_values'  => $this->fields['custom_values'],
-                         'comment_values' => $this->fields['comment_values'],
-                         'default_values' => $this->fields['default_values'],
-                         'task_link'      => $this->fields['plugin_metademands_tasks_id'],
-                         'fields_link'    => $this->fields['fields_link'],
-                         'max_upload'     => $this->fields['max_upload'],
-                         'regex'          => $this->fields['regex'],
+      $paramTypeField = ['value'                 => $this->fields['type'],
+                         'custom_values'         => $this->fields['custom_values'],
+                         'comment_values'        => $this->fields['comment_values'],
+                         'default_values'        => $this->fields['default_values'],
+                         'task_link'             => $this->fields['plugin_metademands_tasks_id'],
+                         'fields_link'           => $this->fields['fields_link'],
+                         'max_upload'            => $this->fields['max_upload'],
+                         'regex'                 => $this->fields['regex'],
                          'use_date_now'          => $this->fields['use_date_now'],
                          'additional_number_day' => $this->fields['additional_number_day'],
-                         'display_type'   => $this->fields['display_type'],
-                         'hidden_link'    => $this->fields['hidden_link'],
-                         'hidden_block'   => $this->fields['hidden_block'],
+                         'display_type'          => $this->fields['display_type'],
+                         'hidden_link'           => $this->fields['hidden_link'],
+                         'hidden_block'          => $this->fields['hidden_block'],
                          //                         'fields_display' => $this->fields['fields_display'],
-                         'item'           => $this->fields['item'],
-                         'type'           => $this->fields['type'],
-                         'check_value'    => $this->fields['check_value'],
-                         'drop'           => $this->fields["dropdown"],
-                         'link_to_user'   => $this->fields["link_to_user"],
-                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"]];
+                         'item'                  => $this->fields['item'],
+                         'type'                  => $this->fields['type'],
+                         'check_value'           => $this->fields['check_value'],
+                         'drop'                  => $this->fields["dropdown"],
+                         'link_to_user'          => $this->fields["link_to_user"],
+                         'metademands_id'        => $this->fields["plugin_metademands_metademands_id"]];
 
       $this->getEditValue(self::_unserialize($this->fields['custom_values']),
                           self::_unserialize($this->fields['comment_values']),
@@ -1427,7 +1427,7 @@ class PluginMetademandsField extends CommonDBChild {
       if (empty($label = self::displayField($data['id'], 'name'))) {
          $label = $data['name'];
       }
-      if($data["use_date_now"] == true) {
+      if ($data["use_date_now"] == true) {
          if (
             $data["type"] == 'date' ||
             $data["type"] == 'date_interval'
@@ -1443,8 +1443,8 @@ class PluginMetademandsField extends CommonDBChild {
             $data["type"] == 'datetime' ||
             $data["type"] == 'datetime_interval'
          ) {
-            $addDays = $data['additional_number_day'];
-            $startDate = time();
+            $addDays       = $data['additional_number_day'];
+            $startDate     = time();
             $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
 
          }
@@ -1782,12 +1782,12 @@ class PluginMetademandsField extends CommonDBChild {
 
                   if ($data['link_to_user'] > 0) {
                      $_POST['groups_id'] = $value;
-                     $fieldUser = new self();
-                     $fieldUser->getFromDBByCrit(['id' => $data['link_to_user'],
-                                                   'type'         => "dropdown_object",
-                                                   'item'         => User::getType()]);
+                     $fieldUser          = new self();
+                     $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
+                                                  'type' => "dropdown_object",
+                                                  'item' => User::getType()]);
 
-                     $_POST['value'] = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                     $_POST['value']        = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                      $_POST['id_fielduser'] = $data['link_to_user'];
                      $_POST['fields_id']    = $data['id'];
                   }
@@ -1829,17 +1829,17 @@ class PluginMetademandsField extends CommonDBChild {
                   if ($on_basket == false) {
                      // My items
                      //TODO : used_by_ticket -> link with item's ticket
-                     $field    = "";
+                     $field = "";
                      echo "<div id='mydevices_user" . $data['link_to_user'] . "' class=\"input-group\">";
                      $_POST['field'] = $namefield . "[" . $data['id'] . "]";
-//                     $users_id = 0;
+                     //                     $users_id = 0;
                      if ($data['link_to_user'] > 0) {
                         $fieldUser = new self();
-                        $fieldUser->getFromDBByCrit(['id' => $data['link_to_user'],
-                                                     'type'         => "dropdown_object",
-                                                     'item'         => User::getType()]);
+                        $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
+                                                     'type' => "dropdown_object",
+                                                     'item' => User::getType()]);
 
-                        $_POST['value'] = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                        $_POST['value']        = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id']    = $data['id'];
                      }
@@ -1929,12 +1929,12 @@ class PluginMetademandsField extends CommonDBChild {
                      $_POST['field'] = $namefield . "[" . $data['id'] . "]";
                      if ($data['link_to_user'] > 0) {
                         $_POST['locations_id'] = $value;
-                        $fieldUser = new self();
-                        $fieldUser->getFromDBByCrit(['id' => $data['link_to_user'],
-                                                     'type'         => "dropdown_object",
-                                                     'item'         => User::getType()]);
+                        $fieldUser             = new self();
+                        $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
+                                                     'type' => "dropdown_object",
+                                                     'item' => User::getType()]);
 
-                        $_POST['value'] = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                        $_POST['value']        = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id']    = $data['id'];
                      }
@@ -2500,7 +2500,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo '</td>';
                   echo "<td>";
 
-                  Dropdown::showYesNo('use_date_now',$params['use_date_now']);
+                  Dropdown::showYesNo('use_date_now', $params['use_date_now']);
                   echo "</td></tr>";
 
                   echo "<tr><td>";
@@ -2510,11 +2510,11 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "<td>";
                   $optionNumber = [
                      'value' => $params['additional_number_day'],
-                     'min' => 0,
-                     'max' => 100,
+                     'min'   => 0,
+                     'max'   => 500,
                   ];
 
-                  Dropdown::showNumber('additional_number_day',$optionNumber);
+                  Dropdown::showNumber('additional_number_day', $optionNumber);
                   echo "</td></tr>";
 
                   echo "</table>";
@@ -3957,10 +3957,10 @@ class PluginMetademandsField extends CommonDBChild {
       foreach ($options as $key => $val) {
          $params[$key] = $val;
       }
-//
-//      if ($userID == 0) {
-//         $userID = Session::getLoginUserID();
-//      }
+      //
+      //      if ($userID == 0) {
+      //         $userID = Session::getLoginUserID();
+      //      }
 
       $rand        = $params['rand'];
       $already_add = $params['used'];
