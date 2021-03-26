@@ -1524,6 +1524,23 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $ticket2 = new Ticket();
                         $ticket2->getFromDB($parent_tickets_id);
                         $parent_fields["requesttypes_id"] = $ticket2->fields['requesttypes_id'];
+                        foreach($line['tasks'] as $key => $l){
+                           //replace #id# in title with the value
+                           $explodeTitle = explode("#",$l['tickettasks_name']);
+                           foreach($explodeTitle as $title){
+                              if(isset($values['fields'][$title])){
+                                 $line['tasks'][$key]['tickettasks_name'] = str_replace("#".$title."#",$values['fields'][$title],$line['tasks'][$key]['tickettasks_name']);
+                              }
+                           }
+
+                           //replace #id# in content with the value
+                           $explodeContent = explode("#",$l['content']);
+                           foreach($explodeContent as $content){
+                              if(isset($values['fields'][$content])){
+                                 $line['tasks'][$key]['content'] = str_replace("#".$content."#",$values['fields'][$content],$line['tasks'][$key]['content']);
+                              }
+                           }
+                        }
                         if (!$this->createSonsTickets($parent_tickets_id,
                                                       $this->mergeFields($parent_fields,
                                                                          $parent_ticketfields),
