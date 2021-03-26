@@ -83,10 +83,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                                    $cond,
                                                                    false);
       if (count($groups) > 0) {
+         echo "<div class='tooltip_group_text'>";
          echo "<b>" . _n('Group', 'Groups', count($groups)) . "</b> :<br>";
          foreach ($groups as $group) {
             echo Dropdown::getDropdownName("glpi_groups", $group) . "<br>";
          }
+         echo "</div>";
       }
       echo "</span>";
    }

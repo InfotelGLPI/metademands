@@ -309,6 +309,10 @@ button.clear-basket {
     font-weight: bold;
 }
 
+.tooltip_group_text {
+    margin-left: 90px;
+}
+
 .preview-md {
     position: relative;
 }

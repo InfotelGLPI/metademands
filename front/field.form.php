@@ -48,12 +48,13 @@ if (!isset($_POST["check_value"])) {
          $field->update($update);
       }
    }
-
-   foreach ($_POST["hidden_link"] as $idField) {
-      $update            = [];
-      $update["id"]      = $idField;
-      $update["to_hide"] = 1;
-      $field->update($update);
+   if(isset($_POST["hidden_link"])) {
+      foreach ($_POST["hidden_link"] as $idField) {
+         $update            = [];
+         $update["id"]      = $idField;
+         $update["to_hide"] = 1;
+         $field->update($update);
+      }
    }
 }
 
