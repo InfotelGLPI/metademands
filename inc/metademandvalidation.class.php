@@ -281,7 +281,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       echo "</th>";
       echo "</tr>";
       echo "<tr class='tab_bg_1 center'>";
-      if ($this->fields["users_id"] == 0 && $this->fields["validate"] == self::TO_VALIDATE) {
+      if ($this->fields["users_id"] == 0
+          && $this->fields["validate"] == self::TO_VALIDATE) {
          echo "<td>" . __('Create sub-tickets', 'metademands') . " &nbsp;";
          echo "<input  type='radio' name='create_subticket' id='create_subticket' value='1' checked>";
          echo "</td>";
@@ -291,15 +292,28 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          echo "</tr>";
          echo "<tr class='tab_bg_1 center' id='to_update_group'>";
 
-         Ajax::updateItemOnEvent('create_subticket', 'to_update_group', $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/displayGroupField.php", ["create_subticket" => '__VALUE__', 'tickets_id' => $ticket_id]);
-         Ajax::updateItemOnEvent('create_subticket2', 'to_update_group', $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/displayGroupField.php", ["create_subticket" => '__VALUE__', 'tickets_id' => $ticket_id]);
-      } else if ($this->fields["users_id"] == 0 && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
+         Ajax::updateItemOnEvent('create_subticket',
+                                 'to_update_group',
+                                 $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/displayGroupField.php",
+                                 ["create_subticket" => '__VALUE__',
+                                  'tickets_id' => $ticket_id]);
+         Ajax::updateItemOnEvent('create_subticket2',
+                                 'to_update_group',
+                                 $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/displayGroupField.php",
+                                 ["create_subticket" => '__VALUE__',
+                                  'tickets_id' => $ticket_id]);
+
+      } else if ($this->fields["users_id"] == 0
+                 && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
          echo "<td colspan='2'>" . __('Attribute ticket to ', 'metademands') . " &nbsp;";
          echo Html::hidden("create_subticket", ["value" => 2]);
+         $group = 0;
          foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
             $group = $d['groups_id'];
          }
-         Group::dropdown(['condition' => ['is_assign' => 1], 'name' => 'group_to_assign', 'value' => $group]);
+         Group::dropdown(['condition' => ['is_assign' => 1],
+                          'name' => 'group_to_assign',
+                          'value' => $group]);
          echo "</td>";
 
       } else if ($this->fields["users_id"] != 0

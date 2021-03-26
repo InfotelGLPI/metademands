@@ -184,7 +184,7 @@ function plugin_metademands_install() {
       $sql    = "SHOW COLUMNS FROM `glpi_plugin_metademands_fields`";
       $result = $DB->query($sql);
       while ($data = $DB->fetchArray($result)) {
-         if ($data['Field'] == 'fields_link' && $data['Type'] == 'int(11)') {
+         if ($data['Field'] == 'fields_link') {
             include(GLPI_ROOT . "/plugins/metademands/install/update274_275.php");
             update274_275();
          }

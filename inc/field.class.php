@@ -2485,41 +2485,41 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</td></tr>";
                }
 
-               if (
-                  $params["value"] == 'date' ||
-                  $params["value"] == 'datetime' ||
-                  $params["value"] == 'date_interval' ||
-                  $params["value"] == 'datetime_interval'
-               ) {
-
-                  echo "<tr><td>";
-                  echo "<table class='metademands_show_custom_fields'>";
-                  echo "<tr><td>";
-                  echo __('Default date now', 'metademands');
-                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-
-                  Dropdown::showYesNo('use_date_now', $params['use_date_now']);
-                  echo "</td></tr>";
-
-                  echo "<tr><td>";
-                  echo __('Additional number day to the default date', 'metademands');
-                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                  echo '</td>';
-                  echo "<td>";
-                  $optionNumber = [
-                     'value' => $params['additional_number_day'],
-                     'min'   => 0,
-                     'max'   => 500,
-                  ];
-
-                  Dropdown::showNumber('additional_number_day', $optionNumber);
-                  echo "</td></tr>";
-
-                  echo "</table>";
-                  echo "</td></tr>";
-               }
+               //               if (
+               //                  $params["value"] == 'date' ||
+               //                  $params["value"] == 'datetime' ||
+               //                  $params["value"] == 'date_interval' ||
+               //                  $params["value"] == 'datetime_interval'
+               //               ) {
+               //
+               //                  echo "<tr><td>";
+               //                  echo "<table class='metademands_show_custom_fields'>";
+               //                  echo "<tr><td>";
+               //                  echo __('Default date now', 'metademands');
+               //                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+               //                  echo '</td>';
+               //                  echo "<td>";
+               //
+               //                  Dropdown::showYesNo('use_date_now', $params['use_date_now']);
+               //                  echo "</td></tr>";
+               //
+               //                  echo "<tr><td>";
+               //                  echo __('Additional number day to the default date', 'metademands');
+               //                  //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+               //                  echo '</td>';
+               //                  echo "<td>";
+               //                  $optionNumber = [
+               //                     'value' => $params['additional_number_day'],
+               //                     'min'   => 0,
+               //                     'max'   => 500,
+               //                  ];
+               //
+               //                  Dropdown::showNumber('additional_number_day', $optionNumber);
+               //                  echo "</td></tr>";
+               //
+               //                  echo "</table>";
+               //                  echo "</td></tr>";
+               //               }
                if ($params["type"] == 'dropdown_multiple') {
 
                   $disp                              = [];
@@ -2668,10 +2668,9 @@ class PluginMetademandsField extends CommonDBChild {
          case 'datetime' :
          case 'date_interval' :
          case 'datetime_interval' :
-            $html .= "<tr><td>";
-            $html .= __('Day greater or equal to now', 'metademands');
-            $html .= "</td><td>";
-
+            $html    .= "<tr><td>";
+            $html    .= __('Day greater or equal to now', 'metademands');
+            $html    .= "</td><td>";
             $checked = '';
             if (isset($params['check_value']) && !empty($params['check_value'])) {
                $checked = 'checked';
@@ -2679,6 +2678,23 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "<input type='checkbox' name='check_value' value='[1]' $checked>";
             $html .= "</td></tr>";
 
+            $html .= "<tr><td>";
+            $html .= __('Default date now', 'metademands');
+            $html .= "</td><td>";
+            $html .= Dropdown::showYesNo('use_date_now', $params['use_date_now'],-1,['display' => $display]);
+            $html .= "</td></tr>";
+
+            $html         .= "<tr><td>";
+            $html         .= __('Additional number day to the default date', 'metademands');
+            $html         .= "</td><td>";
+            $optionNumber = [
+               'value' => $params['additional_number_day'],
+               'min'   => 0,
+               'max'   => 500,
+               'display' => $display
+            ];
+            $html         .= Dropdown::showNumber('additional_number_day', $optionNumber);
+            $html         .= "</td></tr>";
 
             break;
 
