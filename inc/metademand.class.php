@@ -1669,7 +1669,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
          }
 
-         $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;border-style: dashed;'>"; // class='mticket'
+         $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
          $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
          if (!empty($options['resources_id'])) {
             $resource = new PluginResourcesResource();
@@ -2145,7 +2145,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
             $content = '';
             if (!empty($son_ticket_data['content'])) {
-               $content = "<table class='tab_cadre_fixe' style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
+               $content = "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                           "</th></tr><tr><td colspan='2'>" . $son_ticket_data['content'];
                $content .= "</td></tr></table><br>";
             }
@@ -2154,7 +2154,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if ($config->getField('childs_parent_content') == 1) {
                if (!empty( $parent_fields_content['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;border-style: dashed;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
+                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
                               "</th></tr><tr><td colspan='2'>" .  $parent_fields_content['content'];
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "</td></tr></table><br>";
