@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-26 16:42+0000\n"
+"POT-Creation-Date: 2021-03-29 16:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -154,7 +154,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:259 inc/field.class.php:3617 inc/field.class.php:3700
+#: inc/field.class.php:259 inc/field.class.php:3631 inc/field.class.php:3714
 msgid "Additional label"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/field.class.php:295 inc/field.class.php:781 inc/field.class.php:3682
+#: inc/field.class.php:295 inc/field.class.php:781 inc/field.class.php:3696
 msgid "Block"
 msgstr ""
 
@@ -170,12 +170,12 @@ msgstr ""
 msgid "Display field after"
 msgstr ""
 
-#: inc/field.class.php:359 inc/field.class.php:772 inc/field.class.php:3619
+#: inc/field.class.php:359 inc/field.class.php:772 inc/field.class.php:3633
 #: inc/task.class.php:272
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:451 inc/field.class.php:778 inc/field.class.php:3724
+#: inc/field.class.php:451 inc/field.class.php:778 inc/field.class.php:3738
 msgid "Display into the basket"
 msgstr ""
 
@@ -199,16 +199,16 @@ msgstr ""
 msgid "Form fields"
 msgstr ""
 
-#: inc/field.class.php:774 inc/field.class.php:2896
+#: inc/field.class.php:774 inc/field.class.php:2910
 msgid "Link a task to the field"
 msgstr ""
 
-#: inc/field.class.php:775 inc/field.class.php:2658 inc/field.class.php:2706
-#: inc/field.class.php:2805
+#: inc/field.class.php:775 inc/field.class.php:2672 inc/field.class.php:2720
+#: inc/field.class.php:2819
 msgid "Value to check"
 msgstr ""
 
-#: inc/field.class.php:782 inc/field.class.php:3691
+#: inc/field.class.php:782 inc/field.class.php:3705
 msgid "Order"
 msgstr ""
 
@@ -220,7 +220,7 @@ msgstr ""
 msgid "Defined value"
 msgstr ""
 
-#: inc/field.class.php:873 inc/field.class.php:2707 inc/field.class.php:2806
+#: inc/field.class.php:873 inc/field.class.php:2721 inc/field.class.php:2820
 msgid "Not null value"
 msgstr ""
 
@@ -305,86 +305,86 @@ msgstr ""
 msgid "Regex"
 msgstr ""
 
-#: inc/field.class.php:2526
-msgid "Classic display"
-msgstr ""
-
-#: inc/field.class.php:2527
-msgid "Double column display"
-msgstr ""
-
-#: inc/field.class.php:2531
-msgid "Display type of the field"
-msgstr ""
-
-#: inc/field.class.php:2672
+#: inc/field.class.php:2503
 msgid "Day greater or equal to now"
 msgstr ""
 
-#: inc/field.class.php:2682
+#: inc/field.class.php:2512
 msgid "Default date now"
 msgstr ""
 
-#: inc/field.class.php:2688
+#: inc/field.class.php:2521
 msgid "Additional number day to the default date"
 msgstr ""
 
-#: inc/field.class.php:2859
+#: inc/field.class.php:2540
+msgid "Classic display"
+msgstr ""
+
+#: inc/field.class.php:2541
+msgid "Double column display"
+msgstr ""
+
+#: inc/field.class.php:2545
+msgid "Display type of the field"
+msgstr ""
+
+#: inc/field.class.php:2873
 msgid "If field empty"
 msgstr ""
 
-#: inc/field.class.php:2897
+#: inc/field.class.php:2911
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: inc/field.class.php:2906
+#: inc/field.class.php:2920
 msgid "Link a field to the field"
 msgstr ""
 
-#: inc/field.class.php:2907
+#: inc/field.class.php:2921
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: inc/field.class.php:2915
+#: inc/field.class.php:2929
 msgid "Link a hidden field"
 msgstr ""
 
-#: inc/field.class.php:2916
+#: inc/field.class.php:2930
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/field.class.php:2924
+#: inc/field.class.php:2938
 msgid "Link a hidden block"
 msgstr ""
 
-#: inc/field.class.php:2925
+#: inc/field.class.php:2939
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/field.class.php:3065
+#: inc/field.class.php:3079
 msgid "Custom values"
 msgstr ""
 
-#: inc/field.class.php:3106 inc/field.class.php:3136 inc/field.class.php:3185
-#: inc/field.class.php:3241 inc/field.class.php:3270 inc/field.class.php:3288
-#: inc/field.class.php:3388
+#: inc/field.class.php:3120 inc/field.class.php:3150 inc/field.class.php:3199
+#: inc/field.class.php:3255 inc/field.class.php:3284 inc/field.class.php:3302
+#: inc/field.class.php:3402
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/field.class.php:3197
+#: inc/field.class.php:3211
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: inc/field.class.php:3313
+#: inc/field.class.php:3327
 msgid "Button Type"
 msgstr ""
 
-#: inc/field.class.php:3320
+#: inc/field.class.php:3334
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
@@ -689,77 +689,77 @@ msgstr ""
 msgid "Wizard overview"
 msgstr ""
 
-#: inc/wizard.class.php:173
+#: inc/wizard.class.php:175
 msgid "Demand choice"
 msgstr ""
 
-#: inc/wizard.class.php:222
+#: inc/wizard.class.php:224
 msgid "How can i use it"
 msgstr ""
 
-#: inc/wizard.class.php:225
+#: inc/wizard.class.php:227
 msgid "Who can benefit from this service?"
 msgstr ""
 
-#: inc/wizard.class.php:228
+#: inc/wizard.class.php:230
 msgid "Lead time"
 msgstr ""
 
-#: inc/wizard.class.php:231
+#: inc/wizard.class.php:233
 msgid "How to obtain the software in case of request?"
 msgstr ""
 
-#: inc/wizard.class.php:234
+#: inc/wizard.class.php:236
 msgid "Availability of service"
 msgstr ""
 
-#: inc/wizard.class.php:237
+#: inc/wizard.class.php:239
 msgid "What are the rules to follow ?"
 msgstr ""
 
-#: inc/wizard.class.php:264
+#: inc/wizard.class.php:266
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: inc/wizard.class.php:273
+#: inc/wizard.class.php:275
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: inc/wizard.class.php:419
+#: inc/wizard.class.php:421
 #, php-format
 msgid "Step %d - Ticket type choice"
 msgstr ""
 
-#: inc/wizard.class.php:590
+#: inc/wizard.class.php:592
 msgid "No advanced request found"
 msgstr ""
 
-#: inc/wizard.class.php:671 inc/wizard.class.php:707
+#: inc/wizard.class.php:673 inc/wizard.class.php:709
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:709
+#: inc/wizard.class.php:711
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2380
+#: inc/wizard.class.php:2384
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2389
+#: inc/wizard.class.php:2393
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2435
+#: inc/wizard.class.php:2439
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2439
+#: inc/wizard.class.php:2443
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""

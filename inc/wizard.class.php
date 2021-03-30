@@ -2375,6 +2375,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                $checkKo[] = 1;
             }
             // date not < today
+            $value["check_value"] = PluginMetademandsField::_unserialize($value["check_value"]);
+
             if ($fields['value'] != 'NULL'
                 && !empty($fields['value'])
                 && !empty($value['check_value'])
