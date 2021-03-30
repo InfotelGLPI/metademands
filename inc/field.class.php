@@ -2430,9 +2430,9 @@ class PluginMetademandsField extends CommonDBChild {
             if (strpos($address, 'field.form.php') > 0) {
                echo "<div id='show_type_fields'>";
                echo "<table width='100%' class='metademands_show_values'>";
-               echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "</th></tr>";
-               echo "<i class='fa fa-plus' id='addNewOpt' class='pointer'></i>";
-               echo "</th></tr></thead><tbody>";
+               echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "&nbsp;";
+               echo "<i class='fas fa-plus-circle pointer' id='addNewOpt'></i>";
+               echo "</th></tr>";
 
                //               echo "<tr>";
                $nb  = 0;
