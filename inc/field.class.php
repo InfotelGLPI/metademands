@@ -677,7 +677,8 @@ class PluginMetademandsField extends CommonDBChild {
       //      if ($this->fields['type'] == 'dropdown') {
       //         $this->fields['type'] = $this->fields['item'];
       //      }
-      $paramTypeField = ['value'                 => $this->fields['type'],
+      $paramTypeField = ['id'                    => $this->fields['id'],
+                         'value'                 => $this->fields['type'],
                          'custom_values'         => $this->fields['custom_values'],
                          'comment_values'        => $this->fields['comment_values'],
                          'default_values'        => $this->fields['default_values'],
@@ -2508,9 +2509,9 @@ class PluginMetademandsField extends CommonDBChild {
             if (strpos($address, 'field.form.php') > 0) {
                echo "<div id='show_type_fields'>";
                echo "<table width='100%' class='metademands_show_values'>";
-               echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "</th></tr>";
-               echo "<i class='fa fa-plus' id='addNewOpt' class='pointer'></i>";
-               echo "</th></tr></thead><tbody>";
+               echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "&nbsp;";
+               echo "<i class='fas fa-plus-circle pointer' id='addNewOpt'></i>";
+               echo "</th></tr>";
 
                //               echo "<tr>";
                $nb  = 0;
@@ -2571,21 +2572,21 @@ class PluginMetademandsField extends CommonDBChild {
                ) {
 
                   $check_values = self::_unserialize($params['check_value']);
-                  $check_value = array_shift($check_values);
+                  $check_value  = array_shift($check_values);
                   if (!isset($check_value)) {
                      $check_value = "";
                   }
                   echo "<tr><td>";
                   echo "<table class='metademands_show_custom_fields'>";
-                  echo     "<tr><td>";
-                  echo     __('Day greater or equal to now', 'metademands');
-                  echo     "</td><td>";
+                  echo "<tr><td>";
+                  echo __('Day greater or equal to now', 'metademands');
+                  echo "</td><td>";
                   $checked = '';
                   if (isset($check_value) && !empty($check_value)) {
                      $checked = 'checked';
                   }
-                  echo  "<input type='checkbox' name='check_value' value='[1]' $checked>";
-                  echo  "</td></tr>";
+                  echo "<input type='checkbox' name='check_value' value='[1]' $checked>";
+                  echo "</td></tr>";
                   echo "<tr><td>";
                   echo __('Default date now', 'metademands');
                   //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
@@ -2798,39 +2799,39 @@ class PluginMetademandsField extends CommonDBChild {
 
             $html .= $this->showLinkHtml($metademands->fields["id"], $params, $optid, 1, 1, 1);
             break;
-//         case 'date' :
-//         case 'datetime' :
-//         case 'date_interval' :
-//         case 'datetime_interval' :
-//            $html    .= "<tr><td>";
-//            $html    .= __('Day greater or equal to now', 'metademands');
-//            $html    .= "</td><td>";
-//            $checked = '';
-//            if (isset($params['check_value']) && !empty($params['check_value'])) {
-//               $checked = 'checked';
-//            }
-//            $html .= "<input type='checkbox' name='check_value' value='[1]' $checked>";
-//            $html .= "</td></tr>";
-//
-//            $html .= "<tr><td>";
-//            $html .= __('Default date now', 'metademands');
-//            $html .= "</td><td>";
-//            $html .= Dropdown::showYesNo('use_date_now', $params['use_date_now'],-1,['display' => $display]);
-//            $html .= "</td></tr>";
-//
-//            $html         .= "<tr><td>";
-//            $html         .= __('Additional number day to the default date', 'metademands');
-//            $html         .= "</td><td>";
-//            $optionNumber = [
-//               'value' => $params['additional_number_day'],
-//               'min'   => 0,
-//               'max'   => 500,
-//               'display' => $display
-//            ];
-//            $html         .= Dropdown::showNumber('additional_number_day', $optionNumber);
-//            $html         .= "</td></tr>";
-//
-//            break;
+         //         case 'date' :
+         //         case 'datetime' :
+         //         case 'date_interval' :
+         //         case 'datetime_interval' :
+         //            $html    .= "<tr><td>";
+         //            $html    .= __('Day greater or equal to now', 'metademands');
+         //            $html    .= "</td><td>";
+         //            $checked = '';
+         //            if (isset($params['check_value']) && !empty($params['check_value'])) {
+         //               $checked = 'checked';
+         //            }
+         //            $html .= "<input type='checkbox' name='check_value' value='[1]' $checked>";
+         //            $html .= "</td></tr>";
+         //
+         //            $html .= "<tr><td>";
+         //            $html .= __('Default date now', 'metademands');
+         //            $html .= "</td><td>";
+         //            $html .= Dropdown::showYesNo('use_date_now', $params['use_date_now'],-1,['display' => $display]);
+         //            $html .= "</td></tr>";
+         //
+         //            $html         .= "<tr><td>";
+         //            $html         .= __('Additional number day to the default date', 'metademands');
+         //            $html         .= "</td><td>";
+         //            $optionNumber = [
+         //               'value' => $params['additional_number_day'],
+         //               'min'   => 0,
+         //               'max'   => 500,
+         //               'display' => $display
+         //            ];
+         //            $html         .= Dropdown::showNumber('additional_number_day', $optionNumber);
+         //            $html         .= "</td></tr>";
+         //
+         //            break;
 
          case 'dropdown':
          case 'dropdown_object':
@@ -3218,18 +3219,24 @@ class PluginMetademandsField extends CommonDBChild {
          switch ($params['item']) {
             case 'other':
                echo "<tr>";
+               echo "<td>";
                if (is_array($values) && !empty($values)) {
+                  echo "<div id='drag'>";
+                  echo "<table class='tab_cadre_fixe'>";
                   foreach ($values as $key => $value) {
                      echo "<tr>";
 
-                     echo "<td>";
+                     echo '<td class="rowhandler control center">';
+                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                      echo "<p id='custom_values$key'>";
                      echo __('Value') . " " . $key . " ";
-                     echo '<input type="text" name="custom_values[' . $key . ']"  value="' . $value . '" size="30"/>';
+                     echo '<input type="text" name="custom_values[' . $key . ']"  value="' . $value . '" size="50"/>';
                      echo '</p>';
-                     echo "</td>";
+                     echo '</div>';
+                     echo '</td>';
 
-                     echo "<td>";
+                     echo '<td class="rowhandler control center">';
+                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                      //                     echo "<p id='default_values$key'>";
                      $display_default = false;
                      //                     if ($params['value'] == 'dropdown_multiple') {
@@ -3249,10 +3256,32 @@ class PluginMetademandsField extends CommonDBChild {
                      echo '</p>';
                      //                     }
                      //                     echo '</p>';
-                     echo "</td>";
+                     echo '</div>';
+                     echo '</td>';
+
+                     echo '<td class="rowhandler control center">';
+                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                     echo "<i class=\"fas fa-arrows-alt\"></i>";
+
+                     echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
+                                                    _x('button', 'Delete permanently'),
+                                                    ['id'                           => $key,
+                                                     'plugin_metademands_fields_id' => $params['id'],
+                                                    ],
+                                                    'fa-times-circle');
+
+                     echo '</div>';
+                     echo '</td>';
 
                      echo "</tr>";
                   }
+                  echo '<input type="hidden" id="fields_id" value="' . $params["id"] . '" />';
+                  echo '</table>';
+                  echo '</div>';
+                  echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
+                  echo '</td>';
+
+                  echo "</tr>";
                   echo "<tr>";
                   echo "<td colspan='4' align='right' id='show_custom_fields'>";
                   self::initCustomValue(max(array_keys($values)), false, $display_default);
@@ -3263,7 +3292,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                   echo "<td>";
                   echo __('Value') . " 1 ";
-                  echo '<input type="text" name="custom_values[1]"  value="" size="30"/>';
+                  echo '<input type="text" name="custom_values[1]"  value="" size="50"/>';
                   echo "</td>";
                   echo "<td>";
                   $display_default = false;
@@ -3466,6 +3495,52 @@ class PluginMetademandsField extends CommonDBChild {
       }
    }
 
+
+   function reorderArray($targetArray, $indexFrom, $indexTo) {
+      $targetElement  = $targetArray[$indexFrom];
+      $magicIncrement = ($indexTo - $indexFrom) / abs($indexTo - $indexFrom);
+
+      for ($Element = $indexFrom; $Element != $indexTo; $Element += $magicIncrement) {
+         $targetArray[$Element] = $targetArray[$Element + $magicIncrement];
+      }
+
+      $targetArray[$indexTo] = $targetElement;
+
+      return $targetArray;
+   }
+
+   /**
+    * @param array $params
+    */
+   public function reorder(array $params) {
+
+      $crit = [
+         'id' => $params['field_id'],
+      ];
+
+      $itemMove = new Self();
+      $itemMove->getFromDBByCrit($crit);
+
+      $custom_values = self::_unserialize($itemMove->fields["custom_values"]);
+
+      if (isset($params['old_order']) && isset($params['new_order'])) {
+
+         $old_order = $params['old_order'];
+         $new_order = $params['new_order'];
+
+         $old_order = $old_order + 1;
+         $new_order = $new_order + 1;
+
+         $new_values = $this->reorderArray($custom_values, $old_order, $new_order);
+
+         $itemMove->update([
+                              'id'            => $params['field_id'],
+                              'custom_values' => self::_serialize($new_values)
+                           ]);
+
+      }
+   }
+
    /**
     * @param      $count
     * @param bool $display_comment
@@ -3485,13 +3560,13 @@ class PluginMetademandsField extends CommonDBChild {
       echo '<input type="hidden" id="count_custom_values" value="' . $count . '"/>';
       echo "<input type='hidden' id='display_default' value='$display_default' />";
 
-      echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer' 
+      echo "&nbsp;<i class='fa-1x fas fa-plus-square' style='cursor:pointer' 
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");' 
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
 
-      echo "&nbsp;<i class='fa-2x fas fa-trash-alt' style='cursor:pointer'
-            onclick='$script metademandWizard.metademands_delete_custom_values(\"custom_values\");'
-            title='" . _sx('button', 'Delete permanently') . "'/></i>";
+//      echo "&nbsp;<i class='fa-2x fas fa-trash-alt' style='cursor:pointer'
+//            onclick='$script metademandWizard.metademands_delete_custom_values(\"custom_values\");'
+//            title='" . _sx('button', 'Delete permanently') . "'/></i>";
 
    }
 

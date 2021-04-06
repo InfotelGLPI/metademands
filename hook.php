@@ -442,7 +442,7 @@ function plugin_metademands_timeline_actions($data) {
       echo "</script>\n";
       echo "<li class='metavalidation' onclick='" .
            "javascript:viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(\"Solution\");'>"
-           . "<i class='fa fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
+           . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
    }
 
 

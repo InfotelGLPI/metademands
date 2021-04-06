@@ -72,7 +72,8 @@ if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
    $_POST['custom_values'] = $custom_values;
 }
 
-if (isset($_POST['item']) && isset($_POST['type']) && (empty($_POST['item']) || $_POST['item'] === 0)) {
+if (isset($_POST['item']) && isset($_POST['type'])
+    && (empty($_POST['item']) || $_POST['item'] === 0)) {
    $_POST['item'] = $_POST['type'];
 }
 
@@ -249,6 +250,24 @@ if (isset($_POST["add"])) {
       $field->check(-1, UPDATE, $_POST);
       $field->update($_POST);
    }
+
+   Html::back();
+
+} else if (isset($_POST["delete_field_custom_values"])) {
+
+   $crit = [
+      'id' => $_POST['plugin_metademands_fields_id'],
+   ];
+   $field->getFromDBByCrit($crit);
+
+   $custom_values = PluginMetademandsField::_unserialize($field->fields["custom_values"]);
+
+   unset($custom_values[$_POST['id']]);
+   $custom_values = array_combine(range(1, count($custom_values)), array_values($custom_values));
+   $field->update([
+                        'id'            => $_POST['plugin_metademands_fields_id'],
+                        'custom_values' => PluginMetademandsField::_serialize($custom_values)
+                     ]);
 
    Html::back();
 

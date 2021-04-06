@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-29 16:22+0000\n"
+"POT-Creation-Date: 2021-04-06 15:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "Link to metademands"
 msgstr ""
 
-#: setup.php:147 inc/metademand.class.php:80 inc/profile.class.php:175
+#: setup.php:154 inc/metademand.class.php:80 inc/profile.class.php:175
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -154,7 +154,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:259 inc/field.class.php:3631 inc/field.class.php:3714
+#: inc/field.class.php:259 inc/field.class.php:3706 inc/field.class.php:3789
 msgid "Additional label"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/field.class.php:295 inc/field.class.php:781 inc/field.class.php:3696
+#: inc/field.class.php:295 inc/field.class.php:782 inc/field.class.php:3771
 msgid "Block"
 msgstr ""
 
@@ -170,16 +170,16 @@ msgstr ""
 msgid "Display field after"
 msgstr ""
 
-#: inc/field.class.php:359 inc/field.class.php:772 inc/field.class.php:3633
+#: inc/field.class.php:359 inc/field.class.php:773 inc/field.class.php:3708
 #: inc/task.class.php:272
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:451 inc/field.class.php:778 inc/field.class.php:3738
+#: inc/field.class.php:451 inc/field.class.php:779 inc/field.class.php:3813
 msgid "Display into the basket"
 msgstr ""
 
-#: inc/field.class.php:502 inc/field.class.php:780
+#: inc/field.class.php:502 inc/field.class.php:781
 msgid "Use this field as a ticket field"
 msgstr ""
 
@@ -195,196 +195,196 @@ msgstr ""
 msgid "Link this to a user field"
 msgstr ""
 
-#: inc/field.class.php:762
+#: inc/field.class.php:763
 msgid "Form fields"
 msgstr ""
 
-#: inc/field.class.php:774 inc/field.class.php:2910
+#: inc/field.class.php:775 inc/field.class.php:2911
 msgid "Link a task to the field"
 msgstr ""
 
-#: inc/field.class.php:775 inc/field.class.php:2672 inc/field.class.php:2720
-#: inc/field.class.php:2819
+#: inc/field.class.php:776 inc/field.class.php:2673 inc/field.class.php:2721
+#: inc/field.class.php:2820
 msgid "Value to check"
 msgstr ""
 
-#: inc/field.class.php:782 inc/field.class.php:3705
+#: inc/field.class.php:783 inc/field.class.php:3780
 msgid "Order"
 msgstr ""
 
-#: inc/field.class.php:829 inc/field.class.php:840
+#: inc/field.class.php:830 inc/field.class.php:841
 msgid "Multiples"
 msgstr ""
 
-#: inc/field.class.php:853
+#: inc/field.class.php:854
 msgid "Defined value"
 msgstr ""
 
-#: inc/field.class.php:873 inc/field.class.php:2721 inc/field.class.php:2820
+#: inc/field.class.php:874 inc/field.class.php:2722 inc/field.class.php:2821
 msgid "Not null value"
 msgstr ""
 
-#: inc/field.class.php:993
+#: inc/field.class.php:994
 msgid "Glpi Object"
 msgstr ""
 
-#: inc/field.class.php:995
+#: inc/field.class.php:996
 msgid "Dropdown"
 msgstr ""
 
-#: inc/field.class.php:997
+#: inc/field.class.php:998
 msgid "Dropdown multiple"
 msgstr ""
 
-#: inc/field.class.php:999
+#: inc/field.class.php:1000
 msgid "Text"
 msgstr ""
 
-#: inc/field.class.php:1001
+#: inc/field.class.php:1002
 msgid "Checkbox"
 msgstr ""
 
-#: inc/field.class.php:1003
+#: inc/field.class.php:1004
 msgid "Textarea"
 msgstr ""
 
-#: inc/field.class.php:1005
+#: inc/field.class.php:1006
 msgid "Date"
 msgstr ""
 
-#: inc/field.class.php:1007
+#: inc/field.class.php:1008
 msgid "Date & Hour"
 msgstr ""
 
-#: inc/field.class.php:1009
+#: inc/field.class.php:1010
 msgid "Date interval"
 msgstr ""
 
-#: inc/field.class.php:1011
+#: inc/field.class.php:1012
 msgid "Date & Hour interval"
 msgstr ""
 
-#: inc/field.class.php:1013
+#: inc/field.class.php:1014
 msgid "Yes / No"
 msgstr ""
 
-#: inc/field.class.php:1019
+#: inc/field.class.php:1020
 msgid "Radio button"
 msgstr ""
 
-#: inc/field.class.php:1021
+#: inc/field.class.php:1022
 msgid "Father's field"
 msgstr ""
 
-#: inc/field.class.php:1025
+#: inc/field.class.php:1026
 msgid "Number"
 msgstr ""
 
-#: inc/field.class.php:1027
+#: inc/field.class.php:1028
 msgid "Informations"
 msgstr ""
 
-#: inc/field.class.php:1335
+#: inc/field.class.php:1336
 msgid "Category of the metademand"
 msgstr ""
 
-#: inc/field.class.php:1418
+#: inc/field.class.php:1419
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/field.class.php:2433
+#: inc/field.class.php:2434
 msgid "Options"
 msgstr ""
 
-#: inc/field.class.php:2458
+#: inc/field.class.php:2459
 msgid "Number of documents allowed"
 msgstr ""
 
-#: inc/field.class.php:2477
+#: inc/field.class.php:2478
 msgid "Regex"
 msgstr ""
 
-#: inc/field.class.php:2503
+#: inc/field.class.php:2504
 msgid "Day greater or equal to now"
 msgstr ""
 
-#: inc/field.class.php:2512
+#: inc/field.class.php:2513
 msgid "Default date now"
 msgstr ""
 
-#: inc/field.class.php:2521
+#: inc/field.class.php:2522
 msgid "Additional number day to the default date"
 msgstr ""
 
-#: inc/field.class.php:2540
+#: inc/field.class.php:2541
 msgid "Classic display"
 msgstr ""
 
-#: inc/field.class.php:2541
+#: inc/field.class.php:2542
 msgid "Double column display"
 msgstr ""
 
-#: inc/field.class.php:2545
+#: inc/field.class.php:2546
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/field.class.php:2873
+#: inc/field.class.php:2874
 msgid "If field empty"
 msgstr ""
 
-#: inc/field.class.php:2911
+#: inc/field.class.php:2912
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: inc/field.class.php:2920
+#: inc/field.class.php:2921
 msgid "Link a field to the field"
 msgstr ""
 
-#: inc/field.class.php:2921
+#: inc/field.class.php:2922
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: inc/field.class.php:2929
+#: inc/field.class.php:2930
 msgid "Link a hidden field"
 msgstr ""
 
-#: inc/field.class.php:2930
+#: inc/field.class.php:2931
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/field.class.php:2938
+#: inc/field.class.php:2939
 msgid "Link a hidden block"
 msgstr ""
 
-#: inc/field.class.php:2939
+#: inc/field.class.php:2940
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/field.class.php:3079
+#: inc/field.class.php:3080
 msgid "Custom values"
 msgstr ""
 
-#: inc/field.class.php:3120 inc/field.class.php:3150 inc/field.class.php:3199
-#: inc/field.class.php:3255 inc/field.class.php:3284 inc/field.class.php:3302
-#: inc/field.class.php:3402
+#: inc/field.class.php:3127 inc/field.class.php:3179 inc/field.class.php:3228
+#: inc/field.class.php:3284 inc/field.class.php:3313 inc/field.class.php:3331
+#: inc/field.class.php:3477
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/field.class.php:3211
+#: inc/field.class.php:3240
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: inc/field.class.php:3327
+#: inc/field.class.php:3356
 msgid "Button Type"
 msgstr ""
 
-#: inc/field.class.php:3334
+#: inc/field.class.php:3363
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
