@@ -51,6 +51,13 @@ function plugin_init_metademands() {
    $plugin = new Plugin();
 
    if (Session::getLoginUserID()) {
+
+      if (isset($_SESSION['glpiactiveprofile']['interface'])
+          && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+         $PLUGIN_HOOKS['add_javascript']['metademands'][] = "lib/redips/redips-drag-min.js";
+         $PLUGIN_HOOKS['add_javascript']['metademands'][] = "scripts/plugin_metademands_drag-field-row.js";
+      }
+
       Plugin::registerClass('PluginMetademandsMetademand', ['addtabon' => 'Ticket']);
       Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
