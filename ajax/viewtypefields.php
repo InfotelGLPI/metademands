@@ -60,6 +60,7 @@ switch ($_POST['step']) {
                         'max_upload'     => $_POST['max_upload'],
                         'regex'          => $_POST['regex'],
                         'display_type'   => $_POST['display_type'],
+                        'informations_to_display'   => $_POST['informations_to_display'],
                         //                     'fields_display' => $this->fields['fields_display'],
                         'hidden_link'    => $_POST['hidden_link'],
                         'hidden_block'   => $_POST['hidden_block'],

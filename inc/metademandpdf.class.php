@@ -495,7 +495,34 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $value = " ";
                      switch ($elt['item']) {
                         case 'User':
-                           $value = $dbu->getUserName($fields[$elt['id']]);
+                           $information = json_decode($elt['informations_to_display']);
+                           $item = new $elt["item"]();
+                           $dataItems = "";
+                           if($item->getFromDB($fields[$elt['id']])){
+                              if(in_array('name',$information)){
+                                 $dataItems .= " ".$item->fields["name"]." ";
+                              }
+                              if(in_array('full_name',$information)){
+                                 $dataItems .= " ".$elt["item"]::getFriendlyNameById($fields[$elt['id']])." ";
+                              }
+                              if(in_array('realname',$information)){
+                                 $dataItems .= " ".$item->fields["realname"]." ";
+                              }
+                              if(in_array('firstname',$information)){
+                                 $dataItems .= " ".$item->fields["firstname"]." ";
+                              }
+                              if(in_array('email',$information)){
+                                 $dataItems .= " ".$item->getDefaultEmail()." ";
+                              }
+
+
+                           }
+                           if(empty($dataItems)){
+                              $value = $dbu->getUserName($fields[$elt['id']]);
+                           } else {
+                              $value = $dataItems;
+                           }
+
                            break;
                         case 'ITILCategory_Metademands':
                            $value = Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'), $fields[$elt['id']]);
@@ -581,6 +608,48 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                         // Draw line
                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                     }else if($elt['item'] == 'User'){
+                        $values     = $fields[$elt['id']];
+                        $parseValue = [];
+                        if(!empty($values) && !is_array($values)){
+                           $values = json_decode($values);
+                        }
+
+                        $information = json_decode($elt['informations_to_display']);
+                        $item = new $elt["item"]();
+                        foreach ($values as $k => $v) {
+                           $dataItems = "";
+                           if($item->getFromDB($v)){
+                              if(in_array('name',$information)){
+                                 $dataItems .= " ".$item->fields["name"]." ";
+                              }
+                              if(in_array('full_name',$information)){
+                                 $dataItems .= " ".$elt["item"]::getFriendlyNameById($v)." ";
+                              }
+                              if(in_array('realname',$information)){
+                                 $dataItems .= " ".$item->fields["realname"]." ";
+                              }
+                              if(in_array('firstname',$information)){
+                                 $dataItems .= " ".$item->fields["firstname"]." ";
+                              }
+                              if(in_array('email',$information)){
+                                 $dataItems .= " ".$item->getDefaultEmail()." ";
+                              }
+                              if(!empty($dataItems)){
+                                 $dataItems .= PHP_EOL;
+                              }
+
+                           }
+                           //                              array_push($parseValue, $custom_values[$v]);
+                           if(!empty($dataItems)){
+                              array_push($parseValue, $dataItems);
+                           }
+                        }
+                        $value = implode("", $parseValue);
+                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                        // Draw line
+                        $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+
                      }
                      break;
 

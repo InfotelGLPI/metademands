@@ -1772,7 +1772,35 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   switch ($field['item']) {
                      case 'User':
                         $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $result['content'] .= "<td>" . getUserName($field['value']) . "</td>";
+                        $item = new $field['item']();
+                        $content ="";
+                        $information = json_decode($field['informations_to_display']);
+                        if($item->getFromDB($field['value'])){
+
+                           if(in_array('name',$information)){
+                              $content .= "".$item->fields["name"]." ";
+                           }
+                           if(in_array('full_name',$information)){
+                              $content .= "".$field["item"]::getFriendlyNameById($field['value'])." ";
+                           }
+                           if(in_array('realname',$information)){
+                              $content .= "".$item->fields["realname"]." ";
+                           }
+                           if(in_array('firstname',$information)){
+                              $content .= "".$item->fields["firstname"]." ";
+                           }
+                           if(in_array('email',$information)){
+                              $content .= "".$item->getDefaultEmail()." ";
+                           }
+
+                        }
+                        if(empty($content)){
+                           $result['content'] .= "<td>" . getUserName($field['value']) . "</td>";
+                        }else{
+                           $result['content'] .= "<td>" . $content . "</td>";
+                        }
+
+
                         break;
                      case 'ITILCategory_Metademands':
                         $dbu               = new DbUtils();
@@ -1818,7 +1846,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                }
                break;
             case 'dropdown_multiple':
-               if (!empty($field['custom_values'])) {
+               if (!empty($field['custom_values']) && $field['item'] != 'User') {
                   if ($field['item'] != "other") {
                      $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                      foreach ($custom_values as $k => $val) {
@@ -1845,6 +1873,41 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                   }
 
+               }else if($field['item'] == 'User') {
+
+                  $information = json_decode($field['informations_to_display']);
+                  $parseValue     = [];
+                  $dataItems = "<table>";
+                  $item = new $field["item"]();
+                  foreach ($field['value'] as $value) {
+
+
+                     if($item->getFromDB($value)){
+                        $dataItems .="<tr>";
+                        if(in_array('name',$information)){
+                           $dataItems .= "<td>".$item->fields["name"]."</td>";
+                        }
+                        if(in_array('full_name',$information)){
+                           $dataItems .= "<td>".$field["item"]::getFriendlyNameById($value)."</td>";
+                        }
+                        if(in_array('realname',$information)){
+                           $dataItems .= "<td>".$item->fields["realname"]."</td>";
+                        }
+                        if(in_array('firstname',$information)){
+                           $dataItems .= "<td>".$item->fields["firstname"]."</td>";
+                        }
+                        if(in_array('email',$information)){
+                           $dataItems .= "<td>".$item->getDefaultEmail()."</td>";
+                        }
+                        $dataItems .="</tr>";
+                     }
+
+                     array_push($parseValue, $field["item"]::getFriendlyNameById($value));
+                  }
+                  $dataItems .= "</table>";
+                  //TODO MAKE TABLE IN A TABLE
+                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $dataItems . "</td>";
+//                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                }
 
                break;

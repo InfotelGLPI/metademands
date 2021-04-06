@@ -95,6 +95,9 @@ if (isset($_POST["add"])) {
       if (isset($_POST["default_values"])) {
          $_POST["default_values"] = PluginMetademandsField::_serialize($_POST["default_values"]);
       }
+      if (isset($_POST["informations_to_display"])) {
+         $_POST["informations_to_display"] = PluginMetademandsField::_serialize($_POST["informations_to_display"]);
+      }
    }
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
@@ -122,6 +125,7 @@ if (isset($_POST["add"])) {
       $comment_values = "";
       $custom_values  = [];
       $default_values = [];
+
       if (isset($_POST['custom_values'])) {
          $custom_values = $_POST['custom_values'];
       }
@@ -131,9 +135,11 @@ if (isset($_POST["add"])) {
       if (isset($_POST['default_values'])) {
          $default_values = $_POST['default_values'];
       }
+
       $_POST["custom_values"]  = PluginMetademandsField::_serialize($custom_values);
       $_POST["comment_values"] = PluginMetademandsField::_serialize($comment_values);
       $_POST["default_values"] = PluginMetademandsField::_serialize($default_values);
+
    } else if ($_POST["type"] == 'link') {
       $_POST["custom_values"]  = PluginMetademandsField::_serialize($_POST['custom_values']);
       $_POST["comment_values"] = '';
@@ -160,6 +166,11 @@ if (isset($_POST["add"])) {
    if (isset($_POST["hidden_block"])) {
       $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
+   $informations_to_display = [];
+   if (isset($_POST['informations_to_display'])) {
+      $informations_to_display = $_POST['informations_to_display'];
+   }
+   $_POST["informations_to_display"] = PluginMetademandsField::_serialize($informations_to_display);
 
    if(!isset($_POST['item'])){
       $_POST['item'] ="";
