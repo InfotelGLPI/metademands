@@ -1555,7 +1555,7 @@ class PluginMetademandsField extends CommonDBChild {
                $iterator                                            = $DB->request($criteria);
 
                while ($datau = $iterator->next()) {
-                  $data['custom_values'][$datau['users_id']] = $data["item"]::getFriendlyNameById($datau['users_id']);
+                  $data['custom_values'][$datau['users_id']] = getUserName($datau['users_id']);
                }
 
                if (!empty($value) && !is_array($value)) {
