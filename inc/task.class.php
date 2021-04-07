@@ -178,6 +178,17 @@ class PluginMetademandsTask extends CommonTreeDropdown {
             echo "</td>";
             echo "</tr>";
 
+            echo "<tr class='tab_bg_1 center'>";
+            echo "<td>";
+
+            $rand = mt_rand();
+            Ajax::createIframeModalWindow("tags".$rand,
+                                          $CFG_GLPI['root_doc']."/plugins/metademands/front/tags.php?metademands_id=".
+                                             $metademands->fields['id']);
+            echo "<a class='vsubmit' href='#' onClick=\"".Html::jsGetElementbyID("tags".$rand).".dialog('open'); return false;\"> ".__('Show list of available tags')."</a>";
+            echo "</td>";
+            echo "</tr>";
+
             echo "<tr class='tab_bg_1'>";
             echo "<td class='center'>";
             echo "<span id='show_add_task_form'>";
@@ -191,6 +202,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
             echo "</tr>";
 
             echo "<tr class='tab_bg_1'>";
+
             echo "<td class='tab_bg_2 center' colspan='6'>";
             echo "<input type='hidden' class='submit' name='plugin_metademands_metademands_id' value='" . $metademands->fields['id'] . "'>";
             echo "<input type='hidden' name='entities_id' value='" . $metademands->fields['entities_id'] . "'/>";

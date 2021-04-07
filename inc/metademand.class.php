@@ -3369,4 +3369,39 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'itemtype'   => 'Ticket',
       ];
    }
+
+
+   /**
+    * @param $id
+    **/
+   static function showAvailableTags($id) {
+      $metademand = new PluginMetademandsMetademand();
+      $tags = $metademand->getTags($id);
+
+      echo "<div class='center'>";
+      echo "<table class='tab_cadre_fixe'>";
+      echo "<tr><th>".__('Tag')."</th>
+                <th>".__('Label')."</th>
+            </tr>";
+      foreach ($tags as $tag => $values) {
+
+         echo "<tr>
+                  <td>#".$tag."#</td>
+                  <td>".$values."</td>
+               </tr>";
+      }
+      echo "</table></div>";
+   }
+
+
+   function getTags($id) {
+      $metademand_fields = new PluginMetademandsField();
+      $fields = $metademand_fields->find(['plugin_metademands_metademands_id' => $id]);
+      $res = [];
+      foreach ($fields as $field){
+         $res[$field['id']] = $field['name'];
+      }
+
+      return $res;
+   }
 }
