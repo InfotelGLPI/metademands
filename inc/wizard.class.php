@@ -720,7 +720,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<input type='submit' class='metademand_previous_button submit' name='previous' value='" . __('Previous') . "'>";
                echo "</div>";
                echo "</div>";
-               echo "</div>";
             }
 
             //            if ($metademands->getField('is_order')) {

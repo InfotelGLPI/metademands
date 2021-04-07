@@ -47,7 +47,7 @@ class PluginMetademandsField extends CommonDBChild {
    static $types = ['PluginMetademandsMetademand'];
 
    static $dropdown_meta_items     = ['', 'other', 'ITILCategory_Metademands', 'urgency', 'impact', 'priority', 'mydevices'];
-   static $dropdown_multiple_items = ['other', 'Appliance','User'];
+   static $dropdown_multiple_items = ['other', 'Appliance', 'User'];
 
    static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'date', 'datetime', 'informations',
                           'date_interval', 'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
@@ -313,27 +313,27 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<td>";
       $randType   = self::dropdownFieldTypes("type", ['value'          => $this->fields["type"],
                                                       'metademands_id' => $this->fields["plugin_metademands_metademands_id"]]);
-      $paramsType = ['value'                 => '__VALUE__',
-                     'type'                  => '__VALUE__',
-                     'item'                  => $this->fields['item'],
-                     'task_link'             => $this->fields['plugin_metademands_tasks_id'],
-                     'fields_link'           => $this->fields['fields_link'],
-                     'max_upload'            => $this->fields['max_upload'],
-                     'regex'                 => $this->fields['regex'],
-                     'use_date_now'          => $this->fields['use_date_now'],
-                     'additional_number_day' => $this->fields['additional_number_day'],
-                     'display_type'          => $this->fields['display_type'],
-                     'informations_to_display'          => $this->fields['informations_to_display'],
+      $paramsType = ['value'                   => '__VALUE__',
+                     'type'                    => '__VALUE__',
+                     'item'                    => $this->fields['item'],
+                     'task_link'               => $this->fields['plugin_metademands_tasks_id'],
+                     'fields_link'             => $this->fields['fields_link'],
+                     'max_upload'              => $this->fields['max_upload'],
+                     'regex'                   => $this->fields['regex'],
+                     'use_date_now'            => $this->fields['use_date_now'],
+                     'additional_number_day'   => $this->fields['additional_number_day'],
+                     'display_type'            => $this->fields['display_type'],
+                     'informations_to_display' => $this->fields['informations_to_display'],
                      //                     'fields_display' => $this->fields['fields_display'],
-                     'hidden_link'           => $this->fields['hidden_link'],
-                     'hidden_block'          => $this->fields['hidden_block'],
-                     'custom_values'         => $this->fields['custom_values'],
-                     'comment_values'        => $this->fields['comment_values'],
-                     'default_values'        => $this->fields['default_values'],
-                     'check_value'           => $this->fields['check_value'],
-                     'metademands_id'        => $this->fields["plugin_metademands_metademands_id"],
-                     'link_to_user'          => $this->fields["link_to_user"],
-                     'change_type'           => 1];
+                     'hidden_link'             => $this->fields['hidden_link'],
+                     'hidden_block'            => $this->fields['hidden_block'],
+                     'custom_values'           => $this->fields['custom_values'],
+                     'comment_values'          => $this->fields['comment_values'],
+                     'default_values'          => $this->fields['default_values'],
+                     'check_value'             => $this->fields['check_value'],
+                     'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
+                     'link_to_user'            => $this->fields["link_to_user"],
+                     'change_type'             => 1];
       Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", $CFG_GLPI["root_doc"] .
                                                                                 "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
 
@@ -369,29 +369,29 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<span id='show_item' style='display:none'>";
       $randItem = self::dropdownFieldItems("item", $this->fields["type"], ['value' => $this->fields["item"]]);
       echo "</span>";
-      $paramsType = ['value'                 => '__VALUE__',
-                     'type'                  => '__VALUE__',
-                     'item'                  => $this->fields['item'],
-                     'task_link'             => $this->fields['plugin_metademands_tasks_id'],
-                     'fields_link'           => $this->fields['fields_link'],
-                     'max_upload'            => $this->fields['max_upload'],
-                     'regex'                 => $this->fields['regex'],
-                     'use_date_now'          => $this->fields['use_date_now'],
-                     'additional_number_day' => $this->fields['additional_number_day'],
-                     'display_type'          => $this->fields['display_type'],
-                     'informations_to_display'          => $this->fields['informations_to_display'],
+      $paramsType = ['value'                   => '__VALUE__',
+                     'type'                    => '__VALUE__',
+                     'item'                    => $this->fields['item'],
+                     'task_link'               => $this->fields['plugin_metademands_tasks_id'],
+                     'fields_link'             => $this->fields['fields_link'],
+                     'max_upload'              => $this->fields['max_upload'],
+                     'regex'                   => $this->fields['regex'],
+                     'use_date_now'            => $this->fields['use_date_now'],
+                     'additional_number_day'   => $this->fields['additional_number_day'],
+                     'display_type'            => $this->fields['display_type'],
+                     'informations_to_display' => $this->fields['informations_to_display'],
                      //                     'fields_display' => $this->fields['fields_display'],
-                     'hidden_link'           => $this->fields['hidden_link'],
-                     'hidden_block'          => $this->fields['hidden_block'],
-                     'custom_values'         => $this->fields['custom_values'],
-                     'comment_values'        => $this->fields['comment_values'],
-                     'default_values'        => $this->fields['default_values'],
-                     'check_value'           => $this->fields['check_value'],
-                     'step'                  => 'object',
-                     'rand'                  => $randItem,
-                     'metademands_id'        => $this->fields["plugin_metademands_metademands_id"],
-                     'link_to_user'          => $this->fields["link_to_user"],
-                     'change_type'           => 1];
+                     'hidden_link'             => $this->fields['hidden_link'],
+                     'hidden_block'            => $this->fields['hidden_block'],
+                     'custom_values'           => $this->fields['custom_values'],
+                     'comment_values'          => $this->fields['comment_values'],
+                     'default_values'          => $this->fields['default_values'],
+                     'check_value'             => $this->fields['check_value'],
+                     'step'                    => 'object',
+                     'rand'                    => $randItem,
+                     'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
+                     'link_to_user'            => $this->fields["link_to_user"],
+                     'change_type'             => 1];
       Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", $CFG_GLPI["root_doc"] .
                                                                               "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
       echo "<span id='show_item_title' style='display:none'>";
@@ -402,26 +402,26 @@ class PluginMetademandsField extends CommonDBChild {
       Html::showColorField('color', ['value' => $this->fields["color"]]);
       echo "</span>";
 
-      $paramsItem = ['value'                 => '__VALUE__',
-                     'item'                  => '__VALUE__',
-                     'type'                  => $this->fields['type'],
-                     'task_link'             => $this->fields['plugin_metademands_tasks_id'],
-                     'fields_link'           => $this->fields['fields_link'],
-                     'max_upload'            => $this->fields['max_upload'],
-                     'regex'                 => $this->fields['regex'],
-                     'use_date_now'          => $this->fields['use_date_now'],
-                     'additional_number_day' => $this->fields['additional_number_day'],
-                     'display_type'          => $this->fields['display_type'],
-                     'informations_to_display'          => $this->fields['informations_to_display'],
+      $paramsItem = ['value'                   => '__VALUE__',
+                     'item'                    => '__VALUE__',
+                     'type'                    => $this->fields['type'],
+                     'task_link'               => $this->fields['plugin_metademands_tasks_id'],
+                     'fields_link'             => $this->fields['fields_link'],
+                     'max_upload'              => $this->fields['max_upload'],
+                     'regex'                   => $this->fields['regex'],
+                     'use_date_now'            => $this->fields['use_date_now'],
+                     'additional_number_day'   => $this->fields['additional_number_day'],
+                     'display_type'            => $this->fields['display_type'],
+                     'informations_to_display' => $this->fields['informations_to_display'],
                      //                     'fields_display' => $this->fields['fields_display'],
-                     'hidden_link'           => $this->fields['hidden_link'],
-                     'hidden_block'          => $this->fields['hidden_block'],
-                     'metademands_id'        => $this->fields["plugin_metademands_metademands_id"],
-                     'custom_values'         => $this->fields["custom_values"],
-                     'comment_values'        => $this->fields["comment_values"],
-                     'default_values'        => $this->fields["default_values"],
-                     'link_to_user'          => $this->fields["link_to_user"],
-                     'check_value'           => $this->fields['check_value']];
+                     'hidden_link'             => $this->fields['hidden_link'],
+                     'hidden_block'            => $this->fields['hidden_block'],
+                     'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
+                     'custom_values'           => $this->fields["custom_values"],
+                     'comment_values'          => $this->fields["comment_values"],
+                     'default_values'          => $this->fields["default_values"],
+                     'link_to_user'            => $this->fields["link_to_user"],
+                     'check_value'             => $this->fields['check_value']];
       Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", $CFG_GLPI["root_doc"] .
                                                                                 "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
 
@@ -677,28 +677,28 @@ class PluginMetademandsField extends CommonDBChild {
       //      if ($this->fields['type'] == 'dropdown') {
       //         $this->fields['type'] = $this->fields['item'];
       //      }
-      $paramTypeField = ['id'                    => $this->fields['id'],
-                         'value'                 => $this->fields['type'],
-                         'custom_values'         => $this->fields['custom_values'],
-                         'comment_values'        => $this->fields['comment_values'],
-                         'default_values'        => $this->fields['default_values'],
-                         'task_link'             => $this->fields['plugin_metademands_tasks_id'],
-                         'fields_link'           => $this->fields['fields_link'],
-                         'max_upload'            => $this->fields['max_upload'],
-                         'regex'                 => $this->fields['regex'],
-                         'use_date_now'          => $this->fields['use_date_now'],
-                         'additional_number_day' => $this->fields['additional_number_day'],
-                         'display_type'          => $this->fields['display_type'],
-                         'informations_to_display'          => $this->fields['informations_to_display'],
-                         'hidden_link'           => $this->fields['hidden_link'],
-                         'hidden_block'          => $this->fields['hidden_block'],
+      $paramTypeField = ['id'                      => $this->fields['id'],
+                         'value'                   => $this->fields['type'],
+                         'custom_values'           => $this->fields['custom_values'],
+                         'comment_values'          => $this->fields['comment_values'],
+                         'default_values'          => $this->fields['default_values'],
+                         'task_link'               => $this->fields['plugin_metademands_tasks_id'],
+                         'fields_link'             => $this->fields['fields_link'],
+                         'max_upload'              => $this->fields['max_upload'],
+                         'regex'                   => $this->fields['regex'],
+                         'use_date_now'            => $this->fields['use_date_now'],
+                         'additional_number_day'   => $this->fields['additional_number_day'],
+                         'display_type'            => $this->fields['display_type'],
+                         'informations_to_display' => $this->fields['informations_to_display'],
+                         'hidden_link'             => $this->fields['hidden_link'],
+                         'hidden_block'            => $this->fields['hidden_block'],
                          //                         'fields_display' => $this->fields['fields_display'],
-                         'item'                  => $this->fields['item'],
-                         'type'                  => $this->fields['type'],
-                         'check_value'           => $this->fields['check_value'],
-                         'drop'                  => $this->fields["dropdown"],
-                         'link_to_user'          => $this->fields["link_to_user"],
-                         'metademands_id'        => $this->fields["plugin_metademands_metademands_id"]];
+                         'item'                    => $this->fields['item'],
+                         'type'                    => $this->fields['type'],
+                         'check_value'             => $this->fields['check_value'],
+                         'drop'                    => $this->fields["dropdown"],
+                         'link_to_user'            => $this->fields["link_to_user"],
+                         'metademands_id'          => $this->fields["plugin_metademands_metademands_id"]];
 
       $this->getEditValue(self::_unserialize($this->fields['custom_values']),
                           self::_unserialize($this->fields['comment_values']),
@@ -1517,7 +1517,8 @@ class PluginMetademandsField extends CommonDBChild {
     * @return int|mixed|String
     */
    static function getFieldInput($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0) {
-      global $CFG_GLPI;
+      global $CFG_GLPI, $DB;
+
       $metademand = new PluginMetademandsMetademand();
       $metademand->getFromDB($data['plugin_metademands_metademands_id']);
 
@@ -1543,149 +1544,64 @@ class PluginMetademandsField extends CommonDBChild {
 
       switch ($data['type']) {
          case 'dropdown_multiple' :
-            if (!empty($data['custom_values'])) {
+            if ($data['item'] == User::getType()) {
+               $self                                                = new self();
+               $data['custom_values']                               = [];
+               $criteria                                            = $self->getDistinctUserCriteria() + $self->getProfileJoinCriteria();
+               $criteria['FROM']                                    = User::getTable();
+               $criteria['WHERE'][User::getTable() . '.is_deleted'] = 0;
+               $criteria['WHERE'][User::getTable() . '.is_active']  = 1;
+               $criteria['ORDER']                                   = ['NAME ASC'];
+               $iterator                                            = $DB->request($criteria);
 
-               $data['custom_values'] = self::_unserialize($data['custom_values']);
-               foreach ($data['custom_values'] as $k => $val) {
-                  if ($data['item'] != "other") {
-                     $data['custom_values'][$k] = $data["item"]::getFriendlyNameById($k);
-                  } else {
-                     if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
-                        $data['custom_values'][$k] = $ret;
-                     }
-                  }
-
+               while ($datau = $iterator->next()) {
+                  $data['custom_values'][$datau['users_id']] = $data["item"]::getFriendlyNameById($datau['users_id']);
                }
-               $defaults       = self::_unserialize($data['default_values']);
-               $default_values = [];
-               if ($defaults) {
-                  foreach ($defaults as $k => $v) {
-                     if ($v == 1) {
-                        $default_values[] = $k;
-                     }
-                  }
-               }
-               ksort($data['custom_values']);
-               if (!empty($value) && !is_array($value)) {
-                  $value = json_decode($value);
-               }
-               $value = is_array($value) ? $value : $default_values;
-               if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                  $name  = $namefield . "[" . $data['id'] . "][]";
-                  $css   = Html::css("/plugins/metademands/css/doubleform.css");
-                  $field = "$css
-                           <div class=\"form-row\">";
-                  $field .= "<div class=\"zone\">
-                                   <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-
-                  foreach ($data['custom_values'] as $k => $val) {
-                     if (!in_array($k, $value)) {
-                        $field .= "<option value=\"$k\" >$val</option>";
-                     }
-                  }
-
-                  $field .= "</select></div>";
-
-                  $field .= " <div class=\"centralCol\">
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
-                               </div>";
-
-                  $field .= "<div class=\"zone\">
-                                   <select name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-                  foreach ($data['custom_values'] as $k => $val) {
-                     if (in_array($k, $value)) {
-                        $field .= "<option value=\"$k\" >$val</option>";
-                     }
-                  }
-
-                  $field .= "</select></div>";
-
-                  $field .= "</div>";
-
-                  $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.min.js\" type=\"text/javascript\"></script>
-                           <script type=\"text/javascript\">
-                           jQuery(document).ready(function($) {
-                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
-                                      search: {
-                                          left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
-                                          right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
-                                      },
-                                      keepRenderingSort: true,
-                                      fireSearch: function(value) {
-                                          return value.length > 2;
-                                      }
-                                  });
-                              });
-                           </script>";
-               } else {
-                  $field = Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $data['custom_values'],
-                                                   ['values'   => $value,
-                                                    'width'    => '250px',
-                                                    'multiple' => true,
-                                                    'display'  => false
-                                                   ]);
-               }
-
-            } else if ($data['item'] == User::getType()){
-               $data['custom_values'] = self::_unserialize($data['custom_values']);
-               $item = new $data["item"]();
-               $cond = [];
-               if($item->maybeDeleted()){
-                  $cond['is_deleted'] = 0;
-               }
-               $items = $item->find($cond," NAME ASC");
-               foreach ($items as $k => $val) {
-
-                  $data['custom_values'][$k] = $data["item"]::getFriendlyNameById($k);
-
-
-               }
-
 
                if (!empty($value) && !is_array($value)) {
                   $value = json_decode($value);
                }
-               if(!is_array($value)){
+               if (!is_array($value)) {
                   $value = [];
                }
-                  $name  = $namefield . "[" . $data['id'] . "][]";
-                  $css   = Html::css("/plugins/metademands/css/doubleform.css");
-                  $field = "$css
+               $name  = $namefield . "[" . $data['id'] . "][]";
+               $css   = Html::css("/plugins/metademands/css/doubleform.css");
+               $field = "$css
                            <div class=\"form-row\">";
-                  $field .= "<div class=\"zone\">
+               $field .= "<div class=\"zone\">
                                    <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
 
+               if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
                   foreach ($data['custom_values'] as $k => $val) {
                      if (!in_array($k, $value)) {
                         $field .= "<option value=\"$k\" >$val</option>";
                      }
                   }
+               }
 
-                  $field .= "</select></div>";
+               $field .= "</select></div>";
 
-                  $field .= " <div class=\"centralCol\">
+               $field .= " <div class=\"centralCol\">
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
                                </div>";
 
-                  $field .= "<div class=\"zone\">
+               $field .= "<div class=\"zone\">
                                    <select name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+               if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
                   foreach ($data['custom_values'] as $k => $val) {
                      if (in_array($k, $value)) {
                         $field .= "<option value=\"$k\" >$val</option>";
                      }
                   }
+               }
+               $field .= "</select></div>";
 
-                  $field .= "</select></div>";
+               $field .= "</div>";
 
-                  $field .= "</div>";
-
-                  $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.js\" type=\"text/javascript\"></script>
+               $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.js\" type=\"text/javascript\"></script>
                            <script type=\"text/javascript\">
                            jQuery(document).ready(function($) {
                                   $('#multiselect$namefield" . $data["id"] . "').multiselect({
@@ -1702,6 +1618,94 @@ class PluginMetademandsField extends CommonDBChild {
                            </script>";
 
 
+            } else {
+               if (!empty($data['custom_values'])) {
+
+                  $data['custom_values'] = self::_unserialize($data['custom_values']);
+                  foreach ($data['custom_values'] as $k => $val) {
+                     if ($data['item'] != "other") {
+                        $data['custom_values'][$k] = $data["item"]::getFriendlyNameById($k);
+                     } else {
+                        if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
+                           $data['custom_values'][$k] = $ret;
+                        }
+                     }
+
+                  }
+                  $defaults       = self::_unserialize($data['default_values']);
+                  $default_values = [];
+                  if ($defaults) {
+                     foreach ($defaults as $k => $v) {
+                        if ($v == 1) {
+                           $default_values[] = $k;
+                        }
+                     }
+                  }
+                  ksort($data['custom_values']);
+                  if (!empty($value) && !is_array($value)) {
+                     $value = json_decode($value);
+                  }
+                  $value = is_array($value) ? $value : $default_values;
+                  if ($data["display_type"] != self::CLASSIC_DISPLAY) {
+                     $name  = $namefield . "[" . $data['id'] . "][]";
+                     $css   = Html::css("/plugins/metademands/css/doubleform.css");
+                     $field = "$css
+                           <div class=\"form-row\">";
+                     $field .= "<div class=\"zone\">
+                                   <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+
+                     foreach ($data['custom_values'] as $k => $val) {
+                        if (!in_array($k, $value)) {
+                           $field .= "<option value=\"$k\" >$val</option>";
+                        }
+                     }
+
+                     $field .= "</select></div>";
+
+                     $field .= " <div class=\"centralCol\">
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
+                               </div>";
+
+                     $field .= "<div class=\"zone\">
+                                   <select name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+                     foreach ($data['custom_values'] as $k => $val) {
+                        if (in_array($k, $value)) {
+                           $field .= "<option value=\"$k\" >$val</option>";
+                        }
+                     }
+
+                     $field .= "</select></div>";
+
+                     $field .= "</div>";
+
+                     $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.min.js\" type=\"text/javascript\"></script>
+                           <script type=\"text/javascript\">
+                           jQuery(document).ready(function($) {
+                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
+                                      search: {
+                                          left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
+                                          right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
+                                      },
+                                      keepRenderingSort: true,
+                                      fireSearch: function(value) {
+                                          return value.length > 2;
+                                      }
+                                  });
+                              });
+                           </script>";
+                  } else {
+                     $field = Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $data['custom_values'],
+                                                      ['values'   => $value,
+                                                       'width'    => '250px',
+                                                       'multiple' => true,
+                                                       'display'  => false
+                                                      ]);
+                  }
+
+               }
             }
             break;
          case 'dropdown':
@@ -2629,21 +2633,21 @@ class PluginMetademandsField extends CommonDBChild {
                   echo Dropdown::showFromArray("display_type", $disp, ['value' => $params['display_type'], 'display' => false]);
                   echo "</td></tr>";
 
-                  if($params["item"] == 'User'){
+                  if ($params["item"] == 'User') {
                      echo "<tr>";
                      echo "<td colspan='2' class='center'>";
-                     echo __("Informations to display in ticket and PDF","metademands");
+                     echo __("Informations to display in ticket and PDF", "metademands");
                      echo "</td>";
                      echo "</tr>";
                      echo "<tr>";
                      echo "<td colspan='2' class='center'>";
                      $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
-                     $informations["email"] = _n('Email', 'Emails', 1);
-                     $informations["name"] =  __('Login');
-                     $informations["full_name"] =  __('Complete name');
-                     $informations["realname"] =  __('Surname');
-                     $informations["firstname"] = __('First name');
-                     echo Dropdown::showFromArray('informations_to_display',$informations, ['values' => $params['informations_to_display'], 'display' => false, 'multiple'=> true]);
+                     $informations["email"]             = _n('Email', 'Emails', 1);
+                     $informations["name"]              = __('Login');
+                     $informations["full_name"]         = __('Complete name');
+                     $informations["realname"]          = __('Surname');
+                     $informations["firstname"]         = __('First name');
+                     echo Dropdown::showFromArray('informations_to_display', $informations, ['values' => $params['informations_to_display'], 'display' => false, 'multiple' => true]);
                      echo "</td>";
                      echo "</tr>";
                   }
@@ -2651,23 +2655,23 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</table>";
                   echo "</td></tr>";
                }
-               if($params['type'] == 'dropdown_object' && $params['item'] == 'User'){
+               if ($params['type'] == 'dropdown_object' && $params['item'] == 'User') {
                   echo "<tr><td>";
                   echo "<table class='metademands_show_custom_fields'>";
                   echo "<tr>";
                   echo "<td colspan='2' class='center'>";
-                  echo __("Informations to display in ticket and PDF","metademands");
+                  echo __("Informations to display in ticket and PDF", "metademands");
                   echo "</td>";
                   echo "</tr>";
                   echo "<tr>";
                   echo "<td colspan='2' class='center'>";
                   $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
-                  $informations["email"] = _n('Email', 'Emails', 1);
-                  $informations["name"] =  __('Login');
-                  $informations["full_name"] =  __('Complete name');
-                  $informations["realname"] =  __('Surname');
-                  $informations["firstname"] = __('First name');
-                  echo Dropdown::showFromArray('informations_to_display',$informations, ['values' => $params['informations_to_display'], 'display' => false, 'multiple'=> true]);
+                  $informations["email"]             = _n('Email', 'Emails', 1);
+                  $informations["name"]              = __('Login');
+                  $informations["full_name"]         = __('Complete name');
+                  $informations["realname"]          = __('Surname');
+                  $informations["firstname"]         = __('First name');
+                  echo Dropdown::showFromArray('informations_to_display', $informations, ['values' => $params['informations_to_display'], 'display' => false, 'multiple' => true]);
                   echo "</td>";
                   echo "</tr>";
                   echo "</table>";
@@ -3197,9 +3201,8 @@ class PluginMetademandsField extends CommonDBChild {
       if (in_array($params['value'], $allowed_custom_types)
           || in_array($params['item'], $allowed_custom_items)) {
 
-         if($params['item'] != 'User'){
-
-            echo "<table width='100%' class='metademands_show_values'>";
+         echo "<table width='100%' class='metademands_show_values'>";
+         if ($params['value'] != "dropdown_multiple" && $params['item'] != 'User') {
             echo "<tr><th colspan='4'>" . __('Custom values', 'metademands') . "</th></tr>";
          }
 
@@ -3264,11 +3267,11 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<i class=\"fas fa-arrows-alt\"></i>";
 
                      echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
-                                                    _x('button', 'Delete permanently'),
-                                                    ['id'                           => $key,
-                                                     'plugin_metademands_fields_id' => $params['id'],
-                                                    ],
-                                                    'fa-times-circle');
+                                               _x('button', 'Delete permanently'),
+                                               ['id'                           => $key,
+                                                'plugin_metademands_fields_id' => $params['id'],
+                                               ],
+                                               'fa-times-circle');
 
                      echo '</div>';
                      echo '</td>';
@@ -3288,9 +3291,8 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</td>";
                   echo "</tr>";
                } else {
-                  echo "<tr>";
-
-                  echo "<td>";
+                  //                  echo "<tr>";
+                  //                  echo "<td>";
                   echo __('Value') . " 1 ";
                   echo '<input type="text" name="custom_values[1]"  value="" size="50"/>';
                   echo "</td>";
@@ -3564,9 +3566,9 @@ class PluginMetademandsField extends CommonDBChild {
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");' 
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
 
-//      echo "&nbsp;<i class='fa-2x fas fa-trash-alt' style='cursor:pointer'
-//            onclick='$script metademandWizard.metademands_delete_custom_values(\"custom_values\");'
-//            title='" . _sx('button', 'Delete permanently') . "'/></i>";
+      //      echo "&nbsp;<i class='fa-2x fas fa-trash-alt' style='cursor:pointer'
+      //            onclick='$script metademandWizard.metademands_delete_custom_values(\"custom_values\");'
+      //            title='" . _sx('button', 'Delete permanently') . "'/></i>";
 
    }
 
@@ -4477,5 +4479,41 @@ class PluginMetademandsField extends CommonDBChild {
          //                                       $CFG_GLPI["root_doc"] . "/ajax/ticketiteminformation.php",
          //                                       $params);
       }
+   }
+
+   public function getProfileJoinCriteria() {
+      return [
+         'INNER JOIN' => [
+            Profile_User::getTable() => [
+               'ON' => [
+                  Profile_User::getTable() => 'users_id',
+                  User::getTable()         => 'id'
+               ]
+            ]
+         ],
+         'WHERE'      => getEntitiesRestrictCriteria(
+            Profile_User::getTable(),
+            'entities_id',
+            $_SESSION['glpiactiveentities'],
+            true
+         )
+      ];
+   }
+
+   /**
+    * Get request criteria to select uniques users
+    *
+    * @return array
+    * @since 9.4
+    *
+    */
+   final public function getDistinctUserCriteria() {
+      return [
+         'FIELDS'   => [
+            User::getTable() . '.id AS users_id',
+            User::getTable() . '.language AS language'
+         ],
+         'DISTINCT' => true,
+      ];
    }
 }
