@@ -2642,11 +2642,13 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<tr>";
                      echo "<td colspan='2' class='center'>";
                      $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
-                     $informations["email"]             = _n('Email', 'Emails', 1);
-                     $informations["name"]              = __('Login');
+
                      $informations["full_name"]         = __('Complete name');
                      $informations["realname"]          = __('Surname');
                      $informations["firstname"]         = __('First name');
+                     $informations["name"]              = __('Login');
+//                     $informations["group"]             = Group::getTypeName(1);
+                     $informations["email"]             = _n('Email', 'Emails', 1);
                      echo Dropdown::showFromArray('informations_to_display', $informations, ['values' => $params['informations_to_display'], 'display' => false, 'multiple' => true]);
                      echo "</td>";
                      echo "</tr>";
@@ -2666,11 +2668,12 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "<tr>";
                   echo "<td colspan='2' class='center'>";
                   $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
-                  $informations["email"]             = _n('Email', 'Emails', 1);
-                  $informations["name"]              = __('Login');
                   $informations["full_name"]         = __('Complete name');
                   $informations["realname"]          = __('Surname');
                   $informations["firstname"]         = __('First name');
+                  $informations["name"]              = __('Login');
+//                  $informations["group"]             = Group::getTypeName(1);
+                  $informations["email"]             = _n('Email', 'Emails', 1);
                   echo Dropdown::showFromArray('informations_to_display', $informations, ['values' => $params['informations_to_display'], 'display' => false, 'multiple' => true]);
                   echo "</td>";
                   echo "</tr>";

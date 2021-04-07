@@ -436,8 +436,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
                   case 'textarea':
                      $value = $fields[$elt['id']];
-                     $value = Html::cleanPostForTextArea(Html::clean($value));
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                     $value = (Toolbox::addslashes_deep($value));
+                     $value = Html::cleanPostForTextArea(Html::clean($value));
+
                      // Draw line
                      $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
@@ -499,9 +501,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                            $item = new $elt["item"]();
                            $dataItems = "";
                            if($item->getFromDB($fields[$elt['id']])){
-                              if(in_array('name',$information)){
-                                 $dataItems .= " ".$item->fields["name"]." ";
-                              }
+
                               if(in_array('full_name',$information)){
                                  $dataItems .= " ".$elt["item"]::getFriendlyNameById($fields[$elt['id']])." ";
                               }
@@ -510,6 +510,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                               }
                               if(in_array('firstname',$information)){
                                  $dataItems .= " ".$item->fields["firstname"]." ";
+                              }
+                              if(in_array('name',$information)){
+                                 $dataItems .= " ".$item->fields["name"]." ";
                               }
                               if(in_array('email',$information)){
                                  $dataItems .= " ".$item->getDefaultEmail()." ";
@@ -620,9 +623,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         foreach ($values as $k => $v) {
                            $dataItems = "";
                            if($item->getFromDB($v)){
-                              if(in_array('name',$information)){
-                                 $dataItems .= " ".$item->fields["name"]." ";
-                              }
+
                               if(in_array('full_name',$information)){
                                  $dataItems .= " ".$elt["item"]::getFriendlyNameById($v)." ";
                               }
@@ -631,6 +632,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                               }
                               if(in_array('firstname',$information)){
                                  $dataItems .= " ".$item->fields["firstname"]." ";
+                              }
+                              if(in_array('name',$information)){
+                                 $dataItems .= " ".$item->fields["name"]." ";
                               }
                               if(in_array('email',$information)){
                                  $dataItems .= " ".$item->getDefaultEmail()." ";

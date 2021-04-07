@@ -1777,9 +1777,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         $information = json_decode($field['informations_to_display']);
                         if($item->getFromDB($field['value'])){
 
-                           if(in_array('name',$information)){
-                              $content .= "".$item->fields["name"]." ";
-                           }
+
                            if(in_array('full_name',$information)){
                               $content .= "".$field["item"]::getFriendlyNameById($field['value'])." ";
                            }
@@ -1788,6 +1786,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                            }
                            if(in_array('firstname',$information)){
                               $content .= "".$item->fields["firstname"]." ";
+                           }
+                           if(in_array('name',$information)){
+                              $content .= "".$item->fields["name"]." ";
                            }
                            if(in_array('email',$information)){
                               $content .= "".$item->getDefaultEmail()." ";
@@ -1884,9 +1885,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                      if($item->getFromDB($value)){
                         $dataItems .="<tr>";
-                        if(in_array('name',$information)){
-                           $dataItems .= "<td>".$item->fields["name"]."</td>";
-                        }
+
                         if(in_array('full_name',$information)){
                            $dataItems .= "<td>".$field["item"]::getFriendlyNameById($value)."</td>";
                         }
@@ -1895,6 +1894,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         }
                         if(in_array('firstname',$information)){
                            $dataItems .= "<td>".$item->fields["firstname"]."</td>";
+                        }
+                        if(in_array('name',$information)){
+                           $dataItems .= "<td>".$item->fields["name"]."</td>";
                         }
                         if(in_array('email',$information)){
                            $dataItems .= "<td>".$item->getDefaultEmail()."</td>";
@@ -1920,7 +1922,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
             case 'textarea':
             case 'text':
                $field['value']    = Html::cleanPostForTextArea($field['value']);
-               $result['content'] .= "<td $style_title>" . $label . "</td><td>" . stripslashes($field['value']) . "</td>";
+               $field['value']    = Toolbox::addslashes_deep($field['value']);
+//               $field['value']    = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($field['value']));
+               $result['content'] .= "<td $style_title>" . $label . "</td><td>" . ($field['value']) . "</td>";
                break;
             case 'checkbox':
                if (!empty($field['custom_values'])) {
