@@ -353,14 +353,16 @@ class PluginMetademandsWizard extends CommonDBTM {
     */
    static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
 
-      echo "<div id='ajax_loader' class=\"ajax_loader\">";
-      echo "</div>";
+      if ($preview == false) {
+         echo "<div id='ajax_loader' class=\"ajax_loader\">";
+         echo "</div>";
 
-      echo Html::scriptBlock(
-         "$(window).load(function() {
+         echo Html::scriptBlock(
+            "$(window).load(function() {
              $('#ajax_loader').hide();
           });");
-      
+      }
+
       switch ($step) {
          case PluginMetademandsMetademand::STEP_CREATE:
             $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
