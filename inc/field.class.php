@@ -1593,7 +1593,7 @@ class PluginMetademandsField extends CommonDBChild {
                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
                   foreach ($data['custom_values'] as $k => $val) {
                      if (in_array($k, $value)) {
-                        $field .= "<option value=\"$k\" >$val</option>";
+                        $field .= "<option selected value=\"$k\" >$val</option>";
                      }
                   }
                }
@@ -1612,7 +1612,7 @@ class PluginMetademandsField extends CommonDBChild {
                                       keepRenderingSort: true,
                                       fireSearch: function(value) {
                                           return value.length > 2;
-                                      }
+                                      },
                                   });
                               });
                            </script>";
@@ -1673,7 +1673,7 @@ class PluginMetademandsField extends CommonDBChild {
                                    <select name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                      foreach ($data['custom_values'] as $k => $val) {
                         if (in_array($k, $value)) {
-                           $field .= "<option value=\"$k\" >$val</option>";
+                           $field .= "<option selected value=\"$k\" >$val</option>";
                         }
                      }
 
@@ -1692,7 +1692,7 @@ class PluginMetademandsField extends CommonDBChild {
                                       keepRenderingSort: true,
                                       fireSearch: function(value) {
                                           return value.length > 2;
-                                      }
+                                      },
                                   });
                               });
                            </script>";
@@ -1870,7 +1870,8 @@ class PluginMetademandsField extends CommonDBChild {
                                                   'type' => "dropdown_object",
                                                   'item' => User::getType()]);
 
-                     $_POST['value']        = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                     $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
+                                               && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                      $_POST['id_fielduser'] = $data['link_to_user'];
                      $_POST['fields_id']    = $data['id'];
                   }
@@ -2017,7 +2018,8 @@ class PluginMetademandsField extends CommonDBChild {
                                                      'type' => "dropdown_object",
                                                      'item' => User::getType()]);
 
-                        $_POST['value']        = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                        $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
+                                                  && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id']    = $data['id'];
                      }
@@ -3483,10 +3485,10 @@ class PluginMetademandsField extends CommonDBChild {
                echo "</td>";
                echo "<td>";
 
-               echo '<label>' . __("Button Type", "metademands") . '</label>';
+               echo '<label>' . __("Button Type", "metademands") . '</label>&nbsp;';
                Dropdown::showFromArray("custom_values[0]",
                                        [
-                                          'button' => __('button'),
+                                          'button' => __('button', "metademands"),
                                           'link_a' => __('Web link')
                                        ],
                                        ['value' => $linkType]);

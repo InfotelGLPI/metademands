@@ -142,20 +142,20 @@ class PluginMetademandsWizard extends CommonDBTM {
       if ($parameters['preview']) {
          $style = "style='width: 1000px;'";
       }
-      echo "<div class='bt-block bt-features' $style> ";
+      echo "<div id='meta-form' class='bt-block bt-features' $style> ";
 
-      echo "<form name    = 'wizard_form'
-                  method  = 'post'
-                  action  = '" . Toolbox::getItemTypeFormURL(__CLASS__) . "'
-                  enctype = 'multipart/form-data' 
-                  class = 'metademands_img'> ";
+      echo "<form name='wizard_form' id ='wizard_form'
+                        method='post'
+                        action= '" . Toolbox::getItemTypeFormURL(__CLASS__) . "'
+                        enctype='multipart/form-data'
+                        class='metademands_img'> ";
 
       // Case of simple ticket convertion
-      echo "<input type = 'hidden' value = '" . $parameters['tickets_id'] . "' name = 'tickets_id' > ";
+      echo "<input type='hidden' value='" . $parameters['tickets_id'] . "' name='tickets_id' > ";
       // Resources id
-      echo "<input type = 'hidden' value = '" . $parameters['resources_id'] . "' name = 'resources_id' > ";
+      echo "<input type='hidden' value='" . $parameters['resources_id'] . "' name= 'resources_id' > ";
       // Resources step
-      echo "<input type = 'hidden' value = '" . $parameters['resources_step'] . "' name = 'resources_step' > ";
+      echo "<input type='hidden' value= '" . $parameters['resources_step'] . "' name= 'resources_step' > ";
 
 
       $icon = '';
@@ -604,6 +604,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    static function showMetademands($metademands_id, $step, $preview = false, $options = []) {
+      global $CFG_GLPI;
 
       $parameters = ['itilcategories_id' => 0];
 
@@ -711,7 +712,38 @@ class PluginMetademandsWizard extends CommonDBTM {
                         echo "<input type='submit' class='submit metademand_next_button' name='next' value='" . _sx('button', 'Validate your basket', 'metademands') . "'>";
                      }
                   } else {
-                     echo "<input type='submit' class='submit metademand_next_button' name='next' value='" . _sx('button', 'Post') . "'>";
+                     echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+                     echo "</div>";
+                     echo "<input type='button' id='submitjob' class='submit metademand_next_button' name='next_button' value='" . _sx('button', 'Post') . "'>";
+                     echo "<input type='hidden' name='next'>";
+                     $ID = $metademands->fields['id'];
+                     echo "<script>
+                       $('#submitjob').click(function() {
+                          var meta_id = {$ID};
+                          tinyMCE.triggerSave();
+                          jQuery('.resume_builder_input').trigger('change');
+                          $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                          $('#ajax_loader').show();
+                          $.ajax({
+                             url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/createmetademands.php',
+                                type: 'POST',
+                                data: $('form').serializeArray(),
+                                success: function(response){
+                                    $('#ajax_loader').hide();
+                                    if (response == 1) {
+                                       document.location.reload();
+                                    } else {
+                                       window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                    }                                  
+                                 },
+                                error: function(xhr, status, error) {
+                                   console.log(xhr);
+                                   console.log(status);
+                                   console.log(error);
+                                 } 
+                             });
+                       });
+                     </script>";
                   }
 
                } else {
@@ -760,7 +792,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $keys             = array_keys($line);
          $keyIndexes       = array_flip($keys);
 
-         $rank  = $line[$keys[0]]['rank'];
+         $rank = $line[$keys[0]]['rank'];
          echo "<div bloc-id='bloc" . $rank . "'>";
          // Color
          if ($preview) {
@@ -1675,7 +1707,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               if (isset($check_value[$k])) {
                                  $idc     = $check_value[$k];
                                  $idv     = $hidden_block[$idc];
-                                    $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
                               }
                            }
                         }
@@ -2265,8 +2297,6 @@ class PluginMetademandsWizard extends CommonDBTM {
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
-
-
       }
       //INFO : not used for update basket
       if ($value['item'] != 'ITILCategory_Metademands' && $KO === false && isset($post[$fieldname][$id])) {

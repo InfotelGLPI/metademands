@@ -34,7 +34,7 @@ global $CFG_GLPI;
 
 $wizard      = new PluginMetademandsWizard();
 $metademands = new PluginMetademandsMetademand();
-$field       = new PluginMetademandsField();
+$fields       = new PluginMetademandsField();
 
 if (empty($_POST['metademands_id'])) {
    $_POST['metademands_id'] = 0;
@@ -74,8 +74,7 @@ if (isset($_POST['next'])) {
       if ($metademands->canCreate()
           || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
 
-         $field = new PluginMetademandsField();
-         $data  = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+         $data  = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
          $metademands->getFromDB($_POST['form_metademands_id']);
          $plugin = new Plugin();
          $meta   = [];
@@ -350,7 +349,7 @@ if (isset($_POST['next'])) {
 
       $checks  = [];
       $content = [];
-      $data    = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
+      $data    = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
                                'is_basket'                         => 1]);
 
       foreach ($data as $id => $value) {
@@ -400,7 +399,7 @@ if (isset($_POST['next'])) {
 
          $checks  = [];
          $content = [];
-         $data    = $field->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+         $data    = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
 
          foreach ($data as $id => $value) {
 
