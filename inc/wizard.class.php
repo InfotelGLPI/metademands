@@ -725,7 +725,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                      echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                      echo "</div>";
                      echo "<input type='button' id='submitjob' class='submit metademand_next_button' name='next_button' value='" . _sx('button', 'Post') . "'>";
-                     echo "<input type='hidden' name='next'>";
                      $ID = $metademands->fields['id'];
                      echo "<script>
                        $('#submitjob').click(function() {
