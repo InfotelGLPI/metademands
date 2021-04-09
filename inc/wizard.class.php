@@ -855,15 +855,15 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right: 20px;position: absolute;color:" . $line[$keys[0]]['color'] . ";'></i>";
                $rand = mt_rand();
                echo Html::scriptBlock("
-                     var myelement = '#up" . $rank . "';
+                     var myelement$rand = '#up" . $rank . "';
                      var bloc$rand = 'bloc" . $rank . "';
-                     $(myelement).click(function() {     
+                     $(myelement$rand).click(function() {     
                          if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
                              $('[bloc-hideid =' + bloc$rand + ']').hide();
-                             $(myelement).toggleClass('fa-chevron-up fa-chevron-down');
+                             $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
                          } else {
                              $('[bloc-hideid =' + bloc$rand + ']').show();
-                             $(myelement).toggleClass('fa-chevron-down fa-chevron-up');
+                             $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
                          }
                      });");
                echo "</span></h4>";
@@ -920,15 +920,15 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<i id='up" . $data["rank"] . "' class='fa-1x fas fa-chevron-up pointer' style='right: 20px;position: absolute;color:" . $data['color'] . ";'></i>";
                   $rand = mt_rand();
                   echo Html::scriptBlock("
-                     var myelement = '#up" . $data["rank"] . "';
+                     var myelement$rand = '#up" . $data["rank"] . "';
                      var bloc$rand = 'bloc" . $data["rank"] . "';
-                     $(myelement).click(function() {     
+                     $(myelement$rand).click(function() {     
                          if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
                              $('[bloc-hideid =' + bloc$rand + ']').hide();
-                             $(myelement).toggleClass('fa-chevron-up fa-chevron-down');
+                             $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
                          } else {
                              $('[bloc-hideid =' + bloc$rand + ']').show();
-                             $(myelement).toggleClass('fa-chevron-down fa-chevron-up');
+                             $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
                          }
                      });");
                   echo "</span></h4>";
