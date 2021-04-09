@@ -1590,11 +1590,10 @@ class PluginMetademandsField extends CommonDBChild {
 
                $field .= "<div class=\"zone\">
                                    <select name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-               if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
-                  foreach ($data['custom_values'] as $k => $val) {
-                     if (in_array($k, $value)) {
-                        $field .= "<option selected value=\"$k\" >$val</option>";
-                     }
+               if (is_array($value) && count($value) > 0) {
+                  foreach ($value as $k => $val) {
+                        $field .= "<option selected value=\"$val\" >".getUserName($val)."</option>";
+
                   }
                }
                $field .= "</select></div>";
