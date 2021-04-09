@@ -3401,6 +3401,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
    }
 
 
+   /** Display Tags available for the metademand $id
+    * @param $id
+    **/
    function getTags($id) {
       $metademand_fields = new PluginMetademandsField();
       $fields = $metademand_fields->find(['plugin_metademands_metademands_id' => $id]);
