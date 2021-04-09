@@ -1752,6 +1752,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
          switch ($field['type']) {
             case 'title' :
+            case 'title-block' :
                $result['content'] .= "<th colspan='2'>" . $label . "</th>";
                break;
             case 'dropdown':
@@ -1769,80 +1770,82 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $custom_values[$field['value']] . "</td>";
                   }
                } else {
-                  switch ($field['item']) {
-                     case 'User':
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $item = new $field['item']();
-                        $content ="";
-                        $information = json_decode($field['informations_to_display']);
-                        if($item->getFromDB($field['value'])){
+                  if ($field['value'] != 0) {
+                     switch ($field['item']) {
+                        case 'User':
+                           $result['content'] .= "<td $style_title>" . $label . "</td>";
+                           $item              = new $field['item']();
+                           $content           = "";
+                           $information       = json_decode($field['informations_to_display']);
+                           if ($item->getFromDB($field['value'])) {
 
 
-                           if(in_array('full_name',$information)){
-                              $content .= "".$field["item"]::getFriendlyNameById($field['value'])." ";
+                              if (in_array('full_name', $information)) {
+                                 $content .= "" . $field["item"]::getFriendlyNameById($field['value']) . " ";
+                              }
+                              if (in_array('realname', $information)) {
+                                 $content .= "" . $item->fields["realname"] . " ";
+                              }
+                              if (in_array('firstname', $information)) {
+                                 $content .= "" . $item->fields["firstname"] . " ";
+                              }
+                              if (in_array('name', $information)) {
+                                 $content .= "" . $item->fields["name"] . " ";
+                              }
+                              if (in_array('email', $information)) {
+                                 $content .= "" . $item->getDefaultEmail() . " ";
+                              }
+
                            }
-                           if(in_array('realname',$information)){
-                              $content .= "".$item->fields["realname"]." ";
-                           }
-                           if(in_array('firstname',$information)){
-                              $content .= "".$item->fields["firstname"]." ";
-                           }
-                           if(in_array('name',$information)){
-                              $content .= "".$item->fields["name"]." ";
-                           }
-                           if(in_array('email',$information)){
-                              $content .= "".$item->getDefaultEmail()." ";
+                           if (empty($content)) {
+                              $result['content'] .= "<td>" . getUserName($field['value']) . "</td>";
+                           } else {
+                              $result['content'] .= "<td>" . $content . "</td>";
                            }
 
-                        }
-                        if(empty($content)){
-                           $result['content'] .= "<td>" . getUserName($field['value']) . "</td>";
-                        }else{
-                           $result['content'] .= "<td>" . $content . "</td>";
-                        }
 
-
-                        break;
-                     case 'ITILCategory_Metademands':
-                        $dbu               = new DbUtils();
-                        $result['content'] .= "<td $style_title>" . $label . "</td><td>";
-                        $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
-                                                                        $field['value']);
-                        $result['content'] .= "</td>";
-                        break;
-                     case 'mydevices':
-                        $dbu               = new DbUtils();
-                        $result['content'] .= "<td $style_title>" . $label . "</td><td>";
-                        $splitter          = explode("_", $field['value']);
-                        if (count($splitter) == 2) {
-                           $itemtype = $splitter[0];
-                           $items_id = $splitter[1];
-                        }
-                        if ($itemtype && $items_id) {
-                           $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
-                                                                           $items_id);
-                        }
-                        $result['content'] .= "</td>";
-                        break;
-                     case 'urgency':
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $result['content'] .= "<td>" . Ticket::getUrgencyName($field['value']) . "</td>";
-                        break;
-                     case 'impact':
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $result['content'] .= "<td>" . Ticket::getImpactName($field['value']) . "</td>";
-                        break;
-                     case 'priority':
-                        $result['content'] .= "<td $style_title>" . $label . "</td>";
-                        $result['content'] .= "<td>" . Ticket::getPriorityName($field['value']) . "</td>";
-                        break;
-                     default:
-                        $dbu               = new DbUtils();
-                        $result['content'] .= "<td $style_title>" . $label . "</td><td>";
-                        $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
-                                                                        $field['value']);
-                        $result['content'] .= "</td>";
-                        break;
+                           break;
+                        case 'ITILCategory_Metademands':
+                           $dbu               = new DbUtils();
+                           $result['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
+                                                                           $field['value']);
+                           $result['content'] .= "</td>";
+                           break;
+                        case 'mydevices':
+                           $dbu               = new DbUtils();
+                           $result['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           $splitter          = explode("_", $field['value']);
+                           if (count($splitter) == 2) {
+                              $itemtype = $splitter[0];
+                              $items_id = $splitter[1];
+                           }
+                           if ($itemtype && $items_id) {
+                              $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
+                                                                              $items_id);
+                           }
+                           $result['content'] .= "</td>";
+                           break;
+                        case 'urgency':
+                           $result['content'] .= "<td $style_title>" . $label . "</td>";
+                           $result['content'] .= "<td>" . Ticket::getUrgencyName($field['value']) . "</td>";
+                           break;
+                        case 'impact':
+                           $result['content'] .= "<td $style_title>" . $label . "</td>";
+                           $result['content'] .= "<td>" . Ticket::getImpactName($field['value']) . "</td>";
+                           break;
+                        case 'priority':
+                           $result['content'] .= "<td $style_title>" . $label . "</td>";
+                           $result['content'] .= "<td>" . Ticket::getPriorityName($field['value']) . "</td>";
+                           break;
+                        default:
+                           $dbu               = new DbUtils();
+                           $result['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
+                                                                           $field['value']);
+                           $result['content'] .= "</td>";
+                           break;
+                     }
                   }
                }
                break;

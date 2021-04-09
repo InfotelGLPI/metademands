@@ -132,7 +132,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
          echo "<div class='form-row' $style>";
 
          echo "<div class='form-group basket-title col-md-5'>";
-         if ($v['type'] == 'title') {
+         if ($v['type'] == 'title' || $v['type'] == 'title-block') {
             echo "<h5><span style='color:" . $v['color'] . ";'>";
          }
 
@@ -145,7 +145,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             echo "*";
          }
          echo "</span>";
-         if ($v['type'] == 'title') {
+         if ($v['type'] == 'title' || $v['type'] == 'title-block') {
             echo "</span>";
             echo "</h5>";
          }

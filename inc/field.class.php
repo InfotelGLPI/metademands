@@ -50,7 +50,7 @@ class PluginMetademandsField extends CommonDBChild {
    static $dropdown_multiple_items = ['other', 'Appliance', 'User'];
 
    static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'date', 'datetime', 'informations',
-                          'date_interval', 'datetime_interval', 'yesno', 'upload', 'title', 'radio', 'link', 'number', 'parent_field'];
+                          'date_interval', 'datetime_interval', 'yesno', 'upload', 'title', 'title-block', 'radio', 'link', 'number', 'parent_field'];
 
    static $allowed_options_types = ['yesno', 'date', 'datetime', 'date_interval', 'datetime_interval', 'checkbox', 'radio', 'dropdown_multiple', 'dropdown', 'dropdown_object',
                                     'parent_field', 'number', 'text', 'textarea', 'upload'];
@@ -341,15 +341,20 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
 
       // ORDER
-      echo "<td>" . __('Display field after', 'metademands') . "</td>";
-      echo "<td>";
-      echo "<span id='show_order'>";
-      $this->showOrderDropdown($this->fields['rank'],
-                               $this->fields['id'],
-                               $this->fields['plugin_metademands_fields_id'],
-                               $this->fields["plugin_metademands_metademands_id"]);
-      echo "</span>";
-      echo "</td>";
+      if ($ID > 0
+          && $this->fields['type'] != "title-block") {
+         echo "<td>" . __('Display field after', 'metademands') . "</td>";
+         echo "<td>";
+         echo "<span id='show_order'>";
+         $this->showOrderDropdown($this->fields['rank'],
+                                  $this->fields['id'],
+                                  $this->fields['plugin_metademands_fields_id'],
+                                  $this->fields["plugin_metademands_metademands_id"]);
+         echo "</span>";
+         echo "</td>";
+      } else {
+         echo "<td colspan='2'></td>";
+      }
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
@@ -441,6 +446,7 @@ class PluginMetademandsField extends CommonDBChild {
                  'valueDisplay_title' => 'show_item_title',
                  'value_title'        => 'title',
                  'value_informations' => 'informations',
+                 'value_title_block'  => 'title-block',
       ];
 
       $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(['root_doc' => $CFG_GLPI['root_doc']]) . ");";
@@ -463,6 +469,7 @@ class PluginMetademandsField extends CommonDBChild {
       } else {
          echo "<td colspan='2'></td>";
       }
+
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
@@ -499,7 +506,9 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       //TODO permit linked items_id / itemtype
-      if ($ID > 0 && $this->fields['type'] != "title"
+      if ($ID > 0
+          && $this->fields['type'] != "title"
+          && $this->fields['type'] != "title-block"
           && $this->fields['type'] != "informations") {
          echo "<td>";
          echo __('Use this field as a ticket field', 'metademands');
@@ -1020,6 +1029,8 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Add a document');
          case 'title'   :
             return __('Title');
+         case 'title-block'   :
+            return __('Block title', 'metademands');
          case 'radio'   :
             return __('Radio button', 'metademands');
          case 'parent_field' :
@@ -1467,6 +1478,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
          if ($data['type'] != "title"
              && $data['type'] != "informations"
+             && $data['type'] != "title-block"
              && $data['type'] != "text"
              && !empty($comment)) {
             echo "&nbsp;";
@@ -1592,7 +1604,7 @@ class PluginMetademandsField extends CommonDBChild {
                                    <select name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                if (is_array($value) && count($value) > 0) {
                   foreach ($value as $k => $val) {
-                        $field .= "<option selected value=\"$val\" >".getUserName($val)."</option>";
+                     $field .= "<option selected value=\"$val\" >" . getUserName($val) . "</option>";
 
                   }
                }
@@ -2644,12 +2656,12 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<td colspan='2' class='center'>";
                      $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
 
-                     $informations["full_name"]         = __('Complete name');
-                     $informations["realname"]          = __('Surname');
-                     $informations["firstname"]         = __('First name');
-                     $informations["name"]              = __('Login');
-//                     $informations["group"]             = Group::getTypeName(1);
-                     $informations["email"]             = _n('Email', 'Emails', 1);
+                     $informations["full_name"] = __('Complete name');
+                     $informations["realname"]  = __('Surname');
+                     $informations["firstname"] = __('First name');
+                     $informations["name"]      = __('Login');
+                     //                     $informations["group"]             = Group::getTypeName(1);
+                     $informations["email"] = _n('Email', 'Emails', 1);
                      echo Dropdown::showFromArray('informations_to_display', $informations, ['values' => $params['informations_to_display'], 'display' => false, 'multiple' => true]);
                      echo "</td>";
                      echo "</tr>";
@@ -2673,8 +2685,8 @@ class PluginMetademandsField extends CommonDBChild {
                   $informations["realname"]          = __('Surname');
                   $informations["firstname"]         = __('First name');
                   $informations["name"]              = __('Login');
-//                  $informations["group"]             = Group::getTypeName(1);
-                  $informations["email"]             = _n('Email', 'Emails', 1);
+                  //                  $informations["group"]             = Group::getTypeName(1);
+                  $informations["email"] = _n('Email', 'Emails', 1);
                   echo Dropdown::showFromArray('informations_to_display', $informations, ['values' => $params['informations_to_display'], 'display' => false, 'multiple' => true]);
                   echo "</td>";
                   echo "</tr>";
@@ -4007,6 +4019,7 @@ class PluginMetademandsField extends CommonDBChild {
          $rank = 1;
       }
       $restrict = ['rank' => $rank, 'plugin_metademands_metademands_id' => $metademands_id];
+      $restrict += ['NOT' => ['type' => 'title-block']];
       if (!empty($fields_id)) {
          $restrict += ['NOT' => ['id' => $fields_id]];
       }
