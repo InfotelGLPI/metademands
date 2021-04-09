@@ -172,6 +172,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       if (Session::getCurrentInterface() == 'central') {
          $this->addStandardTab('Log', $ong, $options);
       }
+      $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
       return $ong;
    }
 
