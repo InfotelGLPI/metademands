@@ -205,6 +205,8 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             echo "<label><i>" . nl2br($comment) . "</i></label>";
          }
+         echo "<span style='margin-left:45%;'><input type='button' id='mydraft'  class='submit' name='next_button' value='" . _sx('button', 'My drafts','metademands') . "'></span>";
+
          echo "</div></div>";
 
          $plugin = new Plugin();
