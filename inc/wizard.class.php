@@ -1107,6 +1107,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "</div>";
          echo "</div>";
+         echo "</div>";
          if ($preview) {
             $color = PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']);
             echo "<div class=\"form-row\" style='border-bottom: 3px solid #" . $color . ";' >";
