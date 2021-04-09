@@ -297,7 +297,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          $this->SetBackgroundColor($color);
          $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
-      } else if ($type == 'title' || $type == 'textarea') {
+      } else if ($type == 'title' || $type == 'title-block' ||$type == 'textarea') {
          $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
       } else {
@@ -305,7 +305,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
          $this->SetXY($x + $width, $y);
       }
 
-      if ($type != 'title' && $type != 'linebreak') {
+      if ($type != 'title' && $type != 'title-block' && $type != 'linebreak') {
          $this->SetBackgroundColor($color);
          $this->SetFontNormal($fontColor, $bold, $size);
          //Draw values
@@ -366,7 +366,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
             if (isset($fields[$key])
                 || $elt['type'] == 'title'
-                || $elt['type'] == 'upload') {
+                || $elt['type'] == 'title-block'
+                || $elt['type'] == 'upload'
+                || $elt['type'] == 'radio') {
                $newForm[$fielCount] = $elt;
                if ($rank != $elt['rank']) {
                   $newForm[$fielCount] = ['type' => 'linebreak',
@@ -398,8 +400,10 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
             if (isset($fields[$elt['id']])
                 || $elt['type'] == 'title'
+                || $elt['type'] == 'title-block'
                 || $elt['type'] == 'upload'
-                || $elt['type'] == 'linebreak') {
+                || $elt['type'] == 'linebreak'
+                || $elt['type'] == 'radio') {
 
                $y = $this->GetY();
                if (($y + $this->line_height) >= ($this->page_height - $this->header_height)) {
@@ -417,6 +421,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
 
                switch ($elt['type']) {
                   case 'title':
+                  case 'title-block':
                      // Draw line
                      $this->MultiCellValue($this->title_width, $this->line_height, $elt['type'], $label, '', 'LRBT', 'C', $this->bgcolor, 1, $this->subtitle_size, 'black');
                      break;
@@ -498,29 +503,29 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      switch ($elt['item']) {
                         case 'User':
                            $information = json_decode($elt['informations_to_display']);
-                           $item = new $elt["item"]();
-                           $dataItems = "";
-                           if($item->getFromDB($fields[$elt['id']])){
+                           $item        = new $elt["item"]();
+                           $dataItems   = "";
+                           if ($item->getFromDB($fields[$elt['id']])) {
 
-                              if(in_array('full_name',$information)){
-                                 $dataItems .= " ".$elt["item"]::getFriendlyNameById($fields[$elt['id']])." ";
+                              if (in_array('full_name', $information)) {
+                                 $dataItems .= " " . $elt["item"]::getFriendlyNameById($fields[$elt['id']]) . " ";
                               }
-                              if(in_array('realname',$information)){
-                                 $dataItems .= " ".$item->fields["realname"]." ";
+                              if (in_array('realname', $information)) {
+                                 $dataItems .= " " . $item->fields["realname"] . " ";
                               }
-                              if(in_array('firstname',$information)){
-                                 $dataItems .= " ".$item->fields["firstname"]." ";
+                              if (in_array('firstname', $information)) {
+                                 $dataItems .= " " . $item->fields["firstname"] . " ";
                               }
-                              if(in_array('name',$information)){
-                                 $dataItems .= " ".$item->fields["name"]." ";
+                              if (in_array('name', $information)) {
+                                 $dataItems .= " " . $item->fields["name"] . " ";
                               }
-                              if(in_array('email',$information)){
-                                 $dataItems .= " ".$item->getDefaultEmail()." ";
+                              if (in_array('email', $information)) {
+                                 $dataItems .= " " . $item->getDefaultEmail() . " ";
                               }
 
 
                            }
-                           if(empty($dataItems)){
+                           if (empty($dataItems)) {
                               $value = $dbu->getUserName($fields[$elt['id']]);
                            } else {
                               $value = $dataItems;
@@ -589,9 +594,9 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      if (!empty($elt['custom_values'])) {
                         $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
                         foreach ($custom_values as $k => $val) {
-                           if($elt['item'] != "other"){
+                           if ($elt['item'] != "other") {
                               $custom_values[$k] = $elt["item"]::getFriendlyNameById($k);
-                           }else{
+                           } else {
                               if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
                                  $custom_values[$k] = $ret;
                               }
@@ -599,7 +604,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         }
                         $values     = $fields[$elt['id']];
                         $parseValue = [];
-                        if(!empty($values) && !is_array($values)){
+                        if (!empty($values) && !is_array($values)) {
                            $values = json_decode($values);
                         }
                         if (is_array($values) && count($values)) {
@@ -611,41 +616,41 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                         // Draw line
                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
-                     }else if($elt['item'] == 'User'){
+                     } else if ($elt['item'] == 'User') {
                         $values     = $fields[$elt['id']];
                         $parseValue = [];
-                        if(!empty($values) && !is_array($values)){
+                        if (!empty($values) && !is_array($values)) {
                            $values = json_decode($values);
                         }
 
                         $information = json_decode($elt['informations_to_display']);
-                        $item = new $elt["item"]();
+                        $item        = new $elt["item"]();
                         foreach ($values as $k => $v) {
                            $dataItems = "";
-                           if($item->getFromDB($v)){
+                           if ($item->getFromDB($v)) {
 
-                              if(in_array('full_name',$information)){
-                                 $dataItems .= " ".$elt["item"]::getFriendlyNameById($v)." ";
+                              if (in_array('full_name', $information)) {
+                                 $dataItems .= " " . $elt["item"]::getFriendlyNameById($v) . " ";
                               }
-                              if(in_array('realname',$information)){
-                                 $dataItems .= " ".$item->fields["realname"]." ";
+                              if (in_array('realname', $information)) {
+                                 $dataItems .= " " . $item->fields["realname"] . " ";
                               }
-                              if(in_array('firstname',$information)){
-                                 $dataItems .= " ".$item->fields["firstname"]." ";
+                              if (in_array('firstname', $information)) {
+                                 $dataItems .= " " . $item->fields["firstname"] . " ";
                               }
-                              if(in_array('name',$information)){
-                                 $dataItems .= " ".$item->fields["name"]." ";
+                              if (in_array('name', $information)) {
+                                 $dataItems .= " " . $item->fields["name"] . " ";
                               }
-                              if(in_array('email',$information)){
-                                 $dataItems .= " ".$item->getDefaultEmail()." ";
+                              if (in_array('email', $information)) {
+                                 $dataItems .= " " . $item->getDefaultEmail() . " ";
                               }
-                              if(!empty($dataItems)){
+                              if (!empty($dataItems)) {
                                  $dataItems .= PHP_EOL;
                               }
 
                            }
                            //                              array_push($parseValue, $custom_values[$v]);
-                           if(!empty($dataItems)){
+                           if (!empty($dataItems)) {
                               array_push($parseValue, $dataItems);
                            }
                         }
@@ -691,13 +696,15 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                               $custom_values[$k] = $ret;
                            }
                         }
-                        $values = PluginMetademandsField::_unserialize($fields[$elt['id']]);
-                        foreach ($custom_values as $k => $v) {
-                           if ($values == $k) {
-                              $value = $custom_values[$k];
+                        if ($fields[$elt['id']] != NULL) {
+                           $values = PluginMetademandsField::_unserialize($fields[$elt['id']]);
+                           foreach ($custom_values as $k => $v) {
+                              if ($values == $k) {
+                                 $value = $custom_values[$k];
+                              }
                            }
+                           $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                         }
-                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                         // Draw line
                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      }
@@ -729,6 +736,8 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         }
                         $label2 = str_replace("’", "'", $label2);
                         $label2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label2));
+                        $label2 = (Toolbox::addslashes_deep($label2));
+                        $label2 = Html::cleanPostForTextArea(Html::clean($label2));
                      }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -747,6 +756,8 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         }
                         $label2 = str_replace("’", "'", $label2);
                         $label2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label2));
+                        $label2 = (Toolbox::addslashes_deep($label2));
+                        $label2 = Html::cleanPostForTextArea(Html::clean($label2));
                      }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
