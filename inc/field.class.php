@@ -768,7 +768,8 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<div class='center first-bloc'>";
          if ($canedit) {
             Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
+            $massiveactionparams = ['item' => __CLASS__,
+                                    'container' => 'mass' . __CLASS__ . $rand];
             Html::showMassiveActions($massiveactionparams);
          }
          echo "<table class='tab_cadre_fixe'>";
@@ -3819,6 +3820,12 @@ class PluginMetademandsField extends CommonDBChild {
       $field = new self();
       $field->deleteByCriteria(['parent_field_id' => $this->getID(),
                                 'type'            => 'parent_field']);
+
+      $temp = new PluginMetademandsTicketField();
+      $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsBasketline();
+      $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
    }
 
    /**
@@ -4131,8 +4138,9 @@ class PluginMetademandsField extends CommonDBChild {
       $forbidden = parent::getForbiddenStandardMassiveAction();
 
       $forbidden[] = 'merge';
+      $forbidden[] = 'add_transfer_list';
+      $forbidden[] = 'amend_comment';
 
-      //      $forbidden[] = 'clone';
       return $forbidden;
    }
 

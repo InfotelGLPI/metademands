@@ -471,7 +471,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                    AND type = $type    
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
                . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
-      $query .= "AND is_active ORDER BY `name` $limit";
+
+      //Type can be deleted
+      $meta = new PluginMetademandsMetademand();
+      if ($meta->maybeDeleted()) {
+         $query .= " AND `is_deleted` = '0' ";
+      }
+
+      $query .= "AND `is_active` = 1 ORDER BY `name` $limit";
 
       $metademands = [];
       $result      = $DB->query($query);

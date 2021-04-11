@@ -29,6 +29,11 @@
 
 define('PLUGIN_METADEMANDS_VERSION', '2.7.6');
 
+if (!defined("PLUGIN_METADEMANDS_DIR")) {
+   define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
+   define("PLUGIN_METADEMANDS_DIR_NOFULL", Plugin::getPhpDir("metademands",false));
+}
+
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands() {
    global $PLUGIN_HOOKS;

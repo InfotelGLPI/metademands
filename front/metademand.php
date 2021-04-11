@@ -27,8 +27,16 @@
  --------------------------------------------------------------------------
  */
  
-include ('../../../inc/includes.php');
-Session::checkLoginUser();
+include('../../../inc/includes.php');
 
-$dropdown = new PluginMetademandsMetademand();
-include (GLPI_ROOT . "/front/dropdown.common.php");
+Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");
+
+$meta = new PluginMetademandsMetademand();
+
+if ($meta->canView() || Session::haveRight("config", UPDATE)) {
+   Search::show('PluginMetademandsMetademand');
+} else {
+   Html::displayRightError();
+}
+
+Html::footer();

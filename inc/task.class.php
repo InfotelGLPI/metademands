@@ -872,4 +872,22 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       }
    }
 
+   function cleanDBonPurge() {
+
+      $field = new self();
+      $field->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsField();
+      $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsTicket_Task();
+      $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsTicketTask();
+      $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsMetademandTask();
+      $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+   }
+
 }

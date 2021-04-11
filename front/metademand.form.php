@@ -27,8 +27,57 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
-Session::checkLoginUser();
+include('../../../inc/includes.php');
 
-$dropdown=new PluginMetademandsMetademand();
-include (GLPI_ROOT . "/front/dropdown.common.form.php");
+if (!isset($_GET["id"])) {
+   $_GET["id"] = "";
+}
+if (!isset($_GET["withtemplate"])) {
+   $_GET["withtemplate"] = "";
+}
+
+$meta      = new PluginMetademandsMetademand();
+
+if (isset($_POST["add"])) {
+
+   $meta->check(-1, CREATE, $_POST);
+   $newID = $meta->add($_POST);
+   if ($_SESSION['glpibackcreated']) {
+      Html::redirect($meta->getFormURL() . "?id=" . $newID);
+   }
+   Html::back();
+
+} else if (isset($_POST["delete"])) {
+
+   $meta->check($_POST['id'], DELETE);
+   $meta->delete($_POST);
+   $meta->redirectToList();
+
+} else if (isset($_POST["restore"])) {
+
+   $meta->check($_POST['id'], PURGE);
+   $meta->restore($_POST);
+   $meta->redirectToList();
+
+} else if (isset($_POST["purge"])) {
+
+   $meta->check($_POST['id'], PURGE);
+   $meta->delete($_POST, 1);
+   $meta->redirectToList();
+
+} else if (isset($_POST["update"])) {
+
+   $meta->check($_POST['id'], UPDATE);
+   $meta->update($_POST);
+   Html::back();
+
+} else {
+
+   $meta->checkGlobal(READ);
+
+   Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");
+
+   $meta->display($_GET);
+
+   Html::footer();
+}

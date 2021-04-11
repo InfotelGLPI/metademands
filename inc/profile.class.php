@@ -56,7 +56,7 @@ class PluginMetademandsProfile extends Profile {
     * @return bool
     */
    static function canCreate() {
-      return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+      return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE, PURGE]);
    }
 
    /**
@@ -97,15 +97,6 @@ class PluginMetademandsProfile extends Profile {
       return true;
    }
 
-   /**
-    * @param \Profile $prof
-    */
-   static function purgeProfiles(Profile $prof) {
-      $plugprof = new ProfileRight();
-      foreach (self::getAllRights(true) as $right) {
-         $plugprof->deleteByCriteria(['profiles_id' => $prof->getField("id"), 'name' => $right]);
-      }
-   }
 
    /**
     * @param int  $profiles_id
@@ -126,7 +117,7 @@ class PluginMetademandsProfile extends Profile {
       $profile = new Profile();
       $profile->getFromDB($profiles_id);
 
-      $rights = $this->getAllRights(false, $profiles_id);
+      $rights = $this->getAllRights();
 
       $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
                                                          'default_class' => 'tab_bg_2',
@@ -162,20 +153,14 @@ class PluginMetademandsProfile extends Profile {
     *
     * @return array
     */
-   static function getAllRights($all = false, $profiles_id = 0) {
+   static function getAllRights($all = false) {
 
-      $interface = 'central';
-      if ($profiles_id > 0) {
-         $profile = new Profile();
-         $profile->getFromDB($profiles_id);
-         $interface = $profile->fields['interface'];
-      }
-
-      $rights = [['itemtype'  => 'PluginMetademandsMetademand',
-                            'label'     => _n('Meta-Demand', 'Meta-Demands', 1, 'metademands'),
-                            'field'     => 'plugin_metademands',
-                            'rights'    => self::getItemRights($interface)
-                ]];
+      $rights = [
+         ['rights' => Profile::getRightsFor('PluginMetademandsMetademand', 'central'),
+          'label'  => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
+          'field'  => 'plugin_metademands'
+         ],
+      ];
 
       if ($all) {
          $rights[] = ['itemtype'  => 'PluginMetademandsWizard',
@@ -296,7 +281,9 @@ class PluginMetademandsProfile extends Profile {
       }
 
       // Migration old rights in new ones
-      self::migrateOneProfile();
+      foreach ($DB->request("SELECT `id` FROM `glpi_profiles`") as $prof) {
+         self::migrateOneProfile($prof['id']);
+      }
 
       foreach ($DB->request("SELECT *
                              FROM `glpi_profilerights` 
@@ -304,21 +291,6 @@ class PluginMetademandsProfile extends Profile {
                              AND `name` LIKE '%plugin_metademands%'") as $prof) {
          $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
       }
-   }
-
-     /**
-   * Initialize profiles, and migrate it necessary
-   */
-   static function changeProfile() {
-      global $DB;
-
-      foreach ($DB->request("SELECT *
-                             FROM `glpi_profilerights` 
-                             WHERE `profiles_id`='".$_SESSION['glpiactiveprofile']['id']."' 
-                             AND `name` LIKE '%plugin_metademands%'") as $prof) {
-         $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
-      }
-
    }
 
    /**

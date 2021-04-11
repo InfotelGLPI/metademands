@@ -23,7 +23,9 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `date_creation` datetime DEFAULT NULL,
     `date_mod` datetime DEFAULT NULL,
     `validation_subticket` TINYINT(1) NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`)
+    `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`),
+    KEY `itilcategories_id` (`itilcategories_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------------------------------------
@@ -347,7 +349,10 @@ CREATE TABLE `glpi_plugin_metademands_metademandvalidations`
     `validate`                          tinyint(1) NOT NULL DEFAULT '0',
     `date`                              timestamp NOT NULL,
     `tickets_to_create`                 text NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `users_id` (`users_id`),
+    KEY `tickets_id` (`tickets_id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci

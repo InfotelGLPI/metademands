@@ -134,6 +134,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
                                          ["`itilcategories_id`" => $category_id,
                                           "`is_active`"         => 1,
+                                          "`is_deleted`"         => 0,
                                           "`type`"              => $type]);
 
       if (!empty($metas)) {
