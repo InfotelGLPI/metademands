@@ -156,7 +156,7 @@ class PluginMetademandsProfile extends Profile {
    static function getAllRights($all = false) {
 
       $rights = [
-         ['rights' => Profile::getRightsFor('PluginMetademandsMetademand', 'central'),
+         ['itemtype' => 'PluginMetademandsMetademand',
           'label'  => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
           'field'  => 'plugin_metademands'
          ],

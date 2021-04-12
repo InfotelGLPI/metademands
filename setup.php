@@ -39,7 +39,7 @@ function plugin_init_metademands() {
    global $PLUGIN_HOOKS;
 
    $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
-   $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'changeProfile'];
+   $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'initProfile'];
    $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js'];
    $PLUGIN_HOOKS["javascript"]['metademands']     = ["/plugins/metademands/scripts/metademands.js"];
    $PLUGIN_HOOKS['add_css']['metademands']        = ['/css/metademands.css'];
