@@ -20,14 +20,15 @@ Characteristics :
 - [X] Create a father / childs tickets
 - [X] Semi-automatic creation of child tickets
 - [X] Scheduling created tickets
-
-News :
 - [X] Create basket from assistants
 - [X] Create PDF for your demands
 - [X] Translation of assistants
 - [X] Meta Incidents
 
-Help us to add these features
+News :
+- [X] Meta Changes
+- [ ] Save your forms as Draft
 
-- [ ] Save your forms for validation
+Help us to add these features
+- [ ] Export / Import forms
 
