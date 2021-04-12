@@ -375,11 +375,11 @@ class PluginMetademandsWizard extends CommonDBTM {
             unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
             break;
 
-         case PluginMetademandsMetademand::STEP_INIT:
-            self::chooseType($step);
-            unset($_SESSION['plugin_metademands']);
-            unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
-            break;
+         //         case PluginMetademandsMetademand::STEP_INIT:
+         //            self::chooseType($step);
+         //            unset($_SESSION['plugin_metademands']);
+         //            unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
+         //            break;
 
          default:
             self::showMetademands($metademands_id, $step, $preview, $options);
@@ -423,35 +423,35 @@ class PluginMetademandsWizard extends CommonDBTM {
    /**
     * @param $step
     */
-   static function chooseType($step) {
-
-      echo "<div class=\"form-row\">";
-      echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
-      echo "<h4 class=\"bt-title-divider\"><span>";
-      echo sprintf(__('Step %d - Ticket type choice', 'metademands'), $step);
-      echo "</span></h4>";
-      echo "</div>";
-      echo "</div>";
-
-      echo "<div class=\"form-row\">";
-      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-      // Type
-      echo '<b>' . __('Type') . '</b>';
-      echo "</div>";
-      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-      $types    = PluginMetademandsTask::getTaskTypes();
-      $types[0] = Dropdown::EMPTY_VALUE;
-      ksort($types);
-      Dropdown::showFromArray('type', $types, ['width' => 150]);
-      echo "</div>";
-      echo "</div>";
-
-      echo "<div class=\"form-row\">";
-      echo "<div class=\"bt-feature col-md-12 right\">";
-      echo "<input type='submit' class='submit' name='next' value='" . __('Next') . "'>";
-      echo "</div>";
-      echo "</div>";
-   }
+   //   static function chooseType($step) {
+   //
+   //      echo "<div class=\"form-row\">";
+   //      echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
+   //      echo "<h4 class=\"bt-title-divider\"><span>";
+   //      echo sprintf(__('Step %d - Ticket type choice', 'metademands'), $step);
+   //      echo "</span></h4>";
+   //      echo "</div>";
+   //      echo "</div>";
+   //
+   //      echo "<div class=\"form-row\">";
+   //      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
+   //      // Type
+   //      echo '<b>' . __('Type') . '</b>';
+   //      echo "</div>";
+   //      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
+   //      $types    = PluginMetademandsTask::getTaskTypes();
+   //      $types[0] = Dropdown::EMPTY_VALUE;
+   //      ksort($types);
+   //      Dropdown::showFromArray('type', $types, ['width' => 150]);
+   //      echo "</div>";
+   //      echo "</div>";
+   //
+   //      echo "<div class=\"form-row\">";
+   //      echo "<div class=\"bt-feature col-md-12 right\">";
+   //      echo "<input type='submit' class='submit' name='next' value='" . __('Next') . "'>";
+   //      echo "</div>";
+   //      echo "</div>";
+   //   }
 
    /**
     * @param string $limit
@@ -464,11 +464,18 @@ class PluginMetademandsWizard extends CommonDBTM {
    static function selectMetademands($limit = "", $type = Ticket::DEMAND_TYPE) {
       global $DB;
 
+      if ($type == Ticket::INCIDENT_TYPE || $type == Ticket::DEMAND_TYPE) {
+         $crit = "type = '$type'";
+      } else {
+         $crit = "object_to_create = '$type'";
+      }
+
+
       $dbu   = new DbUtils();
       $query = "SELECT `id`,`name`
                    FROM `glpi_plugin_metademands_metademands`
                    WHERE (is_order = 1  OR `glpi_plugin_metademands_metademands`.`itilcategories_id` <> '')
-                   AND type = $type    
+                   AND $crit  
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
                . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
 
@@ -512,6 +519,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
+//         $data['Problem']             = __('Problem');
+         $data['Change']              = __('Change');
 
          //         foreach ($data as $type => $typename) {
          //
@@ -577,6 +586,9 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
+//         $data['Problem']             = __('Problem');
+         $data['Change']              = __('Change');
+
          echo "<div style='margin-bottom: 10px'>";
          $rand = Dropdown::showFromArray("type", $data, ["value" => Ticket::DEMAND_TYPE]);
          echo "</div>";
@@ -2221,8 +2233,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                $datas['fields'] = $values['fields'];
 
-
-               $result = $metademands->addMetademands($metademands_id, $datas, $options);
+               $result = $metademands->addObjects($metademands_id, $values, $options);
                Session::addMessageAfterRedirect($result['message']);
             }
             $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
@@ -2269,14 +2280,13 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
                                             'users_id'                          => Session::getLoginUserID()]);
-
-            $result = $metademands->addMetademands($metademands_id, $values, $options);
+            $result = $metademands->addObjects($metademands_id, $values, $options);
             Session::addMessageAfterRedirect($result['message']);
          }
 
       } else {
          //not in basket
-         $result = $metademands->addMetademands($metademands_id, $values, $options);
+         $result = $metademands->addObjects($metademands_id, $values, $options);
          Session::addMessageAfterRedirect($result['message']);
       }
 

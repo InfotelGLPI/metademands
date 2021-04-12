@@ -246,82 +246,6 @@ function plugin_metademands_uninstall() {
    return true;
 }
 
-// Define Dropdown tables to be manage in GLPI
-/**
- * @return array
- */
-//function plugin_metademands_getDropdown() {
-//
-//   $plugin = new Plugin();
-//
-//   if ($plugin->isActivated("metademands")) {
-//      return ['PluginMetademandsMetademand'      => PluginMetademandsMetademand::getTypeName(2),
-//      ];
-//   } else {
-//      return [];
-//   }
-//}
-
-// Hook done on purge item case
-/**
- * @param $item
- */
-function plugin_pre_item_purge_metademands($item) {
-   switch (get_class($item)) {
-      case 'PluginMetademandsMetademand' :
-         $temp = new PluginMetademandsTask();
-         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $item->getField('id')], 1);
-
-         $temp = new PluginMetademandsGroup();
-         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $item->getField('id')], 1);
-
-         $temp = new PluginMetademandsField();
-         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $item->getField('id')], 1);
-
-         $temp = new PluginMetademandsTicketField();
-         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $item->getField('id')], 1);
-
-         $temp = new PluginMetademandsMetademandValidation();
-         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $item->getField('id')], 1);
-         break;
-
-      case 'PluginMetademandsTask' :
-         $temp = new PluginMetademandsTicketTask();
-         $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $item->getField('id')], 1);
-
-         $temp = new PluginMetademandsMetademandTask();
-         $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $item->getField('id')], 1);
-         break;
-
-      case 'PluginMetademandsField' :
-         $temp = new PluginMetademandsTicket_Field();
-         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $item->getField('id')], 1);
-         break;
-
-      case 'Ticket' :
-         $temp = new PluginMetademandsTicket_Task();
-         $temp->deleteByCriteria(['tickets_id' => $item->getField('id')], 1);
-
-         $temp = new PluginMetademandsTicket_Metademand();
-         $temp->deleteByCriteria(['tickets_id' => $item->getField('id')], 1);
-
-         $temp = new PluginMetademandsTicket_Field();
-         $temp->deleteByCriteria(['tickets_id' => $item->getField('id')], 1);
-
-         break;
-
-      case 'Group' :
-         $temp = new PluginMetademandsGroup();
-         $temp->deleteByCriteria(['groups_id' => $item->getField('id')], 1);
-         break;
-
-      case 'PluginResourcesContractType' :
-         $temp = new PluginMetademandsMetademand_Resource();
-         $temp->deleteByCriteria(['plugin_resources_contracttypes_id' => $item->getField('id')], 1);
-         break;
-   }
-}
-
 // How to display specific actions ?
 // options contain at least itemtype and and action
 /**
@@ -402,11 +326,6 @@ function plugin_metademands_getDatabaseRelations() {
  *
  * @return mixed
  */
-/**
- * @param $data
- *
- * @return mixed
- */
 function plugin_metademands_MassiveActionsProcess($data) {
    $metademand = new PluginMetademandsMetademand();
    $res        = $metademand->doSpecificMassiveActions($data);
@@ -435,6 +354,9 @@ function plugin_metademands_registerMethods() {
 
 }
 
+/**
+ * @param $data
+ */
 function plugin_metademands_timeline_actions($data) {
    global $CFG_GLPI;
    $metaValidation = new PluginMetademandsMetademandValidation();
@@ -520,6 +442,16 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
 }
 
 
+/**
+ * @param $link
+ * @param $nott
+ * @param $type
+ * @param $ID
+ * @param $val
+ * @param $searchtype
+ *
+ * @return string
+ */
 function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype) {
 
    $searchopt = &Search::getOptions($type);
@@ -601,6 +533,13 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
    return "";
 }
 
+/**
+ * @param $type
+ * @param $ID
+ * @param $num
+ *
+ * @return string
+ */
 function plugin_metademands_addSelect($type, $ID, $num) {
    $searchopt = &Search::getOptions($type);
    $table     = $searchopt[$ID]["table"];
@@ -616,6 +555,16 @@ function plugin_metademands_addSelect($type, $ID, $num) {
    }
 }
 
+/**
+ * @param        $type
+ * @param        $field
+ * @param        $data
+ * @param        $num
+ * @param string $linkfield
+ *
+ * @return string
+ * @throws \GlpitestSQLError
+ */
 function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = "") {
    global $CFG_GLPI;
    switch ($field) {

@@ -817,7 +817,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
     *
     * @return \Document_Item
     */
-   public function addDocument($name, $tickets_id, $entities_id) {
+   public function addDocument($name, $itemtype, $items_id, $entities_id) {
       //Construction du chemin du fichier
       //      $filename = "metademand_" . $idTicket . ".pdf";
       $filename = $name . ".pdf";
@@ -833,17 +833,17 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
       $input["date_mod"]    = date("Y-m-d H:i:s");
       $input["users_id"]    = Session::getLoginUserID();
       $input["entities_id"] = $entities_id;
-      $input["tickets_id"]  = $tickets_id;
-      //entities_id
-      //tickets_id
+      if ($itemtype == 'Ticket') {
+         $input["tickets_id"]  = $items_id;
+      }
       //Initialisation du document
       $newdoc  = $doc->add($input);
       $docitem = new Document_Item();
 
       //entities_id
-      $docitem->add(['itemtype'     => "Ticket",
+      $docitem->add(['itemtype'     => $itemtype,
                      "documents_id" => $newdoc,
-                     "items_id"     => $tickets_id,
+                     "items_id"     => $items_id,
                      "entities_id"  => $entities_id]);
       return $docitem;
    }

@@ -15,6 +15,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `is_recursive` int(1) NOT NULL default '0', -- is_recursive
     `is_active` tinyint(1) NOT NULL DEFAULT '1',
     `comment` text COLLATE utf8_unicode_ci default NULL,
+    `object_to_create` varchar(255) collate utf8_unicode_ci default NULL,
     `type` int(11) NOT NULL default '0', -- metademand type : Incident, demand
     `itilcategories_id` varchar(255) NOT NULL default '[]', -- references itilcategories glpi
     `icon` varchar(255) default NULL,

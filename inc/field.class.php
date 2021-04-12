@@ -511,13 +511,20 @@ class PluginMetademandsField extends CommonDBChild {
           && $this->fields['type'] != "title-block"
           && $this->fields['type'] != "informations") {
          echo "<td>";
-         echo __('Use this field as a ticket field', 'metademands');
+         echo __('Use this field as a field', 'metademands');
          echo "</td>";
          echo "<td>";
          $ticket_fields[0] = Dropdown::EMPTY_VALUE;
-         $searchOption     = Search::getOptions('Ticket');
-         $tt               = new TicketTemplate();
+         $objectclass = $metademand->fields['object_to_create'];
+         $searchOption     = Search::getOptions($objectclass);
+
+         if ($objectclass == 'Ticket') {
+            $tt = new TicketTemplate();
+         } else if ($objectclass == 'Change') {
+            $tt = new ChangeTemplate();
+         }
          $allowed_fields   = $tt->getAllowedFields(true, true);
+
          unset($allowed_fields[-2]);
 
          //      Array ( [1] => name [21] => content [12] => status [10] => urgency [11] => impact [3] => priority
@@ -632,12 +639,17 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2'>";
          echo "</td>";
-         echo "<td>";
-         echo __('Use this field for child ticket field', 'metademands');
-         echo "</td>";
-         echo "<td>";
-         Dropdown::showYesNo('used_by_child', $this->fields['used_by_child']);
-         echo "</td>";
+         if ($metademand->fields['object_to_create'] == 'Ticket') {
+            echo "<td>";
+            echo __('Use this field for child ticket field', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('used_by_child', $this->fields['used_by_child']);
+            echo "</td>";
+         } else {
+            echo "<td colspan='2'>";
+            echo "</td>";
+         }
          echo "</tr>";
       } else {
          Html::hidden('used_by_child', ['value' => 0]);
@@ -2603,7 +2615,10 @@ class PluginMetademandsField extends CommonDBChild {
                ) {
 
                   $check_values = self::_unserialize($params['check_value']);
-                  $check_value  = array_shift($check_values);
+                  if (is_array($check_values)) {
+                     $check_value  = array_shift($check_values);
+                  }
+
                   if (!isset($check_value)) {
                      $check_value = "";
                   }
