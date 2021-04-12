@@ -277,6 +277,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
          }
       }
 
+      if (empty($input['object_to_create'])) {
+         Session::addMessageAfterRedirect(__('Object to create is mandatory', 'metademands'), false, ERROR);
+         return false;
+      }
+
       return $input;
    }
 
@@ -298,7 +303,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
          //retreive all multiple cats from all metademands
          $iterator_cats               = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
-         $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id', 'FROM' => $this->getTable(), 'WHERE' => ['id' => $input['id']]]);
+         $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
+                                                      'FROM' => $this->getTable(),
+                                                      'WHERE' => ['id' => $input['id']]]);
 
          $number_cats_meta = count($iterator_meta_existing_cats);
          if ($number_cats_meta) {
@@ -353,6 +360,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
             Session::addMessageAfterRedirect(__('There are sub-metademands or this is a sub-metademand. This metademand cannot be in basket mode', 'metademands'), false, ERROR);
             return false;
          }
+      }
+
+      if (empty($input['object_to_create'])) {
+         Session::addMessageAfterRedirect(__('Object to create is mandatory', 'metademands'), false, ERROR);
+         return false;
       }
 
       return $input;
@@ -627,16 +639,16 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
-      echo __('Object to create', 'metademands') . "</td>";
+      echo __('Object to create', 'metademands') . "&nbsp;<span style='color:red;'>*</span></td>";
       echo "<td>";
-      if ($ID == 0) {
+//      if ($ID == 0) {
          $objects    = self::getObjectTypes();
-         $idDropdown = Dropdown::showFromArray('object_to_create', $objects);
+         $idDropdown = Dropdown::showFromArray('object_to_create', $objects,  ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
                                  $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
-      } else {
-         echo self::getObjectTypeName($this->fields['object_to_create']);
-      }
+//      } else {
+//         echo self::getObjectTypeName($this->fields['object_to_create']);
+//      }
       echo "</td>";
       echo "<td colspan='2'>";
 

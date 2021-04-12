@@ -511,7 +511,7 @@ class PluginMetademandsField extends CommonDBChild {
           && $this->fields['type'] != "title-block"
           && $this->fields['type'] != "informations") {
          echo "<td>";
-         echo __('Use this field as a field', 'metademands');
+         echo __('Use this field as object field', 'metademands');
          echo "</td>";
          echo "<td>";
          $ticket_fields[0] = Dropdown::EMPTY_VALUE;
