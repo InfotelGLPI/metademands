@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-12 07:55+0000\n"
+"POT-Creation-Date: 2021-04-12 09:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,7 +52,7 @@ msgstr ""
 
 #: front/wizard.form.php:243 front/wizard.form.php:247
 #: front/wizard.form.php:249 front/wizard.form.php:469
-#: front/wizard.form.php:474 front/wizard.form.php:476
+#: front/wizard.form.php:474 front/wizard.form.php:476 inc/menu.class.php:60
 msgid "Create a demand"
 msgstr ""
 
@@ -510,23 +510,23 @@ msgstr ""
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:2977 inc/metademand.class.php:3001
+#: inc/metademand.class.php:2958
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:3110 inc/metademand.class.php:3165
+#: inc/metademand.class.php:3067 inc/metademand.class.php:3122
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:3122 inc/metademand.class.php:3287
+#: inc/metademand.class.php:3079 inc/metademand.class.php:3244
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3134 inc/metademand.class.php:3339
+#: inc/metademand.class.php:3091 inc/metademand.class.php:3296
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:3146 inc/metademand.class.php:3217
+#: inc/metademand.class.php:3103 inc/metademand.class.php:3174
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
