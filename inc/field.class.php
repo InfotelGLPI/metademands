@@ -607,6 +607,17 @@ class PluginMetademandsField extends CommonDBChild {
       }
       echo "</tr>";
 
+      if ($ID > 0 && $this->fields['type'] == "textarea") {
+         echo "<tr class='tab_bg_1'>";
+         echo "<td>";
+         echo __('Use richt text', 'metademands');
+         echo "</td>";
+         echo "<td>";
+         Dropdown::showYesNo('use_richtext', ($this->fields['use_richtext']));
+         echo "</td>";
+         echo "<td colspan='2'></td>";
+         echo "</tr>";
+      }
 
       if ($ID > 0 && (($this->fields['type'] == "dropdown_object"
                        && ($this->fields["item"] == "User" || $this->fields["item"] == "Group"))
@@ -768,7 +779,7 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<div class='center first-bloc'>";
          if ($canedit) {
             Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['item' => __CLASS__,
+            $massiveactionparams = ['item'      => __CLASS__,
                                     'container' => 'mass' . __CLASS__ . $rand];
             Html::showMassiveActions($massiveactionparams);
          }
@@ -2170,15 +2181,17 @@ class PluginMetademandsField extends CommonDBChild {
             break;
          case 'textarea':
             $value = Html::cleanPostForTextArea($value);
-            $field = Html::textarea(['name'            => $namefield . "[" . $data['id'] . "]",
-                                     'value'           => $value,
-                                     'editor_id'       => $namefield . "[" . $data['id'] . "]",
-                                     'enable_richtext' => true,
-                                     'display'         => false,
-                                     'cols'            => 80,
-                                     'rows'            => 3]);
-
-            //            $field = "<textarea class='form-control' rows='3' placeholder=\"" . $comment . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+            if ($data['use_richtext'] == 1) {
+               $field = Html::textarea(['name'            => $namefield . "[" . $data['id'] . "]",
+                                        'value'           => $value,
+                                        'editor_id'       => $namefield . "[" . $data['id'] . "]",
+                                        'enable_richtext' => true,
+                                        'display'         => false,
+                                        'cols'            => 80,
+                                        'rows'            => 3]);
+            } else {
+               $field = "<textarea class='form-control' rows='3' cols='80' placeholder=\"" . Html::clean($comment) . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+            }
             break;
          case 'date':
          case 'date_interval':
