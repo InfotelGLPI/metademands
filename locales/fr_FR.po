@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-12 13:11+0000\n"
+"POT-Creation-Date: 2021-04-12 13:35+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2021\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -185,7 +185,7 @@ msgid "Display into the basket"
 msgstr "Afficher dans le panier"
 
 #: inc/field.class.php:514
-msgid "Use this field as a field"
+msgid "Use this field as object field"
 msgstr "Utiliser comme champ de l'objet"
 
 #: inc/field.class.php:620
@@ -434,13 +434,17 @@ msgstr "Ajouter un groupe"
 msgid "Groups allowed to enter a demand"
 msgstr "Groupes autorisés à saisir une demande"
 
-#: inc/metademand.class.php:262 inc/metademand.class.php:327
+#: inc/metademand.class.php:262 inc/metademand.class.php:334
 #: inc/task.class.php:667 inc/tickettask.class.php:567
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 "La catégorie est liée à une méta-demande. Merci d'en sélectionner une autre"
 
-#: inc/metademand.class.php:353
+#: inc/metademand.class.php:281 inc/metademand.class.php:366
+msgid "Object to create is mandatory"
+msgstr "L'objet à créer est obligatoire"
+
+#: inc/metademand.class.php:360
 msgid ""
 "There are sub-metademands or this is a sub-metademand. This metademand "
 "cannot be in basket mode"
@@ -448,122 +452,122 @@ msgstr ""
 "Il existe des sous-métademandes ou ceci est un sous-métademande. Cette "
 "métademande ne peut pas être en mode panier"
 
-#: inc/metademand.class.php:440 inc/metademand.class.php:765
+#: inc/metademand.class.php:452 inc/metademand.class.php:777
 msgid "Use as basket"
 msgstr "Utiliser comme un panier"
 
-#: inc/metademand.class.php:448 inc/metademand.class.php:770
+#: inc/metademand.class.php:460 inc/metademand.class.php:782
 msgid "Create one ticket for all lines of the basket"
 msgstr "Créer un seul ticket pour toutes les lignes du panier"
 
-#: inc/metademand.class.php:466 inc/metademand.class.php:630
+#: inc/metademand.class.php:478 inc/metademand.class.php:642
 msgid "Object to create"
 msgstr "Objet à créer"
 
-#: inc/metademand.class.php:754 inc/metademand.class.php:891
+#: inc/metademand.class.php:766 inc/metademand.class.php:903
 msgid "Example"
 msgstr "Exemple"
 
-#: inc/metademand.class.php:774
+#: inc/metademand.class.php:786
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 "Vous ne pouvez pas utiliser ce paramètre s'il y a plus d'une catégorie"
 
-#: inc/metademand.class.php:784
+#: inc/metademand.class.php:796
 msgid "Need validation to create subticket"
 msgstr "Nécessite la validation pour créer les tickets enfants"
 
-#: inc/metademand.class.php:805
+#: inc/metademand.class.php:817
 msgid "Tasks level cannot be changed as unresolved related tickets exist"
 msgstr ""
 "L'ordre des sous-demandes ne peut être changé tant que des tickets liés non "
 "résolus existent"
 
-#: inc/metademand.class.php:913
+#: inc/metademand.class.php:925
 msgid "field add on demand"
 msgstr "ajout du champ à la demande"
 
-#: inc/metademand.class.php:915
+#: inc/metademand.class.php:927
 msgid "field update on demand"
 msgstr "champ mise à jour sur la demande"
 
-#: inc/metademand.class.php:917
+#: inc/metademand.class.php:929
 msgid "field delete on demand"
 msgstr "champ supprimé sur la demande"
 
-#: inc/metademand.class.php:1733
+#: inc/metademand.class.php:1745
 msgid "Demand add failed"
 msgstr "Echec de l'ajout de la demande"
 
-#: inc/metademand.class.php:1737
+#: inc/metademand.class.php:1749
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr "Demande \"%s\" ajouté avec succès"
 
-#: inc/metademand.class.php:1739
+#: inc/metademand.class.php:1751
 #, php-format
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr "Ticket \"%s\" modifié en méta-demande avec succès"
 
-#: inc/metademand.class.php:1742
+#: inc/metademand.class.php:1754
 #, php-format
 msgid "Problem \"%s\" added with success"
 msgstr "Problème \"%s\" ajouté avec succès"
 
-#: inc/metademand.class.php:1744
+#: inc/metademand.class.php:1756
 #, php-format
 msgid "Change \"%s\" added with success"
 msgstr "Changement \"%s\" ajouté avec succès"
 
-#: inc/metademand.class.php:2343
+#: inc/metademand.class.php:2355
 msgid "Child Ticket"
 msgstr "Ticket enfant"
 
-#: inc/metademand.class.php:2352
+#: inc/metademand.class.php:2364
 msgid "Parent tickets"
 msgstr "Tickets parents"
 
-#: inc/metademand.class.php:2477
+#: inc/metademand.class.php:2489
 msgid "Metademand need a validation"
 msgstr "La métademande est en attente de validation"
 
-#: inc/metademand.class.php:2504
+#: inc/metademand.class.php:2516
 msgid "Demand followup"
 msgstr "Suivi de la demande"
 
-#: inc/metademand.class.php:2518
+#: inc/metademand.class.php:2530
 msgid "Existent tickets"
 msgstr "Tickets existants"
 
-#: inc/metademand.class.php:2525 inc/metademand.class.php:2654
+#: inc/metademand.class.php:2537 inc/metademand.class.php:2666
 msgid "Due date"
 msgstr "Date d'échéance"
 
-#: inc/metademand.class.php:2647
+#: inc/metademand.class.php:2659
 msgid "Next tickets"
 msgstr "Prochains tickets"
 
-#: inc/metademand.class.php:2724
+#: inc/metademand.class.php:2736
 msgid "Coming"
 msgstr "A venir"
 
-#: inc/metademand.class.php:3073
+#: inc/metademand.class.php:3085
 msgid "Configure demands"
 msgstr "Configurer les demandes"
 
-#: inc/metademand.class.php:3182 inc/metademand.class.php:3237
+#: inc/metademand.class.php:3194 inc/metademand.class.php:3249
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: inc/metademand.class.php:3194 inc/metademand.class.php:3359
+#: inc/metademand.class.php:3206 inc/metademand.class.php:3371
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: inc/metademand.class.php:3206 inc/metademand.class.php:3411
+#: inc/metademand.class.php:3218 inc/metademand.class.php:3423
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: inc/metademand.class.php:3218 inc/metademand.class.php:3289
+#: inc/metademand.class.php:3230 inc/metademand.class.php:3301
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 
@@ -700,7 +704,7 @@ msgstr "Mettre à jour le bloc à utiliser"
 msgid "Linked ticket"
 msgstr "Ticket lié"
 
-#: inc/ticket.class.php:267
+#: inc/ticket.class.php:268
 msgid ""
 "The demand cannot be resolved or closed until all child tickets are not "
 "resolved"
