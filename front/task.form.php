@@ -135,7 +135,7 @@ if (isset($_POST["add"])) {
 
 } else {
    $task->checkGlobal(READ);
-   Html::header(PluginMetademandsTask::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");
+   Html::header(PluginMetademandsTask::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
    $task->display(['id' => $_GET["id"]]);
    Html::footer();
 }

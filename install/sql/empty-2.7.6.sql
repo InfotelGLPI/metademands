@@ -100,7 +100,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `use_date_now` tinyint(1) default 0,
     `additional_number_day` INT(11) default 0,
     `informations_to_display` varchar(255) NOT NULL default '[]',
-    `use_richtext` TINYINT(1) NOT NULL DEFAULT '1'
+    `use_richtext` TINYINT(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),

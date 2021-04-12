@@ -110,7 +110,7 @@ function plugin_init_metademands() {
                                                          ['PluginMetademandsTicket', 'pre_add_ticket']];
 
       if (Session::haveRight("plugin_metademands", READ)) {
-         $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMetademand'];
+         $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMenu'];
       }
 
       if (Session::haveRight("plugin_metademands", READ)

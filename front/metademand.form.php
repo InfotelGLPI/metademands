@@ -75,7 +75,7 @@ if (isset($_POST["add"])) {
 
    $meta->checkGlobal(READ);
 
-   Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");
+   Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 
    $meta->display($_GET);
 

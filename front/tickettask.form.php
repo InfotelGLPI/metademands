@@ -71,7 +71,7 @@ if (isset($_POST["update"])) {
 
 } else {
    $tickettask->checkGlobal(READ);
-   Html::header(PluginMetademandsTask::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");
+   Html::header(PluginMetademandsTask::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
    $_SESSION["metademandsHelpdeskSaved"] = $_POST;
    $tickettask->display(['id' => $_GET["id"]]);
    Html::footer();

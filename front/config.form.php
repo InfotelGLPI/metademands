@@ -49,13 +49,13 @@ if ($plugin->isActivated("metademands")) {
       Html::back();
 
    } else {
-      Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmetademand", "config");
+      Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
       $config->showForm();
       Html::footer();
    }
 
 } else {
-   Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmetademand", "config");
+   Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
    echo "<div align='center'><br><br><i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i><br><br>";
    echo "<b>Please activate the plugin</b></div>";
    Html::footer();

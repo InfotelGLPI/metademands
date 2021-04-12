@@ -2952,50 +2952,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $forbidden[] = 'clone';
       return $forbidden;
    }
-
-   /**
-    * @return array|array[]|bool
-    */
-   /**
-    * @return array
-    */
-   static function getMenuContent() {
-      $plugin_page = "/plugins/metademands/front/wizard.form.php";
-      $menu        = [];
-      //Menu entry in helpdesk
-      $menu['title']           = self::getTypeName(2);
-      $menu['page']            = $plugin_page;
-      $menu['links']['search'] = $plugin_page;
-      if (Session::haveRightsOr("plugin_metademands", [CREATE, UPDATE])) {
-         //Entry icon in breadcrumb
-         $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
-         $menu['links']['add']    = '/plugins/metademands/front/wizard.form.php';
-         $menu['links']['search'] = '/plugins/metademands/front/metademand.php';
-      }
-
-      // metademand creation
-      $menu['options']['metademand']['title']           = __('Configure demands', 'metademands');
-      $menu['options']['metademand']['page']            = '/plugins/metademands/front/metademand.php';
-      $menu['options']['metademand']['links']['add']    = '/plugins/metademands/front/metademand.form.php';
-      $menu['options']['metademand']['links']['search'] = '/plugins/metademands/front/metademand.php';
-
-      // config
-      $menu['options']['config']['title']           = __('Setup');
-      $menu['options']['config']['page']            = '/plugins/metademands/front/metademand.php';
-      $menu['options']['config']['links']['add']    = '/plugins/metademands/front/metademand.form.php';
-      $menu['options']['config']['links']['search'] = '/plugins/metademands/front/metademand.php';
-
-      $menu['icon'] = self::getIcon();
-
-      return $menu;
-   }
-
-   /**
-    * @return string
-    */
-   static function getIcon() {
-      return "fas fa-share-alt";
-   }
+   
 
    function displayHeader() {
       Html::header(__('Configure demands', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand", "metademand");
@@ -3163,7 +3120,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       $default_params = [
          'label'         => __("Running metademands", 'metademands'),
-         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'icon'          => PluginMetademandsMenu::getIcon(),
          'apply_filters' => [],
       ];
 
@@ -3215,7 +3172,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       $default_params = [
          'label'         => __("Running metademands with tickets of my groups", "metademands"),
-         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'icon'          => PluginMetademandsMenu::getIcon(),
          'apply_filters' => [],
       ];
 
@@ -3285,7 +3242,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       $default_params = [
          'label'         => __("Metademands to be closed", 'metademands'),
-         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'icon'          => PluginMetademandsMenu::getIcon(),
          'apply_filters' => [],
       ];
 
@@ -3337,7 +3294,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       $default_params = [
          'label'         => __("Metademands to be validated", 'metademands'),
-         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'icon'          => PluginMetademandsMenu::getIcon(),
          'apply_filters' => [],
       ];
 

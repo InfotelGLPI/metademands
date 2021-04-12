@@ -29,7 +29,7 @@
  
 include('../../../inc/includes.php');
 
-Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");
+Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 
 $meta = new PluginMetademandsMetademand();
 

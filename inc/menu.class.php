@@ -49,13 +49,17 @@ class PluginMetademandsMenu extends CommonDBTM {
       $menu['title']           = self::getMenuName();
       $menu['page']            = PLUGIN_METADEMANDS_DIR_NOFULL."/front/metademand.php";
       $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
-      if (PluginDatabasesDatabase::canCreate()) {
+      if (PluginMetademandsMetademand::canCreate()) {
          $menu['links']['add'] = PluginMetademandsMetademand::getFormURL(false);
       }
       if (Session::haveRight("config", UPDATE)) {
          //Entry icon in breadcrumb
          $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
       }
+
+      $image = "<i class='fas fa-share-alt' title='" .  __('Create a demand', 'metademands') . "'></i>";
+      $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
+
       $menu['icon'] = self::getIcon();
 
       return $menu;
@@ -66,11 +70,11 @@ class PluginMetademandsMenu extends CommonDBTM {
    }
 
    static function removeRightsFromSession() {
-      if (isset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMetademand'])) {
-         unset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMetademand']);
+      if (isset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMenu'])) {
+         unset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMenu']);
       }
-      if (isset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmetademand'])) {
-         unset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmetademand']);
+      if (isset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmenu'])) {
+         unset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmenu']);
       }
    }
 }

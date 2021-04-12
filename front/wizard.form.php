@@ -240,7 +240,7 @@ if (isset($_POST['next'])) {
          unset($_SESSION['metademands_hide']);
       }
       if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
+         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu");
       } else {
          $plugin = new Plugin();
          if ($plugin->isActivated('servicecatalog')) {
@@ -466,7 +466,7 @@ if (isset($_POST['next'])) {
 
    } else {
       if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
+         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu", "wizard");
 
       } else {
          $plugin = new Plugin();
