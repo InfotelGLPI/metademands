@@ -341,8 +341,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
 
       // ORDER
-      if ($ID > 0
-          && $this->fields['type'] != "title-block") {
+      if ($this->fields['type'] != "title-block") {
          echo "<td>" . __('Display field after', 'metademands') . "</td>";
          echo "<td>";
          echo "<span id='show_order'>";
@@ -3800,12 +3799,12 @@ class PluginMetademandsField extends CommonDBChild {
          return false;
       }
 
-      $meta = new PluginMetademandsMetademand();
+//      $meta = new PluginMetademandsMetademand();
 
-      if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
-          && $meta->fields['is_order'] == 1) {
-         $input['is_basket'] = 1;
-      }
+//      if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
+//          && $meta->fields['is_order'] == 1) {
+//         $input['is_basket'] = 1;
+//      }
 
       if (isset($input["type"]) && $input["type"] == "checkbox") {
          $input["item"] = "checkbox";
@@ -3849,7 +3848,7 @@ class PluginMetademandsField extends CommonDBChild {
       $field->deleteByCriteria(['parent_field_id' => $this->getID(),
                                 'type'            => 'parent_field']);
 
-      $temp = new PluginMetademandsTicketField();
+      $temp = new PluginMetademandsTicket_Field();
       $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
 
       $temp = new PluginMetademandsBasketline();

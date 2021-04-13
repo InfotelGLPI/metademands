@@ -194,16 +194,26 @@ if (isset($_POST["add"])) {
 
    Html::redirect($field->getFormURL() . "?id=" . $_POST["id"]);
 
-}  else if (isset($_POST["clear_option"])) {
-   // Check update rights for fields
-   $ids = $_POST['option'];
+}  else if (isset($_POST["purge"])) {
 
-   foreach ($ids as $k => $v) {
-      unset($_POST["check_value"][$k]);
-      unset($_POST["plugin_metademands_tasks_id"][$k]);
-      unset($_POST["fields_link"][$k]);
-      unset($_POST["hidden_link"][$k]);
-      unset($_POST["hidden_block"][$k]);
+   // Check update rights for fields
+   $field->check(-1, UPDATE, $_POST);
+   $field->delete($_POST, 1);
+
+   PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
+   $field->redirectToList();
+
+} else if (isset($_POST["clear_option"])) {
+   // Check update rights for fields
+   if (isset($_POST["option"])) {
+      $ids = $_POST['option'];
+      foreach ($ids as $k => $v) {
+         unset($_POST["check_value"][$k]);
+         unset($_POST["plugin_metademands_tasks_id"][$k]);
+         unset($_POST["fields_link"][$k]);
+         unset($_POST["hidden_link"][$k]);
+         unset($_POST["hidden_block"][$k]);
+      }
    }
    $input["id"] = $_POST["id"];
    if (isset($_POST["check_value"])) {
@@ -225,14 +235,6 @@ if (isset($_POST["add"])) {
    $field->check(-1, UPDATE, $_POST);
    $field->update($input);
    Html::redirect($field->getFormURL() . "?id=" . $input["id"]);
-
-} else if (isset($_POST["purge"])) {
-   // Check update rights for fields
-   $field->check(-1, UPDATE, $_POST);
-   $field->delete($_POST, 1);
-
-   PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
-   $field->redirectToList();
 
 } else if (isset($_POST["delete_custom_value"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])) {

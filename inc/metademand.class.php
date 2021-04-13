@@ -250,9 +250,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $cat_already_store = false;
       if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
 
-         //retreive all multiple cats from all metademands
-         $iterator_cats = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
-         $cats          = $input['itilcategories_id'];
+         //retrieve all multiple cats from all metademands
+         $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
+                                        'FROM'   => $this->getTable(),
+                                        'WHERE'  => ['is_deleted' => 0]]);
+
+         $cats = $input['itilcategories_id'];
 
          while ($data = $iterator_cats->next()) {
             if (is_array(json_decode($data['itilcategories_id'])) && is_array($cats)) {
@@ -301,16 +304,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $cat_already_store = false;
       if (isset($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
 
-         //         $restrict = ["`itilcategories_id`" => $input['itilcategories_id'],
-         //                      "NOT"                 => ["id" => $input['id']]];
-         //         $dbu      = new DbUtils();
-         //         $cats     = $dbu->getAllDataFromTable($this->getTable(), $restrict);
-
-         //retreive all multiple cats from all metademands
-         $iterator_cats               = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
+         //retrieve all multiple cats from all metademands
+         $iterator_cats               = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
+                                                      'FROM'   => $this->getTable(),
+                                                      'WHERE'  => ['is_deleted' => 0]]);
          $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
                                                       'FROM'   => $this->getTable(),
-                                                      'WHERE'  => ['id' => $input['id']]]);
+                                                      'WHERE'  => ['id' => $input['id'], 'is_deleted' => 0]]);
 
          $number_cats_meta = count($iterator_meta_existing_cats);
          if ($number_cats_meta) {
@@ -351,13 +351,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
       }
 
       if (isset($input['is_order']) && $input['is_order'] == 1) {
-         $fields      = new PluginMetademandsField();
-         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $this->getID()]);
-         if (count($fields_data) > 0) {
-            foreach ($fields_data as $field) {
-               $fields->update(['is_basket' => 1, 'id' => $field['id']]);
-            }
-         }
+//         $fields      = new PluginMetademandsField();
+//         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $this->getID()]);
+//         if (count($fields_data) > 0) {
+//            foreach ($fields_data as $field) {
+//               $fields->update(['is_basket' => 1, 'id' => $field['id']]);
+//            }
+//         }
          $metademands_data = $this->constructMetademands($this->getID());
          $metademands_data = array_values($metademands_data);
          if (is_array($metademands_data['tasks'])
