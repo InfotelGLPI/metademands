@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-13 15:37+0000\n"
+"POT-Creation-Date: 2021-04-13 15:58+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "Link to metademands"
 msgstr ""
 
-#: setup.php:159 inc/menu.class.php:40 inc/metademand.class.php:80
+#: setup.php:153 inc/menu.class.php:40 inc/metademand.class.php:80
 #: inc/profile.class.php:160
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -671,12 +671,12 @@ msgstr ""
 msgid "Root"
 msgstr ""
 
-#: inc/task.class.php:452 inc/task.class.php:820 inc/tickettask.class.php:136
+#: inc/task.class.php:452 inc/task.class.php:823 inc/tickettask.class.php:136
 #, php-format
 msgid "Block %s"
 msgstr ""
 
-#: inc/task.class.php:796
+#: inc/task.class.php:799
 msgctxt "button"
 msgid "Update block to use"
 msgstr ""
