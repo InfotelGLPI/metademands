@@ -282,6 +282,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
          return false;
       }
 
+      if (isset($input['object_to_create'])
+          && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
+         $input['type'] = 0;
+      }
+
       return $input;
    }
 
@@ -304,8 +309,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
          //retreive all multiple cats from all metademands
          $iterator_cats               = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
          $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
-                                                      'FROM' => $this->getTable(),
-                                                      'WHERE' => ['id' => $input['id']]]);
+                                                      'FROM'   => $this->getTable(),
+                                                      'WHERE'  => ['id' => $input['id']]]);
 
          $number_cats_meta = count($iterator_meta_existing_cats);
          if ($number_cats_meta) {
@@ -365,6 +370,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
       if (empty($input['object_to_create'])) {
          Session::addMessageAfterRedirect(__('Object to create is mandatory', 'metademands'), false, ERROR);
          return false;
+      }
+
+      if (isset($input['object_to_create'])
+          && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
+         $input['type'] = 0;
       }
 
       return $input;
@@ -606,10 +616,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
    private static function getObjectTypes() {
 
       return [
-         null      => Dropdown::EMPTY_VALUE,
-         'Ticket'  => __('Ticket'),
-         'Change'  => __('Change'),
-//         'Problem' => __('Problem'),
+         null     => Dropdown::EMPTY_VALUE,
+         'Ticket' => __('Ticket'),
+         'Change' => __('Change'),
+         //         'Problem' => __('Problem'),
       ];
    }
 
@@ -641,14 +651,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>";
       echo __('Object to create', 'metademands') . "&nbsp;<span style='color:red;'>*</span></td>";
       echo "<td>";
-//      if ($ID == 0) {
+      if ($ID == 0) {
          $objects    = self::getObjectTypes();
-         $idDropdown = Dropdown::showFromArray('object_to_create', $objects,  ['value' => $this->fields['object_to_create']]);
+         $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
                                  $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
-//      } else {
-//         echo self::getObjectTypeName($this->fields['object_to_create']);
-//      }
+      } else {
+         echo self::getObjectTypeName($this->fields['object_to_create']);
+         echo "<input type='hidden' name='object_to_create' value=\"" . $this->fields['object_to_create'] . "\">";
+      }
       echo "</td>";
       echo "<td colspan='2'>";
 
@@ -697,6 +708,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
          } else {
             $criteria = ['is_incident' => 1];
+         }
+
+         if ($this->fields['object_to_create'] == 'Problem') {
+            $criteria = ['is_problem' => 1];
+         } elseif ($this->fields['object_to_create'] == 'Change') {
+            $criteria = ['is_change' => 1];
          }
 
          $criteria += getEntitiesRestrictCriteria(
@@ -1415,6 +1432,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                // Get predefined ticket fields
                //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
                if ($object_class == 'Ticket') {
+                  //TODO Change / problem ?
                   $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory);
                }
                $list_fields  = $line['form'];
