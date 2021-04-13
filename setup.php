@@ -74,12 +74,6 @@ function plugin_init_metademands() {
 
       $PLUGIN_HOOKS['pre_item_purge']['metademands'] = ['Profile'                       =>
                                                            ['PluginMetademandsProfile', 'purgeProfiles'],
-                                                        'PluginMetademandsMetademand'   => 'plugin_pre_item_purge_metademands',
-                                                        'PluginMetademandsTask'         => 'plugin_pre_item_purge_metademands',
-                                                        'Group'                         => 'plugin_pre_item_purge_metademands',
-                                                        'Ticket'                        => 'plugin_pre_item_purge_metademands',
-                                                        'PluginMetademandsField'        => 'plugin_pre_item_purge_metademands',
-                                                        'PluginResourcesContractType'   => 'plugin_pre_item_purge_metademands',
                                                         'TicketTemplateMandatoryField'  =>
                                                            ['PluginMetademandsTicketField', 'post_delete_mandatoryField'],
                                                         'TicketTemplatePredefinedField' =>
