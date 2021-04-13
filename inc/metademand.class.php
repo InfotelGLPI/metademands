@@ -3086,9 +3086,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
    /**
     * @return array
     */
-   /**
-    * @return array
-    */
    function getForbiddenStandardMassiveAction() {
 
       $forbidden = parent::getForbiddenStandardMassiveAction();

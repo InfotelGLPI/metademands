@@ -519,8 +519,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
-//         $data['Problem']             = __('Problem');
-         $data['Change']              = __('Change');
+         //         $data['Problem']             = __('Problem');
+         $data['Change'] = __('Change');
 
          //         foreach ($data as $type => $typename) {
          //
@@ -586,8 +586,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
-//         $data['Problem']             = __('Problem');
-         $data['Change']              = __('Change');
+         //         $data['Problem']             = __('Problem');
+         $data['Change'] = __('Change');
 
          echo "<div style='margin-bottom: 10px'>";
          $rand = Dropdown::showFromArray("type", $data, ["value" => Ticket::DEMAND_TYPE]);
@@ -875,36 +875,39 @@ class PluginMetademandsWizard extends CommonDBTM {
                                top: 0;
                            }
                           </style>';
+         }
 
-            echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
-         } else {
 
-            if ($line[$keys[0]]['type'] == 'title-block') {
+         if ($line[$keys[0]]['type'] == 'title-block') {
+            if ($preview) {
+               echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
+            } else {
                echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
-               echo "<h4 class=\"bt-title-divider\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
+            }
+            echo "<h4 class=\"bt-title-divider\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
 
-               if (empty($label = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'name'))) {
-                  $label = $line[$keys[0]]['name'];
-               }
+            if (empty($label = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'name'))) {
+               $label = $line[$keys[0]]['name'];
+            }
 
-               echo $label;
-               $config_link = "";
-               if ($preview) {
-                  $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $line[$keys[0]]['id'] . "'>";
-                  $config_link .= "<i class='fas fa-wrench'></i></a>";
+            echo $label;
+            $config_link = "";
+            if ($preview) {
+               $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $line[$keys[0]]['id'] . "'>";
+               $config_link .= "<i class='fas fa-wrench'></i></a>";
+            }
+            echo $config_link;
+            if (isset($line[$keys[0]]['label2']) && !empty($line[$keys[0]]['label2'])) {
+               echo "&nbsp;";
+               if (empty($label2 = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'label2'))) {
+                  $label2 = $line[$keys[0]]['label2'];
                }
-               echo $config_link;
-               if (isset($line[$keys[0]]['label2']) && !empty($line[$keys[0]]['label2'])) {
-                  echo "&nbsp;";
-                  if (empty($label2 = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'label2'))) {
-                     $label2 = $line[$keys[0]]['label2'];
-                  }
-                  Html::showToolTip(Html::clean($label2),
-                                    ['awesome-class' => 'fa-info-circle']);
-               }
-               echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right: 20px;position: absolute;color:" . $line[$keys[0]]['color'] . ";'></i>";
-               $rand = mt_rand();
-               echo Html::scriptBlock("
+               Html::showToolTip(Html::clean($label2),
+                                 ['awesome-class' => 'fa-info-circle']);
+            }
+            echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right: 20px;position: absolute;color:" . $line[$keys[0]]['color'] . ";'></i>";
+            $rand = mt_rand();
+            echo Html::scriptBlock("
                      var myelement$rand = '#up" . $rank . "';
                      var bloc$rand = 'bloc" . $rank . "';
                      $(myelement$rand).click(function() {     
@@ -916,18 +919,22 @@ class PluginMetademandsWizard extends CommonDBTM {
                              $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
                          }
                      });");
-               echo "</span></h4>";
-               if (!empty($line[$keys[0]]['comment'])) {
-                  if (empty($comment = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'comment'))) {
-                     $comment = $line[$keys[0]]['comment'];
-                  }
-                  $comment = htmlspecialchars_decode(stripslashes($comment));
-                  echo "<label><i>" . $comment . "</i></label>";
+            echo "</span></h4>";
+            if (!empty($line[$keys[0]]['comment'])) {
+               if (empty($comment = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'comment'))) {
+                  $comment = $line[$keys[0]]['comment'];
                }
-
-               echo "</div>";
+               $comment = htmlspecialchars_decode(stripslashes($comment));
+               echo "<label><i>" . $comment . "</i></label>";
             }
-            echo "<div bloc-hideid='bloc" . $rank . "'>";
+
+            echo "</div>";
+         }
+         echo "<div bloc-hideid='bloc" . $rank . "'>";
+
+         if ($preview) {
+            echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
+         } else {
             echo "<div class=\"form-row\" style='$style'>";
          }
          foreach ($line as $key => $data) {
@@ -950,7 +957,31 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                // Title block field
                if ($data['type'] == 'title-block') {
-                  echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
+                  if ($preview) {
+                     $rank = $data["rank"];
+                     $color = PluginMetademandsField::setColor($rank);
+                     $style = 'padding-top:5px; 
+                      border-top :3px solid #' . $color . ';
+                      border-left :3px solid #' . $color . ';
+                      border-right :3px solid #' . $color;
+                     echo '<style type="text/css">
+                       .preview-md-';
+                     echo $rank;
+                     echo ':before {
+                         content: attr(data-title);
+                         background: #';
+                     echo $color . ";";
+                     echo 'position: absolute;
+                               padding: 0 20px;
+                               color: #fff;
+                               right: 0;
+                               top: 0;
+                           }
+                          </style>';
+                     echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
+                  } else {
+                     echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
+                  }
                   echo "<h4 class=\"bt-title-divider\"><span style='color:" . $data['color'] . ";'>";
 
                   if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
