@@ -738,7 +738,38 @@ class PluginMetademandsWizard extends CommonDBTM {
                         echo "<input type='submit' class='submit metademand_next_button' id='add_to_basket' name='add_to_basket' value='"
                              . _sx('button', 'Add to basket', 'metademands') . "'>";
                      } else {
-                        echo "<input type='submit' class='submit metademand_next_button' name='next' value='" . _sx('button', 'Validate your basket', 'metademands') . "'>";
+
+                        echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+                        echo "</div>";
+                        echo "<input type='button' id='submitjob' class='submit metademand_next_button' name='next_button' value='" . _sx('button', 'Validate your basket', 'metademands') . "'>";
+                        $ID = $metademands->fields['id'];
+                        echo "<script>
+                          $('#submitjob').click(function() {
+                             var meta_id = {$ID};
+                             tinyMCE.triggerSave();
+                             jQuery('.resume_builder_input').trigger('change');
+                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                             $('#ajax_loader').show();
+                             $.ajax({
+                                url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/createmetademands.php',
+                                   type: 'POST',
+                                   data: $('form').serializeArray(),
+                                   success: function(response){
+                                       $('#ajax_loader').hide();
+                                       if (response == 1) {
+                                          document.location.reload();
+                                       } else {
+                                          window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                       }                                  
+                                    },
+                                   error: function(xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                    } 
+                                });
+                          });
+                        </script>";
                      }
                   } else {
                      echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
@@ -2280,6 +2311,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
                                             'users_id'                          => Session::getLoginUserID()]);
+
             $result = $metademands->addObjects($metademands_id, $values, $options);
             Session::addMessageAfterRedirect($result['message']);
          }
