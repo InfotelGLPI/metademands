@@ -37,7 +37,7 @@ include_once('metademandpdf.class.php');
 /**
  * Class PluginMetademandsMetademand
  */
-class PluginMetademandsMetademand extends CommonDropdown {
+class PluginMetademandsMetademand extends CommonDBTM {
 
    const LOG_ADD        = 1;
    const LOG_UPDATE     = 2;
@@ -163,14 +163,22 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $this->addDefaultFormTab($ong);
       $this->addStandardTab('PluginMetademandsField', $ong, $options);
       $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
-      $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
+      //TODO Change / problem ?
+      if ($this->getField('object_to_create') == 'Ticket') {
+         $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
+      }
       $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
-      if ($this->getField('is_order') == 0) {
+      if ($this->getField('is_order') == 0
+          && $this->getField('object_to_create') == 'Ticket') {
          $this->addStandardTab('PluginMetademandsTask', $ong, $options);
       }
       $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
       if (Session::getCurrentInterface() == 'central') {
          $this->addStandardTab('Log', $ong, $options);
+      }
+      //TODO Change / problem ?
+      if ($this->getField('object_to_create') == 'Ticket') {
+         $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
       }
       return $ong;
    }
@@ -192,8 +200,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
             if (!empty($ticket->input["itilcategories_id"])) {
                $dbu        = new DbUtils();
                $metademand = new self();
-               $metas      = $metademand->find(['is_active' => 1,
-                                                'type'      => $ticket->input["type"]]);
+               $metas      = $metademand->find(['is_active'  => 1,
+                                                'is_deleted' => 0,
+                                                'type'       => $ticket->input["type"]]);
                $cats       = [];
 
                foreach ($metas as $meta) {
@@ -241,9 +250,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $cat_already_store = false;
       if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
 
-         //retreive all multiple cats from all metademands
-         $iterator_cats = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
-         $cats          = $input['itilcategories_id'];
+         //retrieve all multiple cats from all metademands
+         $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
+                                        'FROM'   => $this->getTable(),
+                                        'WHERE'  => ['is_deleted' => 0]]);
+
+         $cats = $input['itilcategories_id'];
 
          while ($data = $iterator_cats->next()) {
             if (is_array(json_decode($data['itilcategories_id'])) && is_array($cats)) {
@@ -268,6 +280,16 @@ class PluginMetademandsMetademand extends CommonDropdown {
          }
       }
 
+      if (empty($input['object_to_create'])) {
+         Session::addMessageAfterRedirect(__('Object to create is mandatory', 'metademands'), false, ERROR);
+         return false;
+      }
+
+      if (isset($input['object_to_create'])
+          && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
+         $input['type'] = 0;
+      }
+
       return $input;
    }
 
@@ -282,14 +304,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
       $cat_already_store = false;
       if (isset($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
 
-         //         $restrict = ["`itilcategories_id`" => $input['itilcategories_id'],
-         //                      "NOT"                 => ["id" => $input['id']]];
-         //         $dbu      = new DbUtils();
-         //         $cats     = $dbu->getAllDataFromTable($this->getTable(), $restrict);
-
-         //retreive all multiple cats from all metademands
-         $iterator_cats               = $DB->request($this->getTable(), ['FIELDS' => [$this->getTable() => ['id', 'itilcategories_id']]]);
-         $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id', 'FROM' => $this->getTable(), 'WHERE' => ['id' => $input['id']]]);
+         //retrieve all multiple cats from all metademands
+         $iterator_cats               = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
+                                                      'FROM'   => $this->getTable(),
+                                                      'WHERE'  => ['is_deleted' => 0]]);
+         $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
+                                                      'FROM'   => $this->getTable(),
+                                                      'WHERE'  => ['id' => $input['id'], 'is_deleted' => 0]]);
 
          $number_cats_meta = count($iterator_meta_existing_cats);
          if ($number_cats_meta) {
@@ -330,13 +351,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
 
       if (isset($input['is_order']) && $input['is_order'] == 1) {
-         $fields      = new PluginMetademandsField();
-         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $this->getID()]);
-         if (count($fields_data) > 0) {
-            foreach ($fields_data as $field) {
-               $fields->update(['is_basket' => 1, 'id' => $field['id']]);
-            }
-         }
+
          $metademands_data = $this->constructMetademands($this->getID());
          $metademands_data = array_values($metademands_data);
          if (is_array($metademands_data['tasks'])
@@ -344,6 +359,16 @@ class PluginMetademandsMetademand extends CommonDropdown {
             Session::addMessageAfterRedirect(__('There are sub-metademands or this is a sub-metademand. This metademand cannot be in basket mode', 'metademands'), false, ERROR);
             return false;
          }
+      }
+
+      if (empty($input['object_to_create'])) {
+         Session::addMessageAfterRedirect(__('Object to create is mandatory', 'metademands'), false, ERROR);
+         return false;
+      }
+
+      if (isset($input['object_to_create'])
+          && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
+         $input['type'] = 0;
       }
 
       return $input;
@@ -364,6 +389,15 @@ class PluginMetademandsMetademand extends CommonDropdown {
    function post_updateItem($history = 1) {
       parent::post_updateItem($history);
 
+      if (isset($this->updates['is_order']) && $this->input['is_order'] == 1) {
+         $fields      = new PluginMetademandsField();
+         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $this->getID()]);
+         if (count($fields_data) > 0) {
+            foreach ($fields_data as $field) {
+               $fields->update(['is_basket' => 1, 'id' => $field['id']]);
+            }
+         }
+      }
       PluginMetademandsTicketField::updateMandatoryTicketFields($this->input);
    }
 
@@ -384,7 +418,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
     */
    function rawSearchOptions() {
 
-      //      $tab = parent::rawSearchOptions();
+      $tab = [];
 
       $tab[] = [
          'id'   => 'common',
@@ -451,6 +485,16 @@ class PluginMetademandsMetademand extends CommonDropdown {
       ];
 
       $tab[] = [
+         'id'            => '8',
+         'table'         => $this->getTable(),
+         'field'         => 'object_to_create',
+         'name'          => __('Object to create', 'metademands'),
+         'searchtype'    => ['equals', 'notequals'],
+         'datatype'      => 'specific',
+         'massiveaction' => false,
+      ];
+
+      $tab[] = [
          'id'            => '92',
          'table'         => $this->getTable(),
          'field'         => 'itilcategories_id',
@@ -458,6 +502,14 @@ class PluginMetademandsMetademand extends CommonDropdown {
          'searchtype'    => ['equals', 'notequals'],
          'datatype'      => 'specific',
          'massiveaction' => false,
+      ];
+
+      $tab[] = [
+         'id'       => '30',
+         'table'    => $this->getTable(),
+         'field'    => 'id',
+         'name'     => __('ID'),
+         'datatype' => 'number'
       ];
 
       $tab[] = [
@@ -511,6 +563,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
             return Ticket::getTicketTypeName($values[$field]);
             break;
 
+         case 'object_to_create':
+            return self::getObjectTypeName($values[$field]);
+            break;
+
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }
@@ -531,6 +587,43 @@ class PluginMetademandsMetademand extends CommonDropdown {
             return Ticket::dropdownType($name, $options);
       }
       return parent::getSpecificValueToSelect($field, $name, $values, $options);
+   }
+
+   /**
+    * @param $value
+    *
+    * @return string
+    */
+   private static function getObjectTypeName($value) {
+
+      switch ($value) {
+
+         case 'Ticket' :
+            return __('Ticket');
+
+         case 'Change' :
+            return __('Change');
+
+         case 'Problem' :
+            return __('Problem');
+
+         default :
+            // Return $value if not define
+            return Dropdown::EMPTY_VALUE;
+      }
+   }
+
+   /**
+    * @return array
+    */
+   private static function getObjectTypes() {
+
+      return [
+         null     => Dropdown::EMPTY_VALUE,
+         'Ticket' => __('Ticket'),
+         'Change' => __('Change'),
+         //         'Problem' => __('Problem'),
+      ];
    }
 
    function showForm($ID, $options = []) {
@@ -558,74 +651,110 @@ class PluginMetademandsMetademand extends CommonDropdown {
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td>" . _n('Type', 'Types', 1) . "</td>";
       echo "<td>";
-      $opt  = [
-         'value' => $this->fields['type'],
-      ];
-      $rand = Ticket::dropdownType('type', $opt);
-
-      $params = ['type'            => '__VALUE__',
-                 'entity_restrict' => $this->fields['entities_id'],
-                 'value'           => $this->fields['itilcategories_id'],
-                 'currenttype'     => $this->fields['type']];
-
-      Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-                                    $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownTicketCategories.php",
-                                    $params);
-      echo "</td>";
-
-      echo "<td>" . __('Category') . "</td>";
+      echo __('Object to create', 'metademands') . "&nbsp;<span style='color:red;'>*</span></td>";
       echo "<td>";
-
-      if ($this->fields['type']) {
-         switch ($this->fields['type']) {
-            case Ticket::INCIDENT_TYPE :
-               $criteria['is_incident'] = 1;
-               break;
-
-            case Ticket::DEMAND_TYPE:
-               $criteria['is_request'] = 1;
-               break;
-         }
+      if ($ID == 0) {
+         $objects    = self::getObjectTypes();
+         $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
+         Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
+                                 $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
       } else {
-         $criteria = ['is_incident' => 1];
+         echo self::getObjectTypeName($this->fields['object_to_create']);
+         echo "<input type='hidden' name='object_to_create' value=\"" . $this->fields['object_to_create'] . "\">";
       }
+      echo "</td>";
+      echo "<td colspan='2'>";
 
-      $criteria += getEntitiesRestrictCriteria(
-         \ITILCategory::getTable(),
-         'entities_id',
-         $_SESSION['glpiactiveentities'],
-         true
-      );
-
-      $dbu    = new DbUtils();
-      $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
-      $temp   = [];
-      foreach ($result as $item) {
-         $temp[$item['id']] = $item['completename'];
-      }
-      $categories = [];
-      if (isset($this->fields['itilcategories_id'])) {
-         if (is_array($this->fields['itilcategories_id'])) {
-            $categories = json_encode($this->fields['itilcategories_id']);
-         } else if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
-            $categories = $this->fields['itilcategories_id'];
-         } else {
-            $array      = [$this->fields['itilcategories_id']];
-            $categories = json_encode($array);
-         }
-      }
-      $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
-      echo "<span id='show_category_by_type'>";
-      Dropdown::showFromArray('itilcategories_id', $temp,
-                              ['values'   => $values,
-                               'width'    => '100%',
-                               'multiple' => true,
-                               'entity'   => $_SESSION['glpiactiveentities']]);
+      echo "<span id='define_object'>";
       echo "</span>";
+
       echo "</td>";
       echo "</tr>";
+
+      if ($ID > 0) {
+         echo "<tr class='tab_bg_1'>";
+
+         if ($this->fields['object_to_create'] == 'Ticket') {
+            echo "<td>" . _n('Type', 'Types', 1) . "</td>";
+            echo "<td>";
+            $opt  = [
+               'value' => $this->fields['type'],
+            ];
+            $rand = Ticket::dropdownType('type', $opt);
+
+            $params = ['type'            => '__VALUE__',
+                       'entity_restrict' => $this->fields['entities_id'],
+                       'value'           => $this->fields['itilcategories_id'],
+                       'currenttype'     => $this->fields['type']];
+
+            Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
+                                          $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownITILCategories.php",
+                                          $params);
+            echo "</td>";
+         } else {
+            echo "<td colspan='2'></td>";
+         }
+
+         echo "<td>" . __('Category') . "</td>";
+         echo "<td>";
+
+         if ($this->fields['type']) {
+            switch ($this->fields['type']) {
+               case Ticket::INCIDENT_TYPE :
+                  $criteria['is_incident'] = 1;
+                  break;
+
+               case Ticket::DEMAND_TYPE:
+                  $criteria['is_request'] = 1;
+                  break;
+            }
+         } else {
+            $criteria = ['is_incident' => 1];
+         }
+
+         if ($this->fields['object_to_create'] == 'Problem') {
+            $criteria = ['is_problem' => 1];
+         } elseif ($this->fields['object_to_create'] == 'Change') {
+            $criteria = ['is_change' => 1];
+         }
+
+         $criteria += getEntitiesRestrictCriteria(
+            \ITILCategory::getTable(),
+            'entities_id',
+            $_SESSION['glpiactiveentities'],
+            true
+         );
+
+         $dbu    = new DbUtils();
+         $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
+         $temp   = [];
+         foreach ($result as $item) {
+            $temp[$item['id']] = $item['completename'];
+         }
+         $categories = [];
+         if (isset($this->fields['itilcategories_id'])) {
+            if (is_array($this->fields['itilcategories_id'])) {
+               $categories = json_encode($this->fields['itilcategories_id']);
+            } else if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
+               $categories = $this->fields['itilcategories_id'];
+            } else {
+               $array      = [$this->fields['itilcategories_id']];
+               $categories = json_encode($array);
+            }
+         }
+         $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
+         echo "<span id='show_category_by_type'>";
+         Dropdown::showFromArray('itilcategories_id', $temp,
+                                 ['values'   => $values,
+                                  'width'    => '100%',
+                                  'multiple' => true,
+                                  'entity'   => $_SESSION['glpiactiveentities']]);
+         echo "</span>";
+         echo "</td>";
+         echo "</tr>";
+      }
+
 
       echo "<tr class='tab_bg_1'>";
 
@@ -894,8 +1023,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $meta_data['fields'][$data['id']] = $data['values'];
          }
       }
-
-      return $metademands->addMetademands($params['metademands_id'], $meta_data);
+      return $metademands->addObjects($params['metademands_id'], $meta_data);
    }
 
    /**
@@ -1001,7 +1129,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
       if (isset($options['type'])) {
          $type = $options['type'];
       }
-      $condition = "1 AND `" . $this->getTable() . "`.`type` = '$type' AND is_active ";
+      if ($type == Ticket::INCIDENT_TYPE || $type == Ticket::DEMAND_TYPE) {
+         $condition = "1 AND `" . $this->getTable() . "`.`type` = '$type' AND is_active = 1 AND is_deleted = 0 ";
+      } else {
+         $condition = "1 AND `" . $this->getTable() . "`.`object_to_create` = '$type' AND is_active = 1 AND is_deleted = 0 ";
+      }
+
       $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), null, null, true);
 
       if (!empty($params['condition'])) {
@@ -1160,15 +1293,17 @@ class PluginMetademandsMetademand extends CommonDropdown {
     * @return array
     * @throws \GlpitestSQLError
     */
-   function addMetademands($metademands_id, $values, $options = []) {
-      global $DB, $PLUGIN_HOOKS;
+   function addObjects($metademands_id, $values, $options = []) {
+      global $PLUGIN_HOOKS;
 
       $tasklevel = 1;
 
       $metademands_data = $this->constructMetademands($metademands_id);
       $this->getFromDB($metademands_id);
 
-      $ticket              = new Ticket();
+      $object_class = $this->fields['object_to_create'];
+      $object       = new $object_class();
+
       $ticket_metademand   = new PluginMetademandsTicket_Metademand();
       $ticket_field        = new PluginMetademandsTicket_Field();
       $ticket_ticket       = new Ticket_Ticket();
@@ -1186,20 +1321,23 @@ class PluginMetademandsMetademand extends CommonDropdown {
          foreach ($metademands_data as $form_step => $data) {
             $docitem = null;
             foreach ($data as $form_metademands_id => $line) {
-               $noChild = false;
-               if ($ancestor_tickets_id > 0) {
-                  // Skip ticket creation if not allowed by metademand form
-                  $metademandtasks_tasks_ids = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
-                  //                  foreach ($metademandtasks_tasks_ids as $metademandtasks_tasks_id) {
-                  if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_ids, $ancestor_tickets_id)) {
-                     $noChild = true;
+
+               if ($object_class == 'Ticket') {
+                  $noChild = false;
+                  if ($ancestor_tickets_id > 0) {
+                     // Skip ticket creation if not allowed by metademand form
+                     $metademandtasks_tasks_ids = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
+                     //                  foreach ($metademandtasks_tasks_ids as $metademandtasks_tasks_id) {
+                     if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_ids, $ancestor_tickets_id)) {
+                        $noChild = true;
+                     }
+                     //                  }
+                  } else {
+                     $values['fields']['tickets_id'] = 0;
                   }
-                  //                  }
-               } else {
-                  $values['fields']['tickets_id'] = 0;
-               }
-               if ($noChild) {
-                  continue;
+                  if ($noChild) {
+                     continue;
+                  }
                }
                $metademand = new self();
                $metademand->getFromDB($form_metademands_id);
@@ -1259,12 +1397,13 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                $parent_fields['name'] = self::$PARENT_PREFIX .
                                         $n;
-               $parent_fields['type'] = $this->fields['type'];
-
+               if ($object_class == 'Ticket') {
+                  $parent_fields['type'] = $this->fields['type'];
+                  // Existing tickets id field
+                  $parent_fields['id'] = $values['fields']['tickets_id'];
+               }
                $parent_fields['entities_id'] = $_SESSION['glpiactive_entity'];
 
-               // Existing tickets id field
-               $parent_fields['id']     = $values['fields']['tickets_id'];
                $parent_fields['status'] = CommonITILObject::INCOMING;
 
                // Resources id
@@ -1295,10 +1434,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                // Get predefined ticket fields
                //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
-               $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory);
-
+               if ($object_class == 'Ticket') {
+                  //TODO Change / problem ?
+                  $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory);
+               }
                $list_fields  = $line['form'];
-               $searchOption = Search::getOptions('Ticket');
+               $searchOption = Search::getOptions($object_class);
                foreach ($list_fields as $id => $fields_values) {
                   if ($fields_values['used_by_ticket'] > 0) {
                      foreach ($values_form as $k => $v) {
@@ -1321,12 +1462,12 @@ class PluginMetademandsMetademand extends CommonDropdown {
                            if ($fields_values['used_by_ticket'] == 13) {
 
                               if ($fields_values['type'] == "dropdown_meta"
-                                   && $fields_values["item"] == "mydevices") {
-                                 $item = explode('_', $v[$id]);
+                                  && $fields_values["item"] == "mydevices") {
+                                 $item                      = explode('_', $v[$id]);
                                  $parent_fields["items_id"] = [$item[0] => [$item[1]]];
                               }
                               if ($fields_values['type'] == "dropdown_object"
-                              && Ticket::isPossibleToAssignType($fields_values["item"])) {
+                                  && Ticket::isPossibleToAssignType($fields_values["item"])) {
                                  $parent_fields["items_id"] = [$fields_values["item"] => [$v[$id]]];
                               }
                            }
@@ -1369,8 +1510,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
                if (empty($parent_fields['id'])) {
                   unset($parent_fields['id']);
 
-                  $input = $this->mergeFields($parent_fields, $parent_ticketfields);
-
+                  if ($object_class == 'Ticket') {
+                     $input = $this->mergeFields($parent_fields, $parent_ticketfields);
+                  } else {
+                     $input = $parent_fields;
+                  }
                   if ($metademand->fields['is_order'] == 0) {
                      if (isset($values['fields']['files'][$form_metademands_id]['_filename'])) {
                         $input['_filename'] = $values['fields']['files'][$form_metademands_id]['_filename'];
@@ -1406,7 +1550,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
-                  $parent_tickets_id = $ticket->add($input);
+                  $parent_tickets_id = $object->add($input);
                   //Hook to do action after ticket creation with metademands
                   if (isset($PLUGIN_HOOKS['metademands'])) {
                      foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1429,8 +1573,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      if (empty($comm = PluginMetademandsMetademand::displayField($this->getID(), 'comment'))) {
                         $comm = $this->getField("comment");
                      }
-                     $docPdf = new PluginMetaDemandsMetaDemandPdf($n,
-                                                                  $comm);
+                     $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm);
                      if ($metademand->fields['is_order'] == 0) {
                         $values_form['0'] = isset($values) ? $values : [];
                         $docPdf->drawPdf($line['form'], $values_form, false);
@@ -1453,20 +1596,23 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $docPdf->Close();
                      //TODO TO Tranlate
                      $name    = PluginMetaDemandsMetaDemandPdf::cleanTitle($n);
-                     $docitem = $docPdf->addDocument($name, $ticket->getID(), $_SESSION['glpiactive_entity']);
+                     $docitem = $docPdf->addDocument($name, $object_class, $object->getID(), $_SESSION['glpiactive_entity']);
                   }
 
                   // Ticket already exists
                } else {
-                  $parent_tickets_id = $parent_fields['id'];
-                  $ticket->getFromDB($parent_tickets_id);
-                  $parent_fields['content']       = $ticket->fields['content']
-                                                    . "<br>" . $parent_fields['content'];
-                  $parent_fields['name']          = Html::cleanPostForTextArea($parent_fields['name'])
-                                                    . '&nbsp;:&nbsp;' . Html::cleanPostForTextArea($ticket->fields['name']);
-                  $ticket_exists_array[]          = 1;
-                  $ticket_exists                  = true;
-                  $values['fields']['tickets_id'] = 0;
+                  if ($object_class == 'Ticket') {
+                     $parent_tickets_id = $parent_fields['id'];
+                     $object->getFromDB($parent_tickets_id);
+                     $parent_fields['content']       = $object->fields['content']
+                                                       . "<br>" . $parent_fields['content'];
+                     $parent_fields['name']          = Html::cleanPostForTextArea($parent_fields['name'])
+                                                       . '&nbsp;:&nbsp;' . Html::cleanPostForTextArea($object->fields['name']);
+                     $ticket_exists_array[]          = 1;
+                     $ticket_exists                  = true;
+                     $values['fields']['tickets_id'] = 0;
+                  }
+
                }
 
                //Prevent create subtickets
@@ -1495,112 +1641,117 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $ancestor_tickets_id = $parent_tickets_id;
                   }
 
-                  // Metademands - ticket relation
-                  $ticket_metademand_id = $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
-                                                                   'parent_tickets_id'                 => $ancestor_tickets_id,
-                                                                   'plugin_metademands_metademands_id' => $form_metademands_id,
-                                                                   'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
+                  if ($object_class == 'Ticket') {
+                     // Metademands - ticket relation
+                     //TODO Change / problem ?
+                     $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
+                                              'parent_tickets_id'                 => $ancestor_tickets_id,
+                                              'plugin_metademands_metademands_id' => $form_metademands_id,
+                                              'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
 
-                  // Save all form values of the ticket
-                  if (count($line['form']) && isset($values['fields'])) {
-                     $ticket_field->setTicketFieldsValues($line['form'], $values['fields'], $parent_tickets_id);
+                     // Save all form values of the ticket
+                     if (count($line['form']) && isset($values['fields'])) {
+                        //TODO Change / problem ?
+                        $ticket_field->setTicketFieldsValues($line['form'], $values['fields'], $parent_tickets_id);
+                     }
+
+                     if (!empty($ancestor_tickets_id) && $object_class == 'Ticket') {
+                        // Add son link to parent
+                        $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
+                                             'tickets_id_2' => $ancestor_tickets_id,
+                                             'link'         => Ticket_Ticket::SON_OF]);
+                        $ancestor_tickets_id = $parent_tickets_id;
+                     }
                   }
-
-                  if (!empty($ancestor_tickets_id)) {
-                     // Add son link to parent
-                     $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
-                                          'tickets_id_2' => $ancestor_tickets_id,
-                                          'link'         => Ticket_Ticket::SON_OF]);
-                     $ancestor_tickets_id = $parent_tickets_id;
-                  }
-
                   // Create sons tickets
-                  if (isset($line['tasks'])
-                      && is_array($line['tasks'])
-                      && count($line['tasks'])) {
-                     //                     $line['tasks'] = $this->checkTaskAllowed($metademands_id, $values, $line['tasks']);
+                  if ($object_class == 'Ticket') {
+                     if (isset($line['tasks'])
+                         && is_array($line['tasks'])
+                         && count($line['tasks'])) {
+                        //                     $line['tasks'] = $this->checkTaskAllowed($metademands_id, $values, $line['tasks']);
 
-                     if ($this->fields["validation_subticket"] == 0) {
-                        $ticket2 = new Ticket();
-                        $ticket2->getFromDB($parent_tickets_id);
-                        $parent_fields["requesttypes_id"] = $ticket2->fields['requesttypes_id'];
-                        foreach($line['tasks'] as $key => $l){
-                           //replace #id# in title with the value
-                           $explodeTitle = explode("#",$l['tickettasks_name']);
-                           foreach($explodeTitle as $title){
-                              if(isset($values['fields'][$title])){
-                                 $line['tasks'][$key]['tickettasks_name'] = str_replace("#".$title."#",$values['fields'][$title],$line['tasks'][$key]['tickettasks_name']);
+                        if ($this->fields["validation_subticket"] == 0) {
+                           $ticket2 = new Ticket();
+                           $ticket2->getFromDB($parent_tickets_id);
+                           $parent_fields["requesttypes_id"] = $ticket2->fields['requesttypes_id'];
+                           foreach ($line['tasks'] as $key => $l) {
+                              //replace #id# in title with the value
+                              $explodeTitle = explode("#", $l['tickettasks_name']);
+                              foreach ($explodeTitle as $title) {
+                                 if (isset($values['fields'][$title])) {
+                                    $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $values['fields'][$title], $line['tasks'][$key]['tickettasks_name']);
+                                 }
+                              }
+
+                              //replace #id# in content with the value
+                              $explodeContent = explode("#", $l['content']);
+                              foreach ($explodeContent as $content) {
+                                 if (isset($values['fields'][$content])) {
+                                    $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $values['fields'][$content], $line['tasks'][$key]['content']);
+                                 }
                               }
                            }
-
-                           //replace #id# in content with the value
-                           $explodeContent = explode("#",$l['content']);
-                           foreach($explodeContent as $content){
-                              if(isset($values['fields'][$content])){
-                                 $line['tasks'][$key]['content'] = str_replace("#".$content."#",$values['fields'][$content],$line['tasks'][$key]['content']);
-                              }
+                           if (!$this->createSonsTickets($parent_tickets_id,
+                                                         $this->mergeFields($parent_fields,
+                                                                            $parent_ticketfields),
+                                                         $parent_tickets_id, $line['tasks'], $tasklevel)) {
+                              $KO[] = 1;
                            }
-                        }
-                        if (!$this->createSonsTickets($parent_tickets_id,
-                                                      $this->mergeFields($parent_fields,
-                                                                         $parent_ticketfields),
-                                                      $parent_tickets_id, $line['tasks'], $tasklevel)) {
-                           $KO[] = 1;
+                        } else {
+                           $metaValid                                    = new PluginMetademandsMetademandValidation();
+                           $paramIn["tickets_id"]                        = $parent_tickets_id;
+                           $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
+                           $paramIn["users_id"]                          = 0;
+                           $paramIn["validate"]                          = PluginMetademandsMetademandValidation::TO_VALIDATE;
+                           $paramIn["date"]                              = date("Y-m-d H:i:s");
+                           $tasks                                        = $line['tasks'];
+                           foreach ($tasks as $key => $val) {
+                              $tasks[$key]['tickettasks_name']   = urlencode($val['tickettasks_name']);
+                              $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
+                              $tasks[$key]['content']            = urlencode($val['content']);
+                           }
+                           $paramIn["tickets_to_create"] = json_encode($tasks);
+                           $metaValid->add($paramIn);
                         }
                      } else {
-                        $metaValid                                    = new PluginMetademandsMetademandValidation();
-                        $paramIn["tickets_id"]                        = $parent_tickets_id;
-                        $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
-                        $paramIn["users_id"]                          = 0;
-                        $paramIn["validate"]                          = PluginMetademandsMetademandValidation::TO_VALIDATE;
-                        $paramIn["date"]                              = date("Y-m-d H:i:s");
-                        $tasks                                        = $line['tasks'];
-                        foreach ($tasks as $key => $val) {
-                           $tasks[$key]['tickettasks_name']   = urlencode($val['tickettasks_name']);
-                           $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
-                           $tasks[$key]['content']            = urlencode($val['content']);
+                        if ($this->fields["validation_subticket"] == 1) {
+                           $metaValid                                    = new PluginMetademandsMetademandValidation();
+                           $paramIn["tickets_id"]                        = $parent_tickets_id;
+                           $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
+                           $paramIn["users_id"]                          = 0;
+                           $paramIn["validate"]                          = PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK;
+                           $paramIn["date"]                              = date("Y-m-d H:i:s");
+
+                           $paramIn["tickets_to_create"] = "";
+                           $metaValid->add($paramIn);
                         }
-                        $paramIn["tickets_to_create"] = json_encode($tasks);
-                        $metaValid->add($paramIn);
-                     }
-                  } else {
-                     if ($this->fields["validation_subticket"] == 1) {
-                        $metaValid                                    = new PluginMetademandsMetademandValidation();
-                        $paramIn["tickets_id"]                        = $parent_tickets_id;
-                        $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
-                        $paramIn["users_id"]                          = 0;
-                        $paramIn["validate"]                          = PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK;
-                        $paramIn["date"]                              = date("Y-m-d H:i:s");
-
-                        $paramIn["tickets_to_create"] = "";
-                        $metaValid->add($paramIn);
-                     }
-                  }
-
-                  // Case of simple ticket convertion
-                  if ($ticket_exists) {
-                     if (isset($parent_ticketfields['_users_id_observer'])
-                         && !empty($parent_ticketfields['_users_id_observer'])) {
-                        $parent_ticketfields['_itil_observer'] = ['users_id' => $parent_ticketfields['_users_id_observer'],
-                                                                  '_type'    => 'user'];
-                     }
-                     if (isset($parent_ticketfields['_groups_id_observer'])
-                         && !empty($parent_ticketfields['_groups_id_observer'])) {
-                        $parent_ticketfields['_itil_observer'] = ['groups_id' => $parent_ticketfields['_groups_id_observer'],
-                                                                  '_type'     => 'group'];
-                     }
-                     if (isset($parent_ticketfields['_users_id_assign'])
-                         && !empty($parent_ticketfields['_users_id_assign'])) {
-                        $parent_ticketfields['_itil_assign'] = ['users_id' => $parent_ticketfields['_users_id_assign'],
-                                                                '_type'    => 'user'];
-                     }
-                     if (isset($parent_ticketfields['_groups_id_assign'])
-                         && !empty($parent_ticketfields['_groups_id_assign'])) {
-                        $parent_ticketfields['_itil_assign'] = ['groups_id' => $parent_ticketfields['_groups_id_assign'],
-                                                                '_type'     => 'group'];
                      }
 
-                     $ticket->update($this->mergeFields($parent_fields, $parent_ticketfields));
+                     // Case of simple ticket convertion
+                     if ($ticket_exists) {
+                        if (isset($parent_ticketfields['_users_id_observer'])
+                            && !empty($parent_ticketfields['_users_id_observer'])) {
+                           $parent_ticketfields['_itil_observer'] = ['users_id' => $parent_ticketfields['_users_id_observer'],
+                                                                     '_type'    => 'user'];
+                        }
+                        if (isset($parent_ticketfields['_groups_id_observer'])
+                            && !empty($parent_ticketfields['_groups_id_observer'])) {
+                           $parent_ticketfields['_itil_observer'] = ['groups_id' => $parent_ticketfields['_groups_id_observer'],
+                                                                     '_type'     => 'group'];
+                        }
+                        if (isset($parent_ticketfields['_users_id_assign'])
+                            && !empty($parent_ticketfields['_users_id_assign'])) {
+                           $parent_ticketfields['_itil_assign'] = ['users_id' => $parent_ticketfields['_users_id_assign'],
+                                                                   '_type'    => 'user'];
+                        }
+                        if (isset($parent_ticketfields['_groups_id_assign'])
+                            && !empty($parent_ticketfields['_groups_id_assign'])) {
+                           $parent_ticketfields['_itil_assign'] = ['groups_id' => $parent_ticketfields['_groups_id_assign'],
+                                                                   '_type'     => 'group'];
+                        }
+
+                        $object->update($this->mergeFields($parent_fields, $parent_ticketfields));
+                     }
                   }
                } else {
                   $KO[] = 1;
@@ -1610,19 +1761,26 @@ class PluginMetademandsMetademand extends CommonDropdown {
       }
 
       // Message return
-      $parent_metademands_name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
+      $parent_metademands_name = $object->getName();
       if (count($KO)) {
          $message = __('Demand add failed', 'metademands') . ' : ' . $parent_metademands_name;
       } else {
-         if (!in_array(1, $ticket_exists_array)) {
-            $message = sprintf(__('Demand "%s" added with success', 'metademands'), $parent_metademands_name);
-         } else {
-            $message = sprintf(__('Ticket "%s" updated to metademand with success', 'metademands'), $parent_metademands_name);
+         if ($object_class == 'Ticket') {
+            if (!in_array(1, $ticket_exists_array)) {
+               $message = sprintf(__('Demand "%s" added with success', 'metademands'), $parent_metademands_name);
+            } else {
+               $message = sprintf(__('Ticket "%s" updated to metademand with success', 'metademands'), $parent_metademands_name);
+            }
+         } else if ($object_class == 'Problem') {
+            $message = sprintf(__('Problem "%s" added with success', 'metademands'), $parent_metademands_name);
+         } else if ($object_class == 'Change') {
+            $message = sprintf(__('Change "%s" added with success', 'metademands'), $parent_metademands_name);
          }
       }
 
-      return ['message' => $message, 'tickets_id' => $ancestor_tickets_id];
+      return ['message' => $message, 'id' => $ancestor_tickets_id];
    }
+
 
    /**
     * @param $parent_fields
@@ -1877,34 +2035,34 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                   }
 
-               }else if($field['item'] == 'User') {
+               } else if ($field['item'] == 'User') {
 
                   $information = json_decode($field['informations_to_display']);
-                  $parseValue     = [];
-                  $dataItems = "<table>";
-                  $item = new $field["item"]();
+                  $parseValue  = [];
+                  $dataItems   = "<table>";
+                  $item        = new $field["item"]();
                   foreach ($field['value'] as $value) {
 
 
-                     if($item->getFromDB($value)){
-                        $dataItems .="<tr>";
+                     if ($item->getFromDB($value)) {
+                        $dataItems .= "<tr>";
 
-                        if(in_array('full_name',$information)){
-                           $dataItems .= "<td>".$field["item"]::getFriendlyNameById($value)."</td>";
+                        if (in_array('full_name', $information)) {
+                           $dataItems .= "<td>" . $field["item"]::getFriendlyNameById($value) . "</td>";
                         }
-                        if(in_array('realname',$information)){
-                           $dataItems .= "<td>".$item->fields["realname"]."</td>";
+                        if (in_array('realname', $information)) {
+                           $dataItems .= "<td>" . $item->fields["realname"] . "</td>";
                         }
-                        if(in_array('firstname',$information)){
-                           $dataItems .= "<td>".$item->fields["firstname"]."</td>";
+                        if (in_array('firstname', $information)) {
+                           $dataItems .= "<td>" . $item->fields["firstname"] . "</td>";
                         }
-                        if(in_array('name',$information)){
-                           $dataItems .= "<td>".$item->fields["name"]."</td>";
+                        if (in_array('name', $information)) {
+                           $dataItems .= "<td>" . $item->fields["name"] . "</td>";
                         }
-                        if(in_array('email',$information)){
-                           $dataItems .= "<td>".$item->getDefaultEmail()."</td>";
+                        if (in_array('email', $information)) {
+                           $dataItems .= "<td>" . $item->getDefaultEmail() . "</td>";
                         }
-                        $dataItems .="</tr>";
+                        $dataItems .= "</tr>";
                      }
 
                      array_push($parseValue, $field["item"]::getFriendlyNameById($value));
@@ -1912,7 +2070,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                   $dataItems .= "</table>";
                   //TODO MAKE TABLE IN A TABLE
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $dataItems . "</td>";
-//                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
+                  //                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                }
 
                break;
@@ -1924,9 +2082,9 @@ class PluginMetademandsMetademand extends CommonDropdown {
                break;
             case 'textarea':
             case 'text':
-               $field['value']    = Html::cleanPostForTextArea($field['value']);
-               $field['value']    = Toolbox::addslashes_deep($field['value']);
-//               $field['value']    = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($field['value']));
+               $field['value'] = Html::cleanPostForTextArea($field['value']);
+               $field['value'] = Toolbox::addslashes_deep($field['value']);
+               //               $field['value']    = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($field['value']));
                $result['content'] .= "<td $style_title>" . $label . "</td><td>" . ($field['value']) . "</td>";
                break;
             case 'checkbox':
@@ -2110,7 +2268,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $ticket_ticket = new Ticket_Ticket();
       $ticket_task   = new PluginMetademandsTicket_Task();
-      $task   = new PluginMetademandsTask();
+      $task          = new PluginMetademandsTask();
       $ticket        = new Ticket();
       $KO            = [];
 
@@ -2148,7 +2306,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $fields       = $ticket_field->find(['tickets_id' => $ancestor_tickets_id]);
             foreach ($fields as $f) {
                $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
-               if($values_form[$f['plugin_metademands_fields_id']] === null){
+               if ($values_form[$f['plugin_metademands_fields_id']] === null) {
                   $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
                }
             }
@@ -2160,7 +2318,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                      $searchOption = Search::getOptions('Ticket');
                      $task->getFromDB($son_ticket_data['tasks_id']);
                      $blocks = json_decode($task->fields["block_use"]);
-                     if(!empty($blocks)) {
+                     if (!empty($blocks)) {
 
 
                         foreach ($line['form'] as $i => $l) {
@@ -2171,7 +2329,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         }
                         $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form]);
                         $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
-                     }else{
+                     } else {
                         $parent_fields_content['content'] = $parent_fields['content'];
                      }
                      foreach ($list_fields as $id => $fields_values) {
@@ -2222,10 +2380,10 @@ class PluginMetademandsMetademand extends CommonDropdown {
             $config = new PluginMetademandsConfig();
             $config->getFromDB(1);
             if ($config->getField('childs_parent_content') == 1) {
-               if (!empty( $parent_fields_content['content'])) {
+               if (!empty($parent_fields_content['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
-                              "</th></tr><tr><td colspan='2'>" .  $parent_fields_content['content'];
+                              "</th></tr><tr><td colspan='2'>" . $parent_fields_content['content'];
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "</td></tr></table><br>";
                   //}
@@ -2931,9 +3089,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
    /**
     * @return array
     */
-   /**
-    * @return array
-    */
    function getForbiddenStandardMassiveAction() {
 
       $forbidden = parent::getForbiddenStandardMassiveAction();
@@ -2943,49 +3098,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
       return $forbidden;
    }
 
-   /**
-    * @return array|array[]|bool
-    */
-   /**
-    * @return array
-    */
-   static function getMenuContent() {
-      $plugin_page = "/plugins/metademands/front/wizard.form.php";
-      $menu        = [];
-      //Menu entry in helpdesk
-      $menu['title']           = self::getTypeName(2);
-      $menu['page']            = $plugin_page;
-      $menu['links']['search'] = $plugin_page;
-      if (Session::haveRightsOr("plugin_metademands", [CREATE, UPDATE])) {
-         //Entry icon in breadcrumb
-         $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
-         $menu['links']['add']    = '/plugins/metademands/front/wizard.form.php';
-         $menu['links']['search'] = '/plugins/metademands/front/metademand.php';
-      }
-
-      // metademand creation
-      $menu['options']['metademand']['title']           = __('Configure demands', 'metademands');
-      $menu['options']['metademand']['page']            = '/plugins/metademands/front/metademand.php';
-      $menu['options']['metademand']['links']['add']    = '/plugins/metademands/front/metademand.form.php';
-      $menu['options']['metademand']['links']['search'] = '/plugins/metademands/front/metademand.php';
-
-      // config
-      $menu['options']['config']['title']           = __('Setup');
-      $menu['options']['config']['page']            = '/plugins/metademands/front/metademand.php';
-      $menu['options']['config']['links']['add']    = '/plugins/metademands/front/metademand.form.php';
-      $menu['options']['config']['links']['search'] = '/plugins/metademands/front/metademand.php';
-
-      $menu['icon'] = self::getIcon();
-
-      return $menu;
-   }
-
-   /**
-    * @return string
-    */
-   static function getIcon() {
-      return "fas fa-share-alt";
-   }
 
    function displayHeader() {
       Html::header(__('Configure demands', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand", "metademand");
@@ -3142,7 +3254,6 @@ class PluginMetademandsMetademand extends CommonDropdown {
       ];
 
 
-
       return $cards;
 
    }
@@ -3154,7 +3265,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $default_params = [
          'label'         => __("Running metademands", 'metademands'),
-         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'icon'          => PluginMetademandsMenu::getIcon(),
          'apply_filters' => [],
       ];
 
@@ -3206,7 +3317,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $default_params = [
          'label'         => __("Running metademands with tickets of my groups", "metademands"),
-         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'icon'          => PluginMetademandsMenu::getIcon(),
          'apply_filters' => [],
       ];
 
@@ -3215,11 +3326,11 @@ class PluginMetademandsMetademand extends CommonDropdown {
                         LEFT JOIN `glpi_plugin_metademands_tickets_metademands` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
                          LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
                          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands 
-                             ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` AND `glpi_groups_tickets_metademands`.`type` = '".CommonITILActor::ASSIGN."') 
+                             ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` AND `glpi_groups_tickets_metademands`.`type` = '" . CommonITILActor::ASSIGN . "') 
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
                             `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
-                                    " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('".implode("','",
-                                                                                                                                      $_SESSION['glpigroups'])."'))  " .
+                                    " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode("','",
+                                                                                                                                             $_SESSION['glpigroups']) . "'))  " .
          $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
@@ -3276,7 +3387,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $default_params = [
          'label'         => __("Metademands to be closed", 'metademands'),
-         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'icon'          => PluginMetademandsMenu::getIcon(),
          'apply_filters' => [],
       ];
 
@@ -3328,7 +3439,7 @@ class PluginMetademandsMetademand extends CommonDropdown {
 
       $default_params = [
          'label'         => __("Metademands to be validated", 'metademands'),
-         'icon'          => PluginMetademandsMetademand::getIcon(),
+         'icon'          => PluginMetademandsMenu::getIcon(),
          'apply_filters' => [],
       ];
 
@@ -3383,32 +3494,72 @@ class PluginMetademandsMetademand extends CommonDropdown {
     **/
    static function showAvailableTags($id) {
       $metademand = new PluginMetademandsMetademand();
-      $tags = $metademand->getTags($id);
+      $tags       = $metademand->getTags($id);
 
       echo "<div class='center'>";
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th>".__('Tag')."</th>
-                <th>".__('Label')."</th>
+      echo "<tr><th>" . __('Tag') . "</th>
+                <th>" . __('Label') . "</th>
             </tr>";
       foreach ($tags as $tag => $values) {
 
          echo "<tr>
-                  <td>#".$tag."#</td>
-                  <td>".$values."</td>
+                  <td>#" . $tag . "#</td>
+                  <td>" . $values . "</td>
                </tr>";
       }
       echo "</table></div>";
    }
 
 
+   /** Display Tags available for the metademand $id
+    *
+    * @param $id
+    **/
    function getTags($id) {
       $metademand_fields = new PluginMetademandsField();
-      $fields = $metademand_fields->find(['plugin_metademands_metademands_id' => $id]);
-      $res = [];
-      foreach ($fields as $field){
+      $fields            = $metademand_fields->find(['plugin_metademands_metademands_id' => $id]);
+      $res               = [];
+      foreach ($fields as $field) {
          $res[$field['id']] = $field['name'];
       }
 
       return $res;
+   }
+
+   /**
+    * Actions done when item is deleted from the database
+    *
+    * @return nothing
+    **/
+   public function cleanDBonPurge() {
+
+      $temp = new PluginMetademandsMetademandTask();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsField();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsTicketField();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsTicket_Metademand();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsMetademandTask();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsGroup();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsMetademand_Resource();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsBasketline();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsMetademandValidation();
+      $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
    }
 }

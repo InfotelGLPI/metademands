@@ -29,12 +29,17 @@
 
 define('PLUGIN_METADEMANDS_VERSION', '2.7.6');
 
+if (!defined("PLUGIN_METADEMANDS_DIR")) {
+   define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
+   define("PLUGIN_METADEMANDS_DIR_NOFULL", Plugin::getPhpDir("metademands",false));
+}
+
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands() {
    global $PLUGIN_HOOKS;
 
    $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
-   $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'changeProfile'];
+   $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'initProfile'];
    $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js'];
    $PLUGIN_HOOKS["javascript"]['metademands']     = ["/plugins/metademands/scripts/metademands.js"];
    $PLUGIN_HOOKS['add_css']['metademands']        = ['/css/metademands.css'];
@@ -69,12 +74,6 @@ function plugin_init_metademands() {
 
       $PLUGIN_HOOKS['pre_item_purge']['metademands'] = ['Profile'                       =>
                                                            ['PluginMetademandsProfile', 'purgeProfiles'],
-                                                        'PluginMetademandsMetademand'   => 'plugin_pre_item_purge_metademands',
-                                                        'PluginMetademandsTask'         => 'plugin_pre_item_purge_metademands',
-                                                        'Group'                         => 'plugin_pre_item_purge_metademands',
-                                                        'Ticket'                        => 'plugin_pre_item_purge_metademands',
-                                                        'PluginMetademandsField'        => 'plugin_pre_item_purge_metademands',
-                                                        'PluginResourcesContractType'   => 'plugin_pre_item_purge_metademands',
                                                         'TicketTemplateMandatoryField'  =>
                                                            ['PluginMetademandsTicketField', 'post_delete_mandatoryField'],
                                                         'TicketTemplatePredefinedField' =>
@@ -105,7 +104,7 @@ function plugin_init_metademands() {
                                                          ['PluginMetademandsTicket', 'pre_add_ticket']];
 
       if (Session::haveRight("plugin_metademands", READ)) {
-         $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMetademand'];
+         $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMenu'];
       }
 
       if (Session::haveRight("plugin_metademands", READ)

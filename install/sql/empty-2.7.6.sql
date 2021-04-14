@@ -15,6 +15,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `is_recursive` int(1) NOT NULL default '0', -- is_recursive
     `is_active` tinyint(1) NOT NULL DEFAULT '1',
     `comment` text COLLATE utf8_unicode_ci default NULL,
+    `object_to_create` varchar(255) collate utf8_unicode_ci default NULL,
     `type` int(11) NOT NULL default '0', -- metademand type : Incident, demand
     `itilcategories_id` varchar(255) NOT NULL default '[]', -- references itilcategories glpi
     `icon` varchar(255) default NULL,
@@ -23,7 +24,9 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `date_creation` datetime DEFAULT NULL,
     `date_mod` datetime DEFAULT NULL,
     `validation_subticket` TINYINT(1) NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`)
+    `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`),
+    KEY `itilcategories_id` (`itilcategories_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ----------------------------------------------------------
@@ -98,6 +101,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `use_date_now` tinyint(1) default 0,
     `additional_number_day` INT(11) default 0,
     `informations_to_display` varchar(255) NOT NULL default '[]',
+    `use_richtext` TINYINT(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
@@ -347,7 +351,10 @@ CREATE TABLE `glpi_plugin_metademands_metademandvalidations`
     `validate`                          tinyint(1) NOT NULL DEFAULT '0',
     `date`                              timestamp NOT NULL,
     `tickets_to_create`                 text NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `users_id` (`users_id`),
+    KEY `tickets_id` (`tickets_id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci

@@ -31,29 +31,50 @@
  * Class PluginMetademandsMenu
  */
 class PluginMetademandsMenu extends CommonDBTM {
-
    static $rightname = 'plugin_metademands';
 
    /**
-    * @return bool|int
+    * @return translated
     */
-   static function canView() {
-      return Session::haveRight(self::$rightname, READ);
+   static function getMenuName() {
+      return _n('Meta-Demand', 'Meta-Demands', 2, 'metademands');
    }
 
    /**
-    * @return bool
+    * @return array
     */
-   static function canCreate() {
-      return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+   static function getMenuContent() {
+
+      $menu                    = [];
+      $menu['title']           = self::getMenuName();
+      $menu['page']            = PLUGIN_METADEMANDS_DIR_NOFULL."/front/metademand.php";
+      $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
+      if (PluginMetademandsMetademand::canCreate()) {
+         $menu['links']['add'] = PluginMetademandsMetademand::getFormURL(false);
+      }
+      if (Session::haveRight("config", UPDATE)) {
+         //Entry icon in breadcrumb
+         $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
+      }
+
+      $image = "<i class='fas fa-share-alt' title='" .  __('Create a demand', 'metademands') . "'></i>";
+      $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
+
+      $menu['icon'] = self::getIcon();
+
+      return $menu;
+   }
+
+   static function getIcon() {
+      return "fas fa-share-alt";
    }
 
    static function removeRightsFromSession() {
-      if (isset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMetademand'])) {
-         unset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMetademand']);
+      if (isset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMenu'])) {
+         unset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMenu']);
       }
-      if (isset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmetademand'])) {
-         unset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmetademand']);
+      if (isset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmenu'])) {
+         unset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmenu']);
       }
    }
 }

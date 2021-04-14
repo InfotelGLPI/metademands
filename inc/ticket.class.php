@@ -97,7 +97,7 @@ class PluginMetademandsTicket extends CommonDBTM {
    static function post_update_ticket(Ticket $ticket) {
       global $DB;
 
-      $metademand = new PluginMetademandsMetademand();
+      $metademand        = new PluginMetademandsMetademand();
       $ticket_metademand = new PluginMetademandsTicket_Metademand();
       $ticket_task       = new PluginMetademandsMetademandTask();
 
@@ -115,20 +115,20 @@ class PluginMetademandsTicket extends CommonDBTM {
 
    static function manageMetademandStatusOnUpdateTicket($ticket_metademand, $DB, $ticket) {
 
-      $parent_ticket     = false;
+      $parent_ticket = false;
 
       //parent or child
       if (count($ticket_metademand->fields) > 0) {
          $parent_ticket = true;
       } else {
-         $ticket_parent_id = self::getTicketIDOfMetademand($ticket->getID());
+         $ticket_parent_id  = self::getTicketIDOfMetademand($ticket->getID());
          $meta_to_not_close = self::childTicketsOpen($ticket_parent_id);
-         if($ticket_metademand->getFromDBByCrit(['parent_tickets_id'=>$ticket_parent_id])){
+         if ($ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $ticket_parent_id])) {
             $validationmeta = new PluginMetademandsMetademandValidation();
-            $validation = $validationmeta->getFromDBByCrit(['tickets_id'=>$ticket_parent_id]);
-            $validation_ok = false;
-            if($validation) {
-               if(in_array($validationmeta->fields['validate'],[PluginMetademandsMetademandValidation::TO_VALIDATE,PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK])){
+            $validation     = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket_parent_id]);
+            $validation_ok  = false;
+            if ($validation) {
+               if (in_array($validationmeta->fields['validate'], [PluginMetademandsMetademandValidation::TO_VALIDATE, PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK])) {
                   $validation_ok = true;
                }
             }
@@ -145,8 +145,8 @@ class PluginMetademandsTicket extends CommonDBTM {
       //reopen or refused solution for parent with no sons
       if ($parent_ticket) {
          if ($ticket->getField('status') != Ticket::SOLVED
-            && $ticket->getField('status') != Ticket::CLOSED
-            && $ticket_metademand->getField('status') == PluginMetademandsTicket_Metademand::CLOSED) {
+             && $ticket->getField('status') != Ticket::CLOSED
+             && $ticket_metademand->getField('status') == PluginMetademandsTicket_Metademand::CLOSED) {
             $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
          }
       }
@@ -157,11 +157,11 @@ class PluginMetademandsTicket extends CommonDBTM {
     *
     * @return mixed
     */
-   static function getTicketIDOfMetademand($ticket_id){
+   static function getTicketIDOfMetademand($ticket_id) {
       $ticket_task = new PluginMetademandsTicket_Task();
-      if($ticket_task->getFromDBByCrit(['tickets_id'=>$ticket_id])){
-         while ($ticket_task->fields['level'] != 1){
-            $ticket_task->getFromDBByCrit(['tickets_id'=>$ticket_task->fields['parent_tickets_id']]);
+      if ($ticket_task->getFromDBByCrit(['tickets_id' => $ticket_id])) {
+         while ($ticket_task->fields['level'] != 1) {
+            $ticket_task->getFromDBByCrit(['tickets_id' => $ticket_task->fields['parent_tickets_id']]);
          }
          return $ticket_task->fields['parent_tickets_id'];
       }
@@ -175,21 +175,21 @@ class PluginMetademandsTicket extends CommonDBTM {
     *
     * @return bool
     */
-   static function childTicketsOpen($tickets_id){
-      $ticket_task = new PluginMetademandsTicket_Task();
-      $ticket_tasks = $ticket_task->find(['parent_tickets_id'=>$tickets_id]);
-      $status = false;
-      if(count($ticket_tasks) == 0){
+   static function childTicketsOpen($tickets_id) {
+      $ticket_task  = new PluginMetademandsTicket_Task();
+      $ticket_tasks = $ticket_task->find(['parent_tickets_id' => $tickets_id]);
+      $status       = false;
+      if (count($ticket_tasks) == 0) {
          return false;
       } else {
          $ticket = new Ticket();
-         foreach ($ticket_tasks as $tt){
+         foreach ($ticket_tasks as $tt) {
             $ticket->getFromDB($tt['tickets_id']);
-            if(in_array($ticket->fields['status'],Ticket::getNotSolvedStatusArray())){
+            if (in_array($ticket->fields['status'], Ticket::getNotSolvedStatusArray())) {
                return true;
-            }else{
+            } else {
                $status = ($status || self::childTicketsOpen($tt['tickets_id']));
-               if($status == true){
+               if ($status == true) {
                   return $status;
                }
             }
@@ -198,6 +198,7 @@ class PluginMetademandsTicket extends CommonDBTM {
       }
 
    }
+
    /**
     * @param \Ticket $ticket
     *
@@ -343,8 +344,8 @@ class PluginMetademandsTicket extends CommonDBTM {
 
       // Fill array with uncreated son tickets
       if (!empty($metademands_id)) {
-         $task_data = [];
-         $task      = new PluginMetademandsTask();
+         $task_data           = [];
+         $task                = new PluginMetademandsTask();
          $parent_tickets_id[] = $tickets_id;
          foreach ($ticket_task_data as $values) {
             $parent_tickets_id[] = $values['tickets_id'];
@@ -371,7 +372,7 @@ class PluginMetademandsTicket extends CommonDBTM {
 
          if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {
-               $data['type']      = PluginMetademandsTask::TICKET_TYPE;
+               $data['type']                 = PluginMetademandsTask::TICKET_TYPE;
                $task_data[$data['tasks_id']] = $data;
                // If child task exists : son ticket creation
                $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
@@ -385,7 +386,7 @@ class PluginMetademandsTicket extends CommonDBTM {
 
                   foreach ($tasks as $k => $v) {
                      foreach ($v as $taskchild) {
-                        if(PluginMetademandsTicket_Field::checkTicketCreation($taskchild['tasks_id'],$tickets_id)){
+                        if (PluginMetademandsTicket_Field::checkTicketCreation($taskchild['tasks_id'], $tickets_id)) {
                            $task_data[$taskchild['tasks_id']] = ['tasks_name' => $taskchild['tickettasks_name'],
                                                                  'level'      => $taskchild['level'],
                                                                  'tickets_id' => 0,
@@ -544,12 +545,12 @@ class PluginMetademandsTicket extends CommonDBTM {
 
       $entities_id = $_SESSION['glpiactive_entity'];
 
-      $fields = ['itilcategories_id'   => 0,
-                 'content'             => '',
-                 'name'                => '',
-                 'type'                => 0,
-                 'urgency'             => 0,
-                 'entities_id'         => $entities_id];
+      $fields = ['itilcategories_id' => 0,
+                 'content'           => '',
+                 'name'              => '',
+                 'type'              => 0,
+                 'urgency'           => 0,
+                 'entities_id'       => $entities_id];
 
       $tt = new TicketTemplate();
       if ($ticket_template) {

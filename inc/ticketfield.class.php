@@ -115,8 +115,8 @@ class PluginMetademandsTicketField extends CommonDBChild {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $field = new self();
 
-      if (in_array($item->getType(), self::getTypes(true))) {
-         $field->showPluginFromItems($item);
+      if ($item->getType() == 'PluginMetademandsMetademand') {
+         $field->showFromMetademand($item);
       }
       return true;
    }
@@ -129,7 +129,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @return bool (display)
     * @throws \GlpitestSQLError
     */
-   function showPluginFromItems($item) {
+   function showFromMetademand($item) {
 
       if (!$this->canview()) {
          return false;
@@ -367,36 +367,6 @@ class PluginMetademandsTicketField extends CommonDBChild {
       }
 
       return $fields;
-   }
-
-
-   /**
-    * Type that could be linked to a metademand
-    *
-    * @param $all boolean, all type, or only allowed ones
-    *
-    * @return array of types
-    * */
-   static function getTypes($all = false) {
-
-      $dbu = new DbUtils();
-      if ($all) {
-         return self::$types;
-      }
-
-      // Only allowed types
-      $types = self::$types;
-
-      foreach ($types as $key => $type) {
-         if (!($item = $dbu->getItemForItemtype($type))) {
-            continue;
-         }
-
-         if (!$item->canView()) {
-            unset($types[$key]);
-         }
-      }
-      return $types;
    }
 
    /**

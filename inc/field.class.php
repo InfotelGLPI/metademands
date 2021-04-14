@@ -341,8 +341,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "</td>";
 
       // ORDER
-      if ($ID > 0
-          && $this->fields['type'] != "title-block") {
+      if ($this->fields['type'] != "title-block") {
          echo "<td>" . __('Display field after', 'metademands') . "</td>";
          echo "<td>";
          echo "<span id='show_order'>";
@@ -511,13 +510,20 @@ class PluginMetademandsField extends CommonDBChild {
           && $this->fields['type'] != "title-block"
           && $this->fields['type'] != "informations") {
          echo "<td>";
-         echo __('Use this field as a ticket field', 'metademands');
+         echo __('Use this field as object field', 'metademands');
          echo "</td>";
          echo "<td>";
          $ticket_fields[0] = Dropdown::EMPTY_VALUE;
-         $searchOption     = Search::getOptions('Ticket');
-         $tt               = new TicketTemplate();
+         $objectclass = $metademand->fields['object_to_create'];
+         $searchOption     = Search::getOptions($objectclass);
+
+         if ($objectclass == 'Ticket') {
+            $tt = new TicketTemplate();
+         } else if ($objectclass == 'Change') {
+            $tt = new ChangeTemplate();
+         }
          $allowed_fields   = $tt->getAllowedFields(true, true);
+
          unset($allowed_fields[-2]);
 
          //      Array ( [1] => name [21] => content [12] => status [10] => urgency [11] => impact [3] => priority
@@ -607,6 +613,17 @@ class PluginMetademandsField extends CommonDBChild {
       }
       echo "</tr>";
 
+      if ($ID > 0 && $this->fields['type'] == "textarea") {
+         echo "<tr class='tab_bg_1'>";
+         echo "<td>";
+         echo __('Use richt text', 'metademands');
+         echo "</td>";
+         echo "<td>";
+         Dropdown::showYesNo('use_richtext', ($this->fields['use_richtext']));
+         echo "</td>";
+         echo "<td colspan='2'></td>";
+         echo "</tr>";
+      }
 
       if ($ID > 0 && (($this->fields['type'] == "dropdown_object"
                        && ($this->fields["item"] == "User" || $this->fields["item"] == "Group"))
@@ -621,12 +638,17 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2'>";
          echo "</td>";
-         echo "<td>";
-         echo __('Use this field for child ticket field', 'metademands');
-         echo "</td>";
-         echo "<td>";
-         Dropdown::showYesNo('used_by_child', $this->fields['used_by_child']);
-         echo "</td>";
+         if ($metademand->fields['object_to_create'] == 'Ticket') {
+            echo "<td>";
+            echo __('Use this field for child ticket field', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('used_by_child', $this->fields['used_by_child']);
+            echo "</td>";
+         } else {
+            echo "<td colspan='2'>";
+            echo "</td>";
+         }
          echo "</tr>";
       } else {
          Html::hidden('used_by_child', ['value' => 0]);
@@ -768,7 +790,8 @@ class PluginMetademandsField extends CommonDBChild {
          echo "<div class='center first-bloc'>";
          if ($canedit) {
             Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
+            $massiveactionparams = ['item'      => __CLASS__,
+                                    'container' => 'mass' . __CLASS__ . $rand];
             Html::showMassiveActions($massiveactionparams);
          }
          echo "<table class='tab_cadre_fixe'>";
@@ -2171,15 +2194,17 @@ class PluginMetademandsField extends CommonDBChild {
             break;
          case 'textarea':
             $value = Html::cleanPostForTextArea($value);
-            $field = Html::textarea(['name'            => $namefield . "[" . $data['id'] . "]",
-                                     'value'           => $value,
-                                     'editor_id'       => $namefield . "[" . $data['id'] . "]",
-                                     'enable_richtext' => true,
-                                     'display'         => false,
-                                     'cols'            => 80,
-                                     'rows'            => 3]);
-
-            //            $field = "<textarea class='form-control' rows='3' placeholder=\"" . $comment . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+            if ($data['use_richtext'] == 1) {
+               $field = Html::textarea(['name'            => $namefield . "[" . $data['id'] . "]",
+                                        'value'           => $value,
+                                        'editor_id'       => $namefield . "[" . $data['id'] . "]",
+                                        'enable_richtext' => true,
+                                        'display'         => false,
+                                        'cols'            => 80,
+                                        'rows'            => 3]);
+            } else {
+               $field = "<textarea class='form-control' rows='3' cols='80' placeholder=\"" . Html::clean($comment) . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+            }
             break;
          case 'date':
          case 'date_interval':
@@ -2591,7 +2616,10 @@ class PluginMetademandsField extends CommonDBChild {
                ) {
 
                   $check_values = self::_unserialize($params['check_value']);
-                  $check_value  = array_shift($check_values);
+                  if (is_array($check_values)) {
+                     $check_value  = array_shift($check_values);
+                  }
+
                   if (!isset($check_value)) {
                      $check_value = "";
                   }
@@ -3773,12 +3801,12 @@ class PluginMetademandsField extends CommonDBChild {
          return false;
       }
 
-      $meta = new PluginMetademandsMetademand();
+//      $meta = new PluginMetademandsMetademand();
 
-      if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
-          && $meta->fields['is_order'] == 1) {
-         $input['is_basket'] = 1;
-      }
+//      if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
+//          && $meta->fields['is_order'] == 1) {
+//         $input['is_basket'] = 1;
+//      }
 
       if (isset($input["type"]) && $input["type"] == "checkbox") {
          $input["item"] = "checkbox";
@@ -3821,6 +3849,12 @@ class PluginMetademandsField extends CommonDBChild {
       $field = new self();
       $field->deleteByCriteria(['parent_field_id' => $this->getID(),
                                 'type'            => 'parent_field']);
+
+      $temp = new PluginMetademandsTicket_Field();
+      $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsBasketline();
+      $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
    }
 
    /**
@@ -4133,8 +4167,9 @@ class PluginMetademandsField extends CommonDBChild {
       $forbidden = parent::getForbiddenStandardMassiveAction();
 
       $forbidden[] = 'merge';
+      $forbidden[] = 'add_transfer_list';
+      $forbidden[] = 'amend_comment';
 
-      //      $forbidden[] = 'clone';
       return $forbidden;
    }
 

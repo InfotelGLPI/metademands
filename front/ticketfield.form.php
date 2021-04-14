@@ -64,7 +64,7 @@ if (isset($_POST["add"])) {
 
 } else {
    $ticketField->checkGlobal(READ);
-   Html::header(PluginMetademandsTicket_Field::getTypeName(2), '', "helpdesk", "pluginmetademandsmetademand");
+   Html::header(PluginMetademandsTicket_Field::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
    $ticketField->display(['id' => $_GET["id"]]);
    Html::footer();
 }

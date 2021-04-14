@@ -240,7 +240,7 @@ if (isset($_POST['next'])) {
          unset($_SESSION['metademands_hide']);
       }
       if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
+         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu");
       } else {
          $plugin = new Plugin();
          if ($plugin->isActivated('servicecatalog')) {
@@ -384,10 +384,11 @@ if (isset($_POST['next'])) {
          $content = array_merge($content, $check['content']);
       }
 
-      if ($KO === false) {
-
+      if ($KO === false && count($content) > 0) {
          $basketline = new PluginMetademandsBasketline();
          $basketline->addToBasket($content, $_POST['form_metademands_id']);
+      } else {
+         Session::addMessageAfterRedirect(__("There is a problem with the basket", "metademands"), false, ERROR);
       }
       Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
 
@@ -623,7 +624,7 @@ if (isset($_POST['next'])) {
       Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
    }else {
       if (Session::getCurrentInterface() == 'central') {
-         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand");
+         Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu", "wizard");
 
       } else {
          $plugin = new Plugin();

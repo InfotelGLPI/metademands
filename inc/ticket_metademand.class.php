@@ -78,19 +78,53 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     * @return array|string
     */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
+      global $DB;
       if (!$withtemplate) {
          if ($item->getType() == 'PluginMetademandsMetademand') {
             if ($_SESSION['glpishow_count_on_tabs']) {
                $dbu = new DbUtils();
-               return self::createTabEntry(self::getTypeName(),
-                                           $dbu->countElementsInTable($this->getTable(),
-                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
+
+               $query = self::countTicketsInTable($item->getID());
+               $result  = $DB->query($query);
+               $numrows = $DB->numrows($result);
+
+               return self::createTabEntry(__('Linked opened tickets', 'metademands'),
+                                           $numrows);
             }
-            return self::getTypeName();
+            return __('Linked opened tickets', 'metademands');
          }
       }
       return '';
+   }
+
+
+   /**
+    * @param $meta_id
+    *
+    * @return string
+    */
+   static function countTicketsInTable($meta_id) {
+
+      $status  = CommonITILObject::INCOMING . ", " . CommonITILObject::PLANNED . ", " .
+                 CommonITILObject::ASSIGNED . ", " . CommonITILObject::WAITING;
+
+      $query = "SELECT DISTINCT `glpi_tickets`.`id`
+                FROM `glpi_tickets`
+                LEFT JOIN `glpi_tickets_users`
+                  ON (`glpi_tickets`.`id` = `glpi_tickets_users`.`tickets_id`)
+                LEFT JOIN `glpi_plugin_metademands_tickets_metademands`
+                  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_metademands`.`tickets_id`)
+                LEFT JOIN `glpi_groups_tickets`
+                  ON (`glpi_tickets`.`id` = `glpi_groups_tickets`.`tickets_id`)";
+
+      $query .= "WHERE `glpi_tickets`.`is_deleted` = 0 
+      AND `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id` = $meta_id 
+      AND (`glpi_tickets`.`status` IN ($status)) " .
+                getEntitiesRestrictRequest("AND", "glpi_tickets");
+      $query .= " ORDER BY glpi_tickets.date_mod DESC";
+
+      return $query;
+
    }
 
    /**
@@ -105,10 +139,34 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
     * @return bool|true
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      $field = new self();
+      global $DB;
 
-      if (in_array($item->getType(), self::getTypes(true))) {
-         $field->showPluginFromItems($item);
+      if (!Session::haveRight("ticket", Ticket::READALL)
+          && !Session::haveRight("ticket", Ticket::READASSIGN)
+          && !Session::haveRight("ticket", CREATE)) {
+         return false;
+      }
+
+      $query = self::countTicketsInTable($item->getID());
+      $result  = $DB->query($query);
+      $numrows = $DB->numrows($result);
+
+      if ($numrows > 0) {
+
+         echo "<table class='tab_cadrehov'>";
+         echo "<tr>";
+         echo "<th></th>";
+         echo "<th>" . __('Requester') . "</th>";
+         echo "<th>" . __('Associated element') . "</th>";
+         echo "<th>" . __('Description') . "</th>";
+         echo "</tr>";
+         for ($i = 0; $i < $numrows; $i++) {
+            $ID = $DB->result($result, $i, "id");
+            Ticket::showVeryShort($ID);
+         }
+         echo "</table>";
+      } else {
+         echo __('No item found');
       }
       return true;
    }
@@ -132,9 +190,9 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
 
       switch ($field) {
          case 'status' :
-            $options['name']      = $name;
-            $options['value']     = $values[$field];
-//            $options['withmajor'] = 1;
+            $options['name']  = $name;
+            $options['value'] = $values[$field];
+            //            $options['withmajor'] = 1;
             return self::dropdownStatus($options);
             break;
       }

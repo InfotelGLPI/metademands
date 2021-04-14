@@ -34,7 +34,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsTask
  */
-class PluginMetademandsTask extends CommonTreeDropdown {
+class PluginMetademandsTask extends CommonDBTM {
 
    static $rightname = 'plugin_metademands';
 
@@ -182,10 +182,10 @@ class PluginMetademandsTask extends CommonTreeDropdown {
             echo "<td>";
 
             $rand = mt_rand();
-            Ajax::createIframeModalWindow("tags".$rand,
-                                          $CFG_GLPI['root_doc']."/plugins/metademands/front/tags.php?metademands_id=".
-                                             $metademands->fields['id']);
-            echo "<a class='vsubmit' href='#' onClick=\"".Html::jsGetElementbyID("tags".$rand).".dialog('open'); return false;\"> ".__('Show list of available tags')."</a>";
+            Ajax::createIframeModalWindow("tags" . $rand,
+                                          $CFG_GLPI['root_doc'] . "/plugins/metademands/front/tags.php?metademands_id=" .
+                                          $metademands->fields['id']);
+            echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
             echo "</td>";
             echo "</tr>";
 
@@ -340,7 +340,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          echo "<th class='center b'>" . __('Category') . "</th>";
          echo "<th class='center b'>" . __('Assigned to') . "</th>";
          echo "<th class='center b' colspan='2'>" . __('Level', 'metademands') . "</th>";
-         echo "<th class='center b'>" . __('Block to use','metademands') . "</th>";
+         echo "<th class='center b'>" . __('Block to use', 'metademands') . "</th>";
          echo "</tr>";
          foreach ($tasks as $value) {
             echo "<tr class='tab_bg_1'>";
@@ -442,17 +442,17 @@ class PluginMetademandsTask extends CommonTreeDropdown {
             }
 
             $blocks = json_decode($value['block_use']);
-            if(!empty($blocks)){
-               $blocktext ="";
-               $i = 0;
-               foreach ($blocks as $block){
-                  if($i != 0){
-                     $blocktext .=" <br>";
+            if (!empty($blocks)) {
+               $blocktext = "";
+               $i         = 0;
+               foreach ($blocks as $block) {
+                  if ($i != 0) {
+                     $blocktext .= " <br>";
                   }
-                  $blocktext .= sprintf(__("Block %s",'metademands'),$block);
+                  $blocktext .= sprintf(__("Block %s", 'metademands'), $block);
                   $i++;
                }
-            }else {
+            } else {
                $blocktext = __('All');
             }
             echo "<td>";
@@ -780,9 +780,12 @@ class PluginMetademandsTask extends CommonTreeDropdown {
          $forbidden[] = 'purge';
          $forbidden[] = 'restore';
       }
-
+      $forbidden[] = 'add_transfer_list';
       $forbidden[] = 'move_under';
       $forbidden[] = 'update';
+      $forbidden[] = 'merge';
+      $forbidden[] = 'clone';
+      $forbidden[] = 'amend_comment';
 
       return $forbidden;
    }
@@ -793,7 +796,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
       $actions = parent::getSpecificMassiveActions($checkitem);
 
       if ($isadmin) {
-         $actions['PluginMetademandsTask' . MassiveAction::CLASS_ACTION_SEPARATOR . 'updateBlock']   = _x('button', 'Update block to use','metademands');
+         $actions['PluginMetademandsTask' . MassiveAction::CLASS_ACTION_SEPARATOR . 'updateBlock'] = _x('button', 'Update block to use', 'metademands');
       }
 
       return $actions;
@@ -815,18 +818,18 @@ class PluginMetademandsTask extends CommonTreeDropdown {
 
          case "updateBlock" :
             $blocks = [];
-            for($i =1; $i<=20; $i++){
-               if(!isset($blocks[$i])){
-                  $blocks[$i] = sprintf(__("Block %s",'metademands'),$i);
+            for ($i = 1; $i <= 20; $i++) {
+               if (!isset($blocks[$i])) {
+                  $blocks[$i] = sprintf(__("Block %s", 'metademands'), $i);
                }
             }
             ksort($blocks);
 
             Dropdown::showFromArray('block_use', $blocks,
                                     [
-                                     'width'    => '100%',
-                                     'multiple' => true,
-                                     ]);
+                                       'width'    => '100%',
+                                       'multiple' => true,
+                                    ]);
             echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
             break;
@@ -850,7 +853,7 @@ class PluginMetademandsTask extends CommonTreeDropdown {
                                                        array $ids) {
 
       $task = new PluginMetademandsTask();
-      $dbu          = new DbUtils();
+      $dbu  = new DbUtils();
 
       switch ($ma->getAction()) {
          case "updateBlock":
@@ -858,18 +861,36 @@ class PluginMetademandsTask extends CommonTreeDropdown {
             foreach ($ma->items as $itemtype => $myitem) {
                foreach ($myitem as $key => $value) {
 
-                     $myvalue['block_use'] = json_encode($input['block_use']);
-                     $myvalue['id']                    = $key;
-                     if ($task->update($myvalue)) {
-                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
-                     } else {
-                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
-                     }
+                  $myvalue['block_use'] = json_encode($input['block_use']);
+                  $myvalue['id']        = $key;
+                  if ($task->update($myvalue)) {
+                     $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
+                  } else {
+                     $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                  }
 
                }
             }
             break;
       }
+   }
+
+   function cleanDBonPurge() {
+
+      $field = new self();
+      $field->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsField();
+      $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsTicket_Task();
+      $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsTicketTask();
+      $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
+
+      $temp = new PluginMetademandsMetademandTask();
+      $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
    }
 
 }
