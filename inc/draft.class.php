@@ -35,6 +35,14 @@ class PluginMetademandsDraft extends CommonDBTM {
    static $rightname = 'plugin_metademands';
 
 
+   static function countDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id) {
+
+      $self   = new self();
+      $drafts = $self->find(['users_id'                          => $users_id,
+                             'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id]);
+
+      return count($drafts);
+   }
    static function showDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id) {
       global $CFG_GLPI;
       $self   = new self();

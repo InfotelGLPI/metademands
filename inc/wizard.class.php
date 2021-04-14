@@ -203,8 +203,17 @@ class PluginMetademandsWizard extends CommonDBTM {
                         <i class='fas fa-wrench'></i></a>";
          }
          echo "</span>";
-         echo "<i class='fas fa-2x fa-cloud-download-alt mydraft pointer' title='"._sx('button', 'Your drafts', 'metademands')."' 
+         echo "<span class='mydraft'>";
+         $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
+         if ($count_drafts > 0) {
+            echo "<span class='mydraft-text'>";
+            echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                         $count_drafts);
+            echo "</span>";
+         }
+         echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='"._sx('button', 'Your drafts', 'metademands')."' 
                 data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
+         echo "</span>";
          echo "</h4>";
          if ($meta->getFromDB($parameters['metademands_id'])
              && !empty($meta->fields['comment'])) {
@@ -589,6 +598,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo $comm;
                }
                echo "</span></em>";
+
+               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
+               if ($count_drafts > 0) {
+                  echo "<br><em><span class='mydraft-comment'>";
+                  echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                                     $count_drafts);
+                  echo "</span>";
+               }
 
                echo "</p></div></a>";
             }
