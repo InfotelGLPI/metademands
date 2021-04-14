@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-14 15:31+0000\n"
+"POT-Creation-Date: 2021-04-14 16:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,23 +50,30 @@ msgstr ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/deletedraft.php:50 inc/draft.class.php:108
+#: ajax/deletedraft.php:50 inc/draft.class.php:116
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
-#: ajax/deletedraft.php:56 inc/draft.class.php:114
+#: ajax/deletedraft.php:56 inc/draft.class.php:122
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: ajax/deletedraft.php:62 inc/draft.class.php:121
+#: ajax/deletedraft.php:62 inc/draft.class.php:129
 msgid "No draft available for this metademand"
 msgstr ""
 
 #: ajax/displayGroupField.php:43
 msgid "Attribute ticket/tasks to "
 msgstr ""
+
+#: ajax/updatelistmeta.php:82 inc/wizard.class.php:210 inc/wizard.class.php:605
+#, php-format
+msgid "You have %d draft"
+msgid_plural "You have %d drafts"
+msgstr[0] ""
+msgstr[1] ""
 
 #: front/wizard.form.php:243 front/wizard.form.php:247
 #: front/wizard.form.php:249 front/wizard.form.php:608
@@ -165,26 +172,26 @@ msgstr ""
 msgid "Example : "
 msgstr ""
 
-#: inc/draft.class.php:73
+#: inc/draft.class.php:81
 msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:78 inc/draft.class.php:89
+#: inc/draft.class.php:86 inc/draft.class.php:97
 msgctxt "button"
 msgid "Clean form"
 msgstr ""
 
-#: inc/draft.class.php:85
+#: inc/draft.class.php:93
 msgid "Draft name"
 msgstr ""
 
-#: inc/draft.class.php:86
+#: inc/draft.class.php:94
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
 
-#: inc/draft.class.php:97
+#: inc/draft.class.php:105
 msgid "Your drafts"
 msgstr ""
 
@@ -785,73 +792,73 @@ msgstr ""
 msgid "Demand choice"
 msgstr ""
 
-#: inc/wizard.class.php:206
+#: inc/wizard.class.php:214
 msgctxt "button"
 msgid "Your drafts"
 msgstr ""
 
-#: inc/wizard.class.php:236
+#: inc/wizard.class.php:245
 msgid "How can i use it"
 msgstr ""
 
-#: inc/wizard.class.php:239
+#: inc/wizard.class.php:248
 msgid "Who can benefit from this service?"
 msgstr ""
 
-#: inc/wizard.class.php:242
+#: inc/wizard.class.php:251
 msgid "Lead time"
 msgstr ""
 
-#: inc/wizard.class.php:245
+#: inc/wizard.class.php:254
 msgid "How to obtain the software in case of request?"
 msgstr ""
 
-#: inc/wizard.class.php:248
+#: inc/wizard.class.php:257
 msgid "Availability of service"
 msgstr ""
 
-#: inc/wizard.class.php:251
+#: inc/wizard.class.php:260
 msgid "What are the rules to follow ?"
 msgstr ""
 
-#: inc/wizard.class.php:278
+#: inc/wizard.class.php:287
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: inc/wizard.class.php:287
+#: inc/wizard.class.php:296
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: inc/wizard.class.php:633
+#: inc/wizard.class.php:650
 msgid "No advanced request found"
 msgstr ""
 
-#: inc/wizard.class.php:715 inc/wizard.class.php:751
+#: inc/wizard.class.php:732 inc/wizard.class.php:768
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:756
+#: inc/wizard.class.php:773
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2619
+#: inc/wizard.class.php:2636
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2628
+#: inc/wizard.class.php:2645
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2674
+#: inc/wizard.class.php:2691
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2678
+#: inc/wizard.class.php:2695
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
