@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-14 15:31+0000\n"
+"POT-Creation-Date: 2021-04-14 16:15+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2021\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -54,23 +54,31 @@ msgstr "Le nom du brouillon est obligatoire"
 msgid "There is no line on the basket"
 msgstr "Il n'y a pas de demandes dans le panier"
 
-#: ajax/deletedraft.php:50 inc/draft.class.php:108
+#: ajax/deletedraft.php:50 inc/draft.class.php:116
 msgctxt "button"
 msgid "Load draft"
 msgstr "Charger le brouillon"
 
-#: ajax/deletedraft.php:56 inc/draft.class.php:114
+#: ajax/deletedraft.php:56 inc/draft.class.php:122
 msgctxt "button"
 msgid "Delete draft"
 msgstr "Supprimer le brouillon"
 
-#: ajax/deletedraft.php:62 inc/draft.class.php:121
+#: ajax/deletedraft.php:62 inc/draft.class.php:129
 msgid "No draft available for this metademand"
 msgstr "Pas de brouillons disponibles pour cette métademande"
 
 #: ajax/displayGroupField.php:43
 msgid "Attribute ticket/tasks to "
 msgstr "Attribuer le ticket / les tâches à"
+
+#: ajax/updatelistmeta.php:82 inc/wizard.class.php:210
+#: inc/wizard.class.php:605
+#, php-format
+msgid "You have %d draft"
+msgid_plural "You have %d drafts"
+msgstr[0] "Vous avez %d brouillon"
+msgstr[1] "Vous avez %d brouillons"
 
 #: front/wizard.form.php:243 front/wizard.form.php:247
 #: front/wizard.form.php:249 front/wizard.form.php:608
@@ -169,26 +177,26 @@ msgstr "Icône pour le widget de ServiceCatalog"
 msgid "Example : "
 msgstr "Exemple :"
 
-#: inc/draft.class.php:73
+#: inc/draft.class.php:81
 msgctxt "button"
 msgid "Save draft"
 msgstr "Sauver le brouillon"
 
-#: inc/draft.class.php:78 inc/draft.class.php:89
+#: inc/draft.class.php:86 inc/draft.class.php:97
 msgctxt "button"
 msgid "Clean form"
 msgstr "Vider le formulaire"
 
-#: inc/draft.class.php:85
+#: inc/draft.class.php:93
 msgid "Draft name"
 msgstr "Nom du brouillon"
 
-#: inc/draft.class.php:86
+#: inc/draft.class.php:94
 msgctxt "button"
 msgid "Save as draft"
 msgstr "Sauver comme brouillon"
 
-#: inc/draft.class.php:97
+#: inc/draft.class.php:105
 msgid "Your drafts"
 msgstr "Vos brouillons"
 
@@ -806,73 +814,73 @@ msgstr "Aperçu du formulaire"
 msgid "Demand choice"
 msgstr "Choix de la demande"
 
-#: inc/wizard.class.php:206
+#: inc/wizard.class.php:214
 msgctxt "button"
 msgid "Your drafts"
 msgstr "Vos brouillons"
 
-#: inc/wizard.class.php:236
+#: inc/wizard.class.php:245
 msgid "How can i use it"
 msgstr "Comment puis-je l’utiliser"
 
-#: inc/wizard.class.php:239
+#: inc/wizard.class.php:248
 msgid "Who can benefit from this service?"
 msgstr "Qui peut bénéficier de ce service ?"
 
-#: inc/wizard.class.php:242
+#: inc/wizard.class.php:251
 msgid "Lead time"
 msgstr "Délai de mise en œuvre"
 
-#: inc/wizard.class.php:245
+#: inc/wizard.class.php:254
 msgid "How to obtain the software in case of request?"
 msgstr "Comment obtenir le logiciel en cas de demande ?"
 
-#: inc/wizard.class.php:248
+#: inc/wizard.class.php:257
 msgid "Availability of service"
 msgstr "Disponibilité du service"
 
-#: inc/wizard.class.php:251
+#: inc/wizard.class.php:260
 msgid "What are the rules to follow ?"
 msgstr "Quelles sont les règles à respecter ?"
 
-#: inc/wizard.class.php:278
+#: inc/wizard.class.php:287
 msgid "You don't have the right to update tickets"
 msgstr "Vous n'avez pas le droit de mettre à jour les tickets"
 
-#: inc/wizard.class.php:287
+#: inc/wizard.class.php:296
 msgid "You don't have the right to create meta-demand"
 msgstr "Vous n'êtes pas habilité à créer ce type de demande"
 
-#: inc/wizard.class.php:633
+#: inc/wizard.class.php:650
 msgid "No advanced request found"
 msgstr "Aucune demande avancée n'a été trouvée"
 
-#: inc/wizard.class.php:715 inc/wizard.class.php:751
+#: inc/wizard.class.php:732 inc/wizard.class.php:768
 msgctxt "button"
 msgid "Add to basket"
 msgstr "Ajouter au panier"
 
-#: inc/wizard.class.php:756
+#: inc/wizard.class.php:773
 msgctxt "button"
 msgid "Validate your basket"
 msgstr "Valider votre panier"
 
-#: inc/wizard.class.php:2619
+#: inc/wizard.class.php:2636
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
 
-#: inc/wizard.class.php:2628
+#: inc/wizard.class.php:2645
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr "La date %1$s ne peut être supérieure à la date %2$s"
 
-#: inc/wizard.class.php:2674
+#: inc/wizard.class.php:2691
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s"
 
-#: inc/wizard.class.php:2678
+#: inc/wizard.class.php:2695
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
