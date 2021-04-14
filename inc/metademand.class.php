@@ -351,13 +351,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       }
 
       if (isset($input['is_order']) && $input['is_order'] == 1) {
-//         $fields      = new PluginMetademandsField();
-//         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $this->getID()]);
-//         if (count($fields_data) > 0) {
-//            foreach ($fields_data as $field) {
-//               $fields->update(['is_basket' => 1, 'id' => $field['id']]);
-//            }
-//         }
+
          $metademands_data = $this->constructMetademands($this->getID());
          $metademands_data = array_values($metademands_data);
          if (is_array($metademands_data['tasks'])
@@ -395,6 +389,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
    function post_updateItem($history = 1) {
       parent::post_updateItem($history);
 
+      if (isset($this->updates['is_order']) && $this->input['is_order'] == 1) {
+         $fields      = new PluginMetademandsField();
+         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $this->getID()]);
+         if (count($fields_data) > 0) {
+            foreach ($fields_data as $field) {
+               $fields->update(['is_basket' => 1, 'id' => $field['id']]);
+            }
+         }
+      }
       PluginMetademandsTicketField::updateMandatoryTicketFields($this->input);
    }
 

@@ -384,10 +384,11 @@ if (isset($_POST['next'])) {
          $content = array_merge($content, $check['content']);
       }
 
-      if ($KO === false) {
-
+      if ($KO === false && count($content) > 0) {
          $basketline = new PluginMetademandsBasketline();
          $basketline->addToBasket($content, $_POST['form_metademands_id']);
+      } else {
+         Session::addMessageAfterRedirect(__("There is a problem with the basket", "metademands"), false, ERROR);
       }
       Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
 
