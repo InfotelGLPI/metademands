@@ -287,7 +287,8 @@ function plugin_metademands_getDatabaseRelations() {
                                                         "glpi_plugin_metademands_groups"                => "plugin_metademands_metademands_id",
                                                         "glpi_plugin_metademands_basketlines"           => "plugin_metademands_metademands_id",
                                                         "glpi_plugin_metademands_metademandvalidations" => "plugin_metademands_metademands_id",
-                                                        "glpi_plugin_metademands_metademands_resources" => "plugin_metademands_metademands_id"],
+                                                        "glpi_plugin_metademands_metademands_resources" => "plugin_metademands_metademands_id",
+                                                        "glpi_plugin_metademands_drafts"                => "plugin_metademands_metademands_id"],
 
               "glpi_tickets"                   => ["glpi_plugin_metademands_tickets_fields"        => "tickets_id",
                                                    "glpi_plugin_metademands_metademandvalidations" => "tickets_id",
@@ -299,6 +300,7 @@ function plugin_metademands_getDatabaseRelations() {
                                                    "glpi_plugin_metademands_tickettasks"           => "users_id_assign",
                                                    "glpi_plugin_metademands_tickettasks"           => "users_id_requester",
                                                    "glpi_plugin_metademands_tickettasks"           => "users_id_observer",
+                                                   "glpi_plugin_metademands_drafts"                => "users_id"
               ],
               "glpi_groups"                    => ["glpi_plugin_metademands_groups"      => "groups_id",
                                                    "glpi_plugin_metademands_tickettasks" => "groups_id_assign",
@@ -309,12 +311,15 @@ function plugin_metademands_getDatabaseRelations() {
                                                    "glpi_plugin_metademands_tickettasks" => "itilcategories_id",
               ],
               "glpi_plugin_metademands_fields" => ["glpi_plugin_metademands_tickets_fields" => "plugin_metademands_fields_id",
+                                                   "glpi_plugin_metademands_drafts_values" => "plugin_metademands_fields_id",
                                                    "glpi_plugin_metademands_basketlines"    => "plugin_metademands_fields_id"],
 
               "glpi_plugin_metademands_tasks" => ["glpi_plugin_metademands_fields"          => "plugin_metademands_tasks_id",
                                                   "glpi_plugin_metademands_tickettasks"     => "plugin_metademands_tasks_id",
                                                   "glpi_plugin_metademands_tickets_tasks"   => "plugin_metademands_tasks_id",
                                                   "glpi_plugin_metademands_metademandtasks" => "plugin_metademands_tasks_id"],
+
+              "glpi_plugin_metademands_drafts" => ["glpi_plugin_metademands_drafts_values" => "plugin_metademands_drafts_id"],
       ];
    } else {
       return [];

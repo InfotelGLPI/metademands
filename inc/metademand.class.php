@@ -1551,6 +1551,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $object->add($input);
+                  if(isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])){
+                     $draft = new PluginMetademandsDraft();
+                     $draft->deleteByCriteria(['id'=>$_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
+                  }
                   //Hook to do action after ticket creation with metademands
                   if (isset($PLUGIN_HOOKS['metademands'])) {
                      foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
