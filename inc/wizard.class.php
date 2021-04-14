@@ -205,10 +205,14 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             echo "<label><i>" . nl2br($comment) . "</i></label>";
          }
-         echo "<span style='margin-left:45%;'><input type='button' id='mydraft'  class='submit' name='next_button' value='" . _sx('button', 'My drafts','metademands') . "'></span>";
+         echo "<span style='margin-left:45%;'><input type='button' id='mydraft'  onclick='$(\"#divdrafts\").toggle();'  class='submit' name='mydrafts' value='" . _sx('button', 'My drafts','metademands') . "'></span>";
 
          echo "</div></div>";
+         echo "<div id='divdrafts" . "' class=\"input-draft\" style='display:none;'>";
 
+         echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(),$parameters['metademands_id']);
+         //         include(GLPI_ROOT . "/plugins/metademands/ajax/utooltipUpdate.php");
+         echo "</div>";
          $plugin = new Plugin();
          if ($plugin->isActivated('servicecatalog')) {
             $configsc = new PluginServicecatalogConfig();
@@ -760,6 +764,37 @@ class PluginMetademandsWizard extends CommonDBTM {
                } else {
                   echo "<input type='submit' class='metademand_next_button submit' name='next' value='" . __('Next') . "'>";
                }
+               echo Html::scriptBlock(
+                  "$('[name=\"wizard_form\"]').submit(function() {
+                            $('[name=\"from\"]').html('');
+                            var val = $(\"input[type=submit][clicked=true]\").attr('draft_id');
+                            console.log(val);
+                            if(val){
+                              $('#plugin_metademands_drafts_id').val(val);
+                            }
+                            
+                            
+                        });
+                      $(\"form input[type=submit]\").click(function() {
+                          $(\"input[type=submit]\", $(this).parents(\"form\")).removeAttr(\"clicked\");
+                          $(this).attr(\"clicked\", \"true\");
+                      });
+                        "
+
+               );
+               if(isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_name'])){
+                  $draftname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands']['plugin_metademands_drafts_name'])) ?? '';
+               } else {
+                  $draftname = '';
+               }
+
+
+
+              echo "<input type='text' style='margin-left:52%;margin-bottom: 3px' maxlength='250' placeholder='".__('Draft name','metademands')."' name='draft_name' value=\"$draftname\">";
+
+              echo "<input type='submit' class='submit' style='margin-left:50%;'name='save_draft' value='" . _sx('button', 'Save as draft','metademands') . "'>";
+
+
                echo "<input type='submit' class='metademand_previous_button submit' name='previous' value='" . __('Previous') . "'>";
                echo "</div>";
                echo "</div>";

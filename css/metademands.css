@@ -282,6 +282,49 @@ button.clear-basket {
     margin-top: 15px;
 }
 
+.input-draft {
+    position: relative;
+    display: table;
+    border-collapse: separate;
+    margin-left: 43%;
+}
+.draft {
+    position: relative;
+    max-width: 70em;
+    margin: 1%;
+    background-color: #fff;
+    padding: 1.125em 1.5em;
+    font-size: 12px;
+    border-radius: 1rem;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, .3), 0 0.0625rem 0.125rem rgba(0, 0, 0, .2);
+    /* float: left; */
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 15px;
+}
+.draft::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    bottom: 100%;
+    /*left: 1.5em;*/
+    left: 43%;
+    border: .75rem solid transparent;
+    border-top: none;
+    border-bottom-color: #fff;
+    filter: drop-shadow(0 -0.0625rem 0.0625rem rgba(0, 0, 0, .1));
+}
+
+.draftcloseButton {
+    position: absolute;
+    right: 5px;
+    border: 0;
+    background-color: #FFF;
+    font-size: 9px;
+    top: 5px;
+}
+
 .speech::before {
     content: '';
     position: absolute;

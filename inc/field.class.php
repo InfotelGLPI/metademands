@@ -2045,8 +2045,10 @@ class PluginMetademandsField extends CommonDBChild {
             }
             break;
          case 'text':
-            $field = "<input type='text' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "' 
+            $field = "<input type='text' name='" . $namefield . "[" . $data['id'] . "]' value='" . Html::cleanInputText(Toolbox::stripslashes_deep($value)) . "' 
             class='form-control form-control-sm' id='" . $namefield . "[" . $data['id'] . "]' placeholder=\"" . Html::clean($comment) . "\">";
+//            $id = $namefield . "[" . $data['id'] . "]";
+//            $field .= Html::scriptBlock("$( \"\").val($value);");
             break;
          case 'informations':
             if ($on_basket == false) {
