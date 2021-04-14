@@ -282,15 +282,20 @@ button.clear-basket {
     margin-top: 15px;
 }
 
+.mydraft {
+    float: right;
+    color: #e3e0e0;
+}
+
 .input-draft {
     position: relative;
     display: table;
     border-collapse: separate;
-    margin-left: 43%;
+    float: right;
 }
 .draft {
     position: relative;
-    max-width: 70em;
+    width: 300px;
     margin: 1%;
     background-color: #fff;
     padding: 1.125em 1.5em;
@@ -298,7 +303,7 @@ button.clear-basket {
     border-radius: 1rem;
     box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, .3), 0 0.0625rem 0.125rem rgba(0, 0, 0, .2);
     /* float: left; */
-    display: inline-block;
+    display: table-cell;
     vertical-align: top;
     margin-top: 15px;
 }
@@ -309,7 +314,7 @@ button.clear-basket {
     height: 0;
     bottom: 100%;
     /*left: 1.5em;*/
-    left: 43%;
+    right: 25px;
     border: .75rem solid transparent;
     border-top: none;
     border-bottom-color: #fff;

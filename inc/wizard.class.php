@@ -82,7 +82,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                                    $user->getID(),
                                                                    $cond,
                                                                    false);
-      $style = '';
+      $style                = '';
       if (!empty($user->fields['picture'])) {
          $style = 'tooltip_group_text';
       }
@@ -202,7 +202,10 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
                         <i class='fas fa-wrench'></i></a>";
          }
-         echo "</span></h4>";
+         echo "</span>";
+         echo "<i class='fas fa-2x fa-cloud-download-alt mydraft pointer' title='"._sx('button', 'Your drafts', 'metademands')."' 
+                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
+         echo "</h4>";
          if ($meta->getFromDB($parameters['metademands_id'])
              && !empty($meta->fields['comment'])) {
             if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
@@ -210,14 +213,12 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             echo "<label><i>" . nl2br($comment) . "</i></label>";
          }
-         echo "<span style='margin-left:45%;'><input type='button' id='mydraft'  onclick='$(\"#divdrafts\").toggle();'  class='submit' name='mydrafts' value='" . _sx('button', 'My drafts','metademands') . "'></span>";
 
          echo "</div></div>";
          echo "<div id='divdrafts" . "' class=\"input-draft\" style='display:none;'>";
-
-         echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(),$parameters['metademands_id']);
-         //         include(GLPI_ROOT . "/plugins/metademands/ajax/utooltipUpdate.php");
+         echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
          echo "</div>";
+
          $plugin = new Plugin();
          if ($plugin->isActivated('servicecatalog')) {
             $configsc = new PluginServicecatalogConfig();
@@ -819,37 +820,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                } else {
                   echo "<input type='submit' class='metademand_next_button submit' name='next' value='" . __('Next') . "'>";
                }
-               echo Html::scriptBlock(
-                  "$('[name=\"wizard_form\"]').submit(function() {
-                            $('[name=\"from\"]').html('');
-                            var val = $(\"input[type=submit][clicked=true]\").attr('draft_id');
-                            console.log(val);
-                            if(val){
-                              $('#plugin_metademands_drafts_id').val(val);
-                            }
-                            
-                            
-                        });
-                      $(\"form input[type=submit]\").click(function() {
-                          $(\"input[type=submit]\", $(this).parents(\"form\")).removeAttr(\"clicked\");
-                          $(this).attr(\"clicked\", \"true\");
-                      });
-                        "
-
-               );
-               if(isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_name'])){
-                  $draftname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands']['plugin_metademands_drafts_name'])) ?? '';
-               } else {
-                  $draftname = '';
-               }
-
-
-
-              echo "<input type='text' style='margin-left:52%;margin-bottom: 3px' maxlength='250' placeholder='".__('Draft name','metademands')."' name='draft_name' value=\"$draftname\">";
-
-              echo "<input type='submit' class='submit' style='margin-left:50%;'name='save_draft' value='" . _sx('button', 'Save as draft','metademands') . "'>";
-
-
                echo "<input type='submit' class='metademand_previous_button submit' name='previous' value='" . __('Previous') . "'>";
                echo "</div>";
                echo "</div>";
@@ -1000,7 +970,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                // Title block field
                if ($data['type'] == 'title-block') {
                   if ($preview) {
-                     $rank = $data["rank"];
+                     $rank  = $data["rank"];
                      $color = PluginMetademandsField::setColor($rank);
                      $style = 'padding-top:5px; 
                       border-top :3px solid #' . $color . ';

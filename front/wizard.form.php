@@ -34,7 +34,7 @@ global $CFG_GLPI;
 
 $wizard      = new PluginMetademandsWizard();
 $metademands = new PluginMetademandsMetademand();
-$fields       = new PluginMetademandsField();
+$fields      = new PluginMetademandsField();
 
 if (empty($_POST['metademands_id'])) {
    $_POST['metademands_id'] = 0;
@@ -74,7 +74,7 @@ if (isset($_POST['next'])) {
       if ($metademands->canCreate()
           || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
 
-         $data  = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+         $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
          $metademands->getFromDB($_POST['form_metademands_id']);
          $plugin = new Plugin();
          $meta   = [];
@@ -350,7 +350,7 @@ if (isset($_POST['next'])) {
       $checks  = [];
       $content = [];
       $data    = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
-                               'is_basket'                         => 1]);
+                                'is_basket'                         => 1]);
 
       foreach ($data as $id => $value) {
 
@@ -465,9 +465,9 @@ if (isset($_POST['next'])) {
 
       Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
 
-   } else if(isset($_POST['save_draft'])){
+   } else if (isset($_POST['save_draft'])) {
       $nblines = 0;
-      $KO = false;
+      $KO      = false;
       //Create ticket
       if ($nblines == 0) {
          $post    = $_POST['field'];
@@ -482,27 +482,27 @@ if (isset($_POST['next'])) {
          for ($i = 0; $i < $nblines; $i++) {
 
 
-//            //Clean $post & $data & $_POST
-//            $data  = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id']]);
-//            $dataOld = $data;
-//            // Double appel for prevent order fields
-//            PluginMetademandsWizard::unsetHidden($data, $post);
-//            PluginMetademandsWizard::unsetHidden($dataOld, $post);
+            //            //Clean $post & $data & $_POST
+            //            $data  = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id']]);
+            //            $dataOld = $data;
+            //            // Double appel for prevent order fields
+            //            PluginMetademandsWizard::unsetHidden($data, $post);
+            //            PluginMetademandsWizard::unsetHidden($dataOld, $post);
 
-            $_POST['field'] = $post;
+            $_POST['field']   = $post;
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
             if (count($metademands_data)) {
                foreach ($metademands_data as $form_step => $data) {
                   $docitem = null;
                   foreach ($data as $form_metademands_id => $line) {
-                     foreach ($line['form'] as $id => $value){
+                     foreach ($line['form'] as $id => $value) {
                         if (!isset($post[$id])) {
-                           if(isset($_SESSION['plugin_metademands']['fields'][$id]) && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']){
+                           if (isset($_SESSION['plugin_metademands']['fields'][$id]) && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
                               $_POST['field'][$id] = $_SESSION['plugin_metademands']['fields'][$id];
-                           }else{
+                           } else {
                               $_POST['field'][$id] = [];
                            }
-                        } else if(empty($_POST['draft_name'])){
+                        } else if (empty($_POST['draft_name'])) {
                            $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
                         }
 
@@ -549,80 +549,61 @@ if (isset($_POST['next'])) {
             }
 
             $drafts = new PluginMetademandsDraft();
-            if(isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])){
+            if (isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])) {
                $draft_id = $_POST['plugin_metademands_drafts_id'];
                $drafts->getFromDB($_POST['plugin_metademands_drafts_id']);
                $drafts_values = new PluginMetademandsDraft_Value();
-               $drafts_values->deleteByCriteria(['plugin_metademands_drafts_id'=>$draft_id]);
+               $drafts_values->deleteByCriteria(['plugin_metademands_drafts_id' => $draft_id]);
                $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
                if (count($metademands_data)) {
                   foreach ($metademands_data as $form_step => $data) {
                      $docitem = null;
                      foreach ($data as $form_metademands_id => $line) {
-                        PluginMetademandsDraft::setDraftValues($line['form'],  $_POST['field'],$draft_id);
+                        PluginMetademandsDraft::setDraftValues($line['form'], $_POST['field'], $draft_id);
                      }
                   }
                }
                PluginMetademandsDraft::loadDraftValues($draft_id);
-            }else{
-               if(!isset($_POST['draft_name']) || (isset($_POST['draft_name']) && empty($_POST['draft_name']))){
-                  Session::addMessageAfterRedirect(__('Draft name is required','metademands'),false,ERROR);
+            } else {
+               if (!isset($_POST['draft_name']) || (isset($_POST['draft_name']) && empty($_POST['draft_name']))) {
+                  Session::addMessageAfterRedirect(__('Draft name is required', 'metademands'), false, ERROR);
                   Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
                }
-               $inputs =  [];
+               $inputs         = [];
                $inputs['name'] = Toolbox::addslashes_deep($_POST['draft_name']);
-//               $inputs['name'] = 'd1';
-               $inputs['users_id'] = Session::getLoginUserID();
+               //               $inputs['name'] = 'd1';
+               $inputs['users_id']                          = Session::getLoginUserID();
                $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
-               $inputs['date'] = date('Y-m-d H:i:s');
+               $inputs['date']                              = date('Y-m-d H:i:s');
 
-               $draft_id = $drafts->add($inputs);
+               $draft_id         = $drafts->add($inputs);
                $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
                if (count($metademands_data)) {
                   foreach ($metademands_data as $form_step => $data) {
                      $docitem = null;
                      foreach ($data as $form_metademands_id => $line) {
-                        PluginMetademandsDraft::setDraftValues($line['form'],  $_POST['field'],$draft_id);
+                        PluginMetademandsDraft::setDraftValues($line['form'], $_POST['field'], $draft_id);
                      }
                   }
                }
 
 
             }
-            $_SESSION['plugin_metademands']['plugin_metademands_drafts_id'] = $draft_id;
+            $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']   = $draft_id;
             $_SESSION['plugin_metademands']['plugin_metademands_drafts_name'] = $_POST['draft_name'];
 
 
          }
       }
-      Session::addMessageAfterRedirect(__('Draft saved','metademands'),false);
+      Session::addMessageAfterRedirect(__('Draft saved', 'metademands'), false);
       Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
-   } else if(isset($_POST['load_draft'])) {
-      PluginMetademandsDraft::loadDraftValues($_POST['plugin_metademands_drafts_id']);
-      $draft = new PluginMetademandsDraft();
-      $draft_name = '';
-      if($draft->getFromDB($_POST['plugin_metademands_drafts_id'])){
-         $draft_name = $draft->getField('name');
-      }
 
-//      PluginMetademandsDraft::loadDraftValues(6);
-      $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
-      // Case of simple ticket convertion
-      $_SESSION['plugin_metademands']['fields']['tickets_id'] = $_POST['tickets_id'];
-      // Resources id
-      $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
-      // Resources step
-      $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
+   } else if (isset($_POST['clean_form'])) {
 
-      //Category id if have category field
-      $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
-      $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
-         (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
-      $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
-      $_SESSION['plugin_metademands']['plugin_metademands_drafts_id'] = $_POST['plugin_metademands_drafts_id'];
-      $_SESSION['plugin_metademands']['plugin_metademands_drafts_name'] = $draft_name;
+      unset($_SESSION['plugin_metademands']);
       Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
-   }else {
+
+   } else {
       if (Session::getCurrentInterface() == 'central') {
          Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu", "wizard");
 
