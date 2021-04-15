@@ -78,7 +78,7 @@ if (isset($_POST['save_draft'])) {
                         } else {
                            $_POST['field'][$id] = [];
                         }
-                     } else if (empty($_POST['draft_name'])) {
+                     } else  {
                         $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
                      }
 
@@ -143,7 +143,8 @@ if (isset($_POST['save_draft'])) {
          } else {
             if (!isset($_POST['draft_name']) || (isset($_POST['draft_name']) && empty($_POST['draft_name']))) {
                Session::addMessageAfterRedirect(__('Draft name is required', 'metademands'), false, ERROR);
-               Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
+//               Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
+               break;
             }
             $inputs         = [];
             $inputs['name'] = Toolbox::addslashes_deep($_POST['draft_name']);

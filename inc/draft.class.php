@@ -80,7 +80,7 @@ class PluginMetademandsDraft extends CommonDBTM {
          $return .= "<tr class='tab_bg_1'>";
          $return .= "<td colspan='4' class='center'>";
          $title = _sx('button', 'Save draft', 'metademands') ."&nbsp;(".$_SESSION['plugin_metademands']['plugin_metademands_drafts_name'].")";
-         $return .= "<button name='save_draft' type='submit' class='btn btn-success'><i class='fas fa-1x fa-save pointer' 
+         $return .= "<button name='save_draft' id='submitSave' form=''  class='btn btn-success'><i class='fas fa-1x fa-save pointer' 
                     title='$title' 
                            data-hasqtip='0' aria-hidden='true' ></i></button>";
 //         $return .= __("Save draft", 'metademands');
@@ -92,8 +92,9 @@ class PluginMetademandsDraft extends CommonDBTM {
          $return .= "<td colspan='4' class='center'>";
          $return .= "<input type='text' maxlength='250' 
          placeholder='" . __('Draft name', 'metademands') . "' name='draft_name' value=\"$draftname\"><br><br>";
-         $return .= "<button name='save_draft' type='submit' class='btn btn-success'><i class='fas fa-1x fa-cloud-upload-alt pointer' title='" . _sx('button', 'Save as draft', 'metademands') . "' 
+         $return .= "<button name='save_draft' id='submitSave' form=''  class='btn btn-success'><i class='fas fa-1x fa-cloud-upload-alt pointer' title='" . _sx('button', 'Save as draft', 'metademands') . "' 
                            data-hasqtip='0' aria-hidden='true' ></i></button>";
+
 
          $return .= "&nbsp;<button name='clean_form' type='submit' class='btn btn-warning'><i class='fas fa-1x fa-broom pointer' title='" . _sx('button', 'Clean form', 'metademands') . "' 
                            data-hasqtip='0' aria-hidden='true' ></i></button><br>";
@@ -194,6 +195,35 @@ class PluginMetademandsDraft extends CommonDBTM {
                              });
                        };
                      </script>";
+      $return .= "<script>
+                          $('#submitSave').click(function() {
+                           
+                             if(typeof tinyMCE !== 'undefined'){
+                                tinyMCE.triggerSave();
+                             }
+                             jQuery('.resume_builder_input').trigger('change');
+                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                             $('#ajax_loader').show();
+                             arrayDatas = $('form').serializeArray();
+                             arrayDatas.push({name: \"save_draft\", value: true});
+                             console.log(arrayDatas);
+                             $.ajax({
+                                url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/adddraft.php',
+                                   type: 'POST',
+                                   data: arrayDatas,
+                                   success: function(response){
+                                       $('#ajax_loader').hide();
+                                       document.location.reload();
+                                                                        
+                                    },
+                                   error: function(xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                    } 
+                                });
+                          });
+                        </script>";
       $return .= "</span>";
 
       return $return;

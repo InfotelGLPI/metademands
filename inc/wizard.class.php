@@ -775,7 +775,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                         echo "<script>
                           $('#submitjob').click(function() {
                              var meta_id = {$ID};
-                             tinyMCE.triggerSave();
+                             if(typeof tinyMCE !== 'undefined'){
+                                tinyMCE.triggerSave();
+                             }
                              jQuery('.resume_builder_input').trigger('change');
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
