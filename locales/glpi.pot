@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-14 16:15+0000\n"
+"POT-Creation-Date: 2021-04-15 08:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,17 +50,17 @@ msgstr ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/deletedraft.php:50 inc/draft.class.php:116
+#: ajax/deletedraft.php:54 inc/draft.class.php:117
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
-#: ajax/deletedraft.php:56 inc/draft.class.php:122
+#: ajax/deletedraft.php:60 inc/draft.class.php:123
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: ajax/deletedraft.php:62 inc/draft.class.php:129
+#: ajax/deletedraft.php:66 inc/draft.class.php:130
 msgid "No draft available for this metademand"
 msgstr ""
 
@@ -172,26 +172,26 @@ msgstr ""
 msgid "Example : "
 msgstr ""
 
-#: inc/draft.class.php:81
+#: inc/draft.class.php:82
 msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:86 inc/draft.class.php:97
+#: inc/draft.class.php:87 inc/draft.class.php:98
 msgctxt "button"
 msgid "Clean form"
 msgstr ""
 
-#: inc/draft.class.php:93
+#: inc/draft.class.php:94
 msgid "Draft name"
 msgstr ""
 
-#: inc/draft.class.php:94
+#: inc/draft.class.php:95
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
 
-#: inc/draft.class.php:105
+#: inc/draft.class.php:106
 msgid "Your drafts"
 msgstr ""
 
