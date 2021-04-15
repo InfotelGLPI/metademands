@@ -195,14 +195,20 @@
             obs = $("[name='" + toobserve + "']");
          }
          // const zerodiff = (currentValue) => currentValue == 0;
-
+         console.log(toupdate);
+         console.log(toobserve);
+         console.log(check_value);
+         console.log(type);
+         console.log(obs.val());
+         console.log(Array.isArray(check_value));
          var op1 = (!Array.isArray(check_value) &&
              check_value != 0 &&
              obs.val() == check_value);
          var op2 = (Array.isArray(check_value) &&
-             obs.val() != 0 &&
+             (obs.val() != 0 || (type == 'checkbox' && obs.val() == 0 )) &&
              check_value.includes(parseInt(obs.val(),10)));
-
+         console.log(op1);
+         console.log(op2);
          if (  op1|| op2
             //  ||
             // check_value == 'NOT_NULL' &&

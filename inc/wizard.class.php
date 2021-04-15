@@ -1245,9 +1245,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "metademandWizard$rand.metademand_setMandatoryField(
                          'metademands_wizard_red" . $fields_link[$key] . "', 
                          'field[" . $data['id'] . "]',[";
-                           if ($check_value[$key] > 0) {
+                           if ($check_value[$key] > 0 || ($data['type'] == 'checkbox' && $check_value[$key] == 0 ) ) {
                               $script .= $check_value[$key];
                            }
+
                            foreach ($fields_link2 as $key2 => $fields2) {
                               if ($key != $key2) {
                                  if ($fields_link[$key] == $fields_link[$key2]) {
