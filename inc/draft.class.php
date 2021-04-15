@@ -186,6 +186,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                                 type: 'POST',
                                 data: data_send,
                                 success: function(response){
+                                    $('#ajax_loader').hide();
                                     if (response == 1) {
                                        document.location.reload();
                                     } else {
@@ -206,7 +207,6 @@ class PluginMetademandsDraft extends CommonDBTM {
                              $('#ajax_loader').show();
                              arrayDatas = $('form').serializeArray();
                              arrayDatas.push({name: \"save_draft\", value: true});
-                             console.log(arrayDatas);
                              $.ajax({
                                 url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/adddraft.php',
                                    type: 'POST',
