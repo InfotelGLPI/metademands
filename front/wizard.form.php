@@ -502,7 +502,7 @@ if (isset($_POST['next'])) {
                            } else {
                               $_POST['field'][$id] = [];
                            }
-                        } else if (empty($_POST['draft_name'])) {
+                        } else  {
                            $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
                         }
 

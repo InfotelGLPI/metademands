@@ -44,6 +44,7 @@ class PluginMetademandsDraft extends CommonDBTM {
 
       $return .= Html::scriptBlock(
          "$('[name=\"wizard_form\"]').submit(function() {
+                            $('#ajax_loader').show();
                             $('[name=\"from\"]').html('');
                             var val = $(\"input[type=submit][clicked=true]\").attr('draft_id');
                             console.log(val);
@@ -131,7 +132,13 @@ class PluginMetademandsDraft extends CommonDBTM {
 
       $return .= "<script>
                        var meta_id = {$plugin_metademands_metademands_id};
+                       
                       function deleteDraft(draft_id) {
+                          var self_delete = false;
+                          if($draft_id == draft_id ){
+                              self_delete = true;
+                          }
+                          $('#ajax_loader').show();
                           $.ajax({
                              url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/deletedraft.php',
                                 type: 'POST',
@@ -139,10 +146,15 @@ class PluginMetademandsDraft extends CommonDBTM {
                                   {
                                     users_id:$users_id,
                                     plugin_metademands_metademands_id: meta_id,
-                                    drafts_id: draft_id
+                                    drafts_id: draft_id,
+                                    self_delete: self_delete
                                   },
                                 success: function(response){
                                     $('#bodyDraft').html(response);
+                                    $('#ajax_loader').hide();
+                                    if(self_delete){
+                                        document.location.reload();
+                                    }
                                  },
                                 error: function(xhr, status, error) {
                                    console.log(xhr);
@@ -157,6 +169,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                       var meta_id = {$plugin_metademands_metademands_id};
                       var step = {$step};
                       function loadDraft(draft_id) {
+                         $('#ajax_loader').show();
                          var data_send = $('form').serializeArray();
                          data_send.push({name: 'plugin_metademands_drafts_id', value: draft_id});
                           $.ajax({
