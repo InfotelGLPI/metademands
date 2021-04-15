@@ -514,7 +514,7 @@ class PluginMetademandsField extends CommonDBChild {
          echo "</td>";
          echo "<td>";
          $ticket_fields[0] = Dropdown::EMPTY_VALUE;
-         $objectclass = $metademand->fields['object_to_create'];
+         $objectclass      = $metademand->fields['object_to_create'];
          $searchOption     = Search::getOptions($objectclass);
 
          if ($objectclass == 'Ticket') {
@@ -522,7 +522,7 @@ class PluginMetademandsField extends CommonDBChild {
          } else if ($objectclass == 'Change') {
             $tt = new ChangeTemplate();
          }
-         $allowed_fields   = $tt->getAllowedFields(true, true);
+         $allowed_fields = $tt->getAllowedFields(true, true);
 
          unset($allowed_fields[-2]);
 
@@ -1912,7 +1912,7 @@ class PluginMetademandsField extends CommonDBChild {
                      include(GLPI_ROOT . "/plugins/metademands/ajax/ugroupUpdate.php");
                      echo "</div>";
                   } else {
-                     $options['name']    = $namefield . "[" . $data['id'] . "]";
+                     $options['name'] = $namefield . "[" . $data['id'] . "]";
 
                      if (!empty($data['custom_values'])) {
                         $options = PluginMetademandsField::_unserialize($data['custom_values']);
@@ -1921,12 +1921,12 @@ class PluginMetademandsField extends CommonDBChild {
                         }
                      }
                      $field .= Group::dropdown(['name'      => $options['name'],
-                                      'entity'    => $_SESSION['glpiactiveentities'],
-                                      'value'     => $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0,
-                                      'readonly'  => true,
-                                      'condition' => $cond,
-                                      'display'   => false
-                                     ]);
+                                                'entity'    => $_SESSION['glpiactiveentities'],
+                                                'value'     => $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0,
+                                                'readonly'  => true,
+                                                'condition' => $cond,
+                                                'display'   => false
+                                               ]);
                   }
 
 
@@ -1982,11 +1982,11 @@ class PluginMetademandsField extends CommonDBChild {
                         include(GLPI_ROOT . "/plugins/metademands/ajax/umydevicesUpdate.php");
                         echo "</div>";
                      } else {
-                        $rand = mt_rand();
-                        $p    = ['rand' => $rand,
-                                 'name' => $_POST["field"],
-                                 'value' => $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0 ];
-                        $field .= PluginMetademandsField::dropdownMyDevices(Session::getLoginUserID(), $_SESSION['glpiactiveentities'], 0, 0, $p,false);
+                        $rand  = mt_rand();
+                        $p     = ['rand'  => $rand,
+                                  'name'  => $_POST["field"],
+                                  'value' => $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0];
+                        $field .= PluginMetademandsField::dropdownMyDevices(Session::getLoginUserID(), $_SESSION['glpiactiveentities'], 0, 0, $p, false);
                      }
 
 
@@ -2072,7 +2072,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                      if ($data['link_to_user'] > 0) {
                         echo "<div id='location_user" . $data['link_to_user'] . "' class=\"input-group\">";
-                        $_POST['field'] = $namefield . "[" . $data['id'] . "]";
+                        $_POST['field']        = $namefield . "[" . $data['id'] . "]";
                         $_POST['locations_id'] = $value;
                         $fieldUser             = new self();
                         $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
@@ -2085,10 +2085,10 @@ class PluginMetademandsField extends CommonDBChild {
                         $_POST['fields_id']    = $data['id'];
                         include(GLPI_ROOT . "/plugins/metademands/ajax/ulocationUpdate.php");
                         echo "</div>";
-                     }else{
+                     } else {
                         $options['name']    = $namefield . "[" . $data['id'] . "]";
                         $options['display'] = false;
-                        $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0;
+                        $options['value']   = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0;
                         $field              .= Location::dropdown($options);
                      }
 
@@ -2103,8 +2103,8 @@ class PluginMetademandsField extends CommonDBChild {
          case 'text':
             $field = "<input type='text' name='" . $namefield . "[" . $data['id'] . "]' value='" . Html::cleanInputText(Toolbox::stripslashes_deep($value)) . "' 
             class='form-control form-control-sm' id='" . $namefield . "[" . $data['id'] . "]' placeholder=\"" . Html::clean($comment) . "\">";
-//            $id = $namefield . "[" . $data['id'] . "]";
-//            $field .= Html::scriptBlock("$( \"\").val($value);");
+            //            $id = $namefield . "[" . $data['id'] . "]";
+            //            $field .= Html::scriptBlock("$( \"\").val($value);");
             break;
          case 'informations':
             if ($on_basket == false) {
@@ -2650,7 +2650,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                   $check_values = self::_unserialize($params['check_value']);
                   if (is_array($check_values)) {
-                     $check_value  = array_shift($check_values);
+                     $check_value = array_shift($check_values);
                   }
 
                   if (!isset($check_value)) {
@@ -3834,12 +3834,12 @@ class PluginMetademandsField extends CommonDBChild {
          return false;
       }
 
-//      $meta = new PluginMetademandsMetademand();
+      //      $meta = new PluginMetademandsMetademand();
 
-//      if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
-//          && $meta->fields['is_order'] == 1) {
-//         $input['is_basket'] = 1;
-//      }
+      //      if ($meta->getFromDB($input['plugin_metademands_metademands_id'])
+      //          && $meta->fields['is_order'] == 1) {
+      //         $input['is_basket'] = 1;
+      //      }
 
       if (isset($input["type"]) && $input["type"] == "checkbox") {
          $input["item"] = "checkbox";
@@ -4558,7 +4558,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
 
          $return = "<span id='show_items_id_requester'>";
-         $return .= Dropdown::showFromArray($params['name'], $my_devices, ['rand' => $rand, 'display' => false, 'value'=>$params['value']]);
+         $return .= Dropdown::showFromArray($params['name'], $my_devices, ['rand' => $rand, 'display' => false, 'value' => $params['value']]);
          $return .= "</span>";
 
          if ($display) {

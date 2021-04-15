@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-15 08:56+0000\n"
+"POT-Creation-Date: 2021-04-15 15:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgid_plural "Meta-Demands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ajax/adddraft.php:145 front/wizard.form.php:569
+#: ajax/adddraft.php:146
 msgid "Draft name is required"
 msgstr ""
 
@@ -50,17 +50,17 @@ msgstr ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/deletedraft.php:54 inc/draft.class.php:117
+#: ajax/deletedraft.php:54 inc/draft.class.php:118
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
-#: ajax/deletedraft.php:60 inc/draft.class.php:123
+#: ajax/deletedraft.php:60 inc/draft.class.php:124
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: ajax/deletedraft.php:66 inc/draft.class.php:130
+#: ajax/deletedraft.php:66 inc/draft.class.php:131
 msgid "No draft available for this metademand"
 msgstr ""
 
@@ -83,10 +83,6 @@ msgstr ""
 
 #: front/wizard.form.php:391
 msgid "There is a problem with the basket"
-msgstr ""
-
-#: front/wizard.form.php:598
-msgid "Draft saved"
 msgstr ""
 
 #: inc/basketline.class.php:55
@@ -177,7 +173,7 @@ msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:87 inc/draft.class.php:98
+#: inc/draft.class.php:87 inc/draft.class.php:99
 msgctxt "button"
 msgid "Clean form"
 msgstr ""
@@ -191,7 +187,7 @@ msgctxt "button"
 msgid "Save as draft"
 msgstr ""
 
-#: inc/draft.class.php:106
+#: inc/draft.class.php:107
 msgid "Your drafts"
 msgstr ""
 
@@ -843,22 +839,22 @@ msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2636
+#: inc/wizard.class.php:2638
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2645
+#: inc/wizard.class.php:2647
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2691
+#: inc/wizard.class.php:2693
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2695
+#: inc/wizard.class.php:2697
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""

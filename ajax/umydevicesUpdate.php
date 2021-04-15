@@ -68,8 +68,8 @@ if (isset($_POST['fields_id'])
 
 
 $rand = mt_rand();
-$p    = ['rand' => $rand,
-         'name' => $_POST["field"],
+$p    = ['rand'  => $rand,
+         'name'  => $_POST["field"],
          'value' => $val];
 
 PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p);

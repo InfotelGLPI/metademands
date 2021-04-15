@@ -35,11 +35,11 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-$KO   = false;
-$step = $_POST['step'] + 1;
+$KO          = false;
+$step        = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
-$fields = new PluginMetademandsField();
+$fields      = new PluginMetademandsField();
 
 if (isset($_POST['save_draft'])) {
    $nblines = 0;
@@ -78,7 +78,7 @@ if (isset($_POST['save_draft'])) {
                         } else {
                            $_POST['field'][$id] = [];
                         }
-                     } else  {
+                     } else {
                         $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
                      }
 
@@ -144,7 +144,7 @@ if (isset($_POST['save_draft'])) {
          } else {
             if (!isset($_POST['draft_name']) || (isset($_POST['draft_name']) && empty($_POST['draft_name']))) {
                Session::addMessageAfterRedirect(__('Draft name is required', 'metademands'), false, ERROR);
-//               Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
+               //               Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
                break;
             }
             $inputs         = [];
@@ -171,8 +171,8 @@ if (isset($_POST['save_draft'])) {
 
       }
    }
-//   Session::addMessageAfterRedirect(__('Draft saved', 'metademands'), false);
-//   Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
+   //   Session::addMessageAfterRedirect(__('Draft saved', 'metademands'), false);
+   //   Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
 }
 if ($KO === false) {
    echo 0;
