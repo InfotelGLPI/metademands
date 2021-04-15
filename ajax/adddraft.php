@@ -140,6 +140,7 @@ if (isset($_POST['save_draft'])) {
                }
             }
             PluginMetademandsDraft::loadDraftValues($draft_id);
+            $_POST['draft_name'] = $drafts->getField('name');
          } else {
             if (!isset($_POST['draft_name']) || (isset($_POST['draft_name']) && empty($_POST['draft_name']))) {
                Session::addMessageAfterRedirect(__('Draft name is required', 'metademands'), false, ERROR);

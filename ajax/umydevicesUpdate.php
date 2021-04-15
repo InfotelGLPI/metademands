@@ -60,14 +60,18 @@ if (isset($_POST['value']) && $_POST["value"] > 0) {
    }
 }
 
+$val = 0;
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])) {
-   $users_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
+   $val = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
 }
+
 
 $rand = mt_rand();
 $p    = ['rand' => $rand,
-         'name' => $_POST["field"]];
+         'name' => $_POST["field"],
+         'value' => $val];
+
 PluginMetademandsField::dropdownMyDevices($users_id, $_SESSION['glpiactiveentities'], 0, 0, $p);
 
 $_POST['name'] = "mydevices_user";
