@@ -287,11 +287,23 @@ button.clear-basket {
     color: #e3e0e0;
 }
 
+.mydraft-text {
+    margin-top: 15px;
+    color: #e3e0e0;
+    font-size: 12px;
+}
+
+.mydraft-comment {
+    color: #9e9d9d;
+    font-size: 10px;
+}
+
 .input-draft {
     position: relative;
     display: table;
     border-collapse: separate;
     float: right;
+    z-index: 2;
 }
 .draft {
     position: relative;

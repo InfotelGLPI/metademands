@@ -75,6 +75,15 @@ if (isset($_POST["type"])) {
                $return .= "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                $return .= $meta->fields['comment'];
                $return .= "</span></em>";
+
+               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
+               if ($count_drafts > 0) {
+                  $return .= "<br><em><span class='mydraft-comment'>";
+                  $return .= sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                               $count_drafts);
+                  $return .= "</span>";
+               }
+
                $return .= "</p></div></a>";
             }
          }
