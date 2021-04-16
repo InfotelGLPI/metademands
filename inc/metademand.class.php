@@ -2374,6 +2374,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
             $son_ticket_data['requesttypes_id']     = $parent_fields['requesttypes_id'];
             $son_ticket_data['_auto_import']        = 1;
             $son_ticket_data['status']              = Ticket::INCOMING;
+            if(isset($parent_fields['urgency'])){
+               $son_ticket_data['urgency'] = $parent_fields['urgency'];
+            }
+            if(isset($parent_fields['impact'])){
+               $son_ticket_data['impact'] = $parent_fields['impact'];
+            }
+            if(isset($parent_fields['priority'])){
+               $son_ticket_data['priority'] = $parent_fields['priority'];
+            }
 
             $content = '';
             if (!empty($son_ticket_data['content'])) {
