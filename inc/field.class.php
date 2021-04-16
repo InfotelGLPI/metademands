@@ -1912,7 +1912,7 @@ class PluginMetademandsField extends CommonDBChild {
                      include(GLPI_ROOT . "/plugins/metademands/ajax/ugroupUpdate.php");
                      echo "</div>";
                   } else {
-                     $options['name'] = $namefield . "[" . $data['id'] . "]";
+                     $name = $namefield . "[" . $data['id'] . "]";
 
                      if (!empty($data['custom_values'])) {
                         $options = PluginMetademandsField::_unserialize($data['custom_values']);
@@ -1921,8 +1921,9 @@ class PluginMetademandsField extends CommonDBChild {
                         }
                      }
                      $val_group = (isset($_SESSION['plugin_metademands']['fields'][$data['id']])
-                               && !is_array($_SESSION['plugin_metademands']['fields'][$data['id']])) ?? 0;
-                     $field .= Group::dropdown(['name'      => $options['name'],
+                               && !is_array($_SESSION['plugin_metademands']['fields'][$data['id']])) ? $_SESSION['plugin_metademands']['fields'][$data['id']] : 0;
+
+                     $field .= Group::dropdown(['name'      => $name,
                                                 'entity'    => $_SESSION['glpiactiveentities'],
                                                 'value'     => $val_group,
                                                 'readonly'  => true,
