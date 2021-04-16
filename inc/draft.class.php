@@ -128,7 +128,7 @@ class PluginMetademandsDraft extends CommonDBTM {
             $return .= "</tr>";
          }
       } else {
-         $return .= "<tr class='tab_bg_1'><td colspan='4' class='center'>" . __('No draft available for this metademand', 'metademands') . "</td></tr>";
+         $return .= "<tr class='tab_bg_1'><td colspan='4' class='center'>" . __('No draft available for this form', 'metademands') . "</td></tr>";
       }
       $return .= "</tbody>";
       $return .= "</table>";
