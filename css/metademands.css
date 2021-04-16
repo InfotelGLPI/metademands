@@ -289,12 +289,16 @@ button.clear-basket {
 
 .mydraft-text {
     margin-top: 15px;
-    color: #e3e0e0;
+    color: #949191;
     font-size: 12px;
 }
 
+.mydraft-fa {
+    color: #949191;
+}
+
 .mydraft-comment {
-    color: #9e9d9d;
+    color: #949191;
     font-size: 10px;
 }
 

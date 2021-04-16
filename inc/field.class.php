@@ -1442,7 +1442,7 @@ class PluginMetademandsField extends CommonDBChild {
     * @param string $config_link
     * @param int    $itilcategories_id
     */
-   static function getFieldType($data, $metademands_data, $preview = false, $config_link = "", $itilcategories_id = 0) {
+   static function getFieldType($metademands_data, $data, $preview = false, $config_link = "", $itilcategories_id = 0) {
       global $PLUGIN_HOOKS;
 
       $required = "";
@@ -1920,9 +1920,11 @@ class PluginMetademandsField extends CommonDBChild {
                            $cond[$type_group] = $values;
                         }
                      }
+                     $val_group = (isset($_SESSION['plugin_metademands']['fields'][$data['id']])
+                               && !is_array($_SESSION['plugin_metademands']['fields'][$data['id']])) ?? 0;
                      $field .= Group::dropdown(['name'      => $options['name'],
                                                 'entity'    => $_SESSION['glpiactiveentities'],
-                                                'value'     => $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0,
+                                                'value'     => $val_group,
                                                 'readonly'  => true,
                                                 'condition' => $cond,
                                                 'display'   => false

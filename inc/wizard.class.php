@@ -203,17 +203,20 @@ class PluginMetademandsWizard extends CommonDBTM {
                         <i class='fas fa-wrench'></i></a>";
          }
          echo "</span>";
-         echo "<span class='mydraft'>";
-         $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
-         if ($count_drafts > 0) {
-            echo "<span class='mydraft-text'>";
-            echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                         $count_drafts);
+         if (!$parameters['preview']) {
+            echo "<span class='mydraft'>";
+            $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
+            if ($count_drafts > 0) {
+               echo "<span class='mydraft-text'>";
+               echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                            $count_drafts);
+               echo "</span>";
+            }
+
+            echo "<i class='fas fa-2x mydraft-fa fa-cloud-download-alt pointer' title='" . _sx('button', 'Your drafts', 'metademands') . "' 
+                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
             echo "</span>";
          }
-         echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='"._sx('button', 'Your drafts', 'metademands')."' 
-                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
-         echo "</span>";
          echo "</h4>";
          if ($meta->getFromDB($parameters['metademands_id'])
              && !empty($meta->fields['comment'])) {
@@ -603,7 +606,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                if ($count_drafts > 0) {
                   echo "<br><em><span class='mydraft-comment'>";
                   echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                                     $count_drafts);
+                               $count_drafts);
                   echo "</span>";
                }
 
@@ -1145,7 +1148,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-5 $class\">";
                }
                //see fields
-               PluginMetademandsField::getFieldType($data, $metademands_data, $preview, $config_link, $itilcategories_id);
+               PluginMetademandsField::getFieldType($metademands_data, $data, $preview, $config_link, $itilcategories_id);
 
                // Label 2 (date interval)
                if (!empty($data['label2'])
@@ -1247,7 +1250,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                          'field[" . $data['id'] . "]',[";
                            if ($check_value[$key] > 0
                                || (($data['type'] == 'checkbox' || $data['type'] == 'radio')
-                                   && $check_value[$key] == 0 )) {
+                                   && $check_value[$key] == 0)) {
                               $script .= $check_value[$key];
                            }
 

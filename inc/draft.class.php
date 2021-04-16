@@ -262,7 +262,7 @@ class PluginMetademandsDraft extends CommonDBTM {
       $draft_value   = new PluginMetademandsDraft_Value();
       $drafts_values = $draft_value->find(['plugin_metademands_drafts_id' => $plugin_metademands_drafts_id]);
       foreach ($drafts_values as $values) {
-         $_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'])) ?? Toolbox::addslashes_deep($values['value']);
+         $_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'], true)) ?? Toolbox::addslashes_deep($values['value']);
       }
    }
 }
