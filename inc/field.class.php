@@ -296,7 +296,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<td>";
       $randRank   = Dropdown::showNumber('rank', ['value' => $this->fields["rank"],
                                                   'min'   => 1,
-                                                  'max'   => 20]);
+                                                  'max'   => 30]);
       $paramsRank = ['rank'               => '__VALUE__',
                      'step'               => 'order',
                      'fields_id'          => $this->fields['id'],
@@ -3253,7 +3253,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                      'display' => $display,
                                                      'used'    => [$fields->getField('rank')],
                                                      'min'     => 1,
-                                                     'max'     => 20,
+                                                     'max'     => 30,
                                                      'toadd'   => [0 => Dropdown::EMPTY_VALUE]]);
    }
 
@@ -4067,7 +4067,7 @@ class PluginMetademandsField extends CommonDBChild {
       switch ($field) {
          case 'rank':
             $options['min'] = 1;
-            $options['max'] = 10;
+            $options['max'] = 30;
 
             return Dropdown::showNumber($name, $options);
             break;
@@ -4091,7 +4091,7 @@ class PluginMetademandsField extends CommonDBChild {
          $rank = 1;
       }
       $restrict = ['rank' => $rank, 'plugin_metademands_metademands_id' => $metademands_id];
-      $restrict += ['NOT' => ['type' => 'title-block']];
+//      $restrict += ['NOT' => ['type' => 'title-block']];
       if (!empty($fields_id)) {
          $restrict += ['NOT' => ['id' => $fields_id]];
       }
