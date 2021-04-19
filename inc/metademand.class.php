@@ -1551,9 +1551,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $object->add($input);
-                  if(isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])){
+                  if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
                      $draft = new PluginMetademandsDraft();
-                     $draft->deleteByCriteria(['id'=>$_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
+                     $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
                   }
                   //Hook to do action after ticket creation with metademands
                   if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -1713,6 +1713,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               $tasks[$key]['tickettasks_name']   = urlencode($val['tickettasks_name']);
                               $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
                               $tasks[$key]['content']            = urlencode($val['content']);
+                              $tasks[$key]['block_use']          = json_decode($val["block_use"], true);
                            }
                            $paramIn["tickets_to_create"] = json_encode($tasks);
                            $metaValid->add($paramIn);
@@ -1765,7 +1766,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       }
 
       // Message return
-      $parent_metademands_name = $object->getName();
+      $parent_metademands_name = Dropdown::getDropdownName("glpi_plugin_metademands_metademands", $object->getID());
       if (count($KO)) {
          $message = __('Demand add failed', 'metademands') . ' : ' . $parent_metademands_name;
       } else {
@@ -1893,7 +1894,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       }
 
       if ((!empty($field['value']) || $field['value'] == "0")
-          && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'radio') {
+          && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'title-block' || $field['type'] == 'radio') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
          //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
          //            $result['content'] .= "<tr>";
@@ -2374,13 +2375,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
             $son_ticket_data['requesttypes_id']     = $parent_fields['requesttypes_id'];
             $son_ticket_data['_auto_import']        = 1;
             $son_ticket_data['status']              = Ticket::INCOMING;
-            if(isset($parent_fields['urgency'])){
+            if (isset($parent_fields['urgency'])) {
                $son_ticket_data['urgency'] = $parent_fields['urgency'];
             }
-            if(isset($parent_fields['impact'])){
+            if (isset($parent_fields['impact'])) {
                $son_ticket_data['impact'] = $parent_fields['impact'];
             }
-            if(isset($parent_fields['priority'])){
+            if (isset($parent_fields['priority'])) {
                $son_ticket_data['priority'] = $parent_fields['priority'];
             }
 
