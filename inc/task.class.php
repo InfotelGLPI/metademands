@@ -339,7 +339,7 @@ class PluginMetademandsTask extends CommonDBTM {
          echo "<th class='center b'>" . __('Type') . "</th>";
          echo "<th class='center b'>" . __('Category') . "</th>";
          echo "<th class='center b'>" . __('Assigned to') . "</th>";
-         echo "<th class='center b' colspan='2'>" . __('Level', 'metademands') . "</th>";
+         echo "<th class='center b'>" . __('Level', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Block to use', 'metademands') . "</th>";
          echo "</tr>";
          foreach ($tasks as $value) {
@@ -431,12 +431,12 @@ class PluginMetademandsTask extends CommonDBTM {
                   echo "<div class='center'>" . $value['level'] . "</div>";
                   echo "</td>";
                } else {
-                  echo "<td " . $color_class . " colspan='2'>";
+                  echo "<td " . $color_class . ">";
                   echo "<div class='center'>" . __('Root', 'metademands') . "</div>";
                   echo "</td>";
                }
             } else {
-               echo "<td " . $color_class . " colspan='2'>
+               echo "<td " . $color_class . ">
                         <div class='center'>" . __('Root', 'metademands') . "</div>
                      </td>";
             }
@@ -616,7 +616,6 @@ class PluginMetademandsTask extends CommonDBTM {
     * @param integer $search_level
     *
     * @return integer child
-    * @throws \GlpitestSQLError
     * @throws \GlpitestSQLError
     */
    function getChildrenForLevel($tasks_id, $search_level) {
