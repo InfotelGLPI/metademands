@@ -166,16 +166,16 @@ class PluginMetademandsTicketField extends CommonDBChild {
          }
          echo "</td>";
          echo "</tr>";
-//         echo "<tr class='tab_bg_1 center'>";
-//         echo "<td>";
-//
-//         $rand = mt_rand();
-//         Ajax::createIframeModalWindow("tags" . $rand,
-//                                       $CFG_GLPI['root_doc'] . "/plugins/metademands/front/tags.php?metademands_id=" .
-//                                       $item->fields['id']);
-//         echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
-//         echo "</td>";
-//         echo "</tr>";
+         echo "<tr class='tab_bg_1 center'>";
+         echo "<td>";
+
+         $rand = mt_rand();
+         Ajax::createIframeModalWindow("tags" . $rand,
+                                       $CFG_GLPI['root_doc'] . "/plugins/metademands/front/tags.php?metademands_id=" .
+                                       $item->fields['id']);
+         echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
+         echo "</td>";
+         echo "</tr>";
          echo "</table>";
          Html::closeForm();
          echo "</div>";

@@ -819,7 +819,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
       Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
       echo "</td>";
-      echo "<td>" . __('Hide value no of Yes No field in ticket', 'metademands') . "</td><td>";
+      echo "<td>" . __('Hide the "No" values of Yes / No fields in the tickets', 'metademands') . "</td><td>";
       Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
       echo "</td>";
       echo "</td>";
