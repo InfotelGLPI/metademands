@@ -1441,7 +1441,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
                if ($object_class == 'Ticket') {
                   //TODO Change / problem ?
-                  $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory);
+                  $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values);
                }
                $list_fields  = $line['form'];
                $searchOption = Search::getOptions($object_class);
@@ -2463,7 +2463,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     *
     * @return array
     */
-   function formatTicketFields($metademands_id, $itilcategory) {
+   function formatTicketFields($metademands_id, $itilcategory, $values) {
       $result              = [];
       $ticket_field        = new PluginMetademandsTicketField();
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
@@ -2480,6 +2480,29 @@ class PluginMetademandsMetademand extends CommonDBTM {
                 && (!in_array($allowed_fields[$value['num']], PluginMetademandsTicketField::$used_fields))) {
                $value['item'] = $allowed_fields[$value['num']];
                if ($value['item'] == 'name') {
+                  $explodeTitle = explode("#", $value['value']);
+                  foreach ($explodeTitle as $title) {
+                     if (isset($values['fields'][$title])) {
+                        $field = new PluginMetademandsField();
+                        $field->getFromDB($title);
+                        $fields          = $field->fields;
+                        $fields['value'] = '';
+
+                        $fields['value'] = $values['fields'][$title];
+
+                        $fields['value2'] = '';
+                        if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
+                           $fields['value2'] = $values['fields'][$title . '-2'];
+                        }
+                        $result                                  = [];
+                        $result[$fields['rank']]['content']                       = "";
+                        $result[$fields['rank']]['display']                       = false;
+                        $parent_fields_id                        = 0;
+                        $v                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                        $value['value'] = str_replace("#" . $title . "#", $v,  $value['value']);
+                     }
+                  }
+
                   $result[$value['item']] = self::$PARENT_PREFIX . $value['value'];
                } else {
                   $result[$value['item']] = json_decode($value['value'], true);
