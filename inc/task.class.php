@@ -176,17 +176,6 @@ class PluginMetademandsTask extends CommonDBTM {
             echo "</td>";
             echo "</tr>";
 
-            echo "<tr class='tab_bg_1 center'>";
-            echo "<td>";
-
-            $rand = mt_rand();
-            Ajax::createIframeModalWindow("tags" . $rand,
-                                          $CFG_GLPI['root_doc'] . "/plugins/metademands/front/tags.php?metademands_id=" .
-                                          $metademands->fields['id']);
-            echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
-            echo "</td>";
-            echo "</tr>";
-
             echo "<tr class='tab_bg_1'>";
             echo "<td class='center'>";
             echo "<span id='show_add_task_form'>";
@@ -302,6 +291,7 @@ class PluginMetademandsTask extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    private function listTasks($metademands_id, $canedit, $canchangeorder) {
+      global $CFG_GLPI;
 
       $tasks = $this->getTasks($metademands_id);
 
@@ -309,6 +299,21 @@ class PluginMetademandsTask extends CommonDBTM {
          $metademands = new PluginMetademandsMetademand();
          $metademands->showDuplication($metademands_id);
       }
+
+      echo "<div class='center first-bloc'>";
+      echo "<table class='tab_cadre_fixe'>";
+      echo "<tr class='tab_bg_1 center'>";
+      echo "<td>";
+
+      $rand = mt_rand();
+      Ajax::createIframeModalWindow("tags" . $rand,
+                                    $CFG_GLPI['root_doc'] . "/plugins/metademands/front/tags.php?metademands_id=" .
+                                    $metademands_id);
+      echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
+      echo "</td>";
+      echo "</tr>";
+      echo "</table>";
+      echo "</div>";
 
       $rand = mt_rand();
 
@@ -695,8 +700,8 @@ class PluginMetademandsTask extends CommonDBTM {
          }
       }
 
-      return Dropdown::showFromArray('plugin_metademands_tasks_id[]', $data, ['value' => $selected_value,
-                                                                              'tree' => true,
+      return Dropdown::showFromArray('plugin_metademands_tasks_id[]', $data, ['value'   => $selected_value,
+                                                                              'tree'    => true,
                                                                               'display' => $display]);
    }
 
