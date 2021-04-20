@@ -1913,6 +1913,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $result['content'] = "";
       $parent_fields_id  = 0;
 
+
       foreach ($values_form as $k => $values) {
          if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name'))) {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
@@ -1926,9 +1927,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
             $result['content'] .= "<tr><th colspan='2'>" . $resource->fields['name'] . " " . $resource->fields['firstname'] . "</th></tr>";
          }
          //      $result['content'] .= "</table>";
+         $resultTemp = [];
          $nb = 0;
          foreach ($parent_fields as $fields_id => $field) {
 
+            if(!isset($resultTemp[$field['rank']])){
+               $resultTemp[$field['rank']]['content'] = "";
+               $resultTemp[$field['rank']]['display'] = false;
+            }
             $field['value'] = '';
             if (isset($values[$fields_id])) {
                $field['value'] = $values[$fields_id];
@@ -1949,16 +1955,21 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
 
             if ($nb % 2 == 0) {
-               $result['content'] .= "<tr class='even'>";
+               $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
             } else {
-               $result['content'] .= "<tr class='odd'>";
+               $resultTemp[$field['rank']]['content'] .= "<tr class='odd'>";
             }
             $nb++;
 
-            self::getContentWithField($parent_fields, $fields_id, $field, $result, $parent_fields_id);
+            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id);
 
-            $result['content'] .= "</tr>";
+            $resultTemp[$field['rank']]['content'] .= "</tr>";
 
+         }
+         foreach ($resultTemp as $blockId => $tab){
+            if($tab['display'] == true){
+               $result['content'] .= $tab['content'];
+            }
          }
          $result['content'] .= "</table>";
       }
@@ -2011,7 +2022,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          switch ($field['type']) {
             case 'title' :
             case 'title-block' :
-               $result['content'] .= "<th colspan='2'>" . $label . "</th>";
+               $result[$field['rank']]['content'] .= "<th colspan='2'>" . $label . "</th>";
                break;
             case 'dropdown':
             case 'dropdown_object':
@@ -2028,7 +2039,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      if ($return_value == true) {
                         return $custom_values[$field['value']];
                      } else {
-                        $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $custom_values[$field['value']] . "</td>";
+                        $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . $custom_values[$field['value']] . "</td>";
+                        $result[$field['rank']]['display'] = true;
                      }
                   }
                   if ($return_value == true) {
@@ -2038,7 +2050,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($field['value'] != 0) {
                      switch ($field['item']) {
                         case 'User':
-                           $result['content'] .= "<td $style_title>" . $label . "</td>";
+                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                           $result[$field['rank']]['display'] = true;
                            $item              = new $field['item']();
                            $content           = "";
                            $information       = json_decode($field['informations_to_display']);
@@ -2064,9 +2077,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            }
                            if (empty($content)) {
 
-                              $result['content'] .= "<td>" . getUserName($field['value']) . "</td>";
+                              $result[$field['rank']]['content'] .= "<td>" . getUserName($field['value']) . "</td>";
                            } else {
-                              $result['content'] .= "<td>" . $content . "</td>";
+                              $result[$field['rank']]['content'] .= "<td>" . $content . "</td>";
                            }
                            if ($return_value == true) {
                               return getUserName($field['value']);
@@ -2076,10 +2089,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            break;
                         case 'ITILCategory_Metademands':
                            $dbu               = new DbUtils();
-                           $result['content'] .= "<td $style_title>" . $label . "</td><td>";
-                           $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
+                           $result[$field['rank']]['display'] = true;
+                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
                                                                            $field['value']);
-                           $result['content'] .= "</td>";
+                           $result[$field['rank']]['content'] .= "</td>";
                            if ($return_value == true) {
                               return Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
                                                                $field['value']);
@@ -2087,17 +2101,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            break;
                         case 'mydevices':
                            $dbu               = new DbUtils();
-                           $result['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           $result[$field['rank']]['display'] = true;
+                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
                            $splitter          = explode("_", $field['value']);
                            if (count($splitter) == 2) {
                               $itemtype = $splitter[0];
                               $items_id = $splitter[1];
                            }
                            if ($itemtype && $items_id) {
-                              $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
+                              $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
                                                                               $items_id);
                            }
-                           $result['content'] .= "</td>";
+                           $result[$field['rank']]['content'] .= "</td>";
                            if ($return_value == true) {
                               if (isset($items_id)) {
                                  return Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
@@ -2109,32 +2124,36 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            }
                            break;
                         case 'urgency':
-                           $result['content'] .= "<td $style_title>" . $label . "</td>";
-                           $result['content'] .= "<td>" . Ticket::getUrgencyName($field['value']) . "</td>";
+                           $result[$field['rank']]['display'] = true;
+                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                           $result[$field['rank']]['content'] .= "<td>" . Ticket::getUrgencyName($field['value']) . "</td>";
                            if ($return_value == true) {
                               return Ticket::getUrgencyName($field['value']);
                            }
                            break;
                         case 'impact':
-                           $result['content'] .= "<td $style_title>" . $label . "</td>";
-                           $result['content'] .= "<td>" . Ticket::getImpactName($field['value']) . "</td>";
+                           $result[$field['rank']]['display'] = true;
+                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                           $result[$field['rank']]['content'] .= "<td>" . Ticket::getImpactName($field['value']) . "</td>";
                            if ($return_value == true) {
                               return Ticket::getImpactName($field['value']);
                            }
                            break;
                         case 'priority':
-                           $result['content'] .= "<td $style_title>" . $label . "</td>";
-                           $result['content'] .= "<td>" . Ticket::getPriorityName($field['value']) . "</td>";
+                           $result[$field['rank']]['display'] = true;
+                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                           $result[$field['rank']]['content'] .= "<td>" . Ticket::getPriorityName($field['value']) . "</td>";
                            if ($return_value == true) {
                               return Ticket::getPriorityName($field['value']);
                            }
                            break;
                         default:
                            $dbu               = new DbUtils();
-                           $result['content'] .= "<td $style_title>" . $label . "</td><td>";
-                           $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
+                           $result[$field['rank']]['display'] = true;
+                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                                            $field['value']);
-                           $result['content'] .= "</td>";
+                           $result[$field['rank']]['content'] .= "</td>";
                            if ($return_value == true) {
                               return Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                                $field['value']);
@@ -2159,7 +2178,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      if ($return_value == true) {
                         return implode(', ', $parseValue);
                      } else {
-                        $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
+                        $result[$field['rank']]['display'] = true;
+                        $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                      }
 
                   } else {
@@ -2177,7 +2197,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      if ($return_value == true) {
                         return implode(', ', $parseValue);
                      } else {
-                        $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
+                        $result[$field['rank']]['display'] = true;
+                        $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                      }
                   }
 
@@ -2218,8 +2239,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($return_value == true) {
                      return implode(',', $parseValue);
                   } else {
-                     $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $dataItems . "</td>";
-                     //                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
+                     $result[$field['rank']]['display'] = true;
+                     $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . $dataItems . "</td>";
+                     //                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                   }
                }
 
@@ -2231,7 +2253,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if ($return_value == true) {
                   return $field['value'];
                } else {
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . $field['value'] . '</a></td>';
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . $field['value'] . '</a></td>';
                }
                break;
             case 'textarea':
@@ -2242,7 +2265,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if ($return_value == true) {
                   return $field['value'];
                } else {
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . ($field['value']) . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . ($field['value']) . "</td>";
                }
                break;
             case 'checkbox':
@@ -2257,7 +2281,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
                   $custom_checkbox   = [];
-                  $result['content'] .= "<td $style_title>" . $label . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
                   foreach ($custom_values as $key => $val) {
                      $checked = isset($field['value'][$key]) ? 1 : 0;
                      if ($checked) {
@@ -2267,14 +2292,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($return_value == true) {
                      return implode(',', $custom_checkbox);
                   } else {
-                     $result['content'] .= "<td>" . implode('<br>', $custom_checkbox) . "</td>";
+                     $result[$field['rank']]['content'] .= "<td>" . implode('<br>', $custom_checkbox) . "</td>";
                   }
                } else {
                   if ($field['value']) {
                      if ($return_value == true) {
                         return $field['value'];
                      } else {
-                        $result['content'] .= "<td>" . $field['value'] . "</td>";
+                        $result[$field['rank']]['display'] = true;
+                        $result[$field['rank']]['content'] .= "<td>" . $field['value'] . "</td>";
                      }
                   }
                }
@@ -2290,7 +2316,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($field['value'] != "") {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
-                  $result['content'] .= "<td $style_title>" . $label . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
                   $custom_radio      = "";
                   foreach ($custom_values as $key => $val) {
                      if ($field['value'] == $key && $field['value'] !== "") {
@@ -2300,14 +2327,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($return_value == true) {
                      return $custom_radio;
                   } else {
-                     $result['content'] .= "<td>" . $custom_radio . "</td>";
+                     $result[$field['rank']]['content'] .= "<td>" . $custom_radio . "</td>";
                   }
                } else {
                   if ($field['value']) {
                      if ($return_value == true) {
                         return $label;
                      } else {
-                        $result['content'] .= "<td>" . $label . "</td>";
+                        $result[$field['rank']]['display'] = true;
+                        $result[$field['rank']]['content'] .= "<td>" . $label . "</td>";
                      }
                   }
                }
@@ -2316,44 +2344,50 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if ($return_value == true) {
                   return $field['value'];
                } else {
-                  $result['content'] .= $label . ' : ' . $field['value'];
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= $label . ' : ' . $field['value'];
                }
                break;
             case 'date':
                if ($return_value == true) {
                   return Html::convDate($field['value']);
                } else {
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
                }
                break;
             case 'datetime':
                if ($return_value == true) {
                   return Html::convDateTime($field['value']);
                } else {
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td>";
                }
                break;
             case 'date_interval':
                if ($return_value == true) {
                   return Html::convDate($field['value']) . " - " . Html::convDate($field['value2']);
                } else {
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td></tr>";
-                  $result['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td></tr>";
+                  $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
                }
                break;
             case 'datetime_interval':
                if ($return_value == true) {
                   return Html::convDateTime($field['value']) . " - " . Html::convDateTime($field['value2']);
                } else {
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td></tr>";
-                  $result['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDateTime($field['value2']) . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td></tr>";
+                  $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDateTime($field['value2']) . "</td>";
                }
                break;
             case 'number':
                if ($return_value == true) {
                   return $field['value'];
                } else {
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $field['value'] . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . $field['value'] . "</td>";
                }
                break;
             case 'yesno':
@@ -2365,7 +2399,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if ($return_value == true) {
                   return $val;
                } else {
-                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $val . "</td>";
+                  $result[$field['rank']]['display'] = true;
+                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . $val . "</td>";
                }
                break;
 
@@ -2391,7 +2426,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                //plugins case
                break;
          }
-         //         $result['content'] .= "<br>";
+         //         $result[$field['rank']]['content'] .= "<br>";
       }
       $parent_fields_id = $fields_id;
    }
