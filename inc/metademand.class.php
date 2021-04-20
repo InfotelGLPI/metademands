@@ -1986,7 +1986,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param $parent_fields_id
     * @param $return_value
     */
-   function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false) {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false) {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";

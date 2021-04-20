@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-20 10:08+0000\n"
+"POT-Creation-Date: 2021-04-20 13:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -224,7 +224,7 @@ msgid "Display field after"
 msgstr ""
 
 #: inc/field.class.php:361 inc/field.class.php:806 inc/field.class.php:3893
-#: inc/task.class.php:282
+#: inc/task.class.php:271
 msgid "Object"
 msgstr ""
 
@@ -474,7 +474,7 @@ msgid "Groups allowed to enter a demand"
 msgstr ""
 
 #: inc/metademand.class.php:265 inc/metademand.class.php:339
-#: inc/task.class.php:635 inc/tickettask.class.php:567
+#: inc/task.class.php:640 inc/tickettask.class.php:567
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -707,32 +707,32 @@ msgstr ""
 msgid "Task type"
 msgstr ""
 
-#: inc/task.class.php:196
+#: inc/task.class.php:185
 msgid "You don't have the ticket creation right"
 msgstr ""
 
-#: inc/task.class.php:326
+#: inc/task.class.php:331
 msgid "Tasks"
 msgstr ""
 
-#: inc/task.class.php:340
+#: inc/task.class.php:345
 msgid "Level"
 msgstr ""
 
-#: inc/task.class.php:341 inc/tickettask.class.php:128
+#: inc/task.class.php:346 inc/tickettask.class.php:128
 msgid "Block to use"
 msgstr ""
 
-#: inc/task.class.php:433 inc/task.class.php:438
+#: inc/task.class.php:438 inc/task.class.php:443
 msgid "Root"
 msgstr ""
 
-#: inc/task.class.php:450 inc/task.class.php:793 inc/tickettask.class.php:136
+#: inc/task.class.php:455 inc/task.class.php:798 inc/tickettask.class.php:136
 #, php-format
 msgid "Block %s"
 msgstr ""
 
-#: inc/task.class.php:769
+#: inc/task.class.php:774
 msgctxt "button"
 msgid "Update block to use"
 msgstr ""
