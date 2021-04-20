@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-20 13:02+0000\n"
+"POT-Creation-Date: 2021-04-20 13:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -556,55 +556,55 @@ msgstr ""
 msgid "Change \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2585
+#: inc/metademand.class.php:2620
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:2594
+#: inc/metademand.class.php:2629
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2719
+#: inc/metademand.class.php:2754
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:2746
+#: inc/metademand.class.php:2781
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:2760
+#: inc/metademand.class.php:2795
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2767 inc/metademand.class.php:2896
+#: inc/metademand.class.php:2802 inc/metademand.class.php:2931
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:2889
+#: inc/metademand.class.php:2924
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2966
+#: inc/metademand.class.php:3001
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:3312
+#: inc/metademand.class.php:3347
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:3421 inc/metademand.class.php:3476
+#: inc/metademand.class.php:3456 inc/metademand.class.php:3511
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:3433 inc/metademand.class.php:3598
+#: inc/metademand.class.php:3468 inc/metademand.class.php:3633
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3445 inc/metademand.class.php:3650
+#: inc/metademand.class.php:3480 inc/metademand.class.php:3685
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:3457 inc/metademand.class.php:3528
+#: inc/metademand.class.php:3492 inc/metademand.class.php:3563
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
