@@ -816,7 +816,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
       Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
       echo "</td>";
-      echo "<td colspan='2'>";
+      echo "<td>" . __('Hide value no of Yes No field in ticket', 'metademands') . "</td><td>";
+      Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
+      echo "</td>";
       echo "</td>";
       echo "</tr>";
 
@@ -1933,6 +1935,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
             if ($field['type'] == 'radio' && $field['value'] === "") {
                continue;
             }
+            $self = new self();
+            $self->getFromDB($metademands_id);
+            if($self->getField('hide_no_field') == 1){
+               if ($field['type'] == 'yesno' && $field['value'] != "2") {
+                  continue;
+               }
+            }
+
             if ($nb % 2 == 0) {
                $result['content'] .= "<tr class='even'>";
             } else {
