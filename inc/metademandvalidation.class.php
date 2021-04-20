@@ -36,7 +36,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsMetademandValidation extends CommonDBTM {
 
-
    static $rightname = 'plugin_metademands';
 
    const VALIDATE_WITHOUT_TASK   = 3; // meta validate without task
@@ -69,65 +68,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
     */
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-   }
-
-   /**
-    * Display tab for each users
-    *
-    * @param CommonGLPI $item
-    * @param int        $withtemplate
-    *
-    * @return array|string
-    */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-
-      //      if (!$withtemplate) {
-      //         if ($item->getType() == 'PluginMetademandsMetademand') {
-      //            if ($_SESSION['glpishow_count_on_tabs']) {
-      //               $dbu = new DbUtils();
-      //               return self::createTabEntry(self::getTypeName(),
-      //                                           $dbu->countElementsInTable($this->getTable(),
-      //                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
-      //            }
-      //            return self::getTypeName();
-      //         }
-      //      }
-      return '';
-   }
-
-   /**
-    * Display content for each users
-    *
-    * @static
-    *
-    * @param CommonGLPI $item
-    * @param int        $tabnum
-    * @param int        $withtemplate
-    *
-    * @return bool|true
-    */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      $field = new self();
-
-      //      if (in_array($item->getType(), self::getTypes(true))) {
-      //         $field->showForm(0, ["item" => $item]);
-      //      }
-      return true;
-   }
-
-   /**
-    * @param array $options
-    *
-    * @return array
-    * @see CommonGLPI::defineTabs()
-    */
-   function defineTabs($options = []) {
-
-      $ong = [];
-      $this->addDefaultFormTab($ong);
-      //      $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
-
-      return $ong;
    }
 
 

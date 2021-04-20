@@ -77,9 +77,10 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
 
       echo PluginMetademandsMetademand::getTypeName(1) . "&nbsp;:&nbsp;";
       Dropdown::show('PluginMetademandsMetademand',
-                     ['name' => 'link_metademands_id',
-                      'used' => $used,
-                      'condition' => ['is_order' => 0]
+                     ['name'      => 'link_metademands_id',
+                      'used'      => $used,
+                      'condition' => ['is_order' => 0,
+                                      'object_to_create' => 'Ticket']
                      ]);
 
       unset($used[array_search($ID, $used)]);
@@ -125,8 +126,8 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
    static function getSonMetademandTaskId($metademands_id) {
       global $DB;
 
-      $res = [];
-      $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id,
+      $res    = [];
+      $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id,
                        `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id
                FROM `glpi_plugin_metademands_metademandtasks`
                LEFT JOIN `glpi_plugin_metademands_tasks`
@@ -203,7 +204,8 @@ class PluginMetademandsMetademandTask extends CommonDBTM {
       $metademands_parent = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($metademands_id);
 
       $field  = new PluginMetademandsField();
-      $fields = $field->find(['type' => 'parent_field', 'plugin_metademands_metademands_id' => $metademands_id]);
+      $fields = $field->find(['type' => 'parent_field',
+                              'plugin_metademands_metademands_id' => $metademands_id]);
 
       //delete of the metademand fields in the present child requests as father fields
       foreach ($fields as $data) {

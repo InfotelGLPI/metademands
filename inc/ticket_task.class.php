@@ -36,8 +36,6 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsTicket_Task extends CommonDBTM {
 
-   static $types = ['PluginMetademandsMetademand'];
-
    static $rightname = 'plugin_metademands';
 
    /**
@@ -101,7 +99,7 @@ class PluginMetademandsTicket_Task extends CommonDBTM {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $field = new self();
 
-      if (in_array($item->getType(), self::getTypes(true))) {
+      if ($item->getType() == 'PluginMetademandsMetademand') {
          $field->showPluginFromItems($item);
       }
       return true;

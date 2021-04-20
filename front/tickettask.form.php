@@ -45,7 +45,7 @@ if (isset($_POST["update"])) {
    if ($tickettask->isMandatoryField($_POST) && $tickettask->update($_POST)) {
 
       $tasks_id    = $_POST['plugin_metademands_tasks_id'];
-      $parent_task = isset($_POST['parent_tasks_id']) ? $_POST['parent_tasks_id'] : 0;
+      $parent_task = $_POST['parent_tasks_id'] ?? 0;
 
       if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
          $_POST['block_use'] = [];
@@ -61,7 +61,7 @@ if (isset($_POST["update"])) {
          $_POST['plugin_metademands_tasks_id'] = 0;
          $_POST['level'] = 1;
       }
-      $_POST['type']  = 0;
+      $_POST['type']  = PluginMetademandsTask::TICKET_TYPE;
       $_POST['id'] = $tasks_id;
       $_POST['plugin_metademands_tasks_id'] = $parent_task;
 

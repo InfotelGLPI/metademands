@@ -39,8 +39,6 @@ class PluginMetademandsGroup extends CommonDBTM {
    public $itemtype = 'PluginMetademandsMetademand';
    public $items_id = 'plugin_metademands_metademands_id';
 
-   static $types = ['PluginMetademandsMetademand'];
-
    static $rightname = 'plugin_metademands';
 
    /**
@@ -104,7 +102,7 @@ class PluginMetademandsGroup extends CommonDBTM {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $field = new self();
 
-      if (in_array($item->getType(), self::getTypes(true))) {
+      if ($item->getType() == 'PluginMetademandsMetademand') {
          $field->showForMetademand($item);
       }
       return true;
@@ -229,33 +227,6 @@ class PluginMetademandsGroup extends CommonDBTM {
       echo "</div>";
    }
 
-   /**
-    * Type than could be linked to a typo
-    *
-    * @param $all boolean, all type, or only allowed ones
-    *
-    * @return array of types
-    * */
-   static function getTypes($all = false) {
-
-      if ($all) {
-         return self::$types;
-      }
-
-      // Only allowed types
-      $types = self::$types;
-      $dbu = new DbUtils();
-      foreach ($types as $key => $type) {
-         if (!($item = $dbu->getItemForItemtype($type))) {
-            continue;
-         }
-
-         if (!$item->canView()) {
-            unset($types[$key]);
-         }
-      }
-      return $types;
-   }
 
    /**
     * @param $metademands_id
