@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-20 10:00+0000\n"
+"POT-Creation-Date: 2021-04-20 10:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -513,7 +513,7 @@ msgid "Need validation to create subticket"
 msgstr ""
 
 #: inc/metademand.class.php:822
-msgid "Hide value no of Yes No field in ticket"
+msgid "Hide the \"No\" values of Yes / No fields in the tickets"
 msgstr ""
 
 #: inc/metademand.class.php:842
