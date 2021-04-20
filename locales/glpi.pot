@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-20 07:40+0000\n"
+"POT-Creation-Date: 2021-04-20 10:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -191,7 +191,7 @@ msgstr ""
 msgid "Your drafts"
 msgstr ""
 
-#: inc/field.class.php:74 inc/ticket_field.class.php:55
+#: inc/field.class.php:74 inc/ticket_field.class.php:52
 msgid "Wizard creation"
 msgstr ""
 
@@ -488,123 +488,123 @@ msgid ""
 "cannot be in basket mode"
 msgstr ""
 
-#: inc/metademand.class.php:465 inc/metademand.class.php:797
+#: inc/metademand.class.php:465 inc/metademand.class.php:800
 msgid "Use as basket"
 msgstr ""
 
-#: inc/metademand.class.php:473 inc/metademand.class.php:802
+#: inc/metademand.class.php:473 inc/metademand.class.php:805
 msgid "Create one ticket for all lines of the basket"
 msgstr ""
 
-#: inc/metademand.class.php:491 inc/metademand.class.php:655
+#: inc/metademand.class.php:491 inc/metademand.class.php:658
 msgid "Object to create"
 msgstr ""
 
-#: inc/metademand.class.php:786 inc/metademand.class.php:925
+#: inc/metademand.class.php:789 inc/metademand.class.php:928
 msgid "Example"
 msgstr ""
 
-#: inc/metademand.class.php:806
+#: inc/metademand.class.php:809
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 
-#: inc/metademand.class.php:816
+#: inc/metademand.class.php:819
 msgid "Need validation to create subticket"
 msgstr ""
 
-#: inc/metademand.class.php:819
+#: inc/metademand.class.php:822
 msgid "Hide value no of Yes No field in ticket"
 msgstr ""
 
-#: inc/metademand.class.php:839
+#: inc/metademand.class.php:842
 msgid "Tasks level cannot be changed as unresolved related tickets exist"
 msgstr ""
 
-#: inc/metademand.class.php:947
+#: inc/metademand.class.php:950
 msgid "field add on demand"
 msgstr ""
 
-#: inc/metademand.class.php:949
+#: inc/metademand.class.php:952
 msgid "field update on demand"
 msgstr ""
 
-#: inc/metademand.class.php:951
+#: inc/metademand.class.php:954
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:1854
+#: inc/metademand.class.php:1857
 msgid "Demand add failed"
 msgstr ""
 
-#: inc/metademand.class.php:1858
+#: inc/metademand.class.php:1861
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:1860
+#: inc/metademand.class.php:1863
 #, php-format
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr ""
 
-#: inc/metademand.class.php:1863
+#: inc/metademand.class.php:1866
 #, php-format
 msgid "Problem \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:1865
+#: inc/metademand.class.php:1868
 #, php-format
 msgid "Change \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2582
+#: inc/metademand.class.php:2585
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:2591
+#: inc/metademand.class.php:2594
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2716
+#: inc/metademand.class.php:2719
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:2743
+#: inc/metademand.class.php:2746
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:2757
+#: inc/metademand.class.php:2760
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2764 inc/metademand.class.php:2893
+#: inc/metademand.class.php:2767 inc/metademand.class.php:2896
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:2886
+#: inc/metademand.class.php:2889
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2963
+#: inc/metademand.class.php:2966
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:3309
+#: inc/metademand.class.php:3312
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:3418 inc/metademand.class.php:3473
+#: inc/metademand.class.php:3421 inc/metademand.class.php:3476
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:3430 inc/metademand.class.php:3595
+#: inc/metademand.class.php:3433 inc/metademand.class.php:3598
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3442 inc/metademand.class.php:3647
+#: inc/metademand.class.php:3445 inc/metademand.class.php:3650
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:3454 inc/metademand.class.php:3525
+#: inc/metademand.class.php:3457 inc/metademand.class.php:3528
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -623,7 +623,7 @@ msgid "Created on"
 msgstr ""
 
 #: inc/metademandtask.class.php:50 inc/task.class.php:53
-#: inc/ticket_metademand.class.php:55 inc/ticket_task.class.php:50
+#: inc/ticket_metademand.class.php:53 inc/ticket_task.class.php:50
 #: inc/tickettask.class.php:51
 msgid "Task creation"
 msgstr ""
@@ -737,42 +737,42 @@ msgctxt "button"
 msgid "Update block to use"
 msgstr ""
 
-#: inc/ticket.class.php:52
+#: inc/ticket.class.php:50
 msgid "Linked ticket"
 msgstr ""
 
-#: inc/ticket.class.php:268
+#: inc/ticket.class.php:266
 msgid ""
 "The demand cannot be resolved or closed until all child tickets are not "
 "resolved"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:91 inc/ticket_metademand.class.php:94
+#: inc/ticket_metademand.class.php:89 inc/ticket_metademand.class.php:92
 msgid "Linked opened tickets"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:265
+#: inc/ticket_metademand.class.php:263
 msgctxt "status"
 msgid "In progress"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:268
+#: inc/ticket_metademand.class.php:266
 msgctxt "status"
 msgid "To close"
 msgstr ""
 
-#: inc/ticket_metademand.class.php:271
+#: inc/ticket_metademand.class.php:269
 msgctxt "status"
 msgid "Closed"
 msgstr ""
 
-#: inc/ticketfield.class.php:63
+#: inc/ticketfield.class.php:60
 msgid "Ticket field"
 msgid_plural "Ticket fields"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/ticketfield.class.php:157 inc/ticketfield.class.php:165
+#: inc/ticketfield.class.php:155 inc/ticketfield.class.php:163
 msgid "Synchronise with ticket template"
 msgstr ""
 
