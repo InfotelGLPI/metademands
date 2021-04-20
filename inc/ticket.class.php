@@ -95,11 +95,9 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    static function post_update_ticket(Ticket $ticket) {
-      global $DB;
 
       $metademand        = new PluginMetademandsMetademand();
       $ticket_metademand = new PluginMetademandsTicket_Metademand();
-      $ticket_task       = new PluginMetademandsMetademandTask();
 
       $ticket_metademand->getFromDBByCrit(['parent_tickets_id' => $ticket->getID()]);
 
@@ -108,12 +106,12 @@ class PluginMetademandsTicket extends CommonDBTM {
          $metademand->addSonTickets($ticket->fields, $ticket_metademand);
       }
 
-      self::manageMetademandStatusOnUpdateTicket($ticket_metademand, $DB, $ticket);
+      self::manageMetademandStatusOnUpdateTicket($ticket_metademand, $ticket);
 
       return $ticket;
    }
 
-   static function manageMetademandStatusOnUpdateTicket($ticket_metademand, $DB, $ticket) {
+   static function manageMetademandStatusOnUpdateTicket($ticket_metademand, $ticket) {
 
       $parent_ticket = false;
 
@@ -134,9 +132,11 @@ class PluginMetademandsTicket extends CommonDBTM {
             }
 
             if (!$meta_to_not_close && !$validation_ok) {
-               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::TO_CLOSED]);
+               $ticket_metademand->update(['id' => $ticket_metademand->getID(),
+                                           'status' => PluginMetademandsTicket_Metademand::TO_CLOSED]);
             } else if ($meta_to_not_close || $validation_ok) {
-               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+               $ticket_metademand->update(['id' => $ticket_metademand->getID(),
+                                           'status' => PluginMetademandsTicket_Metademand::RUNNING]);
             }
          }
 
@@ -623,7 +623,7 @@ class PluginMetademandsTicket extends CommonDBTM {
             foreach ($tickets as $key => $val) {
                $job = new Ticket();
                if ($job->getfromDB($val) && $job->fields['is_deleted'] == 0) {
-                  if (!in_array($job->fields['status'], $status) && $job->fields['is_deleted'] == 0) {
+                  if (!in_array($job->fields['status'], $status)) {
                      $solved = false;
                   }
                }

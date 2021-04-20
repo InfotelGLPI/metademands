@@ -38,20 +38,34 @@ $tickettask = new PluginMetademandsTicketTask();
 $task       = new PluginMetademandsTask();
 
 if (isset($_POST["update"])) {
+
    // Check update rights for clients
    $tickettask->check(-1, UPDATE, $_POST);
-   if ($tickettask->isMandatoryField($_POST) && $tickettask->update($_POST)) {
-      $tasks_id    = $_POST['plugin_metademands_tasks_id'];
-      $parent_task = isset($_POST['parent_tasks_id']) ? $_POST['parent_tasks_id'] : 0;
 
-      if($_POST['block_use'] == ''){
+   if ($tickettask->isMandatoryField($_POST) && $tickettask->update($_POST)) {
+
+      $tasks_id    = $_POST['plugin_metademands_tasks_id'];
+      $parent_task = $_POST['parent_tasks_id'] ?? 0;
+
+      if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
          $_POST['block_use'] = [];
+      } else {
+         $_POST['block_use'] = json_encode($_POST['block_use']);
       }
 
-      $task->update(['id' => $tasks_id,
-                     'name' => $_POST['name'],
-                     'plugin_metademands_tasks_id' => $parent_task,
-                     'block_use' => json_encode($_POST['block_use'])]);
+      if ($parent_task > 0) {
+         $parenttask = new PluginMetademandsTask();
+         $parenttask->getFromDB($parent_task);
+         $_POST['level'] = $parenttask->fields['level'] + 1;
+      } else {
+         $_POST['plugin_metademands_tasks_id'] = 0;
+         $_POST['level'] = 1;
+      }
+      $_POST['type']  = PluginMetademandsTask::TICKET_TYPE;
+      $_POST['id'] = $tasks_id;
+      $_POST['plugin_metademands_tasks_id'] = $parent_task;
+
+      $task->update($_POST);
    }
    //   PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
    Html::back();

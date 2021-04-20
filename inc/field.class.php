@@ -35,6 +35,7 @@ if (!defined('GLPI_ROOT')) {
  * Class PluginMetademandsField
  */
 class PluginMetademandsField extends CommonDBChild {
+   static $rightname = 'plugin_metademands';
 
    static public $itemtype = 'PluginMetademandsMetademand';
    static public $items_id = 'plugin_metademands_metademands_id';
@@ -44,24 +45,22 @@ class PluginMetademandsField extends CommonDBChild {
    // Demand type
    const DOUBLE_COLUMN_DISPLAY = 1;
 
-   static $types = ['PluginMetademandsMetademand'];
-
    static $dropdown_meta_items     = ['', 'other', 'ITILCategory_Metademands', 'urgency', 'impact', 'priority', 'mydevices'];
    static $dropdown_multiple_items = ['other', 'Appliance', 'User'];
 
-   static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox', 'textarea', 'date', 'datetime', 'informations',
-                          'date_interval', 'datetime_interval', 'yesno', 'upload', 'title', 'title-block', 'radio', 'link', 'number', 'parent_field'];
+   static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox',
+                          'textarea', 'date', 'datetime', 'informations', 'date_interval', 'datetime_interval', 'yesno',
+                          'upload', 'title', 'title-block', 'radio', 'link', 'number', 'parent_field'];
 
-   static $allowed_options_types = ['yesno', 'date', 'datetime', 'date_interval', 'datetime_interval', 'checkbox', 'radio', 'dropdown_multiple', 'dropdown', 'dropdown_object',
-                                    'parent_field', 'number', 'text', 'textarea', 'upload'];
+   static $allowed_options_types = ['yesno', 'date', 'datetime', 'date_interval', 'datetime_interval', 'checkbox', 'radio',
+                                    'dropdown_multiple', 'dropdown', 'dropdown_object', 'parent_field', 'number', 'text',
+                                    'textarea', 'upload'];
    static $allowed_options_items = ['other'];
 
    static $allowed_custom_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple'];
    static $allowed_custom_items = ['other'];
 
    static $not_null = 'NOT_NULL';
-
-   static $rightname = 'plugin_metademands';
 
    /**
     * functions mandatory
@@ -90,7 +89,6 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
-    * Display tab for each users
     *
     * @param CommonGLPI $item
     * @param int        $withtemplate
@@ -114,7 +112,6 @@ class PluginMetademandsField extends CommonDBChild {
    }
 
    /**
-    * Display content for each users
     *
     * @static
     *
@@ -127,7 +124,7 @@ class PluginMetademandsField extends CommonDBChild {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $field = new self();
 
-      if (in_array($item->getType(), self::getTypes(true))) {
+      if ($item->getType() == 'PluginMetademandsMetademand') {
          $field->showForm(0, ["item" => $item]);
       }
       return true;
@@ -3754,33 +3751,6 @@ class PluginMetademandsField extends CommonDBChild {
    //      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
    //   }
 
-   /**
-    * Type that could be linked to a metademand
-    *
-    * @param $all boolean, all type, or only allowed ones
-    *
-    * @return array of types
-    * */
-   static function getTypes($all = false) {
-
-      if ($all) {
-         return self::$types;
-      }
-
-      // Only allowed types
-      $types = self::$types;
-      $dbu   = new DbUtils();
-      foreach ($types as $key => $type) {
-         if (!($item = $dbu->getItemForItemtype($type))) {
-            continue;
-         }
-
-         if (!$item->canView()) {
-            unset($types[$key]);
-         }
-      }
-      return $types;
-   }
 
    /**
     * @param $params

@@ -1687,19 +1687,19 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  if (isset($values['fields'][$title])) {
                                     $field = new PluginMetademandsField();
                                     $field->getFromDB($title);
-                                    $fields = $field->fields;
+                                    $fields          = $field->fields;
                                     $fields['value'] = '';
 
-                                    $fields['value'] =$values['fields'][$title];
+                                    $fields['value'] = $values['fields'][$title];
 
                                     $fields['value2'] = '';
                                     if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                        $fields['value2'] = $values['fields'][$title . '-2'];
                                     }
-                                    $result = [];
-                                    $result['content'] = "";
-                                    $parent_fields_id = 0;
-                                    $value = self::getContentWithField([],0,$fields,$result,$parent_fields_id,true);
+                                    $result                                  = [];
+                                    $result['content']                       = "";
+                                    $parent_fields_id                        = 0;
+                                    $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                  }
                               }
@@ -1710,23 +1710,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  if (isset($values['fields'][$content])) {
                                     $field = new PluginMetademandsField();
                                     $field->getFromDB($content);
-                                    $fields = $field->fields;
+                                    $fields          = $field->fields;
                                     $fields['value'] = '';
 
-                                    $fields['value'] =$values['fields'][$content];
+                                    $fields['value'] = $values['fields'][$content];
 
                                     $fields['value2'] = '';
                                     if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                        $fields['value2'] = $values['fields'][$content . '-2'];
                                     }
-                                    $result = [];
-                                    $result['content'] = "";
-                                    $parent_fields_id = 0;
-                                    $value = self::getContentWithField([],0,$fields,$result,$parent_fields_id,true);
+                                    $result                         = [];
+                                    $result['content']              = "";
+                                    $parent_fields_id               = 0;
+                                    $value                          = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                  }
                               }
                            }
+
                            if (!$this->createSonsTickets($parent_tickets_id,
                                                          $this->mergeFields($parent_fields,
                                                                             $parent_ticketfields),
@@ -1748,19 +1749,19 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  if (isset($values['fields'][$title])) {
                                     $field = new PluginMetademandsField();
                                     $field->getFromDB($title);
-                                    $fields = $field->fields;
+                                    $fields          = $field->fields;
                                     $fields['value'] = '';
 
-                                    $fields['value'] =$values['fields'][$title];
+                                    $fields['value'] = $values['fields'][$title];
 
                                     $fields['value2'] = '';
                                     if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                        $fields['value2'] = $values['fields'][$title . '-2'];
                                     }
-                                    $result = [];
-                                    $result['content'] = "";
-                                    $parent_fields_id = 0;
-                                    $value = self::getContentWithField([],0,$fields,$result,$parent_fields_id,true);
+                                    $result                                  = [];
+                                    $result['content']                       = "";
+                                    $parent_fields_id                        = 0;
+                                    $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                  }
                               }
@@ -1771,31 +1772,32 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  if (isset($values['fields'][$content])) {
                                     $field = new PluginMetademandsField();
                                     $field->getFromDB($content);
-                                    $fields = $field->fields;
+                                    $fields          = $field->fields;
                                     $fields['value'] = '';
 
-                                    $fields['value'] =$values['fields'][$content];
+                                    $fields['value'] = $values['fields'][$content];
 
                                     $fields['value2'] = '';
                                     if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                        $fields['value2'] = $values['fields'][$content . '-2'];
                                     }
-                                    $result = [];
-                                    $result['content'] = "";
-                                    $parent_fields_id = 0;
-                                    $value = self::getContentWithField([],0,$fields,$result,$parent_fields_id,true);
+                                    $result                         = [];
+                                    $result['content']              = "";
+                                    $parent_fields_id               = 0;
+                                    $value                          = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                  }
                               }
                            }
 
-                           $tasks                                        = $line['tasks'];
+                           $tasks = $line['tasks'];
                            foreach ($tasks as $key => $val) {
                               $tasks[$key]['tickettasks_name']   = urlencode($val['tickettasks_name']);
                               $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
                               $tasks[$key]['content']            = urlencode($val['content']);
                               $tasks[$key]['block_use']          = json_decode($val["block_use"], true);
                            }
+
                            $paramIn["tickets_to_create"] = json_encode($tasks);
                            $metaValid->add($paramIn);
                         }
@@ -1847,9 +1849,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
       }
 
       // Message return
-      $parent_metademands_name = Dropdown::getDropdownName("glpi_plugin_metademands_metademands", $object->getID());
+      $parent_metademands_name = Toolbox::stripslashes_deep($object->fields['name']);
       if (count($KO)) {
-         $message = __('Demand add failed', 'metademands') . ' : ' . $parent_metademands_name;
+         $message = __('Demand add failed', 'metademands');
       } else {
          if ($object_class == 'Ticket') {
             if (!in_array(1, $ticket_exists_array)) {
@@ -2020,13 +2022,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      }
                   }
                   if (isset($custom_values[$field['value']])) {
-                     if($return_value == true){
+                     if ($return_value == true) {
                         return $custom_values[$field['value']];
-                     }else {
+                     } else {
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $custom_values[$field['value']] . "</td>";
                      }
                   }
-                  if($return_value == true){
+                  if ($return_value == true) {
                      return "";
                   }
                } else {
@@ -2063,10 +2065,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            } else {
                               $result['content'] .= "<td>" . $content . "</td>";
                            }
-                           if($return_value == true){
+                           if ($return_value == true) {
                               return getUserName($field['value']);
                            }
-
 
 
                            break;
@@ -2076,9 +2077,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
                                                                            $field['value']);
                            $result['content'] .= "</td>";
-                           if($return_value == true){
-                              return  Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
-                                                                $field['value']);
+                           if ($return_value == true) {
+                              return Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
+                                                               $field['value']);
                            }
                            break;
                         case 'mydevices':
@@ -2094,8 +2095,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                                               $items_id);
                            }
                            $result['content'] .= "</td>";
-                           if($return_value == true){
-                              if(isset($items_id)){
+                           if ($return_value == true) {
+                              if (isset($items_id)) {
                                  return Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
                                                                   $items_id);
                               } else {
@@ -2107,21 +2108,21 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         case 'urgency':
                            $result['content'] .= "<td $style_title>" . $label . "</td>";
                            $result['content'] .= "<td>" . Ticket::getUrgencyName($field['value']) . "</td>";
-                           if($return_value == true){
+                           if ($return_value == true) {
                               return Ticket::getUrgencyName($field['value']);
                            }
                            break;
                         case 'impact':
                            $result['content'] .= "<td $style_title>" . $label . "</td>";
                            $result['content'] .= "<td>" . Ticket::getImpactName($field['value']) . "</td>";
-                           if($return_value == true){
+                           if ($return_value == true) {
                               return Ticket::getImpactName($field['value']);
                            }
                            break;
                         case 'priority':
                            $result['content'] .= "<td $style_title>" . $label . "</td>";
                            $result['content'] .= "<td>" . Ticket::getPriorityName($field['value']) . "</td>";
-                           if($return_value == true){
+                           if ($return_value == true) {
                               return Ticket::getPriorityName($field['value']);
                            }
                            break;
@@ -2131,7 +2132,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            $result['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                                            $field['value']);
                            $result['content'] .= "</td>";
-                           if($return_value == true){
+                           if ($return_value == true) {
                               return Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                                $field['value']);
                            }
@@ -2152,9 +2153,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      foreach ($field['value'] as $value) {
                         array_push($parseValue, $custom_values[$value]);
                      }
-                     if($return_value == true){
+                     if ($return_value == true) {
                         return implode(', ', $parseValue);
-                     }else{
+                     } else {
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                      }
 
@@ -2170,9 +2171,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      foreach ($field['value'] as $value) {
                         array_push($parseValue, $custom_values[$value]);
                      }
-                     if($return_value == true){
+                     if ($return_value == true) {
                         return implode(', ', $parseValue);
-                     }else {
+                     } else {
                         $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                      }
                   }
@@ -2211,9 +2212,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   }
                   $dataItems .= "</table>";
                   //TODO MAKE TABLE IN A TABLE
-                  if($return_value == true){
+                  if ($return_value == true) {
                      return implode(',', $parseValue);
-                  }else {
+                  } else {
                      $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $dataItems . "</td>";
                      //                  $result['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                   }
@@ -2224,9 +2225,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if (strpos($field['value'], 'http://') !== 0 && strpos($field['value'], 'https://') !== 0) {
                   $field['value'] = "http://" . $field['value'];
                }
-               if($return_value == true){
+               if ($return_value == true) {
                   return $field['value'];
-               }else {
+               } else {
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . $field['value'] . '</a></td>';
                }
                break;
@@ -2235,9 +2236,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $field['value'] = Html::cleanPostForTextArea($field['value']);
                $field['value'] = Toolbox::addslashes_deep($field['value']);
                //               $field['value']    = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($field['value']));
-               if($return_value == true){
+               if ($return_value == true) {
                   return $field['value'];
-               }else {
+               } else {
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . ($field['value']) . "</td>";
                }
                break;
@@ -2260,16 +2261,16 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         $custom_checkbox[] .= $val;
                      }
                   }
-                  if($return_value == true){
+                  if ($return_value == true) {
                      return implode(',', $custom_checkbox);
-                  }else {
+                  } else {
                      $result['content'] .= "<td>" . implode('<br>', $custom_checkbox) . "</td>";
                   }
                } else {
                   if ($field['value']) {
-                     if($return_value == true){
+                     if ($return_value == true) {
                         return $field['value'];
-                     }else {
+                     } else {
                         $result['content'] .= "<td>" . $field['value'] . "</td>";
                      }
                   }
@@ -2293,62 +2294,62 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         $custom_radio = $val;
                      }
                   }
-                  if($return_value == true){
+                  if ($return_value == true) {
                      return $custom_radio;
-                  }else {
+                  } else {
                      $result['content'] .= "<td>" . $custom_radio . "</td>";
                   }
                } else {
                   if ($field['value']) {
-                     if($return_value == true){
+                     if ($return_value == true) {
                         return $label;
-                     }else {
+                     } else {
                         $result['content'] .= "<td>" . $label . "</td>";
                      }
                   }
                }
                break;
             case 'textarea':
-               if($return_value == true){
+               if ($return_value == true) {
                   return $field['value'];
-               }else {
+               } else {
                   $result['content'] .= $label . ' : ' . $field['value'];
                }
                break;
             case 'date':
-               if($return_value == true){
+               if ($return_value == true) {
                   return Html::convDate($field['value']);
-               }else {
+               } else {
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
                }
                break;
             case 'datetime':
-               if($return_value == true){
+               if ($return_value == true) {
                   return Html::convDateTime($field['value']);
-               }else {
+               } else {
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td>";
                }
                break;
             case 'date_interval':
-               if($return_value == true){
-                  return Html::convDate($field['value'])." - ".Html::convDate($field['value2']);
-               }else {
+               if ($return_value == true) {
+                  return Html::convDate($field['value']) . " - " . Html::convDate($field['value2']);
+               } else {
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td></tr>";
                   $result['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
                }
                break;
             case 'datetime_interval':
-               if($return_value == true){
-                  return Html::convDateTime($field['value'])." - ".Html::convDateTime($field['value2']);
-               }else {
+               if ($return_value == true) {
+                  return Html::convDateTime($field['value']) . " - " . Html::convDateTime($field['value2']);
+               } else {
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td></tr>";
                   $result['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDateTime($field['value2']) . "</td>";
                }
                break;
             case 'number':
-               if($return_value == true){
+               if ($return_value == true) {
                   return $field['value'];
-               }else {
+               } else {
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $field['value'] . "</td>";
                }
                break;
@@ -2358,9 +2359,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                } else {
                   $val = __('No');
                }
-               if($return_value == true){
+               if ($return_value == true) {
                   return $val;
-               }else {
+               } else {
                   $result['content'] .= "<td $style_title>" . $label . "</td><td>" . $val . "</td>";
                }
                break;
@@ -2515,10 +2516,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $list_fields  = $line['form'];
                      $searchOption = Search::getOptions('Ticket');
                      $task->getFromDB($son_ticket_data['tasks_id']);
-                     $blocks = json_decode($task->fields["block_use"]);
+                     $blocks = json_decode($task->fields["block_use"], true);
                      if (!empty($blocks)) {
-
-
                         foreach ($line['form'] as $i => $l) {
                            if (!in_array($l['rank'], $blocks)) {
                               unset($line['form'][$i]);

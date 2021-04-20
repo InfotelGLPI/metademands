@@ -80,21 +80,21 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       $metademands->getFromDB($metademands_id);
 
       // Default values
-      $values = ['itilcategories_id'                      => 0,
-                 'type'                                   => Ticket::DEMAND_TYPE,
-                 'parent_tasks_id'                        => 0,
-                 'plugin_metademands_tasks_id'            => 0,
-                 'content'                                => '',
-                 'name'                                   => '',
-                 'block_use'                                   => '',
-                 'entities_id'                            => 0];
+      $values = ['itilcategories_id'           => 0,
+                 'type'                        => Ticket::DEMAND_TYPE,
+                 'parent_tasks_id'             => 0,
+                 'plugin_metademands_tasks_id' => 0,
+                 'content'                     => '',
+                 'name'                        => '',
+                 'block_use'                   => '',
+                 'entities_id'                 => 0];
 
       // Init values
       foreach ($input as $key => $val) {
          $values[$key] = $val;
       }
 
-//      $values['block_use'] = json_decode($values['block_use']);
+      //      $values['block_use'] = json_decode($values['block_use']);
       $ticket = new Ticket();
 
       // Restore saved value or override with page parameter
@@ -105,7 +105,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          unset($_SESSION["metademandsHelpdeskSaved"]);
       }
       $values['block_use'] = json_decode($values['block_use']);
-      if($values['block_use'] == null){
+      if ($values['block_use'] == null) {
          $values['block_use'] = [];
       }
       // Clean text fields
@@ -125,15 +125,15 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<th>" . sprintf(__('%1$s'), __('Block to use','metademands')) . "</th>";
+      echo "<th>" . sprintf(__('%1$s'), __('Block to use', 'metademands')) . "</th>";
       echo "<td>";
       $metademands;
-      $field = new PluginMetademandsField();
-      $fields = $field->find(["plugin_metademands_metademands_id"=>$metademands_id]);
+      $field  = new PluginMetademandsField();
+      $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
       $blocks = [];
-      foreach($fields as $f){
-         if(!isset($blocks[$f['rank']])){
-            $blocks[intval($f['rank'])] = sprintf(__("Block %s",'metademands'),$f["rank"]);
+      foreach ($fields as $f) {
+         if (!isset($blocks[$f['rank']])) {
+            $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
          }
       }
       ksort($blocks);
@@ -388,16 +388,16 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "<input type='hidden' name='_tickettemplates_id' value='" . $tt->fields['id'] . "'>";
       echo "<input type='hidden' name='showForMetademands' value='1'>";
       echo "<input type='hidden' name='displayType' value='0'>";
-//      $config          = PluginMetademandsConfig::getInstance();
-//      $options         = ['config' => $config, 'root_doc' => $CFG_GLPI['root_doc']];
-//      $options['lang'] = ['category' => __('Category')];
-//      echo Html::scriptBlock(" if ($(\"input[name='itilcategories_id']\") != undefined) {
-//                                    var object = $(document).metademandAdditionalFields(" . json_encode($options) . ");
-//
-//                                    if (object.params['config'].enable_families) {
-//                                        object.metademands_loadFamilies(0, 0, \"form_ticket\");
-//                                    }
-//                                }");
+      //      $config          = PluginMetademandsConfig::getInstance();
+      //      $options         = ['config' => $config, 'root_doc' => $CFG_GLPI['root_doc']];
+      //      $options['lang'] = ['category' => __('Category')];
+      //      echo Html::scriptBlock(" if ($(\"input[name='itilcategories_id']\") != undefined) {
+      //                                    var object = $(document).metademandAdditionalFields(" . json_encode($options) . ");
+      //
+      //                                    if (object.params['config'].enable_families) {
+      //                                        object.metademands_loadFamilies(0, 0, \"form_ticket\");
+      //                                    }
+      //                                }");
       echo "</td>";
       echo "</tr>";
       echo "</table>";
@@ -531,9 +531,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       if (!$webserviceMode) {
          return true;
       } else {
-         return ['ticket_template' => $tt->fields['id'],
+         return ['ticket_template'  => $tt->fields['id'],
                  'mandatory_fields' => $mandatory_missing,
-                 'message' => $message];
+                 'message'          => $message];
       }
    }
 
@@ -601,5 +601,4 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          $metademands->getEmpty();
       }
    }
-
 }

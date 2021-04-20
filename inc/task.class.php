@@ -38,8 +38,6 @@ class PluginMetademandsTask extends CommonDBTM {
 
    static $rightname = 'plugin_metademands';
 
-   static $types = ['PluginMetademandsMetademand'];
-
    const TICKET_TYPE     = 0;
    const METADEMAND_TYPE = 1;
 
@@ -116,8 +114,8 @@ class PluginMetademandsTask extends CommonDBTM {
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       $field = new self();
 
-      if (in_array($item->getType(), self::getTypes(true))) {
-         $field->showPluginFromItems($item);
+      if ($item->getType() == 'PluginMetademandsMetademand') {
+         $field->showTaskslist($item);
       }
       return true;
    }
@@ -130,7 +128,7 @@ class PluginMetademandsTask extends CommonDBTM {
     * @return bool (display)
     * @throws \GlpitestSQLError
     */
-   function showPluginFromItems($metademands) {
+   function showTaskslist($metademands) {
       global $CFG_GLPI;
 
       if (!$this->canview()) {
@@ -339,7 +337,7 @@ class PluginMetademandsTask extends CommonDBTM {
          echo "<th class='center b'>" . __('Type') . "</th>";
          echo "<th class='center b'>" . __('Category') . "</th>";
          echo "<th class='center b'>" . __('Assigned to') . "</th>";
-         echo "<th class='center b' colspan='2'>" . __('Level', 'metademands') . "</th>";
+         echo "<th class='center b'>" . __('Level', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Block to use', 'metademands') . "</th>";
          echo "</tr>";
          foreach ($tasks as $value) {
@@ -431,12 +429,12 @@ class PluginMetademandsTask extends CommonDBTM {
                   echo "<div class='center'>" . $value['level'] . "</div>";
                   echo "</td>";
                } else {
-                  echo "<td " . $color_class . " colspan='2'>";
+                  echo "<td " . $color_class . ">";
                   echo "<div class='center'>" . __('Root', 'metademands') . "</div>";
                   echo "</td>";
                }
             } else {
-               echo "<td " . $color_class . " colspan='2'>
+               echo "<td " . $color_class . ">
                         <div class='center'>" . __('Root', 'metademands') . "</div>
                      </td>";
             }
@@ -547,35 +545,6 @@ class PluginMetademandsTask extends CommonDBTM {
 
 
    /**
-    * Type than could be linked to a metademand
-    *
-    * @param $all boolean, all type, or only allowed ones
-    *
-    * @return array of types
-    * */
-   static function getTypes($all = false) {
-
-      $dbu = new DbUtils();
-      if ($all) {
-         return self::$types;
-      }
-
-      // Only allowed types
-      $types = self::$types;
-
-      foreach ($types as $key => $type) {
-         if (!($item = $dbu->getItemForItemtype($type))) {
-            continue;
-         }
-
-         if (!$item->canView()) {
-            unset($types[$key]);
-         }
-      }
-      return $types;
-   }
-
-   /**
     * Get ticket types
     *
     * @return array of types
@@ -616,7 +585,6 @@ class PluginMetademandsTask extends CommonDBTM {
     * @param integer $search_level
     *
     * @return integer child
-    * @throws \GlpitestSQLError
     * @throws \GlpitestSQLError
     */
    function getChildrenForLevel($tasks_id, $search_level) {
@@ -727,7 +695,9 @@ class PluginMetademandsTask extends CommonDBTM {
          }
       }
 
-      return Dropdown::showFromArray('plugin_metademands_tasks_id[]', $data, ['value' => $selected_value, 'tree' => true, 'display' => $display]);
+      return Dropdown::showFromArray('plugin_metademands_tasks_id[]', $data, ['value' => $selected_value,
+                                                                              'tree' => true,
+                                                                              'display' => $display]);
    }
 
    /**
