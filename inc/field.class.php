@@ -4583,4 +4583,43 @@ class PluginMetademandsField extends CommonDBChild {
          'DISTINCT' => true,
       ];
    }
+
+   /**
+    * @param $id
+    **/
+   static function showAvailableTags($id) {
+
+      $self = new self();
+      $tags       = $self->getTags($id);
+
+      echo "<div class='center'>";
+      echo "<table class='tab_cadre_fixe'>";
+      echo "<tr><th>" . __('Tag') . "</th>
+                <th>" . __('Label') . "</th>
+            </tr>";
+      foreach ($tags as $tag => $values) {
+
+         echo "<tr>
+                  <td>#" . $tag . "#</td>
+                  <td>" . $values . "</td>
+               </tr>";
+      }
+      echo "</table></div>";
+   }
+
+
+   /** Display fields Tags available for the metademand $id
+    *
+    * @param $id
+    **/
+   function getTags($id) {
+
+      $fields            = $this->find(['plugin_metademands_metademands_id' => $id]);
+      $res               = [];
+      foreach ($fields as $field) {
+         $res[$field['id']] = $field['name'];
+      }
+
+      return $res;
+   }
 }

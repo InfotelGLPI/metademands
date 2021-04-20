@@ -584,7 +584,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
             return ITILCategory::dropdown($opt);
          case 'type':
             $options['value'] = $values[$field];
-            return Ticket::dropdownType($name, $options);
+            return Ticket::dropdownType($name, );
+         case 'object_to_create':
+            return Dropdown::showFromArray($name, self::getObjectTypes(),$options);
+            break;
       }
       return parent::getSpecificValueToSelect($field, $name, $values, $options);
    }
@@ -3696,44 +3699,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
 
    /**
-    * @param $id
-    **/
-   static function showAvailableTags($id) {
-      $metademand = new PluginMetademandsMetademand();
-      $tags       = $metademand->getTags($id);
-
-      echo "<div class='center'>";
-      echo "<table class='tab_cadre_fixe'>";
-      echo "<tr><th>" . __('Tag') . "</th>
-                <th>" . __('Label') . "</th>
-            </tr>";
-      foreach ($tags as $tag => $values) {
-
-         echo "<tr>
-                  <td>#" . $tag . "#</td>
-                  <td>" . $values . "</td>
-               </tr>";
-      }
-      echo "</table></div>";
-   }
-
-
-   /** Display Tags available for the metademand $id
-    *
-    * @param $id
-    **/
-   function getTags($id) {
-      $metademand_fields = new PluginMetademandsField();
-      $fields            = $metademand_fields->find(['plugin_metademands_metademands_id' => $id]);
-      $res               = [];
-      foreach ($fields as $field) {
-         $res[$field['id']] = $field['name'];
-      }
-
-      return $res;
-   }
-
-   /**
     * Actions done when item is deleted from the database
     *
     * @return nothing
@@ -3767,5 +3732,44 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $temp = new PluginMetademandsMetademandValidation();
       $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
 
+   }
+
+   /**
+    * @param $id
+    **/
+   static function showAvailableTags($id) {
+
+      $self = new self();
+      $tags       = $self->getTags($id);
+
+      echo "<div class='center'>";
+      echo "<table class='tab_cadre_fixe'>";
+      echo "<tr><th>" . __('Tag') . "</th>
+                <th>" . __('Label') . "</th>
+            </tr>";
+      foreach ($tags as $tag => $values) {
+
+         echo "<tr>
+                  <td>#" . $tag . "#</td>
+                  <td>" . $values . "</td>
+               </tr>";
+      }
+      echo "</table></div>";
+   }
+
+
+   /** Display Tags available for the metademand $id
+    *
+    * @param $id
+    **/
+   function getTags($id) {
+
+      $fields            = $this->find(['id' => $id]);
+      $res               = [];
+      foreach ($fields as $field) {
+         $res[$field['id']] = $field['name'];
+      }
+
+      return $res;
    }
 }

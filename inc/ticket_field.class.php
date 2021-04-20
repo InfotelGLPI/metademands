@@ -38,11 +38,8 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
 
    public $itemtype = 'PluginMetademandsMetademand';
 
-   static $types = ['PluginMetademandsMetademand'];
-
    static $rightname = 'plugin_metademands';
-
-
+   
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()

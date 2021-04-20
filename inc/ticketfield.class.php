@@ -42,12 +42,9 @@ class PluginMetademandsTicketField extends CommonDBChild {
    //4 => requester
    //71 => requester group
    static $used_fields = [
-      'content', 'itilcategories_id', 'type', 'status',
-      'time_to_resolve', 'itemtype',
-                          'items_id', '_groups_id_requester', '_users_id_requester', 'slas_id', 4, 71
+      'content', 'itilcategories_id', 'type', 'status', 'time_to_resolve', 'itemtype',
+      'items_id', '_groups_id_requester', '_users_id_requester', 'slas_id', 4, 71
    ];
-
-   static $types = ['PluginMetademandsMetademand'];
 
    static $rightname = 'plugin_metademands';
 
@@ -130,6 +127,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
     * @throws \GlpitestSQLError
     */
    function showFromMetademand($item) {
+      global $CFG_GLPI;
 
       if (!$this->canview()) {
          return false;
@@ -168,6 +166,16 @@ class PluginMetademandsTicketField extends CommonDBChild {
          }
          echo "</td>";
          echo "</tr>";
+//         echo "<tr class='tab_bg_1 center'>";
+//         echo "<td>";
+//
+//         $rand = mt_rand();
+//         Ajax::createIframeModalWindow("tags" . $rand,
+//                                       $CFG_GLPI['root_doc'] . "/plugins/metademands/front/tags.php?metademands_id=" .
+//                                       $item->fields['id']);
+//         echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
+//         echo "</td>";
+//         echo "</tr>";
          echo "</table>";
          Html::closeForm();
          echo "</div>";
@@ -292,25 +300,25 @@ class PluginMetademandsTicketField extends CommonDBChild {
                Session::addToNavigateListItems($this->getType(), $id);
                echo "<tr class='tab_bg_1'>";
                echo "<td width='10'>";
-//               $predefined = false;
-//               if (isset($tt->predefined[$fieldnames[$value['num']]])) {
-//                  $predefined = true;
-//               }
+               //               $predefined = false;
+               //               if (isset($tt->predefined[$fieldnames[$value['num']]])) {
+               //                  $predefined = true;
+               //               }
 
                if ($canedit) {
                   Html::showMassiveActionCheckBox(__CLASS__, $id);
                }
                echo "</td>";
                echo "<td>";
-//               if (!$predefined) {
-                  echo "<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsTicketField') . "?id=" . $id . "'>" . $fields[$value['num']] . "</a> ";
-//               } else {
-//                  echo $fields[$value['num']] . " (" . __('Predefined value in template', 'metademands') . " " . $tt->getLink() . ") ";
-//               }
+               //               if (!$predefined) {
+               echo "<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsTicketField') . "?id=" . $id . "'>" . $fields[$value['num']] . "</a> ";
+               //               } else {
+               //                  echo $fields[$value['num']] . " (" . __('Predefined value in template', 'metademands') . " " . $tt->getLink() . ") ";
+               //               }
                echo $tt->getMandatoryMark($fieldnames[$value['num']]);
                echo "</td>";
                echo "<td>";
-               $display_datas = [];
+               $display_datas                                        = [];
                $display_datas[$searchOption[$value['num']]['field']] = $value['value'];
 
                echo $ticket->getValueToDisplay($searchOption[$value['num']], $display_datas, $display_options);
@@ -419,7 +427,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
                                      'condition' => ['is_assign' => 1]]);
             break;
          case 'status':
-            $opt = ['name' => 'ticketfield[' . $field_id . ']',
+            $opt = ['name'  => 'ticketfield[' . $field_id . ']',
                     'value' => $value];
             Ticket::dropdownStatus($opt);
             break;
@@ -668,7 +676,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
                if (isset($tt->predefined[$key])) {
                   $default_value = $tt->predefined[$key];
                }
-//               $default_value = json_encode($default_value);
+               //               $default_value = json_encode($default_value);
                if (!$used) {
                   $ticketField->add(['value'                             => $default_value,
                                      'num'                               => $num,
