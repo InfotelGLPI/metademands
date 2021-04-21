@@ -3404,7 +3404,9 @@ class PluginMetademandsField extends CommonDBChild {
 
          switch ($params['value']) {
             case 'dropdown_multiple':
-               if ($params["item"] != "other" && !empty($params["item"]) && $params["item"] != "User") {
+               if ($params["item"] != "other"
+                   && !empty($params["item"])
+                   && $params["item"] != "User") {
                   $item = new $params['item'];
 
                   $items = $item->find([], ["name ASC"]);
@@ -3461,18 +3463,22 @@ class PluginMetademandsField extends CommonDBChild {
                break;
             case 'checkbox':
             case 'radio':
+               echo "<tr>";
+               echo "<td>";
                if (is_array($values) && !empty($values)) {
+                  echo "<div id='drag'>";
+                  echo "<table class='tab_cadre_fixe'>";
                   foreach ($values as $key => $value) {
                      echo "<tr>";
 
-                     echo "<td>";
+                     echo '<td class="rowhandler control center">';
                      echo "<p id='custom_values$key'>";
                      echo __('Value') . " " . $key . " ";
                      echo '<input type="text" name="custom_values[' . $key . ']"  value="' . $value . '" size="30"/>';
                      echo '</p>';
                      echo "</td>";
 
-                     echo "<td>";
+                     echo '<td class="rowhandler control center">';
                      echo "<p id='comment_values$key'>";
                      if ($params['value'] == 'checkbox' || $params['value'] == 'radio') {
                         echo " " . __('Comment') . " ";
@@ -3494,17 +3500,34 @@ class PluginMetademandsField extends CommonDBChild {
                      echo '</p>';
                      echo "</td>";
 
+                     echo '<td class="rowhandler control center">';
+                     echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                     echo "<i class=\"fas fa-arrows-alt\"></i>";
+
+                     echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
+                                               _x('button', 'Delete permanently'),
+                                               ['id'                           => $key,
+                                                'plugin_metademands_fields_id' => $params['id'],
+                                               ],
+                                               'fa-times-circle');
+
+                     echo '</div>';
+                     echo '</td>';
+
                      echo "</tr>";
                   }
+                  echo '<input type="hidden" id="fields_id" value="' . $params["id"] . '" />';
+                  echo '</table>';
+                  echo '</div>';
+                  echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
+
                   echo "<tr>";
                   echo "<td colspan='4' align='right' id='show_custom_fields'>";
                   self::initCustomValue(max(array_keys($values)), true, true);
                   echo "</td>";
                   echo "</tr>";
                } else {
-                  echo "<tr>";
 
-                  echo "<td>";
                   echo __('Value') . " 0 ";
                   echo '<input type="text" name="custom_values[0]"  value="" size="30"/>';
                   echo "</td>";
