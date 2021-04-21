@@ -25,9 +25,13 @@ Characteristics :
 - [X] Translation of assistants
 - [X] Meta Incidents
 
-News :
+For next version :
 - [X] Meta Changes
-- [ ] Save your forms as Draft
+- [X] Save your forms as Draft
+- [X] Use tags for titles
+- [X] Review buttons as Bootstrap
+- [X] Don't send null datas block
+- [X] Add background color & title color
 
 Help us to add these features
 - [ ] Export / Import forms
