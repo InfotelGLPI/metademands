@@ -53,7 +53,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             echo "<div class='form-row'>";
             echo "<div class='form-group col-md-11'>";
             echo "<h4 class='bt-title-divider'>" . __('Your basket', 'metademands');
-            echo "&nbsp;<button type='submit' class='pointer clear-basket' name='clear_basket' title='"
+            echo "&nbsp;<button type='submit' class='pointer btn btn-light' name='clear_basket' title='"
                  . _sx('button', 'Clear the basket', 'metademands') . "'>";
             echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
             echo "</button>";
@@ -169,13 +169,13 @@ class PluginMetademandsBasketline extends CommonDBTM {
       }
       echo "<div class='form-row'>";
       echo "<div class='form-group col-md-5 center'>";
-      echo "<button type='submit' class='btn update-line-basket' name='update_basket_line' value='$idline' title='"
+      echo "<button type='submit' class='btn btn-primary' name='update_basket_line' value='$idline' title='"
            . _sx('button', 'Update this line', 'metademands') . "'>";
-      echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+      echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>";
       echo "</button>";
       echo "</div>";
       echo "<div class='form-group col-md-5 center'>";
-      echo "<button type='submit' class='btn delete-line-basket' name='delete_basket_line' value='$idline' title='"
+      echo "<button type='submit' class='btn btn-danger' name='delete_basket_line' value='$idline' title='"
            . _sx('button', 'Delete this line', 'metademands') . "'>";
       echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
       echo "</button>";
