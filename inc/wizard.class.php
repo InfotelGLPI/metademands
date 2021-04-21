@@ -138,14 +138,14 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo Html::script("/plugins/metademands/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
       echo "<div id ='content'>";
       $background_color = "";
-      $meta = new PluginMetademandsMetademand();
+      $meta             = new PluginMetademandsMetademand();
       if ($meta->getFromDB($parameters['metademands_id'])) {
          if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
             $background_color = $meta->fields['background_color'];
          }
       }
       if (!$parameters['preview']) {
-         echo "<div class='bt-container-fluid metademands_wizard_rank' style='background-color: ".$background_color.";'> ";
+         echo "<div class='bt-container-fluid metademands_wizard_rank' style='background-color: " . $background_color . ";'> ";
       }
       $style = "";
       if ($parameters['preview']) {
@@ -195,12 +195,19 @@ class PluginMetademandsWizard extends CommonDBTM {
                $icon = $meta->fields['icon'];
             }
          }
+
+         $title_color = "";
+         if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
+            $title_color = $meta->fields['title_color'];
+         }
+         echo "<span style='color: " . $title_color . ";'> ";
          echo "<i class='fa-2x fas $icon'></i>&nbsp;";
          if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
             echo $meta->getName();
          } else {
             echo $n;
          }
+         echo "</span>";
          //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
          if (Session::haveRight('plugin_metademands', UPDATE)) {
             echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>

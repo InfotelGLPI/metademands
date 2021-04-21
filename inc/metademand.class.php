@@ -828,7 +828,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>" . __('Background color', 'metademands') . "</td><td>";
       Html::showColorField('background_color', ['value' => $this->fields["background_color"]]);
       echo "</td>";
-      echo "<td colspan='2'></td>";
+      echo "<td>" . __('Title color', 'metademands') . "</td><td>";
+      Html::showColorField('title_color', ['value' => $this->fields["title_color"]]);
+      echo "</td>";
       echo "</tr>";
 
       $this->showFormButtons($options);
