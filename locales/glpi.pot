@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-21 12:43+0000\n"
+"POT-Creation-Date: 2021-04-21 12:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -68,7 +68,7 @@ msgstr ""
 msgid "Attribute ticket/tasks to "
 msgstr ""
 
-#: ajax/updatelistmeta.php:82 inc/wizard.class.php:215 inc/wizard.class.php:612
+#: ajax/updatelistmeta.php:82 inc/wizard.class.php:222 inc/wizard.class.php:619
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
@@ -500,7 +500,7 @@ msgstr ""
 msgid "Object to create"
 msgstr ""
 
-#: inc/metademand.class.php:789 inc/metademand.class.php:934
+#: inc/metademand.class.php:789 inc/metademand.class.php:936
 msgid "Example"
 msgstr ""
 
@@ -520,95 +520,99 @@ msgstr ""
 msgid "Background color"
 msgstr ""
 
-#: inc/metademand.class.php:848
+#: inc/metademand.class.php:831
+msgid "Title color"
+msgstr ""
+
+#: inc/metademand.class.php:850
 msgid "Tasks level cannot be changed as unresolved related tickets exist"
 msgstr ""
 
-#: inc/metademand.class.php:956
+#: inc/metademand.class.php:958
 msgid "field add on demand"
 msgstr ""
 
-#: inc/metademand.class.php:958
+#: inc/metademand.class.php:960
 msgid "field update on demand"
 msgstr ""
 
-#: inc/metademand.class.php:960
+#: inc/metademand.class.php:962
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:1863
+#: inc/metademand.class.php:1865
 msgid "Demand add failed"
-msgstr ""
-
-#: inc/metademand.class.php:1867
-#, php-format
-msgid "Demand \"%s\" added with success"
 msgstr ""
 
 #: inc/metademand.class.php:1869
 #, php-format
-msgid "Ticket \"%s\" updated to metademand with success"
+msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:1872
+#: inc/metademand.class.php:1871
 #, php-format
-msgid "Problem \"%s\" added with success"
+msgid "Ticket \"%s\" updated to metademand with success"
 msgstr ""
 
 #: inc/metademand.class.php:1874
 #, php-format
+msgid "Problem \"%s\" added with success"
+msgstr ""
+
+#: inc/metademand.class.php:1876
+#, php-format
 msgid "Change \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2649
+#: inc/metademand.class.php:2651
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:2658
+#: inc/metademand.class.php:2660
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2783
+#: inc/metademand.class.php:2785
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:2810
+#: inc/metademand.class.php:2812
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:2824
+#: inc/metademand.class.php:2826
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2831 inc/metademand.class.php:2960
+#: inc/metademand.class.php:2833 inc/metademand.class.php:2962
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:2953
+#: inc/metademand.class.php:2955
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:3030
+#: inc/metademand.class.php:3032
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:3376
+#: inc/metademand.class.php:3378
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:3485 inc/metademand.class.php:3540
+#: inc/metademand.class.php:3487 inc/metademand.class.php:3542
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:3497 inc/metademand.class.php:3662
+#: inc/metademand.class.php:3499 inc/metademand.class.php:3664
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3509 inc/metademand.class.php:3714
+#: inc/metademand.class.php:3511 inc/metademand.class.php:3716
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:3521 inc/metademand.class.php:3592
+#: inc/metademand.class.php:3523 inc/metademand.class.php:3594
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -796,74 +800,74 @@ msgstr ""
 msgid "Demand choice"
 msgstr ""
 
-#: inc/wizard.class.php:220
+#: inc/wizard.class.php:227
 msgctxt "button"
 msgid "Your drafts"
 msgstr ""
 
-#: inc/wizard.class.php:252
+#: inc/wizard.class.php:259
 msgid "How can i use it"
 msgstr ""
 
-#: inc/wizard.class.php:255
+#: inc/wizard.class.php:262
 msgid "Who can benefit from this service?"
 msgstr ""
 
-#: inc/wizard.class.php:258
+#: inc/wizard.class.php:265
 msgid "Lead time"
 msgstr ""
 
-#: inc/wizard.class.php:261
+#: inc/wizard.class.php:268
 msgid "How to obtain the software in case of request?"
 msgstr ""
 
-#: inc/wizard.class.php:264
+#: inc/wizard.class.php:271
 msgid "Availability of service"
 msgstr ""
 
-#: inc/wizard.class.php:267
+#: inc/wizard.class.php:274
 msgid "What are the rules to follow ?"
 msgstr ""
 
-#: inc/wizard.class.php:294
+#: inc/wizard.class.php:301
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: inc/wizard.class.php:303
+#: inc/wizard.class.php:310
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: inc/wizard.class.php:657
+#: inc/wizard.class.php:664
 msgid "No advanced request found"
 msgstr ""
 
-#: inc/wizard.class.php:739 inc/wizard.class.php:741 inc/wizard.class.php:778
-#: inc/wizard.class.php:780
+#: inc/wizard.class.php:746 inc/wizard.class.php:748 inc/wizard.class.php:785
+#: inc/wizard.class.php:787
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:786 inc/wizard.class.php:788
+#: inc/wizard.class.php:793 inc/wizard.class.php:795
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2668
+#: inc/wizard.class.php:2675
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2677
+#: inc/wizard.class.php:2684
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2723
+#: inc/wizard.class.php:2730
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2727
+#: inc/wizard.class.php:2734
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
