@@ -21,7 +21,7 @@ CREATE TABLE `glpi_plugin_metademands_drafts_values`
   AUTO_INCREMENT = 1;
 
 
-  CREATE TABLE `glpi_plugin_metademands_drafts`
+CREATE TABLE `glpi_plugin_metademands_drafts`
 (
     `id`                                int(11) NOT NULL AUTO_INCREMENT,
     `name`                              VARCHAR (255) NOT NULL    DEFAULT '0',

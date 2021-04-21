@@ -865,7 +865,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
 
                } else {
-                  echo "<button form='' class='metademand_next_button submit btn btn-primary' name='next' title='" . __('Next') . "'>";
+                  echo "<button class='metademand_next_button submit btn btn-primary' name='next' title='" . __('Next') . "'>";
                   echo __('Next');
                   echo "&nbsp;<i class='fas fa-chevron-right' data-hasqtip='0' aria-hidden='true'></i>";
                   echo "</button>";
