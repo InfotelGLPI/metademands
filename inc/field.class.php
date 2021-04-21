@@ -761,7 +761,13 @@ class PluginMetademandsField extends CommonDBChild {
          $wizard = new PluginMetademandsWizard();
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr><th class='tab_bg_1'>" . PluginMetademandsWizard::getTypeName() . "</th></tr>";
-         echo "<tr><td>";
+         $meta = new PluginMetademandsMetademand();
+         if ($meta->getFromDB($item->fields['id'])) {
+            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
+               $background_color = $meta->fields['background_color'];
+            }
+         }
+         echo "<tr><td style='background-color: ".$background_color.";'>";
          $options = ['step'           => PluginMetademandsMetademand::STEP_SHOW,
                      'metademands_id' => $item->getID(),
                      'preview'        => true];

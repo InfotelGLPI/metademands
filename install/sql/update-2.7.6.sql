@@ -3,6 +3,7 @@ ALTER TABLE `glpi_plugin_metademands_metademands` ADD `is_deleted` tinyint(1) NO
 ALTER TABLE `glpi_plugin_metademands_fields` ADD `use_richtext` TINYINT(1) NOT NULL DEFAULT '1';
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `object_to_create` varchar(255) collate utf8_unicode_ci default NULL;
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `hide_no_field` tinyint(1)  default '0';
+ALTER TABLE `glpi_plugin_metademands_metademands` ADD `background_color` varchar(255) default '#FFFFFF';
 UPDATE `glpi_plugin_metademands_metademands` SET `object_to_create` = 'Ticket';
 
 

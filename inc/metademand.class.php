@@ -822,7 +822,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>" . __('Hide the "No" values of Yes / No fields in the tickets', 'metademands') . "</td><td>";
       Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
       echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>" . __('Background color', 'metademands') . "</td><td>";
+      Html::showColorField('background_color', ['value' => $this->fields["background_color"]]);
       echo "</td>";
+      echo "<td colspan='2'></td>";
       echo "</tr>";
 
       $this->showFormButtons($options);

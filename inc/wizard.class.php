@@ -105,9 +105,6 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    function showWizard($options) {
-      global $CFG_GLPI;
-
-      $config = PluginMetademandsConfig::getInstance();
 
       $parameters = ['step'              => PluginMetademandsMetademand::STEP_INIT,
                      'metademands_id'    => 0,
@@ -140,8 +137,15 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo Html::css("/public/lib/base.css");
       echo Html::script("/plugins/metademands/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
       echo "<div id ='content'>";
+      $background_color = "";
+      $meta = new PluginMetademandsMetademand();
+      if ($meta->getFromDB($parameters['metademands_id'])) {
+         if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
+            $background_color = $meta->fields['background_color'];
+         }
+      }
       if (!$parameters['preview']) {
-         echo "<div class='bt-container-fluid metademands_wizard_rank' > ";
+         echo "<div class='bt-container-fluid metademands_wizard_rank' style='background-color: ".$background_color.";'> ";
       }
       $style = "";
       if ($parameters['preview']) {

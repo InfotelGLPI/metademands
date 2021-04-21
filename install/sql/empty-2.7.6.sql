@@ -26,6 +26,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `validation_subticket` TINYINT(1) NOT NULL DEFAULT '0',
     `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
     `hide_no_field` tinyint(1)  default '0',
+    `background_color` varchar(255) default '#FFFFFF',
     PRIMARY KEY (`id`),
     KEY `itilcategories_id` (`itilcategories_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
