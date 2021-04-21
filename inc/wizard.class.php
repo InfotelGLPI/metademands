@@ -1195,7 +1195,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      echo "<div class=\"form-group metademands_wizard_label2\">";
                   }
                   if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                     $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
+                     $label2 = htmlspecialchars_decode(stripslashes(Html::clean($data['label2'])));
 
                   }
                   if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {

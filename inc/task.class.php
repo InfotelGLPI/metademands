@@ -458,7 +458,7 @@ class PluginMetademandsTask extends CommonDBTM {
             } else {
                $blocktext = __('All');
             }
-            echo "<td>";
+            echo "<td $color_class>";
             echo $blocktext;
             echo "</td>";
             echo "</tr>";
