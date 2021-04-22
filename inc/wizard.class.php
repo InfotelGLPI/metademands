@@ -742,7 +742,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                               ["plugin_metademands_metademands_id" => $metademands->fields['id'],
                                                                "users_id"                          => Session::getLoginUserID()])) {
                            echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-                           echo "<button class='btn btn-primary' id='add_to_basket' name='add_to_basket' title='"
+                           echo "<button class='btn btn-primary btn-sm' id='add_to_basket' name='add_to_basket' title='"
                                 . _sx('button', 'Add to basket', 'metademands') . "'>";
                            echo "<i class='fas fa-plus' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                            echo _sx('button', 'Add to basket', 'metademands');
@@ -781,7 +781,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (!countElementsInTable("glpi_plugin_metademands_basketlines",
                                                ["plugin_metademands_metademands_id" => $metademands->fields['id'],
                                                 "users_id"                          => Session::getLoginUserID()])) {
-                        echo "<button class='submit metademand_next_button btn btn-primary' id='add_to_basket' name='add_to_basket' title='"
+                        echo "<button class='submit metademand_next_button btn btn-primary btn-sm' id='add_to_basket' name='add_to_basket' title='"
                              . _sx('button', 'Add to basket', 'metademands') . "'>";
                         echo "<i class='fas fa-plus' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                         echo _sx('button', 'Add to basket', 'metademands');
@@ -790,7 +790,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                         echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                         echo "</div>";
-                        echo "<button form='' id='submitjob' class='submit metademand_next_button btn btn-success' name='next_button' title='" . _sx('button', 'Validate your basket', 'metademands') . "'>";
+                        echo "<button form='' id='submitjob' class='submit metademand_next_button btn btn-success btn-sm' name='next_button' title='" . _sx('button', 'Validate your basket', 'metademands') . "'>";
                         echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                         echo _sx('button', 'Validate your basket', 'metademands');
                         echo "</button>";
@@ -828,7 +828,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   } else {
                      echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                      echo "</div>";
-                     echo "<button form='' class='btn btn-success metademand_next_button' id='submitjob' name='next_button' title='" . _sx('button', 'Post') . "'>";
+                     echo "<button form='' class='btn btn-success btn-sm metademand_next_button' id='submitjob' name='next_button' title='" . _sx('button', 'Post') . "'>";
                      echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                      echo _sx('button', 'Post');
                      echo "</button>";
@@ -865,12 +865,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
 
                } else {
-                  echo "<button class='metademand_next_button submit btn btn-primary' name='next' title='" . __('Next') . "'>";
+                  echo "<button class='metademand_next_button submit btn btn-primary btn-sm' name='next' title='" . __('Next') . "'>";
                   echo __('Next');
                   echo "&nbsp;<i class='fas fa-chevron-right' data-hasqtip='0' aria-hidden='true'></i>";
                   echo "</button>";
                }
-               echo "<button class='btn btn-primary metademand_previous_button' name='previous' title='" . __('Previous') . "'>";
+               echo "<button class='btn btn-primary btn-sm metademand_previous_button' name='previous' title='" . __('Previous') . "'>";
                echo "<i class='fas fa-chevron-left' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                echo __('Previous');
                echo "</button>";
