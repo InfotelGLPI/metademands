@@ -238,7 +238,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
          echo "</div></div>";
-         echo "<div id='divdrafts" . "' class=\"input-draft\" style='display:none;'>";
+         echo "<div id='divdrafts' class=\"input-draft card bg-light mb-3\" style='display:none;'>";
          echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
          echo "</div>";
 
