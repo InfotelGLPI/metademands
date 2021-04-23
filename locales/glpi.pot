@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-23 14:23+0000\n"
+"POT-Creation-Date: 2021-04-23 15:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "Link to metademands"
 msgstr ""
 
-#: setup.php:153 inc/menu.class.php:40 inc/metademand.class.php:80
+#: setup.php:148 inc/menu.class.php:40 inc/metademand.class.php:80
 #: inc/profile.class.php:160
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -68,7 +68,7 @@ msgstr ""
 msgid "Attribute ticket/tasks to "
 msgstr ""
 
-#: ajax/updatelistmeta.php:82 inc/wizard.class.php:223 inc/wizard.class.php:620
+#: ajax/updatelistmeta.php:82 inc/wizard.class.php:223 inc/wizard.class.php:568
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
@@ -215,7 +215,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:256 inc/field.class.php:3917 inc/field.class.php:4000
+#: inc/field.class.php:256 inc/field.class.php:3919 inc/field.class.php:4002
 msgid "Additional label"
 msgstr ""
 
@@ -223,7 +223,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/field.class.php:292 inc/field.class.php:821 inc/field.class.php:3982
+#: inc/field.class.php:292 inc/field.class.php:821 inc/field.class.php:3984
 msgid "Block"
 msgstr ""
 
@@ -231,12 +231,12 @@ msgstr ""
 msgid "Display field after"
 msgstr ""
 
-#: inc/field.class.php:361 inc/field.class.php:812 inc/field.class.php:3919
+#: inc/field.class.php:361 inc/field.class.php:812 inc/field.class.php:3921
 #: inc/task.class.php:271
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:456 inc/field.class.php:818 inc/field.class.php:4024
+#: inc/field.class.php:456 inc/field.class.php:818 inc/field.class.php:4026
 msgid "Display into the basket"
 msgstr ""
 
@@ -264,12 +264,12 @@ msgstr ""
 msgid "Form fields"
 msgstr ""
 
-#: inc/field.class.php:814 inc/field.class.php:3117
+#: inc/field.class.php:814 inc/field.class.php:3119
 msgid "Link a task to the field"
 msgstr ""
 
-#: inc/field.class.php:815 inc/field.class.php:2879 inc/field.class.php:2927
-#: inc/field.class.php:3026
+#: inc/field.class.php:815 inc/field.class.php:2881 inc/field.class.php:2929
+#: inc/field.class.php:3028
 msgid "Value to check"
 msgstr ""
 
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:822 inc/field.class.php:3991
+#: inc/field.class.php:822 inc/field.class.php:3993
 msgid "Order"
 msgstr ""
 
@@ -289,7 +289,7 @@ msgstr ""
 msgid "Defined value"
 msgstr ""
 
-#: inc/field.class.php:913 inc/field.class.php:2928 inc/field.class.php:3027
+#: inc/field.class.php:913 inc/field.class.php:2930 inc/field.class.php:3029
 msgid "Not null value"
 msgstr ""
 
@@ -406,66 +406,66 @@ msgstr ""
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
-#: inc/field.class.php:3080
+#: inc/field.class.php:3082
 msgid "If field empty"
 msgstr ""
 
-#: inc/field.class.php:3118
+#: inc/field.class.php:3120
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: inc/field.class.php:3127
+#: inc/field.class.php:3129
 msgid "Link a field to the field"
 msgstr ""
 
-#: inc/field.class.php:3128
+#: inc/field.class.php:3130
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: inc/field.class.php:3136
+#: inc/field.class.php:3138
 msgid "Link a hidden field"
 msgstr ""
 
-#: inc/field.class.php:3137
+#: inc/field.class.php:3139
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/field.class.php:3145
+#: inc/field.class.php:3147
 msgid "Link a hidden block"
 msgstr ""
 
-#: inc/field.class.php:3146
+#: inc/field.class.php:3148
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/field.class.php:3288
+#: inc/field.class.php:3290
 msgid "Custom values"
 msgstr ""
 
-#: inc/field.class.php:3337 inc/field.class.php:3388 inc/field.class.php:3439
-#: inc/field.class.php:3499 inc/field.class.php:3545 inc/field.class.php:3563
-#: inc/field.class.php:3709
+#: inc/field.class.php:3339 inc/field.class.php:3390 inc/field.class.php:3441
+#: inc/field.class.php:3501 inc/field.class.php:3547 inc/field.class.php:3565
+#: inc/field.class.php:3711
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/field.class.php:3451
+#: inc/field.class.php:3453
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: inc/field.class.php:3588
+#: inc/field.class.php:3590
 msgid "Button Type"
 msgstr ""
 
-#: inc/field.class.php:3591
+#: inc/field.class.php:3593
 msgid "button"
 msgstr ""
 
-#: inc/field.class.php:3595
+#: inc/field.class.php:3597
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
@@ -845,37 +845,37 @@ msgstr ""
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: inc/wizard.class.php:665
+#: inc/wizard.class.php:613
 msgid "No advanced request found"
 msgstr ""
 
-#: inc/wizard.class.php:747 inc/wizard.class.php:749 inc/wizard.class.php:786
-#: inc/wizard.class.php:788
+#: inc/wizard.class.php:695 inc/wizard.class.php:697 inc/wizard.class.php:734
+#: inc/wizard.class.php:736
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:794 inc/wizard.class.php:796
+#: inc/wizard.class.php:742 inc/wizard.class.php:744
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2679
+#: inc/wizard.class.php:2627
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2688
+#: inc/wizard.class.php:2636
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2734
+#: inc/wizard.class.php:2682
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2738
+#: inc/wizard.class.php:2686
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
