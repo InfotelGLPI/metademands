@@ -1475,10 +1475,7 @@ class PluginMetademandsField extends CommonDBChild {
             $data["type"] == 'date_interval'
          ) {
             $date = date("Y-m-d");
-
-
             $addDays = $data['additional_number_day'];
-
             $data['value'] = date('Y-m-d', strtotime($date . " + $addDays days"));
          }
          if (
