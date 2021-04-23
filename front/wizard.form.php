@@ -305,8 +305,10 @@ if (isset($_POST['next'])) {
                } else {
                   Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
                }
-            } else if ($itilcategories > 0) {
+            } else if ($itilcategories > 0 && $type > 0) {
                Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=$type&level=1");
+            } else if ($itilcategories > 0 && $type == 0) {
+               Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
             }
          } else if ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW) {
             if (isset($_SESSION['metademands_hide'])) {

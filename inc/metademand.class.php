@@ -189,20 +189,21 @@ class PluginMetademandsMetademand extends CommonDBTM {
     *
     * @return bool|string
     */
-   static function redirectForm(Ticket $ticket, $type = 'show') {
+   static function redirectForm($object, $type = 'show') {
       global $CFG_GLPI;
 
       $conf   = new PluginMetademandsConfig();
       $config = $conf->getInstance();
       if ($config['simpleticket_to_metademand']) {
-         if (($type == 'show' && $ticket->fields["id"] == 0)
-             || ($type == 'update' && $ticket->fields["id"] > 0)) {
-            if (!empty($ticket->input["itilcategories_id"])) {
+         if (($type == 'show' && $object->fields["id"] == 0)
+             || ($type == 'update' && $object->fields["id"] > 0)) {
+            if (!empty($object->input["itilcategories_id"])) {
                $dbu        = new DbUtils();
                $metademand = new self();
                $metas      = $metademand->find(['is_active'  => 1,
                                                 'is_deleted' => 0,
-                                                'type'       => $ticket->input["type"]]);
+//                                                'type'       => $ticket->input["type"]
+                                               ]);
                $cats       = [];
 
                foreach ($metas as $meta) {
@@ -220,7 +221,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                $meta_concerned = 0;
                foreach ($cats as $meta => $meta_cats) {
-                  if (in_array($ticket->input['itilcategories_id'], $meta_cats)) {
+                  if (in_array($object->input['itilcategories_id'], $meta_cats)) {
                      $meta_concerned = $meta;
                   }
                }
@@ -231,7 +232,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                                   ["plugin_metademands_metademands_id" => $meta_concerned])) {
                      return $CFG_GLPI["root_doc"] . "/plugins/metademands/front/wizard.form.php?itilcategories_id=" .
-                            $ticket->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned . "&tickets_id=" . $ticket->fields["id"] . "&step=" . self::STEP_SHOW;
+                            $object->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned . "&tickets_id=" . $object->fields["id"] . "&step=" . self::STEP_SHOW;
                   }
                }
             }
