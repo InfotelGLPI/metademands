@@ -10,8 +10,8 @@
             <en><![CDATA[This plugin allows you to create wizards to handle complex requests in GLPI that will generate child tickets assigned to different groups of technicians]]></en>
         </short>
         <long>
-            <fr><![CDATA[Ce plugin permet de créer des wizards pour gérer des demandes complexes dans GLPI qui génèreront des tickets enfants attribués à des groupes de techniciens différents]]></fr>
-            <en><![CDATA[This plugin allows you to create wizards to handle complex requests in GLPI that will generate child tickets assigned to different groups of technicians]]></en>
+            <fr><![CDATA[Ce plugin permet de créer des wizards pour gérer des demandes complexes dans GLPI qui génèreront des tickets enfants attribués à des groupes de techniciens différents.<br /> Caractéristiques: <br /> - Générez vos propres assistants <br /> - Lien avec la catégorie de ticket pour la lancer automatiquement <br /> - Créez un ticket père / enfant <br /> - Création semi-automatique de tickets enfants <br /> - Planification des tickets créés <br /> - Créer un panier de vos demandes<br /> - Créer un PDF pour vos demandes <br /> - Traduction des formulaires<br /> - Meta Incidents <br /> - Meta Changements<br /> - Enregistrez vos formulaires comme brouillon <br /> - Utilisez des balises pour les titres <br /> - Boutons Bootstrap]]></fr>
+            <en><![CDATA[This plugin allows you to create wizards to handle complex requests in GLPI that will generate child tickets assigned to different groups of technicians.<br />Characteristics :<br />- Generate your own assistants<br />- Link with the ticket category to launch it automatically<br />- Create a father / childs tickets<br />- Semi-automatic creation of child tickets<br />- Scheduling created tickets<br />- Create basket for your demands<br />- Create PDF for your demands<br />- Translation of forms<br />- Meta Incidents<br />- Meta Changes<br />- Save your forms as Draft<br />- Use tags for titles<br />- Bootstrap Buttons]]></en>
         </long>
     </description>
     <homepage>https://github.com/InfotelGLPI/metademands</homepage>

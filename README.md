@@ -22,7 +22,7 @@ Characteristics :
 - [X] Scheduling created tickets
 - [X] Create basket from assistants
 - [X] Create PDF for your demands
-- [X] Translation of assistants
+- [X] Translation of forms
 - [X] Meta Incidents
 - [X] Meta Changes
 - [X] Save your forms as Draft
