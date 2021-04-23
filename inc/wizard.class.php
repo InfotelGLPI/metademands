@@ -132,7 +132,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $parameters['resources_step'] = $_SESSION['plugin_metademands']['fields']['resources_step'];
       }
       Html::requireJs("metademands");
-      echo Html::css("/plugins/servicecatalog/css/bootstrap4.css");
+      echo Html::css("/plugins/metademands/css/bootstrap4.css");
       echo Html::css("/plugins/metademands/css/style_bootstrap_main.css");
       echo Html::css("/plugins/metademands/css/style_bootstrap_ticket.css");
       echo Html::css("/public/lib/base.css");
