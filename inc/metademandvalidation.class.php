@@ -211,7 +211,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
-      echo "<form name='form_raz' id='form_raz' method='post' action='" . $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/timeline.php" . "' >";
+      echo "<form name='form_raz' id='form_raz' method='post' action='" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php" . "' >";
       echo "<input type='hidden' name='action' id='action_validationMeta' value='validationMeta' />";
       echo "<input type='hidden' name='tickets_id' id='action_validationMeta' value='$ticket_id' />";
       echo "<table class='tab_cadre_fixe'>";
@@ -234,12 +234,12 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
          Ajax::updateItemOnEvent('create_subticket',
                                  'to_update_group',
-                                 $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/displayGroupField.php",
+                                 $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/displayGroupField.php",
                                  ["create_subticket" => '__VALUE__',
                                   'tickets_id' => $ticket_id]);
          Ajax::updateItemOnEvent('create_subticket2',
                                  'to_update_group',
-                                 $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/displayGroupField.php",
+                                 $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/displayGroupField.php",
                                  ["create_subticket" => '__VALUE__',
                                   'tickets_id' => $ticket_id]);
 

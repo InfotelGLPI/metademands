@@ -119,7 +119,7 @@
          var display_comment = $('#display_comment').val();
          var display_default = $('#display_default').val();
          $.ajax({
-            url: object.params['root_doc'] + '/plugins/metademands/ajax/addnewvalue.php',
+            url: object.params['root_doc'] + '/ajax/addnewvalue.php',
             type: "POST",
             dataType: "html",
             data: {

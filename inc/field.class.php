@@ -299,8 +299,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'fields_id'          => $this->fields['id'],
                      'metademands_id'     => $this->fields['plugin_metademands_metademands_id'],
                      'previous_fields_id' => $this->fields['plugin_metademands_fields_id']];
-      Ajax::updateItemOnSelectEvent('dropdown_rank' . $randRank, "show_order", $CFG_GLPI["root_doc"] .
-                                                                               "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsRank);
+      Ajax::updateItemOnSelectEvent('dropdown_rank' . $randRank, "show_order", $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL .
+                                                                               "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsRank);
       echo "</td>";
       echo "</tr>";
 
@@ -331,8 +331,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'link_to_user'            => $this->fields["link_to_user"],
                      'change_type'             => 1];
-      Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", $CFG_GLPI["root_doc"] .
-                                                                                "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
+      Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL .
+                                                                                "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
 
 
       echo "</td>";
@@ -393,8 +393,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'link_to_user'            => $this->fields["link_to_user"],
                      'change_type'             => 1];
-      Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", $CFG_GLPI["root_doc"] .
-                                                                              "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
+      Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL .
+                                                                              "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
       echo "<span id='show_item_title' style='display:none'>";
       //      echo Html::script('/lib/jqueryplugins/spectrum-colorpicker/spectrum.js');
       //      echo Html::css('lib/jqueryplugins/spectrum-colorpicker/spectrum.min.css');
@@ -423,8 +423,8 @@ class PluginMetademandsField extends CommonDBChild {
                      'default_values'          => $this->fields["default_values"],
                      'link_to_user'            => $this->fields["link_to_user"],
                      'check_value'             => $this->fields['check_value']];
-      Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", $CFG_GLPI["root_doc"] .
-                                                                                "/plugins/metademands/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
+      Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL .
+                                                                                "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
 
 
       echo "<input type='hidden' name='plugin_metademands_metademands_id' value='" . $this->fields["plugin_metademands_metademands_id"] . "'/>";
@@ -1600,7 +1600,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $value = [];
                }
                $name  = $namefield . "[" . $data['id'] . "][]";
-               $css   = Html::css("/plugins/metademands/css/doubleform.css");
+               $css   = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/doubleform.css");
                $field = "$css
                            <div class=\"form-row\">";
                $field .= "<div class=\"zone\">
@@ -1682,7 +1682,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $value = is_array($value) ? $value : $default_values;
                   if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                      $name  = $namefield . "[" . $data['id'] . "][]";
-                     $css   = Html::css("/plugins/metademands/css/doubleform.css");
+                     $css   = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/doubleform.css");
                      $field = "$css
                            <div class=\"form-row\">";
                      $field .= "<div class=\"zone\">
@@ -1792,13 +1792,13 @@ class PluginMetademandsField extends CommonDBChild {
                                                    => 'value',
                                     'id_fielduser' => $data['id'],
                                     'to_update'    => "tooltip_user" . $data['id'],
-                                    'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
+                                    'url'          => $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/utooltipUpdate.php",
                                     'moreparams'   => $paramstooltip];
 
                      $field .= "<script type='text/javascript'>";
                      $field .= "$(function() {";
                      Ajax::updateItemJsCode("tooltip_user" . $data['id'],
-                                            $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/utooltipUpdate.php",
+                                            $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/utooltipUpdate.php",
                                             $paramstooltip,
                                             $namefield . "[" . $data['id'] . "]", false);
                      $field .= "});</script>";
@@ -1812,13 +1812,13 @@ class PluginMetademandsField extends CommonDBChild {
                                                 => 'value',
                                  'id_fielduser' => $data['id'],
                                  'to_update'    => "location_user" . $data['id'],
-                                 'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ulocationUpdate.php",
+                                 'url'          => $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/ulocationUpdate.php",
                                  'moreparams'   => $paramsloc];
 
                   $field .= "<script type='text/javascript'>";
                   $field .= "$(function() {";
                   Ajax::updateItemJsCode("location_user" . $data['id'],
-                                         $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ulocationUpdate.php",
+                                         $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/ulocationUpdate.php",
                                          $paramsloc,
                                          $namefield . "[" . $data['id'] . "]", false);
                   $field .= "});</script>";
@@ -1833,13 +1833,13 @@ class PluginMetademandsField extends CommonDBChild {
                                                 => 'value',
                                  'id_fielduser' => $data['id'],
                                  'to_update'    => "group_user" . $data['id'],
-                                 'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ugroupUpdate.php",
+                                 'url'          => $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/ugroupUpdate.php",
                                  'moreparams'   => $paramsgroup];
 
                   $field .= "<script type='text/javascript'>";
                   $field .= "$(function() {";
                   Ajax::updateItemJsCode("group_user" . $data['id'],
-                                         $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/ugroupUpdate.php",
+                                         $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/ugroupUpdate.php",
                                          $paramsgroup,
                                          $namefield . "[" . $data['id'] . "]", false);
                   $field .= "});</script>";
@@ -1853,13 +1853,13 @@ class PluginMetademandsField extends CommonDBChild {
                                                 => 'value',
                                  'id_fielduser' => $data['id'],
                                  'to_update'    => "mydevices_user" . $data['id'],
-                                 'url'          => $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/umydevicesUpdate.php",
+                                 'url'          => $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/umydevicesUpdate.php",
                                  'moreparams'   => $paramsdev];
 
                   $field .= "<script type='text/javascript'>";
                   $field .= "$(function() {";
                   Ajax::updateItemJsCode("mydevices_user" . $data['id'],
-                                         $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/umydevicesUpdate.php",
+                                         $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/umydevicesUpdate.php",
                                          $paramsdev,
                                          $namefield . "[" . $data['id'] . "]", false);
                   $field .= "});</script>";
@@ -1880,7 +1880,7 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<div id='tooltip_user" . $data['id'] . "' class=\"input-group\">";
                      $_POST['value']        = $value;
                      $_POST['id_fielduser'] = $data['id'];
-                     include(GLPI_ROOT . "/plugins/metademands/ajax/utooltipUpdate.php");
+                     include(PLUGIN_METADEMANDS_DIR . "/ajax/utooltipUpdate.php");
                      echo "</div>";
                   }
 
@@ -1909,7 +1909,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                      $_POST['id_fielduser'] = $data['link_to_user'];
                      $_POST['fields_id']    = $data['id'];
-                     include(GLPI_ROOT . "/plugins/metademands/ajax/ugroupUpdate.php");
+                     include(PLUGIN_METADEMANDS_DIR . "/ajax/ugroupUpdate.php");
                      echo "</div>";
                   } else {
                      $name = $namefield . "[" . $data['id'] . "]";
@@ -1982,7 +1982,7 @@ class PluginMetademandsField extends CommonDBChild {
                         $_POST['value']        = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id']    = $data['id'];
-                        include(GLPI_ROOT . "/plugins/metademands/ajax/umydevicesUpdate.php");
+                        include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
                         echo "</div>";
                      } else {
                         $rand  = mt_rand();
@@ -2086,7 +2086,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                   && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id']    = $data['id'];
-                        include(GLPI_ROOT . "/plugins/metademands/ajax/ulocationUpdate.php");
+                        include(PLUGIN_METADEMANDS_DIR . "/ajax/ulocationUpdate.php");
                         echo "</div>";
                      } else {
                         $options['name']    = $namefield . "[" . $data['id'] . "]";
@@ -2790,13 +2790,15 @@ class PluginMetademandsField extends CommonDBChild {
     */
    function addNewOpt($url) {
       global $CFG_GLPI;
+
       $res = "<script type='text/javascript'>
 
-      var rootDoc = '" . $CFG_GLPI['root_doc'] . "';
+      var rootDoc = '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "';
+      
                 $('#addNewOpt').click(function(){
                     var nb = document.getElementById('nbOptions').valueOf().value;
                     nb++;
-                    parent.parent.window.location.replace(rootDoc + '/plugins/metademands/front/" . $url . "&nbOpt='+nb);
+                    parent.parent.window.location.replace(rootDoc + '/front/" . $url . "&nbOpt='+nb);
                 });
                 </script>";
       echo $res;
@@ -3661,7 +3663,7 @@ class PluginMetademandsField extends CommonDBChild {
       global $CFG_GLPI;
 
       Html::requireJs("metademands");
-      $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(['root_doc' => $CFG_GLPI['root_doc']]) . ");";
+      $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(['root_doc' => $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL]) . ");";
 
       echo "<input type='hidden' id='display_comment' value='$display_comment' />";
       echo '<input type="hidden" id="count_custom_values" value="' . $count . '"/>';

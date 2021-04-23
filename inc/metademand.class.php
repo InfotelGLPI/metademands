@@ -231,7 +231,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   // Redirect if not linked to a resource contract type
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                                   ["plugin_metademands_metademands_id" => $meta_concerned])) {
-                     return $CFG_GLPI["root_doc"] . "/plugins/metademands/front/wizard.form.php?itilcategories_id=" .
+                     return $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?itilcategories_id=" .
                             $object->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned . "&tickets_id=" . $object->fields["id"] . "&step=" . self::STEP_SHOW;
                   }
                }
@@ -662,7 +662,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $objects    = self::getObjectTypes();
          $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
-                                 $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
+                                 $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
       } else {
          echo self::getObjectTypeName($this->fields['object_to_create']);
          echo "<input type='hidden' name='object_to_create' value=\"" . $this->fields['object_to_create'] . "\">";
@@ -693,7 +693,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                        'currenttype'     => $this->fields['type']];
 
             Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-                                          $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownITILCategories.php",
+                                          $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/dropdownITILCategories.php",
                                           $params);
             echo "</td>";
          } else {
@@ -3227,7 +3227,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
             // Redirect on finish
             if (isset($options['redirect'])) {
-               Html::redirect($CFG_GLPI['root_doc'] . "/plugins/metademands/front/metademand.form.php?id=" . $new_metademands_id);
+               Html::redirect($CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/metademand.form.php?id=" . $new_metademands_id);
             }
          }
          return true;

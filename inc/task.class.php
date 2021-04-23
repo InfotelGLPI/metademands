@@ -171,7 +171,7 @@ class PluginMetademandsTask extends CommonDBTM {
             $params = ['taskType'                          => '__VALUE__',
                        'plugin_metademands_metademands_id' => $metademands->fields['id']];
             Ajax::updateItemOnSelectEvent("dropdown_taskType$rand", "show_add_task_form",
-                                          $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/showAddTaskForm.php",
+                                          $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/showAddTaskForm.php",
                                           $params);
             echo "</td>";
             echo "</tr>";
@@ -307,7 +307,7 @@ class PluginMetademandsTask extends CommonDBTM {
 
       $rand = mt_rand();
       Ajax::createIframeModalWindow("tags" . $rand,
-                                    $CFG_GLPI['root_doc'] . "/plugins/metademands/front/tags.php?metademands_id=" .
+                                    $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .
                                     $metademands_id);
       echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
       echo "</td>";

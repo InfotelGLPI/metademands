@@ -31,7 +31,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-require_once(GLPI_ROOT . "/plugins/metademands/fpdf/fpdf.php");
+require_once(PLUGIN_METADEMANDS_DIR. "/fpdf/fpdf.php");
 
 /**
  * Class PluginMetaDemandsMetaDemandPdf

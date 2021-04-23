@@ -171,7 +171,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
 
          $rand = mt_rand();
          Ajax::createIframeModalWindow("tags" . $rand,
-                                       $CFG_GLPI['root_doc'] . "/plugins/metademands/front/tags.php?metademands_id=" .
+                                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .
                                        $item->fields['id']);
          echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
          echo "</td>";
@@ -240,7 +240,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
                            'relative_dates' => 1];
 
       Ajax::updateItem("show_massiveaction_field",
-                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownMassiveActionField.php",
+                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/dropdownMassiveActionField.php",
                        $paramsmassaction);
       echo "</td>";
       echo "</tr>";

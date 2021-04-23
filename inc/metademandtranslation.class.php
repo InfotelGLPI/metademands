@@ -264,7 +264,7 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
                     'items_id' => $item->getID()];
          Ajax::updateItemOnSelectEvent("dropdown_language$rand",
                                        "span_fields",
-                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updateTranslationMetademands.php",
+                                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/updateTranslationMetademands.php",
                                        $params);
       }
       echo "</td><td colspan='2'>&nbsp;</td></tr>";

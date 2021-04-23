@@ -214,7 +214,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
          $data = $metademand_resource->getDataForResourceContractType($resources->fields['plugin_resources_contracttypes_id'], ['entities_id' => $_SESSION['glpiactive_entity']]);
          $data = array_shift($data);
          if (!empty($data["plugin_metademands_metademands_id"])) {
-            Html::redirect($CFG_GLPI["root_doc"]."/plugins/metademands/front/wizard.form.php?metademands_id=".$data["plugin_metademands_metademands_id"]."&resources_id=".$resources->fields['id']."&resources_step=".$resources_step."&step=2");
+            Html::redirect($CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php?metademands_id=".$data["plugin_metademands_metademands_id"]."&resources_id=".$resources->fields['id']."&resources_step=".$resources_step."&step=2");
          }
       }
    }

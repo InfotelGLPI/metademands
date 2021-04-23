@@ -41,17 +41,12 @@ function plugin_init_metademands() {
    $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
    $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'initProfile'];
    $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js'];
-   $PLUGIN_HOOKS["javascript"]['metademands']     = ["/plugins/metademands/scripts/metademands.js"];
+   $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL."/scripts/metademands.js"];
    $PLUGIN_HOOKS['add_css']['metademands']        = ['/css/metademands.css'];
 
    // add minidashboard
    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = ['PluginMetademandsMetademand', 'getMetademandDashboards'];
 
-//   if ((strpos($_SERVER['REQUEST_URI'], "ticket.form.php") !== false)
-//       || strpos($_SERVER['REQUEST_URI'], "helpdesk.public.php?create_ticket=1") !== false
-//       || strpos($_SERVER['REQUEST_URI'], "tracking.injector.php") !== false) {
-//      $PLUGIN_HOOKS['add_javascript']['metademands'][] = 'scripts/metademands_load_scripts.js';
-//   }
    $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
    $plugin = new Plugin();
 

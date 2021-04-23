@@ -163,7 +163,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                           }
                           $('#ajax_loader').show();
                           $.ajax({
-                             url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/deletedraft.php',
+                             url: '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/deletedraft.php',
                                 type: 'POST',
                                 data:
                                   {
@@ -196,7 +196,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                          var data_send = $('form').serializeArray();
                          data_send.push({name: 'plugin_metademands_drafts_id', value: draft_id});
                           $.ajax({
-                             url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/loaddraft.php',
+                             url: '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/loaddraft.php',
                                 type: 'POST',
                                 data: data_send,
                                 success: function(response){
@@ -204,7 +204,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                                     if (response == 1) {
                                        document.location.reload();
                                     } else {
-                                       window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
+                                       window.location.href = '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
                                     }
                                  }
                              });
@@ -222,7 +222,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                              arrayDatas = $('form').serializeArray();
                              arrayDatas.push({name: \"save_draft\", value: true});
                              $.ajax({
-                                url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/adddraft.php',
+                                url: '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/adddraft.php',
                                    type: 'POST',
                                    data: arrayDatas,
                                    success: function(response){

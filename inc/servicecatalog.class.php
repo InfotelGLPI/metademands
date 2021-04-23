@@ -75,7 +75,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getMenuLink() {
       global $CFG_GLPI;
 
-      return $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
+      return $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
    }
 
    /**
@@ -143,7 +143,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
          if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                          ["plugin_metademands_metademands_id" => $meta["id"]])) {
 
-            return $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=0&step=".PluginMetademandsMetademand::STEP_SHOW;
+            return $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=0&step=".PluginMetademandsMetademand::STEP_SHOW;
 
          }
       }

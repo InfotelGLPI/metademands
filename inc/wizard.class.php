@@ -132,11 +132,11 @@ class PluginMetademandsWizard extends CommonDBTM {
          $parameters['resources_step'] = $_SESSION['plugin_metademands']['fields']['resources_step'];
       }
       Html::requireJs("metademands");
-      echo Html::css("/plugins/metademands/css/bootstrap4.css");
-      echo Html::css("/plugins/metademands/css/style_bootstrap_main.css");
-      echo Html::css("/plugins/metademands/css/style_bootstrap_ticket.css");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/bootstrap4.css");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/style_bootstrap_main.css");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/style_bootstrap_ticket.css");
       echo Html::css("/public/lib/base.css");
-      echo Html::script("/plugins/metademands/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
+      echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL."/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
       echo "<div id ='content'>";
       $background_color = "";
       $meta             = new PluginMetademandsMetademand();
@@ -314,59 +314,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "</div>";
             return false;
          }
-
-         //         if ($config['show_requester_informations']) {
-         //            echo "<div class=\"form-row\">";
-         //            echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
-         //            echo "<h4 class=\"bt-title-divider\"><span>";
-         //            echo __('General informations', 'metademands');
-         //            echo "</span></h4></div>";
-         //
-         //            // If profile have right on requester update
-         //            if ($this->canUpdateRequester() && empty($parameters['tickets_id'])) {
-         //               $rand = mt_rand();
-         //
-         //               echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-         //               echo __('Requester') . '&nbsp;:&nbsp;';
-         //               User::dropdown(['name'      => "_users_id_requester",
-         //                               'value'     => $userid,
-         //                               'right'     => 'all',
-         //                               'rand'      => $rand,
-         //                               'on_change' => "showRequester$rand()"]);
-         //               echo "<script type='text/javascript' >\n";
-         //               echo "function showRequester$rand() {\n";
-         //               $params = ['value'     => '__VALUE__',
-         //                          'old_value' => $userid];
-         //               Ajax::updateItemJsCode("show_users_id_requester",
-         //                                      $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardUser.php",
-         //                                      $params,
-         //                                      "dropdown__users_id_requester$rand");
-         //
-         //               $params = ['value'          => '__VALUE__',
-         //                          'old_value'      => $userid,
-         //                          'metademands_id' => $parameters['metademands_id']];
-         //               Ajax::updateItemJsCode("show_items_id_requester",
-         //                                      $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/dropdownWizardItems.php",
-         //                                      $params,
-         //                                      "dropdown__users_id_requester$rand");
-         //
-         //               echo "}";
-         //               echo "</script>\n";
-         //               echo "</div>";
-         //            } else {
-         //               echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
-         //            }
-         //            echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-         //            echo "<span id='show_users_id_requester'>";
-         //            self::showUserInformations($user);
-         //            echo "</span>";
-         //            echo "</div>";
-         //
-         //            echo "</div>";
-         //         } else {
          echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
-         //         }
-
       }
       $options['resources_id']      = $parameters['resources_id'];
       $options['itilcategories_id'] = $parameters['itilcategories_id'];
@@ -545,7 +493,7 @@ class PluginMetademandsWizard extends CommonDBTM {
    static function listMetademands() {
       global $CFG_GLPI;
 
-      echo Html::css("/plugins/metademands/css/wizard.php");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/wizard.php");
 
       $metademands = self::selectMetademands();
       $config      = new PluginMetademandsConfig();
@@ -580,7 +528,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $params = ['type' => '__VALUE__', "action" => "icon"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",
-                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updatelistmeta.php",
+                                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/updatelistmeta.php",
                                        $params);
          echo "<div id='listmeta' >";
          foreach ($metademands as $id => $name) {
@@ -588,7 +536,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($id)) {
 
-               echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<a class='bt-buttons' href='" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo '<div class="btnsc-normal" >';
                $fasize = "fa-6x";
                echo "<div class='center'>";
@@ -639,7 +587,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $params = ['type' => '__VALUE__', "action" => "dropdown"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",
-                                       $CFG_GLPI["root_doc"] . "/plugins/metademands/ajax/updatelistmeta.php",
+                                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/updatelistmeta.php",
                                        $params);
          echo "<div id='listmeta' class=\"bt-row\">";
          echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
@@ -806,7 +754,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
                              $.ajax({
-                                url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/createmetademands.php',
+                                url: '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/createmetademands.php',
                                    type: 'POST',
                                    data: $('form').serializeArray(),
                                    success: function(response){
@@ -814,7 +762,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                        if (response == 1) {
                                           document.location.reload();
                                        } else {
-                                          window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                          window.location.href = '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
                                        }                                  
                                     },
                                    error: function(xhr, status, error) {
@@ -844,7 +792,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                           $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                           $('#ajax_loader').show();
                           $.ajax({
-                             url: '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/ajax/createmetademands.php',
+                             url: '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/createmetademands.php',
                                 type: 'POST',
                                 data: $('form').serializeArray(),
                                 success: function(response){
@@ -852,7 +800,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     if (response == 1) {
                                        document.location.reload();
                                     } else {
-                                       window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                       window.location.href = '" .$CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
                                     }                                  
                                  },
                                 error: function(xhr, status, error) {
