@@ -27,10 +27,7 @@ Characteristics :
 - [X] Meta Changes
 - [X] Save your forms as Draft
 - [X] Use tags for titles
-- [X] Review buttons as Bootstrap
-- [X] Don't send null datas block
-- [X] Add background color & title color
-
+- [X] Bootstrap Buttons
 
 For next version :
 Help us to add these features
