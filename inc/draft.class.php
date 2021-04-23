@@ -259,9 +259,17 @@ class PluginMetademandsDraft extends CommonDBTM {
             } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
                $field['value'] = json_encode($values[$fields_id]);
             }
+            $field['value2'] = '';
+            if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
+               $field['value2'] = $values[$fields_id . "-2"];
+            } else if (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
+               $field['value2'] = json_encode($values[$fields_id . "-2"]);
+            }
             $draft_value = new PluginMetademandsDraft_Value();
             //TODO CHANGE
-            $draft_value->add(['value'                        => $field['value'],
+            $draft_value->add([
+                               'value'                        => $field['value'],
+                               'value2'                        => $field['value2'],
                                'plugin_metademands_drafts_id' => $draft_id,
                                'plugin_metademands_fields_id' => $fields_id]);
          }
@@ -276,7 +284,16 @@ class PluginMetademandsDraft extends CommonDBTM {
       $draft_value   = new PluginMetademandsDraft_Value();
       $drafts_values = $draft_value->find(['plugin_metademands_drafts_id' => $plugin_metademands_drafts_id]);
       foreach ($drafts_values as $values) {
+         if (isset($_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id']])) {
+            unset($_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id']]);
+         }
+         if (isset($_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id'] . "-2"])) {
+            unset($_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id'] . "-2"]);
+         }
          $_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'], true)) ?? Toolbox::addslashes_deep($values['value']);
+         if (!empty($values['value2'])) {
+            $_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id'] . "-2"] = Toolbox::addslashes_deep(json_decode($values['value2'], true)) ?? Toolbox::addslashes_deep($values['value2']);
+         }
       }
    }
 }

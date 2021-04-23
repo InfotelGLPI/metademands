@@ -370,6 +370,7 @@ CREATE TABLE `glpi_plugin_metademands_drafts_values`
     `plugin_metademands_drafts_id` int(11) NOT NULL    DEFAULT '0',
     `plugin_metademands_fields_id` int(11) NOT NULL    DEFAULT '0',
     `value`                        TEXT    NOT NULL,
+    `value2`                        TEXT    NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8

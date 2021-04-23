@@ -1125,9 +1125,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             if (isset($_SESSION['plugin_metademands']['fields'])) {
 
                foreach ($_SESSION['plugin_metademands']['fields'] as $id => $value) {
-                  if ($data['id'] == $id) {
+                  if (strval($data['id']) === strval($id)) {
                      $data['value'] = $value;
-                  } else if ($data['id'] . '-2' == $id) {
+                  } else if ($data['id'] . '-2' === $id) {
                      $data['value-2'] = $value;
                   }
                }
@@ -2493,6 +2493,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+            if (($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval') && $value['second_date_ok']) {
+               $_SESSION['plugin_metademands']['fields'][$id."-2"] = $post[$fieldname][$id."-2"];
+            }
          }
 
       } else if ($value['item'] == 'ITILCategory_Metademands') {
