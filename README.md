@@ -24,8 +24,6 @@ Characteristics :
 - [X] Create PDF for your demands
 - [X] Translation of assistants
 - [X] Meta Incidents
-
-For next version :
 - [X] Meta Changes
 - [X] Save your forms as Draft
 - [X] Use tags for titles
@@ -33,6 +31,8 @@ For next version :
 - [X] Don't send null datas block
 - [X] Add background color & title color
 
+
+For next version :
 Help us to add these features
 - [ ] Export / Import forms
 
