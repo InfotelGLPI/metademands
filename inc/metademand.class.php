@@ -4010,30 +4010,57 @@ class PluginMetademandsMetademand extends CommonDBTM {
             if ($key == "fields_link") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "custom_values") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "comment_values") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "default_values") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "check_value") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "plugin_metademands_tasks_id") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "hidden_link") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "hidden_block") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "informations_to_display") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if(is_null($fields[$k][$key])){
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "fieldtranslations") {
                $fieldstranslations = $f;
             } else {
@@ -4110,6 +4137,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $fields_link                 = PluginMetademandsField::_unserialize($fields_link);
          $hidden_link                 = PluginMetademandsField::_unserialize($hidden_link);
          $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($plugin_metademands_tasks_id);
+         $toUpdate = [];
+         $toUpdate['id'] = $new;
          if (is_array($fields_link)) {
             foreach ($fields_link as $key => $field_link) {
                if($field_link != 0 && isset($mapTableField[$field_link])){
@@ -4118,7 +4147,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
             }
             $fields_link                      = PluginMetademandsField::_serialize($fields_link);
-            $fieldMeta->fields["fields_link"] = $fields_link;
+            $toUpdate["fields_link"] = $fields_link;
          }
 
          if (is_array($hidden_link)) {
@@ -4129,7 +4158,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
             }
             $hidden_link                      = PluginMetademandsField::_serialize($hidden_link);
-            $fieldMeta->fields["hidden_link"] = $hidden_link;
+            $toUpdate["hidden_link"] = $hidden_link;
          }
 
          if (is_array($plugin_metademands_tasks_id)) {
@@ -4140,20 +4169,22 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
             }
             $plugin_metademands_tasks_id                      = PluginMetademandsField::_serialize($plugin_metademands_tasks_id);
-            $fieldMeta->fields["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
+            $toUpdate["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
          }
 
-         $fieldMeta->update($fieldMeta->fields);
+         $fieldMeta->update($toUpdate);
 
       }
 
       foreach ($mapTableTaskReverse as $new => $old) {
          $meta_task = new PluginMetademandsTask();
          $meta_task->getFromDB($new);
+         $toUpdate = [];
+         $toUpdate['id'] = $new;
          if (isset($mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]])) {
-            $meta_task->fields["plugin_metademands_tasks_id"] = $mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]];
+            $toUpdate["plugin_metademands_tasks_id"] = $mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]];
          }
-         $meta_task->update($meta_task->fields);
+         $meta_task->update($toUpdate);
 
       }
 
@@ -4202,7 +4233,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo __("Metademand file to import", 'metademands');
       echo "</td>";
       echo "<td>";
-      echo "<input type='file' name='meta_file' accept='image/*'>";
+      echo "<input type='file' name='meta_file' accept='text/*'>";
       echo "</td>";
       echo "</tr>";
       echo "<tr>";
