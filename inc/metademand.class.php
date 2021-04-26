@@ -3905,9 +3905,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
             $this->to_xml($child, $value);
          } else {
             // if the key is an integer, it needs text with it to actually work.
+
             if ($key != 0 && $key == (int)$key) {
                $key = "key_$key";
             }
+
 
             $parent->addChild($key, $value);
          }
@@ -4170,6 +4172,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
             $plugin_metademands_tasks_id                      = PluginMetademandsField::_serialize($plugin_metademands_tasks_id);
             $toUpdate["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
+         }
+         if($fieldMeta->getField('plugin_metademands_fields_id') != 0 && isset($mapTableField[$fieldMeta->getField('plugin_metademands_fields_id')])){
+            $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$fieldMeta->getField('plugin_metademands_fields_id')];
          }
 
          $fieldMeta->update($toUpdate);
