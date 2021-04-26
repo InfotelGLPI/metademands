@@ -70,6 +70,44 @@ if (isset($_POST["add"])) {
    $meta->check($_POST['id'], UPDATE);
    $meta->update($_POST);
    Html::back();
+} else if (isset($_POST["export"])) {
+
+   $metademands = new PluginMetademandsMetademand();
+   $metademands->getFromDB($_POST["id"]);
+
+
+   $file            = $metademands->exportAsXML();
+   $splitter        = explode("/", $file, 2);
+   $expires_headers = false;
+
+   if ($splitter[0] == "_plugins") {
+      $send = GLPI_PLUGIN_DOC_DIR . '/' . $splitter[1];
+   }
+
+   if ($send && file_exists($send)) {
+      Toolbox::sendFile($send, $splitter[1], null, $expires_headers);
+      unlink($send);
+   } else {
+      Html::displayErrorAndDie(__('Unauthorized access to this file'), true);
+   }
+   //   Html::redirect($meta->getFormURL() . "?id=" . $_POST["id"]);
+
+} else if (isset($_GET["import_form"])) {
+
+   Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+
+   $meta->showImportForm();
+
+   Html::footer();
+} else if (isset($_POST["import_file"])) {
+
+
+   $id = $meta->importXml();
+   if($id){
+      Html::redirect($meta->getFormURL() . "?id=" . $id);
+   } else {
+      Html::back();
+   }
 
 } else {
 

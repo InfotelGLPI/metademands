@@ -3728,11 +3728,13 @@ class PluginMetademandsField extends CommonDBChild {
     */
    static function _serialize($input) {
       if ($input != null || $input == []) {
-         foreach ($input as &$value) {
-            $value = urlencode(Html::cleanPostForTextArea($value));
-         }
+         if(is_array($input)) {
+            foreach ($input as &$value) {
+               $value = urlencode(Html::cleanPostForTextArea($value));
+            }
 
-         return json_encode($input);
+            return json_encode($input);
+         }
       }
    }
 
@@ -3746,7 +3748,7 @@ class PluginMetademandsField extends CommonDBChild {
          if (!is_array($input)) {
             $input = json_decode($input, true);
          }
-         if (is_array($input)) {
+         if (is_array($input) && !empty($input)) {
             foreach ($input as &$value) {
                $value = urldecode($value);
             }

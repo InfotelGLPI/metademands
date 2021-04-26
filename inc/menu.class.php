@@ -57,8 +57,12 @@ class PluginMetademandsMenu extends CommonDBTM {
          $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
       }
 
-      $image = "<i class='fas fa-share-alt' title='" .  __('Create a demand', 'metademands') . "'></i>";
+      $image                 = "<i class='fas fa-share-alt' title='" . __('Create a demand', 'metademands') . "'></i>";
       $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
+
+      $image                 = "<i class='fas fa-upload' title='" . __('Import metademands', 'metademands') . "'></i>";
+      $menu['links'][$image] = PluginMetademandsMetademand::getFormURL(false) . "?import_form=1";
+
 
       $menu['icon'] = self::getIcon();
 

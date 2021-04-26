@@ -834,6 +834,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
+      $options['addbuttons'] = ['export' => __('Export','metademands')];
+
       $this->showFormButtons($options);
 
       return true;
@@ -3839,4 +3841,378 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       return $res;
    }
+
+   public function exportAsXML() {
+      $fields          = $this->fields;
+      $metatranslation = new PluginMetademandsMetademandTranslation();
+      $translations    = $metatranslation->find(['items_id' => $this->getID(), 'itemtype' => PluginMetademandsMetademand::getType()]);
+      foreach ($translations as $id => $translation) {
+         $fields['translations']['meta_translation' . $id] = $translation;
+      }
+      $metafield            = new PluginMetademandsField();
+      $metafields           = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
+      $fields['metafields'] = [];
+      foreach ($metafields as $id => $metafield) {
+         $fields['metafields']['field' . $id] = $metafield;
+      }
+      //      $fields['metafields'] = $metafields;
+      $fieldtranslation = new PluginMetademandsFieldTranslation();
+      foreach ($fields['metafields'] as $id => $f) {
+         $translationsfield = $fieldtranslation->find(['items_id' => $f['id'], 'itemtype' => PluginMetademandsField::getType()]);
+         foreach ($translationsfield as $k => $v) {
+            $fields['metafields'][$id]['fieldtranslations']['translation'] = $v;
+         }
+
+      }
+      $resourceMeta = new PluginMetademandsMetademand_Resource();
+      $resourceMeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->getID()]);
+      $fields['resource'] = $resourceMeta->fields;
+      $meta_Task          = new PluginMetademandsTask();
+      $tasks              = $meta_Task->find(['plugin_metademands_metademands_id' => $this->getID()]);
+      $fields['tasks']    = [];
+      foreach ($tasks as $id => $task) {
+         $fields['tasks']['task' . $id] = $task;
+      }
+      $metaTask  = new PluginMetademandsMetademandTask();
+      $metatasks = $metaTask->find(['plugin_metademands_metademands_id' => $this->getID()]);
+      foreach ($metatasks as $id => $task) {
+         $fields['metatasks']['metatask' . $id] = $task;
+      }
+      $ticketTask = new PluginMetademandsTicketTask();
+
+      foreach ($fields['tasks'] as $id => $task) {
+         $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+         $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
+      }
+
+      $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand></metademand>");
+
+      $this->to_xml($xml, $fields);
+
+      $name = "/metademands/" . $this->getField('name') . ".xml";
+
+      $xml->saveXML(GLPI_PLUGIN_DOC_DIR . $name);
+
+      return "_plugins" . $name;
+
+
+   }
+
+   function to_xml(SimpleXMLElement &$parent, array &$data) {
+      foreach ($data as $key => $value) {
+         if (is_array($value)) {
+            $child = $parent->addChild($key);
+            $this->to_xml($child, $value);
+         } else {
+            // if the key is an integer, it needs text with it to actually work.
+            if ($key != 0 && $key == (int)$key) {
+               $key = "key_$key";
+            }
+
+            $parent->addChild($key, $value);
+         }
+      }
+   }
+
+   public function importXml() {
+
+      if (isset($_FILES['meta_file'])) {
+         if (!count($_FILES['meta_file'])
+             || empty($_FILES['meta_file']['name'])
+             || !is_file($_FILES['meta_file']['tmp_name'])
+         ) {
+
+            switch ($_FILES['meta_file']['error']) {
+               case UPLOAD_ERR_INI_SIZE :
+               case UPLOAD_ERR_FORM_SIZE :
+                  Session::addMessageAfterRedirect(__('File too large to be added.'), false,
+                                                   ERROR);
+                  return false;
+                  break;
+
+               case UPLOAD_ERR_NO_FILE:
+                  Session::addMessageAfterRedirect(__('No file specified.'), false, ERROR);
+                  return false;
+                  break;
+            }
+
+         } else {
+            $tmp       = explode(".", $_FILES['meta_file']['name']);
+            $extension = array_pop($tmp);
+            if (Toolbox::getMime($_FILES['meta_file']['tmp_name'], 'text') && $extension == "xml") {
+               // Unlink old picture (clean on changing format)
+               $filename     = "tmpfileMeta";
+               $picture_path = GLPI_PLUGIN_DOC_DIR . "/metademands/${filename}.$extension";
+               Document::renameForce($_FILES['meta_file']['tmp_name'], $picture_path);
+               $file = $picture_path;
+            } else {
+               Session::addMessageAfterRedirect(__('The file is not an image file.'),
+                                                false, ERROR);
+               return false;
+            }
+         }
+      }
+
+
+      //      $xml   = simplexml_load_file(GLPI_PLUGIN_DOC_DIR . '/test.xml');
+      $xml   = simplexml_load_file($file);
+      $json  = json_encode($xml);
+      $datas = json_decode($json, TRUE);
+
+      $metademand = new PluginMetademandsMetademand();
+      $oldId      = $datas['id'];
+      unset($datas['id']);
+      unset($datas['date_creation']);
+      unset($datas['date_mod']);
+      unset($datas['itilcategories_id']);
+      $datas['entities_id'] = $_SESSION['glpiactive_entity'];
+
+      $mapTableField        = [];
+      $mapTableFieldReverse = [];
+
+
+      $fields = [];
+      if (isset($datas['metafields'])) {
+         $fields = $datas['metafields'];
+      }
+
+      $tasks = [];
+      if (isset($datas['tasks'])) {
+         $tasks = $datas['tasks'];
+      }
+
+      $resource = [];
+      if (isset($datas['resources'])) {
+         $resource = $datas['resources'];
+      }
+
+      $metatasks = [];
+      if (isset($datas['metatasks'])) {
+         $metatasks = $datas['metatasks'];
+      }
+
+      $translations = [];
+      if (isset($datas['translations'])) {
+         $translations = $datas['translations'];
+      }
+
+
+      foreach ($datas as $key => $data) {
+         if (is_array($data) && empty($data)) {
+            $datas[$key] = '';
+         }
+      }
+      $datas = Toolbox::addslashes_deep($datas);
+      $newIDMeta = $metademand->add($datas);
+      //      $translations = [];
+      foreach ($fields as $k => $field) {
+         foreach ($field as $key => $f) {
+            if ($key == "fields_link") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "custom_values") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "comment_values") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "default_values") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "check_value") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "plugin_metademands_tasks_id") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "hidden_link") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "hidden_block") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "informations_to_display") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+            } else if ($key == "fieldtranslations") {
+               $fieldstranslations = $f;
+            } else {
+               if (is_array($f) && empty($f)) {
+                  $fields[$k][$key] = '';
+               }
+            }
+         }
+
+         $oldIDField = $fields[$k]["id"];
+         unset($fields[$k]["id"]);
+         $fields[$k]['entities_id'] = $_SESSION['glpiactive_entity'];
+         $fields[$k] = Toolbox::addslashes_deep($fields[$k]);
+         $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
+         $metaField                                       = new PluginMetademandsField();
+         $newIDField                                      = $metaField->add($fields[$k]);
+         $mapTableField[$oldIDField]                      = $newIDField;
+         $mapTableFieldReverse[$newIDField]               = $oldIDField;
+         if (isset($fieldstranslations)) {
+            foreach ($fieldstranslations as $fieldstranslation) {
+               unset($fieldstranslation['id']);
+               $fieldstranslation['items_id'] = $newIDField;
+
+               $trans = new PluginMetademandsFieldTranslation();
+               $trans->add($fieldstranslation);
+            }
+         }
+
+      }
+      $mapTableTask        = [];
+      $mapTableTaskReverse = [];
+
+      foreach ($tasks as $k => $task) {
+         $oldIDTask = $task['id'];
+         unset($task['id']);
+         unset($task['ancestors_cache']);
+         unset($task['sons_cache']);
+         $task = Toolbox::addslashes_deep($task);
+         $tickettask = $task['tickettask'];
+         foreach ($task as $key => $val) {
+            if (is_array($val)) {
+               $task[$key] = "";
+            }
+         }
+         $task['entities_id'] = $_SESSION['glpiactive_entity'];
+
+         $task['plugin_metademands_metademands_id'] = $newIDMeta;
+         $meta_task                                 = new PluginMetademandsTask();
+         $newIDTask                                 = $meta_task->add($task);
+
+         $mapTableTask[$oldIDTask]        = $newIDTask;
+         $mapTableTaskReverse[$newIDTask] = $oldIDTask;
+
+
+         if (is_array($tickettask) && !empty($tickettask)) {
+            unset($tickettask['id']);
+            foreach ($tickettask as $key => $val) {
+               if (is_array($val) && empty($val)) {
+                  $tickettask[$key] = '';
+               }
+            }
+            $tickettask['plugin_metademands_tasks_id'] = $newIDTask;
+            $tickettaskP                               = new PluginMetademandsTicketTask();
+            $tickettaskP->add($tickettask);
+         }
+
+      }
+      foreach ($mapTableFieldReverse as $new => $old) {
+         $fieldMeta = new PluginMetademandsField();
+         $fieldMeta->getFromDB($new);
+         $fields_link                 = $fieldMeta->getField("fields_link");
+         $hidden_link                 = $fieldMeta->getField("hidden_link");
+         $plugin_metademands_tasks_id = $fieldMeta->getField("plugin_metademands_tasks_id");
+         $fields_link                 = PluginMetademandsField::_unserialize($fields_link);
+         $hidden_link                 = PluginMetademandsField::_unserialize($hidden_link);
+         $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($plugin_metademands_tasks_id);
+         if (is_array($fields_link)) {
+            foreach ($fields_link as $key => $field_link) {
+               if($field_link != 0 && isset($mapTableField[$field_link])){
+                  $fields_link[$key] = $mapTableField[$field_link];
+               }
+
+            }
+            $fields_link                      = PluginMetademandsField::_serialize($fields_link);
+            $fieldMeta->fields["fields_link"] = $fields_link;
+         }
+
+         if (is_array($hidden_link)) {
+            foreach ($hidden_link as $key => $hidden) {
+               if($hidden != 0 && isset($mapTableField[$hidden])){
+                  $hidden_link[$key] = $mapTableField[$hidden];
+               }
+
+            }
+            $hidden_link                      = PluginMetademandsField::_serialize($hidden_link);
+            $fieldMeta->fields["hidden_link"] = $hidden_link;
+         }
+
+         if (is_array($plugin_metademands_tasks_id)) {
+            foreach ($plugin_metademands_tasks_id as $key => $task) {
+               if($task != 0 && isset($mapTableTask[$task])) {
+                  $plugin_metademands_tasks_id[$key] = $mapTableTask[$task];
+               }
+
+            }
+            $plugin_metademands_tasks_id                      = PluginMetademandsField::_serialize($plugin_metademands_tasks_id);
+            $fieldMeta->fields["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
+         }
+
+         $fieldMeta->update($fieldMeta->fields);
+
+      }
+
+      foreach ($mapTableTaskReverse as $new => $old) {
+         $meta_task = new PluginMetademandsTask();
+         $meta_task->getFromDB($new);
+         if (isset($mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]])) {
+            $meta_task->fields["plugin_metademands_tasks_id"] = $mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]];
+         }
+         $meta_task->update($meta_task->fields);
+
+      }
+
+      if (!empty($resource)) {
+         $resource['plugin_metademands_metademands_id'] = $newIDMeta;
+         $resource_meta                                 = new PluginMetademandsMetademand_Resource();
+         $resource_meta->add($resource);
+      }
+
+
+      if (!empty($metatasks)) {
+         foreach ($metatasks as $key => $metatask) {
+            $meta_metatask                              = new PluginMetademandsMetademandTask();
+            $metat                                      = [];
+            $metat['plugin_metademands_metademands_id'] = $newIDMeta;
+            $metat['plugin_metademands_tasks_id']       = $mapTableTask[$metatask['plugin_metademands_tasks_id']];
+            $meta_metatask->add($metat);
+         }
+      }
+
+
+      if (!empty($translations)) {
+         foreach ($translations as $key => $trans) {
+            $meta_translation = new PluginMetademandsMetademandTranslation();
+            unset($trans['id']);
+            $trans['items_id'] = $newIDMeta;
+
+            $meta_translation->add($trans);
+
+         }
+      }
+      unlink($file);
+
+      return $newIDMeta;
+
+   }
+
+   function showImportForm() {
+
+      echo "<div align='center'>";
+      echo "<form name='import_file_form' id='import_file_form' method='post'
+            action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
+      echo " <table class='tab_cadre' width='30%' cellpadding='5'>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>";
+      echo __("Metademand file to import", 'metademands');
+      echo "</td>";
+      echo "<td>";
+      echo "<input type='file' name='meta_file' accept='image/*'>";
+      echo "</td>";
+      echo "</tr>";
+      echo "<tr>";
+      echo "<td  class='center' colspan='2'>";
+      echo Html::submit(__('Import', 'metademands'), ['name' => 'import_file']);
+      echo "</td>";
+      echo "</tr>";
+      echo "</table>";
+      Html::closeForm();
+      echo "</div>";
+   }
+
 }
