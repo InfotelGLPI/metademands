@@ -3910,7 +3910,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $key = "key_$key";
             }
 
-
+//            if($key == 'name' || $key == 'completename' || $key == 'comments' || $key == 'label2')
+            $value = htmlspecialchars($value, ENT_NOQUOTES);
             $parent->addChild($key, $value);
          }
       }
@@ -4002,6 +4003,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
       foreach ($datas as $key => $data) {
          if (is_array($data) && empty($data)) {
             $datas[$key] = '';
+         }else if (!is_array($data)) {
+            $datas[$key] = Html::entity_decode_deep($data);
          }
       }
       $datas = Toolbox::addslashes_deep($datas);
@@ -4009,6 +4012,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
       //      $translations = [];
       foreach ($fields as $k => $field) {
          foreach ($field as $key => $f) {
+
+            $fields[$k][$key] = Html::entity_decode_deep($f);
+
             if ($key == "fields_link") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
@@ -4084,6 +4090,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
          if (isset($fieldstranslations)) {
             foreach ($fieldstranslations as $fieldstranslation) {
                unset($fieldstranslation['id']);
+               $fieldstranslation['value'] = Html::entity_decode_deep($fieldstranslation['value']);
+               $fieldstranslation['field'] = Html::entity_decode_deep($fieldstranslation['field']);
                $fieldstranslation['items_id'] = $newIDField;
 
                $trans = new PluginMetademandsFieldTranslation();
@@ -4105,6 +4113,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
          foreach ($task as $key => $val) {
             if (is_array($val)) {
                $task[$key] = "";
+            } else {
+               $task[$key] = Html::entity_decode_deep($val);
             }
          }
          $task['entities_id'] = $_SESSION['glpiactive_entity'];
@@ -4122,6 +4132,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
             foreach ($tickettask as $key => $val) {
                if (is_array($val) && empty($val)) {
                   $tickettask[$key] = '';
+               } else if (!is_array($val)) {
+                  $tickettask[$key] = Html::entity_decode_deep($val);
                }
             }
             $tickettask['plugin_metademands_tasks_id'] = $newIDTask;
@@ -4214,6 +4226,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
       if (!empty($translations)) {
          foreach ($translations as $key => $trans) {
             $meta_translation = new PluginMetademandsMetademandTranslation();
+            $trans['value'] = Html::entity_decode_deep($trans['value']);
+            $trans['field'] = Html::entity_decode_deep($trans['field']);
             unset($trans['id']);
             $trans['items_id'] = $newIDMeta;
 
