@@ -3624,13 +3624,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
          'criteria' => [
             [
                'link'       => 'AND',
-               'field'      => 9500, // status
+               'field'      => 9500, // metademand status
                'searchtype' => 'equals',
                'value'      => PluginMetademandsTicket_Metademand::RUNNING
             ],
             [
                'link'       => 'AND',
-               'field'      => 9502, // status
+               'field'      => 9502, // group
                'searchtype' => 'equals',
                'value'      => "mygroups"
             ],
