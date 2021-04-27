@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-26 13:40+0000\n"
+"POT-Creation-Date: 2021-04-26 14:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -632,11 +632,11 @@ msgstr ""
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: inc/metademand.class.php:4233
+#: inc/metademand.class.php:4238
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:4241
+#: inc/metademand.class.php:4246
 msgid "Import"
 msgstr ""
 
