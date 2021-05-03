@@ -433,7 +433,8 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
          $sopt[9502]['searchtype']   = "equals";
          $sopt[9502]['forcegroupby'] = true;
          //         $sopt[9502]['linkfield']     = 'parent_tickets_id';
-         $sopt[9502]['joinparams']    = ['jointype' => 'child', 'linkfield' => 'parent_tickets_id'];
+         $sopt[9502]['joinparams']    = ['jointype' => 'child',
+                                         'linkfield' => 'parent_tickets_id'];
          $sopt[9502]['massiveaction'] = false;
 
          $sopt[9503]['table']      = 'glpi_plugin_metademands_tickets_tasks';
@@ -443,7 +444,8 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
          $sopt[9503]['searchtype'] = "";
          //         $sopt[9503]['forcegroupby']    = true;
          //         $sopt[9502]['linkfield']     = 'parent_tickets_id';
-         $sopt[9503]['joinparams'] = ['jointype' => 'child', 'linkfield' => 'parent_tickets_id'];
+         $sopt[9503]['joinparams'] = ['jointype' => 'child',
+                                      'linkfield' => 'parent_tickets_id'];
          //         $sopt[9503]['joinparams']    = ['jointype'  => 'child'];
          $sopt[9503]['massiveaction'] = false;
       }
@@ -580,7 +582,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
    switch ($field) {
       case 9503:
          $out                                  = $data['id'];
-         $options['criteria'][0]['field']      = 50; // status
+         $options['criteria'][0]['field']      = 50; // metademand status
          $options['criteria'][0]['searchtype'] = 'equals';
          $options['criteria'][0]['value']      = $data['id'];
          $options['criteria'][0]['link']       = 'AND';
@@ -589,7 +591,15 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
          $options['criteria'][1]['searchtype'] = 'equals';
          $options['criteria'][1]['value']      = 'mygroups';
          $options['criteria'][1]['link']       = 'AND';
+
+         $options['criteria'][2]['field']      = 12; // status
+         $options['criteria'][2]['searchtype'] = 'equals';
+         $options['criteria'][2]['value']      = 'notold';
+         $options['criteria'][2]['link']       = 'AND';
+
+
          $metademands                          = new PluginMetademandsTicket_Metademand();
+
          if ($metademands->getFromDBByCrit(['tickets_id' => $data['id']])) {
             $DB                               = DBConnection::getReadConnection();
             $dbu                              = new DbUtils();

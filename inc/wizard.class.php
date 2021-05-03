@@ -172,8 +172,8 @@ class PluginMetademandsWizard extends CommonDBTM {
       if ($parameters['step'] == PluginMetademandsMetademand::STEP_LIST) {
          // Wizard title
          echo "<div class=\"form-row\">";
-         echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
-         echo "<h4 class=\"bt-title-divider\"><span>";
+         echo "<div class=\"col-md-12\">";
+         echo "<h3><div class='alert alert-secondary' role='alert'>";
          $icon = "fa-share-alt";
          $meta = new PluginMetademandsMetademand();
          if ($meta->getFromDB($parameters['metademands_id'])) {
@@ -183,7 +183,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "<i class='fa-2x fas $icon'></i>&nbsp;";
          echo __('Demand choice', 'metademands');
-         echo "</span></h4></div></div>";
+         echo "</div></h3></div></div>";
 
       } else if ($parameters['step'] >= PluginMetademandsMetademand::STEP_LIST) {
          // Wizard title
