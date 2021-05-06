@@ -2010,11 +2010,19 @@ class PluginMetademandsField extends CommonDBChild {
                case 'urgency':
                   $field  = "";
                   $ticket = new Ticket();
+                  if ($itilcategories_id == 0) {
+                     $itilcategories_id_array = json_decode($metademand->fields['itilcategories_id'], true);
+                     if (is_array($itilcategories_id_array) && count($itilcategories_id_array) == 1) {
+                        foreach ($itilcategories_id_array as $arr) {
+                           $itilcategories_id = $arr;
+                        }
+                     }
+                  }
                   if ($itilcategories_id > 0) {
                      $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                      if (isset($meta_tt->predefined['urgency'])) {
                         $default_value    = $meta_tt->predefined['urgency'];
-                        $options['value'] = $default_value;
+                        $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? $default_value;
                      }
                   }
                   $options['name']    = $namefield . "[" . $data['id'] . "]";
@@ -2024,11 +2032,19 @@ class PluginMetademandsField extends CommonDBChild {
                case 'impact':
                   $field  = "";
                   $ticket = new Ticket();
+                  if ($itilcategories_id == 0) {
+                     $itilcategories_id_array = json_decode($metademand->fields['itilcategories_id'], true);
+                     if (is_array($itilcategories_id_array) && count($itilcategories_id_array) == 1) {
+                        foreach ($itilcategories_id_array as $arr) {
+                           $itilcategories_id = $arr;
+                        }
+                     }
+                  }
                   if ($itilcategories_id > 0) {
                      $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                      if (isset($meta_tt->predefined['impact'])) {
                         $default_value    = $meta_tt->predefined['impact'];
-                        $options['value'] = $default_value;
+                        $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? $default_value;
                      }
                   }
                   $options['name']    = $namefield . "[" . $data['id'] . "]";
@@ -2038,11 +2054,19 @@ class PluginMetademandsField extends CommonDBChild {
                case 'priority':
                   $field  = "";
                   $ticket = new Ticket();
+                  if ($itilcategories_id == 0) {
+                     $itilcategories_id_array = json_decode($metademand->fields['itilcategories_id'], true);
+                     if (is_array($itilcategories_id_array) && count($itilcategories_id_array) == 1) {
+                        foreach ($itilcategories_id_array as $arr) {
+                           $itilcategories_id = $arr;
+                        }
+                     }
+                  }
                   if ($itilcategories_id > 0) {
                      $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                      if (isset($meta_tt->predefined['priority'])) {
                         $default_value    = $meta_tt->predefined['priority'];
-                        $options['value'] = $default_value;
+                        $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? $default_value;
                      }
                   }
                   $options['name']    = $namefield . "[" . $data['id'] . "]";

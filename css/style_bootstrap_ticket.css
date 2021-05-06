@@ -84,8 +84,8 @@ legend {
 }
 
 .form-row>.col, .form-row>[class*=col-] {
-    padding-right: 15px;
-    padding-left: 15px;
+    padding-right: 35px;
+    padding-left: 35px;
 }
 textarea {
     overflow: auto;

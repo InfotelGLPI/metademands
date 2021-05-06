@@ -1454,6 +1454,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   //TODO Change / problem ?
                   $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values);
                }
+
                $list_fields  = $line['form'];
                $searchOption = Search::getOptions($object_class);
                foreach ($list_fields as $id => $fields_values) {
@@ -1474,7 +1475,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               $name = "_groups_id_observer";
                            }
                            $parent_fields[$name] = $v[$id];
-
+                           $parent_ticketfields[$name] = $v[$id];
                            if ($fields_values['used_by_ticket'] == 13) {
 
                               if ($fields_values['type'] == "dropdown_meta"
@@ -1531,6 +1532,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   } else {
                      $input = $parent_fields;
                   }
+
                   if ($metademand->fields['is_order'] == 0) {
                      if (isset($values['fields']['files'][$form_metademands_id]['_filename'])) {
                         $input['_filename'] = $values['fields']['files'][$form_metademands_id]['_filename'];
@@ -2502,7 +2504,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         $fields['value'] = $values['fields'][$title];
 
                         $fields['value2'] = '';
-                        if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
+                        if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval')
+                            && isset($values['fields'][$title . '-2'])) {
                            $fields['value2'] = $values['fields'][$title . '-2'];
                         }
                         $result                                  = [];
