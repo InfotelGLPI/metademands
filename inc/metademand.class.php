@@ -585,7 +585,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             return ITILCategory::dropdown($opt);
          case 'type':
             $options['value'] = $values[$field];
-            return Ticket::dropdownType($name, );
+            return Ticket::dropdownType($name, $options);
          case 'object_to_create':
             return Dropdown::showFromArray($name, self::getObjectTypes(),$options);
             break;
