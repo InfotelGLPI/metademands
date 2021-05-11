@@ -241,6 +241,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
       return false;
    }
 
+   function post_getEmpty() {
+      $this->fields["background_color"] = '#ffffff';
+   }
    /**
     * @param array $input
     *
@@ -3725,9 +3728,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
       ];
 
       $get_to_validated_meta =
-         "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated' FROM `glpi_plugin_metademands_metademandvalidations`
-                        LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (" . PluginMetademandsMetademandValidation::TO_VALIDATE . "," . PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK . ")" .
+         "SELECT COUNT(`glpi_plugin_metademands_metademandvalidations`.`id`) as 'total_to_validated' 
+          FROM `glpi_plugin_metademands_metademandvalidations`
+         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_metademandvalidations`.`tickets_id` 
+         WHERE  `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "')
+           AND `glpi_plugin_metademands_metademandvalidations`.`validate` IN (" . PluginMetademandsMetademandValidation::TO_VALIDATE . "," . PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK . ")" .
          $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
@@ -3742,17 +3747,28 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $s_criteria = [
          'criteria' => [
             0 => [
-               'link'       => 'OR',
-               'field'      => 9501, // validation status
+               'link'       => 'AND',
+               'field'      => 12, // status
                'searchtype' => 'equals',
-               'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE
+               'value'      => "notold"
             ],
-            1 => [
-               'link'       => 'OR',
-               'field'      => 9501, // validation status
-               'searchtype' => 'equals',
-               'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK
-            ]
+            [
+               'link' => 'AND',
+               'criteria' => [
+                  [
+                     'link'        => 'AND',
+                     'field'      => 9501, // validation status
+                     'searchtype'  => 'equals',
+                     'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE
+                  ],
+                  [
+                     'link'        => 'OR',
+                     'field'      => 9501, // validation status
+                     'searchtype'  => 'equals',
+                     'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK
+                  ]
+               ]
+            ],
          ],
          'reset'    => 'reset'
       ];

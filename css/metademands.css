@@ -388,3 +388,8 @@ button.clear-basket {
     background-color: #f39746;
     color:#425B64;
 }
+
+
+.select2-container {
+    max-width: 250px!important;
+}
