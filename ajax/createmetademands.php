@@ -115,6 +115,15 @@ if (isset($_POST['update_fields'])) {
                $_POST['field'] = $post;
 
                foreach ($data as $id => $value) {
+                  $toBeMandatory = PluginMetademandsWizard::getMandatoryFields($id,$value,$_POST['field']);
+                  if(is_array($toBeMandatory) && !empty($toBeMandatory)){
+                     foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
+                        $data[$valueMandatory]['is_mandatory'] = true;
+                     }
+                  }
+               }
+
+               foreach ($data as $id => $value) {
                   if (!isset($post[$id])) {
                      $post[$id] = [];
                   }

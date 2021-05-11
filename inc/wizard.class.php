@@ -2833,4 +2833,26 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
    }
 
+   static function getMandatoryFields($id,$value,$fields) {
+
+      $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
+      $unserialisedFieldsLink = PluginMetademandsField::_unserialize($value['fields_link']);
+      $toBeMandatory = [];
+      if(is_array($unserialisedCheck) && !empty($unserialisedCheck)) {
+         foreach ($unserialisedCheck as $key => $check) {
+            if( isset($fields[$id]) && is_array($fields[$id])) {
+               if(in_array($check,$fields[$id])){
+                  $toBeMandatory[] = $unserialisedFieldsLink[$key];
+               }
+            } else {
+               if(isset($fields[$id]) && $check == $fields[$id] && $fields[$id] != null) {
+                  $toBeMandatory[] = $unserialisedFieldsLink[$key];
+               }
+            }
+         }
+      }
+      return $toBeMandatory;
+
+   }
+
 }
