@@ -128,6 +128,18 @@ class PluginMetademandsTicket_Task extends CommonDBTM {
            return Group::dropdown($options);
             break;
 
+
+         case 'plugin_metademands_tasks_id':
+            unset($options['toadd']);
+            $right = "own_ticket";
+            $options = [ 'display' => false,
+                         'name' => $name,
+                        'entity'      => $_SESSION['glpiactive_entity'],
+                        'right'       => $right,
+                        'ldap_import' => true];
+            return User::dropdown($options);
+            break;
+
       }
 
       return parent::getSpecificValueToSelect($field, $name, $values, $options);
