@@ -105,10 +105,6 @@
 .metademands_duplication {
     padding: 5px;
     font-weight: bold;
-    border: solid 2px #D5D5D5;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
     color: red;
     margin-bottom: 10px;
 }

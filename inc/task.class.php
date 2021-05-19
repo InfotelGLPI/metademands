@@ -138,6 +138,8 @@ class PluginMetademandsTask extends CommonDBTM {
          return false;
       }
 
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/bootstrap4.css");
+
       $canedit = $metademands->can($metademands->fields['id'], UPDATE);
       $solved  = true;
       if ($canedit) {
@@ -196,11 +198,18 @@ class PluginMetademandsTask extends CommonDBTM {
             echo "<input type='submit' class='submit' name='add' value='" . _sx('button', 'Add') . "'>";
             echo "</td>";
             echo "</tr>";
-         }
 
-         echo "</table>";
-         Html::closeForm();
-         echo "</div>";
+            echo "</table>";
+            Html::closeForm();
+            echo "</div>";
+
+         } else {
+            echo "<h3><div class='alert alert-warning' role='alert'>";
+            echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
+            echo  __('You cannot add new tasks if linked tickets are not solved', 'metademands');
+            echo "</div>";
+            echo "</h3>";
+         }
       }
       $this->listTasks($metademands->fields['id'], $canedit, $solved);
    }

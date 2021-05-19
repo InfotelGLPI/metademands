@@ -850,12 +850,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
     */
    function showDuplication($metademands_id) {
 
-      echo "<table class='tab_glpi metademands_duplication'>";
-      echo "<tr>";
-      echo "<td><i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i></td>";
-      echo "<td>" . __('Tasks level cannot be changed as unresolved related tickets exist', 'metademands') . "</td>";
-      echo "<td width='70px'>";
-      echo "<form name='task_form' id='task_form' method='post' 
+      echo "<h3><div class='alert alert-warning' role='alert'>";
+      echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
+      echo  __('Tasks level cannot be changed as unresolved related tickets exist', 'metademands');
+
+      echo "<br><br><form name='task_form' id='task_form' method='post' 
                action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
       echo "<input type='submit' name='execute' value=\"" . _sx('button', 'Duplicate') . "\"
                       class='submit'>";
@@ -866,9 +865,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<input type='hidden' name='redirect' value=\"1\"
                       class='submit'>";
       Html::closeForm();
-      echo "</td>";
-      echo "</tr>";
-      echo "</table>";
+      echo "</div>";
+      echo "</h3>";
    }
 
    /**
@@ -3678,7 +3676,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $get_closed_parents_tickets_meta =
          "SELECT COUNT(`glpi_plugin_metademands_tickets_metademands`.`id`) as 'total_to_closed' FROM `glpi_plugin_metademands_tickets_metademands`
                         LEFT JOIN `glpi_tickets` ON `glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`tickets_id` WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_tickets`.`status` NOT IN ('" . Ticket::CLOSED . "','" . Ticket::SOLVED . "') AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
                                     " . PluginMetademandsTicket_Metademand::TO_CLOSED . " " .
          $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
@@ -3698,6 +3696,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                'field'      => 9500, // status
                'searchtype' => 'equals',
                'value'      => PluginMetademandsTicket_Metademand::TO_CLOSED
+            ],
+            [
+               'link'       => 'AND',
+               'field'      => 12, // status
+               'searchtype' => 'equals',
+               'value'      => "notold"
             ]
          ],
          'reset'    => 'reset'
