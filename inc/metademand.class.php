@@ -4113,8 +4113,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
          if (isset($fieldstranslations)) {
             foreach ($fieldstranslations as $fieldstranslation) {
                unset($fieldstranslation['id']);
-               $fieldstranslation['value'] = Html::entity_decode_deep($fieldstranslation['value']);
-               $fieldstranslation['field'] = Html::entity_decode_deep($fieldstranslation['field']);
+               $fieldstranslation['value'] = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['value']));
+               $fieldstranslation['field'] = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['field']));
                $fieldstranslation['items_id'] = $newIDField;
 
                $trans = new PluginMetademandsFieldTranslation();
@@ -4249,7 +4249,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       if (!empty($translations)) {
          foreach ($translations as $key => $trans) {
             $meta_translation = new PluginMetademandsMetademandTranslation();
-            $trans['value'] = Html::entity_decode_deep($trans['value']);
+            $trans['value'] = Html::entity_decode_deep(Toolbox::addslashes_deep($trans['value']));
             $trans['field'] = Html::entity_decode_deep($trans['field']);
             unset($trans['id']);
             $trans['items_id'] = $newIDMeta;
