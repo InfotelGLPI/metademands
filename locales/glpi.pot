@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-20 12:41+0000\n"
+"POT-Creation-Date: 2021-05-21 11:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,24 +18,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:395 inc/metademandvalidation.class.php:56
+#: hook.php:400 inc/metademandvalidation.class.php:56
 #: inc/metademandvalidation.class.php:220
 msgid "Metademand validation"
 msgstr ""
 
-#: hook.php:415
+#: hook.php:418
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:431
+#: hook.php:434
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:442
+#: hook.php:445
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:454
+#: hook.php:457
 msgid "Technician child ticket"
 msgstr ""
 
@@ -697,24 +697,28 @@ msgstr ""
 msgid "Validate metademands"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:410
+#: inc/metademandvalidation.class.php:414
 msgid "To validate"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:412
+#: inc/metademandvalidation.class.php:416
 msgid "Child tickets created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:414
+#: inc/metademandvalidation.class.php:418
 msgid "Tasks created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:416
+#: inc/metademandvalidation.class.php:420
 msgid "To validate without child"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:418
+#: inc/metademandvalidation.class.php:422
 msgid "Validate without child"
+msgstr ""
+
+#: inc/metademandvalidation.class.php:425
+msgid "Not subject to validation"
 msgstr ""
 
 #: inc/profile.class.php:45
@@ -884,22 +888,22 @@ msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2627
+#: inc/wizard.class.php:2629
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2636
+#: inc/wizard.class.php:2638
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2682
+#: inc/wizard.class.php:2684
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2686
+#: inc/wizard.class.php:2688
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
