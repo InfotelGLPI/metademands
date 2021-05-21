@@ -369,8 +369,13 @@ function plugin_metademands_registerMethods() {
  */
 function plugin_metademands_timeline_actions($data) {
    global $CFG_GLPI;
+
+
    $metaValidation = new PluginMetademandsMetademandValidation();
-   if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']]) && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+   if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']])
+       && $_SESSION['glpiactiveprofile']['interface'] == 'central'
+   && ($data['item']->fields['status'] != Ticket::SOLVED
+       && $data['item']->fields['status'] != Ticket::CLOSED)) {
       $rand = $data['rand'];
       echo "<script type='text/javascript' >\n
 //      $(document).ready(function() {
@@ -394,8 +399,6 @@ function plugin_metademands_timeline_actions($data) {
            "javascript:viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(\"Solution\");'>"
            . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
    }
-
-
 }
 
 

@@ -2441,7 +2441,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
-            if (($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval') && $value['second_date_ok']) {
+            if (isset($post[$fieldname][$id."-2"]) &&
+                ($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval')
+                && $value['second_date_ok']) {
                $_SESSION['plugin_metademands']['fields'][$id."-2"] = $post[$fieldname][$id."-2"];
             }
          }

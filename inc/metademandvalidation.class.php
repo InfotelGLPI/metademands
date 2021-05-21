@@ -362,7 +362,11 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       }
       switch ($field) {
          case 'validate':
-            return self::getStatusName($values[$field]);
+            $style = "style='background-color: ".self::getStatusColor($values[$field]).";'";
+            $out = "<div class='center' $style>";
+            $out .= self::getStatusName($values[$field]);
+            $out .= "</div>";
+            return $out;
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }
@@ -418,7 +422,29 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
             return __('Validate without child', 'metademands');
          default :
             // Return $value if not define
-            return Dropdown::EMPTY_VALUE;
+            return __('Not subject to validation', 'metademands');
+      }
+   }
+
+   /**
+    * @param $value
+    *
+    * @return string
+    */
+   static function getStatusColor($value) {
+
+      switch ($value) {
+
+         case self::TO_VALIDATE_WITHOUTTASK:
+         case self::TO_VALIDATE :
+            return "orange";
+         case self::VALIDATE_WITHOUT_TASK:
+         case self::TASK_CREATION:
+         case self::TICKET_CREATION :
+            return "forestgreen";
+         default :
+            // Return $value if not define
+            return "";
       }
    }
 }
