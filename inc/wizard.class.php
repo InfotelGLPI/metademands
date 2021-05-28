@@ -132,11 +132,11 @@ class PluginMetademandsWizard extends CommonDBTM {
          $parameters['resources_step'] = $_SESSION['plugin_metademands']['fields']['resources_step'];
       }
       Html::requireJs("metademands");
-      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/bootstrap4.css");
-      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/style_bootstrap_main.css");
-      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/style_bootstrap_ticket.css");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/bootstrap4.css");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_main.css");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_ticket.css");
       echo Html::css("/public/lib/base.css");
-      echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL."/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
+      echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
       echo "<div id ='content'>";
       $background_color = "";
       $meta             = new PluginMetademandsMetademand();
@@ -175,17 +175,15 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<div class=\"col-md-12\">";
          echo "<h3><div class='alert alert-secondary' role='alert'>";
          $icon = "fa-share-alt";
-         $meta = new PluginMetademandsMetademand();
-         if ($meta->getFromDB($parameters['metademands_id'])) {
-            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-               $icon = $meta->fields['icon'];
-            }
+         if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+            $icon = $meta->fields['icon'];
          }
          echo "<i class='fa-2x fas $icon'></i>&nbsp;";
          echo __('Demand choice', 'metademands');
          echo "</div></h3></div></div>";
 
       } else if ($parameters['step'] >= PluginMetademandsMetademand::STEP_LIST) {
+
          // Wizard title
          echo "<div class=\"form-row\">";
          echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
@@ -493,7 +491,7 @@ class PluginMetademandsWizard extends CommonDBTM {
    static function listMetademands() {
       global $CFG_GLPI;
 
-      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/wizard.php");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
 
       $metademands = self::selectMetademands();
       $config      = new PluginMetademandsConfig();
@@ -528,7 +526,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $params = ['type' => '__VALUE__', "action" => "icon"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",
-                                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/updatelistmeta.php",
+                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/updatelistmeta.php",
                                        $params);
          echo "<div id='listmeta' >";
          foreach ($metademands as $id => $name) {
@@ -536,7 +534,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($id)) {
 
-               echo "<a class='bt-buttons' href='" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<a class='bt-buttons' href='" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo '<div class="btnsc-normal" >';
                $fasize = "fa-6x";
                echo "<div class='center'>";
@@ -587,7 +585,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $params = ['type' => '__VALUE__', "action" => "dropdown"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",
-                                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/updatelistmeta.php",
+                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/updatelistmeta.php",
                                        $params);
          echo "<div id='listmeta' class=\"bt-row\">";
          echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
@@ -754,7 +752,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
                              $.ajax({
-                                url: '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/createmetademands.php',
+                                url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
                                    type: 'POST',
                                    data: $('form').serializeArray(),
                                    success: function(response){
@@ -762,7 +760,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                        if (response == 1) {
                                           document.location.reload();
                                        } else {
-                                          window.location.href = '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                          window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
                                        }                                  
                                     },
                                    error: function(xhr, status, error) {
@@ -792,7 +790,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                           $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                           $('#ajax_loader').show();
                           $.ajax({
-                             url: '" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/createmetademands.php',
+                             url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
                                 type: 'POST',
                                 data: $('form').serializeArray(),
                                 success: function(response){
@@ -800,7 +798,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     if (response == 1) {
                                        document.location.reload();
                                     } else {
-                                       window.location.href = '" .$CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
                                     }                                  
                                  },
                                 error: function(xhr, status, error) {
@@ -2441,10 +2439,10 @@ class PluginMetademandsWizard extends CommonDBTM {
             $KO = true;
          } else {
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
-            if (isset($post[$fieldname][$id."-2"]) &&
+            if (isset($post[$fieldname][$id . "-2"]) &&
                 ($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval')
                 && $value['second_date_ok']) {
-               $_SESSION['plugin_metademands']['fields'][$id."-2"] = $post[$fieldname][$id."-2"];
+               $_SESSION['plugin_metademands']['fields'][$id . "-2"] = $post[$fieldname][$id . "-2"];
             }
          }
 
@@ -2835,19 +2833,19 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
    }
 
-   static function getMandatoryFields($id,$value,$fields) {
+   static function getMandatoryFields($id, $value, $fields) {
 
       $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
       $unserialisedFieldsLink = PluginMetademandsField::_unserialize($value['fields_link']);
-      $toBeMandatory = [];
-      if(is_array($unserialisedCheck) && !empty($unserialisedCheck)) {
+      $toBeMandatory          = [];
+      if (is_array($unserialisedCheck) && !empty($unserialisedCheck)) {
          foreach ($unserialisedCheck as $key => $check) {
-            if( isset($fields[$id]) && is_array($fields[$id])) {
-               if(in_array($check,$fields[$id])){
+            if (isset($fields[$id]) && is_array($fields[$id])) {
+               if (in_array($check, $fields[$id])) {
                   $toBeMandatory[] = $unserialisedFieldsLink[$key];
                }
             } else {
-               if(isset($fields[$id]) && $check == $fields[$id] && $fields[$id] != null) {
+               if (isset($fields[$id]) && $check == $fields[$id] && $fields[$id] != null) {
                   $toBeMandatory[] = $unserialisedFieldsLink[$key];
                }
             }
