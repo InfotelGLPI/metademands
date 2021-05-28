@@ -28,8 +28,9 @@ Characteristics :
 - [X] Save your forms as Draft
 - [X] Use tags for titles
 - [X] Bootstrap Buttons
+- [X] Export / Import forms
 
 For next version :
-Help us to add these features
-- [ ] Export / Import forms
+Help us to add new features
+
 
