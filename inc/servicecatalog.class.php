@@ -132,18 +132,38 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
 
       $dbu   = new DbUtils();
       $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-                                         ["`itilcategories_id`" => $category_id,
-                                          "`is_active`"         => 1,
+                                         ["`is_active`"         => 1,
                                           "`is_deleted`"         => 0,
                                           "`type`"              => $type]);
+      $cats       = [];
 
-      if (!empty($metas)) {
-         $meta = reset($metas);
+      foreach ($metas as $meta) {
+         $categories = [];
+         if (isset($meta['itilcategories_id'])) {
+            if (is_array(json_decode($meta['itilcategories_id'], true))) {
+               $categories = $meta['itilcategories_id'];
+            } else {
+               $array      = [$meta['itilcategories_id']];
+               $categories = json_encode($array);
+            }
+         }
+         $cats[$meta['id']] = json_decode($categories);
+      }
+
+      $meta_concerned = 0;
+      foreach ($cats as $meta => $meta_cats) {
+         if (in_array($category_id, $meta_cats)) {
+            $meta_concerned = $meta;
+         }
+      }
+
+      if (!empty($meta_concerned)) {
+//         $meta = reset($metas);
          //Redirect if not linked to a resource contract type
          if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
-                                         ["plugin_metademands_metademands_id" => $meta["id"]])) {
+                                         ["plugin_metademands_metademands_id" => $meta_concerned])) {
 
-            return $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $meta["id"] . "&tickets_id=0&step=".PluginMetademandsMetademand::STEP_SHOW;
+            return $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $meta_concerned . "&tickets_id=0&step=".PluginMetademandsMetademand::STEP_SHOW;
 
          }
       }
