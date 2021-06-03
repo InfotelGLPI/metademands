@@ -2862,7 +2862,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   }
 
 
-                  $result[$value['item']] = self::$PARENT_PREFIX . $value['value'];
+                  $inputs[$value['item']] = self::$PARENT_PREFIX . $value['value'];
                } else {
                   $inputs[$value['item']] = json_decode($value['value'], true);
                }
