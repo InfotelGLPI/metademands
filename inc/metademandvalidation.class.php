@@ -153,8 +153,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
-      $ticket->fields["_users_id_requester"] = Session::getLoginUserID();
-      $users                                 = $ticket->getUsers(CommonITILActor::REQUESTER);
+      //      $ticket->fields["_users_id_requester"] = Session::getLoginUserID();
+      $users = $ticket->getUsers(CommonITILActor::REQUESTER);
       foreach ($users as $user) {
          $ticket->fields["_users_id_requester"] = $user['users_id'];
       }
@@ -211,7 +211,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
-      echo "<form name='form_raz' id='form_raz' method='post' action='" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php" . "' >";
+      echo "<form name='form_raz' id='form_raz' method='post' action='" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php" . "' >";
       echo "<input type='hidden' name='action' id='action_validationMeta' value='validationMeta' />";
       echo "<input type='hidden' name='tickets_id' id='action_validationMeta' value='$ticket_id' />";
       echo "<table class='tab_cadre_fixe'>";
@@ -234,14 +234,14 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
          Ajax::updateItemOnEvent('create_subticket',
                                  'to_update_group',
-                                 $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/displayGroupField.php",
+                                 $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/displayGroupField.php",
                                  ["create_subticket" => '__VALUE__',
-                                  'tickets_id' => $ticket_id]);
+                                  'tickets_id'       => $ticket_id]);
          Ajax::updateItemOnEvent('create_subticket2',
                                  'to_update_group',
-                                 $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/displayGroupField.php",
+                                 $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/displayGroupField.php",
                                  ["create_subticket" => '__VALUE__',
-                                  'tickets_id' => $ticket_id]);
+                                  'tickets_id'       => $ticket_id]);
 
       } else if ($this->fields["users_id"] == 0
                  && $this->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
@@ -252,8 +252,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
             $group = $d['groups_id'];
          }
          Group::dropdown(['condition' => ['is_assign' => 1],
-                          'name' => 'group_to_assign',
-                          'value' => $group]);
+                          'name'      => 'group_to_assign',
+                          'value'     => $group]);
          echo "</td>";
 
       } else if ($this->fields["users_id"] != 0
@@ -362,10 +362,10 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       }
       switch ($field) {
          case 'validate':
-            $style = "style='background-color: ".self::getStatusColor($values[$field]).";'";
-            $out = "<div class='center' $style>";
-            $out .= self::getStatusName($values[$field]);
-            $out .= "</div>";
+            $style = "style='background-color: " . self::getStatusColor($values[$field]) . ";'";
+            $out   = "<div class='center' $style>";
+            $out   .= self::getStatusName($values[$field]);
+            $out   .= "</div>";
             return $out;
       }
       return parent::getSpecificValueToDisplay($field, $values, $options);

@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -41,10 +41,11 @@ switch ($_POST['create_subticket']) {
       $ticket = new Ticket();
       $ticket->getFromDB($_POST['tickets_id']);
       echo "<td colspan='2'>" . __('Attribute ticket/tasks to ', 'metademands') . " &nbsp;";
+      $group = 0;
       foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
          $group = $d['groups_id'];
       }
-      Group::dropdown(['condition'=>['is_assign'=>1],'name'=>'group_to_assign','value'=>$group]);
+      Group::dropdown(['condition' => ['is_assign' => 1], 'name' => 'group_to_assign', 'value' => $group]);
       break;
 }
 
