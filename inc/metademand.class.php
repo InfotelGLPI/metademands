@@ -244,6 +244,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
    function post_getEmpty() {
       $this->fields["background_color"] = '#ffffff';
    }
+
    /**
     * @param array $input
     *
@@ -665,7 +666,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $objects    = self::getObjectTypes();
          $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
-                                 $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
+                                 $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
       } else {
          echo self::getObjectTypeName($this->fields['object_to_create']);
          echo "<input type='hidden' name='object_to_create' value=\"" . $this->fields['object_to_create'] . "\">";
@@ -696,7 +697,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                        'currenttype'     => $this->fields['type']];
 
             Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-                                          $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/dropdownITILCategories.php",
+                                          $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/dropdownITILCategories.php",
                                           $params);
             echo "</td>";
          } else {
@@ -837,7 +838,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
-      $options['addbuttons'] = ['export' => __('Export','metademands')];
+      $options['addbuttons'] = ['export' => __('Export', 'metademands')];
 
       $this->showFormButtons($options);
 
@@ -852,7 +853,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<h3><div class='alert alert-warning' role='alert'>";
       echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
-      echo  __('Tasks level cannot be changed as unresolved related tickets exist', 'metademands');
+      echo __('Tasks level cannot be changed as unresolved related tickets exist', 'metademands');
 
       echo "<br><br><form name='task_form' id='task_form' method='post' 
                action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
@@ -1003,7 +1004,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
     *
     * @return type
     * @throws \GlpitestSQLError
-    * @throws \GlpitestSQLError
     * @global type $DB
     *
     */
@@ -1050,7 +1050,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param type  $protocol
     *
     * @return type
-    * @throws \GlpitestSQLError
     * @throws \GlpitestSQLError
     * @global type $DB
     *
@@ -1451,11 +1450,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                // Get predefined ticket fields
                //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
+               $parent_ticketfields = [];
                if ($object_class == 'Ticket') {
                   //TODO Change / problem ?
                   $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values);
                }
-
                $list_fields  = $line['form'];
                $searchOption = Search::getOptions($object_class);
                foreach ($list_fields as $id => $fields_values) {
@@ -1777,7 +1776,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $fields['value'] = $values['fields'][$title];
 
                                     $fields['value2'] = '';
-                                    if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
+                                    if (($fields['type'] == 'date_interval'
+                                         || $fields['type'] == 'datetime_interval')
+                                        && isset($values['fields'][$title . '-2'])) {
                                        $fields['value2'] = $values['fields'][$title . '-2'];
                                     }
                                     $result                                  = [];
@@ -1866,7 +1867,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $fields['value'] = $values['fields'][$content];
 
                                     $fields['value2'] = '';
-                                    if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
+                                    if (($fields['type'] == 'date_interval'
+                                         || $fields['type'] == 'datetime_interval')
+                                        && isset($values['fields'][$content . '-2'])) {
                                        $fields['value2'] = $values['fields'][$content . '-2'];
                                     }
                                     $result                         = [];
@@ -1973,7 +1976,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $fields['value'] = $values['fields'][$title];
 
                                     $fields['value2'] = '';
-                                    if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
+                                    if (($fields['type'] == 'date_interval'
+                                         || $fields['type'] == 'datetime_interval')
+                                        && isset($values['fields'][$title . '-2'])) {
                                        $fields['value2'] = $values['fields'][$title . '-2'];
                                     }
                                     $result                                  = [];
@@ -2063,7 +2068,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $fields['value'] = $values['fields'][$content];
 
                                     $fields['value2'] = '';
-                                    if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
+                                    if (($fields['type'] == 'date_interval'
+                                         || $fields['type'] == 'datetime_interval')
+                                        && isset($values['fields'][$content . '-2'])) {
                                        $fields['value2'] = $values['fields'][$content . '-2'];
                                     }
                                     $result                         = [];
@@ -2210,10 +2217,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
          }
          //      $result['content'] .= "</table>";
          $resultTemp = [];
-         $nb = 0;
+         $nb         = 0;
          foreach ($parent_fields as $fields_id => $field) {
 
-            if(!isset($resultTemp[$field['rank']])){
+            if (!isset($resultTemp[$field['rank']])) {
                $resultTemp[$field['rank']]['content'] = "";
                $resultTemp[$field['rank']]['display'] = false;
             }
@@ -2230,7 +2237,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
             $self = new self();
             $self->getFromDB($metademands_id);
-            if($self->getField('hide_no_field') == 1){
+            if ($self->getField('hide_no_field') == 1) {
                if ($field['type'] == 'yesno' && $field['value'] != "2") {
                   continue;
                }
@@ -2248,8 +2255,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
             $resultTemp[$field['rank']]['content'] .= "</tr>";
 
          }
-         foreach ($resultTemp as $blockId => $tab){
-            if($tab['display'] == true){
+         foreach ($resultTemp as $blockId => $tab) {
+            if ($tab['display'] == true) {
                $result['content'] .= $tab['content'];
             }
          }
@@ -2334,9 +2341,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         case 'User':
                            $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
                            $result[$field['rank']]['display'] = true;
-                           $item              = new $field['item']();
-                           $content           = "";
-                           $information       = json_decode($field['informations_to_display']);
+                           $item                              = new $field['item']();
+                           $content                           = "";
+                           $information                       = json_decode($field['informations_to_display']);
                            if ($item->getFromDB($field['value'])) {
 
 
@@ -2370,11 +2377,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                            break;
                         case 'ITILCategory_Metademands':
-                           $dbu               = new DbUtils();
+                           $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
                            $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
                            $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
-                                                                           $field['value']);
+                                                                                           $field['value']);
                            $result[$field['rank']]['content'] .= "</td>";
                            if ($return_value == true) {
                               return Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
@@ -2382,17 +2389,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            }
                            break;
                         case 'mydevices':
-                           $dbu               = new DbUtils();
+                           $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
                            $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
-                           $splitter          = explode("_", $field['value']);
+                           $splitter                          = explode("_", $field['value']);
                            if (count($splitter) == 2) {
                               $itemtype = $splitter[0];
                               $items_id = $splitter[1];
                            }
                            if ($itemtype && $items_id) {
                               $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
-                                                                              $items_id);
+                                                                                              $items_id);
                            }
                            $result[$field['rank']]['content'] .= "</td>";
                            if ($return_value == true) {
@@ -2430,11 +2437,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            }
                            break;
                         default:
-                           $dbu               = new DbUtils();
+                           $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
                            $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
                            $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
-                                                                           $field['value']);
+                                                                                           $field['value']);
                            $result[$field['rank']]['content'] .= "</td>";
                            if ($return_value == true) {
                               return Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
@@ -2562,7 +2569,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if (!empty($field['value'])) {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
-                  $custom_checkbox   = [];
+                  $custom_checkbox                   = [];
                   $result[$field['rank']]['display'] = true;
                   $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
                   foreach ($custom_values as $key => $val) {
@@ -2600,7 +2607,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   }
                   $result[$field['rank']]['display'] = true;
                   $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
-                  $custom_radio      = "";
+                  $custom_radio                      = "";
                   foreach ($custom_values as $key => $val) {
                      if ($field['value'] == $key && $field['value'] !== "") {
                         $custom_radio = $val;
@@ -2746,7 +2753,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @return array
     */
    function formatTicketFields($metademands_id, $itilcategory, $values) {
-      $result              = [];
+      $inputs              = [];
       $ticket_field        = new PluginMetademandsTicketField();
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
@@ -2770,7 +2777,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         foreach ($explodeTitle as $title) {
                            if (isset($values['fields'][$title])) {
                               $field = new PluginMetademandsField();
-                              $field->getFromDB($title);
                               $fields          = $field->fields;
                               $fields['value'] = '';
 
@@ -2846,24 +2852,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
                             && isset($values['fields'][$title . '-2'])) {
                            $fields['value2'] = $values['fields'][$title . '-2'];
                         }
-                        $result                                  = [];
-                        $result[$fields['rank']]['content']                       = "";
-                        $result[$fields['rank']]['display']                       = false;
-                        $parent_fields_id                        = 0;
-                        $v                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                        $value['value'] = str_replace("#" . $title . "#", $v,  $value['value']);
+                        $result                             = [];
+                        $result[$fields['rank']]['content'] = "";
+                        $result[$fields['rank']]['display'] = false;
+                        $parent_fields_id                   = 0;
+                        $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                        $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
                      }
                   }
 
 
                   $result[$value['item']] = self::$PARENT_PREFIX . $value['value'];
                } else {
-                  $result[$value['item']] = json_decode($value['value'], true);
+                  $inputs[$value['item']] = json_decode($value['value'], true);
                }
             }
          }
       }
-      return $result;
+      return $inputs;
    }
 
    /**
@@ -2874,7 +2880,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param       $ancestor_tickets_id
     *
     * @return bool
-    * @throws \GlpitestSQLError
     * @throws \GlpitestSQLError
     */
    function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1) {
@@ -2898,12 +2903,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
             // Field format for ticket
             foreach ($son_ticket_data as $field => $value) {
-               if (strstr($field, 'groups_id_') || strstr($field, 'users_id_')) {
+               if (strstr($field, 'groups_id_')
+                   || strstr($field, 'users_id_')) {
                   $son_ticket_data['_' . $field] = $son_ticket_data[$field];
                }
             }
             foreach ($parent_fields as $field => $value) {
-               if (strstr($field, 'groups_id_') || strstr($field, 'users_id_')) {
+               if (strstr($field, 'groups_id_')
+                   || strstr($field, 'users_id_')) {
                   $parent_fields['_' . $field] = $parent_fields[$field];
                }
             }
@@ -2992,13 +2999,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
 
             $content = '';
+            $config  = new PluginMetademandsConfig();
+            $config->getFromDB(1);
+
             if (!empty($son_ticket_data['content'])) {
                $content = "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                           "</th></tr><tr><td colspan='2'>" . $son_ticket_data['content'];
                $content .= "</td></tr></table><br>";
             }
-            $config = new PluginMetademandsConfig();
-            $config->getFromDB(1);
+
             if ($config->getField('childs_parent_content') == 1) {
                if (!empty($parent_fields_content['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
@@ -3009,8 +3018,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   //}
                }
             }
-
-            //            $content = Html::cleanPostForTextArea($content);
 
             $son_ticket_data['content'] = $content;
             if (isset($parent_fields['_groups_id_assign'])) {
@@ -3086,13 +3093,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                      // Find parent metademand tickets_id and get its _groups_id_assign
                      $tickets_found              = PluginMetademandsTicket::getAncestorTickets($tickets_data['id'], true);
-                     $parent_groups_tickets_data = $groups_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'], 'type' => CommonITILActor::ASSIGN]);
+                     $parent_groups_tickets_data = $groups_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
+                                                                          'type'       => CommonITILActor::ASSIGN]);
 
                      if (count($parent_groups_tickets_data)) {
                         $parent_groups_tickets_data          = reset($parent_groups_tickets_data);
                         $ticket->fields['_groups_id_assign'] = $parent_groups_tickets_data['groups_id'];
                      }
-                     $parent_groups_tickets_data = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'], 'type' => CommonITILActor::ASSIGN]);
+                     $parent_groups_tickets_data = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
+                                                                         'type'       => CommonITILActor::ASSIGN]);
 
                      if (count($parent_groups_tickets_data)) {
                         $parent_groups_tickets_data         = reset($parent_groups_tickets_data);
@@ -3115,7 +3124,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param $ticket
     *
     * @return bool
-    * @throws \GlpitestSQLError
     * @throws \GlpitestSQLError
     */
    function showPluginForTicket($ticket) {
@@ -3399,7 +3407,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
     *
     * @return bool
     * @throws \GlpitestSQLError
-    * @throws \GlpitestSQLError
     */
    function executeDuplicate($options = []) {
       global $CFG_GLPI;
@@ -3571,7 +3578,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
             // Redirect on finish
             if (isset($options['redirect'])) {
-               Html::redirect($CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/metademand.form.php?id=" . $new_metademands_id);
+               Html::redirect($CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/metademand.form.php?id=" . $new_metademands_id);
             }
          }
          return true;
@@ -4095,18 +4102,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                'value'      => "notold"
             ],
             [
-               'link' => 'AND',
+               'link'     => 'AND',
                'criteria' => [
                   [
-                     'link'        => 'AND',
+                     'link'       => 'AND',
                      'field'      => 9501, // validation status
-                     'searchtype'  => 'equals',
+                     'searchtype' => 'equals',
                      'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE
                   ],
                   [
-                     'link'        => 'OR',
+                     'link'       => 'OR',
                      'field'      => 9501, // validation status
-                     'searchtype'  => 'equals',
+                     'searchtype' => 'equals',
                      'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK
                   ]
                ]
@@ -4170,7 +4177,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
    static function showAvailableTags($id) {
 
       $self = new self();
-      $tags       = $self->getTags($id);
+      $tags = $self->getTags($id);
 
       echo "<div class='center'>";
       echo "<table class='tab_cadre_fixe'>";
@@ -4194,8 +4201,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
     **/
    function getTags($id) {
 
-      $fields            = $this->find(['id' => $id]);
-      $res               = [];
+      $fields = $this->find(['id' => $id]);
+      $res    = [];
       foreach ($fields as $field) {
          $res[$field['id']] = $field['name'];
       }
@@ -4271,7 +4278,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $key = "key_$key";
             }
 
-//            if($key == 'name' || $key == 'completename' || $key == 'comments' || $key == 'label2')
+            //            if($key == 'name' || $key == 'completename' || $key == 'comments' || $key == 'label2')
             $value = htmlspecialchars($value, ENT_NOQUOTES);
             $parent->addChild($key, $value);
          }
@@ -4364,11 +4371,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
       foreach ($datas as $key => $data) {
          if (is_array($data) && empty($data)) {
             $datas[$key] = '';
-         }else if (!is_array($data)) {
+         } else if (!is_array($data)) {
             $datas[$key] = Html::entity_decode_deep($data);
          }
       }
-      $datas = Toolbox::addslashes_deep($datas);
+      $datas     = Toolbox::addslashes_deep($datas);
       $newIDMeta = $metademand->add($datas);
       //      $translations = [];
       foreach ($fields as $k => $field) {
@@ -4379,55 +4386,55 @@ class PluginMetademandsMetademand extends CommonDBTM {
             if ($key == "fields_link") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "custom_values") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "comment_values") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "default_values") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "check_value") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "plugin_metademands_tasks_id") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "hidden_link") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "hidden_block") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "informations_to_display") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-               if(is_null($fields[$k][$key])){
+               if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "fieldtranslations") {
@@ -4441,8 +4448,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
          $oldIDField = $fields[$k]["id"];
          unset($fields[$k]["id"]);
-         $fields[$k]['entities_id'] = $_SESSION['glpiactive_entity'];
-         $fields[$k] = Toolbox::addslashes_deep($fields[$k]);
+         $fields[$k]['entities_id']                       = $_SESSION['glpiactive_entity'];
+         $fields[$k]                                      = Toolbox::addslashes_deep($fields[$k]);
          $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
          $metaField                                       = new PluginMetademandsField();
          $newIDField                                      = $metaField->add($fields[$k]);
@@ -4451,8 +4458,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
          if (isset($fieldstranslations)) {
             foreach ($fieldstranslations as $fieldstranslation) {
                unset($fieldstranslation['id']);
-               $fieldstranslation['value'] = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['value']));
-               $fieldstranslation['field'] = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['field']));
+               $fieldstranslation['value']    = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['value']));
+               $fieldstranslation['field']    = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['field']));
                $fieldstranslation['items_id'] = $newIDField;
 
                $trans = new PluginMetademandsFieldTranslation();
@@ -4469,7 +4476,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          unset($task['id']);
          unset($task['ancestors_cache']);
          unset($task['sons_cache']);
-         $task = Toolbox::addslashes_deep($task);
+         $task       = Toolbox::addslashes_deep($task);
          $tickettask = $task['tickettask'];
          foreach ($task as $key => $val) {
             if (is_array($val)) {
@@ -4512,41 +4519,41 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $fields_link                 = PluginMetademandsField::_unserialize($fields_link);
          $hidden_link                 = PluginMetademandsField::_unserialize($hidden_link);
          $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($plugin_metademands_tasks_id);
-         $toUpdate = [];
-         $toUpdate['id'] = $new;
+         $toUpdate                    = [];
+         $toUpdate['id']              = $new;
          if (is_array($fields_link)) {
             foreach ($fields_link as $key => $field_link) {
-               if($field_link != 0 && isset($mapTableField[$field_link])){
+               if ($field_link != 0 && isset($mapTableField[$field_link])) {
                   $fields_link[$key] = $mapTableField[$field_link];
                }
 
             }
-            $fields_link                      = PluginMetademandsField::_serialize($fields_link);
+            $fields_link             = PluginMetademandsField::_serialize($fields_link);
             $toUpdate["fields_link"] = $fields_link;
          }
 
          if (is_array($hidden_link)) {
             foreach ($hidden_link as $key => $hidden) {
-               if($hidden != 0 && isset($mapTableField[$hidden])){
+               if ($hidden != 0 && isset($mapTableField[$hidden])) {
                   $hidden_link[$key] = $mapTableField[$hidden];
                }
 
             }
-            $hidden_link                      = PluginMetademandsField::_serialize($hidden_link);
+            $hidden_link             = PluginMetademandsField::_serialize($hidden_link);
             $toUpdate["hidden_link"] = $hidden_link;
          }
 
          if (is_array($plugin_metademands_tasks_id)) {
             foreach ($plugin_metademands_tasks_id as $key => $task) {
-               if($task != 0 && isset($mapTableTask[$task])) {
+               if ($task != 0 && isset($mapTableTask[$task])) {
                   $plugin_metademands_tasks_id[$key] = $mapTableTask[$task];
                }
 
             }
-            $plugin_metademands_tasks_id                      = PluginMetademandsField::_serialize($plugin_metademands_tasks_id);
+            $plugin_metademands_tasks_id             = PluginMetademandsField::_serialize($plugin_metademands_tasks_id);
             $toUpdate["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
          }
-         if($fieldMeta->getField('plugin_metademands_fields_id') != 0 && isset($mapTableField[$fieldMeta->getField('plugin_metademands_fields_id')])){
+         if ($fieldMeta->getField('plugin_metademands_fields_id') != 0 && isset($mapTableField[$fieldMeta->getField('plugin_metademands_fields_id')])) {
             $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$fieldMeta->getField('plugin_metademands_fields_id')];
          }
 
@@ -4557,7 +4564,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       foreach ($mapTableTaskReverse as $new => $old) {
          $meta_task = new PluginMetademandsTask();
          $meta_task->getFromDB($new);
-         $toUpdate = [];
+         $toUpdate       = [];
          $toUpdate['id'] = $new;
          if (isset($mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]])) {
             $toUpdate["plugin_metademands_tasks_id"] = $mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]];
@@ -4587,8 +4594,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
       if (!empty($translations)) {
          foreach ($translations as $key => $trans) {
             $meta_translation = new PluginMetademandsMetademandTranslation();
-            $trans['value'] = Html::entity_decode_deep(Toolbox::addslashes_deep($trans['value']));
-            $trans['field'] = Html::entity_decode_deep($trans['field']);
+            $trans['value']   = Html::entity_decode_deep(Toolbox::addslashes_deep($trans['value']));
+            $trans['field']   = Html::entity_decode_deep($trans['field']);
             unset($trans['id']);
             $trans['items_id'] = $newIDMeta;
 

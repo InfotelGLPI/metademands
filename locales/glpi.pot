@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-01 13:28+0000\n"
+"POT-Creation-Date: 2021-06-03 12:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,19 +23,23 @@ msgstr ""
 msgid "Metademand validation"
 msgstr ""
 
-#: hook.php:418
+#: hook.php:420
+msgid "Metademand approver"
+msgstr ""
+
+#: hook.php:433
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:434
+#: hook.php:449
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:445
+#: hook.php:460
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:457
+#: hook.php:472
 msgid "Technician child ticket"
 msgstr ""
 
@@ -489,158 +493,158 @@ msgstr ""
 msgid "Import metademands"
 msgstr ""
 
-#: inc/metademand.class.php:269 inc/metademand.class.php:343
+#: inc/metademand.class.php:270 inc/metademand.class.php:344
 #: inc/task.class.php:649 inc/tickettask.class.php:567
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
-#: inc/metademand.class.php:288 inc/metademand.class.php:369
+#: inc/metademand.class.php:289 inc/metademand.class.php:370
 msgid "Object to create is mandatory"
 msgstr ""
 
-#: inc/metademand.class.php:363
+#: inc/metademand.class.php:364
 msgid ""
 "There are sub-metademands or this is a sub-metademand. This metademand "
 "cannot be in basket mode"
 msgstr ""
 
-#: inc/metademand.class.php:469 inc/metademand.class.php:804
+#: inc/metademand.class.php:470 inc/metademand.class.php:805
 msgid "Use as basket"
 msgstr ""
 
-#: inc/metademand.class.php:477 inc/metademand.class.php:809
+#: inc/metademand.class.php:478 inc/metademand.class.php:810
 msgid "Create one ticket for all lines of the basket"
 msgstr ""
 
-#: inc/metademand.class.php:495 inc/metademand.class.php:662
+#: inc/metademand.class.php:496 inc/metademand.class.php:663
 msgid "Object to create"
 msgstr ""
 
-#: inc/metademand.class.php:793 inc/metademand.class.php:940
+#: inc/metademand.class.php:794 inc/metademand.class.php:941
 msgid "Example"
 msgstr ""
 
-#: inc/metademand.class.php:813
+#: inc/metademand.class.php:814
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 
-#: inc/metademand.class.php:823
+#: inc/metademand.class.php:824
 msgid "Need validation to create subticket"
 msgstr ""
 
-#: inc/metademand.class.php:826
+#: inc/metademand.class.php:827
 msgid "Hide the \"No\" values of Yes / No fields in the tickets"
 msgstr ""
 
-#: inc/metademand.class.php:832
+#: inc/metademand.class.php:833
 msgid "Background color"
 msgstr ""
 
-#: inc/metademand.class.php:835
+#: inc/metademand.class.php:836
 msgid "Title color"
 msgstr ""
 
-#: inc/metademand.class.php:840
+#: inc/metademand.class.php:841
 msgid "Export"
 msgstr ""
 
-#: inc/metademand.class.php:855
+#: inc/metademand.class.php:856
 msgid "Tasks level cannot be changed as unresolved related tickets exist"
 msgstr ""
 
-#: inc/metademand.class.php:962
+#: inc/metademand.class.php:963
 msgid "field add on demand"
 msgstr ""
 
-#: inc/metademand.class.php:964
+#: inc/metademand.class.php:965
 msgid "field update on demand"
 msgstr ""
 
-#: inc/metademand.class.php:966
+#: inc/metademand.class.php:967
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:1871
+#: inc/metademand.class.php:1878
 msgid "Demand add failed"
-msgstr ""
-
-#: inc/metademand.class.php:1875
-#, php-format
-msgid "Demand \"%s\" added with success"
-msgstr ""
-
-#: inc/metademand.class.php:1877
-#, php-format
-msgid "Ticket \"%s\" updated to metademand with success"
-msgstr ""
-
-#: inc/metademand.class.php:1880
-#, php-format
-msgid "Problem \"%s\" added with success"
 msgstr ""
 
 #: inc/metademand.class.php:1882
 #, php-format
+msgid "Demand \"%s\" added with success"
+msgstr ""
+
+#: inc/metademand.class.php:1884
+#, php-format
+msgid "Ticket \"%s\" updated to metademand with success"
+msgstr ""
+
+#: inc/metademand.class.php:1887
+#, php-format
+msgid "Problem \"%s\" added with success"
+msgstr ""
+
+#: inc/metademand.class.php:1889
+#, php-format
 msgid "Change \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2658
+#: inc/metademand.class.php:2669
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:2667
+#: inc/metademand.class.php:2677
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2792
+#: inc/metademand.class.php:2801
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:2819
+#: inc/metademand.class.php:2828
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:2833
+#: inc/metademand.class.php:2842
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:2840 inc/metademand.class.php:2969
+#: inc/metademand.class.php:2849 inc/metademand.class.php:2978
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:2962
+#: inc/metademand.class.php:2971
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:3039
+#: inc/metademand.class.php:3048
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:3385
+#: inc/metademand.class.php:3393
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:3494 inc/metademand.class.php:3549
+#: inc/metademand.class.php:3502 inc/metademand.class.php:3557
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:3506 inc/metademand.class.php:3671
+#: inc/metademand.class.php:3514 inc/metademand.class.php:3679
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3518 inc/metademand.class.php:3729
+#: inc/metademand.class.php:3526 inc/metademand.class.php:3737
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:3530 inc/metademand.class.php:3601
+#: inc/metademand.class.php:3538 inc/metademand.class.php:3609
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: inc/metademand.class.php:4275
+#: inc/metademand.class.php:4283
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:4283
+#: inc/metademand.class.php:4291
 msgid "Import"
 msgstr ""
 
