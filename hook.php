@@ -416,16 +416,16 @@ function plugin_metademands_getAddSearchOptions($itemtype) {
 
          $sopt[9499]['table']         = 'glpi_users';
          $sopt[9499]['field']         = 'name';
-         $sopt[9499]['linkfield']         = 'users_id';
+         $sopt[9499]['linkfield']     = 'users_id';
          $sopt[9499]['name']          = __("Metademand approver", 'metademands');
          $sopt[9499]['datatype']      = "itemlink";
          $sopt[9499]['forcegroupby']  = true;
-         $sopt[9499]['joinparams']    = ['beforejoin'         => [
-                                       'table'              => 'glpi_plugin_metademands_metademandvalidations',
-                                       'joinparams'         => [
-                                          'jointype'           => 'child'
-                                       ]
-                                    ]];
+         $sopt[9499]['joinparams']    = ['beforejoin' => [
+            'table'      => 'glpi_plugin_metademands_metademandvalidations',
+            'joinparams' => [
+               'jointype' => 'child'
+            ]
+         ]];
          $sopt[9499]['massiveaction'] = false;
 
          $sopt[9500]['table']         = 'glpi_plugin_metademands_tickets_metademands';
@@ -573,26 +573,22 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
 function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$already_link_tables) {
 
    // Rename table for meta left join
-   $AS        = "";
-   $AS_device = "";
-   $nt        = "glpi_plugin_resources_resources";
-   $nt_device = "glpi_plugin_resources_resources_items";
+   $AS = "";
    // Multiple link possibilies case
-   if ($new_table == "glpi_plugin_metademands_tickets_tasks" || $new_table == "glpi_plugin_resources_managers" || $new_table == "glpi_plugin_resources_recipients" || $new_table == "glpi_plugin_resources_recipients_leaving") {
-      $AS        = " AS " . $new_table;
-      $AS_device = " AS glpi_plugin_resources_resources_items_" . $linkfield;
-      $nt        .= "_" . $linkfield;
-      $nt_device .= "_" . $linkfield;
+   if ($new_table == "glpi_plugin_metademands_tickets_tasks") {
+      $AS = " AS " . $new_table;
    }
 
    switch ($new_table) {
       //
       case "glpi_plugin_metademands_tickets_tasks" :
          return "LEFT JOIN `glpi_plugin_metademands_tickets_tasks` $AS ON (`$ref_table`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
-          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` and `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
+          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` 
+          AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
           LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
-          
-          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id` and `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
+          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id` AND `glpi_tickets_metademands`.`is_deleted` = 0)
+          LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id` 
+          AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
           LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
          break;
 
@@ -643,6 +639,25 @@ function plugin_metademands_addSelect($type, $ID, $num) {
 function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = "") {
    global $CFG_GLPI;
    switch ($field) {
+      case 9499 :
+         $out = getUserName($data['raw']["ITEM_" . $num]);
+         return $out;
+         break;
+      case 9500 :
+         $out = PluginMetademandsTicket_Metademand::getStatusName($data['raw']["ITEM_" . $num]);
+         return $out;
+         break;
+      case 9501 :
+         $style = "style='background-color: " . PluginMetademandsMetademandValidation::getStatusColor($data['raw']["ITEM_" . $num]) . ";'";
+         $out   = "<div class='center' $style>";
+         $out   .= PluginMetademandsMetademandValidation::getStatusName($data['raw']["ITEM_" . $num]);
+         $out   .= "</div>";
+         return $out;
+         break;
+      //      case 9502 :
+      //         $out   = PluginMetademandsTicket_Metademand::getStatusName($data['raw']["ITEM_" . $num]);
+      //         return $out;
+      //         break;
       case 9503:
          $out                                  = $data['id'];
          $options['criteria'][0]['field']      = 50; // metademand status
@@ -696,22 +711,23 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
          break;
       case 9504 :
          $result = "";
-         if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
-            if (isset($data["Ticket_9504"]["count"])) {
-               $count = $data["Ticket_9504"]["count"];
-               $i     = 0;
-               for ($i; $i < $count; $i++) {
-                  if ($i != 0) {
-                     $result .= "\n";
+                  if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
+                     if (isset($data["Ticket_9504"]["count"])) {
+                        $count = $data["Ticket_9504"]["count"];
+                        $i     = 0;
+                        for ($i; $i < $count; $i++) {
+                           if ($i != 0) {
+                              $result .= "\n";
+                           }
+                           $result .= getUserName($data["Ticket_9504"][$i]["name"]);
+
+
+                        }
+                     }
                   }
-                  $result .= getUserName($data["Ticket_9504"][$i]["name"]);
-
-
-               }
-            }
-         }
          return $result;
          break;
+
    }
 
    return "";

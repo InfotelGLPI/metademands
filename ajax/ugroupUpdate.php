@@ -43,6 +43,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
       if ($fieldGroup->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'],
                                         'type'         => "dropdown_object",
+                                        'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                         'item'         => Group::getType()])) {
          $_POST["field"] = "field[" . $fieldGroup->fields['id'] . "]";
       }

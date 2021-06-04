@@ -202,7 +202,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $metademand = new self();
                $metas      = $metademand->find(['is_active'  => 1,
                                                 'is_deleted' => 0,
-//                                                'type'       => $ticket->input["type"]
+                                                //                                                'type'       => $ticket->input["type"]
                                                ]);
                $cats       = [];
 
@@ -231,7 +231,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   // Redirect if not linked to a resource contract type
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                                   ["plugin_metademands_metademands_id" => $meta_concerned])) {
-                     return $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?itilcategories_id=" .
+                     return $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?itilcategories_id=" .
                             $object->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned . "&tickets_id=" . $object->fields["id"] . "&step=" . self::STEP_SHOW;
                   }
                }
@@ -591,7 +591,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             $options['value'] = $values[$field];
             return Ticket::dropdownType($name, $options);
          case 'object_to_create':
-            return Dropdown::showFromArray($name, self::getObjectTypes(),$options);
+            return Dropdown::showFromArray($name, self::getObjectTypes(), $options);
             break;
       }
       return parent::getSpecificValueToSelect($field, $name, $values, $options);
@@ -1474,7 +1474,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            if ($fields_values['used_by_ticket'] == 65) {
                               $name = "_groups_id_observer";
                            }
-                           $parent_fields[$name] = $v[$id];
+                           $parent_fields[$name]       = $v[$id];
                            $parent_ticketfields[$name] = $v[$id];
                            if ($fields_values['used_by_ticket'] == 13) {
 
@@ -1699,7 +1699,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            foreach ($line['tasks'] as $key => $l) {
                               //replace #id# in title with the value
                               do {
-                                 $match = $this->getBetween($l['tickettasks_name'],'[',']');
+                                 $match = $this->getBetween($l['tickettasks_name'], '[', ']');
                                  if (empty($match)) {
                                     $explodeTitle = [];
                                     $explodeTitle = explode("#", $l['tickettasks_name']);
@@ -1718,19 +1718,21 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           }
                                           $result                                  = [];
                                           $result['content']                       = "";
+                                          $result[$fields['rank']]['content']      = "";
+                                          $result[$fields['rank']]['display']      = false;
                                           $parent_fields_id                        = 0;
                                           $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                           $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                        }
                                     }
                                  } else {
-                                    $explodeVal = [];
-                                    $explodeVal = explode("|",$match);
-                                    $find = false;
+                                    $explodeVal     = [];
+                                    $explodeVal     = explode("|", $match);
+                                    $find           = false;
                                     $val_to_replace = "";
                                     foreach ($explodeVal as $str) {
 
-                                       $explodeTitle = explode("#",$str);
+                                       $explodeTitle = explode("#", $str);
                                        foreach ($explodeTitle as $title) {
                                           if (isset($values['fields'][$title])) {
                                              $field = new PluginMetademandsField();
@@ -1744,23 +1746,25 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                                 $fields['value2'] = $values['fields'][$title . '-2'];
                                              }
-                                             $result                                  = [];
-                                             $result['content']                       = "";
-                                             $parent_fields_id                        = 0;
-                                             $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                             $str = str_replace("#" . $title . "#", $value,  $str);
-                                             if(!is_null($value) && !empty($value)) {
+                                             $result                             = [];
+                                             $result['content']                  = "";
+                                             $result[$fields['rank']]['content'] = "";
+                                             $result[$fields['rank']]['display'] = false;
+                                             $parent_fields_id                   = 0;
+                                             $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                             $str                                = str_replace("#" . $title . "#", $value, $str);
+                                             if (!is_null($value) && !empty($value)) {
                                                 $find = true;
                                              }
                                           }
 
                                        }
-                                       if($find == true) {
+                                       if ($find == true) {
                                           break;
                                        }
                                     }
-                                    $line['tasks'][$key]['tickettasks_name'] = str_replace("[".$match."]", $str, $line['tasks'][$key]['tickettasks_name']);
-//                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
+                                    $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['tickettasks_name']);
+                                    //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                  }
                               } while (!empty($match));
 
@@ -1783,6 +1787,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     }
                                     $result                                  = [];
                                     $result['content']                       = "";
+                                    $result[$fields['rank']]['content']      = "";
+                                    $result[$fields['rank']]['display']      = false;
                                     $parent_fields_id                        = 0;
                                     $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
@@ -1790,10 +1796,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               }
 
 
-
                               //replace #id# in content with the value
                               do {
-                                 $match = $this->getBetween($l['content'],'[',']');
+                                 $match = $this->getBetween($l['content'], '[', ']');
                                  if (empty($match)) {
                                     $explodeContent = explode("#", $l['content']);
                                     foreach ($explodeContent as $content) {
@@ -1809,17 +1814,19 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                              $fields['value2'] = $values['fields'][$content . '-2'];
                                           }
-                                          $result                         = [];
-                                          $result['content']              = "";
-                                          $parent_fields_id               = 0;
-                                          $value                          = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                          $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          $result                             = [];
+                                          $result['content']                  = "";
+                                          $result[$fields['rank']]['content'] = "";
+                                          $result[$fields['rank']]['display'] = false;
+                                          $parent_fields_id                   = 0;
+                                          $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                        }
                                     }
                                  } else {
-                                    $explodeVal = [];
-                                    $explodeVal = explode("|",$match);
-                                    $find = false;
+                                    $explodeVal     = [];
+                                    $explodeVal     = explode("|", $match);
+                                    $find           = false;
                                     $val_to_replace = "";
                                     foreach ($explodeVal as $str) {
 
@@ -1837,21 +1844,23 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                                 $fields['value2'] = $values['fields'][$content . '-2'];
                                              }
-                                             $result                         = [];
-                                             $result['content']              = "";
-                                             $parent_fields_id               = 0;
-                                             $value                          = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                             $str = str_replace("#" . $content . "#", $value,  $str);
-                                             if(!is_null($value) && !empty($value)) {
+                                             $result                             = [];
+                                             $result['content']                  = "";
+                                             $result[$fields['rank']]['content'] = "";
+                                             $result[$fields['rank']]['display'] = false;
+                                             $parent_fields_id                   = 0;
+                                             $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                             $str                                = str_replace("#" . $content . "#", $value, $str);
+                                             if (!is_null($value) && !empty($value)) {
                                                 $find = true;
                                              }
                                           }
                                        }
-                                       if($find == true) {
+                                       if ($find == true) {
                                           break;
                                        }
                                     }
-                                    $line['tasks'][$key]['content'] = str_replace("[".$match."]", $str, $line['tasks'][$key]['content']);
+                                    $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                  }
                               } while (!empty($match));
@@ -1872,11 +1881,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                         && isset($values['fields'][$content . '-2'])) {
                                        $fields['value2'] = $values['fields'][$content . '-2'];
                                     }
-                                    $result                         = [];
-                                    $result['content']              = "";
-                                    $parent_fields_id               = 0;
-                                    $value                          = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                    $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                    $result                             = [];
+                                    $result['content']                  = "";
+                                    $result[$fields['rank']]['content'] = "";
+                                    $result[$fields['rank']]['display'] = false;
+                                    $parent_fields_id                   = 0;
+                                    $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                    $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                  }
                               }
                            }
@@ -1898,7 +1909,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            foreach ($line['tasks'] as $key => $l) {
                               //replace #id# in title with the value
                               do {
-                                 $match = $this->getBetween($l['tickettasks_name'],'[',']');
+                                 $match = $this->getBetween($l['tickettasks_name'], '[', ']');
                                  if (empty($match)) {
                                     $explodeTitle = [];
                                     $explodeTitle = explode("#", $l['tickettasks_name']);
@@ -1917,19 +1928,21 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           }
                                           $result                                  = [];
                                           $result['content']                       = "";
+                                          $result[$fields['rank']]['content']      = "";
+                                          $result[$fields['rank']]['display']      = false;
                                           $parent_fields_id                        = 0;
                                           $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                           $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                        }
                                     }
                                  } else {
-                                    $explodeVal = [];
-                                    $explodeVal = explode("|",$match);
-                                    $find = false;
+                                    $explodeVal     = [];
+                                    $explodeVal     = explode("|", $match);
+                                    $find           = false;
                                     $val_to_replace = "";
                                     foreach ($explodeVal as $str) {
 
-                                       $explodeTitle = explode("#",$str);
+                                       $explodeTitle = explode("#", $str);
                                        foreach ($explodeTitle as $title) {
                                           if (isset($values['fields'][$title])) {
                                              $field = new PluginMetademandsField();
@@ -1943,23 +1956,25 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                                 $fields['value2'] = $values['fields'][$title . '-2'];
                                              }
-                                             $result                                  = [];
-                                             $result['content']                       = "";
-                                             $parent_fields_id                        = 0;
-                                             $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                             $str = str_replace("#" . $title . "#", $value,  $str);
-                                             if(!is_null($value) && !empty($value)) {
+                                             $result                             = [];
+                                             $result['content']                  = "";
+                                             $result[$fields['rank']]['content'] = "";
+                                             $result[$fields['rank']]['display'] = false;
+                                             $parent_fields_id                   = 0;
+                                             $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                             $str                                = str_replace("#" . $title . "#", $value, $str);
+                                             if (!is_null($value) && !empty($value)) {
                                                 $find = true;
                                              }
                                           }
 
                                        }
-                                       if($find == true) {
+                                       if ($find == true) {
                                           break;
                                        }
                                     }
-                                    $line['tasks'][$key]['tickettasks_name'] = str_replace("[".$match."]", $str, $line['tasks'][$key]['tickettasks_name']);
-                                    $l['tickettasks_name'] = str_replace("[".$match."]", $str, $l['tickettasks_name']);
+                                    $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['tickettasks_name']);
+                                    $l['tickettasks_name']                   = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                  }
                               } while (!empty($match));
@@ -1981,8 +1996,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                         && isset($values['fields'][$title . '-2'])) {
                                        $fields['value2'] = $values['fields'][$title . '-2'];
                                     }
-                                    $result                                  = [];
-                                    $result['content']                       = "";
+                                    $result                             = [];
+                                    $result['content']                  = "";
+                                    $result[$fields['rank']]['content'] = "";
+                                    $result[$fields['rank']]['display'] = false;
+
                                     $parent_fields_id                        = 0;
                                     $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
@@ -1990,10 +2008,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               }
 
 
-
                               //replace #id# in content with the value
                               do {
-                                 $match = $this->getBetween($l['content'],'[',']');
+                                 $match = $this->getBetween($l['content'], '[', ']');
                                  if (empty($match)) {
                                     $explodeContent = explode("#", $l['content']);
                                     foreach ($explodeContent as $content) {
@@ -2009,17 +2026,19 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                              $fields['value2'] = $values['fields'][$content . '-2'];
                                           }
-                                          $result                         = [];
-                                          $result['content']              = "";
-                                          $parent_fields_id               = 0;
-                                          $value                          = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                          $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          $result                             = [];
+                                          $result['content']                  = "";
+                                          $result[$fields['rank']]['content'] = "";
+                                          $result[$fields['rank']]['display'] = false;
+                                          $parent_fields_id                   = 0;
+                                          $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                        }
                                     }
                                  } else {
-                                    $explodeVal = [];
-                                    $explodeVal = explode("|",$match);
-                                    $find = false;
+                                    $explodeVal     = [];
+                                    $explodeVal     = explode("|", $match);
+                                    $find           = false;
                                     $val_to_replace = "";
                                     foreach ($explodeVal as $str) {
 
@@ -2037,22 +2056,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                                 $fields['value2'] = $values['fields'][$content . '-2'];
                                              }
-                                             $result                         = [];
-                                             $result['content']              = "";
-                                             $parent_fields_id               = 0;
-                                             $value                          = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                             $str = str_replace("#" . $content . "#", $value,  $str);
-                                             if(!is_null($value) && !empty($value)) {
+                                             $result                             = [];
+                                             $result['content']                  = "";
+                                             $result[$fields['rank']]['content'] = "";
+                                             $result[$fields['rank']]['display'] = false;
+                                             $parent_fields_id                   = 0;
+                                             $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                             $str                                = str_replace("#" . $content . "#", $value, $str);
+                                             if (!is_null($value) && !empty($value)) {
                                                 $find = true;
                                              }
                                           }
                                        }
-                                       if($find == true) {
+                                       if ($find == true) {
                                           break;
                                        }
                                     }
-                                    $line['tasks'][$key]['content'] = str_replace("[".$match."]", $str, $line['tasks'][$key]['content']);
-                                    $l['content'] = str_replace("[".$match."]", $str, $l['content']);
+                                    $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
+                                    $l['content']                   = str_replace("[" . $match . "]", $str, $l['content']);
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                  }
                               } while (!empty($match));
@@ -2073,11 +2094,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                         && isset($values['fields'][$content . '-2'])) {
                                        $fields['value2'] = $values['fields'][$content . '-2'];
                                     }
-                                    $result                         = [];
-                                    $result['content']              = "";
-                                    $parent_fields_id               = 0;
-                                    $value                          = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                    $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                    $result                             = [];
+                                    $result['content']                  = "";
+                                    $result[$fields['rank']]['content'] = "";
+                                    $result[$fields['rank']]['display'] = false;
+                                    $parent_fields_id                   = 0;
+                                    $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                    $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                  }
                               }
                            }
@@ -2770,13 +2793,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $value['item'] = $allowed_fields[$value['num']];
                if ($value['item'] == 'name') {
                   do {
-                     $match = $this->getBetween($value['value'],'[',']');
+                     $match = $this->getBetween($value['value'], '[', ']');
                      if (empty($match)) {
                         $explodeTitle = [];
                         $explodeTitle = explode("#", $value['value']);
                         foreach ($explodeTitle as $title) {
                            if (isset($values['fields'][$title])) {
-                              $field = new PluginMetademandsField();
+                              $field           = new PluginMetademandsField();
                               $fields          = $field->fields;
                               $fields['value'] = '';
 
@@ -2787,22 +2810,22 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                   && isset($values['fields'][$title . '-2'])) {
                                  $fields['value2'] = $values['fields'][$title . '-2'];
                               }
-                              $result                                  = [];
-                              $result[$fields['rank']]['content']                       = "";
-                              $result[$fields['rank']]['display']                       = false;
-                              $parent_fields_id                        = 0;
-                              $v                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                              $value['value'] = str_replace("#" . $title . "#", $v,  $value['value']);
+                              $result                             = [];
+                              $result[$fields['rank']]['content'] = "";
+                              $result[$fields['rank']]['display'] = false;
+                              $parent_fields_id                   = 0;
+                              $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
                            }
                         }
                      } else {
-                        $explodeVal = [];
-                        $explodeVal = explode("|",$match);
-                        $find = false;
+                        $explodeVal     = [];
+                        $explodeVal     = explode("|", $match);
+                        $find           = false;
                         $val_to_replace = "";
                         foreach ($explodeVal as $str) {
 
-                           $explodeTitle = explode("#",$str);
+                           $explodeTitle = explode("#", $str);
                            foreach ($explodeTitle as $title) {
                               if (isset($values['fields'][$title])) {
                                  $field = new PluginMetademandsField();
@@ -2817,22 +2840,22 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                      && isset($values['fields'][$title . '-2'])) {
                                     $fields['value2'] = $values['fields'][$title . '-2'];
                                  }
-                                 $result                                  = [];
-                                 $result[$fields['rank']]['content']                       = "";
-                                 $result[$fields['rank']]['display']                       = false;
-                                 $parent_fields_id                        = 0;
-                                 $v                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                 $str = str_replace("#" . $title . "#", $v,  $str);
-                                 if(!is_null($v) && !empty($v)) {
+                                 $result                             = [];
+                                 $result[$fields['rank']]['content'] = "";
+                                 $result[$fields['rank']]['display'] = false;
+                                 $parent_fields_id                   = 0;
+                                 $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                 $str                                = str_replace("#" . $title . "#", $v, $str);
+                                 if (!is_null($v) && !empty($v)) {
                                     $find = true;
                                  }
                               }
                            }
-                           if($find == true) {
+                           if ($find == true) {
                               break;
                            }
                         }
-                        $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
+                        $value['value'] = str_replace("[" . $match . "]", $str, $value['value']);
                      }
                   } while (!empty($match));
 
@@ -4633,11 +4656,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "</div>";
    }
 
-   function getBetween($string, $start = "", $end = ""){
+   function getBetween($string, $start = "", $end = "") {
       if (strpos($string, $start)) { // required if $start not exist in $string
          $startCharCount = strpos($string, $start) + strlen($start);
-         $firstSubStr = substr($string, $startCharCount, strlen($string));
-         $endCharCount = strpos($firstSubStr, $end);
+         $firstSubStr    = substr($string, $startCharCount, strlen($string));
+         $endCharCount   = strpos($firstSubStr, $end);
          if ($endCharCount == 0) {
             $endCharCount = strlen($firstSubStr);
          }

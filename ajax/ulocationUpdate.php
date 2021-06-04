@@ -40,6 +40,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
       if ($fieldUser->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'],
                                        'type'         => "dropdown",
+                                       'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                        'item'         => Location::getType()])) {
          $_POST["field"] = "field[" . $fieldUser->fields['id'] . "]";
       }
