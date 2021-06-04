@@ -2800,6 +2800,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         foreach ($explodeTitle as $title) {
                            if (isset($values['fields'][$title])) {
                               $field           = new PluginMetademandsField();
+                              $field->getFromDB($title);
                               $fields          = $field->fields;
                               $fields['value'] = '';
 
