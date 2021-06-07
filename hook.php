@@ -648,10 +648,14 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
          return $out;
          break;
       case 9501 :
-         $style = "style='background-color: " . PluginMetademandsMetademandValidation::getStatusColor($data['raw']["ITEM_" . $num]) . ";'";
-         $out   = "<div class='center' $style>";
-         $out   .= PluginMetademandsMetademandValidation::getStatusName($data['raw']["ITEM_" . $num]);
-         $out   .= "</div>";
+         if ($data['raw']["ITEM_" . $num] > -1) {
+            $style = "style='background-color: " . PluginMetademandsMetademandValidation::getStatusColor($data['raw']["ITEM_" . $num]) . ";'";
+            $out   = "<div class='center' $style>";
+            $out   .= PluginMetademandsMetademandValidation::getStatusName($data['raw']["ITEM_" . $num]);
+            $out   .= "</div>";
+         } else {
+            $out   = "";
+         }
          return $out;
          break;
       //      case 9502 :

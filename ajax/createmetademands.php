@@ -118,7 +118,9 @@ if (isset($_POST['update_fields'])) {
                   $toBeMandatory = PluginMetademandsWizard::getMandatoryFields($id,$value,$_POST['field']);
                   if(is_array($toBeMandatory) && !empty($toBeMandatory)){
                      foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
-                        $data[$valueMandatory]['is_mandatory'] = true;
+                        if (isset($data[$valueMandatory]['type'])) {
+                           $data[$valueMandatory]['is_mandatory'] = true;
+                        }
                      }
                   }
                }
