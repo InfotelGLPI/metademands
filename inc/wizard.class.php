@@ -2821,6 +2821,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                //                  }
                //               }
             }
+            //TODO
             // if(is_array($unserialisedHiddenBloc)){
             // }
             foreach ($toKeep as $k => $v) {
