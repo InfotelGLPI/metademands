@@ -163,7 +163,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       if ($params["create_subticket"] == 1) {
          if (!$meta->createSonsTickets($ticket_id,
                                        $ticket->fields,
-                                       $ticket_id, $meta_tasks, 1)) {
+                                       $ticket_id, $meta_tasks)) {
             $KO[] = 1;
 
          }
