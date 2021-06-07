@@ -1565,20 +1565,27 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         }
                      }
                   }
-                  $pluginfield = new PluginMetademandsPluginfields();
-                  $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
-                  foreach ($pluginfields as $plfield) {
-                     $fields_field = new PluginFieldsField();
-                     $fields_container = new PluginFieldsContainer();
-                      if($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
-                         if($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
-                            if($fields_container->fields['type'] ==  'dom') {
-                               if(isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                  $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
-                               }
-                            }
-                         }
-                      }
+                  if (Plugin::isPluginActive('fields')) {
+                     $pluginfield  = new PluginMetademandsPluginfields();
+                     $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
+                     foreach ($pluginfields as $plfield) {
+                        $fields_field     = new PluginFieldsField();
+                        $fields_container = new PluginFieldsContainer();
+                        if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
+                           if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
+                              if ($fields_container->fields['type'] == 'dom') {
+                                 if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
+                                    if($fields_field->fields['type'] == 'dropdown') {
+                                       $input["plugin_fields_".$fields_field->fields['name']."dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    } else {
+                                       $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    }
+
+                                 }
+                              }
+                           }
+                        }
+                     }
                   }
 
 
@@ -1589,30 +1596,36 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $draft = new PluginMetademandsDraft();
                      $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
                   }
+                  if (Plugin::isPluginActive('fields')) {
 
-                  $inputField = [];
-                  $pluginfield = new PluginMetademandsPluginfields();
-                  $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
-                  foreach ($pluginfields as $plfield) {
-                     $fields_field = new PluginFieldsField();
-                     $fields_container = new PluginFieldsContainer();
-                     if($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
-                        if($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
-                           if($fields_container->fields['type'] ==  'tab') {
-                              if(isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                 $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                     $inputField   = [];
+                     $pluginfield  = new PluginMetademandsPluginfields();
+                     $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
+                     foreach ($pluginfields as $plfield) {
+                        $fields_field     = new PluginFieldsField();
+                        $fields_container = new PluginFieldsContainer();
+                        if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
+                           if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
+                              if ($fields_container->fields['type'] == 'tab') {
+                                 if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
+                                    if($fields_field->fields['type'] == 'dropdown') {
+                                       $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_".$fields_field->fields['name']."dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    } else {
+                                       $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    }
+                                 }
                               }
                            }
                         }
                      }
-                  }
 
-                  foreach ( $inputField as $containers_id => $vals) {
-                     $container = new PluginFieldsContainer;
-                     $vals['plugin_fields_containers_id'] = $containers_id;
-                     $vals['itemtype'] = $object_class;
-                     $vals['items_id'] = $parent_tickets_id;
-                     $container->updateFieldsValues($vals, $object_class, false);
+                     foreach ($inputField as $containers_id => $vals) {
+                        $container                           = new PluginFieldsContainer;
+                        $vals['plugin_fields_containers_id'] = $containers_id;
+                        $vals['itemtype']                    = $object_class;
+                        $vals['items_id']                    = $parent_tickets_id;
+                        $container->updateFieldsValues($vals, $object_class, false);
+                     }
                   }
                   //Hook to do action after ticket creation with metademands
                   if (isset($PLUGIN_HOOKS['metademands'])) {
