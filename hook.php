@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-2.7.6.sql");
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-2.7.8.sql");
    }
 
    if ($DB->tableExists("glpi_plugin_metademands_profiles")
@@ -200,6 +200,10 @@ function plugin_metademands_install() {
    //version 2.7.6
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "informations_to_display")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.6.sql");
+   }
+
+   if (!$DB->tableExists("glpi_plugin_metademands_pluginfields")) {
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.8.sql");
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";

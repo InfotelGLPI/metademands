@@ -695,6 +695,43 @@ class PluginMetademandsField extends CommonDBChild {
       } else {
          Html::hidden('link_to_field', ['value' => 0]);
       }
+      if(Plugin::isPluginActive('fields')) {
+         echo "<tr class='tab_bg_1'>";
+         echo "<td>";
+         echo __('Link this to a plugin "fields" field', 'metademands');
+         echo "</td>";
+         echo "<td>";
+
+         $arrayAvailableContainer    = [];
+         $fieldsContainer = new PluginFieldsContainer();
+         $fieldsContainers = $fieldsContainer->find();
+
+         $meta = new PluginMetademandsMetademand();
+         $meta->getFromDB($this->fields["plugin_metademands_metademands_id"]);
+         foreach ($fieldsContainers as $container){
+            $typesContainer = json_decode($container['itemtypes']);
+            if(is_array($typesContainer) && in_array($meta->fields["object_to_create"],$typesContainer)) {
+               array_push($arrayAvailableContainer,$container['id']);
+            }
+         }
+
+         $conditions = [
+            "name" => "plugin_fields_fields_id",
+            "condition" => ['plugin_fields_containers_id' => $arrayAvailableContainer]
+         ];
+         $pluginfield           = new PluginMetademandsPluginfields();
+         if ($pluginfield->getFromDBByCrit(['plugin_metademands_fields_id' => $ID]) ) {
+            $conditions["value"] = $pluginfield->fields["plugin_fields_fields_id"];
+         }
+
+         PluginFieldsField::dropdown($conditions);
+
+         echo "</td>";
+         echo "<td colspan='2'>";
+         echo "</td>";
+         echo "</tr>";
+      }
+
 
 
       echo "<tr class='tab_bg_1'>";
@@ -4675,5 +4712,34 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       return $res;
+   }
+
+   function post_addItem() {
+      $inputs = $this->input;
+      $pluginField = new PluginMetademandsPluginfields();
+      $input = [];
+      $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+      $input['plugin_metademands_fields_id'] = $this->fields['id'];
+      $input['plugin_metademands_metademands_id'] = $this->fields['plugin_metademands_metademands_id'];
+      $pluginField->add($input);
+
+   }
+
+   function post_updateItem($history = 1) {
+      $this->input;
+      $pluginField = new PluginMetademandsPluginfields();
+      if($pluginField->getFromDBByCrit(['plugin_metademands_fields_id' => $this->fields['id']])) {
+         $input = [];
+         $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+         $input['plugin_metademands_fields_id'] = $this->fields['id'];
+         $input['id'] = $pluginField->fields['id'];
+         $pluginField->update($input);
+      } else {
+         $input = [];
+         $input['plugin_fields_fields_id'] = $this->input['plugin_fields_fields_id'];
+         $input['plugin_metademands_fields_id'] = $this->fields['id'];
+         $input['plugin_metademands_metademands_id'] = $this->fields['plugin_metademands_metademands_id'];
+         $pluginField->add($input);
+      }
    }
 }
