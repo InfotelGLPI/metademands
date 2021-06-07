@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-07 14:42+0000\n"
+"POT-Creation-Date: 2021-06-07 15:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -568,87 +568,87 @@ msgstr ""
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:2254
+#: inc/metademand.class.php:2267
 msgid "Demand add failed"
 msgstr ""
 
-#: inc/metademand.class.php:2258
+#: inc/metademand.class.php:2271
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2260
+#: inc/metademand.class.php:2273
 #, php-format
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr ""
 
-#: inc/metademand.class.php:2263
+#: inc/metademand.class.php:2276
 #, php-format
 msgid "Problem \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2265
+#: inc/metademand.class.php:2278
 #, php-format
 msgid "Change \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:3122
+#: inc/metademand.class.php:3135
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:3130
+#: inc/metademand.class.php:3143
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:3254
+#: inc/metademand.class.php:3267
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:3281
+#: inc/metademand.class.php:3294
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:3295
+#: inc/metademand.class.php:3308
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:3302 inc/metademand.class.php:3431
+#: inc/metademand.class.php:3315 inc/metademand.class.php:3444
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:3424
+#: inc/metademand.class.php:3437
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:3501
+#: inc/metademand.class.php:3514
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:3846
+#: inc/metademand.class.php:3859
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:3955 inc/metademand.class.php:4010
+#: inc/metademand.class.php:3968 inc/metademand.class.php:4023
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:3967 inc/metademand.class.php:4132
+#: inc/metademand.class.php:3980 inc/metademand.class.php:4145
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:3979 inc/metademand.class.php:4190
+#: inc/metademand.class.php:3992 inc/metademand.class.php:4203
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:3991 inc/metademand.class.php:4062
+#: inc/metademand.class.php:4004 inc/metademand.class.php:4075
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: inc/metademand.class.php:4736
+#: inc/metademand.class.php:4749
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:4744
+#: inc/metademand.class.php:4757
 msgid "Import"
 msgstr ""
 
