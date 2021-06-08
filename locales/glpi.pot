@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-07 15:23+0000\n"
+"POT-Creation-Date: 2021-06-08 09:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,7 +76,7 @@ msgstr ""
 msgid "Attribute ticket/tasks to "
 msgstr ""
 
-#: ajax/updatelistmeta.php:82 inc/wizard.class.php:221 inc/wizard.class.php:566
+#: ajax/updatelistmeta.php:82 inc/wizard.class.php:221 inc/wizard.class.php:567
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
@@ -873,45 +873,45 @@ msgstr ""
 msgid "What are the rules to follow ?"
 msgstr ""
 
-#: inc/wizard.class.php:300
+#: inc/wizard.class.php:301
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: inc/wizard.class.php:309
+#: inc/wizard.class.php:310
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: inc/wizard.class.php:611
+#: inc/wizard.class.php:612
 msgid "No advanced request found"
 msgstr ""
 
-#: inc/wizard.class.php:693 inc/wizard.class.php:695 inc/wizard.class.php:732
-#: inc/wizard.class.php:734
+#: inc/wizard.class.php:694 inc/wizard.class.php:696 inc/wizard.class.php:733
+#: inc/wizard.class.php:735
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:740 inc/wizard.class.php:742
+#: inc/wizard.class.php:741 inc/wizard.class.php:743
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2627
+#: inc/wizard.class.php:2628
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2636
+#: inc/wizard.class.php:2637
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2682
+#: inc/wizard.class.php:2683
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2686
+#: inc/wizard.class.php:2687
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
