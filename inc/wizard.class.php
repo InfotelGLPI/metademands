@@ -293,7 +293,8 @@ class PluginMetademandsWizard extends CommonDBTM {
 
          $user = new User();
          $user->getFromDB($userid);
-
+         
+         $canuse = PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id']);
          // Rights management
          if (!empty($parameters['tickets_id'])
              && !Session::haveRight('ticket', UPDATE)) {
@@ -304,7 +305,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "</div>";
 
          } else if (!self::canCreate()
-                    && !PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id'])
+                    || !$canuse
          ) {
             self::showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
             echo "</div>";
@@ -473,13 +474,13 @@ class PluginMetademandsWizard extends CommonDBTM {
       $result      = $DB->query($query);
       if ($DB->numrows($result)) {
          while ($data = $DB->fetchAssoc($result)) {
-            //         if (PluginMetademandsGroup::isUserHaveRight($data['id'])) {
-            if (empty($name = PluginMetademandsMetademand::displayField($data['id'], 'name'))) {
-               $name = $data['name'];
+            $canuse = PluginMetademandsGroup::isUserHaveRight($data['id']);
+            if ($canuse) {
+               if (empty($name = PluginMetademandsMetademand::displayField($data['id'], 'name'))) {
+                  $name = $data['name'];
+               }
+               $metademands[$data['id']] = $name;
             }
-            $metademands[$data['id']] = $name;
-            //         }
-
          }
       }
       return $metademands;
