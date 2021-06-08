@@ -2772,7 +2772,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          //if field is hidden remove it from Data & Post
          $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
          $unserialisedHiddenLink = PluginMetademandsField::_unserialize($value['hidden_link']);
-         //$unserialisedHiddenBloc = PluginMetademandsField::_unserialize($value['hidden_block']);
+         $unserialisedHiddenBloc = PluginMetademandsField::_unserialize($value['hidden_block']);
          $unserialisedTaskChild = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
          if (is_array($unserialisedCheck) && is_array($unserialisedHiddenLink)) {
             $toKeep = [];
@@ -2802,28 +2802,44 @@ class PluginMetademandsWizard extends CommonDBTM {
                      $_SESSION['metademands_hide'][$idChild] = $idChild;
                   }
                }
-               //               if (!isset($post[$id]) || ((!is_array($post[$id]) && $unserialisedCheck[$key] != $post[$id]) || (is_array($post[$id]) && !in_array($unserialisedCheck[$key], $post[$id])))) {
-               //
-               //                  if (isset($post[$hiddenFields])) unset($post[$hiddenFields]);
-               //                  if (isset($data[$hiddenFields])) unset($data[$hiddenFields]);
-               //
-               //                  //If the field is hidden and linked to a sub metademand
-               //                  //Dont show the sub metademand
-               //                  if (is_array($unserialisedTaskChild)) {
-               //                     foreach ($unserialisedTaskChild as $child) {
-               //                        if ($child != 0) {
-               //                           $metaTask = new PluginMetademandsMetademandTask();
-               //                           $metaTask->getFromDB($child);
-               //                           $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
-               //                           $_SESSION['metademands_hide'][$idChild] = $idChild;
-               //                        }
-               //                     }
-               //                  }
-               //               }
             }
             //TODO
-            // if(is_array($unserialisedHiddenBloc)){
-            // }
+             if(is_array($unserialisedHiddenBloc)){
+                $toKeep = [];
+                foreach ($unserialisedHiddenBloc as $key => $hiddenBloc) {
+                   $metademandsFields = new PluginMetademandsField();
+                   $metademandsFields = $metademandsFields->find(["rank" => $hiddenBloc,'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id']],'order');
+
+                   foreach ($metademandsFields as $metademandField){
+                      if (!isset($toKeep[$metademandField['id']])) {
+                         $toKeep[$metademandField['id']] = false;
+                      }
+                      if (isset($post[$id]) && isset($metademandField['id'])) {
+                         $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
+                      } else {
+                         $test = false;
+                      }
+
+                      if ($test == true) {
+                         $toKeep[$metademandField['id']] = true;
+                         if ($unserialisedTaskChild[$key] != 0) {
+                            $metaTask = new PluginMetademandsMetademandTask();
+                            $metaTask->getFromDB($unserialisedTaskChild[$key]);
+                            $idChild = $metaTask->getField('plugin_metademands_metademands_id');
+                            unset($_SESSION['metademands_hide'][$idChild]);
+                         }
+                      } else {
+                         if ($unserialisedTaskChild[$key] != 0) {
+                            $metaTask = new PluginMetademandsMetademandTask();
+                            $metaTask->getFromDB($unserialisedTaskChild[$key]);
+                            $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
+                            $_SESSION['metademands_hide'][$idChild] = $idChild;
+                         }
+                      }
+                   }
+                }
+
+             }
             foreach ($toKeep as $k => $v) {
                if ($v == false) {
                   if (isset($post[$k])) unset($post[$k]);
