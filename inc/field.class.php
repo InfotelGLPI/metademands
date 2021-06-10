@@ -2189,7 +2189,8 @@ class PluginMetademandsField extends CommonDBChild {
                      if (!empty($label2)) {
                         $btnLabel = $label2;
                      }
-                     $field = "<input type='submit' class='submit' value ='$btnLabel' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
+
+                     $field = "<input type='submit' class='submit' value ='".Html::clean($btnLabel)."' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
 
                      break;
                   case 'link_a' :
