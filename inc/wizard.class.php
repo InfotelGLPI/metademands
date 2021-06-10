@@ -304,9 +304,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "</div>";
             echo "</div>";
 
-         } else if (!self::canCreate()
-                    || !$canuse
-         ) {
+         } else if (!$canuse) {
             self::showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
             echo "</div>";
             echo "</div>";

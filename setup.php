@@ -42,7 +42,7 @@ function plugin_init_metademands() {
    $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'initProfile'];
    $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js'];
    $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL."/scripts/metademands.js"];
-   $PLUGIN_HOOKS['add_css']['metademands']        = ['/css/metademands.css'];
+   $PLUGIN_HOOKS['add_css']['metademands']        = ['css/metademands.css'];
 
    // add minidashboard
    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = ['PluginMetademandsMetademand', 'getMetademandDashboards'];
