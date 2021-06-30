@@ -35,6 +35,18 @@ class PluginMetademandsWizard extends CommonDBTM {
    static $rightname = 'plugin_metademands';
 
    /**
+    * __contruct function where initialize some variables
+    *
+    * @global array $CFG_GLPI
+    */
+   function __construct() {
+      $this->table = "glpi_plugin_metademands_metademands";
+   }
+
+   static function getTable($classname = null) {
+      return CommonDBTM::getTable("PluginMetademandsMetademand");
+   }
+   /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
     *
