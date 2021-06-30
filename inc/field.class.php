@@ -1785,7 +1785,7 @@ class PluginMetademandsField extends CommonDBChild {
             switch ($data['item']) {
                case 'other' :
                   if (!empty($data['custom_values'])) {
-                     $data['custom_values'] = self::_unserialize($data['custom_values']);
+                     $data['custom_values'] = array_merge([0 => Dropdown::EMPTY_VALUE],self::_unserialize($data['custom_values']));
                      foreach ($data['custom_values'] as $k => $val) {
                         if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
                            $data['custom_values'][$k] = $ret;
@@ -1804,8 +1804,8 @@ class PluginMetademandsField extends CommonDBChild {
                      }
                      $value = !empty($value) ? $value : $default_values;
 
-                     $data['custom_values'][0] = Dropdown::EMPTY_VALUE;
-                     ksort($data['custom_values']);
+
+//                     ksort($data['custom_values']);
                      $field = "";
                      $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]",
                                                        $data['custom_values'],
