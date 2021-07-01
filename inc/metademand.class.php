@@ -359,7 +359,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
          $metademands_data = $this->constructMetademands($this->getID());
          $metademands_data = array_values($metademands_data);
-         if (is_array($metademands_data['tasks'])
+         if (isset($metademands_data['tasks'])
+             && is_array($metademands_data['tasks'])
              && count($metademands_data['tasks']) > 0) {
             Session::addMessageAfterRedirect(__('There are sub-metademands or this is a sub-metademand. This metademand cannot be in basket mode', 'metademands'), false, ERROR);
             return false;
@@ -1455,6 +1456,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   //TODO Change / problem ?
                   $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values);
                }
+
                $list_fields  = $line['form'];
                $searchOption = Search::getOptions($object_class);
                foreach ($list_fields as $id => $fields_values) {
@@ -1576,21 +1578,19 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
                               if ($fields_container->fields['type'] == 'dom') {
                                  if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                    if($fields_field->fields['type'] == 'dropdown') {
-                                       $input["plugin_fields_".$fields_field->fields['name']."dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    if ($fields_field->fields['type'] == 'dropdown') {
+                                       $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                        $inputFieldMain["plugin_fields_".$fields_field->fields['name']."dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     } else {
                                        $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                        $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     }
-
                                  }
                               }
                            }
                         }
                      }
                   }
-
 
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
@@ -1612,8 +1612,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
                               if ($fields_container->fields['type'] == 'tab') {
                                  if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                    if($fields_field->fields['type'] == 'dropdown') {
-                                       $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_".$fields_field->fields['name']."dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    if ($fields_field->fields['type'] == 'dropdown') {
+                                       $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     } else {
                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     }
@@ -1822,21 +1822,21 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        }
                                     }
 
-                                    if(strpos($match,"#") !== false) {
+                                    if (strpos($match, "#") !== false) {
                                        $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['tickettasks_name']);
                                        $l['tickettasks_name']                   = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
                                     } else {
-                                       $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", "<@".$str."@>", $line['tasks'][$key]['tickettasks_name']);
-                                       $l['tickettasks_name']                   = str_replace("[" . $match . "]", "<@".$str."@>", $l['tickettasks_name']);
+                                       $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['tickettasks_name']);
+                                       $l['tickettasks_name']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
                                     }
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                  }
                               } while (!empty($match));
 
-                               $line['tasks'][$key]['tickettasks_name'] = str_replace("<@", "[", $line['tasks'][$key]['tickettasks_name']);
+                              $line['tasks'][$key]['tickettasks_name'] = str_replace("<@", "[", $line['tasks'][$key]['tickettasks_name']);
                               $line['tasks'][$key]['tickettasks_name'] = str_replace("@>", "]", $line['tasks'][$key]['tickettasks_name']);
-                              $l['tickettasks_name'] = str_replace("<@", "[",  $l['tickettasks_name']);
-                              $l['tickettasks_name'] = str_replace("@>", "]",  $l['tickettasks_name']);
+                              $l['tickettasks_name']                   = str_replace("<@", "[", $l['tickettasks_name']);
+                              $l['tickettasks_name']                   = str_replace("@>", "]", $l['tickettasks_name']);
 
                               $explodeTitle = explode("#", $l['tickettasks_name']);
                               foreach ($explodeTitle as $title) {
@@ -1929,13 +1929,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           break;
                                        }
                                     }
-//                                    $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
-                                    if(strpos($match,"#") !== false) {
+                                    //                                    $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
+                                    if (strpos($match, "#") !== false) {
                                        $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
-                                       $l['content'] = str_replace("[" . $match . "]", $str,  $l['content']);
+                                       $l['content']                   = str_replace("[" . $match . "]", $str, $l['content']);
                                     } else {
-                                       $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", "<@".$str."@>", $line['tasks'][$key]['content']);
-                                       $l['content'] = str_replace("[" . $match . "]", "<@".$str."@>",  $l['content']);
+                                       $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['content']);
+                                       $l['content']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
                                     }
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                  }
@@ -1943,8 +1943,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                               $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
                               $line['tasks'][$key]['content'] = str_replace("@>", "]", $line['tasks'][$key]['content']);
-                              $l['content'] = str_replace("<@", "[",  $l['content']);
-                              $l['content'] = str_replace("@>", "]",  $l['content']);
+                              $l['content']                   = str_replace("<@", "[", $l['content']);
+                              $l['content']                   = str_replace("@>", "]", $l['content']);
 
                               $explodeContent = explode("#", $l['content']);
                               foreach ($explodeContent as $content) {
@@ -2055,12 +2055,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        }
                                     }
 
-                                    if(strpos($match,"#") !== false) {
+                                    if (strpos($match, "#") !== false) {
                                        $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['tickettasks_name']);
                                        $l['tickettasks_name']                   = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
                                     } else {
-                                       $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", "<@".$str."@>", $line['tasks'][$key]['tickettasks_name']);
-                                       $l['tickettasks_name']                   = str_replace("[" . $match . "]", "<@".$str."@>", $l['tickettasks_name']);
+                                       $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['tickettasks_name']);
+                                       $l['tickettasks_name']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
                                     }
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                  }
@@ -2068,8 +2068,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                               $line['tasks'][$key]['tickettasks_name'] = str_replace("<@", "[", $line['tasks'][$key]['tickettasks_name']);
                               $line['tasks'][$key]['tickettasks_name'] = str_replace("@>", "]", $line['tasks'][$key]['tickettasks_name']);
-                              $l['tickettasks_name'] = str_replace("<@", "[",  $l['tickettasks_name']);
-                              $l['tickettasks_name'] = str_replace("@>", "]",  $l['tickettasks_name']);
+                              $l['tickettasks_name']                   = str_replace("<@", "[", $l['tickettasks_name']);
+                              $l['tickettasks_name']                   = str_replace("@>", "]", $l['tickettasks_name']);
 
                               $explodeTitle = explode("#", $l['tickettasks_name']);
                               foreach ($explodeTitle as $title) {
@@ -2164,12 +2164,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        }
                                     }
 
-                                   if(strpos($match,"#") !== false) {
+                                    if (strpos($match, "#") !== false) {
                                        $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
-                                       $l['content'] = str_replace("[" . $match . "]", $str,  $l['content']);
+                                       $l['content']                   = str_replace("[" . $match . "]", $str, $l['content']);
                                     } else {
-                                       $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", "<@".$str."@>", $line['tasks'][$key]['content']);
-                                       $l['content'] = str_replace("[" . $match . "]", "<@".$str."@>",  $l['content']);
+                                       $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['content']);
+                                       $l['content']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
                                     }
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                  }
@@ -2177,8 +2177,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                               $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
                               $line['tasks'][$key]['content'] = str_replace("@>", "]", $line['tasks'][$key]['content']);
-                              $l['content'] = str_replace("<@", "[",  $l['content']);
-                              $l['content'] = str_replace("@>", "]",  $l['content']);
+                              $l['content']                   = str_replace("<@", "[", $l['content']);
+                              $l['content']                   = str_replace("@>", "]", $l['content']);
 
                               $explodeContent = explode("#", $l['content']);
                               foreach ($explodeContent as $content) {
@@ -2901,7 +2901,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         $explodeTitle = explode("#", $value['value']);
                         foreach ($explodeTitle as $title) {
                            if (isset($values['fields'][$title])) {
-                              $field           = new PluginMetademandsField();
+                              $field = new PluginMetademandsField();
                               $field->getFromDB($title);
                               $fields          = $field->fields;
                               $fields['value'] = '';
@@ -2958,10 +2958,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               break;
                            }
                         }
-                        if(strpos($match,"#") !== false){
+                        if (strpos($match, "#") !== false) {
                            $value['value'] = str_replace("[" . $match . "]", $str, $value['value']);
                         } else {
-                           $value['value'] = str_replace("[" . $match . "]", "<@".$str."@>", $value['value']);
+                           $value['value'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $value['value']);
                         }
 
                      }
@@ -2969,8 +2969,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                   $value['value'] = str_replace("<@", "[", $value['value']);
                   $value['value'] = str_replace("@>", "]", $value['value']);
-                  $explodeTitle = [];
-                  $explodeTitle = explode("#", $value['value']);
+                  $explodeTitle   = [];
+                  $explodeTitle   = explode("#", $value['value']);
                   foreach ($explodeTitle as $title) {
                      if (isset($values['fields'][$title])) {
                         $field = new PluginMetademandsField();
