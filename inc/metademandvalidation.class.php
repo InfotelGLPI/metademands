@@ -160,10 +160,61 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       }
       $meta = new PluginMetademandsMetademand();
       $meta->getFromDB($this->getField("plugin_metademands_metademands_id"));
+
+      $values_form  = [];
+      $ticket_field = new PluginMetademandsTicket_Field();
+      $fields       = $ticket_field->find(['tickets_id' => $ticket_id]);
+      foreach ($fields as $f) {
+         $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
+         if ($values_form[$f['plugin_metademands_fields_id']] === null) {
+            $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
+         }
+
+         $f['plugin_metademands_fields_id'];
+      }
+
+      $inputFieldMain = [];
+      if (Plugin::isPluginActive('fields')) {
+         $pluginfield  = new PluginMetademandsPluginfields();
+         $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $meta->getID()]);
+
+
+         $inputField   = [];
+
+         foreach ($pluginfields as $plfield) {
+            $fields_field     = new PluginFieldsField();
+            $fields_container = new PluginFieldsContainer();
+            if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
+               if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
+                  if ($fields_container->fields['type'] == 'tab') {
+                     if (isset($values_form[$plfield['plugin_metademands_fields_id']])) {
+                        if ($fields_field->fields['type'] == 'dropdown') {
+                           $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
+                        } else {
+                           $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
+                        }
+                     }
+                  }
+
+                  if ($fields_container->fields['type'] == 'dom') {
+                     if (isset($values_form[$plfield['plugin_metademands_fields_id']])) {
+                        if ($fields_field->fields['type'] == 'dropdown') {
+                           $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
+                        } else {
+                           $inputFieldMain[$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
+                        }
+
+                     }
+                  }
+               }
+            }
+         }
+      }
+
       if ($params["create_subticket"] == 1) {
          if (!$meta->createSonsTickets($ticket_id,
                                        $ticket->fields,
-                                       $ticket_id, $meta_tasks)) {
+                                       $ticket_id, $meta_tasks,1, $inputField, $inputFieldMain)) {
             $KO[] = 1;
 
          }

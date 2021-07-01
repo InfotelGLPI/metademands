@@ -1565,6 +1565,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         }
                      }
                   }
+                  $inputFieldMain = [];
                   if (Plugin::isPluginActive('fields')) {
                      $pluginfield  = new PluginMetademandsPluginfields();
                      $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
@@ -1577,8 +1578,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
                                     if($fields_field->fields['type'] == 'dropdown') {
                                        $input["plugin_fields_".$fields_field->fields['name']."dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       $inputFieldMain["plugin_fields_".$fields_field->fields['name']."dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     } else {
                                        $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     }
 
                                  }
@@ -1596,6 +1599,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $draft = new PluginMetademandsDraft();
                      $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
                   }
+                  $inputField = [];
                   if (Plugin::isPluginActive('fields')) {
 
                      $inputField   = [];
@@ -1972,7 +1976,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            if (!$this->createSonsTickets($parent_tickets_id,
                                                          $this->mergeFields($parent_fields,
                                                                             $parent_ticketfields),
-                                                         $parent_tickets_id, $line['tasks'], $tasklevel)) {
+                                                         $parent_tickets_id, $line['tasks'], $tasklevel,$inputField,$inputFieldMain)) {
                               $KO[] = 1;
                            }
                         } else {
@@ -2295,7 +2299,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          switch ($key) {
             //            case 'name' :
             //               $parent_fields[$key] .= ' ' . $val;
-            //               break;
+            //               break;c
             //            case 'content' :
             //               $parent_fields[$key] .= '\r\n' . $val;
             //               break;
@@ -3011,7 +3015,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @return bool
     * @throws \GlpitestSQLError
     */
-   function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1) {
+   function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1, $inputField = [], $inputFieldMain = []) {
 
       $ticket_ticket = new Ticket_Ticket();
       $ticket_task   = new PluginMetademandsTicket_Task();
@@ -3152,8 +3156,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
             if (isset($parent_fields['_groups_id_assign'])) {
                $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
             }
-
+            $son_ticket_data = $this->mergeFields($son_ticket_data,$inputFieldMain);
             if ($son_tickets_id = $ticket->add(Toolbox::addslashes_deep($son_ticket_data))) {
+
+               if (Plugin::isPluginActive('fields')) {
+                  foreach ($inputField as $containers_id => $vals) {
+                     $container                           = new PluginFieldsContainer;
+                     $vals['plugin_fields_containers_id'] = $containers_id;
+                     $vals['itemtype']                    = "Ticket";
+                     $vals['items_id']                    = $son_tickets_id;
+                     $container->updateFieldsValues($vals, "Ticket", false);
+                  }
+               }
                // Add son link to parent
                $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
                                     'tickets_id_2' => $son_tickets_id,

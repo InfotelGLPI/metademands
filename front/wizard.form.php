@@ -354,6 +354,16 @@ if (isset($_POST['next'])) {
       $data    = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
                                 'is_basket'                         => 1]);
 
+
+      //Clean $post & $data & $_POST
+      $dataOld = $data;
+      $post = $_POST['field'];
+      // Double appel for prevent order fields
+      PluginMetademandsWizard::unsetHidden($data, $post);
+      PluginMetademandsWizard::unsetHidden($dataOld, $post);
+      $_POST['field'] = $post;
+
+
       foreach ($data as $id => $value) {
 
          if ($value['type'] == 'radio') {
