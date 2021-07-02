@@ -4718,11 +4718,12 @@ class PluginMetademandsField extends CommonDBChild {
       $inputs                                     = $this->input;
       $pluginField                                = new PluginMetademandsPluginfields();
       $input                                      = [];
-      $input['plugin_fields_fields_id']           = $this->input['plugin_fields_fields_id'];
-      $input['plugin_metademands_fields_id']      = $this->fields['id'];
-      $input['plugin_metademands_metademands_id'] = $this->fields['plugin_metademands_metademands_id'];
-      $pluginField->add($input);
-
+      if (isset($this->input['plugin_fields_fields_id'])) {
+         $input['plugin_fields_fields_id']           = $this->input['plugin_fields_fields_id'];
+         $input['plugin_metademands_fields_id']      = $this->fields['id'];
+         $input['plugin_metademands_metademands_id'] = $this->fields['plugin_metademands_metademands_id'];
+         $pluginField->add($input);
+      }
    }
 
    function post_updateItem($history = 1) {
