@@ -172,14 +172,11 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
          $f['plugin_metademands_fields_id'];
       }
-
+      $inputField   = [];
       $inputFieldMain = [];
       if (Plugin::isPluginActive('fields')) {
          $pluginfield  = new PluginMetademandsPluginfields();
          $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $meta->getID()]);
-
-
-         $inputField   = [];
 
          foreach ($pluginfields as $plfield) {
             $fields_field     = new PluginFieldsField();

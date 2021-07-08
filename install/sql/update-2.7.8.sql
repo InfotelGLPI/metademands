@@ -1,3 +1,4 @@
+ALTER TABLE `glpi_plugin_metademands_metademands` ADD `maintenance_mode` tinyint(1) NOT NULL DEFAULT '0';
 
 CREATE TABLE `glpi_plugin_metademands_pluginfields`
 (

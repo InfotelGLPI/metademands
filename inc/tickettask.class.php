@@ -440,6 +440,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
       $ticket_metademand_data = $ticket_metademand->find(['plugin_metademands_metademands_id' => $metademands->fields['id']]);
       $solved                 = PluginMetademandsTicket::isTicketSolved($ticket_metademand_data);
+      if ($metademands->fields['maintenance_mode'] == 1) {
+         $solved  = true;
+      }
       if (!$solved && $canedit) {
          $metademands->showDuplication($metademands->fields['id']);
       }

@@ -157,181 +157,191 @@ class PluginMetademandsWizard extends CommonDBTM {
             $background_color = $meta->fields['background_color'];
          }
       }
-      if (!$parameters['preview']) {
-         echo "<div class='bt-container-fluid metademands_wizard_rank' style='background-color: " . $background_color . ";'> ";
-      }
-      $style = "";
-      if ($parameters['preview']) {
-         $style = "style='width: 1000px;'";
-      }
-      echo "<div id='meta-form' class='bt-block bt-features' $style> ";
 
-      echo "<form name='wizard_form' id ='wizard_form'
+      if ($meta->fields['maintenance_mode'] == 1 && !$parameters['preview']) {
+         echo "<h3>";
+         echo "<div class='alert alert-warning center'>";
+         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i><br><br>";
+         echo __('This form is in maintenance mode', 'metademands'). "<br><br>";
+         echo __('Please come back later', 'metademands'). "</div></h3>";
+      } else {
+
+         if (!$parameters['preview']) {
+            echo "<div class='bt-container-fluid metademands_wizard_rank' style='background-color: " . $background_color . ";'> ";
+         }
+         $style = "";
+         if ($parameters['preview']) {
+            $style = "style='width: 1000px;'";
+         }
+         echo "<div id='meta-form' class='bt-block bt-features' $style> ";
+
+         echo "<form name='wizard_form' id ='wizard_form'
                         method='post'
                         action= '" . Toolbox::getItemTypeFormURL(__CLASS__) . "'
                         enctype='multipart/form-data'
                         class='metademands_img'> ";
 
-      // Case of simple ticket convertion
-      echo "<input type='hidden' value='" . $parameters['tickets_id'] . "' name='tickets_id' > ";
-      // Resources id
-      echo "<input type='hidden' value='" . $parameters['resources_id'] . "' name= 'resources_id' > ";
-      // Resources step
-      echo "<input type='hidden' value= '" . $parameters['resources_step'] . "' name= 'resources_step' > ";
+         // Case of simple ticket convertion
+         echo "<input type='hidden' value='" . $parameters['tickets_id'] . "' name='tickets_id' > ";
+         // Resources id
+         echo "<input type='hidden' value='" . $parameters['resources_id'] . "' name= 'resources_id' > ";
+         // Resources step
+         echo "<input type='hidden' value= '" . $parameters['resources_step'] . "' name= 'resources_step' > ";
 
 
-      $icon = '';
-      if ($parameters['step'] == PluginMetademandsMetademand::STEP_LIST) {
-         // Wizard title
-         echo "<div class=\"form-row\">";
-         echo "<div class=\"col-md-12\">";
-         echo "<h3><div class='alert alert-secondary' role='alert'>";
-         $icon = "fa-share-alt";
-         if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-            $icon = $meta->fields['icon'];
-         }
-         echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-         echo __('Demand choice', 'metademands');
-         echo "</div></h3></div></div>";
-
-      } else if ($parameters['step'] >= PluginMetademandsMetademand::STEP_LIST) {
-
-         // Wizard title
-         echo "<div class=\"form-row\">";
-         echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
-         echo "<h4 class=\"bt-title-divider\"><span>";
-         $meta = new PluginMetademandsMetademand();
-         if ($meta->getFromDB($parameters['metademands_id'])) {
+         $icon = '';
+         if ($parameters['step'] == PluginMetademandsMetademand::STEP_LIST) {
+            // Wizard title
+            echo "<div class=\"form-row\">";
+            echo "<div class=\"col-md-12\">";
+            echo "<h3><div class='alert alert-secondary' role='alert'>";
+            $icon = "fa-share-alt";
             if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                $icon = $meta->fields['icon'];
             }
-         }
+            echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+            echo __('Demand choice', 'metademands');
+            echo "</div></h3></div></div>";
 
-         $title_color = "";
-         if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-            $title_color = $meta->fields['title_color'];
-         }
-         echo "<span style='color: " . $title_color . ";'> ";
-         echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-         if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
-            echo $meta->getName();
-         } else {
-            echo $n;
-         }
-         echo "</span>";
-         //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
-         if (Session::haveRight('plugin_metademands', UPDATE)) {
-            echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
-                        <i class='fas fa-wrench'></i></a>";
-         }
-         echo "</span>";
-         if (!$parameters['preview']) {
-            echo "<span class='mydraft'>";
-            $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
-            if ($count_drafts > 0) {
-               echo "<span class='mydraft-text'>";
-               echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                            $count_drafts);
-               echo "</span>";
-            }
+         } else if ($parameters['step'] >= PluginMetademandsMetademand::STEP_LIST) {
 
-            echo "<i class='fas fa-2x mydraft-fa fa-cloud-download-alt pointer' title='" . _sx('button', 'Your drafts', 'metademands') . "' 
-                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
-            echo "</span>";
-         }
-         echo "</h4>";
-         if ($meta->getFromDB($parameters['metademands_id'])
-             && !empty($meta->fields['comment'])) {
-            if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
-               $comment = $meta->fields['comment'];
-            }
-            echo "<label><i>" . nl2br($comment) . "</i></label>";
-         }
-
-         echo "</div></div>";
-         echo "<div id='divdrafts' class=\"input-draft card bg-light mb-3\" style='display:none;'>";
-         echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
-         echo "</div>";
-
-         $plugin = new Plugin();
-         if ($plugin->isActivated('servicecatalog')) {
-            $configsc = new PluginServicecatalogConfig();
-            if ($_SESSION['servicecatalog']['sc_itilcategories_id'] > 0
-                && $configsc->seeCategoryDetails()) {
-               $helpdesk_category = new PluginServicecatalogCategory();
-               if ($helpdesk_category->getFromDBByCategory($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
-                  echo "<div class=\"form-row\">";
-                  echo "<div class=\"bt-feature col-md-12 \">";
-                  echo ($helpdesk_category->fields['comment'] != null) ?
-                     "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" . nl2br($helpdesk_category->fields['comment']) . "</p>" : "";
-                  echo ($helpdesk_category->fields['service_detail'] != null) ?
-                     "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_detail'])) . "</p>" : "";
-                  echo ($helpdesk_category->fields['service_users'] != null) ?
-                     "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_users'])) . "</p>" : "";
-                  echo ($helpdesk_category->fields['service_ttr'] != null) ?
-                     "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_ttr'])) . "</p>" : "";
-                  echo ($helpdesk_category->fields['service_use'] != null) ?
-                     "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_use'])) . "</p>" : "";
-                  echo ($helpdesk_category->fields['service_supervision'] != null) ?
-                     "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_supervision'])) . "</p>" : "";
-                  echo ($helpdesk_category->fields['service_rules'] != null) ?
-                     "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_rules'])) . "</p>" : "";
-                  echo "</div></div>";
+            // Wizard title
+            echo "<div class=\"form-row\">";
+            echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
+            echo "<h4 class=\"bt-title-divider\"><span>";
+            $meta = new PluginMetademandsMetademand();
+            if ($meta->getFromDB($parameters['metademands_id'])) {
+               if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+                  $icon = $meta->fields['icon'];
                }
             }
-         }
 
-         // Display user informations
-         $userid = Session::getLoginUserID();
-         // If ticket exists we get its first requester
-         if ($parameters['tickets_id']) {
-            $users_id_requester = PluginMetademandsTicket::getUsedActors($parameters['tickets_id'], CommonITILActor::REQUESTER, 'users_id');
-            if (count($users_id_requester)) {
-               $userid = $users_id_requester[0];
+            $title_color = "";
+            if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
+               $title_color = $meta->fields['title_color'];
             }
-         }
+            echo "<span style='color: " . $title_color . ";'> ";
+            echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+            if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+               echo $meta->getName();
+            } else {
+               echo $n;
+            }
+            echo "</span>";
+            //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
+            if (Session::haveRight('plugin_metademands', UPDATE)) {
+               echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
+                        <i class='fas fa-wrench'></i></a>";
+            }
+            echo "</span>";
+            if (!$parameters['preview']) {
+               echo "<span class='mydraft'>";
+               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
+               if ($count_drafts > 0) {
+                  echo "<span class='mydraft-text'>";
+                  echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                               $count_drafts);
+                  echo "</span>";
+               }
 
-         // Retrieve session values
-         if (isset($_SESSION['plugin_metademands']['fields']['_users_id_requester'])) {
-            $userid = $_SESSION['plugin_metademands']['fields']['_users_id_requester'];
-         }
+               echo "<i class='fas fa-2x mydraft-fa fa-cloud-download-alt pointer' title='" . _sx('button', 'Your drafts', 'metademands') . "' 
+                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
+               echo "</span>";
+            }
+            echo "</h4>";
+            if ($meta->getFromDB($parameters['metademands_id'])
+                && !empty($meta->fields['comment'])) {
+               if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
+                  $comment = $meta->fields['comment'];
+               }
+               echo "<label><i>" . nl2br($comment) . "</i></label>";
+            }
 
-         $user = new User();
-         $user->getFromDB($userid);
-         
-         $canuse = PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id']);
-         // Rights management
-         if (!empty($parameters['tickets_id'])
-             && !Session::haveRight('ticket', UPDATE)) {
-            self::showMessage(__("You don't have the right to update tickets", 'metademands'), true);
-            return false;
-            echo "</div>";
-            echo "</div>";
+            echo "</div></div>";
+            echo "<div id='divdrafts' class=\"input-draft card bg-light mb-3\" style='display:none;'>";
+            echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
             echo "</div>";
 
-         } else if (!$canuse) {
-            self::showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
-            echo "</div>";
-            echo "</div>";
-            echo "</div>";
-            return false;
+            $plugin = new Plugin();
+            if ($plugin->isActivated('servicecatalog')) {
+               $configsc = new PluginServicecatalogConfig();
+               if ($_SESSION['servicecatalog']['sc_itilcategories_id'] > 0
+                   && $configsc->seeCategoryDetails()) {
+                  $helpdesk_category = new PluginServicecatalogCategory();
+                  if ($helpdesk_category->getFromDBByCategory($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+                     echo "<div class=\"form-row\">";
+                     echo "<div class=\"bt-feature col-md-12 \">";
+                     echo ($helpdesk_category->fields['comment'] != null) ?
+                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" . nl2br($helpdesk_category->fields['comment']) . "</p>" : "";
+                     echo ($helpdesk_category->fields['service_detail'] != null) ?
+                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_detail'])) . "</p>" : "";
+                     echo ($helpdesk_category->fields['service_users'] != null) ?
+                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_users'])) . "</p>" : "";
+                     echo ($helpdesk_category->fields['service_ttr'] != null) ?
+                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_ttr'])) . "</p>" : "";
+                     echo ($helpdesk_category->fields['service_use'] != null) ?
+                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_use'])) . "</p>" : "";
+                     echo ($helpdesk_category->fields['service_supervision'] != null) ?
+                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_supervision'])) . "</p>" : "";
+                     echo ($helpdesk_category->fields['service_rules'] != null) ?
+                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_rules'])) . "</p>" : "";
+                     echo "</div></div>";
+                  }
+               }
+            }
+
+            // Display user informations
+            $userid = Session::getLoginUserID();
+            // If ticket exists we get its first requester
+            if ($parameters['tickets_id']) {
+               $users_id_requester = PluginMetademandsTicket::getUsedActors($parameters['tickets_id'], CommonITILActor::REQUESTER, 'users_id');
+               if (count($users_id_requester)) {
+                  $userid = $users_id_requester[0];
+               }
+            }
+
+            // Retrieve session values
+            if (isset($_SESSION['plugin_metademands']['fields']['_users_id_requester'])) {
+               $userid = $_SESSION['plugin_metademands']['fields']['_users_id_requester'];
+            }
+
+            $user = new User();
+            $user->getFromDB($userid);
+
+            $canuse = PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id']);
+            // Rights management
+            if (!empty($parameters['tickets_id'])
+                && !Session::haveRight('ticket', UPDATE)) {
+               self::showMessage(__("You don't have the right to update tickets", 'metademands'), true);
+               return false;
+               echo "</div>";
+               echo "</div>";
+               echo "</div>";
+
+            } else if (!$canuse) {
+               self::showMessage(__("You don't have the right to create meta-demand", 'metademands'), true);
+               echo "</div>";
+               echo "</div>";
+               echo "</div>";
+               return false;
+            }
+            echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
          }
-         echo "<input type='hidden' value='" . $userid . "' name='_users_id_requester'>";
-      }
-      $options['resources_id']      = $parameters['resources_id'];
-      $options['itilcategories_id'] = $parameters['itilcategories_id'];
-      self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options);
-      Html::closeForm();
-      echo "</div>";
-      if (!$parameters['preview']) {
+         $options['resources_id']      = $parameters['resources_id'];
+         $options['itilcategories_id'] = $parameters['itilcategories_id'];
+         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options);
+         Html::closeForm();
          echo "</div>";
+         if (!$parameters['preview']) {
+            echo "</div>";
+         }
       }
       echo "</div>";
    }

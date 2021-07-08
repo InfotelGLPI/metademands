@@ -150,7 +150,9 @@ if (isset($_POST['update_fields'])) {
 
                      foreach ($checkchild as $keyId => $check_value) {
                         $value['check_value']                 = $check_value;
-                        $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId];
+                        if (isset(PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId])) {
+                           $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId];
+                        }
                         $value['fields_link']                 = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
                      }
                   }

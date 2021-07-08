@@ -501,6 +501,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
       ];
 
       $tab[] = [
+         'id'       => '9',
+         'table'    => $this->getTable(),
+         'field'    => 'maintenance_mode',
+         'name'     => __('Maintenance mode'),
+         'datatype' => 'bool',
+      ];
+
+      $tab[] = [
          'id'            => '92',
          'table'         => $this->getTable(),
          'field'         => 'itilcategories_id',
@@ -644,6 +652,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
+      if ($this->fields['maintenance_mode'] == 1) {
+         echo "<h3>";
+         echo "<div class='warning'>";
+         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i><br><br>";
+         echo __('This form is in maintenance mode', 'metademands'). "</div></h3>";
+      }
+
       echo "<td>" . __('Name') . "</td>";
       echo "<td>";
       $opt = [
@@ -655,6 +670,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>" . __('Active') . "</td>";
       echo "<td>";
       Dropdown::showYesNo("is_active", $this->fields['is_active']);
+      echo "</td>";
+
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+
+      echo "<td colspan='2'></td>";
+
+      echo "<td>" . __('Maintenance mode') . "</td>";
+      echo "<td>";
+      Dropdown::showYesNo("maintenance_mode", $this->fields['maintenance_mode']);
       echo "</td>";
 
       echo "</tr>";

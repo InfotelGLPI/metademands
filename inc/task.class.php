@@ -149,6 +149,9 @@ class PluginMetademandsTask extends CommonDBTM {
 
          $solved = PluginMetademandsTicket::isTicketSolved($ticket_metademand_data);
 
+         if ($metademands->fields['maintenance_mode'] == 1) {
+            $solved  = true;
+         }
          if ($solved) {
             echo "<div class='center first-bloc'>";
             echo "<form name='form_ticket' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
