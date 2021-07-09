@@ -152,13 +152,15 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo "<div id ='content'>";
       $background_color = "";
       $meta             = new PluginMetademandsMetademand();
+      $maintenance_mode = 0;
       if ($meta->getFromDB($parameters['metademands_id'])) {
          if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
             $background_color = $meta->fields['background_color'];
          }
+         $maintenance_mode = $meta->fields['maintenance_mode'];
       }
 
-      if ($meta->fields['maintenance_mode'] == 1 && !$parameters['preview']) {
+      if ($maintenance_mode == 1 && !$parameters['preview']) {
          echo "<h3>";
          echo "<div class='alert alert-warning center'>";
          echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i><br><br>";
@@ -208,7 +210,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             // Wizard title
             echo "<div class=\"form-row\">";
             echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
-            echo "<h4 class=\"bt-title-divider\"><span>";
+            echo "<h3 class=\"alert alert-secondary\"><span>";
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($parameters['metademands_id'])) {
                if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
@@ -248,7 +250,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                 data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
                echo "</span>";
             }
-            echo "</h4>";
+            echo "</h3>";
             if ($meta->getFromDB($parameters['metademands_id'])
                 && !empty($meta->fields['comment'])) {
                if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {

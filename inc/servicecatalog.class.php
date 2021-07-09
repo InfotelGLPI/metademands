@@ -105,7 +105,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       }
 
       $list        = "";
-      $metademands = PluginMetademandsWizard::selectMetademands(" LIMIT 5");
+      $metademands = PluginMetademandsWizard::selectMetademands(" LIMIT 3");
 
       foreach ($metademands as $id => $name) {
          $list .= $name . '<br>';
