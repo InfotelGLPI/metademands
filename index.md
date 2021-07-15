@@ -1,3 +1,7 @@
+# Welcome to the mydashboard plugin page !
+
+## Français
+
 # Besoin initial
 
 Beaucoup de clients souhaitent mettre en place des demandes standards, donc des formulaires personnalisés afin de créer des tickets multiples (affectés à X groupes différents).
