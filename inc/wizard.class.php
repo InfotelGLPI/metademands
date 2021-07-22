@@ -318,6 +318,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             $user->getFromDB($userid);
 
             $canuse = PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id']);
+            if ($parameters['preview'] == 1){
+               $canuse = 1;
+            }
             // Rights management
             if (!empty($parameters['tickets_id'])
                 && !Session::haveRight('ticket', UPDATE)) {
