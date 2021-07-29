@@ -24,6 +24,10 @@
     </authors>
     <versions>
         <version>
+            <num>2.7.8</num>
+            <compatibility>~9.5</compatibility>
+        </version>
+        <version>
             <num>2.7.7</num>
             <compatibility>~9.5</compatibility>
         </version>
