@@ -1480,7 +1480,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $parent_ticketfields = [];
                if ($object_class == 'Ticket') {
                   //TODO Change / problem ?
-                  $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values);
+                  $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester']);
                }
 
                $list_fields  = $line['form'];
@@ -1807,6 +1807,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $parent_fields_id                        = 0;
                                           $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                           $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                       } else {
+                                          $users_id = $parent_fields['_users_id_requester'];
+                                          switch ($title) {
+                                             case "requester.login" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['name'];
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                break;
+                                             case "requester.name" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['realname'];
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                break;
+                                             case "requester.firstname" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['firstname'];
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                break;
+                                             case "requester.email" :
+                                                $user = new UserEmail();
+                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                $value = $user->fields['email'];
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                break;
+                                          }
                                        }
                                     }
                                  } else {
@@ -1839,6 +1867,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              $str                                = str_replace("#" . $title . "#", $value, $str);
                                              if (!is_null($value) && !empty($value)) {
                                                 $find = true;
+                                             }
+                                          } else {
+                                             $users_id = $parent_fields['_users_id_requester'];
+                                             switch ($title) {
+                                                case "requester.login" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['name'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "requester.name" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['realname'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "requester.firstname" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['firstname'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "requester.email" :
+                                                   $user = new UserEmail();
+                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                   $value = $user->fields['email'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
                                              }
                                           }
 
@@ -1887,6 +1943,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $parent_fields_id                        = 0;
                                     $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                 } else {
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    switch ($title) {
+                                       case "requester.login" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['name'];
+                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                          break;
+                                       case "requester.name" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['realname'];
+                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                          break;
+                                       case "requester.firstname" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['firstname'];
+                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                          break;
+                                       case "requester.email" :
+                                          $user = new UserEmail();
+                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                          $value = $user->fields['email'];
+                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                          break;
+                                    }
                                  }
                               }
 
@@ -1916,6 +2000,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $parent_fields_id                   = 0;
                                           $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                           $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                       } else {
+                                          $users_id = $parent_fields['_users_id_requester'];
+                                          switch ($content) {
+                                             case "requester.login" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['name'];
+                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                break;
+                                             case "requester.name" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['realname'];
+                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                break;
+                                             case "requester.firstname" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['firstname'];
+                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                break;
+                                             case "requester.email" :
+                                                $user = new UserEmail();
+                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                $value = $user->fields['email'];
+                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                break;
+                                          }
                                        }
                                     }
                                  } else {
@@ -1948,6 +2060,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              $str                                = str_replace("#" . $content . "#", $value, $str);
                                              if (!is_null($value) && !empty($value)) {
                                                 $find = true;
+                                             }
+                                          } else {
+                                             $users_id = $parent_fields['_users_id_requester'];
+                                             switch ($content) {
+                                                case "requester.login" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['name'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "requester.name" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['realname'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "requester.firstname" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['firstname'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "requester.email" :
+                                                   $user = new UserEmail();
+                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                   $value = $user->fields['email'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
                                              }
                                           }
                                        }
@@ -1995,6 +2135,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $parent_fields_id                   = 0;
                                     $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                 } else {
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    switch ($content) {
+                                       case "requester.login" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['name'];
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          break;
+                                       case "requester.name" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['realname'];
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          break;
+                                       case "requester.firstname" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['firstname'];
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          break;
+                                       case "requester.email" :
+                                          $user = new UserEmail();
+                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                          $value = $user->fields['email'];
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          break;
+                                    }
                                  }
                               }
                            }
@@ -2040,6 +2208,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $parent_fields_id                        = 0;
                                           $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                           $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                       } else {
+                                          $users_id = $parent_fields['_users_id_requester'];
+                                          switch ($title) {
+                                             case "requester.login" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['name'];
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                break;
+                                             case "requester.name" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['realname'];
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                break;
+                                             case "requester.firstname" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['firstname'];
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                break;
+                                             case "requester.email" :
+                                                $user = new UserEmail();
+                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                $value = $user->fields['email'];
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                break;
+                                          }
                                        }
                                     }
                                  } else {
@@ -2072,6 +2268,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              $str                                = str_replace("#" . $title . "#", $value, $str);
                                              if (!is_null($value) && !empty($value)) {
                                                 $find = true;
+                                             }
+                                          } else {
+                                             $users_id = $parent_fields['_users_id_requester'];
+                                             switch ($title) {
+                                                case "requester.login" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['name'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "requester.name" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['realname'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "requester.firstname" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['firstname'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "requester.email" :
+                                                   $user = new UserEmail();
+                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                   $value = $user->fields['email'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
                                              }
                                           }
 
@@ -2121,6 +2345,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $parent_fields_id                        = 0;
                                     $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                 } else {
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    switch ($title) {
+                                       case "requester.login" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['name'];
+                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                          break;
+                                       case "requester.name" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['realname'];
+                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                          break;
+                                       case "requester.firstname" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['firstname'];
+                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                          break;
+                                       case "requester.email" :
+                                          $user = new UserEmail();
+                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                          $value = $user->fields['email'];
+                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                          break;
+                                    }
                                  }
                               }
 
@@ -2150,6 +2402,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $parent_fields_id                   = 0;
                                           $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                           $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                       } else {
+                                          $users_id = $parent_fields['_users_id_requester'];
+                                          switch ($content) {
+                                             case "requester.login" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['name'];
+                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                break;
+                                             case "requester.name" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['realname'];
+                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                break;
+                                             case "requester.firstname" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['firstname'];
+                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                break;
+                                             case "requester.email" :
+                                                $user = new UserEmail();
+                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                $value = $user->fields['email'];
+                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                break;
+                                          }
                                        }
                                     }
                                  } else {
@@ -2182,6 +2462,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              $str                                = str_replace("#" . $content . "#", $value, $str);
                                              if (!is_null($value) && !empty($value)) {
                                                 $find = true;
+                                             }
+                                          } else {
+                                             $users_id = $parent_fields['_users_id_requester'];
+                                             switch ($content) {
+                                                case "requester.login" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['name'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "requester.name" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['realname'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "requester.firstname" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['firstname'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "requester.email" :
+                                                   $user = new UserEmail();
+                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                   $value = $user->fields['email'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
                                              }
                                           }
                                        }
@@ -2229,6 +2537,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $parent_fields_id                   = 0;
                                     $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                 } else {
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    switch ($content) {
+                                       case "requester.login" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['name'];
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          break;
+                                       case "requester.name" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['realname'];
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          break;
+                                       case "requester.firstname" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['firstname'];
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          break;
+                                       case "requester.email" :
+                                          $user = new UserEmail();
+                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                          $value = $user->fields['email'];
+                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          break;
+                                    }
                                  }
                               }
                            }
@@ -2358,13 +2694,23 @@ class PluginMetademandsMetademand extends CommonDBTM {
          if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name'))) {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
          }
+         if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+            $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
+            $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
+         }
 
-         $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
-         $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
          if (!empty($options['resources_id'])) {
             $resource = new PluginResourcesResource();
             $resource->getFromDB($options['resources_id']);
-            $result['content'] .= "<tr><th colspan='2'>" . $resource->fields['name'] . " " . $resource->fields['firstname'] . "</th></tr>";
+            if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+               $result['content'] .= "<tr><th colspan='2'>";
+            }
+            $result['content'] .= $resource->fields['name'] . " " . $resource->fields['firstname'];
+            if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+               $result['content'] .= "</th></tr>";
+            }
+
+
          }
          //      $result['content'] .= "</table>";
          $resultTemp = [];
@@ -2394,16 +2740,20 @@ class PluginMetademandsMetademand extends CommonDBTM {
                }
             }
 
-            if ($nb % 2 == 0) {
-               $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
-            } else {
-               $resultTemp[$field['rank']]['content'] .= "<tr class='odd'>";
+            if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+               if ($nb % 2 == 0) {
+                  $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
+               } else {
+                  $resultTemp[$field['rank']]['content'] .= "<tr class='odd'>";
+               }
             }
             $nb++;
+            $hideTable = $options['hideTable'] ?? false;
+            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id,false, $hideTable);
 
-            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id);
-
-            $resultTemp[$field['rank']]['content'] .= "</tr>";
+            if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+               $resultTemp[$field['rank']]['content'] .= "</tr>";
+            }
 
          }
          foreach ($resultTemp as $blockId => $tab) {
@@ -2411,7 +2761,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $result['content'] .= $tab['content'];
             }
          }
-         $result['content'] .= "</table>";
+         if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+            $result['content'] .= "</table>";
+         }
       }
       return $result;
    }
@@ -2426,7 +2778,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param $parent_fields_id
     * @param $return_value
     */
-   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false) {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false) {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
@@ -2462,7 +2814,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
          switch ($field['type']) {
             case 'title' :
             case 'title-block' :
-               $result[$field['rank']]['content'] .= "<th colspan='2'>" . $label . "</th>";
+               if($hideTable == false) {
+                  $result[$field['rank']]['content'] .= "<th colspan='2'>";
+               }
+               $result[$field['rank']]['content'] .= $label;
+               if($hideTable == false) {
+                  $result[$field['rank']]['content'] .= "</th>";
+               }
                break;
             case 'dropdown':
             case 'dropdown_object':
@@ -2479,7 +2837,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      if ($return_value == true) {
                         return $custom_values[$field['value']];
                      } else {
-                        $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . $custom_values[$field['value']] . "</td>";
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "<td $style_title>";
+                        }
+                        $result[$field['rank']]['content'] .= $label;
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "</td><td>";
+                        }
+                        $result[$field['rank']]['content'] .= $custom_values[$field['value']];
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "</td>";
+                        }
+
                         $result[$field['rank']]['display'] = true;
                      }
                   }
@@ -2490,7 +2859,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($field['value'] != 0) {
                      switch ($field['item']) {
                         case 'User':
-                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>" ;
+                           }
+                           $result[$field['rank']]['content'] .= $label ;
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .="</td>";
+                           }
+
                            $result[$field['rank']]['display'] = true;
                            $item                              = new $field['item']();
                            $content                           = "";
@@ -2516,10 +2892,23 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                            }
                            if (empty($content)) {
+                              if($hideTable == false) {
+                                 $result[$field['rank']]['content'] .= "<td>";
+                              }
+                              $result[$field['rank']]['content'] .= getUserName($field['value']) ;
+                              if($hideTable == false) {
+                                 $result[$field['rank']]['content'] .= "</td>";
+                              }
 
-                              $result[$field['rank']]['content'] .= "<td>" . getUserName($field['value']) . "</td>";
                            } else {
-                              $result[$field['rank']]['content'] .= "<td>" . $content . "</td>";
+                              if($hideTable == false) {
+                                 $result[$field['rank']]['content'] .= "<td>" ;
+                              }
+                              $result[$field['rank']]['content'] .= $content ;
+                              if($hideTable == false) {
+                                 $result[$field['rank']]['content'] .="</td>";
+                              }
+
                            }
                            if ($return_value == true) {
                               return getUserName($field['value']);
@@ -2530,10 +2919,19 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         case 'ITILCategory_Metademands':
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>";
+                           }
+                           $result[$field['rank']]['content'] .= $label;
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td><td>";
+                           }
+
                            $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
                                                                                            $field['value']);
-                           $result[$field['rank']]['content'] .= "</td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td>";
+                           }
                            if ($return_value == true) {
                               return Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
                                                                $field['value']);
@@ -2542,7 +2940,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         case 'mydevices':
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>";
+                           }
+                           $result[$field['rank']]['content'] .= $label;
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td><td>";
+                           }
+
                            $splitter                          = explode("_", $field['value']);
                            if (count($splitter) == 2) {
                               $itemtype = $splitter[0];
@@ -2552,7 +2957,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
                                                                                               $items_id);
                            }
-                           $result[$field['rank']]['content'] .= "</td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td>";
+                           }
                            if ($return_value == true) {
                               if (isset($items_id)) {
                                  return Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
@@ -2565,24 +2972,60 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            break;
                         case 'urgency':
                            $result[$field['rank']]['display'] = true;
-                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
-                           $result[$field['rank']]['content'] .= "<td>" . Ticket::getUrgencyName($field['value']) . "</td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>" ;
+                           }
+                           $result[$field['rank']]['content'] .= $label ;
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td>";
+                              $result[$field['rank']]['content'] .= "<td>";
+                           }
+                           $result[$field['rank']]['content'] .= Ticket::getUrgencyName($field['value']);
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td>";
+                           }
+
+
                            if ($return_value == true) {
                               return Ticket::getUrgencyName($field['value']);
                            }
                            break;
                         case 'impact':
                            $result[$field['rank']]['display'] = true;
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                           }
                            $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
-                           $result[$field['rank']]['content'] .= "<td>" . Ticket::getImpactName($field['value']) . "</td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                              $result[$field['rank']]['content'] .= "<td>";
+                           }
+                           $result[$field['rank']]['content'] .= Ticket::getImpactName($field['value']);
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td>";
+                           }
+
+
                            if ($return_value == true) {
                               return Ticket::getImpactName($field['value']);
                            }
                            break;
                         case 'priority':
                            $result[$field['rank']]['display'] = true;
-                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
-                           $result[$field['rank']]['content'] .= "<td>" . Ticket::getPriorityName($field['value']) . "</td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>";
+                           }
+                           $result[$field['rank']]['content'] .= $label;
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td>";
+                              $result[$field['rank']]['content'] .= "<td>";
+                           }
+                           $result[$field['rank']]['content'] .= Ticket::getPriorityName($field['value']) ;
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td>";
+                           }
+
+
                            if ($return_value == true) {
                               return Ticket::getPriorityName($field['value']);
                            }
@@ -2590,10 +3033,21 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         default:
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>";
+                           }
+                           $result[$field['rank']]['content'] .= $label;
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td><td>";
+                           }
                            $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                                                            $field['value']);
-                           $result[$field['rank']]['content'] .= "</td>";
+                           if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= "</td>";
+                           }
+
+
+
                            if ($return_value == true) {
                               return Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                                $field['value']);
@@ -2619,7 +3073,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         return implode(', ', $parseValue);
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "<td $style_title>";
+                        }
+                        $result[$field['rank']]['content'] .= $label;
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "</td><td>";
+                        }
+                        $result[$field['rank']]['content'] .= implode('<br>', $parseValue);
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "</td>";
+                        }
+
                      }
 
                   } else {
@@ -2638,7 +3103,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         return implode(', ', $parseValue);
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "<td $style_title>";
+                        }
+                        $result[$field['rank']]['content'] .= $label;
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "</td><td>";
+                        }
+                        $result[$field['rank']]['content'] .= implode('<br>', $parseValue);
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "</td>";
+                        }
+
                      }
                   }
 
@@ -2646,41 +3122,92 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                   $information = json_decode($field['informations_to_display']);
                   $parseValue  = [];
-                  $dataItems   = "<table>";
+                  if($hideTable == false) {
+                     $dataItems = "<table>";
+                  }
                   $item        = new $field["item"]();
                   foreach ($field['value'] as $value) {
 
 
                      if ($item->getFromDB($value)) {
-                        $dataItems .= "<tr>";
+                        if($hideTable == false) {
+                           $dataItems .= "<tr>";
+                        }
 
                         if (in_array('full_name', $information)) {
-                           $dataItems .= "<td>" . $field["item"]::getFriendlyNameById($value) . "</td>";
+                           if($hideTable == false) {
+                              $dataItems .= "<td>";
+                           }
+                           $dataItems .= $field["item"]::getFriendlyNameById($value) ;
+                           if($hideTable == false) {
+                              $dataItems .= "</td>";
+                           }
+
                         }
                         if (in_array('realname', $information)) {
-                           $dataItems .= "<td>" . $item->fields["realname"] . "</td>";
+                           if($hideTable == false) {
+                              $dataItems .= "<td>";
+                           }
+                           $dataItems .=  $item->fields["realname"] ;
+                           if($hideTable == false) {
+                              $dataItems .= "</td>";
+                           }
                         }
                         if (in_array('firstname', $information)) {
-                           $dataItems .= "<td>" . $item->fields["firstname"] . "</td>";
+                           if($hideTable == false) {
+                              $dataItems .= "<td>";
+                           }
+                           $dataItems .= $item->fields["firstname"] ;
+                           if($hideTable == false) {
+                              $dataItems .= "</td>";
+                           }
                         }
                         if (in_array('name', $information)) {
-                           $dataItems .= "<td>" . $item->fields["name"] . "</td>";
+                           if($hideTable == false) {
+                              $dataItems .= "<td>";
+                           }
+                           $dataItems .= $item->fields["name"] ;
+                           if($hideTable == false) {
+                              $dataItems .= "</td>";
+                           }
                         }
                         if (in_array('email', $information)) {
-                           $dataItems .= "<td>" . $item->getDefaultEmail() . "</td>";
+                           if($hideTable == false) {
+                              $dataItems .= "<td>";
+                           }
+                           $dataItems .= $item->getDefaultEmail() ;
+                           if($hideTable == false) {
+                              $dataItems .= "</td>";
+                           }
+
                         }
-                        $dataItems .= "</tr>";
+                        if($hideTable == false) {
+                           $dataItems .= "</tr>";
+                        }
                      }
 
                      array_push($parseValue, $field["item"]::getFriendlyNameById($value));
                   }
-                  $dataItems .= "</table>";
+                  if($hideTable == false) {
+                     $dataItems .= "</table>";
+                  }
                   //TODO MAKE TABLE IN A TABLE
                   if ($return_value == true) {
                      return implode(',', $parseValue);
                   } else {
                      $result[$field['rank']]['display'] = true;
-                     $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . $dataItems . "</td>";
+                     if($hideTable == false) {
+                        $result[$field['rank']]['content'] .= "<td $style_title>";
+                     }
+                     $result[$field['rank']]['content'] .= $label;
+                     if($hideTable == false) {
+                        $result[$field['rank']]['content'] .= "</td><td>";
+                     }
+                     $result[$field['rank']]['content'] .= $dataItems ;
+                     if($hideTable == false) {
+                        $result[$field['rank']]['content'] .= "</td>";
+                     }
+
                      //                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
                   }
                }
@@ -2694,7 +3221,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . $field['value'] . '</a></td>';
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>" ;
+                  }
+                  $result[$field['rank']]['content'] .=  $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . $field['value'] . '</a>';
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= '</td>';
+                  }
+
                }
                break;
             case 'textarea':
@@ -2706,7 +3244,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . ($field['value']) . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label ;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= ($field['value']);
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
                }
                break;
             case 'checkbox':
@@ -2722,7 +3271,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   }
                   $custom_checkbox                   = [];
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
                   foreach ($custom_values as $key => $val) {
                      $checked = isset($field['value'][$key]) ? 1 : 0;
                      if ($checked) {
@@ -2732,7 +3288,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($return_value == true) {
                      return implode(',', $custom_checkbox);
                   } else {
-                     $result[$field['rank']]['content'] .= "<td>" . implode('<br>', $custom_checkbox) . "</td>";
+                     if($hideTable == false) {
+                        $result[$field['rank']]['content'] .= "<td>";
+                     }
+                     $result[$field['rank']]['content'] .= implode('<br>', $custom_checkbox);
+                     if($hideTable == false) {
+                        $result[$field['rank']]['content'] .= "</td>";
+                     }
+
                   }
                } else {
                   if ($field['value']) {
@@ -2740,7 +3303,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         return $field['value'];
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        $result[$field['rank']]['content'] .= "<td>" . $field['value'] . "</td>";
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "<td>";
+                        }
+                        $result[$field['rank']]['content'] .= $field['value'];
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "</td>";
+                        }
+
                      }
                   }
                }
@@ -2757,7 +3327,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
                   $custom_radio                      = "";
                   foreach ($custom_values as $key => $val) {
                      if ($field['value'] == $key && $field['value'] !== "") {
@@ -2767,7 +3344,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($return_value == true) {
                      return $custom_radio;
                   } else {
-                     $result[$field['rank']]['content'] .= "<td>" . $custom_radio . "</td>";
+                     if($hideTable == false) {
+                        $result[$field['rank']]['content'] .= "<td>" ;
+                     }
+                     $result[$field['rank']]['content'] .= $custom_radio ;
+                     if($hideTable == false) {
+                        $result[$field['rank']]['content'] .= "</td>";
+                     }
+
                   }
                } else {
                   if ($field['value']) {
@@ -2775,7 +3359,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         return $label;
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        $result[$field['rank']]['content'] .= "<td>" . $label . "</td>";
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "<td>";
+                        }
+                        $result[$field['rank']]['content'] .= $label;
+                        if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= "</td>";
+                        }
                      }
                   }
                }
@@ -2793,7 +3383,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return Html::convDate($field['value']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= Html::convDate($field['value']);
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
                }
                break;
             case 'datetime':
@@ -2801,7 +3402,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return Html::convDateTime($field['value']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .=  Html::convDateTime($field['value']);
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
                }
                break;
             case 'date_interval':
@@ -2809,8 +3421,28 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return Html::convDate($field['value']) . " - " . Html::convDate($field['value2']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDate($field['value']) . "</td></tr>";
-                  $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDate($field['value2']) . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= Html::convDate($field['value']);
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td></tr>";
+                     $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label2;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= Html::convDate($field['value2']);
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
+
                }
                break;
             case 'datetime_interval':
@@ -2818,8 +3450,28 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return Html::convDateTime($field['value']) . " - " . Html::convDateTime($field['value2']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . Html::convDateTime($field['value']) . "</td></tr>";
-                  $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>" . $label2 . "</td><td>" . Html::convDateTime($field['value2']) . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= Html::convDateTime($field['value']);
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td></tr>";
+                     $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label2;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= Html::convDateTime($field['value2']);
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
+
                }
                break;
             case 'number':
@@ -2827,7 +3479,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . $field['value'] . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= $field['value'];
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
                }
                break;
             case 'yesno':
@@ -2840,7 +3503,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return $val;
                } else {
                   $result[$field['rank']]['display'] = true;
-                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . $val . "</td>";
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td><td>";
+                  }
+                  $result[$field['rank']]['content'] .= $val ;
+                  if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= "</td>";
+                  }
+
                }
                break;
 
@@ -2903,7 +3577,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     *
     * @return array
     */
-   function formatTicketFields($metademands_id, $itilcategory, $values) {
+   function formatTicketFields($metademands_id, $itilcategory, $values,$users_id_requester) {
       $inputs              = [];
       $ticket_field        = new PluginMetademandsTicketField();
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
@@ -2945,6 +3619,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               $parent_fields_id                   = 0;
                               $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                               $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                           } else {
+                              $users_id = $users_id_requester;
+                              switch ($title) {
+                                 case "requester.login" :
+                                    $user = new User();
+                                    $user->getFromDB($users_id);
+                                    $v = $user->fields['name'];
+                                    $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                    break;
+                                 case "requester.name" :
+                                    $user = new User();
+                                    $user->getFromDB($users_id);
+                                    $v = $user->fields['realname'];
+                                    $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                    break;
+                                 case "requester.firstname" :
+                                    $user = new User();
+                                    $user->getFromDB($users_id);
+                                    $v = $user->fields['firstname'];
+                                    $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                    break;
+                                 case "requester.email" :
+                                    $user = new UserEmail();
+                                    $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                    $v = $user->fields['email'];
+                                    $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                    break;
+                              }
                            }
                         }
                      } else {
@@ -2977,6 +3679,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  $str                                = str_replace("#" . $title . "#", $v, $str);
                                  if (!is_null($v) && !empty($v)) {
                                     $find = true;
+                                 }
+                              } else {
+                                 $users_id = $users_id_requester;
+                                 switch ($title) {
+                                    case "requester.login" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $v = $user->fields['name'];
+                                       $str                                = str_replace("#" . $title . "#", $v, $str);
+                                       break;
+                                    case "requester.name" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $v = $user->fields['realname'];
+                                       $str                                = str_replace("#" . $title . "#", $v, $str);
+                                       break;
+                                    case "requester.firstname" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $v = $user->fields['firstname'];
+                                       $str                                = str_replace("#" . $title . "#", $v, $str);
+                                       break;
+                                    case "requester.email" :
+                                       $user = new UserEmail();
+                                       $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                       $v = $user->fields['email'];
+                                       $str                                = str_replace("#" . $title . "#", $v, $str);
+                                       break;
                                  }
                               }
                            }
@@ -3017,6 +3747,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         $parent_fields_id                   = 0;
                         $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                         $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                     } else {
+                        $users_id = $users_id_requester;
+                        switch ($title) {
+                           case "requester.login" :
+                              $user = new User();
+                              $user->getFromDB($users_id);
+                              $v = $user->fields['name'];
+                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                              break;
+                           case "requester.name" :
+                              $user = new User();
+                              $user->getFromDB($users_id);
+                              $v = $user->fields['realname'];
+                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                              break;
+                           case "requester.firstname" :
+                              $user = new User();
+                              $user->getFromDB($users_id);
+                              $v = $user->fields['firstname'];
+                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                              break;
+                           case "requester.email" :
+                              $user = new UserEmail();
+                              $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                              $v = $user->fields['email'];
+                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                              break;
+                        }
                      }
                   }
 
@@ -3096,18 +3854,20 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $list_fields  = $line['form'];
                      $searchOption = Search::getOptions('Ticket');
                      $task->getFromDB($son_ticket_data['tasks_id']);
-                     $blocks = json_decode($task->fields["block_use"], true);
-                     if (!empty($blocks)) {
-                        foreach ($line['form'] as $i => $l) {
-                           if (!in_array($l['rank'], $blocks)) {
-                              unset($line['form'][$i]);
-                              unset($values_form[$i]);
+                     if($task->fields['useBlock'] == 1) {
+                        $blocks = json_decode($task->fields["block_use"], true);
+                        if (!empty($blocks)) {
+                           foreach ($line['form'] as $i => $l) {
+                              if (!in_array($l['rank'], $blocks)) {
+                                 unset($line['form'][$i]);
+                                 unset($values_form[$i]);
+                              }
                            }
+                           $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form],['hideTable' => $task->fields['hideTable']]);
+                           $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
+                        } else {
+                           $parent_fields_content['content'] = $parent_fields['content'];
                         }
-                        $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form]);
-                        $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
-                     } else {
-                        $parent_fields_content['content'] = $parent_fields['content'];
                      }
                      foreach ($list_fields as $id => $fields_values) {
                         if ($fields_values['used_by_ticket'] > 0 && $fields_values['used_by_child'] == 1) {
@@ -3162,9 +3922,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
             $config->getFromDB(1);
 
             if (!empty($son_ticket_data['content'])) {
-               $content = "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
-                          "</th></tr><tr><td colspan='2'>" . $son_ticket_data['content'];
-               $content .= "</td></tr></table><br>";
+               if($task->fields['hideTable'] == false) {
+                  $content = "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
+                             "</th></tr><tr><td colspan='2'>";
+               }
+
+               $content .= $son_ticket_data['content'];
+               if($task->fields['hideTable'] == false) {
+                  $content .= "</td></tr></table><br>";
+               }
             }
 
             if ($config->getField('childs_parent_content') == 1) {

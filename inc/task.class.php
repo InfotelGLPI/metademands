@@ -340,7 +340,7 @@ class PluginMetademandsTask extends CommonDBTM {
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
-         echo "<th class='center b' colspan='9'>" . __('Tasks', 'metademands') . "</th>";
+         echo "<th class='center b' colspan='11'>" . __('Tasks', 'metademands') . "</th>";
          echo "</tr>";
 
          echo "<tr class='tab_bg_2'>";
@@ -356,6 +356,8 @@ class PluginMetademandsTask extends CommonDBTM {
          echo "<th class='center b'>" . __('Assigned to') . "</th>";
          echo "<th class='center b'>" . __('Level', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Block to use', 'metademands') . "</th>";
+         echo "<th class='center b'>" . __('Use block', 'metademands') . "</th>";
+         echo "<th class='center b'>" . __('Hide table', 'metademands') . "</th>";
          echo "</tr>";
          foreach ($tasks as $value) {
             echo "<tr class='tab_bg_1'>";
@@ -473,6 +475,12 @@ class PluginMetademandsTask extends CommonDBTM {
             echo "<td $color_class>";
             echo $blocktext;
             echo "</td>";
+            echo "<td $color_class>";
+            echo Dropdown::getYesNo($value['useBlock']);
+            echo "</td>";
+            echo "<td $color_class>";
+            echo Dropdown::getYesNo($value['hideTable']);
+            echo "</td>";
             echo "</tr>";
 
          }
@@ -522,6 +530,8 @@ class PluginMetademandsTask extends CommonDBTM {
                        `glpi_plugin_metademands_tasks`.`completename` as tasks_completename, 
                        `glpi_plugin_metademands_tasks`.`level`,
                        `glpi_plugin_metademands_tasks`.`block_use`,
+                       `glpi_plugin_metademands_tasks`.`hideTable`,
+                       `glpi_plugin_metademands_tasks`.`useBlock`,
                        `glpi_plugin_metademands_tickettasks`.`itilcategories_id`,
                        `glpi_plugin_metademands_tickettasks`.`content`,
                        `glpi_plugin_metademands_tickettasks`.`status`,

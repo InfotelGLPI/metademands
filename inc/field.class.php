@@ -4688,6 +4688,22 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<tr><th>" . __('Tag') . "</th>
                 <th>" . __('Label') . "</th>
             </tr>";
+      echo "<tr>
+                  <td>#requester.login#</td>
+                  <td>" . __('Requester login','metademands') . "</td>
+               </tr>";
+      echo "<tr>
+                  <td>#requester.name#</td>
+                  <td>" . __('Requester name','metademands'). "</td>
+               </tr>";
+      echo "<tr>
+                  <td>#requester.firstname#</td>
+                  <td>" . __('Requester firstname','metademands') . "</td>
+               </tr>";
+      echo "<tr>
+                  <td>#requester.email#</td>
+                  <td>" . __('Requester email','metademands') . "</td>
+               </tr>";
       foreach ($tags as $tag => $values) {
 
          echo "<tr>

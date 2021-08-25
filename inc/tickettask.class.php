@@ -86,7 +86,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                  'plugin_metademands_tasks_id' => 0,
                  'content'                     => '',
                  'name'                        => '',
-                 'block_use'                   => '',
+                 'block_use'                   => 1,
+                 'useBlock'                    => '',
+                 'hideTable'                   => 0,
                  'entities_id'                 => 0];
 
       // Init values
@@ -125,6 +127,18 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
+      echo "<th>" . sprintf(__('%1$s'), __('Use block', 'metademands')) . "</th>";
+      echo "<td>";
+
+
+      Dropdown::showYesNo('useBlock',$values['useBlock']);
+
+      echo "</td>";
+      echo "<td colspan='4'></td>";
+
+      echo "</tr>";
+      echo "<tr class='tab_bg_1'>";
+
       echo "<th>" . sprintf(__('%1$s'), __('Block to use', 'metademands')) . "</th>";
       echo "<td>";
       $metademands;
@@ -143,6 +157,18 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                                'width'    => '100%',
                                'multiple' => true,
                                'entity'   => $_SESSION['glpiactiveentities']]);
+
+      echo "</td>";
+      echo "<td colspan='4'></td>";
+
+      echo "</tr>";
+      echo "<tr class='tab_bg_1'>";
+
+      echo "<th>" . sprintf(__('%1$s'), __('Hide table', 'metademands')) . "</th>";
+      echo "<td>";
+
+
+      Dropdown::showYesNo('hideTable',$values['hideTable']);
 
       echo "</td>";
       echo "<td colspan='4'></td>";
