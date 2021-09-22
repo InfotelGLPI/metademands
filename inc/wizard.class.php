@@ -2800,8 +2800,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          $unserialisedHiddenLink = PluginMetademandsField::_unserialize($value['hidden_link']);
          $unserialisedHiddenBloc = PluginMetademandsField::_unserialize($value['hidden_block']);
          $unserialisedTaskChild = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
+         $toKeep = [];
          if (is_array($unserialisedCheck) && is_array($unserialisedHiddenLink)) {
-            $toKeep = [];
             foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
                if (!isset($toKeep[$hiddenFields])) {
                   $toKeep[$hiddenFields] = false;
@@ -2829,9 +2829,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
                }
             }
-            //TODO
              if(is_array($unserialisedHiddenBloc)){
-                $toKeep = [];
                 foreach ($unserialisedHiddenBloc as $key => $hiddenBloc) {
                    $metademandsFields = new PluginMetademandsField();
                    $metademandsFields = $metademandsFields->find(["rank" => $hiddenBloc,'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id']],'order');
