@@ -151,7 +151,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          }
       }
       ksort($blocks);
-
+      if (!is_array($values['block_use'])) {
+          $values['block_use'] = [$values['block_use']];
+      }
       Dropdown::showFromArray('block_use', $blocks,
                               ['values'   => $values['block_use'],
                                'width'    => '100%',
