@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-09-22 07:17+0000\n"
+"POT-Creation-Date: 2021-09-23 08:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -514,7 +514,7 @@ msgid "Import metademands"
 msgstr ""
 
 #: inc/metademand.class.php:270 inc/metademand.class.php:344
-#: inc/task.class.php:662 inc/tickettask.class.php:596
+#: inc/task.class.php:662 inc/tickettask.class.php:598
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -799,7 +799,7 @@ msgstr ""
 msgid "Use block"
 msgstr ""
 
-#: inc/task.class.php:360 inc/tickettask.class.php:167
+#: inc/task.class.php:360 inc/tickettask.class.php:169
 msgid "Hide table"
 msgstr ""
 
@@ -856,11 +856,11 @@ msgstr[1] ""
 msgid "Synchronise with ticket template"
 msgstr ""
 
-#: inc/tickettask.class.php:210
+#: inc/tickettask.class.php:212
 msgid "Create after the task"
 msgstr ""
 
-#: inc/tickettask.class.php:226
+#: inc/tickettask.class.php:228
 msgid "Actors"
 msgstr ""
 
