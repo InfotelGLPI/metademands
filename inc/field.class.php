@@ -4725,6 +4725,12 @@ class PluginMetademandsField extends CommonDBChild {
       $res    = [];
       foreach ($fields as $field) {
          $res[$field['id']] = $field['name'];
+         if($field['type'] == 'dropdown_object' && $field['item'] == User::getType()) {
+            $res[$field['id'].".login"] = $field['name']." : ".__('Login');
+            $res[$field['id'].".name"] = $field['name']." : ".__('Name');
+            $res[$field['id'].".firstname"] = $field['name']." : ".__('First name');
+            $res[$field['id'].".email"] = $field['name']." : "._n('Email', 'Emails', 1);
+         }
       }
 
       return $res;
