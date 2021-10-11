@@ -1741,7 +1741,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                   case 'dropdown':
                   case 'dropdown_object':
                   case 'dropdown_meta':
-                     $script = "$('[name=\"field[" . $data["id"] . "]\"]').change(function() {";
+                     if ($data['item'] == "ITILCategory_Metademands") {
+                        $name = "field_plugin_servicecatalog_itilcategories_id";
+                     } else {
+                        $name = "field[" . $data["id"] . "]";
+                     }
+                     $script = "$('[name=\"$name\"]').change(function() {";
                      //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
@@ -2191,7 +2196,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                   case 'dropdown':
                   case 'dropdown_object':
                   case 'dropdown_meta':
-                     $script = "$('[name=\"field[" . $data["id"] . "]\"]').change(function() {";
+                     if ($data['item'] == "ITILCategory_Metademands") {
+                        $name = "field_plugin_servicecatalog_itilcategories_id";
+                     } else {
+                        $name = "field[" . $data["id"] . "]";
+                     }
+
+                     $script = "$('[name=\"$name\"]').change(function() { ";
                      //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {

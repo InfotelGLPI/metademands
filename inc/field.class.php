@@ -55,7 +55,7 @@ class PluginMetademandsField extends CommonDBChild {
    static $allowed_options_types = ['yesno', 'date', 'datetime', 'date_interval', 'datetime_interval', 'checkbox', 'radio',
                                     'dropdown_multiple', 'dropdown', 'dropdown_object', 'parent_field', 'number', 'text',
                                     'textarea', 'upload'];
-   static $allowed_options_items = ['other'];
+   static $allowed_options_items = ['other', 'ITILCategory_Metademands'];
 
    static $allowed_custom_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple'];
    static $allowed_custom_items = ['other'];

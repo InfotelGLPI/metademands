@@ -81,7 +81,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
             } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
                $field['value'] = json_encode($values[$fields_id]);
             }
-            $this->add(['value'                        => $field['value'],
+            $this->add(['value'                        => Toolbox::addslashes_deep($field['value']),
                         'tickets_id'                   => $tickets_id,
                         'plugin_metademands_fields_id' => $fields_id]);
          }
