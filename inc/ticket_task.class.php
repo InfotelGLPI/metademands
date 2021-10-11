@@ -169,4 +169,25 @@ class PluginMetademandsTicket_Task extends CommonDBTM {
       return parent::getSpecificValueToDisplay($field, $values, $options);
    }
 
+   /**
+    * display a value according to a field
+    *
+    * @param $field     String         name of the field
+    * @param $values    String / Array with the value to display
+    * @param $options   Array          of option
+    *
+    * @return a string
+    **@since version 0.83
+    *
+    */
+   static function getFirstTicket($ticket_id) {
+
+      $self = new self();
+      if($self->getFromDBByCrit(['tickets_id' => $ticket_id])) {
+         return self::getFirstTicket($self->fields['parent_tickets_id']);
+      } else {
+         return $ticket_id;
+      }
+   }
+
 }

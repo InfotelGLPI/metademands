@@ -3734,7 +3734,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      }
                   }
                   if (!empty($field['value'])) {
-                     $field['value'] = PluginMetademandsField::_unserialize($field['value']);
+                     if(is_string($field['value'])) {
+                        $field['value'] = PluginMetademandsField::_unserialize($field['value']);
+                     } else {
+                        $field['value'] = json_decode(json_encode($field['value']),true);
+                     }
+
                   }
                   $custom_checkbox                   = [];
                   $result[$field['rank']]['display'] = true;
@@ -4480,6 +4485,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $result = $DB->query($query);
 
          if ($DB->numrows($result)) {
+            $values  = [];
+            $ticket_field = new PluginMetademandsTicket_Field();
+            $ticket_id = PluginMetademandsTicket_Task::getFirstTicket($tickets_data['id']);
+            $fields       = $ticket_field->find(['tickets_id' => $ticket_id]);
+            foreach ($fields as $f) {
+               $values['fields'][$f['plugin_metademands_fields_id']] = json_decode($f['value']);
+               if ($values['fields'][$f['plugin_metademands_fields_id']] === null) {
+                  $values['fields'][$f['plugin_metademands_fields_id']] = $f['value'];
+               }
+
+               $f['plugin_metademands_fields_id'];
+            }
             while ($data = $DB->fetchAssoc($result)) {
 
                // If child task exists : son ticket creation
@@ -4504,10 +4521,637 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      }
                      $parent_groups_tickets_data = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
                                                                          'type'       => CommonITILActor::ASSIGN]);
+                     $requesters = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
+                                                                         'type'       => CommonITILActor::REQUESTER]);
+                     if(!empty($requesters)) {
+                        $requester = array_shift($requesters);
+                        $parent_fields['_users_id_requester'] =$requester['users_id'];
+                     } else {
+                        $parent_fields['_users_id_requester'] = Session::getLoginUserID();
+                        }
 
                      if (count($parent_groups_tickets_data)) {
                         $parent_groups_tickets_data         = reset($parent_groups_tickets_data);
                         $ticket->fields['_users_id_assign'] = $parent_groups_tickets_data['users_id'];
+                     }
+
+                     $l = $tasks_data[$child_tasks_id];
+                     do {
+                        $match = $this->getBetween($l['tickettasks_name'], '[', ']');
+                        if (empty($match)) {
+                           $explodeTitle = [];
+                           $explodeTitle = explode("#", $l['tickettasks_name']);
+                           foreach ($explodeTitle as $title) {
+                              if (isset($values['fields'][$title])) {
+                                 $field = new PluginMetademandsField();
+                                 $field->getFromDB($title);
+                                 $fields          = $field->fields;
+                                 $fields['value'] = '';
+
+                                 $fields['value'] = $values['fields'][$title];
+
+                                 $fields['value2'] = '';
+                                 if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
+                                    $fields['value2'] = $values['fields'][$title . '-2'];
+                                 }
+                                 $resultData                                  = [];
+                                 $resultData['content']                       = "";
+                                 $resultData[$fields['rank']]['content']      = "";
+                                 $resultData[$fields['rank']]['display']      = false;
+                                 $parent_fields_id                        = 0;
+                                 $value                                   = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                              } else {
+                                 $explodeTitle2 = explode(".", $title);
+
+                                 if(isset($values['fields'][$explodeTitle2[0]])) {
+                                    $field_object = new PluginMetademandsField();
+                                    if($field_object->getFromDB($explodeTitle2[0])) {
+                                       if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                          $users_id = $values['fields'][$explodeTitle2[0]];
+                                          switch ($explodeTitle2[1]) {
+                                             case "login" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['name'];
+                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                                break;
+                                             case "name" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['realname'];
+                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                                break;
+                                             case "firstname" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['firstname'];
+                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                                break;
+                                             case "email" :
+                                                $user = new UserEmail();
+                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                $value = $user->fields['email'];
+                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                                break;
+                                          }
+                                       }
+                                    }
+
+                                 }
+
+
+                                 $users_id = $parent_fields['_users_id_requester']; // TODO
+//                                 $users_id = Session::getLoginUserID(); // TODO
+                                 switch ($title) {
+                                    case "requester.login" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $value = $user->fields['name'];
+                                       $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                       break;
+                                    case "requester.name" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $value = $user->fields['realname'];
+                                       $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                       break;
+                                    case "requester.firstname" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $value = $user->fields['firstname'];
+                                       $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                       break;
+                                    case "requester.email" :
+                                       $user = new UserEmail();
+                                       $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                       $value = $user->fields['email'];
+                                       $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                       break;
+                                 }
+
+
+                              }
+                           }
+                        } else {
+                           $explodeVal     = [];
+                           $explodeVal     = explode("|", $match);
+                           $find           = false;
+                           $val_to_replace = "";
+                           foreach ($explodeVal as $str) {
+
+                              $explodeTitle = explode("#", $str);
+                              foreach ($explodeTitle as $title) {
+                                 if (isset($values['fields'][$title])) {
+                                    $field = new PluginMetademandsField();
+                                    $field->getFromDB($title);
+                                    $fields          = $field->fields;
+                                    $fields['value'] = '';
+
+                                    $fields['value'] = $values['fields'][$title];
+
+                                    $fields['value2'] = '';
+                                    if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
+                                       $fields['value2'] = $values['fields'][$title . '-2'];
+                                    }
+                                    $resultData                             = [];
+                                    $resultData['content']                  = "";
+                                    $resultData[$fields['rank']]['content'] = "";
+                                    $resultData[$fields['rank']]['display'] = false;
+                                    $parent_fields_id                   = 0;
+                                    $value                              = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                    $str                                = str_replace("#" . $title . "#", $value, $str);
+                                    if (!is_null($value) && !empty($value)) {
+                                       $find = true;
+                                    }
+                                 } else {
+                                    $explodeTitle2 = explode(".", $title);
+
+                                    if(isset($values['fields'][$explodeTitle2[0]])) {
+                                       $field_object = new PluginMetademandsField();
+                                       if($field_object->getFromDB($explodeTitle2[0])) {
+                                          if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                             $users_id = $values['fields'][$explodeTitle2[0]];
+                                             switch ($explodeTitle2[1]) {
+                                                case "login" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['name'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "name" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['realname'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "firstname" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['firstname'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                                case "email" :
+                                                   $user = new UserEmail();
+                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                   $value = $user->fields['email'];
+                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                   break;
+                                             }
+                                          }
+                                       }
+
+                                    }
+
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    switch ($title) {
+                                       case "requester.login" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['name'];
+                                          $str                                = str_replace("#" . $title . "#", $value, $str);
+                                          break;
+                                       case "requester.name" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['realname'];
+                                          $str                                = str_replace("#" . $title . "#", $value, $str);
+                                          break;
+                                       case "requester.firstname" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['firstname'];
+                                          $str                                = str_replace("#" . $title . "#", $value, $str);
+                                          break;
+                                       case "requester.email" :
+                                          $user = new UserEmail();
+                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                          $value = $user->fields['email'];
+                                          $str                                = str_replace("#" . $title . "#", $value, $str);
+                                          break;
+                                    }
+                                 }
+
+                              }
+                              if ($find == true) {
+                                 break;
+                              }
+                           }
+
+                           if (strpos($match, "#") !== false) {
+                              $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                              $l['tickettasks_name']                   = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
+                           } else {
+                              $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $tasks_data[$child_tasks_id]['tickettasks_name']);
+                              $l['tickettasks_name']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
+                           }
+                           //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
+                        }
+                     } while (!empty($match));
+
+                     $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("<@", "[", $tasks_data[$child_tasks_id]['tickettasks_name']);
+                     $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("@>", "]", $tasks_data[$child_tasks_id]['tickettasks_name']);
+                     $l['tickettasks_name']                   = str_replace("<@", "[", $l['tickettasks_name']);
+                     $l['tickettasks_name']                   = str_replace("@>", "]", $l['tickettasks_name']);
+
+                     $explodeTitle = explode("#", $l['tickettasks_name']);
+                     foreach ($explodeTitle as $title) {
+                        if (isset($values['fields'][$title])) {
+                           $field = new PluginMetademandsField();
+                           $field->getFromDB($title);
+                           $fields          = $field->fields;
+                           $fields['value'] = '';
+
+                           $fields['value'] = $values['fields'][$title];
+
+                           $fields['value2'] = '';
+                           if (($fields['type'] == 'date_interval'
+                                || $fields['type'] == 'datetime_interval')
+                               && isset($values['fields'][$title . '-2'])) {
+                              $fields['value2'] = $values['fields'][$title . '-2'];
+                           }
+                           $resultData                                  = [];
+                           $resultData['content']                       = "";
+                           $resultData[$fields['rank']]['content']      = "";
+                           $resultData[$fields['rank']]['display']      = false;
+                           $parent_fields_id                        = 0;
+                           $value                                   = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                           $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                        } else {
+                           $explodeTitle2 = explode(".", $title);
+
+                           if(isset($values['fields'][$explodeTitle2[0]])) {
+                              $field_object = new PluginMetademandsField();
+                              if($field_object->getFromDB($explodeTitle2[0])) {
+                                 if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                    $users_id = $values['fields'][$explodeTitle2[0]];
+                                    switch ($explodeTitle2[1]) {
+                                       case "login" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['name'];
+                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                          break;
+                                       case "name" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['realname'];
+                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                          break;
+                                       case "firstname" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['firstname'];
+                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                          break;
+                                       case "email" :
+                                          $user = new UserEmail();
+                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                          $value = $user->fields['email'];
+                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                          break;
+                                    }
+                                 }
+                              }
+
+                           }
+
+                           $users_id = $parent_fields['_users_id_requester'];
+                           switch ($title) {
+                              case "requester.login" :
+                                 $user = new User();
+                                 $user->getFromDB($users_id);
+                                 $value = $user->fields['name'];
+                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                 break;
+                              case "requester.name" :
+                                 $user = new User();
+                                 $user->getFromDB($users_id);
+                                 $value = $user->fields['realname'];
+                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                 break;
+                              case "requester.firstname" :
+                                 $user = new User();
+                                 $user->getFromDB($users_id);
+                                 $value = $user->fields['firstname'];
+                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                 break;
+                              case "requester.email" :
+                                 $user = new UserEmail();
+                                 $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                 $value = $user->fields['email'];
+                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                 break;
+                           }
+                        }
+                     }
+
+
+                     //replace #id# in content with the value
+                     do {
+                        $match = $this->getBetween($l['content'], '[', ']');
+                        if (empty($match)) {
+                           $explodeContent = explode("#", $l['content']);
+                           foreach ($explodeContent as $content) {
+                              if (isset($values['fields'][$content])) {
+                                 $field = new PluginMetademandsField();
+                                 $field->getFromDB($content);
+                                 $fields          = $field->fields;
+                                 $fields['value'] = '';
+
+                                 $fields['value'] = $values['fields'][$content];
+
+                                 $fields['value2'] = '';
+                                 if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
+                                    $fields['value2'] = $values['fields'][$content . '-2'];
+                                 }
+                                 $resultData                             = [];
+                                 $resultData['content']                  = "";
+                                 $resultData[$fields['rank']]['content'] = "";
+                                 $resultData[$fields['rank']]['display'] = false;
+                                 $parent_fields_id                   = 0;
+                                 $value                              = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                              } else {
+
+                                 $explodeContent2 = explode(".", $content);
+
+                                 if(isset($values['fields'][$explodeContent2[0]])) {
+                                    $field_object = new PluginMetademandsField();
+                                    if($field_object->getFromDB($explodeContent2[0])) {
+                                       if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                          $users_id = $values['fields'][$explodeContent2[0]];
+                                          switch ($explodeContent2[1]) {
+                                             case "login" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['name'];
+                                                $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                                break;
+                                             case "name" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['realname'];
+                                                $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                                break;
+                                             case "firstname" :
+                                                $user = new User();
+                                                $user->getFromDB($users_id);
+                                                $value = $user->fields['firstname'];
+                                                $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                                break;
+                                             case "email" :
+                                                $user = new UserEmail();
+                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                $value = $user->fields['email'];
+                                                $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                                break;
+                                          }
+                                       }
+                                    }
+
+                                 }
+
+                                 $users_id = $parent_fields['_users_id_requester'];
+                                 switch ($content) {
+                                    case "requester.login" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $value = $user->fields['name'];
+                                       $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                       break;
+                                    case "requester.name" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $value = $user->fields['realname'];
+                                       $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                       break;
+                                    case "requester.firstname" :
+                                       $user = new User();
+                                       $user->getFromDB($users_id);
+                                       $value = $user->fields['firstname'];
+                                       $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                       break;
+                                    case "requester.email" :
+                                       $user = new UserEmail();
+                                       $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                       $value = $user->fields['email'];
+                                       $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                       break;
+                                 }
+                              }
+                           }
+                        } else {
+                           $explodeVal     = [];
+                           $explodeVal     = explode("|", $match);
+                           $find           = false;
+                           $val_to_replace = "";
+                           foreach ($explodeVal as $str) {
+
+                              $explodeContent = explode("#", $str);
+                              foreach ($explodeContent as $content) {
+                                 if (isset($values['fields'][$content])) {
+                                    $field = new PluginMetademandsField();
+                                    $field->getFromDB($content);
+                                    $fields          = $field->fields;
+                                    $fields['value'] = '';
+
+                                    $fields['value'] = $values['fields'][$content];
+
+                                    $fields['value2'] = '';
+                                    if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
+                                       $fields['value2'] = $values['fields'][$content . '-2'];
+                                    }
+                                    $resultData                             = [];
+                                    $resultData['content']                  = "";
+                                    $resultData[$fields['rank']]['content'] = "";
+                                    $resultData[$fields['rank']]['display'] = false;
+                                    $parent_fields_id                   = 0;
+                                    $value                              = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                    $str                                = str_replace("#" . $content . "#", $value, $str);
+                                    if (!is_null($value) && !empty($value)) {
+                                       $find = true;
+                                    }
+                                 } else {
+
+                                    $explodeContent2 = explode(".", $content);
+
+                                    if(isset($values['fields'][$explodeContent2[0]])) {
+                                       $field_object = new PluginMetademandsField();
+                                       if($field_object->getFromDB($explodeContent2[0])) {
+                                          if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                             $users_id = $values['fields'][$explodeContent2[0]];
+                                             switch ($explodeContent2[1]) {
+                                                case "login" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['name'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "name" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['realname'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "firstname" :
+                                                   $user = new User();
+                                                   $user->getFromDB($users_id);
+                                                   $value = $user->fields['firstname'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                                case "email" :
+                                                   $user = new UserEmail();
+                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                                   $value = $user->fields['email'];
+                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
+                                                   break;
+                                             }
+                                          }
+                                       }
+
+                                    }
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    switch ($content) {
+                                       case "requester.login" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['name'];
+                                          $str                                = str_replace("#" . $content . "#", $value, $str);
+                                          break;
+                                       case "requester.name" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['realname'];
+                                          $str                                = str_replace("#" . $content . "#", $value, $str);
+                                          break;
+                                       case "requester.firstname" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['firstname'];
+                                          $str                                = str_replace("#" . $content . "#", $value, $str);
+                                          break;
+                                       case "requester.email" :
+                                          $user = new UserEmail();
+                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                          $value = $user->fields['email'];
+                                          $str                                = str_replace("#" . $content . "#", $value, $str);
+                                          break;
+                                    }
+                                 }
+                              }
+                              if ($find == true) {
+                                 break;
+                              }
+                           }
+                           //                                    $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['content']);
+                           if (strpos($match, "#") !== false) {
+                              $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['content']);
+                              $l['content']                   = str_replace("[" . $match . "]", $str, $l['content']);
+                           } else {
+                              $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $tasks_data[$child_tasks_id]['content']);
+                              $l['content']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
+                           }
+                           //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
+                        }
+                     } while (!empty($match));
+
+                     $tasks_data[$child_tasks_id]['content'] = str_replace("<@", "[", $tasks_data[$child_tasks_id]['content']);
+                     $tasks_data[$child_tasks_id]['content'] = str_replace("@>", "]", $tasks_data[$child_tasks_id]['content']);
+                     $l['content']                   = str_replace("<@", "[", $l['content']);
+                     $l['content']                   = str_replace("@>", "]", $l['content']);
+
+                     $explodeContent = explode("#", $l['content']);
+                     foreach ($explodeContent as $content) {
+                        if (isset($values['fields'][$content])) {
+                           $field = new PluginMetademandsField();
+                           $field->getFromDB($content);
+                           $fields          = $field->fields;
+                           $fields['value'] = '';
+
+                           $fields['value'] = $values['fields'][$content];
+
+                           $fields['value2'] = '';
+                           if (($fields['type'] == 'date_interval'
+                                || $fields['type'] == 'datetime_interval')
+                               && isset($values['fields'][$content . '-2'])) {
+                              $fields['value2'] = $values['fields'][$content . '-2'];
+                           }
+                           $resultData                             = [];
+                           $resultData['content']                  = "";
+                           $resultData[$fields['rank']]['content'] = "";
+                           $resultData[$fields['rank']]['display'] = false;
+                           $parent_fields_id                   = 0;
+                           $value                              = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                           $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                        } else {
+
+                           $explodeContent2 = explode(".", $content);
+
+                           if(isset($values['fields'][$explodeContent2[0]])) {
+                              $field_object = new PluginMetademandsField();
+                              if($field_object->getFromDB($explodeContent2[0])) {
+                                 if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                    $users_id = $values['fields'][$explodeContent2[0]];
+                                    switch ($explodeContent2[1]) {
+                                       case "login" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['name'];
+                                          $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                          break;
+                                       case "name" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['realname'];
+                                          $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                          break;
+                                       case "firstname" :
+                                          $user = new User();
+                                          $user->getFromDB($users_id);
+                                          $value = $user->fields['firstname'];
+                                          $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                          break;
+                                       case "email" :
+                                          $user = new UserEmail();
+                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                          $value = $user->fields['email'];
+                                          $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                          break;
+                                    }
+                                 }
+                              }
+
+                           }
+
+                           $users_id = $parent_fields['_users_id_requester'];
+                           switch ($content) {
+                              case "requester.login" :
+                                 $user = new User();
+                                 $user->getFromDB($users_id);
+                                 $value = $user->fields['name'];
+                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                 break;
+                              case "requester.name" :
+                                 $user = new User();
+                                 $user->getFromDB($users_id);
+                                 $value = $user->fields['realname'];
+                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                 break;
+                              case "requester.firstname" :
+                                 $user = new User();
+                                 $user->getFromDB($users_id);
+                                 $value = $user->fields['firstname'];
+                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                 break;
+                              case "requester.email" :
+                                 $user = new UserEmail();
+                                 $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
+                                 $value = $user->fields['email'];
+                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                 break;
+                           }
+                        }
                      }
 
                      $this->createSonsTickets($tickets_data['id'], $ticket->fields, $tickets_found[0]['tickets_id'], $tasks_data, $data['parent_level'] + 1);
