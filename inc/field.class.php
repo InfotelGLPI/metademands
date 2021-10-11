@@ -1711,7 +1711,7 @@ class PluginMetademandsField extends CommonDBChild {
                         }
                      }
                   }
-                  ksort($data['custom_values']);
+                  sort($data['custom_values']);
                   if (!empty($value) && !is_array($value)) {
                      $value = json_decode($value);
                   }
