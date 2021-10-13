@@ -141,7 +141,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       echo "<th>" . sprintf(__('%1$s'), __('Block to use', 'metademands')) . "</th>";
       echo "<td>";
-      $metademands;
+
       $field  = new PluginMetademandsField();
       $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
       $blocks = [];
