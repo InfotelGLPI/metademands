@@ -87,7 +87,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                  'content'                     => '',
                  'name'                        => '',
                  'block_use'                   => 1,
-                 'useBlock'                    => '',
+                 'useBlock'                    => 1,
                  'hideTable'                   => 0,
                  'entities_id'                 => 0];
 

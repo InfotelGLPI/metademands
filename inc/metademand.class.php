@@ -2116,6 +2116,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $result[$fields['rank']]['display'] = false;
                                           $parent_fields_id                   = 0;
                                           $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                          if($fields['type'] == "textarea") {
+                                             if($line['tasks'][$key]["hideTable"] == 1) {
+                                                $value = str_replace("\\n",'","',$value);
+                                             }
+                                          }
                                           $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                        } else {
 
@@ -2213,6 +2218,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              $result[$fields['rank']]['display'] = false;
                                              $parent_fields_id                   = 0;
                                              $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                             if($fields['type'] == "textarea") {
+                                                if($line['tasks'][$key]["hideTable"] == 1) {
+                                                   $value = str_replace("\\n",'","',$value);
+                                                }
+                                             }
                                              $str                                = str_replace("#" . $content . "#", $value, $str);
                                              if (!is_null($value) && !empty($value)) {
                                                 $find = true;
@@ -2328,6 +2338,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $result[$fields['rank']]['display'] = false;
                                     $parent_fields_id                   = 0;
                                     $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                    if($fields['type'] == "textarea") {
+                                       if($line['tasks'][$key]["hideTable"] == 1) {
+                                          $value = str_replace("\\n",'","',$value);
+                                       }
+                                    }
                                     $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                  } else {
 
@@ -2751,6 +2766,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $result[$fields['rank']]['display'] = false;
                                           $parent_fields_id                   = 0;
                                           $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                          if($fields['type'] == "textarea") {
+                                             if($line['tasks'][$key]["hideTable"] == 1) {
+                                                $value = str_replace("\\n",'","',$value);
+                                             }
+                                          }
                                           $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                        } else {
 
@@ -2848,6 +2868,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              $result[$fields['rank']]['display'] = false;
                                              $parent_fields_id                   = 0;
                                              $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                             if($fields['type'] == "textarea") {
+                                                if($line['tasks'][$key]["hideTable"] == 1) {
+                                                   $value = str_replace("\\n",'","',$value);
+                                                }
+                                             }
+
                                              $str                                = str_replace("#" . $content . "#", $value, $str);
                                              if (!is_null($value) && !empty($value)) {
                                                 $find = true;
@@ -2964,6 +2990,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $result[$fields['rank']]['display'] = false;
                                     $parent_fields_id                   = 0;
                                     $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                    if($fields['type'] == "textarea") {
+                                       if($line['tasks'][$key]["hideTable"] == 1) {
+                                          $value = str_replace("\\n",'","',$value);
+                                       }
+                                    }
                                     $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                  } else {
 
