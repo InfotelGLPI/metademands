@@ -546,9 +546,12 @@ class PluginMetademandsField extends CommonDBChild {
          $granted_fields = [];
          if ($this->fields['type'] == "dropdown_object"
              && $this->fields["item"] == "User") {
+            //Valideur
+            $allowed_fields[59] = __('Approver');
             $granted_fields = [
                4,
                66,
+               59
             ];
          }
          if ($this->fields['type'] == "dropdown_object"
@@ -595,10 +598,6 @@ class PluginMetademandsField extends CommonDBChild {
                13
             ];
          }
-
-         //Valideur
-         $allowed_fields[59] = __('Approver');
-         $granted_fields = array_merge($granted_fields,[59]);
 
          foreach ($allowed_fields as $id => $value) {
             if (in_array($searchOption[$id]['linkfield'], $granted_fields) || in_array($id, $granted_fields)) {
