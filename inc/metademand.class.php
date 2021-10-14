@@ -1502,8 +1502,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            if ($fields_values['used_by_ticket'] == 65) {
                               $name = "_groups_id_observer";
                            }
+
                            $parent_fields[$name]       = $v[$id];
                            $parent_ticketfields[$name] = $v[$id];
+                           if ($fields_values['used_by_ticket'] == 59) {
+                              $parent_fields["_add_validation"]           = '0';
+                              $parent_ticketfields["_add_validation"]     = '0';
+                              $parent_fields["validatortype"]           = 'user';
+                              $parent_ticketfields["validatortype"]     = 'user';
+                              $parent_fields["users_id_validate"]       = [$v[$id]];
+                              $parent_ticketfields["users_id_validate"] = [$v[$id]];
+                           }
                            if ($fields_values['used_by_ticket'] == 13) {
 
                               if ($fields_values['type'] == "dropdown_meta"

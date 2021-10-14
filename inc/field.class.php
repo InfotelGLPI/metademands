@@ -596,6 +596,10 @@ class PluginMetademandsField extends CommonDBChild {
             ];
          }
 
+         //Valideur
+         $allowed_fields[59] = __('Approver');
+         $granted_fields = array_merge($granted_fields,[59]);
+
          foreach ($allowed_fields as $id => $value) {
             if (in_array($searchOption[$id]['linkfield'], $granted_fields) || in_array($id, $granted_fields)) {
                $ticket_fields[$id] = $searchOption[$id]['name'];
