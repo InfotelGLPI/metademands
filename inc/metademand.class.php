@@ -1281,11 +1281,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
     */
    function convertMetademandToTicket($ticket, $metademands_id) {
       $tickets_id = $ticket->input["id"];
-
+      $oldlanguage = $_SESSION['glpilanguage'];
       $ticket_task       = new PluginMetademandsTicket_Task();
       $ticket_metademand = new PluginMetademandsTicket_Metademand();
       $ticket_field      = new PluginMetademandsTicket_Field();
       $ticket_ticket     = new Ticket_Ticket();
+
 
       // Try to convert name
       $ticket->input["name"] = addslashes(str_replace(self::$PARENT_PREFIX .
@@ -3192,13 +3193,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
     */
    private function formatFields(array $parent_fields, $metademands_id, $values_form, $options = []) {
 
+      $config_data = PluginMetademandsConfig::getInstance();
+      $langTech = $config_data['languageTech'];
       $result            = [];
       $result['content'] = "";
       $parent_fields_id  = 0;
 
 
       foreach ($values_form as $k => $values) {
-         if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name'))) {
+         if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name',$langTech))) {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
          }
          if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
@@ -3256,7 +3259,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
             $nb++;
             $hideTable = $options['hideTable'] ?? false;
-            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id,false, $hideTable);
+            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id,false, $hideTable,$langTech);
 
             if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
                $resultTemp[$field['rank']]['content'] .= "</tr>";
@@ -3285,16 +3288,16 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param $parent_fields_id
     * @param $return_value
     */
-   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false) {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false, $lang='') {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
       //      $style_title = "style='background-color: #cccccc;'";
 
-      if (empty($label = PluginMetademandsField::displayField($field['id'], 'name'))) {
+      if (empty($label = PluginMetademandsField::displayField($field['id'], 'name',$lang))) {
          $label = Toolbox::stripslashes_deep($field['name']);
       }
-      if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2'))) {
+      if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2',$lang))) {
          $label2 = Toolbox::stripslashes_deep($field['label2']);
       }
 
@@ -3336,7 +3339,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                    && $field['item'] == 'other') {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                   foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k,$lang))) {
                         $custom_values[$k] = $ret;
                      }
                   }
@@ -3597,7 +3600,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   } else {
                      $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                      foreach ($custom_values as $k => $val) {
-                        if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                        if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k,$lang))) {
                            $custom_values[$k] = $ret;
                         }
                      }
@@ -3769,7 +3772,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if (!empty($field['custom_values'])) {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                   foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k,$lang))) {
                         $custom_values[$k] = $ret;
                      }
                   }
@@ -3831,7 +3834,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if (!empty($field['custom_values'])) {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                   foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k))) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k,$lang))) {
                         $custom_values[$k] = $ret;
                      }
                   }
@@ -4036,7 +4039,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $parent_field  = $field;
                   $custom_values = PluginMetademandsField::_unserialize($metademand_field->fields['custom_values']);
                   foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["parent_field_id"], "custom" . $k))) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["parent_field_id"], "custom" . $k,$lang))) {
                         $custom_values[$k] = $ret;
                      }
                   }
@@ -4044,7 +4047,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $parent_field['type']          = $metademand_field->fields['type'];
                   $parent_field['item']          = $metademand_field->fields['item'];
 
-                  self::getContentWithField($parent_fields, $fields_id, $parent_field, $result, $parent_fields_id);
+                  self::getContentWithField($parent_fields, $fields_id, $parent_field, $result, $parent_fields_id,false,false,$lang);
                }
 
                break;
@@ -5854,9 +5857,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @global type $DB
     *
     */
-   static function displayField($id, $field) {
+   static function displayField($id, $field,$lang='') {
       global $DB;
 
+      $res = "";
       // Make new database object and fill variables
       $iterator = $DB->request([
                                   'FROM'  => 'glpi_plugin_metademands_metademandtranslations',
@@ -5867,12 +5871,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                      'language' => $_SESSION['glpilanguage']
                                   ]]);
 
+      if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
+      $iterator2 = $DB->request([
+                                   'FROM'  => 'glpi_plugin_metademands_metademandtranslations',
+                                   'WHERE' => [
+                                      'itemtype' => self::getType(),
+                                      'items_id' => $id,
+                                      'field'    => $field,
+                                      'language' => $lang
+                                   ]]);
+   }
+
+
+
       if (count($iterator)) {
          while ($data = $iterator->next()) {
-            return $data['value'];
+            $res = $data['value'];
+         }
+      } else{
+         //            $res = Dropdown::getDropdownName('glpi_plugin_metademands_metademandtranslations',$id);
+      }
+      if($lang != $_SESSION['glpilanguage'] && $lang != '') {
+         if (count($iterator2)) {
+            while ($data2 = $iterator2->next()) {
+               $res .= ' / ' . $data2['value'];
+            }
          }
       }
-      return "";
+      return $res;
    }
 
    public function checkTaskAllowed($metademands_id, $values, $tasks) {

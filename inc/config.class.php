@@ -142,6 +142,14 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
+      echo "<td>";
+      echo __('Language Tech', 'metademands');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showLanguages("languageTech", ['value' => $config['languageTech']]);
+      echo "</td>";
+      echo "</tr>";
+
       if ($config['display_buttonlist_servicecatalog'] == 1) {
 
          echo "<tr><th colspan='6'>" . __('Configuration of the Service Catalog plugin', 'metademands') . "</th></tr>";

@@ -4235,9 +4235,10 @@ class PluginMetademandsField extends CommonDBChild {
     * @global type $DB
     *
     */
-   static function displayField($id, $field) {
+   static function displayField($id, $field, $lang='') {
       global $DB;
 
+      $res = "";
       // Make new database object and fill variables
       $iterator = $DB->request([
                                   'FROM'  => 'glpi_plugin_metademands_fieldtranslations',
@@ -4247,13 +4248,31 @@ class PluginMetademandsField extends CommonDBChild {
                                      'field'    => $field,
                                      'language' => $_SESSION['glpilanguage']
                                   ]]);
+      if($lang != $_SESSION['glpilanguage'] && $lang != ''){
+         $iterator2 = $DB->request([
+                                      'FROM'  => 'glpi_plugin_metademands_fieldtranslations',
+                                      'WHERE' => [
+                                         'itemtype' => self::getType(),
+                                         'items_id' => $id,
+                                         'field'    => $field,
+                                         'language' => $lang
+                                      ]]);
+      }
+
 
       if (count($iterator)) {
          while ($data = $iterator->next()) {
-            return $data['value'];
+            $res = $data['value'];
          }
       }
-      return "";
+      if($lang != $_SESSION['glpilanguage'] && $lang != '') {
+         if (count($iterator2)) {
+            while ($data2 = $iterator2->next()) {
+               $res .= ' / ' . $data2['value'];
+            }
+         }
+      }
+      return $res;
    }
 
 

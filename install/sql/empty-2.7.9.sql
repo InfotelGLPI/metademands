@@ -288,6 +288,7 @@ CREATE TABLE `glpi_plugin_metademands_configs` (
    `title_servicecatalog`     varchar(255)          DEFAULT NULL,
    `comment_servicecatalog`   TEXT                  DEFAULT NULL,
    `fa_servicecatalog`        varchar(100) NOT NULL DEFAULT 'fas fa-share-alt',
+   `languageTech`        varchar(100) DEFAULT NULL,
    PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
