@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-14 16:01+0000\n"
+"POT-Creation-Date: 2021-10-15 07:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -156,23 +156,27 @@ msgstr ""
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr ""
 
-#: inc/config.class.php:147
+#: inc/config.class.php:146
+msgid "Language Tech"
+msgstr ""
+
+#: inc/config.class.php:155
 msgid "Configuration of the Service Catalog plugin"
 msgstr ""
 
-#: inc/config.class.php:150
+#: inc/config.class.php:158
 msgid "Title for Service Catalog widget"
 msgstr ""
 
-#: inc/config.class.php:161
+#: inc/config.class.php:169
 msgid "Comment for Service Catalog widget"
 msgstr ""
 
-#: inc/config.class.php:173
+#: inc/config.class.php:181
 msgid "Icon for Service Catalog widget"
 msgstr ""
 
-#: inc/config.class.php:174
+#: inc/config.class.php:182
 msgid "Example : "
 msgstr ""
 
@@ -481,19 +485,19 @@ msgstr ""
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
-#: inc/field.class.php:4696
+#: inc/field.class.php:4715
 msgid "Requester login"
 msgstr ""
 
-#: inc/field.class.php:4700
+#: inc/field.class.php:4719
 msgid "Requester name"
 msgstr ""
 
-#: inc/field.class.php:4704
+#: inc/field.class.php:4723
 msgid "Requester firstname"
 msgstr ""
 
-#: inc/field.class.php:4708
+#: inc/field.class.php:4727
 msgid "Requester email"
 msgstr ""
 
@@ -588,87 +592,87 @@ msgstr ""
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:3140
+#: inc/metademand.class.php:3141
 msgid "Demand add failed"
 msgstr ""
 
-#: inc/metademand.class.php:3144
+#: inc/metademand.class.php:3145
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:3146
+#: inc/metademand.class.php:3147
 #, php-format
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr ""
 
-#: inc/metademand.class.php:3149
+#: inc/metademand.class.php:3150
 #, php-format
 msgid "Problem \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:3151
+#: inc/metademand.class.php:3152
 #, php-format
 msgid "Change \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:4438
+#: inc/metademand.class.php:4441
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:4451
+#: inc/metademand.class.php:4454
 msgid "Parent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5224
+#: inc/metademand.class.php:5227
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:5251
+#: inc/metademand.class.php:5254
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:5265
+#: inc/metademand.class.php:5268
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5272 inc/metademand.class.php:5401
+#: inc/metademand.class.php:5275 inc/metademand.class.php:5404
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:5394
+#: inc/metademand.class.php:5397
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5471
+#: inc/metademand.class.php:5474
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:5816
+#: inc/metademand.class.php:5819
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:5925 inc/metademand.class.php:5980
+#: inc/metademand.class.php:5951 inc/metademand.class.php:6006
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:5937 inc/metademand.class.php:6102
+#: inc/metademand.class.php:5963 inc/metademand.class.php:6128
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:5949 inc/metademand.class.php:6160
+#: inc/metademand.class.php:5975 inc/metademand.class.php:6186
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:5961 inc/metademand.class.php:6032
+#: inc/metademand.class.php:5987 inc/metademand.class.php:6058
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: inc/metademand.class.php:6706
+#: inc/metademand.class.php:6732
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:6714
+#: inc/metademand.class.php:6740
 msgid "Import"
 msgstr ""
 
