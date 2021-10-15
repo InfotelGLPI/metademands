@@ -1628,6 +1628,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      }
                   }
 
+                  if(isset($input['items_id']['PluginResourcesResource'])){
+                     $resource = new PluginResourcesResource();
+                     foreach ($input['items_id']['PluginResourcesResource'] as $resource_id){
+                        if($resource->getFromDB($resource_id)){
+                           $input['name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
+                        }
+                     }
+                  }
+
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $object->add($input);
