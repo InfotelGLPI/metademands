@@ -481,7 +481,8 @@ msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
 msgstr ""
-"Si la valeur sélectionnée est égale à la valeur à vérifier,  la demande de v"
+"Si la valeur sélectionnée est égale à la valeur à vérifier, la demande de "
+"validation sera envoyée à l'utilisateur"
 
 #: inc/field.class.php:3399
 msgid "Custom values"
