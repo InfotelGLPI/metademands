@@ -167,6 +167,9 @@ if (isset($_POST["add"])) {
    if (isset($_POST["hidden_block"])) {
       $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
+   if (isset($_POST["users_id_validate"])) {
+      $_POST["users_id_validate"] = PluginMetademandsField::_serialize($_POST["users_id_validate"]);
+   }
    $informations_to_display = [];
    if (isset($_POST['informations_to_display'])) {
       $informations_to_display = $_POST['informations_to_display'];

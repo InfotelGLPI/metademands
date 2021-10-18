@@ -91,6 +91,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `fields_link` varchar(255) NOT NULL default '0',
     `hidden_link` varchar(255) NOT NULL default '0',
     `hidden_block` varchar(255) NOT NULL default '0',
+    `users_id_validate` varchar(255) NOT NULL default '0',
     `max_upload` INT(11) NOT NULL DEFAULT 0,
     `regex` VARCHAR(255) NOT NULL DEFAULT '',
     `color` varchar(255) default NULL,

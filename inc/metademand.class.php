@@ -1401,6 +1401,20 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            }
                            break;
                      }
+
+                     if (isset($metademands_fields->fields['users_id_validate']) && !empty($metademands_fields->fields['users_id_validate'])) {
+                        if (isset($metademands_fields->fields['check_value']) && is_array($datav)) {
+                           $checkeValue   = json_decode($metademands_fields->fields['check_value'], 1);
+                           $usersValidate = json_decode($metademands_fields->fields['users_id_validate'], 1);
+                           foreach ($checkeValue as $key => $checkVal) {
+                              if (in_array($checkVal, $datav)) {
+                                 $add_validation      = '0';
+                                 $validatortype       = 'user';
+                                 $users_id_validate[] = $usersValidate[$key];
+                              }
+                           }
+                        }
+                     }
                   }
                }
                if ($metademand->fields['is_order'] == 0) {
@@ -1558,6 +1572,20 @@ class PluginMetademandsMetademand extends CommonDBTM {
                //                  }
                //               }
                //END TODO Add options
+
+               if (isset($users_id_validate)) {
+                  $parent_fields["_add_validation"]       = $add_validation;
+                  $parent_ticketfields["_add_validation"] = $add_validation;
+                  $parent_fields["validatortype"]         = $validatortype;
+                  $parent_ticketfields["validatortype"]   = $validatortype;
+                  if (isset($parent_fields["users_id_validate"])) {
+                     $parent_fields["users_id_validate"]       = array_merge($parent_fields["users_id_validate"], $users_id_validate);
+                     $parent_ticketfields["users_id_validate"] = array_merge($parent_ticketfields["users_id_validate"], $users_id_validate);
+                  } else {
+                     $parent_fields["users_id_validate"]       = $users_id_validate;
+                     $parent_ticketfields["users_id_validate"] = $users_id_validate;
+                  }
+               }
 
                // Case of simple ticket convertion
                // Ticket does not exist : ADD

@@ -324,6 +324,7 @@ class PluginMetademandsField extends CommonDBChild {
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'             => $this->fields['hidden_link'],
                      'hidden_block'            => $this->fields['hidden_block'],
+                     'users_id_validate'       => $this->fields['users_id_validate'],
                      'custom_values'           => $this->fields['custom_values'],
                      'comment_values'          => $this->fields['comment_values'],
                      'default_values'          => $this->fields['default_values'],
@@ -417,6 +418,7 @@ class PluginMetademandsField extends CommonDBChild {
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'             => $this->fields['hidden_link'],
                      'hidden_block'            => $this->fields['hidden_block'],
+                     'users_id_validate'       => $this->fields['users_id_validate'],
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'custom_values'           => $this->fields["custom_values"],
                      'comment_values'          => $this->fields["comment_values"],
@@ -759,6 +761,7 @@ class PluginMetademandsField extends CommonDBChild {
                          'informations_to_display' => $this->fields['informations_to_display'],
                          'hidden_link'             => $this->fields['hidden_link'],
                          'hidden_block'            => $this->fields['hidden_block'],
+                         'users_id_validate'       => $this->fields['users_id_validate'],
                          //                         'fields_display' => $this->fields['fields_display'],
                          'item'                    => $this->fields['item'],
                          'type'                    => $this->fields['type'],
@@ -2920,6 +2923,13 @@ class PluginMetademandsField extends CommonDBChild {
          $params['hidden_block'] = $params['hidden_block'][$optid];
       }
 
+      $params['users_id_validate'] = self::_unserialize($params['users_id_validate']);
+      if (!isset($params['users_id_validate'][$optid])) {
+         $params['users_id_validate'] = 0;
+      } else {
+         $params['users_id_validate'] = $params['users_id_validate'][$optid];
+      }
+
       //Hook to get values saves from plugin
       if (isset($PLUGIN_HOOKS['metademands'])) {
          $plugin = new Plugin();
@@ -3214,6 +3224,16 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= "<td>";
          $res .= self::showHiddenBlockDropdown($metademands_id, $params['hidden_block'], $this->getID(), false);
          $res .= "</td></tr>";
+
+         if($this->getField("type") == "checkbox"){
+            $res .= "<tr><td>";
+            $res .= __('Link a validation', 'metademands');
+            $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the validation is sent to the user', 'metademands') . '</span>';
+            $res .= '</td>';
+            $res .= "<td>";
+            $res .= self::showValidationDropdown($metademands_id, $params['users_id_validate'], $this->getID(), false);
+            $res .= "</td></tr>";
+         }
       }
 
       //Hook to print new options from plugins
@@ -3321,6 +3341,31 @@ class PluginMetademandsField extends CommonDBChild {
                                                      'min'     => 1,
                                                      'max'     => 30,
                                                      'toadd'   => [0 => Dropdown::EMPTY_VALUE]]);
+   }   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param bool $display
+    * @param      $idF
+    *
+    * @return int|string
+    */
+   static function showValidationDropdown($metademands_id, $selected_value, $idF, $display = true) {
+
+      $fields = new self();
+      $fields->getFromDB($idF);
+      $right = '';
+
+      $metademand = new PluginMetademandsMetademand();
+      $metademand->getFromDB($metademands_id);
+      if($metademand->getField('type') == Ticket::INCIDENT_TYPE){
+         $right = 'validate_incident';
+      } else if($metademand->getField('type') == Ticket::DEMAND_TYPE){
+         $right = 'validate_request';
+      }
+      return User::dropdown(['name' => 'users_id_validate[]',
+                             'value' => $selected_value,
+                             'display' => $display,
+                             'right'=> $right]);
    }
 
    /**
