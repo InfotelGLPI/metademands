@@ -160,9 +160,9 @@ class PluginMetademandsTicketField extends CommonDBChild {
          echo "</tr>";
          echo "<tr class='tab_bg_1'>";
          echo "<td class='tab_bg_2 center'>";
-         echo "<input type='submit' class='submit' name='template_sync' value='" . __('Synchronise with ticket template', 'metademands') . "'>";
+         Html::submit(__('Synchronise with ticket template', 'metademands') , ['name' => 'template_sync', 'class' => 'btn btn-primary']);
          foreach ($item->fields as $name => $value) {
-            echo "<input type='hidden' name='$name' value='$value'>";
+            echo Html::hidden($name, ['value' => $value]);
          }
          echo "</td>";
          echo "</tr>";
@@ -173,7 +173,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          Ajax::createIframeModalWindow("tags" . $rand,
                                        $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .
                                        $item->fields['id']);
-         echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
+         echo "<a class='btn btn-primary btn-sm' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
          echo "</td>";
          echo "</tr>";
          echo "</table>";
@@ -221,8 +221,9 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $searchOption = Search::getOptions('Ticket');
       echo $searchOption[$this->fields['num']]['name'];
 
-      echo "<input type='hidden' name='entities_id' value='" . $this->fields["entities_id"] . "'>";
-      echo "<input type='hidden' name='is_recursive' value='" . $this->fields["is_recursive"] . "'>";
+      echo Html::hidden('entities_id', ['value' => $this->fields["entities_id"]]);
+      echo Html::hidden('is_recursive', ['value' => $this->fields["is_recursive"]]);
+
       echo "</td>";
       echo "<td>" . __('Value') . "</td>";
       echo "<td>";
@@ -268,7 +269,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $rand = mt_rand();
 
       if (count($ticketfield_data) && count($fields)) {
-         echo "<div class='center first-bloc'>";
+         echo "<div class='center first-bloc left'>";
 
          if ($canedit) {
             Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);

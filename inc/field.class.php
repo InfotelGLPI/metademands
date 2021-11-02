@@ -223,13 +223,13 @@ class PluginMetademandsField extends CommonDBChild {
       // LABEL
       echo "<td>" . __('Label') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "name", ['value' => stripslashes($this->fields["name"])]);
+      echo Html::input('name', ['value' => stripslashes($this->fields["name"]), 'size' => 40]);
       if ($ID > 0) {
-         echo "<input type='hidden' name='entities_id' value='" . $this->fields["entities_id"] . "'>";
-         echo "<input type='hidden' name='is_recursive' value='" . $this->fields["is_recursive"] . "'>";
+         echo Html::hidden('entities_id', ['value' => $this->fields["entities_id"]]);
+         echo Html::hidden('is_recursive', ['value' => $this->fields["is_recursive"]]);
       } else {
-         echo "<input type='hidden' name='entities_id' value='" . $item->fields["entities_id"] . "'>";
-         echo "<input type='hidden' name='is_recursive' value='" . $item->fields["is_recursive"] . "'>";
+         echo Html::hidden('entities_id', ['value' => $item->fields["entities_id"]]);
+         echo Html::hidden('is_recursive', ['value' => $item->fields["is_recursive"]]);
       }
       echo "</td>";
 
@@ -260,6 +260,8 @@ class PluginMetademandsField extends CommonDBChild {
       Html::textarea(['name'            => 'label2',
                       'value'           => $label2,
                       'enable_richtext' => true,
+                      'enable_fileupload' => false,
+                      'enable_images'     => false,
                       'cols'            => 50,
                       'rows'            => 3]);
       //      Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
@@ -272,7 +274,9 @@ class PluginMetademandsField extends CommonDBChild {
       Html::textarea(['name'            => 'comment',
                       'value'           => $comment,
                       'enable_richtext' => true,
-                      'cols'            => 80,
+                      'enable_fileupload' => false,
+                      'enable_images'     => false,
+                      'cols'            => 50,
                       'rows'            => 3]);
 
       //      echo Html::autocompletionTextField($this, "comment", ['value' => stripslashes($this->fields["comment"])]);
@@ -429,7 +433,8 @@ class PluginMetademandsField extends CommonDBChild {
                                                                                 "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
 
 
-      echo "<input type='hidden' name='plugin_metademands_metademands_id' value='" . $this->fields["plugin_metademands_metademands_id"] . "'/>";
+      echo Html::hidden('plugin_metademands_metademands_id', ['value' => $this->fields["plugin_metademands_metademands_id"]]);
+
       $params = ['id'                 => 'dropdown_type' . $randType,
                  'to_change'          => 'dropdown_item' . $randItem,
                  'value'              => 'dropdown',
@@ -786,8 +791,8 @@ class PluginMetademandsField extends CommonDBChild {
          if ($canedit) {
             echo "<tr class='tab_bg_1'>";
             echo "<td class='tab_bg_2 center' colspan='6'>";
-            echo "<input type='hidden' class='submit' name='plugin_metademands_metademands_id' value='" . $item->fields['id'] . "'>";
-            echo "<input type='submit' class='submit' name='add' value='" . _sx('button', 'Add') . "'>";
+            echo Html::hidden('plugin_metademands_metademands_id', ['value' =>  $item->fields['id']]);
+            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
             echo "</td>";
             echo "</tr>";
          }
@@ -832,7 +837,7 @@ class PluginMetademandsField extends CommonDBChild {
       $rand = mt_rand();
 
       if (count($data)) {
-         echo "<div class='center first-bloc'>";
+         echo "<div class='center first-bloc left'>";
          if ($canedit) {
             Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
             $massiveactionparams = ['item'      => __CLASS__,
@@ -1547,7 +1552,7 @@ class PluginMetademandsField extends CommonDBChild {
              && $data['type'] != "text"
              && !empty($comment)) {
             echo "&nbsp;";
-            echo Html::showToolTip(Html::clean($comment), ['display' => false]);
+            echo Html::showToolTip(Glpi\Toolbox\RichText::getSafeHtml($comment), ['display' => false]);
          }
          echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
          if ($data['is_mandatory']
@@ -2157,6 +2162,7 @@ class PluginMetademandsField extends CommonDBChild {
                      } else {
                         $options['name']    = $namefield . "[" . $data['id'] . "]";
                         $options['display'] = false;
+                        //TODO Error if mode basket : $value good value - not $_SESSION['plugin_metademands']['fields'][$data['id']]
                         $options['value']   = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0;
                         $field              .= Location::dropdown($options);
                      }
@@ -2170,10 +2176,8 @@ class PluginMetademandsField extends CommonDBChild {
             }
             break;
          case 'text':
-            $field = "<input type='text' name='" . $namefield . "[" . $data['id'] . "]' value='" . Html::cleanInputText(Toolbox::stripslashes_deep($value)) . "' 
-            class='form-control form-control-sm' id='" . $namefield . "[" . $data['id'] . "]' placeholder=\"" . Html::clean($comment) . "\">";
-            //            $id = $namefield . "[" . $data['id'] . "]";
-            //            $field .= Html::scriptBlock("$( \"\").val($value);");
+            $name = $namefield . "[" . $data['id'] . "]";
+            $field = Html::input($name, ['value' =>  Html::cleanInputText(Toolbox::stripslashes_deep($value)), 'placeholder' => Glpi\Toolbox\RichText::getTextFromHtml($comment)]);
             break;
          case 'informations':
             if ($on_basket == false) {
@@ -2195,17 +2199,16 @@ class PluginMetademandsField extends CommonDBChild {
                         $btnLabel = $label2;
                      }
 
-                     $field = "<input type='submit' class='submit' value ='" . Html::clean($btnLabel) . "' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
+                     $field = "<input type='submit' class='submit' value ='" . Toolbox::stripTags($btnLabel) . "' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
 
                      break;
                   case 'link_a' :
-                     $field = "<a target='_blank' href ='" . $data['custom_values'][1] . "'>" . $data['custom_values'][1] . "</a>";
+                     $field = Html::link($data['custom_values'][1], $data['custom_values'][1], ['target' => '_blank']);
                      break;
                }
-               $field .= "<input type='hidden' name=" . $namefield . "[" . $data['id'] . "]' value='" . $data['custom_values'][1] . "' >";
+               $title = $namefield . "[" . $data['id'] . "]";
+               $field .=Html::hidden($title, ['value' =>  $data['custom_values'][1]]);
             }
-            //            echo "<input type='hidden' name=''.$namefield.'[" . $data['id'] . "]' value='" . $data['custom_values'] . "'>";
-
             break;
          case 'checkbox':
             if (!empty($data['custom_values'])) {
@@ -2240,7 +2243,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
                      $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-                     $field .= Html::showToolTip($data['comment_values'][$key],
+                     $field .= Html::showToolTip(Glpi\Toolbox\RichText::getSafeHtml($data['comment_values'][$key]),
                                                  ['awesome-class' => 'fa-info-circle',
                                                   'display'       => false]);
                      $field .= "</span>";
@@ -2286,7 +2289,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
                      $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-                     $field .= Html::showToolTip($data['comment_values'][$key],
+                     $field .= Html::showToolTip(RichText::getSafeHtml($data['comment_values'][$key]),
                                                  ['awesome-class' => 'fa-info-circle',
                                                   'display'       => false]);
                      $field .= "</span>";
@@ -2302,11 +2305,14 @@ class PluginMetademandsField extends CommonDBChild {
                                         'value'           => $value,
                                         'editor_id'       => $namefield . "[" . $data['id'] . "]",
                                         'enable_richtext' => true,
+                                        'enable_fileupload' => false,
+                                        'enable_images'     => false,
                                         'display'         => false,
                                         'cols'            => 80,
                                         'rows'            => 3]);
             } else {
-               $field = "<textarea class='form-control' rows='3' cols='80' placeholder=\"" . Html::clean($comment) . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
+
+               $field = "<textarea class='form-control' rows='3' cols='80' placeholder=\"" . Glpi\Toolbox\RichText::getTextFromHtml($comment) . "\" name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
             }
             break;
          case 'date':
@@ -2842,7 +2848,7 @@ class PluginMetademandsField extends CommonDBChild {
                   echo "</td></tr>";
                }
                if (is_array($opts)) {
-                  echo "<input type='hidden' id='nbOptions' value='" . count($opts) . "' />";
+                  echo Html::hidden('nbOptions', ['value' =>  count($opts)]);
                }
 
                echo "</tbody></table>";
@@ -3255,10 +3261,10 @@ class PluginMetademandsField extends CommonDBChild {
       }
       $res .= "<tr><td colspan='2' class='center'>";
       $res .= Html::hidden('clear_option', ['value' => "clear_option"]);
-      $res .= "<button type='submit' class='pointer' name='option[" . $opt . "]' title='"
-              . _sx('button', 'Delete permanently') . "'>";
-      $res .= "<i class='fa-1x fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
-      $res .= "</button>";
+      $name = "option[' . $opt . ']";
+      $title = "<i class='fa-1x fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+      $title .= _sx('button', 'Delete permanently');
+      echo Html::submit($title, ['name' => $name, 'class' => 'btn btn-primary pointer']);
       $res .= "</td></tr>";
       return $res;
    }
@@ -3774,9 +3780,9 @@ class PluginMetademandsField extends CommonDBChild {
       Html::requireJs("metademands");
       $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(['root_doc' => $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL]) . ");";
 
-      echo "<input type='hidden' id='display_comment' value='$display_comment' />";
-      echo '<input type="hidden" id="count_custom_values" value="' . $count . '"/>';
-      echo "<input type='hidden' id='display_default' value='$display_default' />";
+      echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' =>  $display_comment]);
+      echo Html::hidden('count_custom_values', ['id' => 'count_custom_values','value' =>  $count]);
+      echo Html::hidden('display_default', ['id' => 'display_default','value' =>  $display_default]);
 
       echo "&nbsp;<i class='fa-1x fas fa-plus-square' style='cursor:pointer' 
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");' 

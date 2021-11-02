@@ -322,7 +322,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             while ($data = $iterator_meta_existing_cats->next()) {
                $cats = json_decode($data['itilcategories_id']);
             }
-            if ($cats == null) {
+            if (!isset($cats) || $cats == null) {
                $cats = [];
             }
          }
@@ -661,10 +661,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<td>" . __('Name') . "</td>";
       echo "<td>";
-      $opt = [
-         'option' => 'size = 50 ',
-      ];
-      Html::autocompletionTextField($this, "name", $opt);
+      echo Html::input('name', ['value' => $this->fields['name'], 'size' => 40]);
       echo "</td>";
 
       echo "<td>" . __('Active') . "</td>";
@@ -696,7 +693,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
       } else {
          echo self::getObjectTypeName($this->fields['object_to_create']);
-         echo "<input type='hidden' name='object_to_create' value=\"" . $this->fields['object_to_create'] . "\">";
+         echo Html::hidden('object_to_create', ['value' => $this->fields['object_to_create']]);
       }
       echo "</td>";
       echo "<td colspan='2'>";
@@ -884,14 +881,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<br><br><form name='task_form' id='task_form' method='post' 
                action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-      echo "<input type='submit' name='execute' value=\"" . _sx('button', 'Duplicate') . "\"
-                      class='submit'>";
-      echo "<input type='hidden' name='_method' value=\"Duplicate\"
-                      class='submit'>";
-      echo "<input type='hidden' name='metademands_id' value=\"" . $metademands_id . "\"
-                      class='submit'>";
-      echo "<input type='hidden' name='redirect' value=\"1\"
-                      class='submit'>";
+      Html::submit(_sx('button', 'Duplicate'), ['name' => 'execute', 'class' => 'btn btn-primary']);
+      echo Html::hidden('_method', ['value' => 'Duplicate']);
+      echo Html::hidden('metademands_id', ['value' => $metademands_id]);
+      echo Html::hidden('redirect', ['value' => 1]);
+
       Html::closeForm();
       echo "</div>";
       echo "</h3>";
@@ -910,7 +904,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             echo $this->getURL($this->fields['id']);
             break;
          case 'itilcategories_id':
-            echo "<input type='hidden' name='type' value='" . $this->fields['type'] . "'>";
+            echo Html::hidden('type', ['value' => $this->fields['type']]);
             switch ($this->fields['type']) {
                case Ticket::INCIDENT_TYPE :
                   $criteria = ['is_incident' => 1];

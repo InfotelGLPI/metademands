@@ -164,7 +164,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
          }
          echo "</table>";
       } else {
-         echo __('No item found');
+         echo "<div class='alert alert-important alert-info center'>".__('No item found')."</div>";
       }
       return true;
    }

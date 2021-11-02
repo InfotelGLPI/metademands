@@ -142,8 +142,8 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
          echo "</td></tr>";
          echo "<tr class='tab_bg_1'><td class='tab_bg_2 center'><input type=\"submit\" name=\"update\" class=\"submit\"
             value=\""._sx('button', 'Add')."\" >";
-         echo "<input type='hidden' name='entities_id' value='".$_SESSION['glpiactive_entity']."'>";
-         echo "<input type='hidden' name='plugin_resources_contracttypes_id' value='".$resourceContractType->fields['id']."'>";
+         echo Html::hidden('entities_id', ['value' => $_SESSION['glpiactive_entity']]);
+         echo Html::hidden('plugin_resources_contracttypes_id', ['value' => $resourceContractType->fields['id']]);
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();

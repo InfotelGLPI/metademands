@@ -168,8 +168,8 @@ class PluginMetademandsGroup extends CommonDBTM {
 
          echo "<tr>";
          echo "<td class='tab_bg_2 center' colspan='6'>";
-         echo "<input type='submit' name='add_groups' class='submit' value='"._sx('button', 'Add')."' >";
-         echo "<input type='hidden' name='plugin_metademands_metademands_id' class='submit' value='".$item->fields['id']."' >";
+         echo Html::submit(_sx('button', 'Add'), ['name' => 'add_groups', 'class' => 'btn btn-primary']);
+         echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
          echo "</td>";
          echo "</tr>";
          echo "</table></div>";
@@ -188,7 +188,7 @@ class PluginMetademandsGroup extends CommonDBTM {
    private function listItems($fields, $canedit) {
 
       $rand = mt_rand();
-      echo "<div class='center'>";
+      echo "<div class='left'>";
       if ($canedit) {
          Html::openMassiveActionsForm('mass'.__CLASS__.$rand);
          $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass'.__CLASS__.$rand];
@@ -217,13 +217,13 @@ class PluginMetademandsGroup extends CommonDBTM {
          echo "<td>".Dropdown::getDropdownName('glpi_groups', $field['groups_id'])."</td>";
          echo "</tr>";
       }
-
+      echo "</table>";
       if ($canedit) {
          $massiveactionparams['ontop'] = false;
          Html::showMassiveActions($massiveactionparams);
          Html::closeForm();
       }
-      echo "</table>";
+
       echo "</div>";
    }
 

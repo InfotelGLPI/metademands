@@ -131,7 +131,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
          echo "};";
          echo "</script>\n";
          echo "<div class='center'>" .
-              "<a class='vsubmit' href='javascript:addTranslation" .
+              "<a class='btn btn-primary btn-sm' href='javascript:addTranslation" .
               $item->getType() . $item->getID() . "$rand();'>" . __('Add a new translation') .
               "</a></div><br>";
       }

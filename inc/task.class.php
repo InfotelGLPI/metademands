@@ -138,8 +138,6 @@ class PluginMetademandsTask extends CommonDBTM {
          return false;
       }
 
-      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/bootstrap4.css");
-
       $canedit = $metademands->can($metademands->fields['id'], UPDATE);
       $solved  = true;
       if ($canedit) {
@@ -196,9 +194,9 @@ class PluginMetademandsTask extends CommonDBTM {
             echo "<tr class='tab_bg_1'>";
 
             echo "<td class='tab_bg_2 center' colspan='6'>";
-            echo "<input type='hidden' class='submit' name='plugin_metademands_metademands_id' value='" . $metademands->fields['id'] . "'>";
-            echo "<input type='hidden' name='entities_id' value='" . $metademands->fields['entities_id'] . "'/>";
-            echo "<input type='submit' class='submit' name='add' value='" . _sx('button', 'Add') . "'>";
+            echo Html::hidden('plugin_metademands_metademands_id', ['value' => $metademands->fields['id']]);
+            echo Html::hidden('entities_id', ['value' => $metademands->fields['entities_id']]);
+            Html::submit(_sx('button', 'Add') , ['name' => 'add', 'class' => 'btn btn-primary']);
             echo "</td>";
             echo "</tr>";
 
@@ -254,11 +252,11 @@ class PluginMetademandsTask extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . __('Name') . "</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "name", ['value' => $this->fields["name"]]);
+      echo Html::input('name', ['value' => $this->fields['name'], 'size' => 40]);
       echo "</td>";
       echo "<td>" . __('Label') . "</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "label", ['value' => $this->fields["label"]]);
+      echo Html::input('label', ['value' => $this->fields['label'], 'size' => 40]);
       echo "</td>";
       echo "<td>" . __('Mandatory field') . "</td>";
       echo "<td>";
@@ -287,7 +285,7 @@ class PluginMetademandsTask extends CommonDBTM {
       echo "<span id='show_item' style='display:none'>";
       self::dropdownFieldItems("item", ['value' => $this->fields["item"]]);
       echo "</span>";
-      echo "<input type='hidden' name='plugin_metademands_metademands_id' value='" . $this->fields["plugin_metademands_metademands_id"] . "'/>";
+      echo Html::hidden('plugin_metademands_metademands_id', ['value' => $this->fields["plugin_metademands_metademands_id"]]);
       echo "</td>";
       $this->showFormButtons(['colspan' => 3,
                               'canedit' => $canedit]);
@@ -321,7 +319,7 @@ class PluginMetademandsTask extends CommonDBTM {
       Ajax::createIframeModalWindow("tags" . $rand,
                                     $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .
                                     $metademands_id);
-      echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
+      echo "<a class='btn btn-primary btn-sm' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
       echo "</td>";
       echo "</tr>";
       echo "</table>";

@@ -68,6 +68,11 @@
     }
 }
 
+.height-div {
+    background-color: #FFF;
+    height: 700px;
+}
+
 .middle-div {
     /*float: left;*/
 }

@@ -50,7 +50,7 @@ if ($plugin->isActivated("metademands")) {
 
    } else {
       Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
-      $config->showForm();
+      $config->showConfigForm();
       Html::footer();
    }
 

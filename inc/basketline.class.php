@@ -48,7 +48,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
          if (!$preview && $basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
                                                                 'users_id'                          => Session::getLoginUserID()])) {
 
-            echo "<div class='right-div'>";
+            echo "<div class='height-div right-div'>";
 
             echo "<div class='form-row'>";
             echo "<div class='form-group col-md-11'>";
@@ -145,7 +145,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             if (empty($label2 = PluginMetademandsField::displayField($v['id'], 'label2'))) {
                $label2 = $v['label2'];
             }
-            echo "<br><br><br>" . Html::clean($label2);
+            echo "<br><br><br>" . Toolbox::stripTags($label2);
          }
 
          echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $v['id'] . "'>";

@@ -84,13 +84,14 @@ class PluginMetademandsDraft extends CommonDBTM {
          $return .= "<table class='tab_cadre_fixe'>";
          $return .= "<tr class=''>";
          $return .= "<td colspan='4' class='center'>";
-         $title = _sx('button', 'Save draft', 'metademands') ."&nbsp;(".$_SESSION['plugin_metademands']['plugin_metademands_drafts_name'].")";
-         $return .= "<button name='save_draft' id='submitSave' form=''  class='btn btn-success btn-sm'><i class='fas fa-1x fa-save pointer'
-                    title='$title'
-                           data-hasqtip='0' aria-hidden='true' ></i></button>";
-//         $return .= __("Save draft", 'metademands');
-         $return .= "&nbsp;<button name='clean_form' type='submit' class='btn btn-warning btn-sm'><i class='fas fa-1x fa-broom pointer' title='" . _sx('button', 'Clean form', 'metademands') . "'
-                           data-hasqtip='0' aria-hidden='true' ></i></button><br>";
+         $title = "<i class='fas fa-1x fa-save pointer'></i>&nbsp;";
+         $title .= _sx('button', 'Save draft', 'metademands') ."&nbsp;(".$_SESSION['plugin_metademands']['plugin_metademands_drafts_name'].")";
+         $return .= Html::submit($title, ['name' => 'save_draft', 'id' => 'submitSave', 'class' => 'btn btn-success btn-sm']);
+         $return .= "&nbsp;";
+         $title = "<i class='fas fa-1x fa-broom pointer'></i>";
+         $title .= _sx('button', 'Clean form', 'metademands');
+         $return .= Html::submit($title, ['name' => 'clean_form', 'class' => 'btn btn-warning btn-sm']);
+         $return .= "<br>";
          $return .= "</td></tr>";
       } else {
          $return .= "<div class='card-header'>";
@@ -99,14 +100,17 @@ class PluginMetademandsDraft extends CommonDBTM {
          $return .= "<table class='tab_cadre_fixe'>";
          $return .= "<tr class=''>";
          $return .= "<td colspan='4' class='center'>";
-         $return .= "<input type='text' maxlength='250'
-         placeholder='" . __('Draft name', 'metademands') . "' name='draft_name' value=\"$draftname\"><br><br>";
-         $return .= "<button name='save_draft' id='submitSave' form=''  class='btn btn-success btn-sm'><i class='fas fa-1x fa-cloud-upload-alt pointer' title='" . _sx('button', 'Save as draft', 'metademands') . "'
-                           data-hasqtip='0' aria-hidden='true' ></i></button>";
-
-
-         $return .= "&nbsp;<button name='clean_form' type='submit' class='btn btn-warning btn-sm'><i class='fas fa-1x fa-broom pointer' title='" . _sx('button', 'Clean form', 'metademands') . "'
-                           data-hasqtip='0' aria-hidden='true' ></i></button><br>";
+         $return .= "<br><br>";
+         $return .= Html::input('draft_name', ['value' => $draftname, 'maxlength' => 250, 'placeholder' => __('Draft name', 'metademands')]);
+         $return .= "<br><br>";
+         $title = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
+         $title .= _sx('button', 'Save as draft', 'metademands');
+         $return .= Html::submit($title, ['name' => 'save_draft', 'id' => 'submitSave', 'class' => 'btn btn-success btn-sm']);
+         $return .= "&nbsp;";
+         $title = "<i class='fas fa-1x fa-broom pointer'></i>";
+         $title .= _sx('button', 'Clean form', 'metademands');
+         $return .= Html::submit($title, ['name' => 'clean_form', 'class' => 'btn btn-warning btn-sm']);
+         $return .= "<br>";
          $return .= "</td></tr>";
       }
       $return .= "</table>";

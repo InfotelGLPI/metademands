@@ -161,10 +161,7 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                if ($newtype != $_POST["itemtype"]) {
                   $item = new $newtype();
                }
-               Html::autocompletionTextField($item, $search["linkfield"],
-                                             ['name'   => $search["linkfield"],
-                                              'value'  => stripslashes($_POST['value']),
-                                              'entity' => $_SESSION["glpiactive_entity"]]);
+               echo Html::input($search["linkfield"], ['value' => stripslashes($_POST['value']), 'size' => 40]);
             }
       }
 
@@ -265,9 +262,9 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
 
    if (!$FIELDNAME_PRINTED) {
       if (empty($search["linkfield"])) {
-         echo "<input type='hidden' name='field' value='" . $search["field"] . "'>";
+         echo Html::hidden('field', ['value' => $search["field"]]);
       } else {
-         echo "<input type='hidden' name='field' value='" . $search["linkfield"] . "'>";
+         echo Html::hidden('field', ['value' => $search["linkfield"]]);
       }
    }
 

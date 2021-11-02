@@ -63,7 +63,7 @@ class PluginMetademandsConfig extends CommonDBTM {
    /**
     * @return bool
     */
-   function showForm() {
+   function showConfigForm() {
       if (!$this->canCreate() || !$this->canView()) {
          return false;
       }
@@ -97,14 +97,14 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo __('Parent ticket tag', 'metademands');
       echo "</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "parent_ticket_tag", ['value' => stripslashes($config["parent_ticket_tag"])]);
+      echo Html::input('parent_ticket_tag', ['value' => stripslashes($config["parent_ticket_tag"]), 'size' => 40]);
       echo "</td>";
 
       echo "<td>";
       echo __('Son ticket tag', 'metademands');
       echo "</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "son_ticket_tag", ['value' => stripslashes($config["son_ticket_tag"])]);
+      echo Html::input('son_ticket_tag', ['value' => stripslashes($config["son_ticket_tag"]), 'size' => 40]);
       echo "</td>";
       echo "</tr>";
 
@@ -121,7 +121,6 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
       echo "<td>";
       Dropdown::showYesNo('create_pdf', $config['create_pdf']);
-      //echo "<input type='hidden' name='create_pdf' value='0'>";
       echo "</td>";
       echo "</tr>";
 
@@ -196,8 +195,9 @@ class PluginMetademandsConfig extends CommonDBTM {
          echo "</td>";
          echo "</tr>";
       }
-      echo "<tr><td class='tab_bg_2 center' colspan='6'><input type=\"submit\" name=\"update_config\" class=\"submit\"
-         value=\"" . _sx('button', 'Update') . "\" ></td></tr>";
+      echo "<tr><td class='tab_bg_2 center' colspan='6'>";
+      echo Html::submit(_sx('button', 'Update'), ['name' => 'update_config', 'class' => 'btn btn-primary']);
+      echo "</td></tr>";
 
       echo "</table></div>";
       Html::closeForm();

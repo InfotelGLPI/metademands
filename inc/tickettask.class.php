@@ -246,7 +246,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          echo "<td>";
          $ticket = new Ticket();
          // Requester user
-         echo CommonITILObject::getActorIcon('user', CommonITILActor::REQUESTER) . '&nbsp;';
+//         echo CommonITILObject::getActorIcon('user', CommonITILActor::REQUESTER) . '&nbsp;';
          echo $tt->getMandatoryMark('_users_id_requester');
          User::dropdown(['name'   => 'users_id_requester',
                          'value'  => isset($values['users_id_requester']) ? $values['users_id_requester'] : 0,
@@ -261,7 +261,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          echo "<td>";
          $ticket = new Ticket();
          // Observer user
-         echo CommonITILObject::getActorIcon('user', CommonITILActor::OBSERVER) . '&nbsp;';
+//         echo CommonITILObject::getActorIcon('user', CommonITILActor::OBSERVER) . '&nbsp;';
          echo $tt->getMandatoryMark('_users_id_observer');
          User::dropdown(['name'   => 'users_id_observer',
                          'value'  => isset($values['users_id_observer']) ? $values['users_id_observer'] : 0,
@@ -274,7 +274,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       }
       echo "<td>";
       // Assign user
-      echo CommonITILObject::getActorIcon('user', CommonITILActor::ASSIGN) . '&nbsp;';
+//      echo CommonITILObject::getActorIcon('user', CommonITILActor::ASSIGN) . '&nbsp;';
       echo $tt->getMandatoryMark('_users_id_assign');
       User::dropdown(['name'   => 'users_id_assign',
                       'value'  => isset($values['users_id_assign']) ? $values['users_id_assign'] : 0,
@@ -287,7 +287,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       if ($tt->isMandatoryField('_groups_id_requester')) {
          echo "<td>";
          // Requester Group
-         echo CommonITILObject::getActorIcon('group', CommonITILActor::REQUESTER) . '&nbsp;';
+//         echo CommonITILObject::getActorIcon('group', CommonITILActor::REQUESTER) . '&nbsp;';
          echo $tt->getMandatoryMark('_groups_id_requester');
          Dropdown::show('Group', ['name'      => 'groups_id_requester',
                                   'value'     => isset($values['groups_id_requester']) ? $values['groups_id_requester'] : 0,
@@ -302,7 +302,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       if ($tt->isMandatoryField('_groups_id_observer')) {
          echo "<td>";
          // Observer Group
-         echo CommonITILObject::getActorIcon('group', CommonITILActor::OBSERVER) . '&nbsp;';
+//         echo CommonITILObject::getActorIcon('group', CommonITILActor::OBSERVER) . '&nbsp;';
          echo $tt->getMandatoryMark('_groups_id_observer');
          Dropdown::show('Group', ['name'      => 'groups_id_observer',
                                   'value'     => isset($values['groups_id_observer']) ? $values['groups_id_observer'] : 0,
@@ -315,7 +315,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       }
       echo "<td>";
       // Assign Group
-      echo CommonITILObject::getActorIcon('group', CommonITILActor::ASSIGN) . '&nbsp;';
+//      echo CommonITILObject::getActorIcon('group', CommonITILActor::ASSIGN) . '&nbsp;';
       echo $tt->getMandatoryMark('_groups_id_assign');
       Dropdown::show('Group', ['name'      => 'groups_id_assign',
                                'value'     => isset($values['groups_id_assign']) ? $values['groups_id_assign'] : 0,
@@ -413,9 +413,10 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "<textarea id='content$rand' name='content' rows='3'>" . stripslashes($content) . "</textarea>";
       echo "</div>";
 
-      echo "<input type='hidden' name='_tickettemplates_id' value='" . $tt->fields['id'] . "'>";
-      echo "<input type='hidden' name='showForMetademands' value='1'>";
-      echo "<input type='hidden' name='displayType' value='0'>";
+      echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
+      echo Html::hidden('showForMetademands', ['value' => 1]);
+      echo Html::hidden('displayType', ['value' => 0]);
+
       //      $config          = PluginMetademandsConfig::getInstance();
       //      $options         = ['config' => $config, 'root_doc' => $CFG_GLPI['root_doc']];
       //      $options['lang'] = ['category' => __('Category')];
@@ -489,10 +490,12 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       echo "<form name='form_ticket' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?_in_modal=1&id=$ID' enctype=\"multipart/form-data\">";
       PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved, $input);
-      echo "<input type='hidden' name='plugin_metademands_tasks_id' value='" . $this->fields['plugin_metademands_tasks_id'] . "'>";
-      echo "<input type='hidden' name='_tickettemplates_id' value='" . $tt->fields['id'] . "'>";
-      echo "<input type='hidden' name='type' value='" . $metademands->fields['type'] . "'>";
-      echo "<input type='hidden' name='entities_id' value='" . $metademands->fields['entities_id'] . "'>";
+
+      echo Html::hidden('plugin_metademands_tasks_id', ['value' => $this->fields['plugin_metademands_tasks_id']]);
+      echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
+      echo Html::hidden('type', ['value' => $metademands->fields['type']]);
+      echo Html::hidden('entities_id', ['value' => $metademands->fields['entities_id']]);
+
       echo "<div><table class='tab_cadre_fixe'>";
 
       $options['canedit'] = $canedit;

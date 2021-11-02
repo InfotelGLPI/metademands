@@ -563,9 +563,9 @@ class PluginMetademandsTicket extends CommonDBTM {
          }
       }
 
-      echo "<input type='hidden' name='_from_helpdesk' value='1'>";
-      echo "<input type='hidden' name='requesttypes_id' value='" . RequestType::getDefault('helpdesk') . "'>";
-      echo "<input type='hidden' name='entities_id' value='" . $entities_id . "'>";
+      echo Html::hidden('_from_helpdesk', ['value' => 1]);
+      echo Html::hidden('requesttypes_id', ['value' => RequestType::getDefault('helpdesk')]);
+      echo Html::hidden('entities_id', ['value' => $entities_id]);
 
       echo "<div class='center'><table class='tab_cadre_fixe'>";
       // URGENCY

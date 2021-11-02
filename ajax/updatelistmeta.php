@@ -88,7 +88,7 @@ if (isset($_POST["type"])) {
             }
          }
       } else {
-         $return = __('No item found');
+         $return = "<div class='alert alert-important alert-info center'>".__('No item found')."</div>";
       }
 
       echo $return;

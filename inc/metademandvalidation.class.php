@@ -123,8 +123,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          if ($canedit) {
             echo "<tr class='tab_bg_1'>";
             echo "<td class='tab_bg_2 center' colspan='6'>";
-            echo "<input type='hidden' class='submit' name='plugin_metademands_metademands_id' value='" . $item->fields['id'] . "'>";
-            echo "<input type='submit' class='submit' name='add' value='" . _sx('button', 'Add') . "'>";
+            echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
+            Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
             echo "</td>";
             echo "</tr>";
          }
@@ -260,8 +260,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
       echo "<form name='form_raz' id='form_raz' method='post' action='" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php" . "' >";
-      echo "<input type='hidden' name='action' id='action_validationMeta' value='validationMeta' />";
-      echo "<input type='hidden' name='tickets_id' id='action_validationMeta' value='$ticket_id' />";
+      echo Html::hidden('action', ['id' => 'action_validationMeta', 'value' => 'validationMeta']);
+      echo Html::hidden('tickets_id', ['id' => 'action_validationMeta', 'value' => $ticket_id]);
       echo "<table class='tab_cadre_fixe'>";
       echo "<tr class='tab_bg_1'>";
       echo "<th colspan='2'>";
@@ -333,9 +333,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       ) {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2' class='center'>";
-         echo "<input type='submit' class='submit' name='btnAddAll' id='btnAddAll' ";
-
-         echo "value='" . __("Validate metademands", 'metademands') . "' />";
+         Html::submit(__("Validate metademands", 'metademands'), ['name' => 'btnAddAll', 'name' => 'btnAddAll', 'class' => 'btn btn-primary']);
          echo "</td>";
          echo "</tr>";
       }
