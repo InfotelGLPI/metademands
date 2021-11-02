@@ -1636,7 +1636,7 @@ class PluginMetademandsField extends CommonDBChild {
                $criteria['ORDER']                                   = ['NAME ASC'];
                $iterator                                            = $DB->request($criteria);
 
-               while ($datau = $iterator->next()) {
+               foreach ($iterator as $datau) {
                   $data['custom_values'][$datau['users_id']] = getUserName($datau['users_id']);
                }
 
@@ -4312,7 +4312,7 @@ class PluginMetademandsField extends CommonDBChild {
 
 
       if (count($iterator)) {
-         while ($data = $iterator->next()) {
+         foreach ($iterator as $data) {
             $res = $data['value'];
          }
       }
@@ -4455,7 +4455,7 @@ class PluginMetademandsField extends CommonDBChild {
                if ($nb > 0) {
                   $type_name = $item->getTypeName($nb);
 
-                  while ($data = $iterator->next()) {
+                  foreach ($iterator as $data) {
                      if (!isset($already_add[$itemtype]) || !in_array($data["id"], $already_add[$itemtype])) {
                         $output = $data[$item->getNameField()];
                         if (empty($output) || $_SESSION["glpiis_ids_visible"]) {
@@ -4506,7 +4506,7 @@ class PluginMetademandsField extends CommonDBChild {
             $devices = [];
             $groups  = [];
             if (count($iterator)) {
-               while ($data = $iterator->next()) {
+               foreach ($iterator as $data) {
                   $a_groups                     = getAncestorsOf("glpi_groups", $data["groups_id"]);
                   $a_groups[$data["groups_id"]] = $data["groups_id"];
                   $groups                       = array_merge($groups, $a_groups);
@@ -4537,7 +4537,7 @@ class PluginMetademandsField extends CommonDBChild {
                         if (!isset($already_add[$itemtype])) {
                            $already_add[$itemtype] = [];
                         }
-                        while ($data = $iterator->next()) {
+                        foreach ($iterator as $data) {
                            if (!in_array($data["id"], $already_add[$itemtype])) {
                               $output = '';
                               if (isset($data["name"])) {
@@ -4608,7 +4608,7 @@ class PluginMetademandsField extends CommonDBChild {
                      if (!isset($already_add['Software'])) {
                         $already_add['Software'] = [];
                      }
-                     while ($data = $iterator->next()) {
+                     foreach ($iterator as $data) {
                         if (!in_array($data["id"], $already_add['Software'])) {
                            $output = sprintf(__('%1$s - %2$s'), $type_name, $data["name"]);
                            $output = sprintf(__('%1$s (%2$s)'), $output,
@@ -4671,7 +4671,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $iterator = $DB->request($criteria);
                   if (count($iterator)) {
                      $type_name = $item->getTypeName();
-                     while ($data = $iterator->next()) {
+                     foreach ($iterator as $data) {
                         if (!in_array($data["id"], $already_add[$itemtype])) {
                            $output = $data["name"];
                            if (empty($output) || $_SESSION["glpiis_ids_visible"]) {

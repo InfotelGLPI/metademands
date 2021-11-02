@@ -161,7 +161,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
          echo "<th>" . __("Language") . "</th>";
          echo "<th>" . __("Field") . "</th>";
          echo "<th>" . __("Value") . "</th></tr>";
-         while ($data = $iterator->next()) {
+         foreach ($iterator as $data) {
             $onhover = '';
             if ($canedit) {
                $onhover = "style='cursor:pointer'
@@ -334,7 +334,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
                                      ]
                                   ]);
          if (count($iterator) > 0) {
-            while ($data = $iterator->next()) {
+            foreach ($iterator as $data) {
                $used[$data['field']] = $data['field'];
             }
          }

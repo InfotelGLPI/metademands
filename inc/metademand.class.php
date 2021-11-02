@@ -5916,7 +5916,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
 
       if (count($iterator)) {
-         while ($data = $iterator->next()) {
+         foreach ($iterator as $data) {
             $res = $data['value'];
          }
       } else{
