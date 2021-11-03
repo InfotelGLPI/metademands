@@ -3477,7 +3477,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                      echo "</tr>";
                   }
-                  echo '<input type="hidden" id="fields_id" value="' . $params["id"] . '" />';
+                  echo Html::hidden('fields_id', ['value' => $params["id"]]);
                   echo '</table>';
                   echo '</div>';
                   echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
@@ -3636,7 +3636,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                      echo "</tr>";
                   }
-                  echo '<input type="hidden" id="fields_id" value="' . $params["id"] . '" />';
+                  echo Html::hidden('fields_id', ['value' => $params["id"]]);
                   echo '</table>';
                   echo '</div>';
                   echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
