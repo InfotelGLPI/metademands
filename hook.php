@@ -269,8 +269,7 @@ function plugin_metademands_MassiveActionsDisplay($options = []) {
       case 'PluginMetademandsMetademand':
          switch ($options['action']) {
             case "plugin_metademands_duplicate":
-               echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" 
-                     class=\"submit\" value=\"" . _sx('button', 'Post') . "\" >";
+               echo "&nbsp;". Html::submit(_sx('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
                break;
          }
          break;
