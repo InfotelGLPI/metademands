@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-2.7.9.sql");
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.0.0.sql");
    }
 
    if ($DB->tableExists("glpi_plugin_metademands_profiles")
