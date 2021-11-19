@@ -837,11 +837,6 @@ JAVASCRIPT
 //      ];
 //      echo Html::input('icon', $opt);
 
-      if (isset($this->fields['icon'])
-          && !empty($this->fields['icon'])) {
-         $icon = $this->fields['icon'];
-         echo "<br><br><i class='fas-sc sc-fa-color fas $icon fa-3x' ></i>";
-      }
       echo "</td>";
       echo "</tr>";
 

@@ -239,7 +239,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<span class='mydraft-text'>";
                   echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
                                $count_drafts);
-                  echo "</span>";
+                  echo "</span>&nbsp;";
                }
 
                echo "<i class='fas fa-2x mydraft-fa fa-cloud-download-alt pointer' title='" . _sx('button', 'Your drafts', 'metademands') . "' 

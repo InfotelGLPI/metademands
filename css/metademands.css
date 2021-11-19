@@ -115,19 +115,19 @@
 }
 
 .metademands_wizard_rank {
-    margin: 0 auto;
-    padding: 5px;
-    /*border: 1px solid #ccc;*/
+    /*margin: 0 auto;*/
+    /*padding: 5px;*/
+    /*!*border: 1px solid #ccc;*!*/
 
-    text-align: left;
-    font-size: 12px;
+    /*text-align: left;*/
+    /*font-size: 12px;*/
     /*z-index:1;
     width:900px;*/
     /*background-color: #ffffff;*/
 
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
+    /*-moz-border-radius: 5px;*/
+    /*-webkit-border-radius: 5px;*/
+    /*border-radius: 5px;*/
 
     /*-moz-box-shadow: 0px 2px 5px #666;
     -webkit-box-shadow: 0px 2px 5px #666;
@@ -221,14 +221,14 @@ a.metademand_middle_button {
 }
 
 .metademands_wizard_border {
-    /*border-bottom: #CCC;*/
-    /*border-bottom-style: solid;*/
+    border-bottom: #CCC;
+    border-bottom-style: solid;
 }
 
 .metademands_wizard_label2 {
     background-color: antiquewhite;
     margin-top : 10px;
-    font-size: 11px;
+    font-size: 13px;
     border: 1px #CCC dashed;
     padding-left: 5px;
 }
@@ -236,7 +236,7 @@ a.metademand_middle_button {
 
 .metademands_wizard_informations {
     margin-top : 10px;
-    font-size: 11px;
+    font-size: 13px;
     border: 1px #CCC dashed;
     padding-left: 5px;
 }
@@ -273,7 +273,7 @@ button.clear-basket {
 
 .speech {
     position: relative;
-    max-width: 30em;
+    /*max-width: 30em;*/
     margin: 5px;
     background-color: #fff;
     padding: 1.125em 1.5em;

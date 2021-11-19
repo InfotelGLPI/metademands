@@ -178,20 +178,30 @@ class PluginMetademandsConfig extends CommonDBTM {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2'>";
          echo __('Icon for Service Catalog widget', 'metademands');
-         echo "<br>" . __('Example : ', 'metademands') . "fas fa-share-alt";
          echo "</td>";
          echo "<td colspan='2'>";
-         $opt = [
-            'value'     => $config['fa_servicecatalog'],
-            'maxlength' => 250,
-            'size'      => 80,
-         ];
-         echo Html::input('fa_servicecatalog', $opt);
-         if (isset($config['fa_servicecatalog'])
-             && !empty($config['fa_servicecatalog'])) {
-            $icon = $config['fa_servicecatalog'];
-            echo "<br><br><i class='fas-sc sc-fa-color $icon fa-3x' ></i>";
-         }
+         $icon_selector_id = 'icon_' . mt_rand();
+         echo Html::select(
+            'fa_servicecatalog',
+            [$config['fa_servicecatalog'] => $config['fa_servicecatalog']],
+            [
+               'id'       => $icon_selector_id,
+               'selected' => $config['fa_servicecatalog'],
+               'style'    => 'width:175px;'
+            ]
+         );
+
+         echo Html::script('js/Forms/FaIconSelector.js');
+         echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+         );
+
          echo "</td>";
          echo "</tr>";
       }

@@ -86,7 +86,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       $config = new PluginMetademandsConfig();
       $config->getFromDB(1);
       if (!empty($config->getField('fa_servicecatalog'))) {
-         return $config->getField('fa_servicecatalog');
+         return "fas ".$config->getField('fa_servicecatalog');
       }
       return "fas fa-share-alt";
    }

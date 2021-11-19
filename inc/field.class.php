@@ -1663,7 +1663,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                $field .= "</select></div>";
 
-               $field .= " <div class=\"centralCol\">
+               $field .= " <div class=\"centralCol\" style='width: 3%;'>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
@@ -1743,7 +1743,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                      $field .= "</select></div>";
 
-                     $field .= " <div class=\"centralCol\">
+                     $field .= " <div class=\"centralCol\" style='width: 3%;'>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
@@ -2201,7 +2201,7 @@ class PluginMetademandsField extends CommonDBChild {
                         $btnLabel = $label2;
                      }
 
-                     $field = "<input type='submit' class='submit' value ='" . Toolbox::stripTags($btnLabel) . "' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
+                     $field = "<input type='submit' class='btn btn-primary' value ='" . Toolbox::stripTags($btnLabel) . "' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
 
                      break;
                   case 'link_a' :
