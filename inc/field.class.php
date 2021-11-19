@@ -2321,18 +2321,23 @@ class PluginMetademandsField extends CommonDBChild {
             break;
          case 'date':
          case 'date_interval':
-            $field = Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
-                                                                                'display' => false,
-                                                                                'size' => 40
+            $field    = "<span style='width: 50%!important;display: -webkit-box;'>";
+            $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
+                                                                                   'display' => false,
+                                                                                   'size'    => 40
             ]);
+            $field    .= "</span>";
             break;
          case 'datetime_interval':
          case 'datetime':
-            $field = Html::showDateTimeField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
-                                                                                    'display' => false,
-                                                                                    'size' => 40
-            ]);
-            break;
+
+         $field = "<span style='width: 50%!important;display: -webkit-box;'>";
+         $field .= Html::showDateTimeField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
+                                                                                  'display' => false,
+                                                                                  'size'    => 40
+         ]);
+         $field .= "</span>";
+         break;
          case 'number':
             $data['custom_values'] = self::_unserialize($data['custom_values']);
             $field                 = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", ['value'   => $value,

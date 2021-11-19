@@ -1175,6 +1175,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      $value2 = $data['value-2'];
                   }
 
+                  echo "<span style='width: 50%!important;display: -webkit-box;'>";
                   switch ($data['type']) {
                      case 'date_interval':
                         Html::showDateField("field[" . $data['id'] . "-2]", ['value' => $value2]);
@@ -1185,6 +1186,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $count++; // If date interval : pass to next line
                         break;
                   }
+                  echo "</span>";
                   if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
                      echo "</div>";
                   }
