@@ -263,18 +263,18 @@ function plugin_metademands_uninstall() {
 /**
  * @param array $options
  */
-function plugin_metademands_MassiveActionsDisplay($options = []) {
-
-   switch ($options['itemtype']) {
-      case 'PluginMetademandsMetademand':
-         switch ($options['action']) {
-            case "plugin_metademands_duplicate":
-               echo "&nbsp;". Html::submit(_sx('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
-               break;
-         }
-         break;
-   }
-}
+//function plugin_metademands_MassiveActionsDisplay($options = []) {
+//
+//   switch ($options['itemtype']) {
+//      case 'PluginMetademandsMetademand':
+//         switch ($options['action']) {
+//            case "plugin_metademands_duplicate":
+//               echo "&nbsp;". Html::submit(_sx('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
+//               break;
+//         }
+//         break;
+//   }
+//}
 
 // Define dropdown relations
 /**
@@ -342,12 +342,12 @@ function plugin_metademands_getDatabaseRelations() {
  *
  * @return mixed
  */
-function plugin_metademands_MassiveActionsProcess($data) {
-   $metademand = new PluginMetademandsMetademand();
-   $res        = $metademand->doSpecificMassiveActions($data);
-
-   return $res;
-}
+//function plugin_metademands_MassiveActionsProcess($data) {
+//   $metademand = new PluginMetademandsMetademand();
+//   $res        = $metademand->doSpecificMassiveActions($data);
+//
+//   return $res;
+//}
 
 
 function plugin_metademands_registerMethods() {

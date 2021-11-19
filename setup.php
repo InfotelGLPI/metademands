@@ -111,10 +111,6 @@ function plugin_init_metademands() {
          $PLUGIN_HOOKS['config_page']['metademands'] = 'front/config.form.php';
       }
 
-      if (Session::haveRight("metademands", UPDATE)) {
-         $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
-      }
-
       // Template
       $PLUGIN_HOOKS['tickettemplate']['metademands'] = ['PluginMetademandsTicket', 'getAllowedFields'];
 
@@ -153,31 +149,8 @@ function plugin_version_metademands() {
       'requirements'   => [
          'glpi' => [
             'min' => '10.0',
+            'max' => '11.0',
             'dev' => false
          ]
       ]];
-}
-
-// Optional : check prerequisites before install : may print errors or add to message after redirect
-/**
- * @return bool
- */
-function plugin_metademands_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '10.0', 'lt')
-         || version_compare(GLPI_VERSION, '11.0', 'ge')) {
-      if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '10.0');
-      }
-      return false;
-   }
-
-   return true;
-}
-
-// Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
-/**
- * @return bool
- */
-function plugin_metademands_check_config() {
-   return true;
 }

@@ -319,7 +319,7 @@ class PluginMetademandsTask extends CommonDBTM {
       Ajax::createIframeModalWindow("tags" . $rand,
                                     $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .
                                     $metademands_id);
-      echo "<a class='btn btn-primary btn-sm' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
+      echo "<a class='btn btn-primary' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
       echo "</td>";
       echo "</tr>";
       echo "</table>";

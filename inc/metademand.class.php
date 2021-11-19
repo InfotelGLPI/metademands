@@ -809,17 +809,38 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
 
       echo "<td>" . __('Icon') . "</td><td>";
-      $opt = [
-         'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
-         'maxlength' => 50,
-         'size'      => 50,
-      ];
-      echo Html::input('icon', $opt);
-      echo "<br>" . __('Example', 'metademands') . " : fas fa-share-alt";
+      $icon_selector_id = 'icon_' . mt_rand();
+      echo Html::select(
+         'icon',
+         [$this->fields['icon'] => $this->fields['icon']],
+         [
+            'id'       => $icon_selector_id,
+            'selected' => $this->fields['icon'],
+            'style'    => 'width:175px;'
+         ]
+      );
+
+      echo Html::script('js/Forms/FaIconSelector.js');
+      echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+      );
+//      $opt = [
+//         'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
+//         'maxlength' => 50,
+//         'size'      => 50,
+//      ];
+//      echo Html::input('icon', $opt);
+
       if (isset($this->fields['icon'])
           && !empty($this->fields['icon'])) {
          $icon = $this->fields['icon'];
-         echo "<br><br><i class='fas-sc sc-fa-color $icon fa-3x' ></i>";
+         echo "<br><br><i class='fas-sc sc-fa-color fas $icon fa-3x' ></i>";
       }
       echo "</td>";
       echo "</tr>";
@@ -895,7 +916,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param       $ID
     * @param array $field
     */
-   function displaySpecificTypeField($ID, $field = []) {
+   function displaySpecificTypeField($ID, $field = [], array $options = []) {
 
       $this->getFromDB($ID);
 
@@ -953,18 +974,27 @@ class PluginMetademandsMetademand extends CommonDBTM {
             TicketTemplate::dropdown($opt);
             break;
          case 'icon':
-            $opt = [
-               'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
-               'maxlength' => 250,
-               'size'      => 80,
-            ];
-            echo Html::input('icon', $opt);
-            echo "<br>" . __('Example', 'metademands') . " : fas fa-share-alt";
-            if (isset($this->fields['icon'])
-                && !empty($this->fields['icon'])) {
-               $icon = $this->fields['icon'];
-               echo "<br><br><i class='fas-sc sc-fa-color $icon fa-3x' ></i>";
+            $icon_selector_id = 'icon_' . mt_rand();
+            echo Html::select(
+               'icon',
+               [$this->fields['icon'] => $this->fields['icon']],
+               [
+                  'id'       => $icon_selector_id,
+                  'selected' => $this->fields['icon'],
+                  'style'    => 'width:175px;'
+               ]
+            );
+
+            echo Html::script('js/Forms/FaIconSelector.js');
+            echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
             }
+         );
+JAVASCRIPT
+            );
             break;
       }
    }

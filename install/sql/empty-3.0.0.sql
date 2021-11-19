@@ -15,8 +15,8 @@ CREATE TABLE `glpi_plugin_metademands_metademands` (
     `is_recursive` int(1) NOT NULL default '0', -- is_recursive
     `is_active` tinyint(1) NOT NULL DEFAULT '1',
     `maintenance_mode` tinyint(1) NOT NULL DEFAULT '0',
-    `comment` text COLLATE utf8_unicode_ci default NULL,
-    `object_to_create` varchar(255) collate utf8_unicode_ci default NULL,
+    `comment` text COLLATE utf8mb4_unicode_ci default NULL,
+    `object_to_create` varchar(255) collate utf8mb4_unicode_ci default NULL,
     `type` int(11) NOT NULL default '0', -- metademand type : Incident, demand
     `itilcategories_id` varchar(255) NOT NULL default '[]', -- references itilcategories glpi
     `icon` varchar(255) default NULL,
@@ -43,12 +43,12 @@ CREATE TABLE `glpi_plugin_metademands_tasks` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) default NULL,
     `completename` varchar(255) default NULL,
-    `comment` text COLLATE utf8_unicode_ci default NULL,
+    `comment` text COLLATE utf8mb4_unicode_ci default NULL,
     `entities_id` int(11) NOT NULL default '0', -- entites_id
     `level` int(11) NOT NULL default '0',
     `type` int(11) NOT NULL default '0',
-    `ancestors_cache` text COLLATE utf8_unicode_ci default NULL,
-    `sons_cache` text COLLATE utf8_unicode_ci default NULL,
+    `ancestors_cache` text COLLATE utf8mb4_unicode_ci default NULL,
+    `sons_cache` text COLLATE utf8mb4_unicode_ci default NULL,
     `plugin_metademands_tasks_id` int(11) NOT NULL default '0',
     `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
     `block_use` VARCHAR (255) NOT NULL DEFAULT '[]',
@@ -72,16 +72,16 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `entities_id` int(11) NOT NULL default '0', -- entites_id
     `is_recursive` int(1) NOT NULL default '0', -- is_recursive
-    `comment` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
-    `custom_values` text COLLATE utf8_unicode_ci default NULL,
-    `default_values` text COLLATE utf8_unicode_ci default NULL,
-    `comment_values` text COLLATE utf8_unicode_ci default NULL,
+    `comment` TEXT CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
+    `custom_values` text COLLATE utf8mb4_unicode_ci default NULL,
+    `default_values` text COLLATE utf8mb4_unicode_ci default NULL,
+    `comment_values` text COLLATE utf8mb4_unicode_ci default NULL,
     `check_value` varchar(255) default NULL,
     `rank` int(1) NOT NULL default '0',
     `order` int(1) NOT NULL default '0',
     `name` varchar(255) default NULL,
     `hide_title` TINYINT(1) NOT NULL DEFAULT '0',
-    `label2` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL DEFAULT NULL,
+    `label2` TEXT CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
     `type` varchar(255) default NULL,
     `item` varchar(255) default NULL,
     `is_mandatory` int(1) NOT NULL default '0',
@@ -124,7 +124,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
 DROP TABLE IF EXISTS `glpi_plugin_metademands_tickets_fields`;
 CREATE TABLE `glpi_plugin_metademands_tickets_fields` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `value` text COLLATE utf8_unicode_ci default NULL,
+    `value` text COLLATE utf8mb4_unicode_ci default NULL,
     `tickets_id` int(11) NOT NULL default '0',
     `plugin_metademands_fields_id` int(11) NOT NULL default '0',
     PRIMARY KEY (`id`),
@@ -141,7 +141,7 @@ DROP TABLE IF EXISTS `glpi_plugin_metademands_ticketfields`;
 CREATE TABLE `glpi_plugin_metademands_ticketfields` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `num` int(11) default NULL,
-    `value` text COLLATE utf8_unicode_ci default NULL,
+    `value` text COLLATE utf8mb4_unicode_ci default NULL,
     `entities_id` int(11) NOT NULL default '0', -- entites_id
     `is_recursive` int(1) NOT NULL default '0', -- is_recursive
     `is_mandatory` int(1) NOT NULL default '0',
@@ -160,7 +160,7 @@ CREATE TABLE `glpi_plugin_metademands_ticketfields` (
 DROP TABLE IF EXISTS `glpi_plugin_metademands_tickettasks`;
 CREATE TABLE `glpi_plugin_metademands_tickettasks` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `content` text COLLATE utf8_unicode_ci default NULL,
+    `content` text COLLATE utf8mb4_unicode_ci default NULL,
     `itilcategories_id` int(11) default '0',
     `type` int(11) NOT NULL default '0',
     `status` varchar(255) default NULL,
@@ -307,9 +307,9 @@ CREATE TABLE `glpi_plugin_metademands_basketlines` (
     `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
     `plugin_metademands_fields_id` int(11) NOT NULL default '0',
     `line` int(11) NOT NULL default '0',
-    `name` varchar(150) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `value` text COLLATE utf8_unicode_ci,
-    `value2` text COLLATE utf8_unicode_ci,
+    `name` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `value` text COLLATE utf8mb4_unicode_ci,
+    `value2` text COLLATE utf8mb4_unicode_ci,
     PRIMARY KEY (`id`),
     KEY `users_id` (`users_id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
@@ -322,10 +322,10 @@ CREATE TABLE `glpi_plugin_metademands_fieldtranslations`
 (
     `id`       int(11) NOT NULL AUTO_INCREMENT,
     `items_id` int(11) NOT NULL                     DEFAULT '0',
-    `itemtype` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `language` varchar(5) COLLATE utf8_unicode_ci   DEFAULT NULL,
-    `field`    varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `value`    text COLLATE utf8_unicode_ci         DEFAULT NULL,
+    `itemtype` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `language` varchar(5) COLLATE utf8mb4_unicode_ci   DEFAULT NULL,
+    `field`    varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `value`    text COLLATE utf8mb4_unicode_ci         DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
@@ -334,10 +334,10 @@ CREATE TABLE `glpi_plugin_metademands_metademandtranslations`
 (
     `id`       int(11) NOT NULL AUTO_INCREMENT,
     `items_id` int(11) NOT NULL                     DEFAULT '0',
-    `itemtype` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `language` varchar(5) COLLATE utf8_unicode_ci   DEFAULT NULL,
-    `field`    varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-    `value`    text COLLATE utf8_unicode_ci         DEFAULT NULL,
+    `itemtype` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `language` varchar(5) COLLATE utf8mb4_unicode_ci   DEFAULT NULL,
+    `field`    varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `value`    text COLLATE utf8mb4_unicode_ci         DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 

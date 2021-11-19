@@ -239,7 +239,10 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                      break;
 
                   case "text" :
-                     echo "<textarea cols='45' rows='5' name='" . $search["linkfield"] . "' >" . $_POST["value"] . "</textarea>";
+                     Html::textarea(['name'            => $search["linkfield"] . "' >" . $_POST["value"],
+                                     'cols'       => 45,
+                                     'rows'       => 5,
+                                     'enable_richtext' => false]);
                      $already_display = true;
                      break;
                }

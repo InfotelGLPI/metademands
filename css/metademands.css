@@ -117,7 +117,7 @@
 .metademands_wizard_rank {
     margin: 0 auto;
     padding: 5px;
-    border: 1px solid #ccc;
+    /*border: 1px solid #ccc;*/
 
     text-align: left;
     font-size: 12px;
@@ -221,8 +221,8 @@ a.metademand_middle_button {
 }
 
 .metademands_wizard_border {
-    border-bottom: #CCC;
-    border-bottom-style: solid;
+    /*border-bottom: #CCC;*/
+    /*border-bottom-style: solid;*/
 }
 
 .metademands_wizard_label2 {
@@ -298,7 +298,7 @@ button.clear-basket {
 }
 
 .mydraft-fa {
-    color: #FFF;
+    /*color: #FFF;*/
 }
 
 .mydraft-comment {

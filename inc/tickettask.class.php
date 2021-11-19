@@ -410,7 +410,11 @@ class PluginMetademandsTicketTask extends CommonDBTM {
          $content = $values['content'];
       }
       echo "<div id='content$rand_text'>";
-      echo "<textarea id='content$rand' name='content' rows='3'>" . stripslashes($content) . "</textarea>";
+      Html::textarea(['name'            => 'content',
+                      'value'           => stripslashes($content),
+                      'id'           => 'content'.$rand,
+                      'rows'       => 3,
+                      'enable_richtext' => false]);
       echo "</div>";
 
       echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);

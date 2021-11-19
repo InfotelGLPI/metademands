@@ -592,7 +592,12 @@ class PluginMetademandsTicket extends CommonDBTM {
       echo "<td>" . __('Description');
       echo $tt->getMandatoryMark('content');
       echo "</td>";
-      echo "<td><textarea name='content' cols='80' rows='14'>" . $fields['content'] . "</textarea>";
+      echo "<td>";
+      Html::textarea(['name'            => 'content',
+                      'value'           => $fields['content'],
+                      'cols'       => 80,
+                      'rows'       => 14,
+                      'enable_richtext' => false]);
       echo "</td></tr>";
 
       echo "</table></div>";

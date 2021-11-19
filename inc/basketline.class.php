@@ -50,7 +50,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
 
             echo "<div class='height-div right-div'>";
 
-            echo "<div class='form-row'>";
+            echo "<div class='row'>";
             echo "<div class='form-group col-md-11'>";
             echo "<h4 class='bt-title-divider'>" . __('Your basket', 'metademands');
             echo "&nbsp;<button type='submit' class='pointer btn btn-light' name='clear_basket' title='"
@@ -129,7 +129,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             continue;
          }
 
-         echo "<div class='form-row' $style>";
+         echo "<div class='row' $style>";
 
          echo "<div class='form-group basket-title col-md-5'>";
          if ($v['type'] == 'title' || $v['type'] == 'title-block') {
@@ -183,7 +183,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
          }
          echo "</div>";
       }
-      echo "<div class='form-row'>";
+      echo "<div class='row'>";
       echo "<div class='form-group col-md-5 center'>";
       echo "<button type='submit' class='btn btn-primary' name='update_basket_line' value='$idline' title='"
            . _sx('button', 'Update this line', 'metademands') . "'>";

@@ -131,7 +131,7 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
          echo "};";
          echo "</script>\n";
          echo "<div class='center'>" .
-              "<a class='btn btn-primary btn-sm' href='javascript:addTranslation" .
+              "<a class='btn btn-primary' href='javascript:addTranslation" .
               $item->getType() . $item->getID() . "$rand();'>" . __('Add a new translation') .
               "</a></div><br>";
       }
@@ -282,7 +282,12 @@ class PluginMetademandsMetademandTranslation extends CommonDBChild {
       }
       echo "</td>";
       echo "<td>" . __('Value') . "</td>";
-      echo "<td><textarea cols='80' rows='3' name='value'>" . $this->fields['value'] . "</textarea>";
+      echo "<td>";
+      Html::textarea(['name'            => 'value',
+                      'value'           => $this->fields["value"],
+                      'cols'       => 80,
+                      'rows'       => 3,
+                      'enable_richtext' => false]);
       echo "</td>";
       echo "</tr>\n";
       $this->showFormButtons($options);
