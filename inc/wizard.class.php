@@ -161,20 +161,17 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if ($maintenance_mode == 1 && !$parameters['preview']) {
          echo "<h3>";
-         echo "<div class='alert alert-warning center'>";
-         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i><br><br>";
-         echo __('This form is in maintenance mode', 'metademands') . "<br><br>";
+         echo "<div class='alert alert-important alert-warning center'>";
+         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
+         echo __('This form is in maintenance mode', 'metademands') . "<br>";
          echo __('Please come back later', 'metademands') . "</div></h3>";
       } else {
 
          if (!$parameters['preview']) {
             echo "<div class='bt-container-fluid metademands_wizard_rank' style='background-color: " . $background_color . ";'> ";
          }
-         $style = "";
-         if ($parameters['preview']) {
-            $style = "style='width: 1000px;'";
-         }
-         echo "<div id='meta-form' class='bt-block bt-features' $style> ";
+
+         echo "<div id='meta-form' class='bt-block bt-features'> ";
 
          echo "<form name='wizard_form' id ='wizard_form'
                         method='post'
@@ -623,7 +620,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<br/>";
          echo "<div class=\"bt-row\">";
          echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 right\">";
-         Html::submit(__('Next'), ['name' => 'next', 'class' => 'btn btn-primary']);
+         echo Html::submit(__('Next'), ['name' => 'next', 'class' => 'btn btn-primary']);
          echo "</div>";
          echo "</div>";
       }
@@ -858,7 +855,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "</div></div>";
          echo "<div class=\"row\">";
          echo "<div class=\"bt-feature col-md-12 \">";
-         Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
+         echo Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
          echo Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
          echo "</td>";
          echo "</tr>";
@@ -889,7 +886,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          if ($preview) {
 
             $color = PluginMetademandsField::setColor($rank);
-            $style = 'padding-top:5px; 
+            $style = 'padding-top:5px;
+                      padding-bottom:10px;
                       border-top :3px solid #' . $color . ';
                       border-left :3px solid #' . $color . ';
                       border-right :3px solid #' . $color;
@@ -992,7 +990,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                   if ($preview) {
                      $rank  = $data["rank"];
                      $color = PluginMetademandsField::setColor($rank);
-                     $style = 'padding-top:5px; 
+                     $style = 'padding-top:5px;
+                      padding-bottom:10px;
                       border-top :3px solid #' . $color . ';
                       border-left :3px solid #' . $color . ';
                       border-right :3px solid #' . $color;
@@ -1075,7 +1074,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                                top: 0;
                            }
                           </style>';
-                  $style = 'padding-top:5px; 
+                  $style = 'padding-top:5px;
+                            padding-bottom:10px;
                             border-top :3px solid #' . $color . ';
                             border-left :3px solid #' . $color . ';
                             border-right :3px solid #' . $color;
@@ -1209,7 +1209,8 @@ class PluginMetademandsWizard extends CommonDBTM {
             if ($count >= $columns) {
                if ($preview) {
                   $color            = PluginMetademandsField::setColor($data['rank']);
-                  $style_left_right = 'border-left :3px solid #' . $color . ';
+                  $style_left_right = 'padding-bottom:10px;
+                                       border-left :3px solid #' . $color . ';
                                        border-right :3px solid #' . $color;
                }
 

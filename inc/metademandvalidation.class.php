@@ -124,7 +124,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
             echo "<tr class='tab_bg_1'>";
             echo "<td class='tab_bg_2 center' colspan='6'>";
             echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
-            Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
+            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
             echo "</td>";
             echo "</tr>";
          }
@@ -333,7 +333,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       ) {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2' class='center'>";
-         Html::submit(__("Validate metademands", 'metademands'), ['name' => 'btnAddAll', 'name' => 'btnAddAll', 'class' => 'btn btn-primary']);
+         echo Html::submit(__("Validate metademands", 'metademands'), ['name' => 'btnAddAll', 'name' => 'btnAddAll', 'class' => 'btn btn-primary']);
          echo "</td>";
          echo "</tr>";
       }

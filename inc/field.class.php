@@ -2716,8 +2716,7 @@ class PluginMetademandsField extends CommonDBChild {
                   //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
                   echo '</td>';
                   echo "<td>";
-
-                  echo '<input type="text" name="regex"  value="' . ($params["regex"]) . '" size="50"/>';
+                  echo Html::input('regex', ['value' => $params["regex"], 'size' => 50]);
                   echo "</td></tr>";
                   echo "</table>";
                   echo "</td></tr>";
@@ -3440,7 +3439,8 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                      echo "<p id='custom_values$key'>";
                      echo __('Value') . " " . $key . " ";
-                     echo '<input type="text" name="custom_values[' . $key . ']"  value="' . $value . '" size="50"/>';
+                     $name = "custom_values[' . $key . ']";
+                     echo Html::input($name, ['value' => $value, 'size' => 50]);
                      echo '</p>';
                      echo '</div>';
                      echo '</td>';
@@ -3501,7 +3501,7 @@ class PluginMetademandsField extends CommonDBChild {
                   //                  echo "<tr>";
                   //                  echo "<td>";
                   echo __('Value') . " 1 ";
-                  echo '<input type="text" name="custom_values[1]"  value="" size="50"/>';
+                  echo Html::input('custom_values[1]', ['size' => 50]);
                   echo "</td>";
                   echo "<td>";
                   $display_default = false;
@@ -3602,7 +3602,8 @@ class PluginMetademandsField extends CommonDBChild {
                      echo '<td class="rowhandler control center">';
                      echo "<p id='custom_values$key'>";
                      echo __('Value') . " " . $key . " ";
-                     echo '<input type="text" name="custom_values[' . $key . ']"  value="' . $value . '" size="30"/>';
+                     $name = "custom_values[' . $key . ']";
+                     echo Html::input($name, ['value' => $value, 'size' => 30]);
                      echo '</p>';
                      echo "</td>";
 
@@ -3614,7 +3615,8 @@ class PluginMetademandsField extends CommonDBChild {
                         if (isset($comment[$key])) {
                            $value_comment = $comment[$key];
                         }
-                        echo '<input type="text" name="comment_values[' . $key . ']"  value="' . $value_comment . '" size="30"/>';
+                        $name = "comment_values[' . $key . ']";
+                        echo Html::input($name, ['value' => $value_comment, 'size' => 30]);
                      }
                      echo '</p>';
                      echo "</td>";
@@ -3657,11 +3659,11 @@ class PluginMetademandsField extends CommonDBChild {
                } else {
 
                   echo __('Value') . " 0 ";
-                  echo '<input type="text" name="custom_values[0]"  value="" size="30"/>';
+                  echo Html::input('custom_values[0]', ['size' => 30]);
                   echo "</td>";
                   echo "<td>";
                   echo " " . __('Comment') . " ";
-                  echo '<input type="text" name="comment_values[0]"  value="" size="30"/>';
+                  echo Html::input('comment_values[0]', ['size' => 30]);
                   echo "</td>";
                   echo "<td>";
                   //                  echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
@@ -3705,8 +3707,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $linkVal                 = $params['custom_values'][1];
                }
                echo '<label>' . __("Link") . '</label>';
-               echo '<input type="text" name="custom_values[1]" value="' . $linkVal . '" size="30"/>';
-
+               echo Html::input('comment_values[1]', ['value' => $linkVal, 'size' => 30]);
                echo "</td>";
                echo "<td>";
 
@@ -3815,7 +3816,8 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<td id='show_custom_fields'>";
       echo '<p id=\'custom_values' . $valueId . '\'>';
       echo __('Value') . ' ' . $valueId . ' ';
-      echo '<input type="text" name="custom_values[' . $valueId . ']"value="" size="30"/>';
+      $name = "custom_values[' . $valueId . ']";
+      echo Html::input($name, ['size' => 50]);
       echo "</td>";
       echo '</p>';
 
@@ -3823,7 +3825,8 @@ class PluginMetademandsField extends CommonDBChild {
       echo '<p id=\'comment_values' . $valueId . '\'>';
       if ($display_comment) {
          echo " " . __('Comment') . " ";
-         echo '<input type="text" name="comment_values[' . $valueId . ']"  value="" size="30"/>';
+         $name = "comment_values[' . $valueId . ']";
+         echo Html::input($name, ['size' => 30]);
       }
       echo '</p>';
       echo "</td>";

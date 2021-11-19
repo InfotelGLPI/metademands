@@ -654,8 +654,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       if ($this->fields['maintenance_mode'] == 1) {
          echo "<h3>";
-         echo "<div class='warning'>";
-         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i><br><br>";
+         echo "<div class='alert alert-warning center'>";
+         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
          echo __('This form is in maintenance mode', 'metademands'). "</div></h3>";
       }
 
@@ -897,7 +897,7 @@ JAVASCRIPT
 
       echo "<br><br><form name='task_form' id='task_form' method='post' 
                action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-      Html::submit(_sx('button', 'Duplicate'), ['name' => 'execute', 'class' => 'btn btn-primary']);
+      echo Html::submit(_sx('button', 'Duplicate'), ['name' => 'execute', 'class' => 'btn btn-primary']);
       echo Html::hidden('_method', ['value' => 'Duplicate']);
       echo Html::hidden('metademands_id', ['value' => $metademands_id]);
       echo Html::hidden('redirect', ['value' => 1]);
@@ -6793,7 +6793,7 @@ JAVASCRIPT
       echo "</tr>";
       echo "<tr>";
       echo "<td  class='center' colspan='2'>";
-      echo Html::submit(__('Import', 'metademands'), ['name' => 'import_file']);
+      echo Html::submit(__('Import', 'metademands'), ['name' => 'import_file', 'class' => 'btn btn-primary']);
       echo "</td>";
       echo "</tr>";
       echo "</table>";

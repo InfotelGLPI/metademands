@@ -160,7 +160,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          echo "</tr>";
          echo "<tr class='tab_bg_1'>";
          echo "<td class='tab_bg_2 center'>";
-         Html::submit(__('Synchronise with ticket template', 'metademands') , ['name' => 'template_sync', 'class' => 'btn btn-primary']);
+         echo Html::submit(__('Synchronise with ticket template', 'metademands') , ['name' => 'template_sync', 'class' => 'btn btn-primary']);
          foreach ($item->fields as $name => $value) {
             echo Html::hidden($name, ['value' => $value]);
          }
@@ -168,12 +168,13 @@ class PluginMetademandsTicketField extends CommonDBChild {
          echo "</tr>";
          echo "<tr class='tab_bg_1 center'>";
          echo "<td>";
-
-         $rand = mt_rand();
-         Ajax::createIframeModalWindow("tags" . $rand,
-                                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .
-                                       $item->fields['id']);
-         echo "<a class='btn btn-primary' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
+         echo "<a href='#' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#tags' title='" . __('Show list of available tags') . "' >";
+         echo  __('Show list of available tags');
+         echo "</a>";
+         echo Ajax::createIframeModalWindow('tags',
+                                            $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .$item->fields['id'],
+                                            ['title'   => __('Show list of available tags'),
+                                             'display' => false]);
          echo "</td>";
          echo "</tr>";
          echo "</table>";

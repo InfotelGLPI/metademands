@@ -392,7 +392,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "<th width='$colsize1%'>" . __('Title') . '&nbsp;' . $tt->getMandatoryMark('name') . "</th>";
       echo "<td width='$colsize3%'>";
       $name = isset($values['name']) ? $values['name'] : '';
-      echo "<input type='text' size='90' maxlength='250' name='name' value=\"$name\">";
+      echo Html::input('name', ['value' => $name, 'size' => 90]);
       echo "</td>";
       echo "</tr>";
 

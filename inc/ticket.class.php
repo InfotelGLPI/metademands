@@ -584,8 +584,9 @@ class PluginMetademandsTicket extends CommonDBTM {
       echo "<td>" . __('Title');
       echo $tt->getMandatoryMark('name');
       echo "</td>";
-      echo "<td><input type='text' maxlength='250' size='80' name='name'
-                       value=\"" . $fields['name'] . "\"></td></tr>";
+      echo "<td>";
+      echo Html::input('name', ['value' => $fields['name'], 'size' => 80]);
+      echo "</td></tr>";
 
       // CONTENT
       echo "<tr class='tab_bg_1'>";
