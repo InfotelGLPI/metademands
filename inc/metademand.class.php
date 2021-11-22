@@ -1921,6 +1921,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                    $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                                    break;
                                              }
+                                             if(is_numeric($title)) {
+                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", "", $line['tasks'][$key]['tickettasks_name']);
+                                             }
 
 
                                        }
@@ -2021,6 +2024,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                    $value = $user->fields['email'];
                                                    $str                                = str_replace("#" . $title . "#", $value, $str);
                                                    break;
+                                             }
+                                             if(is_numeric($title)) {
+                                                $str = str_replace("#" . $title . "#", "", $str);
                                              }
                                           }
 
@@ -2135,6 +2141,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                           break;
                                     }
+                                    if(is_numeric($title)) {
+                                       $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", "", $line['tasks'][$key]['tickettasks_name']);
+                                    }
                                  }
                               }
 
@@ -2235,6 +2244,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                 $value = $user->fields['email'];
                                                 $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                                 break;
+                                          }
+                                          if(is_numeric($content)) {
+                                             $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", "", $line['tasks'][$key]['content']);
                                           }
                                        }
                                     }
@@ -2339,6 +2351,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                    $value = $user->fields['email'];
                                                    $str                                = str_replace("#" . $content . "#", $value, $str);
                                                    break;
+                                             }
+                                             if(is_numeric($content)) {
+                                                $str = str_replace("#" . $content . "#", "", $str);
                                              }
                                           }
                                        }
@@ -2458,6 +2473,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                           break;
                                     }
+                                    if(is_numeric($content)) {
+                                       $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", "", $line['tasks'][$key]['content']);
+                                    }
                                  }
                               }
                            }
@@ -2570,6 +2588,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                 $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                                 break;
                                           }
+                                          if(is_numeric($title)) {
+                                             $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", "", $line['tasks'][$key]['tickettasks_name']);
+                                          }
                                        }
                                     }
                                  } else {
@@ -2669,6 +2690,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                    $value = $user->fields['email'];
                                                    $str                                = str_replace("#" . $title . "#", $value, $str);
                                                    break;
+                                             }
+                                             if(is_numeric($title)) {
+                                                $str = str_replace("#" . $title . "#", "", $str);
                                              }
                                           }
 
@@ -2785,6 +2809,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                           break;
                                     }
+                                    if(is_numeric($title)) {
+                                       $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", "", $line['tasks'][$key]['tickettasks_name']);
+                                    }
                                  }
                               }
 
@@ -2885,6 +2912,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                 $value = $user->fields['email'];
                                                 $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                                 break;
+                                          }
+                                          if(is_numeric($content)) {
+                                             $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", "", $line['tasks'][$key]['content']);
                                           }
                                        }
                                     }
@@ -2991,6 +3021,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                                    $value = $user->fields['email'];
                                                    $str                                = str_replace("#" . $content . "#", $value, $str);
                                                    break;
+                                             }
+                                             if(is_numeric($content)) {
+                                                $str = str_replace("#" . $content . "#", "", $str);
                                              }
                                           }
                                        }
@@ -3109,6 +3142,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $value = $user->fields['email'];
                                           $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                           break;
+                                    }
+                                    if(is_numeric($content)) {
+                                       $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", "", $line['tasks'][$key]['content']);
                                     }
                                  }
                               }
@@ -4199,6 +4235,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
                                     break;
                               }
+                              if(is_numeric($title)) {
+                                 $value['value'] = str_replace("#" . $title . "#", "", $value['value']);
+                              }
                            }
                         }
                      } else {
@@ -4259,6 +4298,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        $v = $user->fields['email'];
                                        $str                                = str_replace("#" . $title . "#", $v, $str);
                                        break;
+                                 }
+                                 if(is_numeric($title)) {
+                                    $str = str_replace("#" . $title . "#", "", $str);
                                  }
                               }
                            }
@@ -4326,6 +4368,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               $v = $user->fields['email'];
                               $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
                               break;
+                        }
+                        if(is_numeric($title)) {
+                           $value['value'] = str_replace("#" . $title . "#", "", $value['value']);
                         }
                      }
                   }
@@ -4709,7 +4754,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                        break;
                                  }
-
+                                 if(is_numeric($title)) {
+                                    $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", "", $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                 }
 
                               }
                            }
@@ -4809,6 +4856,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $value = $user->fields['email'];
                                           $str                                = str_replace("#" . $title . "#", $value, $str);
                                           break;
+                                    }
+                                    if(is_numeric($title)) {
+                                       $str = str_replace("#" . $title . "#", "", $str);
                                     }
                                  }
 
@@ -4923,6 +4973,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                  break;
                            }
+                           if(is_numeric($title)) {
+                              $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", "", $tasks_data[$child_tasks_id]['tickettasks_name']);
+                           }
                         }
                      }
 
@@ -5018,6 +5071,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        $value = $user->fields['email'];
                                        $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
                                        break;
+                                 }
+                                 if(is_numeric($sontent)) {
+                                    $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", "", $tasks_data[$child_tasks_id]['content']);
                                  }
                               }
                            }
@@ -5117,6 +5173,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $value = $user->fields['email'];
                                           $str                                = str_replace("#" . $content . "#", $value, $str);
                                           break;
+                                    }
+                                    if(is_numeric($content)) {
+                                       $str = str_replace("#" . $content . "#", "", $str);
                                     }
                                  }
                               }
@@ -5230,6 +5289,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  $value = $user->fields['email'];
                                  $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
                                  break;
+                           }
+                           if(is_numeric($content)) {
+                              $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", "", $tasks_data[$child_tasks_id]['content']);
                            }
                         }
                      }
