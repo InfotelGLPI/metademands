@@ -483,13 +483,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
          'datatype' => 'bool',
       ];
 
-      $tab[] = [
-         'id'       => '4',
-         'table'    => $this->getTable(),
-         'field'    => 'icon',
-         'name'     => __('Icon'),
-         'datatype' => 'text',
-      ];
+//      $tab[] = [
+//         'id'       => '4',
+//         'table'    => $this->getTable(),
+//         'field'    => 'icon',
+//         'name'     => __('Icon'),
+//         'datatype' => 'text',
+//      ];
 
       $tab[] = [
          'id'       => '5',
@@ -533,6 +533,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
          'field'    => 'maintenance_mode',
          'name'     => __('Maintenance mode'),
          'datatype' => 'bool',
+      ];
+
+      $tab[] = [
+         'id'       => '10',
+         'table'    => $this->getTable(),
+         'field'    => 'title_color',
+         'name'     => __('Title color', 'metademands'),
+         'searchtype' => 'equals',
+         'datatype'   => 'color'
+      ];
+
+      $tab[] = [
+         'id'       => '11',
+         'table'    => $this->getTable(),
+         'field'    => 'background_color',
+         'name'     => __('Background color', 'metademands'),
+         'searchtype' => 'equals',
+         'datatype'   => 'color'
       ];
 
       $tab[] = [

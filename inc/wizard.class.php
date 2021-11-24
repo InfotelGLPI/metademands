@@ -157,6 +157,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $background_color = $meta->fields['background_color'];
          }
          $maintenance_mode = $meta->fields['maintenance_mode'];
+         $_SESSION['servicecatalog']['sc_itilcategories_id'] = $meta->fields['itilcategories_id'];
       }
 
       if ($maintenance_mode == 1 && !$parameters['preview']) {
@@ -260,33 +261,46 @@ class PluginMetademandsWizard extends CommonDBTM {
             $plugin = new Plugin();
             if ($plugin->isActivated('servicecatalog')) {
                $configsc = new PluginServicecatalogConfig();
-               if ($_SESSION['servicecatalog']['sc_itilcategories_id'] > 0
-                   && $configsc->seeCategoryDetails()) {
+               if ($configsc->seeCategoryDetails()) {
+                  $itilcategories_id = 0;
+                  $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                  if (is_array($cats) && count($cats) == 1) {
+                     foreach ($cats as $cat) {
+                        $itilcategories_id = $cat;
+                     }
+                  }
                   $helpdesk_category = new PluginServicecatalogCategory();
-                  if ($helpdesk_category->getFromDBByCategory($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+                  if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)) {
                      echo "<div class=\"row\">";
                      echo "<div class=\"bt-feature col-md-12 \">";
                      echo ($helpdesk_category->fields['comment'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" . nl2br($helpdesk_category->fields['comment']) . "</p>" : "";
+                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" .
+                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['comment']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_detail'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" . Toolbox::stripTags(nl2br($helpdesk_category->fields['service_detail'])) . "</p>" : "";
+                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" .
+                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_detail']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_users'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" . Toolbox::stripTags(nl2br($helpdesk_category->fields['service_users'])) . "</p>" : "";
+                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" .
+                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_users']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_ttr'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" . Toolbox::stripTags(nl2br($helpdesk_category->fields['service_ttr'])) . "</p>" : "";
+                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" .
+                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_ttr']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_use'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" . Toolbox::stripTags(nl2br($helpdesk_category->fields['service_use'])) . "</p>" : "";
+                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" .
+                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_use']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_supervision'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" . Toolbox::stripTags(nl2br($helpdesk_category->fields['service_supervision'])) . "</p>" : "";
+                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" .
+                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_supervision']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_rules'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" . Toolbox::stripTags(nl2br($helpdesk_category->fields['service_rules'])) . "</p>" : "";
+                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" .
+                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_rules']) . "</p>" : "";
                      echo "</div></div>";
                   }
                }
