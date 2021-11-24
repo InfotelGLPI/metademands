@@ -284,8 +284,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                         'WHERE'  => ['is_deleted' => 0]]);
 
          $cats = $input['itilcategories_id'];
-
-         while ($data = $iterator_cats->next()) {
+         foreach ($iterator_cats as $data) {
+//         while ($data = $iterator_cats->next()) {
             if (is_array(json_decode($data['itilcategories_id'])) && is_array($cats)) {
                $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
             }
@@ -293,6 +293,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                Session::addMessageAfterRedirect(__('The category is related to a demand. Thank you to select another', 'metademands'), false, ERROR);
                return false;
             }
+            $iterator_cats->next();
          }
       }
 
@@ -342,8 +343,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
          $number_cats_meta = count($iterator_meta_existing_cats);
          if ($number_cats_meta) {
-            while ($data = $iterator_meta_existing_cats->next()) {
+            foreach ($iterator_meta_existing_cats as $data) {
+//            while ($data = $iterator_meta_existing_cats->next()) {
                $cats = json_decode($data['itilcategories_id']);
+               $iterator_meta_existing_cats->next();
             }
             if (!isset($cats) || $cats == null) {
                $cats = [];
@@ -358,8 +361,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $cats[] = $post_cats;
                }
             }
-
-            while ($data = $iterator_cats->next()) {
+            foreach ($iterator_cats as $data) {
+//            while ($data = $iterator_cats->next()) {
                if (is_array(json_decode($data['itilcategories_id'])) && $input['id'] != $data['id']) {
                   $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
                }
@@ -367,6 +370,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   Session::addMessageAfterRedirect(__('The category is related to a demand. Thank you to select another', 'metademands'), false, ERROR);
                   return false;
                }
+               $iterator_cats->next();
             }
             if (!$cat_already_store) {
                $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
@@ -5972,8 +5976,10 @@ JAVASCRIPT
       }
       if($lang != $_SESSION['glpilanguage'] && $lang != '') {
          if (count($iterator2)) {
-            while ($data2 = $iterator2->next()) {
+            foreach ($iterator2 as $data2) {
+//            while ($data2 = $iterator2->next()) {
                $res .= ' / ' . $data2['value'];
+               $iterator2->next();
             }
          }
       }

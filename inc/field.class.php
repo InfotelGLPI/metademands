@@ -4338,8 +4338,10 @@ class PluginMetademandsField extends CommonDBChild {
       }
       if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
          if (count($iterator2)) {
-            while ($data2 = $iterator2->next()) {
+            foreach ($iterator2 as $data2) {
+//            while ($data2 = $iterator2->next()) {
                $res .= ' / ' . $data2['value'];
+               $iterator2->next();
             }
          }
       }
