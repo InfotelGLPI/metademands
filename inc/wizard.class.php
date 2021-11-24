@@ -555,7 +555,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                echo "<a class='bt-buttons' href='" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo '<div class="btnsc-normal" >';
-               $fasize = "fa-6x";
+               $fasize = "fa-4x";
                echo "<div class='center'>";
                $icon = "fa-share-alt";
                if (!empty($meta->fields['icon'])) {
@@ -571,13 +571,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo $n;
                }
 
-               echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-               if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
+               if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment')) && !empty($meta->fields['comment'])) {
+                  echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                   echo $meta->fields['comment'];
-               } else {
+                  echo "</span></em>";
+               } else if (!empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
+                  echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                   echo $comm;
+                  echo "</span></em>";
                }
-               echo "</span></em>";
+
 
                $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
                if ($count_drafts > 0) {

@@ -113,13 +113,36 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       $dbu = new DbUtils();
       if ($dbu->countElementsInTable("glpi_plugin_metademands_tickets_metademands", ["tickets_id" => $item->fields['id']]) ||
-          $dbu->countElementsInTable("glpi_plugin_metademands_tickets_tasks", ["tickets_id" => $item->fields['id']])
+                    $dbu->countElementsInTable("glpi_plugin_metademands_tickets_tasks", ["tickets_id" => $item->fields['id']])
       ) {
          if (!$withtemplate
              && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             if (($item->getType() == 'Ticket' || $item->getType() == 'PluginResourcesResource')
                 && $this->canView()) {
-               return self::getTypeName(1);
+
+               $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+               $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
+               $tickets_found          = [];
+               // If ticket is Parent : Check if all sons ticket are closed
+               if (count($ticket_metademand_data)) {
+                  $ticket_metademand_data = reset($ticket_metademand_data);
+                  $tickets_found          = PluginMetademandsTicket::getSonTickets($item->fields['id'],
+                                                                                   $ticket_metademand_data['plugin_metademands_metademands_id']);
+                  $total = count($tickets_found);
+                  $name = _n('Child ticket', 'Child tickets',$total, 'metademands');
+               } else {
+                  $ticket_task      = new PluginMetademandsTicket_Task();
+                  $ticket_task_data = $ticket_task->find(['tickets_id' => $item->fields['id']]);
+
+                  if (count($ticket_task_data)) {
+                     $tickets_found = PluginMetademandsTicket::getAncestorTickets($item->fields['id'], true);
+                  }
+                  $total = count($tickets_found);
+                  $name = self::getTypeName($total);
+               }
+
+               return self::createTabEntry($name,
+                                           $total);
             }
          }
       }
@@ -6788,7 +6811,8 @@ JAVASCRIPT
       echo __("Metademand file to import", 'metademands');
       echo "</td>";
       echo "<td>";
-      echo "<input type='file' name='meta_file' accept='text/*'>";
+//      echo Html::file(['name'=>'meta_file', 'accept' => 'text/*']);
+      echo "<input class='form-control' type='file' name='meta_file' accept='text/*'>";
       echo "</td>";
       echo "</tr>";
       echo "<tr>";

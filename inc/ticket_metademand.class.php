@@ -80,8 +80,6 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
       if (!$withtemplate) {
          if ($item->getType() == 'PluginMetademandsMetademand') {
             if ($_SESSION['glpishow_count_on_tabs']) {
-               $dbu = new DbUtils();
-
                $query = self::countTicketsInTable($item->getID());
                $result  = $DB->query($query);
                $numrows = $DB->numrows($result);

@@ -62,7 +62,7 @@ if (isset($_POST["type"])) {
 
                $return .= "<a class='bt-buttons' href='" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                $return .= '<div class="btnsc-normal" >';
-               $fasize = "fa-6x";
+               $fasize = "fa-4x";
                $return .= "<div class='center'>";
                $icon   = "fa-share-alt";
                if (!empty($meta->fields['icon'])) {
@@ -72,9 +72,11 @@ if (isset($_POST["type"])) {
                $return .= "</div>";
                $return .= "<br><p>";
                $return .= $meta->getName();
-               $return .= "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-               $return .= $meta->fields['comment'];
-               $return .= "</span></em>";
+               if (!empty($meta->fields['comment'])) {
+                  $return .= "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                  $return .= $meta->fields['comment'];
+                  $return .= "</span></em>";
+               }
 
                $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
                if ($count_drafts > 0) {

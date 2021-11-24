@@ -303,7 +303,7 @@ button.clear-basket {
 
 .mydraft-comment {
     color: #949191;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .input-draft {
@@ -384,12 +384,6 @@ button.clear-basket {
 .preview-md {
     position: relative;
 }
-
-.timeline_choices li.metavalidation {
-    background-color: #f39746;
-    color:#425B64;
-}
-
 
 .select2-container {
     max-width: 250px!important;

@@ -41,6 +41,9 @@ class PluginMetademandsField extends CommonDBChild {
    static public $items_id = 'plugin_metademands_metademands_id';
 
    // Request type
+   const MAX_FIELDS = 40;
+
+   // Request type
    const CLASSIC_DISPLAY = 0;
    // Demand type
    const DOUBLE_COLUMN_DISPLAY = 1;
@@ -297,7 +300,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo "<td>";
       $randRank   = Dropdown::showNumber('rank', ['value' => $this->fields["rank"],
                                                   'min'   => 1,
-                                                  'max'   => 30]);
+                                                  'max'   => self::MAX_FIELDS]);
       $paramsRank = ['rank'               => '__VALUE__',
                      'step'               => 'order',
                      'fields_id'          => $this->fields['id'],
@@ -2845,6 +2848,9 @@ class PluginMetademandsField extends CommonDBChild {
                if (empty($opts)) {
                   $opts = [];
                }
+               if (is_array($opts)) {
+                  echo Html::hidden('nbOptions', ['id' => 'nbOptions', 'value' => count($opts)]);
+               }
                if (is_array($opts) && count($opts) == 0) {
                   echo $this->addNewOpt($url);
                } else if (is_array($opts) && count($opts) > 0) {
@@ -2857,9 +2863,7 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   echo "</td></tr>";
                }
-               if (is_array($opts)) {
-                  echo Html::hidden('nbOptions', ['value' => count($opts)]);
-               }
+
 
                echo "</tbody></table>";
                echo "</div>";
@@ -3271,10 +3275,10 @@ class PluginMetademandsField extends CommonDBChild {
       }
       $res   .= "<tr><td colspan='2' class='center'>";
       $res   .= Html::hidden('clear_option', ['value' => "clear_option"]);
-      $name  = "option[' . $opt . ']";
-      $title = "<i class='fa-1x fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-      $title .= _sx('button', 'Delete permanently');
-      echo Html::submit($title, ['name' => $name, 'class' => 'btn btn-primary pointer']);
+      $name  = "option[$opt]";
+      $title = "<i class='fa-1x fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
+//      $title .= _sx('button', 'Delete permanently');
+      $res   .= Html::submit($title, ['name' => $name, 'class' => 'btn btn-primary pointer']);
       $res .= "</td></tr>";
       return $res;
    }
@@ -3355,7 +3359,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                      'display' => $display,
                                                      'used'    => [$fields->getField('rank')],
                                                      'min'     => 1,
-                                                     'max'     => 30,
+                                                     'max'     => self::MAX_FIELDS,
                                                      'toadd'   => [0 => Dropdown::EMPTY_VALUE]]);
    }
 
@@ -4198,7 +4202,7 @@ class PluginMetademandsField extends CommonDBChild {
       switch ($field) {
          case 'rank':
             $options['min'] = 1;
-            $options['max'] = 30;
+            $options['max'] = self::MAX_FIELDS;
 
             return Dropdown::showNumber($name, $options);
             break;

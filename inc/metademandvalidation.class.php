@@ -250,6 +250,39 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $inputVal['users_id'] = Session::getLoginUserID();
       $inputVal['date']     = $_SESSION["glpi_currenttime"];;
       $this->update($inputVal);
+      if ($inputVal['validate'] == self::TASK_CREATION) {
+         echo "<div class='alert alert-success d-flex'>" . __('Tasks are created', 'metademands') . "</div>";
+      } else if ($inputVal['validate'] = self::TICKET_CREATION) {
+         echo "<div class='alert alert-success d-flex'>" . __('Sub-tickets are created', 'metademands') . "</div>";
+      }
+
+   }
+
+   static function showActionsForm($params) {
+      global $CFG_GLPI;
+
+      $item = $params['item'];
+
+      $metaValidation = new PluginMetademandsMetademandValidation();
+      if ($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
+          && $_SESSION['glpiactiveprofile']['interface'] == 'central'
+          && ($item->fields['status'] != Ticket::SOLVED
+              && $item->fields['status'] != Ticket::CLOSED)) {
+         $style = "btn-green";
+         if ($metaValidation->fields["validate"] == self::TO_VALIDATE) {
+            $style = "btn-orange";
+         }
+         echo "<li class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
+              . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
+
+         echo Ajax::createIframeModalWindow('metavalidation',
+                                            $CFG_GLPI['root_doc'] . '/plugins/metademands/front/metademandvalidation.form.php?tickets_id=' . $item->fields['id'],
+                                            ['title'   => __('Metademand validation', 'metademands'),
+                                             'display' => false,
+                                             'width'         => 200,
+                                             'height'        => 400,
+                                             'reloadonclose' => true]);
+      }
    }
 
    function viewValidation($params) {
@@ -259,11 +292,12 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
-      echo "<form name='form_raz' id='form_raz' method='post' action='" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php" . "' >";
+      echo "<form name='form_raz' id='form_raz' method='post' 
+      action='" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/metademandvalidation.form.php" . "' >";
       echo Html::hidden('action', ['id' => 'action_validationMeta', 'value' => 'validationMeta']);
       echo Html::hidden('tickets_id', ['id' => 'action_validationMeta', 'value' => $ticket_id]);
       echo "<table class='tab_cadre_fixe'>";
-      echo "<tr class='tab_bg_1'>";
+      echo "<tr class='tab_bg_1 center'>";
       echo "<th colspan='2'>";
       echo __("Metademand validation", 'metademands');
       echo "</th>";
@@ -272,10 +306,10 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       if ($this->fields["users_id"] == 0
           && $this->fields["validate"] == self::TO_VALIDATE) {
          echo "<td>" . __('Create sub-tickets', 'metademands') . " &nbsp;";
-         echo "<input  type='radio' name='create_subticket' id='create_subticket' value='1' checked>";
+         echo "<input type='radio' name='create_subticket' id='create_subticket' value='1' checked>";
          echo "</td>";
          echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
-         echo "<input  type='radio' name='create_subticket' id='create_subticket2' value='0'>";
+         echo "<input type='radio' name='create_subticket' id='create_subticket2' value='0'>";
          echo "</td>";
          echo "</tr>";
          echo "<tr class='tab_bg_1 center' id='to_update_group'>";
@@ -306,7 +340,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
       } else if ($this->fields["users_id"] != 0
                  && $this->fields["validate"] == self::TASK_CREATION) {
-         echo "<td colspan='2'>" . __('Tasks are created', 'metademands') . "</td>";
+         echo "<div class='alert alert-success d-flex'>" . __('Tasks are created', 'metademands') . "</div>";
          //         echo "<td>" . __('Create sub-tickets', 'metademands') . "&nbsp;";
          //         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 1 . "]' value='1' checked>";
          //         echo "</td>";
@@ -317,8 +351,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
                  && $this->fields["validate"] == self::VALIDATE_WITHOUT_TASK) {
 
       } else {
-         echo "<td colspan='2'>" . __('Sub-tickets are created', 'metademands') . "</td>";
-
+         echo "<div class='alert alert-success d-flex'>" . __('Sub-tickets are created', 'metademands') . "</div>";
       }
       echo "</tr>";
       if ($this->fields["users_id"] != 0) {
@@ -337,27 +370,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          echo "</td>";
          echo "</tr>";
       }
-      //      foreach ($data['custom_values'] as $key => $label) {
-      //         $field .= "<div class='custom-control custom-radio $inline'>";
-      //
-      //         $checked = "";
-      //         if ($value != NULL && $value == $key) {
-      //            $checked = $value == $key ? 'checked' : '';
-      //         } elseif ($value == NULL && isset($defaults[$key]) && $on_basket == false) {
-      //            $checked = ($defaults[$key] == 1) ? 'checked' : '';
-      //         }
-      //         $field .= "<input class='custom-control-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-      //         $nbr++;
-      //         $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
-      //         if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
-      //            $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-      //            $field .= Html::showToolTip($data['comment_values'][$key],
-      //                                        ['awesome-class' => 'fa-info-circle',
-      //                                         'display'       => false]);
-      //            $field .= "</span>";
-      //         }
-      //         $field .= "</div>";
-      //      }
       Html::closeForm();
    }
 
