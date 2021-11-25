@@ -389,3 +389,7 @@ button.clear-basket {
 .select2-container {
     max-width: 250px!important;
 }
+
+.md-title {
+    margin-top: 10px!important;
+}

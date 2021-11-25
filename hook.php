@@ -208,6 +208,10 @@ function plugin_metademands_install() {
    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "hideTable")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.9.sql");
    }
+   //version 3.0.0
+   if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "formatastable")) {
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.0.0.sql");
+   }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
    if (!is_dir($rep_files_metademands)) {

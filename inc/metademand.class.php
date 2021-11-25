@@ -2071,7 +2071,7 @@ JAVASCRIPT
                                           $parent_fields_id                   = 0;
                                           $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                           if ($fields['type'] == "textarea") {
-                                             if ($line['tasks'][$key]["hideTable"] == 1) {
+                                             if ($line['tasks'][$key]["formatastable"] == 0) {
                                                 $value = str_replace("\\n", '","', $value);
                                              }
                                           }
@@ -2121,7 +2121,7 @@ JAVASCRIPT
                                              $parent_fields_id                   = 0;
                                              $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                              if ($fields['type'] == "textarea") {
-                                                if ($line['tasks'][$key]["hideTable"] == 1) {
+                                                if ($line['tasks'][$key]["formatastable"] == 0) {
                                                    $value = str_replace("\\n", '","', $value);
                                                 }
                                              }
@@ -2190,7 +2190,7 @@ JAVASCRIPT
                                     $parent_fields_id                   = 0;
                                     $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     if ($fields['type'] == "textarea") {
-                                       if ($line['tasks'][$key]["hideTable"] == 1) {
+                                       if ($line['tasks'][$key]["formatastable"] == 0) {
                                           $value = str_replace("\\n", '","', $value);
                                        }
                                     }
@@ -2411,7 +2411,7 @@ JAVASCRIPT
                                           $parent_fields_id                   = 0;
                                           $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                           if ($fields['type'] == "textarea") {
-                                             if ($line['tasks'][$key]["hideTable"] == 1) {
+                                             if ($line['tasks'][$key]["formatastable"] == 0) {
                                                 $value = str_replace("\\n", '","', $value);
                                              }
                                           }
@@ -2461,7 +2461,7 @@ JAVASCRIPT
                                              $parent_fields_id                   = 0;
                                              $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                              if ($fields['type'] == "textarea") {
-                                                if ($line['tasks'][$key]["hideTable"] == 1) {
+                                                if ($line['tasks'][$key]["formatastable"] == 0) {
                                                    $value = str_replace("\\n", '","', $value);
                                                 }
                                              }
@@ -2531,7 +2531,7 @@ JAVASCRIPT
                                     $parent_fields_id                   = 0;
                                     $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                     if ($fields['type'] == "textarea") {
-                                       if ($line['tasks'][$key]["hideTable"] == 1) {
+                                       if ($line['tasks'][$key]["formatastable"] == 0) {
                                           $value = str_replace("\\n", '","', $value);
                                        }
                                     }
@@ -2682,7 +2682,7 @@ JAVASCRIPT
          if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name', $langTech))) {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
          }
-         if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
+         if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
             $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
             $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
          }
@@ -2690,11 +2690,11 @@ JAVASCRIPT
          if (!empty($options['resources_id'])) {
             $resource = new PluginResourcesResource();
             $resource->getFromDB($options['resources_id']);
-            if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                $result['content'] .= "<tr><th colspan='2'>";
             }
             $result['content'] .= $resource->fields['name'] . " " . $resource->fields['firstname'];
-            if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                $result['content'] .= "</th></tr>";
             }
 
@@ -2728,7 +2728,7 @@ JAVASCRIPT
                }
             }
 
-            if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                if ($nb % 2 == 0) {
                   $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
                } else {
@@ -2736,10 +2736,10 @@ JAVASCRIPT
                }
             }
             $nb++;
-            $hideTable = $options['hideTable'] ?? false;
-            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $hideTable, $langTech);
+            $formatAsTable = $options['formatastable'] ?? true;
+            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
 
-            if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                $resultTemp[$field['rank']]['content'] .= "</tr>";
             }
 
@@ -2749,7 +2749,7 @@ JAVASCRIPT
                $result['content'] .= $tab['content'];
             }
          }
-         if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
+         if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
             $result['content'] .= "</table>";
          }
       }
@@ -2766,7 +2766,7 @@ JAVASCRIPT
     * @param $parent_fields_id
     * @param $return_value
     */
-   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false, $lang = '') {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '') {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
@@ -2802,11 +2802,11 @@ JAVASCRIPT
          switch ($field['type']) {
             case 'title' :
             case 'title-block' :
-               if ($hideTable == false) {
+               if ($formatAsTable == true) {
                   $result[$field['rank']]['content'] .= "<th colspan='2'>";
                }
                $result[$field['rank']]['content'] .= $label;
-               if ($hideTable == false) {
+               if ($formatAsTable == true) {
                   $result[$field['rank']]['content'] .= "</th>";
                }
                break;
@@ -2825,15 +2825,15 @@ JAVASCRIPT
                      if ($return_value == true) {
                         return $custom_values[$field['value']];
                      } else {
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td $style_title>";
                         }
                         $result[$field['rank']]['content'] .= $label;
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td><td>";
                         }
                         $result[$field['rank']]['content'] .= $custom_values[$field['value']];
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
 
@@ -2847,11 +2847,11 @@ JAVASCRIPT
                   if ($field['value'] != 0) {
                      switch ($field['item']) {
                         case 'User':
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
 
@@ -2880,20 +2880,20 @@ JAVASCRIPT
 
                            }
                            if (empty($content)) {
-                              if ($hideTable == false) {
+                              if ($formatAsTable == true) {
                                  $result[$field['rank']]['content'] .= "<td>";
                               }
                               $result[$field['rank']]['content'] .= getUserName($field['value']);
-                              if ($hideTable == false) {
+                              if ($formatAsTable == true) {
                                  $result[$field['rank']]['content'] .= "</td>";
                               }
 
                            } else {
-                              if ($hideTable == false) {
+                              if ($formatAsTable == true) {
                                  $result[$field['rank']]['content'] .= "<td>";
                               }
                               $result[$field['rank']]['content'] .= $content;
-                              if ($hideTable == false) {
+                              if ($formatAsTable == true) {
                                  $result[$field['rank']]['content'] .= "</td>";
                               }
 
@@ -2907,17 +2907,17 @@ JAVASCRIPT
                         case 'ITILCategory_Metademands':
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td><td>";
                            }
 
                            $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
                                                                                            $field['value']);
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
                            if ($return_value == true) {
@@ -2928,11 +2928,11 @@ JAVASCRIPT
                         case 'mydevices':
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td><td>";
                            }
 
@@ -2945,7 +2945,7 @@ JAVASCRIPT
                               $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
                                                                                               $items_id);
                            }
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
                            if ($return_value == true) {
@@ -2960,16 +2960,16 @@ JAVASCRIPT
                            break;
                         case 'urgency':
                            $result[$field['rank']]['display'] = true;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                               $result[$field['rank']]['content'] .= "<td>";
                            }
                            $result[$field['rank']]['content'] .= Ticket::getUrgencyName($field['value']);
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
 
@@ -2980,16 +2980,16 @@ JAVASCRIPT
                            break;
                         case 'impact':
                            $result[$field['rank']]['display'] = true;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
                            }
                            $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
                               $result[$field['rank']]['content'] .= "<td>";
                            }
                            $result[$field['rank']]['content'] .= Ticket::getImpactName($field['value']);
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
 
@@ -3000,16 +3000,16 @@ JAVASCRIPT
                            break;
                         case 'priority':
                            $result[$field['rank']]['display'] = true;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                               $result[$field['rank']]['content'] .= "<td>";
                            }
                            $result[$field['rank']]['content'] .= Ticket::getPriorityName($field['value']);
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
 
@@ -3021,16 +3021,16 @@ JAVASCRIPT
                         default:
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td><td>";
                            }
                            $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                                                            $field['value']);
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
 
@@ -3060,15 +3060,15 @@ JAVASCRIPT
                         return implode(', ', $parseValue);
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td $style_title>";
                         }
                         $result[$field['rank']]['content'] .= $label;
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td><td>";
                         }
                         $result[$field['rank']]['content'] .= implode('<br>', $parseValue);
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
 
@@ -3090,15 +3090,15 @@ JAVASCRIPT
                         return implode(', ', $parseValue);
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td $style_title>";
                         }
                         $result[$field['rank']]['content'] .= $label;
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td><td>";
                         }
                         $result[$field['rank']]['content'] .= implode('<br>', $parseValue);
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
 
@@ -3109,7 +3109,7 @@ JAVASCRIPT
 
                   $information = json_decode($field['informations_to_display']);
                   $parseValue  = [];
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $dataItems = "<table>";
                   }
                   $item = new $field["item"]();
@@ -3117,65 +3117,65 @@ JAVASCRIPT
 
 
                      if ($item->getFromDB($value)) {
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $dataItems .= "<tr>";
                         }
 
                         if (in_array('full_name', $information)) {
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
                            $dataItems .= $field["item"]::getFriendlyNameById($value);
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
 
                         }
                         if (in_array('realname', $information)) {
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
                            $dataItems .= $item->fields["realname"];
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
                         }
                         if (in_array('firstname', $information)) {
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
                            $dataItems .= $item->fields["firstname"];
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
                         }
                         if (in_array('name', $information)) {
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
                            $dataItems .= $item->fields["name"];
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
                         }
                         if (in_array('email', $information)) {
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
                            $dataItems .= $item->getDefaultEmail();
-                           if ($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
 
                         }
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $dataItems .= "</tr>";
                         }
                      }
 
                      array_push($parseValue, $field["item"]::getFriendlyNameById($value));
                   }
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $dataItems .= "</table>";
                   }
                   //TODO MAKE TABLE IN A TABLE
@@ -3183,15 +3183,15 @@ JAVASCRIPT
                      return implode(',', $parseValue);
                   } else {
                      $result[$field['rank']]['display'] = true;
-                     if ($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "<td $style_title>";
                      }
                      $result[$field['rank']]['content'] .= $label;
-                     if ($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "</td><td>";
                      }
                      $result[$field['rank']]['content'] .= $dataItems;
-                     if ($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "</td>";
                      }
 
@@ -3208,15 +3208,15 @@ JAVASCRIPT
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . $field['value'] . '</a>';
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= '</td>';
                   }
 
@@ -3231,15 +3231,15 @@ JAVASCRIPT
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= ($field['value']);
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3263,11 +3263,11 @@ JAVASCRIPT
                   }
                   $custom_checkbox                   = [];
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3280,11 +3280,11 @@ JAVASCRIPT
                   if ($return_value == true) {
                      return implode(',', $custom_checkbox);
                   } else {
-                     if ($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "<td>";
                      }
                      $result[$field['rank']]['content'] .= implode('<br>', $custom_checkbox);
-                     if ($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "</td>";
                      }
 
@@ -3295,11 +3295,11 @@ JAVASCRIPT
                         return $field['value'];
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td>";
                         }
                         $result[$field['rank']]['content'] .= $field['value'];
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
 
@@ -3319,11 +3319,11 @@ JAVASCRIPT
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3336,11 +3336,11 @@ JAVASCRIPT
                   if ($return_value == true) {
                      return $custom_radio;
                   } else {
-                     if ($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "<td>";
                      }
                      $result[$field['rank']]['content'] .= $custom_radio;
-                     if ($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "</td>";
                      }
 
@@ -3351,11 +3351,11 @@ JAVASCRIPT
                         return $label;
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td>";
                         }
                         $result[$field['rank']]['content'] .= $label;
-                        if ($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
                      }
@@ -3375,15 +3375,15 @@ JAVASCRIPT
                   return Html::convDate($field['value']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDate($field['value']);
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3394,15 +3394,15 @@ JAVASCRIPT
                   return Html::convDateTime($field['value']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDateTime($field['value']);
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3413,24 +3413,24 @@ JAVASCRIPT
                   return Html::convDate($field['value']) . " - " . Html::convDate($field['value2']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDate($field['value']);
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td></tr>";
                      $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label2;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDate($field['value2']);
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3442,24 +3442,24 @@ JAVASCRIPT
                   return Html::convDateTime($field['value']) . " - " . Html::convDateTime($field['value2']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDateTime($field['value']);
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td></tr>";
                      $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label2;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDateTime($field['value2']);
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3471,15 +3471,15 @@ JAVASCRIPT
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= $field['value'];
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3495,15 +3495,15 @@ JAVASCRIPT
                   return $val;
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= $val;
-                  if ($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3855,7 +3855,7 @@ JAVASCRIPT
                                  unset($values_form[$i]);
                               }
                            }
-                           $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form], ['hideTable' => $task->fields['hideTable']]);
+                           $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
                            $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
                         } else {
                            $parent_fields_content['content'] = $parent_fields['content'];
@@ -3914,14 +3914,14 @@ JAVASCRIPT
             $config->getFromDB(1);
 
             if (!empty($son_ticket_data['content'])) {
-               if ($task->fields['hideTable'] == false) {
+               if ($task->fields['formatastable'] == true) {
                   $content = "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                              "</th></tr><tr><td colspan='2'>";
                }
 
                $content .= Glpi\Toolbox\RichText::getSafeHtml($son_ticket_data['content']);
 
-               if ($task->fields['hideTable'] == false) {
+               if ($task->fields['formatastable'] == true) {
                   $content .= "</td></tr></table><br>";
                }
             }

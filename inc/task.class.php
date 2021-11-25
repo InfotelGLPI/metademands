@@ -357,7 +357,7 @@ class PluginMetademandsTask extends CommonDBTM {
          echo "<th class='center b'>" . __('Level', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Block to use', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Use block', 'metademands') . "</th>";
-         echo "<th class='center b'>" . __('Hide table', 'metademands') . "</th>";
+         echo "<th class='center b'>" . __('Format the description of the childs ticket as a table', 'metademands') . "</th>";
          echo "</tr>";
          foreach ($tasks as $value) {
             echo "<tr class='tab_bg_1'>";
@@ -499,7 +499,7 @@ class PluginMetademandsTask extends CommonDBTM {
             echo Dropdown::getYesNo($value['useBlock']);
             echo "</td>";
             echo "<td $color_class>";
-            echo Dropdown::getYesNo($value['hideTable']);
+            echo Dropdown::getYesNo($value['formatastable']);
             echo "</td>";
             echo "</tr>";
 
@@ -550,7 +550,7 @@ class PluginMetademandsTask extends CommonDBTM {
                        `glpi_plugin_metademands_tasks`.`completename` as tasks_completename, 
                        `glpi_plugin_metademands_tasks`.`level`,
                        `glpi_plugin_metademands_tasks`.`block_use`,
-                       `glpi_plugin_metademands_tasks`.`hideTable`,
+                       `glpi_plugin_metademands_tasks`.`formatastable`,
                        `glpi_plugin_metademands_tasks`.`useBlock`,
                        `glpi_plugin_metademands_tickettasks`.`itilcategories_id`,
                        `glpi_plugin_metademands_tickettasks`.`content`,

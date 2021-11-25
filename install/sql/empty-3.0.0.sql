@@ -53,7 +53,7 @@ CREATE TABLE `glpi_plugin_metademands_tasks` (
     `plugin_metademands_metademands_id` int(11) NOT NULL default '0',
     `block_use` VARCHAR (255) NOT NULL DEFAULT '[]',
     `useBlock` tinyint(1) NOT NULL DEFAULT '1',
-    `hideTable` tinyint(1) NOT NULL DEFAULT '0',
+    `formatastable` tinyint(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),

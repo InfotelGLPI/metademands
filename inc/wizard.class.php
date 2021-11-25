@@ -203,7 +203,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             // Wizard title
             echo "<div class=\"row\">";
-            echo "<div class=\"col-md-12\">";
+            echo "<div class=\"col-md-12 md-title\">";
             echo "<h3 class=\"alert alert-secondary\"><span>";
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($parameters['metademands_id'])) {

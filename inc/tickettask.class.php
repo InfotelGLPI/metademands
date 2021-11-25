@@ -88,7 +88,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                  'name'                        => '',
                  'block_use'                   => 1,
                  'useBlock'                    => 1,
-                 'hideTable'                   => 0,
+                 'formatastable'               => 1,
                  'entities_id'                 => 0];
 
       // Init values
@@ -168,10 +168,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
 
       echo "<th>" . sprintf(__('%1$s'), __('Hide table', 'metademands')) . "</th>";
       echo "<td>";
-
-
-      Dropdown::showYesNo('hideTable',$values['hideTable']);
-
+      Dropdown::showYesNo('formatastable',$values['formatastable']);
       echo "</td>";
       echo "<td colspan='4'></td>";
 
