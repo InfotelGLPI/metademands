@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-25 14:43+0000\n"
+"POT-Creation-Date: 2021-11-25 17:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -595,104 +595,104 @@ msgstr ""
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:2619
+#: inc/metademand.class.php:2615
 msgid "Demand add failed"
 msgstr ""
 
-#: inc/metademand.class.php:2623
+#: inc/metademand.class.php:2619
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2625
+#: inc/metademand.class.php:2621
 #, php-format
 msgid "Ticket \"%s\" updated to metademand with success"
 msgstr ""
 
-#: inc/metademand.class.php:2628
+#: inc/metademand.class.php:2624
 #, php-format
 msgid "Problem \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2630
+#: inc/metademand.class.php:2626
 #, php-format
 msgid "Change \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:3918
+#: inc/metademand.class.php:3914
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:3932
+#: inc/metademand.class.php:3928
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/metademand.class.php:4391 inc/metademand.class.php:4394
+#: inc/metademand.class.php:4387 inc/metademand.class.php:4390
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:4396
+#: inc/metademand.class.php:4392
 msgid "Do you want to validate her?"
 msgstr ""
 
-#: inc/metademand.class.php:4401 inc/metademand.class.php:4405
+#: inc/metademand.class.php:4397 inc/metademand.class.php:4401
 #: inc/metademandvalidation.class.php:56 inc/metademandvalidation.class.php:280
 #: inc/metademandvalidation.class.php:284
 #: inc/metademandvalidation.class.php:306
 msgid "Metademand validation"
 msgstr ""
 
-#: inc/metademand.class.php:4437
+#: inc/metademand.class.php:4433
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:4451
+#: inc/metademand.class.php:4447
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:4458 inc/metademand.class.php:4587
+#: inc/metademand.class.php:4454 inc/metademand.class.php:4583
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:4580
+#: inc/metademand.class.php:4576
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:4657
+#: inc/metademand.class.php:4653
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:4676
+#: inc/metademand.class.php:4672
 msgid "There is no childs tickets / tasks"
 msgstr ""
 
-#: inc/metademand.class.php:5006
+#: inc/metademand.class.php:5002
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:5139 inc/metademand.class.php:5194
+#: inc/metademand.class.php:5135 inc/metademand.class.php:5190
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:5151 inc/metademand.class.php:5316
+#: inc/metademand.class.php:5147 inc/metademand.class.php:5312
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:5163 inc/metademand.class.php:5374
+#: inc/metademand.class.php:5159 inc/metademand.class.php:5370
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:5175 inc/metademand.class.php:5246
+#: inc/metademand.class.php:5171 inc/metademand.class.php:5242
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: inc/metademand.class.php:5920
+#: inc/metademand.class.php:5916
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:5929
+#: inc/metademand.class.php:5925
 msgid "Import"
 msgstr ""
 
@@ -829,7 +829,7 @@ msgstr ""
 msgid "Use block"
 msgstr ""
 
-#: inc/task.class.php:360
+#: inc/task.class.php:360 inc/tickettask.class.php:169
 msgid "Format the description of the childs ticket as a table"
 msgstr ""
 
@@ -884,10 +884,6 @@ msgstr[1] ""
 
 #: inc/ticketfield.class.php:155 inc/ticketfield.class.php:163
 msgid "Synchronise with ticket template"
-msgstr ""
-
-#: inc/tickettask.class.php:169
-msgid "Hide table"
 msgstr ""
 
 #: inc/tickettask.class.php:209
