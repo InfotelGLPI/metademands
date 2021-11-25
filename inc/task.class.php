@@ -578,7 +578,7 @@ class PluginMetademandsTask extends CommonDBTM {
          }
       }
 
-      $query  .= " ORDER BY `glpi_plugin_metademands_tasks`.`completename`";
+      $query  .= " ORDER BY `glpi_plugin_metademands_tasks`.`id`, `glpi_plugin_metademands_tasks`.`completename`";
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {

@@ -1930,10 +1930,8 @@ JAVASCRIPT
                                                 }
                                              }
                                           }
-
-
-                                          $users_id                                = $parent_fields['_users_id_requester'];
-                                          $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                          $users_id = $parent_fields['_users_id_requester'];
+                                          $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                        }
                                     }
                                  } else {
@@ -1975,14 +1973,13 @@ JAVASCRIPT
                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
                                                    if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                       $users_id = $values['fields'][$explodeTitle2[0]];
-                                                      $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                      $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                                    }
                                                 }
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             $str      = self::getContentForUser($title, $users_id, $title, $str);
+                                             $str = self::getContentForUser($title, $users_id, $title, $str, true);
                                           }
-
                                        }
                                        if ($find == true) {
                                           break;
@@ -2035,13 +2032,13 @@ JAVASCRIPT
                                        $field_object = new PluginMetademandsField();
                                        if ($field_object->getFromDB($explodeTitle2[0])) {
                                           if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                             $users_id = $values['fields'][$explodeTitle2[0]];
+                                             $users_id                                = $values['fields'][$explodeTitle2[0]];
                                              $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                           }
                                        }
                                     }
-                                    $users_id                                = $parent_fields['_users_id_requester'];
-                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                  }
                               }
 
@@ -2084,13 +2081,13 @@ JAVASCRIPT
                                              $field_object = new PluginMetademandsField();
                                              if ($field_object->getFromDB($explodeContent2[0])) {
                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                   $users_id = $values['fields'][$explodeContent2[0]];
+                                                   $users_id                       = $values['fields'][$explodeContent2[0]];
                                                    $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                                 }
                                              }
                                           }
                                           $users_id = $parent_fields['_users_id_requester'];
-                                          $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content']);
+                                          $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                        }
                                     }
                                  } else {
@@ -2143,7 +2140,7 @@ JAVASCRIPT
                                                 }
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             $str      = self::getContentForUser($content, $users_id, $content, $str);
+                                             $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                           }
                                        }
                                        if ($find == true) {
@@ -2208,8 +2205,8 @@ JAVASCRIPT
                                           }
                                        }
                                     }
-                                    $users_id                       = $parent_fields['_users_id_requester'];
-                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content']);
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                  }
                               }
                            }
@@ -2268,9 +2265,8 @@ JAVASCRIPT
                                                 }
                                              }
                                           }
-
-                                          $users_id                                = $parent_fields['_users_id_requester'];
-                                          $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                          $users_id = $parent_fields['_users_id_requester'];
+                                          $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                        }
                                     }
                                  } else {
@@ -2318,7 +2314,7 @@ JAVASCRIPT
                                                 }
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             $str      = self::getContentForUser($title, $users_id, $title, $str);
+                                             $str = self::getContentForUser($title, $users_id, $title, $str, true);
                                           }
 
                                        }
@@ -2381,8 +2377,8 @@ JAVASCRIPT
                                        }
                                     }
 
-                                    $users_id                                = $parent_fields['_users_id_requester'];
-                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                  }
                               }
 
@@ -2429,8 +2425,8 @@ JAVASCRIPT
                                                 }
                                              }
                                           }
-                                          $users_id                       = $parent_fields['_users_id_requester'];
-                                          $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content']);
+                                          $users_id = $parent_fields['_users_id_requester'];
+                                          $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                        }
                                     }
                                  } else {
@@ -2484,7 +2480,7 @@ JAVASCRIPT
                                                 }
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             $str      = self::getContentForUser($content, $users_id, $content, $str);
+                                             $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                           }
                                        }
                                        if ($find == true) {
@@ -2549,8 +2545,8 @@ JAVASCRIPT
                                           }
                                        }
                                     }
-                                    $users_id                       = $parent_fields['_users_id_requester'];
-                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content']);
+                                    $users_id = $parent_fields['_users_id_requester'];
+                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                  }
                               }
                            }
@@ -4089,14 +4085,14 @@ JAVASCRIPT
                                     $field_object = new PluginMetademandsField();
                                     if ($field_object->getFromDB($explodeTitle2[0])) {
                                        if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                          $users_id = $values['fields'][$explodeTitle2[0]];
+                                          $users_id                                        = $values['fields'][$explodeTitle2[0]];
                                           $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                        }
                                     }
                                  }
                                  $users_id = $parent_fields['_users_id_requester']; // TODO
                                  //                                 $users_id = Session::getLoginUserID(); // TODO
-                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
                               }
                            }
                         } else {
@@ -4138,12 +4134,12 @@ JAVASCRIPT
                                        if ($field_object->getFromDB($explodeTitle2[0])) {
                                           if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                              $users_id = $values['fields'][$explodeTitle2[0]];
-                                             $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                             $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                           }
                                        }
                                     }
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                    $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                  }
                               }
                               if ($find == true) {
@@ -4197,13 +4193,13 @@ JAVASCRIPT
                               $field_object = new PluginMetademandsField();
                               if ($field_object->getFromDB($explodeTitle2[0])) {
                                  if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                    $users_id = $values['fields'][$explodeTitle2[0]];
+                                    $users_id                                        = $values['fields'][$explodeTitle2[0]];
                                     $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                  }
                               }
                            }
                            $users_id = $parent_fields['_users_id_requester'];
-                           $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                           $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
                         }
                      }
 
@@ -4240,13 +4236,13 @@ JAVASCRIPT
                                     $field_object = new PluginMetademandsField();
                                     if ($field_object->getFromDB($explodeContent2[0])) {
                                        if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                          $users_id = $values['fields'][$explodeContent2[0]];
+                                          $users_id                               = $values['fields'][$explodeContent2[0]];
                                           $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $tasks_data[$child_tasks_id]['content']);
                                        }
                                     }
                                  }
                                  $users_id = $parent_fields['_users_id_requester'];
-                                 $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content']);
+                                 $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
                               }
                            }
                         } else {
@@ -4289,12 +4285,12 @@ JAVASCRIPT
                                        if ($field_object->getFromDB($explodeContent2[0])) {
                                           if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                              $users_id = $values['fields'][$explodeContent2[0]];
-                                             $str = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
+                                             $str      = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
                                           }
                                        }
                                     }
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    $str = self::getContentForUser($content, $users_id, $content, $str);
+                                    $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                  }
                               }
                               if ($find == true) {
@@ -4349,13 +4345,13 @@ JAVASCRIPT
                               $field_object = new PluginMetademandsField();
                               if ($field_object->getFromDB($explodeContent2[0])) {
                                  if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                    $users_id = $values['fields'][$explodeContent2[0]];
+                                    $users_id                               = $values['fields'][$explodeContent2[0]];
                                     $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $tasks_data[$child_tasks_id]['content']);
                                  }
                               }
                            }
                            $users_id = $parent_fields['_users_id_requester'];
-                           $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content']);
+                           $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
                         }
                      }
 
@@ -5948,8 +5944,20 @@ JAVASCRIPT
       }
    }
 
-   static function getContentForUser($field, $users_id, $title, $line) {
+   /**
+    * @param       $field
+    * @param       $users_id
+    * @param       $title
+    * @param       $line
+    * @param false $bypass
+    *
+    * @return array|string|string[]|void
+    */
+   static function getContentForUser($field, $users_id, $title, $line, $bypass = false) {
 
+      if ($bypass === true && is_numeric($title)) {
+         return str_replace("#" . $title . "#", "", $line);
+      }
       switch ($field) {
          case "login" :
          case "requester.login" :
@@ -5980,6 +5988,6 @@ JAVASCRIPT
             return str_replace("#" . $title . "#", $value, $line);
             break;
       }
-
+      return $line;
    }
 }

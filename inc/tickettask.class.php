@@ -166,7 +166,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       echo "</tr>";
       echo "<tr class='tab_bg_1'>";
 
-      echo "<th>" . sprintf(__('%1$s'), __('Hide table', 'metademands')) . "</th>";
+      echo "<th>" . sprintf(__('%1$s'), __('Format the description of the childs ticket as a table', 'metademands')) . "</th>";
       echo "<td>";
       Dropdown::showYesNo('formatastable',$values['formatastable']);
       echo "</td>";
