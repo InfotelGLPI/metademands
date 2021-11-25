@@ -203,8 +203,6 @@ class PluginMetademandsProfile extends Profile {
 
    static function translateARight($old_right) {
       switch ($old_right) {
-         case '':
-            return 0;
          case 'r' :
             return READ;
          case 'w':

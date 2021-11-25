@@ -250,10 +250,13 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $inputVal['users_id'] = Session::getLoginUserID();
       $inputVal['date']     = $_SESSION["glpi_currenttime"];;
       $this->update($inputVal);
+
       if ($inputVal['validate'] == self::TASK_CREATION) {
-         echo "<div class='alert alert-success d-flex'>" . __('Tasks are created', 'metademands') . "</div>";
-      } else if ($inputVal['validate'] = self::TICKET_CREATION) {
-         echo "<div class='alert alert-success d-flex'>" . __('Sub-tickets are created', 'metademands') . "</div>";
+         echo "<div class='alert alert-success alert-important d-flex'>" . __('Tasks are created', 'metademands') . "</div>";
+      } else if ($inputVal['validate'] == self::TICKET_CREATION) {
+         echo "<div class='alert alert-success alert-important d-flex'>" . __('Sub-tickets are created', 'metademands') . "</div>";
+      } else if ($inputVal['validate'] == self::VALIDATE_WITHOUT_TASK) {
+         echo "<div class='alert alert-success alert-important d-flex'>" . __('The metademand is validated and affected', 'metademands') . "</div>";
       }
 
    }
@@ -262,14 +265,15 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       global $CFG_GLPI;
 
       $item = $params['item'];
-
       $metaValidation = new PluginMetademandsMetademandValidation();
       if ($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
           && $_SESSION['glpiactiveprofile']['interface'] == 'central'
           && ($item->fields['status'] != Ticket::SOLVED
-              && $item->fields['status'] != Ticket::CLOSED)) {
+              && $item->fields['status'] != Ticket::CLOSED)
+      && Session::haveRight('plugin_metademands', UPDATE)) {
          $style = "btn-green";
-         if ($metaValidation->fields["validate"] == self::TO_VALIDATE) {
+         if ($metaValidation->fields["validate"] == self::TO_VALIDATE
+         || $metaValidation->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
             $style = "btn-orange";
          }
          echo "<li class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"

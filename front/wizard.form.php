@@ -306,7 +306,7 @@ if (isset($_POST['next'])) {
                   Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
                }
             } else if ($itilcategories > 0 && $type > 0) {
-               Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php?choose_category&type=$type&level=1");
+               Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/choosecategory.form.php?type=$type&level=1");
             } else if ($itilcategories > 0 && $type == 0) {
                Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
             }

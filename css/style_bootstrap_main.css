@@ -109,9 +109,8 @@ body {
 
 .bt-title-divider {
    /*background: #fff url("../pics/bg_divider.png") repeat-x scroll left center;*/
-   margin-bottom: 0.5em;
-   margin-top: 0.3em;
-   margin-right: 0.3em;
+   margin-bottom: 15px;
+   margin-top: 15px;
    padding: 0;
    text-align: left;
 }
