@@ -146,7 +146,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
       Html::requireJs("metademands");
       //      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_main.css");
-//      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_ticket.css");
+      //      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_ticket.css");
 
       echo "<div id ='content'>";
       $background_color = "";
@@ -156,7 +156,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
             $background_color = $meta->fields['background_color'];
          }
-         $maintenance_mode = $meta->fields['maintenance_mode'];
+         $maintenance_mode                                   = $meta->fields['maintenance_mode'];
          $_SESSION['servicecatalog']['sc_itilcategories_id'] = $meta->fields['itilcategories_id'];
       }
 
@@ -263,7 +263,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                $configsc = new PluginServicecatalogConfig();
                if ($configsc->seeCategoryDetails()) {
                   $itilcategories_id = 0;
-                  $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                  $cats              = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
                   if (is_array($cats) && count($cats) == 1) {
                      foreach ($cats as $cat) {
                         $itilcategories_id = $cat;
@@ -767,14 +767,19 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                         $title = "<i class='fas fa-plus'></i>&nbsp;";
                         $title .= _sx('button', 'Add to basket', 'metademands');
-                        echo Html::submit($title, ['name' => 'add_to_basket', 'id' => 'add_to_basket', 'class' => 'metademand_next_button btn btn-primary']);
+                        echo Html::submit($title, ['name'  => 'add_to_basket',
+                                                   'id'    => 'add_to_basket',
+                                                   'class' => 'metademand_next_button btn btn-primary']);
                      } else {
 
                         echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                         echo "</div>";
                         $title = "<i class='fas fa-save'></i>&nbsp;";
                         $title .= _sx('button', 'Validate your basket', 'metademands');
-                        echo Html::submit($title, ['name' => 'next_button', 'id' => 'submitjob', 'class' => 'metademand_next_button btn btn-success']);
+                        echo Html::submit($title, ['name'  => 'next_button',
+                                                   'form' => '',
+                                                   'id'    => 'submitjob',
+                                                   'class' => 'metademand_next_button btn btn-success']);
                         $ID = $metademands->fields['id'];
                         echo "<script>
                           $('#submitjob').click(function() {
@@ -795,7 +800,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                           document.location.reload();
                                        } else {
                                           window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
-                                       }                                  
+                                       }
                                     },
                                    error: function(xhr, status, error) {
                                       console.log(xhr);
@@ -812,7 +817,10 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                      $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                      $title .= _sx('button', 'Post');
-                     echo Html::submit($title, ['name' => 'next_button', 'id' => 'submitjob', 'class' => 'btn btn-success metademand_next_button']);
+                     echo Html::submit($title, ['name'  => 'next_button',
+                                                'form' => '',
+                                                'id'    => 'submitjob',
+                                                'class' => 'btn btn-success metademand_next_button']);
 
                      $ID = $metademands->fields['id'];
                      echo "<script>
@@ -831,10 +839,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                                 success: function(response){
                                     $('#ajax_loader').hide();
                                     if (response == 1) {
-                                       document.location.reload();
+                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
                                     } else {
                                        window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
-                                    }                                  
+                                    }
                                  },
                                 error: function(xhr, status, error) {
                                    console.log(xhr);
@@ -2724,6 +2732,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
       }
+
       if (in_array(1, $checkKo)
           || in_array(1, $checkKoDateInterval)) {
          Session::addMessageAfterRedirect(sprintf(__("Mandatory fields are not filled. Please correct: %s"), implode(', ', $msg)), false, ERROR);

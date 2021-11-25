@@ -4543,7 +4543,8 @@ JAVASCRIPT
                              "</th></tr><tr><td colspan='2'>";
                }
 
-               $content .= $son_ticket_data['content'];
+               $content .= Glpi\Toolbox\RichText::getSafeHtml($son_ticket_data['content']);
+
                if($task->fields['hideTable'] == false) {
                   $content .= "</td></tr></table><br>";
                }
@@ -4552,7 +4553,7 @@ JAVASCRIPT
             if ($config->getField('childs_parent_content') == 1) {
                if (!empty($parent_fields_content['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
+                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . _n('Parent tickets', 'Parent tickets',1, 'metademands') .
                               "</th></tr><tr><td colspan='2'>" . $parent_fields_content['content'];
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "</td></tr></table><br>";

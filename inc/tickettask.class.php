@@ -414,7 +414,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                       'value'           => stripslashes($content),
                       'id'           => 'content'.$rand,
                       'rows'       => 3,
-                      'enable_richtext' => false]);
+                      'enable_richtext' => true,
+                      'enable_fileupload' => false,
+                      'enable_images'     => false]);
       echo "</div>";
 
       echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);

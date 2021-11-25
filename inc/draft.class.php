@@ -86,11 +86,15 @@ class PluginMetademandsDraft extends CommonDBTM {
          $return .= "<td colspan='4' class='center'>";
          $title = "<i class='fas fa-1x fa-save pointer'></i>&nbsp;";
          $title .= _sx('button', 'Save draft', 'metademands') ."&nbsp;(".$_SESSION['plugin_metademands']['plugin_metademands_drafts_name'].")";
-         $return .= Html::submit($title, ['name' => 'save_draft', 'id' => 'submitSave', 'class' => 'btn btn-success btn-sm']);
+         $return .= Html::submit($title, ['name' => 'save_draft',
+                                          'form' => '',
+                                          'id' => 'submitSave',
+                                          'class' => 'btn btn-success btn-sm']);
          $return .= "&nbsp;";
          $title = "<i class='fas fa-1x fa-broom pointer'></i>";
          $title .= _sx('button', 'Clean form', 'metademands');
-         $return .= Html::submit($title, ['name' => 'clean_form', 'class' => 'btn btn-warning btn-sm']);
+         $return .= Html::submit($title, ['name' => 'clean_form',
+                                          'class' => 'btn btn-warning btn-sm']);
          $return .= "<br>";
          $return .= "</td></tr>";
       } else {
@@ -109,6 +113,7 @@ class PluginMetademandsDraft extends CommonDBTM {
          $title = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
          $title .= _sx('button', 'Save as draft', 'metademands');
          $return .= Html::submit($title, ['name' => 'save_draft',
+                                          'form' => '',
                                           'id' => 'submitSave',
                                           'class' => 'btn btn-success btn-sm']);
          $return .= "&nbsp;";
