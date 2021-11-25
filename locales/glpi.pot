@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-25 14:24+0000\n"
+"POT-Creation-Date: 2021-11-25 14:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:389
+#: hook.php:393
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:402
+#: hook.php:406
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:418
+#: hook.php:422
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:429
+#: hook.php:433
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:441
+#: hook.php:445
 msgid "Technician child ticket"
 msgstr ""
 
@@ -525,7 +525,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: inc/metademand.class.php:293 inc/metademand.class.php:370
-#: inc/task.class.php:682 inc/tickettask.class.php:607
+#: inc/task.class.php:682 inc/tickettask.class.php:604
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -829,8 +829,8 @@ msgstr ""
 msgid "Use block"
 msgstr ""
 
-#: inc/task.class.php:360 inc/tickettask.class.php:169
-msgid "Hide table"
+#: inc/task.class.php:360
+msgid "Format the description of the childs ticket as a table"
 msgstr ""
 
 #: inc/task.class.php:472 inc/task.class.php:477
@@ -886,11 +886,15 @@ msgstr[1] ""
 msgid "Synchronise with ticket template"
 msgstr ""
 
-#: inc/tickettask.class.php:212
+#: inc/tickettask.class.php:169
+msgid "Hide table"
+msgstr ""
+
+#: inc/tickettask.class.php:209
 msgid "Create after the task"
 msgstr ""
 
-#: inc/tickettask.class.php:228
+#: inc/tickettask.class.php:225
 msgid "Actors"
 msgstr ""
 
