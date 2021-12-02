@@ -689,7 +689,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>";
       echo __('Object to create', 'metademands') . "&nbsp;<span style='color:red;'>*</span></td>";
       echo "<td>";
-      if ($ID == 0) {
+      if ($ID == 0 || empty($ID)) {
          $objects    = self::getObjectTypes();
          $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
