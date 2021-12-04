@@ -167,6 +167,12 @@ if (isset($_POST["add"])) {
    if (isset($_POST["hidden_block"])) {
       $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
+   $childs_blocks = [];
+   if (isset($_POST['childs_blocks'])) {
+      $childs_blocks = $_POST['childs_blocks'];
+   }
+   $_POST["childs_blocks"] = PluginMetademandsField::_serialize($childs_blocks);
+
    if (isset($_POST["users_id_validate"])) {
       $_POST["users_id_validate"] = PluginMetademandsField::_serialize($_POST["users_id_validate"]);
    }
@@ -216,6 +222,7 @@ if (isset($_POST["add"])) {
          unset($_POST["fields_link"][$k]);
          unset($_POST["hidden_link"][$k]);
          unset($_POST["hidden_block"][$k]);
+         unset($_POST["childs_blocks"][$k]);
       }
    }
    $input["id"] = $_POST["id"];
@@ -233,6 +240,9 @@ if (isset($_POST["add"])) {
    }
    if (isset($_POST["hidden_block"])) {
       $input["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
+   }
+   if (isset($_POST["childs_blocks"])) {
+      $input["childs_blocks"] = PluginMetademandsField::_serialize($_POST["childs_blocks"]);
    }
 
    $field->check(-1, UPDATE, $_POST);

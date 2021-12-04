@@ -109,6 +109,7 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `additional_number_day` INT(11) default 0,
     `informations_to_display` varchar(255) NOT NULL default '[]',
     `use_richtext` TINYINT(1) NOT NULL DEFAULT '1',
+    `childs_blocks` VARCHAR (255) NOT NULL DEFAULT '[]',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
