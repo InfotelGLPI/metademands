@@ -57,10 +57,10 @@ class PluginMetademandsMenu extends CommonDBTM {
          $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
       }
 
-      $image                 = "<i class='fas fa-share-alt' title='" . __('Create a demand', 'metademands') . "'></i>";
+      $image                 = "<i class='ti ti-share' title='" . __('Create a demand', 'metademands') . "'></i>&nbsp;".__('Create a demand', 'metademands');
       $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
 
-      $image                 = "<i class='fas fa-upload' title='" . __('Import metademands', 'metademands') . "'></i>";
+      $image                 = "<i class='ti ti-upload' title='" . __('Import metademands', 'metademands') . "'></i>&nbsp;". __('Import metademands', 'metademands');
       $menu['links'][$image] = PluginMetademandsMetademand::getFormURL(false) . "?import_form=1";
 
 
@@ -70,7 +70,7 @@ class PluginMetademandsMenu extends CommonDBTM {
    }
 
    static function getIcon() {
-      return "fas fa-share-alt";
+      return "ti ti-share";
    }
 
    static function removeRightsFromSession() {

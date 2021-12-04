@@ -250,7 +250,10 @@ class PluginMetademandsBasketline extends CommonDBTM {
     */
    function updateFromBasket($input, $line) {
 
+
       $new_files = [];
+      unset($input['field']);
+
       if (isset($input['_filename']) && !empty($input['_filename'])) {
          foreach ($input['_filename'] as $key => $filename) {
             $new_files[$key]['_prefix_filename'] = $input['_prefix_filename'][$key];
@@ -258,7 +261,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             $new_files[$key]['_filename']        = $input['_filename'][$key];
          }
       }
-      
+
       foreach ($input['field_basket_' . $line] as $fields_id => $value) {
 
          //get id from form_metademands_id & $id
@@ -277,18 +280,18 @@ class PluginMetademandsBasketline extends CommonDBTM {
                if (is_array($new_files) && count($new_files) > 0
                    && is_array($old_files) && count($old_files) > 0) {
                   $files = array_merge($old_files, $new_files);
-                  $value = json_encode($files);
+                  $newvalue = json_encode($files);
                } else {
-                  $value = json_encode($new_files);
+                  $newvalue = json_encode($new_files);
                }
 
             } else {
-               $value = is_array($value) ? PluginMetademandsField::_serialize($value) : $value;
+               $newvalue = is_array($value) ? PluginMetademandsField::_serialize($value) : $value;
             }
 
             if (!str_ends_with($fields_id, "-2")) {
                $this->update(['plugin_metademands_fields_id' => $fields_id,
-                              'value'                        => $value,
+                              'value'                        => $newvalue,
                               'id'                           => $this->fields['id']]);
             }
             //date-interval

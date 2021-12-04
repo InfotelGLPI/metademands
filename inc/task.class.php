@@ -332,7 +332,7 @@ class PluginMetademandsTask extends CommonDBTM {
       if (count($tasks)) {
          Session::initNavigateListItems('PluginMetademandsTicketTask', self::getTypeName(1));
 
-         echo "<div class='center first-bloc'>";
+         echo "<div class='left first-bloc'>";
          if ($canedit && $canchangeorder) {
             Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
             $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
@@ -340,7 +340,7 @@ class PluginMetademandsTask extends CommonDBTM {
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
-         echo "<th class='center b' colspan='11'>" . __('Tasks', 'metademands') . "</th>";
+         echo "<th class='left b' colspan='11'>" . __('Tasks', 'metademands') . "</th>";
          echo "</tr>";
 
          echo "<tr class='tab_bg_2'>";

@@ -56,7 +56,7 @@ if ($plugin->isActivated("metademands")) {
 
 } else {
    Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
-   echo "<div align='center'><br><br><i class='fas fa-exclamation-triangle fa-4x' style='color:orange'></i><br><br>";
-   echo "<b>Please activate the plugin</b></div>";
+   echo "<div class='alert alert-important alert-warning d-flex'>";
+   echo "<b>".__('Please activate the plugin', 'metademands')."</b></div>";
    Html::footer();
 }

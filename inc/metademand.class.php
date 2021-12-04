@@ -80,6 +80,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
       return _n('Meta-Demand', 'Meta-Demands', $nb, 'metademands');
    }
 
+   static function getIcon() {
+      return "ti ti-share";
+   }
+
    /**
     * @return bool|int
     */
@@ -731,7 +735,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>";
       echo __('Object to create', 'metademands') . "&nbsp;<span style='color:red;'>*</span></td>";
       echo "<td>";
-      if ($ID == 0) {
+      if ($ID == 0 || empty($ID)) {
          $objects    = self::getObjectTypes();
          $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
@@ -895,7 +899,7 @@ JAVASCRIPT
          echo "<td>" . __('Create one ticket for all lines of the basket', 'metademands') . "</td><td>";
          Dropdown::showYesNo("create_one_ticket", $this->fields['create_one_ticket']);
          echo "<br>";
-         echo "<span style='color:darkred;'>";
+         echo "<span class='alert alert-important alert-warning d-flex'>";
          echo "<i class='fas fa-exclamation-triangle'></i> " . __('You cannot use this parameter if there is more than one category', 'metademands');
          echo "</span>";
          echo "</td>";
@@ -1751,6 +1755,8 @@ JAVASCRIPT
                                  if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
                                     if ($fields_field->fields['type'] == 'dropdown') {
                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    } else if ($fields_field->fields['type'] == 'yesno') {
+                                       $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
                                     } else {
                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     }
@@ -3072,6 +3078,7 @@ JAVASCRIPT
 
                   } else {
                      $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+
                      foreach ($custom_values as $k => $val) {
                         if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                            $custom_values[$k] = $ret;
@@ -3079,7 +3086,7 @@ JAVASCRIPT
                      }
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                      $parseValue     = [];
-                     foreach ($field['value'] as $value) {
+                     foreach ($field['value'] as $k => $value) {
                         array_push($parseValue, $custom_values[$value]);
                      }
                      if ($return_value == true) {
@@ -4494,7 +4501,7 @@ JAVASCRIPT
 
                if (!empty($values['tickets_id'])) {
                   echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
-                       "?id=" . $ticket->fields['id'] . "'>" . $ticket->fields['name'] . "</a>";
+                       "?id=" . $ticket->fields['id'] . "&glpi_tab=Ticket$".'main'."'>" . $ticket->fields['name'] . "</a>";
                } else {
                   echo self::$SON_PREFIX . $values['tasks_name'];
                }
@@ -5722,6 +5729,12 @@ JAVASCRIPT
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "hidden_block") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if (is_null($fields[$k][$key])) {
+                  $fields[$k][$key] = "[]";
+               }
+            } else if ($key == "childs_blocks") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
                if (is_null($fields[$k][$key])) {
