@@ -48,7 +48,7 @@ if (!isset($_POST["check_value"])) {
          $field->update($update);
       }
    }
-   if(isset($_POST["hidden_link"])) {
+   if (isset($_POST["hidden_link"])) {
       foreach ($_POST["hidden_link"] as $idField) {
          $update            = [];
          $update["id"]      = $idField;
@@ -100,6 +100,7 @@ if (isset($_POST["add"])) {
          $_POST["informations_to_display"] = PluginMetademandsField::_serialize($_POST["informations_to_display"]);
       }
    }
+
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
    if ($_POST['id'] = $field->add($_POST)) {
@@ -167,12 +168,9 @@ if (isset($_POST["add"])) {
    if (isset($_POST["hidden_block"])) {
       $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
-   $childs_blocks = [];
-   if (isset($_POST['childs_blocks'])) {
-      $childs_blocks = $_POST['childs_blocks'];
+   if (isset($_POST["childs_blocks"])) {
+      $_POST["childs_blocks"] = json_encode($_POST['childs_blocks'], JSON_FORCE_OBJECT);
    }
-   $_POST["childs_blocks"] = PluginMetademandsField::_serialize($childs_blocks);
-
    if (isset($_POST["users_id_validate"])) {
       $_POST["users_id_validate"] = PluginMetademandsField::_serialize($_POST["users_id_validate"]);
    }
@@ -182,10 +180,11 @@ if (isset($_POST["add"])) {
    }
    $_POST["informations_to_display"] = PluginMetademandsField::_serialize($informations_to_display);
 
-   if(!isset($_POST['item'])){
-      $_POST['item'] ="";
+   if (!isset($_POST['item'])) {
+      $_POST['item'] = "";
    }
-   // Check update rights for fields
+
+   //    Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
    if ($field->update($_POST)) {
       $field->recalculateOrder($_POST);
@@ -195,15 +194,15 @@ if (isset($_POST["add"])) {
       if (isset($PLUGIN_HOOKS['metademands'])) {
          $plugin = new Plugin();
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-            $p = $_POST;
-            $new_res = PluginMetademandsField::getPluginSaveOptions($plug,$p);
+            $p       = $_POST;
+            $new_res = PluginMetademandsField::getPluginSaveOptions($plug, $p);
          }
       }
    }
 
    Html::redirect($field->getFormURL() . "?id=" . $_POST["id"]);
 
-}  else if (isset($_POST["purge"])) {
+} else if (isset($_POST["purge"])) {
 
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
@@ -242,7 +241,7 @@ if (isset($_POST["add"])) {
       $input["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
    if (isset($_POST["childs_blocks"])) {
-      $input["childs_blocks"] = PluginMetademandsField::_serialize($_POST["childs_blocks"]);
+      $input["childs_blocks"] = json_decode($_POST["childs_blocks"], true);
    }
 
    $field->check(-1, UPDATE, $_POST);
@@ -280,9 +279,9 @@ if (isset($_POST["add"])) {
    unset($custom_values[$_POST['id']]);
    $custom_values = array_combine(range(1, count($custom_values)), array_values($custom_values));
    $field->update([
-                        'id'            => $_POST['plugin_metademands_fields_id'],
-                        'custom_values' => PluginMetademandsField::_serialize($custom_values)
-                     ]);
+                     'id'            => $_POST['plugin_metademands_fields_id'],
+                     'custom_values' => PluginMetademandsField::_serialize($custom_values)
+                  ]);
 
    Html::back();
 

@@ -65,6 +65,11 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $not_null = 'NOT_NULL';
 
+
+   static function getIcon() {
+      return PluginMetademandsMetademand::getIcon();
+   }
+
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
@@ -2950,7 +2955,13 @@ class PluginMetademandsField extends CommonDBChild {
          $params['hidden_block'] = $params['hidden_block'][$optid];
       }
 
-      $params['childs_blocks'] = json_decode($params['childs_blocks']) ?? [];
+      $params['childs_blocks'] = json_decode($params['childs_blocks'], true);
+
+      if (!isset($params['childs_blocks'][$optid])) {
+         $params['childs_blocks'] = [];
+      } else {
+         $params['childs_blocks'] = $params['childs_blocks'][$optid];
+      }
 
       $params['users_id_validate'] = self::_unserialize($params['users_id_validate']);
       if (!isset($params['users_id_validate'][$optid])) {
@@ -3259,7 +3270,7 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= '</br><span class="metademands_wizard_comments">' . __('If child blocks exist, these blocks are hidden when you deselect the option configured', 'metademands') . '</span>';
          $res .= '</td>';
          $res .= "<td>";
-         $res .= self::showChildsBlocksDropdown($metademands_id, $params['childs_blocks'], $this->getID(), false);
+         $res .= self::showChildsBlocksDropdown($metademands_id, $params['childs_blocks'], $this->getID(), $opt, false);
          $res .= "</td></tr>";
 
          if ($this->getField("type") == "checkbox") {
@@ -3388,7 +3399,7 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @return int|string
     */
-   static function showChildsBlocksDropdown($metademands_id, $selected_values, $idF, $display = true) {
+   static function showChildsBlocksDropdown($metademands_id, $selected_values, $idF, $opt, $display = true) {
 
       $fields = new self();
       $fields = $fields->find(["plugin_metademands_metademands_id" => $metademands_id]);
@@ -3399,8 +3410,8 @@ class PluginMetademandsField extends CommonDBChild {
          }
       }
       ksort($blocks);
-
-      return Dropdown::showFromArray('childs_blocks', $blocks,
+      $name = "childs_blocks[" . $opt . "]";
+      return Dropdown::showFromArray($name, $blocks,
                                      ['values'   => $selected_values,
                                       'display'  => $display,
                                       'width'    => '100%',
