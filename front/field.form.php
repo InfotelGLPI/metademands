@@ -169,7 +169,7 @@ if (isset($_POST["add"])) {
       $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
    if (isset($_POST["childs_blocks"])) {
-      $_POST["childs_blocks"] = json_encode($_POST['childs_blocks'], JSON_FORCE_OBJECT);
+      $_POST["childs_blocks"] = json_encode($_POST['childs_blocks']);
    }
    if (isset($_POST["users_id_validate"])) {
       $_POST["users_id_validate"] = PluginMetademandsField::_serialize($_POST["users_id_validate"]);
