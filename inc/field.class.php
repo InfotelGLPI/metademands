@@ -2282,13 +2282,16 @@ class PluginMetademandsField extends CommonDBChild {
                                             case 'text':
                                             case 'textarea':
                                             case 'file':
-                                            case 'select-one':
-                                            case 'select-multiple':
                                             case 'date':
                                             case 'number':
                                             case 'tel':
                                             case 'email':
                                                 jQuery(this).val('');
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
@@ -2388,9 +2391,9 @@ class PluginMetademandsField extends CommonDBChild {
                      $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').is(':checked')) { ";
 
                      foreach ($childs_blocks as $customvalue => $childs) {
-                                                if ($customvalue != $key) {
-                                                   foreach ($childs as $k => $v) {
-                        $script .= "$('div[bloc-id=\"bloc$v\"]').find(':input').each(function() {
+                        if ($customvalue != $key) {
+                           foreach ($childs as $k => $v) {
+                              $script .= "$('div[bloc-id=\"bloc$v\"]').find(':input').each(function() {
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':
@@ -2410,9 +2413,9 @@ class PluginMetademandsField extends CommonDBChild {
                                                 break;
                                         }
                                     });";
-                        $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
-                                                   }
-                                                }
+                              $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                           }
+                        }
                      }
                      $script .= "}";
                      $script .= "})";
@@ -3377,14 +3380,16 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= self::showHiddenBlockDropdown($metademands_id, $params['hidden_block'], $this->getID(), false);
          $res .= "</td></tr>";
 
-         $res .= "<tr><td>";
-         $res .= __('Childs blocks', 'metademands');
-         $res .= '</br><span class="metademands_wizard_comments">' . __('If child blocks exist, these blocks are hidden when you deselect the option configured', 'metademands') . '</span>';
-         $res .= '</td>';
-         $res .= "<td>";
-         $res .= self::showChildsBlocksDropdown($metademands_id, $params['childs_blocks'], $this->getID(), $opt, false);
-         $res .= "</td></tr>";
-
+         if ($this->getField("type") == "checkbox"
+             || $this->getField("type") == "radio") {
+            $res .= "<tr><td>";
+            $res .= __('Childs blocks', 'metademands');
+            $res .= '</br><span class="metademands_wizard_comments">' . __('If child blocks exist, these blocks are hidden when you deselect the option configured', 'metademands') . '</span>';
+            $res .= '</td>';
+            $res .= "<td>";
+            $res .= self::showChildsBlocksDropdown($metademands_id, $params['childs_blocks'], $this->getID(), $opt, false);
+            $res .= "</td></tr>";
+         }
          if ($this->getField("type") == "checkbox") {
             $res .= "<tr><td>";
             $res .= __('Link a validation', 'metademands');
@@ -3810,20 +3815,22 @@ class PluginMetademandsField extends CommonDBChild {
                      echo '<td class="rowhandler control center">';
                      echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                      echo "<i class=\"fas fa-arrows-alt\"></i>";
-
-                     echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
-                                               _x('button', 'Delete permanently'),
-                                               ['id'                           => $key,
-                                                'plugin_metademands_fields_id' => $params['id'],
-                                               ],
-                                               'fa-times-circle');
-
+                     if (isset($params['id'])) {
+                        echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
+                                                  _x('button', 'Delete permanently'),
+                                                  ['id'                           => $key,
+                                                   'plugin_metademands_fields_id' => $params['id'],
+                                                  ],
+                                                  'fa-times-circle');
+                     }
                      echo '</div>';
                      echo '</td>';
 
                      echo "</tr>";
                   }
-                  echo Html::hidden('fields_id', ['value' => $params["id"]]);
+                  if (isset($params['id'])) {
+                     echo Html::hidden('fields_id', ['value' => $params["id"]]);
+                  }
                   echo '</table>';
                   echo '</div>';
                   echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
