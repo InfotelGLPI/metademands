@@ -266,7 +266,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
       $item = $params['item'];
       $metaValidation = new PluginMetademandsMetademandValidation();
-      if ($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
+      if ($item->fields['id'] > 0
+          && $metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
           && $_SESSION['glpiactiveprofile']['interface'] == 'central'
           && ($item->fields['status'] != Ticket::SOLVED
               && $item->fields['status'] != Ticket::CLOSED)

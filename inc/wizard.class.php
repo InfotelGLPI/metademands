@@ -937,9 +937,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             if ($preview) {
                echo "<div class=\"row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
             } else {
-               echo "<div class=\"col-md-12 metademands_wizard_border\" style='width: 100%'>";
+               echo "<div>";
             }
-            echo "<h4 class=\"bt-title-divider\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
+            echo "<br><h4 class=\"alert alert-dark\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
 
             if (empty($label = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'name'))) {
                $label = $line[$keys[0]]['name'];
@@ -1036,9 +1036,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                           </style>';
                      echo "<div class=\"row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
                   } else {
-                     echo "<div class=\"col-md-12 metademands_wizard_border\" style='width: 100%'>";
+                     echo "<div>";
                   }
-                  echo "<h4 class=\"bt-title-divider\"><span style='color:" . $data['color'] . ";'>";
+                  echo "<br><h4 class=\"alert alert-dark\"><span style='color:" . $data['color'] . ";'>";
 
                   if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
                      $label = $data['name'];
@@ -1126,8 +1126,8 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             // Title field
             if ($data['type'] == 'title') {
-               echo "<div class=\"col-md-12 metademands_wizard_border\" style='width: 100%'>";
-               echo "<h4 class=\"bt-title-divider\"><span style='color:" . $data['color'] . ";'>";
+               echo "<div >";
+               echo "<br><h4 class=\"alert alert-dark\"><span style='color:" . $data['color'] . ";'>";
 
                if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
                   $label = $data['name'];
