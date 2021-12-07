@@ -202,11 +202,19 @@ function plugin_metademands_install() {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.6.sql");
    }
 
+   //version 2.7.8
    if (!$DB->tableExists("glpi_plugin_metademands_pluginfields")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.8.sql");
    }
+   
+   //version 2.7.9
    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "hideTable")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.9.sql");
+   }
+   
+   //version 2.7.10
+   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks")) {
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.10.sql");
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
