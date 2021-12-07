@@ -1825,7 +1825,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                   case 'yesno':
                      $script2 = "";
                      $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     $script .= "console.log(this.oldvalue)";
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
                         $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
                         $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
