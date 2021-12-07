@@ -1825,7 +1825,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   case 'yesno':
                      $script2 = "";
                      $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-
+                     $script .= "console.log(this.oldvalue)";
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
                         $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
                         $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
@@ -1836,8 +1836,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                             $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                             
                           }else{
-                           $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();
-                          }
+                           $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                           $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                              $script .="}
                            ";
                               if ($check_value[$key] == $data["custom_values"]) {
                                  $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
@@ -1853,8 +1854,29 @@ class PluginMetademandsWizard extends CommonDBTM {
                                  }
                               }
                            }
+
                         }
                      }
+
+                     if (isset($data['childs_blocks'])) {
+                        $childs_blocks = json_decode($data['childs_blocks'], true);
+                        $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
+                        if (is_array($check_value) && count($check_value) > 0) {
+                           foreach ($childs_blocks as $customvalue => $childs) {
+                              $script .= "
+                          if($(this).val() != $check_value[$customvalue]){";
+                              foreach ($childs as $v) {
+                                 $script .= PluginMetademandsField::getJStorersetFields($v);
+                              }
+
+                              $script .= "}
+                           ";
+
+
+                           }
+                        }
+                     }
+
                      $script .= "});";
                      //Initialize id default value
                      if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
@@ -1926,7 +1948,29 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                   
+                                      $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
+                                        switch(this.type) {
+                                               case 'password':
+                                               case 'text':
+                                               case 'textarea':
+                                               case 'file':
+                                               case 'date':
+                                               case 'number':
+                                               case 'tel':
+                                               case 'email':
+                                                   jQuery(this).val('');
+                                                   break;
+                                               case 'select-one':
+                                               case 'select-multiple':
+                                                   jQuery(this).val('0').trigger('change');
+                                                   jQuery(this).val('0');
+                                                   break;
+                                               case 'checkbox':
+                                               case 'radio':
+                                                   this.checked = false;
+                                                   break;
+                                           }
+                                       });
                                     }else{
                                     $('[bloc-id =\"bloc'+key+'\"]').show();
                             
@@ -1997,7 +2041,29 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                   
+                                   $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
+                                        switch(this.type) {
+                                               case 'password':
+                                               case 'text':
+                                               case 'textarea':
+                                               case 'file':
+                                               case 'date':
+                                               case 'number':
+                                               case 'tel':
+                                               case 'email':
+                                                   jQuery(this).val('');
+                                                   break;
+                                               case 'select-one':
+                                               case 'select-multiple':
+                                                   jQuery(this).val('0').trigger('change');
+                                                   jQuery(this).val('0');
+                                                   break;
+                                               case 'checkbox':
+                                               case 'radio':
+                                                   this.checked = false;
+                                                   break;
+                                           }
+                                       });
                                     }else{
                                     $('[bloc-id =\"bloc'+key+'\"]').show();
                             
@@ -2042,7 +2108,29 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                   
+                                      $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
+                                        switch(this.type) {
+                                               case 'password':
+                                               case 'text':
+                                               case 'textarea':
+                                               case 'file':
+                                               case 'date':
+                                               case 'number':
+                                               case 'tel':
+                                               case 'email':
+                                                   jQuery(this).val('');
+                                                   break;
+                                               case 'select-one':
+                                               case 'select-multiple':
+                                                   jQuery(this).val('0').trigger('change');
+                                                   jQuery(this).val('0');
+                                                   break;
+                                               case 'checkbox':
+                                               case 'radio':
+                                                   this.checked = false;
+                                                   break;
+                                           }
+                                       });
                                     }else{
                                     $('[bloc-id =\"bloc'+key+'\"]').show();
                             
@@ -2084,7 +2172,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                            if (isset($check_value[$key]) && $check_value[$key] == 1) {
                               $script  .= "
                            if($(this).val().trim().length < 1){
-                              $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();
+                              $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                              $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                              $script .= " 
                            }else{
                               $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                            }
@@ -2100,8 +2190,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                            if($(this).val().trim().length < 1){
                                  $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                               }else{
-                                 $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();
-                              }
+                                 $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                             $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                             $script .= " }
                          ";
 
                               $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
@@ -2111,6 +2202,35 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                            }
 
+                        }
+
+                        if (isset($data['childs_blocks'])) {
+                           $childs_blocks = json_decode($data['childs_blocks'], true);
+                           $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              foreach ($childs_blocks as $customvalue => $childs) {
+                                 if (isset($check_value[$customvalue]) && $check_value[$customvalue] == 1) {
+                                    $script .= "
+                               if($(this).val().trim().length < 1){";
+                                    foreach ($childs as $v) {
+                                       $script .= PluginMetademandsField::getJStorersetFields($v);
+                                    }
+
+                                    $script .= "}
+                           ";
+                                 }else {
+                                    $script .= "
+                               if($(this).val().trim().length >= 1){";
+                                    foreach ($childs as $v) {
+                                       $script .= PluginMetademandsField::getJStorersetFields($v);
+                                    }
+
+                                    $script .= "}
+                           ";
+                                 }
+
+                              }
+                           }
                         }
                      }
                      $script .= "});";
@@ -2163,7 +2283,29 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                   
+                                      $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
+                                        switch(this.type) {
+                                               case 'password':
+                                               case 'text':
+                                               case 'textarea':
+                                               case 'file':
+                                               case 'date':
+                                               case 'number':
+                                               case 'tel':
+                                               case 'email':
+                                                   jQuery(this).val('');
+                                                   break;
+                                               case 'select-one':
+                                               case 'select-multiple':
+                                                   jQuery(this).val('0').trigger('change');
+                                                   jQuery(this).val('0');
+                                                   break;
+                                               case 'checkbox':
+                                               case 'radio':
+                                                   this.checked = false;
+                                                   break;
+                                           }
+                                       });
                                     }else{
                                     $('[bloc-id =\"bloc'+key+'\"]').show();
                                     
@@ -2240,13 +2382,53 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                 
+                                       $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
+                                              switch(this.type) {
+                                                     case 'password':
+                                                     case 'text':
+                                                     case 'textarea':
+                                                     case 'file':
+                                                     case 'date':
+                                                     case 'number':
+                                                     case 'tel':
+                                                     case 'email':
+                                                         jQuery(this).val('');
+                                                         break;
+                                                     case 'select-one':
+                                                     case 'select-multiple':
+                                                         jQuery(this).val('0').trigger('change');
+                                                         jQuery(this).val('0');
+                                                         break;
+                                                     case 'checkbox':
+                                                     case 'radio':
+                                                         this.checked = false;
+                                                         break;
+                                                 }
+                                             });
                                     }else{
                                     $('[bloc-id =\"bloc'+key+'\"]').show();
                                    
                                     }
                                    
                                  });";
+                           if (isset($data['childs_blocks'])) {
+                              $childs_blocks = json_decode($data['childs_blocks'], true);
+                              $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
+                              if (is_array($check_value) && count($check_value) > 0) {
+                                 foreach ($childs_blocks as $customvalue => $childs) {
+                                    $script .= "
+                         if((($(this).val() != $check_value[$customvalue] && $check_value[$customvalue] != 0 )  ||  ($(this).val() == 0 &&  $check_value[$customvalue] == 0 ) )){";
+                                    foreach ($childs as $v) {
+                                       $script .= PluginMetademandsField::getJStorersetFields($v);
+                                    }
+
+                                    $script .= "}
+                           ";
+
+
+                                 }
+                              }
+                           }
                         }
                      }
                      $script .= "});";

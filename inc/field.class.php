@@ -62,6 +62,10 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $not_null = 'NOT_NULL';
 
+   static function getIcon() {
+      return PluginMetademandsMetademand::getIcon();
+   }
+
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
@@ -324,6 +328,7 @@ class PluginMetademandsField extends CommonDBChild {
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'             => $this->fields['hidden_link'],
                      'hidden_block'            => $this->fields['hidden_block'],
+                     'childs_blocks'           => $this->fields['childs_blocks'],
                      'users_id_validate'       => $this->fields['users_id_validate'],
                      'custom_values'           => $this->fields['custom_values'],
                      'comment_values'          => $this->fields['comment_values'],
@@ -418,6 +423,7 @@ class PluginMetademandsField extends CommonDBChild {
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'             => $this->fields['hidden_link'],
                      'hidden_block'            => $this->fields['hidden_block'],
+                     'childs_blocks'           => $this->fields['childs_blocks'],
                      'users_id_validate'       => $this->fields['users_id_validate'],
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'custom_values'           => $this->fields["custom_values"],
@@ -761,6 +767,7 @@ class PluginMetademandsField extends CommonDBChild {
                          'informations_to_display' => $this->fields['informations_to_display'],
                          'hidden_link'             => $this->fields['hidden_link'],
                          'hidden_block'            => $this->fields['hidden_block'],
+                         'childs_blocks'           => $this->fields['childs_blocks'],
                          'users_id_validate'       => $this->fields['users_id_validate'],
                          //                         'fields_display' => $this->fields['fields_display'],
                          'item'                    => $this->fields['item'],
@@ -1717,7 +1724,7 @@ class PluginMetademandsField extends CommonDBChild {
                         }
                      }
                   }
-                  sort($data['custom_values']);
+//                  sort($data['custom_values']);
                   if (!empty($value) && !is_array($value)) {
                      $value = json_decode($value);
                   }
@@ -2226,6 +2233,10 @@ class PluginMetademandsField extends CommonDBChild {
                   $inline = 'custom-control-inline';
                }
                $field = "";
+               $childs_blocks = [];
+               if (isset($data['childs_blocks'])) {
+                  $childs_blocks = json_decode($data['childs_blocks'], true);
+               }
 
                foreach ($data['custom_values'] as $key => $label) {
                   $field   .= "<div class='custom-control custom-checkbox $inline'>";
@@ -2246,6 +2257,49 @@ class PluginMetademandsField extends CommonDBChild {
                      $field .= "</span>";
                   }
                   $field .= "</div>";
+                  if (isset($childs_blocks[$key])) {
+                     $id     = $data['id'];
+                     $script = "<script type='text/javascript'>";
+                     $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
+                     $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').not(':checked')) { ";
+
+                     foreach ($childs_blocks[$key] as $customvalue => $childs) {
+                        //                        if ($customvalue != $key) {
+                        //                           foreach ($childs as $k => $v) {
+                        $script .= self::getJStorersetFields($childs);
+//                        $script .= "$('div[bloc-id=\"bloc$childs\"]').find(':input').each(function() {
+//                                     switch(this.type) {
+//                                            case 'password':
+//                                            case 'text':
+//                                            case 'textarea':
+//                                            case 'file':
+//                                            case 'date':
+//                                            case 'number':
+//                                            case 'tel':
+//                                            case 'email':
+//                                                jQuery(this).val('');
+//                                                break;
+//                                            case 'select-one':
+//                                            case 'select-multiple':
+//                                                jQuery(this).val('0').trigger('change');
+//                                                jQuery(this).val('0');
+//                                                break;
+//                                            case 'checkbox':
+//                                            case 'radio':
+//                                                this.checked = false;
+//                                                break;
+//                                        }
+//                                    });";
+                        $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";
+                        //                           }
+                        //                        }
+                     }
+                     $script .= "}";
+                     $script .= "})";
+                     $script .= "</script>";
+
+                     $field .= $script;
+                  }
                }
             } else {
                $checked = $value ? 'checked' : '';
@@ -2271,7 +2325,13 @@ class PluginMetademandsField extends CommonDBChild {
                if ($data['row_display'] == 1) {
                   $inline = 'custom-control-inline';
                }
+
                $field = "";
+               $childs_blocks = [];
+               if (isset($data['childs_blocks'])) {
+                  $childs_blocks = json_decode($data['childs_blocks'], true);
+               }
+
                foreach ($data['custom_values'] as $key => $label) {
                   $field .= "<div class='custom-control custom-radio $inline'>";
 
@@ -2292,6 +2352,67 @@ class PluginMetademandsField extends CommonDBChild {
                      $field .= "</span>";
                   }
                   $field .= "</div>";
+                  //                  if (isset($childs_blocks[$key])) {
+                  //                     $id     = $data['id'];
+                  //                     $script = "<script type='text/javascript'>";
+                  //                     $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
+                  //                     //                     $script  .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').is(':checked')) { ";
+                  //
+                  //                     foreach ($childs_blocks as $customvalue => $childs) {
+                  //                        if ($customvalue != $key) {
+                  //                           foreach ($childs as $k => $v) {
+                  //                              $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                  //                           }
+                  //                        }
+                  //                     }
+                  //                     //                     $script .= "}";
+                  //                     $script .= "})</script>";
+                  //
+                  //                     $field .= $script;
+                  //                  }
+//                  if (isset($childs_blocks[$key])) {
+                     $id     = $data['id'];
+                     $script = "<script type='text/javascript'>";
+                     $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
+                     $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').is(':checked')) { ";
+
+                     foreach ($childs_blocks as $customvalue => $childs) {
+                        if ($customvalue != $key) {
+                           foreach ($childs as $k => $v) {
+                              $script .= self::getJStorersetFields($v);
+//                              $script .= "$('div[bloc-id=\"bloc$v\"]').find(':input').each(function() {
+//                                     switch(this.type) {
+//                                            case 'password':
+//                                            case 'text':
+//                                            case 'textarea':
+//                                            case 'file':
+//                                            case 'date':
+//                                            case 'number':
+//                                            case 'tel':
+//                                            case 'email':
+//                                                jQuery(this).val('');
+//                                                break;
+//                                            case 'select-one':
+//                                            case 'select-multiple':
+//                                                jQuery(this).val('0').trigger('change');
+//                                                jQuery(this).val('0');
+//                                                break;
+//                                            case 'checkbox':
+//                                            case 'radio':
+//                                                this.checked = false;
+//                                                break;
+//                                        }
+//                                    });";
+                              $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                           }
+                        }
+                     }
+                     $script .= "}";
+                     $script .= "})";
+                     $script .= "</script>";
+
+                     $field .= $script;
+//                  }
                }
             }
             break;
@@ -2922,6 +3043,13 @@ class PluginMetademandsField extends CommonDBChild {
       } else {
          $params['hidden_block'] = $params['hidden_block'][$optid];
       }
+      $params['childs_blocks'] = json_decode($params['childs_blocks'], true);
+
+      if (isset($params['childs_blocks'][$optid])) {
+         $params['childs_blocks'] = $params['childs_blocks'][$optid];
+      } else {
+         $params['childs_blocks'] = [];
+      }
 
       $params['users_id_validate'] = self::_unserialize($params['users_id_validate']);
       if (!isset($params['users_id_validate'][$optid])) {
@@ -3117,7 +3245,7 @@ class PluginMetademandsField extends CommonDBChild {
             $html .= "</td>";
             $html .= "</tr><td>";
 
-            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $optid, 1, 1, 1);
+            $html .= $this->showLinkHtml($metademands->fields["id"], $params, $params['check_value'], 1, 1, 1);
 
             break;
          case 'parent_field':
@@ -3224,6 +3352,24 @@ class PluginMetademandsField extends CommonDBChild {
          $res .= "<td>";
          $res .= self::showHiddenBlockDropdown($metademands_id, $params['hidden_block'], $this->getID(), false);
          $res .= "</td></tr>";
+
+         if ($this->getField("type") == "checkbox"
+             || $this->getField("type") == "radio"
+             || $this->getField("type") == "text"
+             || $this->getField("type") == "textarea"
+             || $this->getField("type") == "group"
+             || $this->getField("type") == "dropdown"
+             || $this->getField("type") == "dropdown_object"
+             || $this->getField("type") == "dropdown_meta"
+             || $this->getField("type") == "yesno") {
+            $res .= "<tr><td>";
+            $res .= __('Childs blocks', 'metademands');
+            $res .= '</br><span class="metademands_wizard_comments">' . __('If child blocks exist, these blocks are hidden when you deselect the option configured', 'metademands') . '</span>';
+            $res .= '</td>';
+            $res .= "<td>";
+            $res .= self::showChildsBlocksDropdown($metademands_id, $params['childs_blocks'], $this->getID(), $opt, false);
+            $res .= "</td></tr>";
+         }
 
          if($this->getField("type") == "checkbox"){
             $res .= "<tr><td>";
@@ -3341,7 +3487,38 @@ class PluginMetademandsField extends CommonDBChild {
                                                      'min'     => 1,
                                                      'max'     => 30,
                                                      'toadd'   => [0 => Dropdown::EMPTY_VALUE]]);
-   }   /**
+   }
+
+   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param bool $display
+    * @param      $idF
+    *
+    * @return int|string
+    */
+   static function showChildsBlocksDropdown($metademands_id, $selected_values, $idF, $opt, $display = true) {
+
+      $fields = new self();
+      $fields = $fields->find(["plugin_metademands_metademands_id" => $metademands_id]);
+      $blocks = [];
+      foreach ($fields as $f) {
+         if (!isset($blocks[$f['rank']])) {
+            $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+         }
+      }
+      ksort($blocks);
+
+      $name = "childs_blocks[" . $opt . "]";
+      return Dropdown::showFromArray($name, $blocks,
+                                     ['values'   => $selected_values,
+                                      'display'  => $display,
+                                      'width'    => '100%',
+                                      'multiple' => true,
+                                      'entity'   => $_SESSION['glpiactiveentities']]);
+   }
+
+   /**
     * @param      $metademands_id
     * @param      $selected_value
     * @param bool $display
@@ -3618,19 +3795,23 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                      echo "<i class=\"fas fa-arrows-alt\"></i>";
 
-                     echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
-                                               _x('button', 'Delete permanently'),
-                                               ['id'                           => $key,
-                                                'plugin_metademands_fields_id' => $params['id'],
-                                               ],
-                                               'fa-times-circle');
+                     if (isset($params['id'])) {
+                        echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
+                                                  _x('button', 'Delete permanently'),
+                                                  ['id'                           => $key,
+                                                   'plugin_metademands_fields_id' => $params['id'],
+                                                  ],
+                                                  'fa-times-circle');
+                     }
 
                      echo '</div>';
                      echo '</td>';
 
                      echo "</tr>";
                   }
-                  echo '<input type="hidden" id="fields_id" value="' . $params["id"] . '" />';
+                  if (isset($params['id'])) {
+                     echo Html::hidden('fields_id', ['value' => $params["id"]]);
+                  }
                   echo '</table>';
                   echo '</div>';
                   echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
@@ -4833,5 +5014,42 @@ class PluginMetademandsField extends CommonDBChild {
             $pluginField->add($input);
          }
       }
+   }
+
+   static function getJStorersetFields($id) {
+
+      return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
+     
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                this.checked = false;
+                                                break;
+                                        }
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+
+                                    });";
    }
 }

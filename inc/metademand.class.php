@@ -6642,6 +6642,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
+            } else if ($key == "childs_blocks") {
+               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               if (is_null($fields[$k][$key])) {
+                  $fields[$k][$key] = "[]";
+               }
             } else if ($key == "informations_to_display") {
                $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
