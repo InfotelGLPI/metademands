@@ -1713,6 +1713,9 @@ JAVASCRIPT
                                     if ($fields_field->fields['type'] == 'dropdown') {
                                        $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                        $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    } else if ($fields_field->fields['type'] == 'yesno') {
+                                       $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
+                                       $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
                                     } else {
                                        $input[$fields_field->fields['name']]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                        $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];

@@ -211,6 +211,10 @@ function plugin_metademands_install() {
    //version 3.0.0
    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "formatastable")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.0.0.sql");
+      if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks")) {
+         $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `childs_blocks` VARCHAR (255) NOT NULL DEFAULT '[]';";
+         $DB->query($query);
+      }
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";

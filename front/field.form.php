@@ -241,7 +241,7 @@ if (isset($_POST["add"])) {
       $input["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
    if (isset($_POST["childs_blocks"])) {
-      $input["childs_blocks"] = json_decode($_POST["childs_blocks"], true);
+      $input["childs_blocks"] = json_encode($_POST["childs_blocks"]);
    }
 
    $field->check(-1, UPDATE, $_POST);

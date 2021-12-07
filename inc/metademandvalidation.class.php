@@ -187,6 +187,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
                      if (isset($values_form[$plfield['plugin_metademands_fields_id']])) {
                         if ($fields_field->fields['type'] == 'dropdown') {
                            $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
+                        } else if ($fields_field->fields['type'] == 'yesno') {
+                           $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']]-1;
                         } else {
                            $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
                         }
@@ -197,6 +199,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
                      if (isset($values_form[$plfield['plugin_metademands_fields_id']])) {
                         if ($fields_field->fields['type'] == 'dropdown') {
                            $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
+                        } else if ($fields_field->fields['type'] == 'yesno') {
+                           $inputFieldMain[$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']]-1;
                         } else {
                            $inputFieldMain[$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
                         }
