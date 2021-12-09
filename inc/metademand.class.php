@@ -5738,8 +5738,8 @@ JAVASCRIPT
                   $fields[$k][$key] = "[]";
                }
             } else if ($key == "childs_blocks") {
-               $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-               $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+               $fields[$k][$key] = json_encode($f);
+               $fields[$k][$key] = json_decode($fields[$k][$key], true);
                if (is_null($fields[$k][$key])) {
                   $fields[$k][$key] = "[]";
                }
