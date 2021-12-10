@@ -1563,7 +1563,7 @@ class PluginMetademandsField extends CommonDBChild {
              && $data['type'] != "text"
              && !empty($comment)) {
             echo "&nbsp;";
-            echo Html::showToolTip(Glpi\Toolbox\RichText::getSafeHtml($comment), ['display' => false]);
+            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
          }
          echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
          if ($data['is_mandatory']
@@ -2189,7 +2189,7 @@ class PluginMetademandsField extends CommonDBChild {
          case 'text':
             $name  = $namefield . "[" . $data['id'] . "]";
             $field = Html::input($name, ['value'       => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
-                                         'placeholder' => Glpi\Toolbox\RichText::getTextFromHtml($comment),
+                                         'placeholder' => Glpi\RichText\RichText::getTextFromHtml($comment),
                                          'size'        => 40]);
             break;
          case 'informations':
@@ -2261,7 +2261,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
                      $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-                     $field .= Html::showToolTip(Glpi\Toolbox\RichText::getSafeHtml($data['comment_values'][$key]),
+                     $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($data['comment_values'][$key]),
                                                  ['awesome-class' => 'fa-info-circle',
                                                   'display'       => false]);
                      $field .= "</span>";
@@ -2444,7 +2444,7 @@ class PluginMetademandsField extends CommonDBChild {
             } else {
 
                $field = "<textarea class='form-control' rows='3' cols='80' 
-               placeholder=\"" . Glpi\Toolbox\RichText::getTextFromHtml($comment) . "\" 
+               placeholder=\"" . Glpi\RichText\RichText::getTextFromHtml($comment) . "\" 
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
             }
             break;

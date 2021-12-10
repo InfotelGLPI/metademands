@@ -276,31 +276,31 @@ class PluginMetademandsWizard extends CommonDBTM {
                      echo ($helpdesk_category->fields['comment'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
                     <span class='titlespeech'>" . __('Description') . "</span><br><br>" .
-                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['comment']) . "</p>" : "";
+                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['comment']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_detail'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
                     <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_detail']) . "</p>" : "";
+                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_detail']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_users'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
                     <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_users']) . "</p>" : "";
+                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_users']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_ttr'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
                     <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_ttr']) . "</p>" : "";
+                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_ttr']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_use'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
                     <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_use']) . "</p>" : "";
+                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_use']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_supervision'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
                         <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_supervision']) . "</p>" : "";
+                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_supervision']) . "</p>" : "";
                      echo ($helpdesk_category->fields['service_rules'] != null) ?
                         "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
                     <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\Toolbox\RichText::getTextFromHtml($helpdesk_category->fields['service_rules']) . "</p>" : "";
+                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_rules']) . "</p>" : "";
                      echo "</div></div>";
                   }
                }
@@ -957,7 +957,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                if (empty($label2 = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'label2'))) {
                   $label2 = $line[$keys[0]]['label2'];
                }
-               Html::showToolTip(Glpi\Toolbox\RichText::getSafeHtml($label2),
+               Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($label2),
                                  ['awesome-class' => 'fa-info-circle']);
             }
             echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right:40px;position: absolute;color:" . $line[$keys[0]]['color'] . ";'></i>";
@@ -1051,7 +1051,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                         $label2 = $data['label2'];
                      }
-                     Html::showToolTip(Glpi\Toolbox\RichText::getSafeHtml($label2),
+                     Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($label2),
                                        ['awesome-class' => 'fa-info-circle']);
                   }
                   echo "<i id='up" . $data["rank"] . "' class='fa-1x fas fa-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
@@ -1140,7 +1140,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                      $label2 = $data['label2'];
                   }
-                  Html::showToolTip(Glpi\Toolbox\RichText::getSafeHtml($label2),
+                  Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($label2),
                                     ['awesome-class' => 'fa-info-circle']);
                }
                echo "</span></h4>";

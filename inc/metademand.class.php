@@ -3925,7 +3925,7 @@ JAVASCRIPT
                              "</th></tr><tr><td colspan='2'>";
                }
 
-               $content .= Glpi\Toolbox\RichText::getSafeHtml($son_ticket_data['content']);
+               $content .= Glpi\RichText\RichText::getSafeHtml($son_ticket_data['content']);
 
                if ($task->fields['formatastable'] == true) {
                   $content .= "</td></tr></table><br>";
