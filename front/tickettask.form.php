@@ -78,7 +78,7 @@ if (isset($_POST["update"])) {
       $task->delete($_POST);
    }
    //   PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
-   echo html::scriptBlock("window.parent.$('div[id^=\"metademandTicketTask\"]').dialog('close');window.parent.location.reload();");
+//   echo html::scriptBlock("window.parent.$('div[id^=\"metademandTicketTask\"]').dialog('close');window.parent.location.reload();");
 
 } else if (isset($_GET['_in_modal'])) {
    Html::popHeader(PluginMetademandsTask::getTypeName(2), $_SERVER['PHP_SELF']);

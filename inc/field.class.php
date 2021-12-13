@@ -3010,12 +3010,12 @@ class PluginMetademandsField extends CommonDBChild {
 
       $res = "<script type='text/javascript'>
 
-      var rootDoc = '" . PLUGIN_METADEMANDS_WEBDIR . "';
+      var root_metademands_doc = '" . PLUGIN_METADEMANDS_WEBDIR . "';
       
                 $('#addNewOpt').click(function(){
                     var nb = document.getElementById('nbOptions').valueOf().value;
                     nb++;
-                    parent.parent.window.location.replace(rootDoc + '/front/" . $url . "&nbOpt='+nb);
+                    parent.parent.window.location.replace(root_metademands_doc + '/front/" . $url . "&nbOpt='+nb);
                 });
                 </script>";
       echo $res;
