@@ -559,7 +559,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $params = ['type' => '__VALUE__', "action" => "icon"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",
-                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/updatelistmeta.php",
+                                       PLUGIN_METADEMANDS_WEBDIR . "/ajax/updatelistmeta.php",
                                        $params);
          echo "<div id='listmeta' >";
          foreach ($metademands as $id => $name) {
@@ -567,7 +567,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($id)) {
 
-               echo "<a class='bt-buttons' href='" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                echo '<div class="btnsc-normal" >';
                $fasize = "fa-4x";
                echo "<div class='center'>";
@@ -621,7 +621,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $params = ['type' => '__VALUE__', "action" => "dropdown"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
                                        "listmeta",
-                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/updatelistmeta.php",
+                                       PLUGIN_METADEMANDS_WEBDIR . "/ajax/updatelistmeta.php",
                                        $params);
          echo "<div id='listmeta' class=\"bt-row\">";
          echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
@@ -791,7 +791,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
                              $.ajax({
-                                url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
                                    type: 'POST',
                                    data: $('form').serializeArray(),
                                    success: function(response){
@@ -799,7 +799,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                        if (response == 1) {
                                           document.location.reload();
                                        } else {
-                                          window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                          window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
                                        }
                                     },
                                    error: function(xhr, status, error) {
@@ -833,15 +833,15 @@ class PluginMetademandsWizard extends CommonDBTM {
                           $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                           $('#ajax_loader').show();
                           $.ajax({
-                             url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
+                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
                                 type: 'POST',
                                 data: $('form').serializeArray(),
                                 success: function(response){
                                     $('#ajax_loader').hide();
                                     if (response == 1) {
-                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
                                     } else {
-                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
                                     }
                                  },
                                 error: function(xhr, status, error) {
@@ -2611,7 +2611,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       unset($_SESSION['plugin_metademands']);
 
       if (!empty($options['resources_id'])) {
-         Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
+         Html::redirect(PLUGIN_RESOURCES_WEBDIR . "/front/wizard.form.php");
       } else {
 
          $plugin = new Plugin();
@@ -2619,7 +2619,7 @@ class PluginMetademandsWizard extends CommonDBTM {
              && Session::haveRight("plugin_servicecatalog", READ)
              && $itilcategories_id > 0) {
             $type = $metademands->fields['type'];
-            Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/choosecategory.form.php?type=$type&level=1");
+            Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
          } else {
             Html::redirect($self->getFormURL() . "?step=" . $step = PluginMetademandsMetademand::STEP_LIST);
          }

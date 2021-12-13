@@ -47,7 +47,7 @@ class PluginMetademandsMenu extends CommonDBTM {
 
       $menu                    = [];
       $menu['title']           = self::getMenuName();
-      $menu['page']            = PLUGIN_METADEMANDS_DIR_NOFULL."/front/metademand.php";
+      $menu['page']            = PluginMetademandsMetademand::getSearchURL(false);
       $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
       if (PluginMetademandsMetademand::canCreate()) {
          $menu['links']['add'] = PluginMetademandsMetademand::getFormURL(false);

@@ -303,12 +303,12 @@ if (isset($_POST['next'])) {
                    && strpos($_SERVER['HTTP_REFERER'], "wizard.form.php") !== false) {
                   Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
                } else {
-                  Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
+                  Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                }
             } else if ($itilcategories > 0 && $type > 0) {
-               Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/choosecategory.form.php?type=$type&level=1");
+               Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
             } else if ($itilcategories > 0 && $type == 0) {
-               Html::redirect($CFG_GLPI["root_doc"] . "/plugins/servicecatalog/front/main.form.php");
+               Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
             }
          } else if ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW) {
             if (isset($_SESSION['metademands_hide'])) {

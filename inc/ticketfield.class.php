@@ -172,7 +172,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          echo  __('Show list of available tags');
          echo "</a>";
          echo Ajax::createIframeModalWindow('tags',
-                                            $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .$item->fields['id'],
+                                            PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" .$item->fields['id'],
                                             ['title'   => __('Show list of available tags'),
                                              'display' => false]);
          echo "</td>";
@@ -242,7 +242,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
                            'relative_dates' => 1];
 
       Ajax::updateItem("show_massiveaction_field",
-                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/dropdownMassiveActionField.php",
+                       PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownMassiveActionField.php",
                        $paramsmassaction);
       echo "</td>";
       echo "</tr>";

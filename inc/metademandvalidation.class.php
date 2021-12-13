@@ -285,7 +285,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
               . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
 
          echo Ajax::createIframeModalWindow('metavalidation',
-                                            $CFG_GLPI['root_doc'] . '/plugins/metademands/front/metademandvalidation.form.php?tickets_id=' . $item->fields['id'],
+                                            PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $item->fields['id'],
                                             ['title'   => __('Metademand validation', 'metademands'),
                                              'display' => false,
                                              'width'         => 200,
@@ -302,7 +302,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
       echo "<form name='form_raz' id='form_raz' method='post' 
-      action='" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/metademandvalidation.form.php" . "' >";
+      action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/metademandvalidation.form.php" . "' >";
       echo Html::hidden('action', ['id' => 'action_validationMeta', 'value' => 'validationMeta']);
       echo Html::hidden('tickets_id', ['id' => 'action_validationMeta', 'value' => $ticket_id]);
       echo "<table class='tab_cadre_fixe'>";
@@ -325,12 +325,12 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
          Ajax::updateItemOnEvent('create_subticket',
                                  'to_update_group',
-                                 $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/displayGroupField.php",
+                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/displayGroupField.php",
                                  ["create_subticket" => '__VALUE__',
                                   'tickets_id'       => $ticket_id]);
          Ajax::updateItemOnEvent('create_subticket2',
                                  'to_update_group',
-                                 $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/displayGroupField.php",
+                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/displayGroupField.php",
                                  ["create_subticket" => '__VALUE__',
                                   'tickets_id'       => $ticket_id]);
 

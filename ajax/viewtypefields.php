@@ -69,7 +69,7 @@ switch ($_POST['step']) {
                         'comment_values' => $_POST["comment_values"],
                         'default_values' => $_POST["default_values"],
                         'check_value'    => $_POST['check_value']];
-         Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL .
+         Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", PLUGIN_METADEMANDS_WEBDIR .
                                                                                    "/ajax/viewtypefields.php?id=" . $_POST['metademands_id'], $paramsItem);
       }
 

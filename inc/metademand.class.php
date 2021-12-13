@@ -258,7 +258,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   // Redirect if not linked to a resource contract type
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                                   ["plugin_metademands_metademands_id" => $meta_concerned])) {
-                     return $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?itilcategories_id=" .
+                     return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=" .
                             $object->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned . "&tickets_id=" . $object->fields["id"] . "&step=" . self::STEP_SHOW;
                   }
                }
@@ -289,7 +289,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
          $cats = $input['itilcategories_id'];
          foreach ($iterator_cats as $data) {
-            //         while ($data = $iterator_cats->next()) {
             if (is_array(json_decode($data['itilcategories_id'])) && is_array($cats)) {
                $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
             }
@@ -348,7 +347,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $number_cats_meta = count($iterator_meta_existing_cats);
          if ($number_cats_meta) {
             foreach ($iterator_meta_existing_cats as $data) {
-               //            while ($data = $iterator_meta_existing_cats->next()) {
                $cats = json_decode($data['itilcategories_id']);
                $iterator_meta_existing_cats->next();
             }
@@ -366,7 +364,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
                }
             }
             foreach ($iterator_cats as $data) {
-               //            while ($data = $iterator_cats->next()) {
                if (is_array(json_decode($data['itilcategories_id'])) && $input['id'] != $data['id']) {
                   $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
                }
@@ -739,7 +736,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $objects    = self::getObjectTypes();
          $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
-                                 $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
+                                 PLUGIN_METADEMANDS_WEBDIRL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
       } else {
          echo self::getObjectTypeName($this->fields['object_to_create']);
          echo Html::hidden('object_to_create', ['value' => $this->fields['object_to_create']]);
@@ -770,7 +767,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                        'currenttype'     => $this->fields['type']];
 
             Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-                                          $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/dropdownITILCategories.php",
+                                          PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownITILCategories.php",
                                           $params);
             echo "</td>";
          } else {
@@ -4407,7 +4404,7 @@ JAVASCRIPT
               . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</a>";
 
          echo Ajax::createIframeModalWindow('metavalidation',
-                                            $CFG_GLPI['root_doc'] . '/plugins/metademands/front/metademandvalidation.form.php?tickets_id=' . $ticket->fields['id'],
+                                            PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $ticket->fields['id'],
                                             ['title'         => __('Metademand validation', 'metademands'),
                                              'display'       => false,
                                              'width'         => 200,
@@ -4860,7 +4857,7 @@ JAVASCRIPT
 
             // Redirect on finish
             if (isset($options['redirect'])) {
-               Html::redirect($CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/metademand.form.php?id=" . $new_metademands_id);
+               Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $new_metademands_id);
             }
          }
          return true;
@@ -5086,7 +5083,6 @@ JAVASCRIPT
       if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
          if (count($iterator2)) {
             foreach ($iterator2 as $data2) {
-               //            while ($data2 = $iterator2->next()) {
                $res .= ' / ' . $data2['value'];
                $iterator2->next();
             }

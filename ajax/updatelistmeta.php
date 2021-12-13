@@ -60,7 +60,7 @@ if (isset($_POST["type"])) {
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($id)) {
 
-               $return .= "<a class='bt-buttons' href='" . $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+               $return .= "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                $return .= '<div class="btnsc-normal" >';
                $fasize = "fa-4x";
                $return .= "<div class='center'>";
