@@ -105,11 +105,13 @@
     <license><![CDATA[GPL v2+]]></license>
     <tags>
         <fr>
+            <tag>Helpdesk</tag>
             <tag>Demande</tag>
             <tag>Tickets enfants</tag>
             <tag>Wizard</tag>
         </fr>
         <en>
+            <tag>Helpdesk</tag>
             <tag>Request</tag>
             <tag>Child tickets</tag>
             <tag>Wizard</tag>
