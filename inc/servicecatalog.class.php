@@ -81,6 +81,15 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    /**
     * @return string
     */
+   static function getNavBarLink() {
+      global $CFG_GLPI;
+
+      return PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
+   }
+
+   /**
+    * @return string
+    */
    static function getMenuLogo() {
 
       $config = new PluginMetademandsConfig();

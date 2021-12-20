@@ -105,7 +105,7 @@ function plugin_init_metademands() {
 
       if (Session::haveRight("plugin_metademands", READ)
           && !$plugin->isActivated('servicecatalog')) {
-         $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = '/front/wizard.form.php';
+         $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = PLUGIN_METADEMANDS_DIR_NOFULL.'/front/wizard.form.php';
       }
 
       if (Session::haveRight("config", UPDATE)) {
