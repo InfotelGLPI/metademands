@@ -51,7 +51,7 @@ if ($_POST['object_to_create'] != NULL) {
                  'entity_restrict'  => $_SESSION['glpiactiveentities']];
 
       Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-                                    $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL. "/ajax/dropdownITILCategories.php",
+                                    PLUGIN_METADEMANDS_WEBDIR. "/ajax/dropdownITILCategories.php",
                                     $params);
       echo "</td>";
 

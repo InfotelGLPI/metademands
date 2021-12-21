@@ -27,11 +27,12 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '2.7.10');
+define('PLUGIN_METADEMANDS_VERSION', '3.0.0-rc1');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
    define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
    define("PLUGIN_METADEMANDS_DIR_NOFULL", Plugin::getPhpDir("metademands",false));
+   define("PLUGIN_METADEMANDS_WEBDIR", Plugin::getWebDir("metademands"));
 }
 
 // Init the hooks of the plugins -Needed
@@ -104,15 +105,11 @@ function plugin_init_metademands() {
 
       if (Session::haveRight("plugin_metademands", READ)
           && !$plugin->isActivated('servicecatalog')) {
-         $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = '/front/wizard.form.php';
+         $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = PLUGIN_METADEMANDS_DIR_NOFULL.'/front/wizard.form.php';
       }
 
       if (Session::haveRight("config", UPDATE)) {
          $PLUGIN_HOOKS['config_page']['metademands'] = 'front/config.form.php';
-      }
-
-      if (Session::haveRight("metademands", UPDATE)) {
-         $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
       }
 
       // Template
@@ -132,7 +129,8 @@ function plugin_init_metademands() {
 
    // Import webservice
    $PLUGIN_HOOKS['webservices']['metademands']   = 'plugin_metademands_registerMethods';
-   $PLUGIN_HOOKS['timeline_actions']['metademands']   = 'plugin_metademands_timeline_actions';
+   $PLUGIN_HOOKS['timeline_actions']['metademands'] = ['PluginMetademandsMetademandValidation',
+                                                          'showActionsForm'];
    $PLUGIN_HOOKS['plugin_datainjection_populate']['metademands'] = 'plugin_datainjection_populate_metademands';
 
 }
@@ -152,32 +150,9 @@ function plugin_version_metademands() {
       'homepage'       => 'https://github.com/InfotelGLPI/metademands',
       'requirements'   => [
          'glpi' => [
-            'min' => '9.5',
+            'min' => '10.0',
+            'max' => '11.0',
             'dev' => false
          ]
       ]];
-}
-
-// Optional : check prerequisites before install : may print errors or add to message after redirect
-/**
- * @return bool
- */
-function plugin_metademands_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '9.5', 'lt')
-         || version_compare(GLPI_VERSION, '9.6', 'ge')) {
-      if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '9.5');
-      }
-      return false;
-   }
-
-   return true;
-}
-
-// Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
-/**
- * @return bool
- */
-function plugin_metademands_check_config() {
-   return true;
 }

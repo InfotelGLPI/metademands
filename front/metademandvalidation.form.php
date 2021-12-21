@@ -27,36 +27,20 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
-Session::checkLoginUser();
+include('../../../inc/includes.php');
 
-$plugin = new Plugin();
+Html::popHeader(Ticket::getTypeName(Session::getPluralNumber()));
 
-if ($plugin->isActivated("metademands")) {
+$metavalidation = new PluginMetademandsMetademandValidation();
 
-   Session::checkRight("config", UPDATE);
-
-   $config = new PluginMetademandsConfig();
-
-   if (isset($_POST["update_config"])) {
-      $config_data = PluginMetademandsConfig::getInstance();
-      if (empty($config_data)) {
-         $config->add($_POST);
-      } else {
-         $_POST['id'] = 1;
-         $config->update($_POST);
-      }
-      Html::back();
-
-   } else {
-      Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
-      $config->showConfigForm();
-      Html::footer();
-   }
+if (isset($_POST['action'])) {
+   $metavalidation->validateMeta($_REQUEST);
 
 } else {
-   Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
-   echo "<div class='alert alert-important alert-warning d-flex'>";
-   echo "<b>".__('Please activate the plugin', 'metademands')."</b></div>";
-   Html::footer();
+
+   $params['tickets_id'] = $_GET['tickets_id'];
+   $metavalidation->viewValidation($params);
 }
+
+Html::popFooter();
+

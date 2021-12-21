@@ -24,6 +24,11 @@
     </authors>
     <versions>
         <version>
+            <num>3.0.0-rc1</num>
+            <compatibility>~10.0</compatibility>
+            <download_url>https://github.com/InfotelGLPI/metademands/releases/download/3.0.0-rc1/glpi-metademands-3.0.0-rc1.tar.bz2</download_url>
+        </version>
+        <version>
             <num>2.7.8</num>
             <compatibility>~9.5</compatibility>
         </version>
@@ -100,11 +105,13 @@
     <license><![CDATA[GPL v2+]]></license>
     <tags>
         <fr>
+            <tag>Helpdesk</tag>
             <tag>Demande</tag>
             <tag>Tickets enfants</tag>
             <tag>Wizard</tag>
         </fr>
         <en>
+            <tag>Helpdesk</tag>
             <tag>Request</tag>
             <tag>Child tickets</tag>
             <tag>Wizard</tag>

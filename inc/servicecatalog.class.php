@@ -75,7 +75,16 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
    static function getMenuLink() {
       global $CFG_GLPI;
 
-      return $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
+      return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
+   }
+
+   /**
+    * @return string
+    */
+   static function getNavBarLink() {
+      global $CFG_GLPI;
+
+      return PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
    }
 
    /**
@@ -86,9 +95,9 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       $config = new PluginMetademandsConfig();
       $config->getFromDB(1);
       if (!empty($config->getField('fa_servicecatalog'))) {
-         return $config->getField('fa_servicecatalog');
+         return "fas ".$config->getField('fa_servicecatalog');
       }
-      return "fas fa-share-alt";
+      return PluginMetademandsMetademand::getIcon();
    }
 
 
@@ -163,7 +172,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
          if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                          ["plugin_metademands_metademands_id" => $meta_concerned])) {
 
-            return $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=" . $meta_concerned . "&tickets_id=0&step=".PluginMetademandsMetademand::STEP_SHOW;
+            return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $meta_concerned . "&tickets_id=0&step=".PluginMetademandsMetademand::STEP_SHOW;
 
          }
       }

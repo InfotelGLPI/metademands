@@ -138,8 +138,6 @@ class PluginMetademandsTask extends CommonDBTM {
          return false;
       }
 
-      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/css/bootstrap4.css");
-
       $canedit = $metademands->can($metademands->fields['id'], UPDATE);
       $solved  = true;
       if ($canedit) {
@@ -176,7 +174,7 @@ class PluginMetademandsTask extends CommonDBTM {
             $params = ['taskType'                          => '__VALUE__',
                        'plugin_metademands_metademands_id' => $metademands->fields['id']];
             Ajax::updateItemOnSelectEvent("dropdown_taskType$rand", "show_add_task_form",
-                                          $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/showAddTaskForm.php",
+                                          PLUGIN_METADEMANDS_WEBDIR . "/ajax/showAddTaskForm.php",
                                           $params);
             echo "</td>";
             echo "</tr>";
@@ -196,9 +194,9 @@ class PluginMetademandsTask extends CommonDBTM {
             echo "<tr class='tab_bg_1'>";
 
             echo "<td class='tab_bg_2 center' colspan='6'>";
-            echo "<input type='hidden' class='submit' name='plugin_metademands_metademands_id' value='" . $metademands->fields['id'] . "'>";
-            echo "<input type='hidden' name='entities_id' value='" . $metademands->fields['entities_id'] . "'/>";
-            echo "<input type='submit' class='submit' name='add' value='" . _sx('button', 'Add') . "'>";
+            echo Html::hidden('plugin_metademands_metademands_id', ['value' => $metademands->fields['id']]);
+            echo Html::hidden('entities_id', ['value' => $metademands->fields['entities_id']]);
+            echo Html::submit(_sx('button', 'Add') , ['name' => 'add', 'class' => 'btn btn-primary']);
             echo "</td>";
             echo "</tr>";
 
@@ -254,11 +252,11 @@ class PluginMetademandsTask extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . __('Name') . "</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "name", ['value' => $this->fields["name"]]);
+      echo Html::input('name', ['value' => $this->fields['name'], 'size' => 40]);
       echo "</td>";
       echo "<td>" . __('Label') . "</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "label", ['value' => $this->fields["label"]]);
+      echo Html::input('label', ['value' => $this->fields['label'], 'size' => 40]);
       echo "</td>";
       echo "<td>" . __('Mandatory field') . "</td>";
       echo "<td>";
@@ -287,7 +285,7 @@ class PluginMetademandsTask extends CommonDBTM {
       echo "<span id='show_item' style='display:none'>";
       self::dropdownFieldItems("item", ['value' => $this->fields["item"]]);
       echo "</span>";
-      echo "<input type='hidden' name='plugin_metademands_metademands_id' value='" . $this->fields["plugin_metademands_metademands_id"] . "'/>";
+      echo Html::hidden('plugin_metademands_metademands_id', ['value' => $this->fields["plugin_metademands_metademands_id"]]);
       echo "</td>";
       $this->showFormButtons(['colspan' => 3,
                               'canedit' => $canedit]);
@@ -317,11 +315,13 @@ class PluginMetademandsTask extends CommonDBTM {
       echo "<tr class='tab_bg_1 center'>";
       echo "<td>";
 
-      $rand = mt_rand();
-      Ajax::createIframeModalWindow("tags" . $rand,
-                                    $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/front/tags.php?metademands_id=" .
-                                    $metademands_id);
-      echo "<a class='vsubmit' href='#' onClick=\"" . Html::jsGetElementbyID("tags" . $rand) . ".dialog('open'); return false;\"> " . __('Show list of available tags') . "</a>";
+      echo "<a href='#' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#tags' title='" . __('Show list of available tags') . "' >";
+      echo  __('Show list of available tags');
+      echo "</a>";
+      echo Ajax::createIframeModalWindow('tags',
+                                         PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" .$metademands_id,
+                                         ['title'   => __('Show list of available tags'),
+                                          'display' => false]);
       echo "</td>";
       echo "</tr>";
       echo "</table>";
@@ -332,7 +332,7 @@ class PluginMetademandsTask extends CommonDBTM {
       if (count($tasks)) {
          Session::initNavigateListItems('PluginMetademandsTicketTask', self::getTypeName(1));
 
-         echo "<div class='center first-bloc'>";
+         echo "<div class='left first-bloc'>";
          if ($canedit && $canchangeorder) {
             Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
             $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
@@ -340,7 +340,7 @@ class PluginMetademandsTask extends CommonDBTM {
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='tab_bg_2'>";
-         echo "<th class='center b' colspan='11'>" . __('Tasks', 'metademands') . "</th>";
+         echo "<th class='left b' colspan='11'>" . __('Tasks', 'metademands') . "</th>";
          echo "</tr>";
 
          echo "<tr class='tab_bg_2'>";
@@ -357,7 +357,7 @@ class PluginMetademandsTask extends CommonDBTM {
          echo "<th class='center b'>" . __('Level', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Block to use', 'metademands') . "</th>";
          echo "<th class='center b'>" . __('Use block', 'metademands') . "</th>";
-         echo "<th class='center b'>" . __('Hide table', 'metademands') . "</th>";
+         echo "<th class='center b'>" . __('Format the description of the childs ticket as a table', 'metademands') . "</th>";
          echo "</tr>";
          foreach ($tasks as $value) {
             echo "<tr class='tab_bg_1'>";
@@ -385,9 +385,19 @@ class PluginMetademandsTask extends CommonDBTM {
                   $width = (10 * $value['level']);
                   echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
                }
-               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
-                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
-               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_id'] . "</a>";
+               $name = "#metademandTicketTask" . $value['tickettasks_id'];
+               echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . PluginMetademandsTicketTask::getTypeName() . "' >";
+               echo $value['tickettasks_id'];
+               echo "</a>";
+               echo Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'],
+                                                  Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
+                                                  ['title'   => PluginMetademandsTicketTask::getTypeName(),
+                                                   'display' => false,
+                                                   'reloadonclose' => true]);
+
+//               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
+//                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
+//               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_id'] . "</a>";
                echo "</td>";
 
             } else {
@@ -400,9 +410,19 @@ class PluginMetademandsTask extends CommonDBTM {
             if ($value['type'] == self::TICKET_TYPE) {
                echo "<td>";
                $width = 0;
-               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
-                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
-               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
+               $name = "#metademandTicketTask" . $value['tickettasks_id'];
+               echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . PluginMetademandsTicketTask::getTypeName() . "' >";
+               echo  $value['tickettasks_name'];
+               echo "</a>";
+               echo Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'],
+                                                  Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
+                                                  ['title'   => PluginMetademandsTicketTask::getTypeName(),
+                                                   'display' => false,
+                                                   'reloadonclose' => true]);
+
+//               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
+//                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
+//               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
                echo "</td>";
 
             } else {
@@ -479,7 +499,7 @@ class PluginMetademandsTask extends CommonDBTM {
             echo Dropdown::getYesNo($value['useBlock']);
             echo "</td>";
             echo "<td $color_class>";
-            echo Dropdown::getYesNo($value['hideTable']);
+            echo Dropdown::getYesNo($value['formatastable']);
             echo "</td>";
             echo "</tr>";
 
@@ -530,7 +550,7 @@ class PluginMetademandsTask extends CommonDBTM {
                        `glpi_plugin_metademands_tasks`.`completename` as tasks_completename, 
                        `glpi_plugin_metademands_tasks`.`level`,
                        `glpi_plugin_metademands_tasks`.`block_use`,
-                       `glpi_plugin_metademands_tasks`.`hideTable`,
+                       `glpi_plugin_metademands_tasks`.`formatastable`,
                        `glpi_plugin_metademands_tasks`.`useBlock`,
                        `glpi_plugin_metademands_tickettasks`.`itilcategories_id`,
                        `glpi_plugin_metademands_tickettasks`.`content`,
@@ -558,7 +578,7 @@ class PluginMetademandsTask extends CommonDBTM {
          }
       }
 
-      $query  .= " ORDER BY `glpi_plugin_metademands_tasks`.`completename`";
+      $query  .= " ORDER BY `glpi_plugin_metademands_tasks`.`id`, `glpi_plugin_metademands_tasks`.`completename`";
       $result = $DB->query($query);
 
       if ($DB->numrows($result)) {
@@ -827,7 +847,7 @@ class PluginMetademandsTask extends CommonDBTM {
                                        'width'    => '100%',
                                        'multiple' => true,
                                     ]);
-            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
             return true;
             break;
 

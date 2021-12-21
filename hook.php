@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-2.7.9.sql");
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.0.0.sql");
    }
 
    if ($DB->tableExists("glpi_plugin_metademands_profiles")
@@ -211,10 +211,13 @@ function plugin_metademands_install() {
    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "hideTable")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.9.sql");
    }
-   
-   //version 2.7.10
-   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks")) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.10.sql");
+   //version 3.0.0
+   if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "formatastable")) {
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.0.0.sql");
+      if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks")) {
+         $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `childs_blocks` VARCHAR (255) NOT NULL DEFAULT '[]';";
+         $DB->query($query);
+      }
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
@@ -271,19 +274,18 @@ function plugin_metademands_uninstall() {
 /**
  * @param array $options
  */
-function plugin_metademands_MassiveActionsDisplay($options = []) {
-
-   switch ($options['itemtype']) {
-      case 'PluginMetademandsMetademand':
-         switch ($options['action']) {
-            case "plugin_metademands_duplicate":
-               echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" 
-                     class=\"submit\" value=\"" . _sx('button', 'Post') . "\" >";
-               break;
-         }
-         break;
-   }
-}
+//function plugin_metademands_MassiveActionsDisplay($options = []) {
+//
+//   switch ($options['itemtype']) {
+//      case 'PluginMetademandsMetademand':
+//         switch ($options['action']) {
+//            case "plugin_metademands_duplicate":
+//               echo "&nbsp;". Html::submit(_sx('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
+//               break;
+//         }
+//         break;
+//   }
+//}
 
 // Define dropdown relations
 /**
@@ -351,12 +353,12 @@ function plugin_metademands_getDatabaseRelations() {
  *
  * @return mixed
  */
-function plugin_metademands_MassiveActionsProcess($data) {
-   $metademand = new PluginMetademandsMetademand();
-   $res        = $metademand->doSpecificMassiveActions($data);
-
-   return $res;
-}
+//function plugin_metademands_MassiveActionsProcess($data) {
+//   $metademand = new PluginMetademandsMetademand();
+//   $res        = $metademand->doSpecificMassiveActions($data);
+//
+//   return $res;
+//}
 
 
 function plugin_metademands_registerMethods() {
@@ -377,43 +379,6 @@ function plugin_metademands_registerMethods() {
    $WEBSERVICES_METHOD['metademands.isMandatoryFields']
       = ['PluginMetademandsTicket', 'methodIsMandatoryFields'];
 
-}
-
-/**
- * @param $data
- */
-function plugin_metademands_timeline_actions($data) {
-   global $CFG_GLPI;
-
-
-   $metaValidation = new PluginMetademandsMetademandValidation();
-   if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']])
-       && $_SESSION['glpiactiveprofile']['interface'] == 'central'
-       && ($data['item']->fields['status'] != Ticket::SOLVED
-           && $data['item']->fields['status'] != Ticket::CLOSED)) {
-      $rand = $data['rand'];
-      echo "<script type='text/javascript' >\n
-//      $(document).ready(function() {
-//                $('.ajax_box').show();
-//      });
-      function viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
-
-      $params = ['action'     => 'viewsubitem',
-                 'type'       => 'itemtype',
-                 'tickets_id' => $data['item']->fields['id'],
-                 'id'         => -1];
-      $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
-                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php",
-                                       $params, "", false);
-      echo str_replace("\"itemtype\"", "itemtype", $out);
-      echo "};
-      ";
-
-      echo "</script>\n";
-      echo "<li class='metavalidation' onclick='" .
-           "javascript:viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(\"Solution\");'>"
-           . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
-   }
 }
 
 

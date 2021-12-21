@@ -140,10 +140,10 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
                                                              'used'       => $used_data,
                                                              'entity'     => $_SESSION['glpiactive_entity']]);
          echo "</td></tr>";
-         echo "<tr class='tab_bg_1'><td class='tab_bg_2 center'><input type=\"submit\" name=\"update\" class=\"submit\"
-            value=\""._sx('button', 'Add')."\" >";
-         echo "<input type='hidden' name='entities_id' value='".$_SESSION['glpiactive_entity']."'>";
-         echo "<input type='hidden' name='plugin_resources_contracttypes_id' value='".$resourceContractType->fields['id']."'>";
+         echo "<tr class='tab_bg_1'><td class='tab_bg_2 center'>";
+         echo Html::submit(_sx('button', 'Add'), ['name' => 'update', 'class' => 'btn btn-primary']);
+         echo Html::hidden('entities_id', ['value' => $_SESSION['glpiactive_entity']]);
+         echo Html::hidden('plugin_resources_contracttypes_id', ['value' => $resourceContractType->fields['id']]);
          echo "</td></tr>";
          echo "</table></div>";
          Html::closeForm();
@@ -214,7 +214,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
          $data = $metademand_resource->getDataForResourceContractType($resources->fields['plugin_resources_contracttypes_id'], ['entities_id' => $_SESSION['glpiactive_entity']]);
          $data = array_shift($data);
          if (!empty($data["plugin_metademands_metademands_id"])) {
-            Html::redirect($CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php?metademands_id=".$data["plugin_metademands_metademands_id"]."&resources_id=".$resources->fields['id']."&resources_step=".$resources_step."&step=2");
+            Html::redirect(PLUGIN_METADEMANDS_WEBDIR."/front/wizard.form.php?metademands_id=".$data["plugin_metademands_metademands_id"]."&resources_id=".$resources->fields['id']."&resources_step=".$resources_step."&step=2");
          }
       }
    }

@@ -82,13 +82,19 @@ if (isset($_POST['fields_id'])
    $groups_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
 }
 
+if (isset($_POST['groups_id'])) {
+   $groups_id = $_POST['groups_id'];
+}
+
+$rand = mt_rand();
 Group::dropdown(['name'      => $_POST["field"],
                  'entity'    => $_SESSION['glpiactiveentities'],
                  'value'     => $groups_id,
                  'readonly'  => true,
                  'condition' => $cond,
+                 'rand' => $rand
                 ]);
 
 $_POST['name'] = "group_user";
-$_POST['rand'] = "";
+$_POST['rand'] = $rand;
 Ajax::commonDropdownUpdateItem($_POST);

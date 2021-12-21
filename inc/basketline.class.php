@@ -48,9 +48,9 @@ class PluginMetademandsBasketline extends CommonDBTM {
          if (!$preview && $basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
                                                                 'users_id'                          => Session::getLoginUserID()])) {
 
-            echo "<div class='right-div'>";
+            echo "<div class='height-div right-div'>";
 
-            echo "<div class='form-row'>";
+            echo "<div class='row'>";
             echo "<div class='form-group col-md-11'>";
             echo "<h4 class='bt-title-divider'>" . __('Your basket', 'metademands');
             echo "&nbsp;<button type='submit' class='pointer btn btn-light' name='clear_basket' title='"
@@ -129,7 +129,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             continue;
          }
 
-         echo "<div class='form-row' $style>";
+         echo "<div class='row' $style>";
 
          echo "<div class='form-group basket-title col-md-5'>";
          if ($v['type'] == 'title' || $v['type'] == 'title-block') {
@@ -145,7 +145,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             if (empty($label2 = PluginMetademandsField::displayField($v['id'], 'label2'))) {
                $label2 = $v['label2'];
             }
-            echo "<br><br><br>" . Html::clean($label2);
+            echo "<br><br><br>" . Toolbox::stripTags($label2);
          }
 
          echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $v['id'] . "'>";
@@ -183,7 +183,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
          }
          echo "</div>";
       }
-      echo "<div class='form-row'>";
+      echo "<div class='row'>";
       echo "<div class='form-group col-md-5 center'>";
       echo "<button type='submit' class='btn btn-primary' name='update_basket_line' value='$idline' title='"
            . _sx('button', 'Update this line', 'metademands') . "'>";
@@ -250,7 +250,10 @@ class PluginMetademandsBasketline extends CommonDBTM {
     */
    function updateFromBasket($input, $line) {
 
+
       $new_files = [];
+      unset($input['field']);
+
       if (isset($input['_filename']) && !empty($input['_filename'])) {
          foreach ($input['_filename'] as $key => $filename) {
             $new_files[$key]['_prefix_filename'] = $input['_prefix_filename'][$key];
@@ -258,7 +261,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
             $new_files[$key]['_filename']        = $input['_filename'][$key];
          }
       }
-      
+
       foreach ($input['field_basket_' . $line] as $fields_id => $value) {
 
          //get id from form_metademands_id & $id
@@ -277,18 +280,18 @@ class PluginMetademandsBasketline extends CommonDBTM {
                if (is_array($new_files) && count($new_files) > 0
                    && is_array($old_files) && count($old_files) > 0) {
                   $files = array_merge($old_files, $new_files);
-                  $value = json_encode($files);
+                  $newvalue = json_encode($files);
                } else {
-                  $value = json_encode($new_files);
+                  $newvalue = json_encode($new_files);
                }
 
             } else {
-               $value = is_array($value) ? PluginMetademandsField::_serialize($value) : $value;
+               $newvalue = is_array($value) ? PluginMetademandsField::_serialize($value) : $value;
             }
 
             if (!str_ends_with($fields_id, "-2")) {
                $this->update(['plugin_metademands_fields_id' => $fields_id,
-                              'value'                        => $value,
+                              'value'                        => $newvalue,
                               'id'                           => $this->fields['id']]);
             }
             //date-interval

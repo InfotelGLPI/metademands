@@ -131,7 +131,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
          echo "};";
          echo "</script>\n";
          echo "<div class='center'>" .
-              "<a class='vsubmit' href='javascript:addTranslation" .
+              "<a class='btn btn-primary' href='javascript:addTranslation" .
               $item->getType() . $item->getID() . "$rand();'>" . __('Add a new translation') .
               "</a></div><br>";
       }
@@ -150,7 +150,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
             Html::showMassiveActions($massiveactionparams);
          }
-         echo "<div class='center'>";
+         echo "<div class='left'>";
          echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
          echo "<th colspan='4'>" . __("List of translations") . "</th></tr><tr>";
          if ($canedit) {
@@ -161,7 +161,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
          echo "<th>" . __("Language") . "</th>";
          echo "<th>" . __("Field") . "</th>";
          echo "<th>" . __("Value") . "</th></tr>";
-         while ($data = $iterator->next()) {
+         foreach ($iterator as $data) {
             $onhover = '';
             if ($canedit) {
                $onhover = "style='cursor:pointer'
@@ -264,7 +264,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
                     'items_id' => $item->getID()];
          Ajax::updateItemOnSelectEvent("dropdown_language$rand",
                                        "span_fields",
-                                       $CFG_GLPI["root_doc"] .PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/updateTranslationFields.php",
+                                       PLUGIN_METADEMANDS_WEBDIR . "/ajax/updateTranslationFields.php",
                                        $params);
       }
       echo "</td><td colspan='2'>&nbsp;</td></tr>";
@@ -282,7 +282,12 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
       }
       echo "</td>";
       echo "<td>" . __('Value') . "</td>";
-      echo "<td><textarea cols='80' rows='3' name='value'>" . $this->fields['value'] . "</textarea>";
+      echo "<td>";
+      Html::textarea(['name'            => 'value',
+                      'value'           => $this->fields["value"],
+                      'cols'       => 80,
+                      'rows'       => 3,
+                      'enable_richtext' => false]);
       echo "</td>";
       echo "</tr>\n";
       $this->showFormButtons($options);
@@ -334,7 +339,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
                                      ]
                                   ]);
          if (count($iterator) > 0) {
-            while ($data = $iterator->next()) {
+            foreach ($iterator as $data) {
                $used[$data['field']] = $data['field'];
             }
          }

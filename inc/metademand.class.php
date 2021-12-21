@@ -80,6 +80,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
       return _n('Meta-Demand', 'Meta-Demands', $nb, 'metademands');
    }
 
+   static function getIcon() {
+      return "ti ti-share";
+   }
+
    /**
     * @return bool|int
     */
@@ -119,7 +123,30 @@ class PluginMetademandsMetademand extends CommonDBTM {
              && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             if (($item->getType() == 'Ticket' || $item->getType() == 'PluginResourcesResource')
                 && $this->canView()) {
-               return self::getTypeName(1);
+
+               $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+               $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
+               $tickets_found          = [];
+               // If ticket is Parent : Check if all sons ticket are closed
+               if (count($ticket_metademand_data)) {
+                  $ticket_metademand_data = reset($ticket_metademand_data);
+                  $tickets_found          = PluginMetademandsTicket::getSonTickets($item->fields['id'],
+                                                                                   $ticket_metademand_data['plugin_metademands_metademands_id']);
+                  $total                  = count($tickets_found);
+                  $name                   = _n('Child ticket', 'Child tickets', 2, 'metademands');
+               } else {
+                  $ticket_task      = new PluginMetademandsTicket_Task();
+                  $ticket_task_data = $ticket_task->find(['tickets_id' => $item->fields['id']]);
+
+                  if (count($ticket_task_data)) {
+                     $tickets_found = PluginMetademandsTicket::getAncestorTickets($item->fields['id'], true);
+                  }
+                  $total = count($tickets_found);
+                  $name  = self::getTypeName($total);
+               }
+
+               return self::createTabEntry($name,
+                                           $total);
             }
          }
       }
@@ -231,7 +258,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   // Redirect if not linked to a resource contract type
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                                   ["plugin_metademands_metademands_id" => $meta_concerned])) {
-                     return $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?itilcategories_id=" .
+                     return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=" .
                             $object->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned . "&tickets_id=" . $object->fields["id"] . "&step=" . self::STEP_SHOW;
                   }
                }
@@ -261,8 +288,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                         'WHERE'  => ['is_deleted' => 0]]);
 
          $cats = $input['itilcategories_id'];
-
-         while ($data = $iterator_cats->next()) {
+         foreach ($iterator_cats as $data) {
             if (is_array(json_decode($data['itilcategories_id'])) && is_array($cats)) {
                $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
             }
@@ -270,6 +296,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                Session::addMessageAfterRedirect(__('The category is related to a demand. Thank you to select another', 'metademands'), false, ERROR);
                return false;
             }
+            $iterator_cats->next();
          }
       }
 
@@ -319,10 +346,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
          $number_cats_meta = count($iterator_meta_existing_cats);
          if ($number_cats_meta) {
-            while ($data = $iterator_meta_existing_cats->next()) {
+            foreach ($iterator_meta_existing_cats as $data) {
                $cats = json_decode($data['itilcategories_id']);
+               $iterator_meta_existing_cats->next();
             }
-            if ($cats == null) {
+            if (!isset($cats) || $cats == null) {
                $cats = [];
             }
          }
@@ -335,8 +363,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $cats[] = $post_cats;
                }
             }
-
-            while ($data = $iterator_cats->next()) {
+            foreach ($iterator_cats as $data) {
                if (is_array(json_decode($data['itilcategories_id'])) && $input['id'] != $data['id']) {
                   $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
                }
@@ -344,6 +371,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   Session::addMessageAfterRedirect(__('The category is related to a demand. Thank you to select another', 'metademands'), false, ERROR);
                   return false;
                }
+               $iterator_cats->next();
             }
             if (!$cat_already_store) {
                $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
@@ -456,13 +484,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
          'datatype' => 'bool',
       ];
 
-      $tab[] = [
-         'id'       => '4',
-         'table'    => $this->getTable(),
-         'field'    => 'icon',
-         'name'     => __('Icon'),
-         'datatype' => 'text',
-      ];
+      //      $tab[] = [
+      //         'id'       => '4',
+      //         'table'    => $this->getTable(),
+      //         'field'    => 'icon',
+      //         'name'     => __('Icon'),
+      //         'datatype' => 'text',
+      //      ];
 
       $tab[] = [
          'id'       => '5',
@@ -506,6 +534,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
          'field'    => 'maintenance_mode',
          'name'     => __('Maintenance mode'),
          'datatype' => 'bool',
+      ];
+
+      $tab[] = [
+         'id'         => '10',
+         'table'      => $this->getTable(),
+         'field'      => 'title_color',
+         'name'       => __('Title color', 'metademands'),
+         'searchtype' => 'equals',
+         'datatype'   => 'color'
+      ];
+
+      $tab[] = [
+         'id'         => '11',
+         'table'      => $this->getTable(),
+         'field'      => 'background_color',
+         'name'       => __('Background color', 'metademands'),
+         'searchtype' => 'equals',
+         'datatype'   => 'color'
       ];
 
       $tab[] = [
@@ -654,17 +700,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       if ($this->fields['maintenance_mode'] == 1) {
          echo "<h3>";
-         echo "<div class='warning'>";
-         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i><br><br>";
-         echo __('This form is in maintenance mode', 'metademands'). "</div></h3>";
+         echo "<div class='alert alert-warning center'>";
+         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
+         echo __('This form is in maintenance mode', 'metademands') . "</div></h3>";
       }
 
       echo "<td>" . __('Name') . "</td>";
       echo "<td>";
-      $opt = [
-         'option' => 'size = 50 ',
-      ];
-      Html::autocompletionTextField($this, "name", $opt);
+      echo Html::input('name', ['value' => $this->fields['name'], 'size' => 40]);
       echo "</td>";
 
       echo "<td>" . __('Active') . "</td>";
@@ -693,10 +736,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $objects    = self::getObjectTypes();
          $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
-                                 $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
+                                 PLUGIN_METADEMANDS_WEBDIRL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
       } else {
          echo self::getObjectTypeName($this->fields['object_to_create']);
-         echo "<input type='hidden' name='object_to_create' value=\"" . $this->fields['object_to_create'] . "\">";
+         echo Html::hidden('object_to_create', ['value' => $this->fields['object_to_create']]);
       }
       echo "</td>";
       echo "<td colspan='2'>";
@@ -724,7 +767,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                        'currenttype'     => $this->fields['type']];
 
             Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-                                          $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/dropdownITILCategories.php",
+                                          PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownITILCategories.php",
                                           $params);
             echo "</td>";
          } else {
@@ -812,18 +855,34 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
 
       echo "<td>" . __('Icon') . "</td><td>";
-      $opt = [
-         'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
-         'maxlength' => 50,
-         'size'      => 50,
-      ];
-      echo Html::input('icon', $opt);
-      echo "<br>" . __('Example', 'metademands') . " : fas fa-share-alt";
-      if (isset($this->fields['icon'])
-          && !empty($this->fields['icon'])) {
-         $icon = $this->fields['icon'];
-         echo "<br><br><i class='fas-sc sc-fa-color $icon fa-3x' ></i>";
-      }
+      $icon_selector_id = 'icon_' . mt_rand();
+      echo Html::select(
+         'icon',
+         [$this->fields['icon'] => $this->fields['icon']],
+         [
+            'id'       => $icon_selector_id,
+            'selected' => $this->fields['icon'],
+            'style'    => 'width:175px;'
+         ]
+      );
+
+      echo Html::script('js/Forms/FaIconSelector.js');
+      echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+      );
+      //      $opt = [
+      //         'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
+      //         'maxlength' => 50,
+      //         'size'      => 50,
+      //      ];
+      //      echo Html::input('icon', $opt);
+
       echo "</td>";
       echo "</tr>";
 
@@ -837,7 +896,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          echo "<td>" . __('Create one ticket for all lines of the basket', 'metademands') . "</td><td>";
          Dropdown::showYesNo("create_one_ticket", $this->fields['create_one_ticket']);
          echo "<br>";
-         echo "<span style='color:darkred;'>";
+         echo "<span class='alert alert-important alert-warning d-flex'>";
          echo "<i class='fas fa-exclamation-triangle'></i> " . __('You cannot use this parameter if there is more than one category', 'metademands');
          echo "</span>";
          echo "</td>";
@@ -884,14 +943,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<br><br><form name='task_form' id='task_form' method='post' 
                action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
-      echo "<input type='submit' name='execute' value=\"" . _sx('button', 'Duplicate') . "\"
-                      class='submit'>";
-      echo "<input type='hidden' name='_method' value=\"Duplicate\"
-                      class='submit'>";
-      echo "<input type='hidden' name='metademands_id' value=\"" . $metademands_id . "\"
-                      class='submit'>";
-      echo "<input type='hidden' name='redirect' value=\"1\"
-                      class='submit'>";
+      echo Html::submit(_sx('button', 'Duplicate'), ['name' => 'execute', 'class' => 'btn btn-primary']);
+      echo Html::hidden('_method', ['value' => 'Duplicate']);
+      echo Html::hidden('metademands_id', ['value' => $metademands_id]);
+      echo Html::hidden('redirect', ['value' => 1]);
+
       Html::closeForm();
       echo "</div>";
       echo "</h3>";
@@ -901,7 +957,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param       $ID
     * @param array $field
     */
-   function displaySpecificTypeField($ID, $field = []) {
+   function displaySpecificTypeField($ID, $field = [], array $options = []) {
 
       $this->getFromDB($ID);
 
@@ -910,7 +966,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             echo $this->getURL($this->fields['id']);
             break;
          case 'itilcategories_id':
-            echo "<input type='hidden' name='type' value='" . $this->fields['type'] . "'>";
+            echo Html::hidden('type', ['value' => $this->fields['type']]);
             switch ($this->fields['type']) {
                case Ticket::INCIDENT_TYPE :
                   $criteria = ['is_incident' => 1];
@@ -959,18 +1015,27 @@ class PluginMetademandsMetademand extends CommonDBTM {
             TicketTemplate::dropdown($opt);
             break;
          case 'icon':
-            $opt = [
-               'value'     => isset($this->fields['icon']) ? $this->fields['icon'] : '',
-               'maxlength' => 250,
-               'size'      => 80,
-            ];
-            echo Html::input('icon', $opt);
-            echo "<br>" . __('Example', 'metademands') . " : fas fa-share-alt";
-            if (isset($this->fields['icon'])
-                && !empty($this->fields['icon'])) {
-               $icon = $this->fields['icon'];
-               echo "<br><br><i class='fas-sc sc-fa-color $icon fa-3x' ></i>";
+            $icon_selector_id = 'icon_' . mt_rand();
+            echo Html::select(
+               'icon',
+               [$this->fields['icon'] => $this->fields['icon']],
+               [
+                  'id'       => $icon_selector_id,
+                  'selected' => $this->fields['icon'],
+                  'style'    => 'width:175px;'
+               ]
+            );
+
+            echo Html::script('js/Forms/FaIconSelector.js');
+            echo Html::scriptBlock(<<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
             }
+         );
+JAVASCRIPT
+            );
             break;
       }
    }
@@ -1280,8 +1345,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    function convertMetademandToTicket($ticket, $metademands_id) {
-      $tickets_id = $ticket->input["id"];
-      $oldlanguage = $_SESSION['glpilanguage'];
+      $tickets_id        = $ticket->input["id"];
+      $oldlanguage       = $_SESSION['glpilanguage'];
       $ticket_task       = new PluginMetademandsTicket_Task();
       $ticket_metademand = new PluginMetademandsTicket_Metademand();
       $ticket_field      = new PluginMetademandsTicket_Field();
@@ -1521,8 +1586,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            $parent_fields[$name]       = $v[$id];
                            $parent_ticketfields[$name] = $v[$id];
                            if ($fields_values['used_by_ticket'] == 59) {
-                              $parent_fields["_add_validation"]           = '0';
-                              $parent_ticketfields["_add_validation"]     = '0';
+                              $parent_fields["_add_validation"]         = '0';
+                              $parent_ticketfields["_add_validation"]   = '0';
                               $parent_fields["validatortype"]           = 'user';
                               $parent_ticketfields["validatortype"]     = 'user';
                               $parent_fields["users_id_validate"]       = [$v[$id]];
@@ -1643,10 +1708,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               if ($fields_container->fields['type'] == 'dom') {
                                  if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
                                     if ($fields_field->fields['type'] == 'dropdown') {
-                                       $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
-                                       $inputFieldMain["plugin_fields_".$fields_field->fields['name']."dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    } else if ($fields_field->fields['type'] == 'yesno') {
+                                       $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
+                                       $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
                                     } else {
-                                       $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       $input[$fields_field->fields['name']]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                        $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     }
                                  }
@@ -1656,10 +1724,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      }
                   }
 
-                  if(isset($input['items_id']['PluginResourcesResource'])){
+                  if (isset($input['items_id']['PluginResourcesResource'])) {
                      $resource = new PluginResourcesResource();
-                     foreach ($input['items_id']['PluginResourcesResource'] as $resource_id){
-                        if($resource->getFromDB($resource_id)){
+                     foreach ($input['items_id']['PluginResourcesResource'] as $resource_id) {
+                        if ($resource->getFromDB($resource_id)) {
                            $input['name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
                         }
                      }
@@ -1687,6 +1755,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
                                     if ($fields_field->fields['type'] == 'dropdown') {
                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                    } else if ($fields_field->fields['type'] == 'yesno') {
+                                       $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
                                     } else {
                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     }
@@ -1857,75 +1927,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        } else {
                                           $explodeTitle2 = explode(".", $title);
 
-                                             if(isset($values['fields'][$explodeTitle2[0]])) {
-                                                $field_object = new PluginMetademandsField();
-                                                if($field_object->getFromDB($explodeTitle2[0])) {
-                                                   if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                                      $users_id = $values['fields'][$explodeTitle2[0]];
-                                                      switch ($explodeTitle2[1]) {
-                                                         case "login" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['name'];
-                                                            $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                            break;
-                                                         case "name" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['realname'];
-                                                            $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                            break;
-                                                         case "firstname" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['firstname'];
-                                                            $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                            break;
-                                                         case "email" :
-                                                            $user = new UserEmail();
-                                                            $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                            $value = $user->fields['email'];
-                                                            $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                            break;
-                                                      }
-                                                   }
+                                          if (isset($values['fields'][$explodeTitle2[0]])) {
+                                             $field_object = new PluginMetademandsField();
+                                             if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                                   $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                                   $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                                 }
-
                                              }
-
-
-                                             $users_id = $parent_fields['_users_id_requester'];
-                                             switch ($title) {
-                                                case "requester.login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "requester.name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "requester.firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "requester.email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                             }
-                                             if(is_numeric($title)) {
-                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", "", $line['tasks'][$key]['tickettasks_name']);
-                                             }
-
-
+                                          }
+                                          $users_id = $parent_fields['_users_id_requester'];
+                                          $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                        }
                                     }
                                  } else {
@@ -1962,74 +1974,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           } else {
                                              $explodeTitle2 = explode(".", $title);
 
-                                             if(isset($values['fields'][$explodeTitle2[0]])) {
+                                             if (isset($values['fields'][$explodeTitle2[0]])) {
                                                 $field_object = new PluginMetademandsField();
-                                                if($field_object->getFromDB($explodeTitle2[0])) {
-                                                   if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                                if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                   if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                       $users_id = $values['fields'][$explodeTitle2[0]];
-                                                      switch ($explodeTitle2[1]) {
-                                                         case "login" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['name'];
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                            break;
-                                                         case "name" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['realname'];
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                            break;
-                                                         case "firstname" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['firstname'];
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                            break;
-                                                         case "email" :
-                                                            $user = new UserEmail();
-                                                            $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                            $value = $user->fields['email'];
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                            break;
-                                                      }
+                                                      $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                                    }
                                                 }
-
                                              }
-
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             switch ($title) {
-                                                case "requester.login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "requester.name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "requester.firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "requester.email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                             }
-                                             if(is_numeric($title)) {
-                                                $str = str_replace("#" . $title . "#", "", $str);
-                                             }
+                                             $str = self::getContentForUser($title, $users_id, $title, $str, true);
                                           }
-
                                        }
                                        if ($find == true) {
                                           break;
@@ -2078,72 +2034,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  } else {
                                     $explodeTitle2 = explode(".", $title);
 
-                                    if(isset($values['fields'][$explodeTitle2[0]])) {
+                                    if (isset($values['fields'][$explodeTitle2[0]])) {
                                        $field_object = new PluginMetademandsField();
-                                       if($field_object->getFromDB($explodeTitle2[0])) {
-                                          if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                             $users_id = $values['fields'][$explodeTitle2[0]];
-                                             switch ($explodeTitle2[1]) {
-                                                case "login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                             }
+                                       if ($field_object->getFromDB($explodeTitle2[0])) {
+                                          if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                             $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                             $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                           }
                                        }
-
                                     }
-
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    switch ($title) {
-                                       case "requester.login" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['name'];
-                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                          break;
-                                       case "requester.name" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['realname'];
-                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                          break;
-                                       case "requester.firstname" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['firstname'];
-                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                          break;
-                                       case "requester.email" :
-                                          $user = new UserEmail();
-                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                          $value = $user->fields['email'];
-                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                          break;
-                                    }
-                                    if(is_numeric($title)) {
-                                       $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", "", $line['tasks'][$key]['tickettasks_name']);
-                                    }
+                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                  }
                               }
 
@@ -2172,82 +2073,27 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $result[$fields['rank']]['display'] = false;
                                           $parent_fields_id                   = 0;
                                           $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                          if($fields['type'] == "textarea") {
-                                             if($line['tasks'][$key]["hideTable"] == 1) {
-                                                $value = str_replace("\\n",'","',$value);
+                                          if ($fields['type'] == "textarea") {
+                                             if ($line['tasks'][$key]["formatastable"] == 0) {
+                                                $value = str_replace("\\n", '","', $value);
                                              }
                                           }
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                        } else {
 
                                           $explodeContent2 = explode(".", $content);
 
-                                          if(isset($values['fields'][$explodeContent2[0]])) {
+                                          if (isset($values['fields'][$explodeContent2[0]])) {
                                              $field_object = new PluginMetademandsField();
-                                             if($field_object->getFromDB($explodeContent2[0])) {
-                                                if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                                   $users_id = $values['fields'][$explodeContent2[0]];
-                                                   switch ($explodeContent2[1]) {
-                                                      case "login" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['name'];
-                                                         $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                         break;
-                                                      case "name" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['realname'];
-                                                         $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                         break;
-                                                      case "firstname" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['firstname'];
-                                                         $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                         break;
-                                                      case "email" :
-                                                         $user = new UserEmail();
-                                                         $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                         $value = $user->fields['email'];
-                                                         $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                         break;
-                                                   }
+                                             if ($field_object->getFromDB($explodeContent2[0])) {
+                                                if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                                   $users_id                       = $values['fields'][$explodeContent2[0]];
+                                                   $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                                 }
                                              }
-
                                           }
-
                                           $users_id = $parent_fields['_users_id_requester'];
-                                          switch ($content) {
-                                             case "requester.login" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['name'];
-                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                break;
-                                             case "requester.name" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['realname'];
-                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                break;
-                                             case "requester.firstname" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['firstname'];
-                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                break;
-                                             case "requester.email" :
-                                                $user = new UserEmail();
-                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                $value = $user->fields['email'];
-                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                break;
-                                          }
-                                          if(is_numeric($content)) {
-                                             $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", "", $line['tasks'][$key]['content']);
-                                          }
+                                          $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                        }
                                     }
                                  } else {
@@ -2277,12 +2123,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              $result[$fields['rank']]['display'] = false;
                                              $parent_fields_id                   = 0;
                                              $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                             if($fields['type'] == "textarea") {
-                                                if($line['tasks'][$key]["hideTable"] == 1) {
-                                                   $value = str_replace("\\n",'","',$value);
+                                             if ($fields['type'] == "textarea") {
+                                                if ($line['tasks'][$key]["formatastable"] == 0) {
+                                                   $value = str_replace("\\n", '","', $value);
                                                 }
                                              }
-                                             $str                                = str_replace("#" . $content . "#", $value, $str);
+                                             $str = str_replace("#" . $content . "#", $value, $str);
                                              if (!is_null($value) && !empty($value)) {
                                                 $find = true;
                                              }
@@ -2290,71 +2136,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                                              $explodeContent2 = explode(".", $content);
 
-                                             if(isset($values['fields'][$explodeContent2[0]])) {
+                                             if (isset($values['fields'][$explodeContent2[0]])) {
                                                 $field_object = new PluginMetademandsField();
-                                                if($field_object->getFromDB($explodeContent2[0])) {
-                                                   if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                                if ($field_object->getFromDB($explodeContent2[0])) {
+                                                   if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                       $users_id = $values['fields'][$explodeContent2[0]];
-                                                      switch ($explodeContent2[1]) {
-                                                         case "login" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['name'];
-                                                            $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                            break;
-                                                         case "name" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['realname'];
-                                                            $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                            break;
-                                                         case "firstname" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['firstname'];
-                                                            $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                            break;
-                                                         case "email" :
-                                                            $user = new UserEmail();
-                                                            $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                            $value = $user->fields['email'];
-                                                            $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                            break;
-                                                      }
+                                                      $str      = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
                                                    }
                                                 }
-
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             switch ($content) {
-                                                case "requester.login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "requester.name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "requester.firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "requester.email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                             }
-                                             if(is_numeric($content)) {
-                                                $str = str_replace("#" . $content . "#", "", $str);
-                                             }
+                                             $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                           }
                                        }
                                        if ($find == true) {
@@ -2400,82 +2192,27 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $result[$fields['rank']]['display'] = false;
                                     $parent_fields_id                   = 0;
                                     $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                    if($fields['type'] == "textarea") {
-                                       if($line['tasks'][$key]["hideTable"] == 1) {
-                                          $value = str_replace("\\n",'","',$value);
+                                    if ($fields['type'] == "textarea") {
+                                       if ($line['tasks'][$key]["formatastable"] == 0) {
+                                          $value = str_replace("\\n", '","', $value);
                                        }
                                     }
-                                    $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                    $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                  } else {
 
                                     $explodeContent2 = explode(".", $content);
 
-                                    if(isset($values['fields'][$explodeContent2[0]])) {
+                                    if (isset($values['fields'][$explodeContent2[0]])) {
                                        $field_object = new PluginMetademandsField();
-                                       if($field_object->getFromDB($explodeContent2[0])) {
-                                          if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                             $users_id = $values['fields'][$explodeContent2[0]];
-                                             switch ($explodeContent2[1]) {
-                                                case "login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                   break;
-                                                case "name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                   break;
-                                                case "firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                   break;
-                                                case "email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                   break;
-                                             }
+                                       if ($field_object->getFromDB($explodeContent2[0])) {
+                                          if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                             $users_id                       = $values['fields'][$explodeContent2[0]];
+                                             $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                           }
                                        }
-
                                     }
-
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    switch ($content) {
-                                       case "requester.login" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['name'];
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                          break;
-                                       case "requester.name" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['realname'];
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                          break;
-                                       case "requester.firstname" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['firstname'];
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                          break;
-                                       case "requester.email" :
-                                          $user = new UserEmail();
-                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                          $value = $user->fields['email'];
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                          break;
-                                    }
-                                    if(is_numeric($content)) {
-                                       $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", "", $line['tasks'][$key]['content']);
-                                    }
+                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                  }
                               }
                            }
@@ -2483,7 +2220,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            if (!$this->createSonsTickets($parent_tickets_id,
                                                          $this->mergeFields($parent_fields,
                                                                             $parent_ticketfields),
-                                                         $parent_tickets_id, $line['tasks'], $tasklevel,$inputField,$inputFieldMain)) {
+                                                         $parent_tickets_id, $line['tasks'], $tasklevel, $inputField, $inputFieldMain)) {
                               $KO[] = 1;
                            }
                         } else {
@@ -2525,72 +2262,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                                           $explodeTitle2 = explode(".", $title);
 
-                                          if(isset($values['fields'][$explodeTitle2[0]])) {
+                                          if (isset($values['fields'][$explodeTitle2[0]])) {
                                              $field_object = new PluginMetademandsField();
-                                             if($field_object->getFromDB($explodeTitle2[0])) {
-                                                if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                                   $users_id = $values['fields'][$explodeTitle2[0]];
-                                                   switch ($explodeTitle2[1]) {
-                                                      case "login" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['name'];
-                                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                         break;
-                                                      case "name" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['realname'];
-                                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                         break;
-                                                      case "firstname" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['firstname'];
-                                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                         break;
-                                                      case "email" :
-                                                         $user = new UserEmail();
-                                                         $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                         $value = $user->fields['email'];
-                                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                         break;
-                                                   }
+                                             if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                                   $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                                   $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                                 }
                                              }
-
                                           }
-
                                           $users_id = $parent_fields['_users_id_requester'];
-                                          switch ($title) {
-                                             case "requester.login" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['name'];
-                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                break;
-                                             case "requester.name" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['realname'];
-                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                break;
-                                             case "requester.firstname" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['firstname'];
-                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                break;
-                                             case "requester.email" :
-                                                $user = new UserEmail();
-                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                $value = $user->fields['email'];
-                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                break;
-                                          }
-                                          if(is_numeric($title)) {
-                                             $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", "", $line['tasks'][$key]['tickettasks_name']);
-                                          }
+                                          $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                        }
                                     }
                                  } else {
@@ -2628,72 +2310,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                                              $explodeTitle2 = explode(".", $title);
 
-                                             if(isset($values['fields'][$explodeTitle2[0]])) {
+                                             if (isset($values['fields'][$explodeTitle2[0]])) {
                                                 $field_object = new PluginMetademandsField();
-                                                if($field_object->getFromDB($explodeTitle2[0])) {
-                                                   if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                                if ($field_object->getFromDB($explodeTitle2[0])) {
+                                                   if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                       $users_id = $values['fields'][$explodeTitle2[0]];
-                                                      switch ($explodeTitle2[1]) {
-                                                         case "login" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['name'];
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                            break;
-                                                         case "name" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['realname'];
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                            break;
-                                                         case "firstname" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['firstname'];
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                            break;
-                                                         case "email" :
-                                                            $user = new UserEmail();
-                                                            $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                            $value = $user->fields['email'];
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                            break;
-                                                      }
+                                                      $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                                    }
                                                 }
-
                                              }
-
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             switch ($title) {
-                                                case "requester.login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "requester.name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "requester.firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "requester.email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                             }
-                                             if(is_numeric($title)) {
-                                                $str = str_replace("#" . $title . "#", "", $str);
-                                             }
+                                             $str = self::getContentForUser($title, $users_id, $title, $str, true);
                                           }
 
                                        }
@@ -2746,75 +2373,20 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                                     $explodeTitle2 = explode(".", $title);
 
-                                    if(isset($values['fields'][$explodeTitle2[0]])) {
+                                    if (isset($values['fields'][$explodeTitle2[0]])) {
                                        $field_object = new PluginMetademandsField();
-                                       if($field_object->getFromDB($explodeTitle2[0])) {
-                                          if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                             $users_id = $values['fields'][$explodeTitle2[0]];
-                                             switch ($explodeTitle2[1]) {
-                                                case "login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                                case "email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                                   break;
-                                             }
+                                       if ($field_object->getFromDB($explodeTitle2[0])) {
+                                          if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                             $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                             $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                           }
                                        }
-
                                     }
 
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    switch ($title) {
-                                       case "requester.login" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['name'];
-                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                          break;
-                                       case "requester.name" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['realname'];
-                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                          break;
-                                       case "requester.firstname" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['firstname'];
-                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                          break;
-                                       case "requester.email" :
-                                          $user = new UserEmail();
-                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                          $value = $user->fields['email'];
-                                          $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
-                                          break;
-                                    }
-                                    if(is_numeric($title)) {
-                                       $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", "", $line['tasks'][$key]['tickettasks_name']);
-                                    }
+                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                  }
                               }
-
 
                               //replace #id# in content with the value
                               do {
@@ -2840,82 +2412,27 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                           $result[$fields['rank']]['display'] = false;
                                           $parent_fields_id                   = 0;
                                           $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                          if($fields['type'] == "textarea") {
-                                             if($line['tasks'][$key]["hideTable"] == 1) {
-                                                $value = str_replace("\\n",'","',$value);
+                                          if ($fields['type'] == "textarea") {
+                                             if ($line['tasks'][$key]["formatastable"] == 0) {
+                                                $value = str_replace("\\n", '","', $value);
                                              }
                                           }
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                          $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                        } else {
 
                                           $explodeContent2 = explode(".", $content);
 
-                                          if(isset($values['fields'][$explodeContent2[0]])) {
+                                          if (isset($values['fields'][$explodeContent2[0]])) {
                                              $field_object = new PluginMetademandsField();
-                                             if($field_object->getFromDB($explodeContent2[0])) {
-                                                if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                                   $users_id = $values['fields'][$explodeContent2[0]];
-                                                   switch ($explodeContent2[1]) {
-                                                      case "login" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['name'];
-                                                         $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                         break;
-                                                      case "name" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['realname'];
-                                                         $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                         break;
-                                                      case "firstname" :
-                                                         $user = new User();
-                                                         $user->getFromDB($users_id);
-                                                         $value = $user->fields['firstname'];
-                                                         $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                         break;
-                                                      case "email" :
-                                                         $user = new UserEmail();
-                                                         $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                         $value = $user->fields['email'];
-                                                         $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                         break;
-                                                   }
+                                             if ($field_object->getFromDB($explodeContent2[0])) {
+                                                if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                                   $users_id                       = $values['fields'][$explodeContent2[0]];
+                                                   $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                                 }
                                              }
-
                                           }
-
                                           $users_id = $parent_fields['_users_id_requester'];
-                                          switch ($content) {
-                                             case "requester.login" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['name'];
-                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                break;
-                                             case "requester.name" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['realname'];
-                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                break;
-                                             case "requester.firstname" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['firstname'];
-                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                break;
-                                             case "requester.email" :
-                                                $user = new UserEmail();
-                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                $value = $user->fields['email'];
-                                                $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                break;
-                                          }
-                                          if(is_numeric($content)) {
-                                             $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", "", $line['tasks'][$key]['content']);
-                                          }
+                                          $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                        }
                                     }
                                  } else {
@@ -2945,13 +2462,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                              $result[$fields['rank']]['display'] = false;
                                              $parent_fields_id                   = 0;
                                              $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                             if($fields['type'] == "textarea") {
-                                                if($line['tasks'][$key]["hideTable"] == 1) {
-                                                   $value = str_replace("\\n",'","',$value);
+                                             if ($fields['type'] == "textarea") {
+                                                if ($line['tasks'][$key]["formatastable"] == 0) {
+                                                   $value = str_replace("\\n", '","', $value);
                                                 }
                                              }
 
-                                             $str                                = str_replace("#" . $content . "#", $value, $str);
+                                             $str = str_replace("#" . $content . "#", $value, $str);
                                              if (!is_null($value) && !empty($value)) {
                                                 $find = true;
                                              }
@@ -2959,72 +2476,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                                              $explodeContent2 = explode(".", $content);
 
-                                             if(isset($values['fields'][$explodeContent2[0]])) {
+                                             if (isset($values['fields'][$explodeContent2[0]])) {
                                                 $field_object = new PluginMetademandsField();
-                                                if($field_object->getFromDB($explodeContent2[0])) {
-                                                   if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                                if ($field_object->getFromDB($explodeContent2[0])) {
+                                                   if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                       $users_id = $values['fields'][$explodeContent2[0]];
-                                                      switch ($explodeContent2[1]) {
-                                                         case "login" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['name'];
-                                                            $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                            break;
-                                                         case "name" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['realname'];
-                                                            $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                            break;
-                                                         case "firstname" :
-                                                            $user = new User();
-                                                            $user->getFromDB($users_id);
-                                                            $value = $user->fields['firstname'];
-                                                            $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                            break;
-                                                         case "email" :
-                                                            $user = new UserEmail();
-                                                            $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                            $value = $user->fields['email'];
-                                                            $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                            break;
-                                                      }
+                                                      $str      = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
                                                    }
                                                 }
-
                                              }
-
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             switch ($content) {
-                                                case "requester.login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "requester.name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "requester.firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "requester.email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                             }
-                                             if(is_numeric($content)) {
-                                                $str = str_replace("#" . $content . "#", "", $str);
-                                             }
+                                             $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                           }
                                        }
                                        if ($find == true) {
@@ -3070,82 +2532,27 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $result[$fields['rank']]['display'] = false;
                                     $parent_fields_id                   = 0;
                                     $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                    if($fields['type'] == "textarea") {
-                                       if($line['tasks'][$key]["hideTable"] == 1) {
-                                          $value = str_replace("\\n",'","',$value);
+                                    if ($fields['type'] == "textarea") {
+                                       if ($line['tasks'][$key]["formatastable"] == 0) {
+                                          $value = str_replace("\\n", '","', $value);
                                        }
                                     }
-                                    $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                    $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
                                  } else {
 
                                     $explodeContent2 = explode(".", $content);
 
-                                    if(isset($values['fields'][$explodeContent2[0]])) {
+                                    if (isset($values['fields'][$explodeContent2[0]])) {
                                        $field_object = new PluginMetademandsField();
-                                       if($field_object->getFromDB($explodeContent2[0])) {
-                                          if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                             $users_id = $values['fields'][$explodeContent2[0]];
-                                             switch ($explodeContent2[1]) {
-                                                case "login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                   break;
-                                                case "name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                   break;
-                                                case "firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                   break;
-                                                case "email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                   break;
-                                             }
+                                       if ($field_object->getFromDB($explodeContent2[0])) {
+                                          if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                             $users_id                       = $values['fields'][$explodeContent2[0]];
+                                             $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                           }
                                        }
-
                                     }
-
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    switch ($content) {
-                                       case "requester.login" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['name'];
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                          break;
-                                       case "requester.name" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['realname'];
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                          break;
-                                       case "requester.firstname" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['firstname'];
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                          break;
-                                       case "requester.email" :
-                                          $user = new UserEmail();
-                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                          $value = $user->fields['email'];
-                                          $line['tasks'][$key]['content']     = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                          break;
-                                    }
-                                    if(is_numeric($content)) {
-                                       $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", "", $line['tasks'][$key]['content']);
-                                    }
+                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                  }
                               }
                            }
@@ -3266,18 +2673,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
     */
    private function formatFields(array $parent_fields, $metademands_id, $values_form, $options = []) {
 
-      $config_data = PluginMetademandsConfig::getInstance();
-      $langTech = $config_data['languageTech'];
+      $config_data       = PluginMetademandsConfig::getInstance();
+      $langTech          = $config_data['languageTech'];
       $result            = [];
       $result['content'] = "";
       $parent_fields_id  = 0;
 
 
       foreach ($values_form as $k => $values) {
-         if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name',$langTech))) {
+         if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name', $langTech))) {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
          }
-         if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+         if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
             $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
             $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
          }
@@ -3314,7 +2721,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                }
             }
 
-            if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                if ($nb % 2 == 0) {
                   $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
                } else {
@@ -3322,10 +2729,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
                }
             }
             $nb++;
-            $hideTable = $options['hideTable'] ?? false;
-            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id,false, $hideTable,$langTech);
+            $formatAsTable = $options['formatastable'] ?? true;
+            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
 
-            if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                $resultTemp[$field['rank']]['content'] .= "</tr>";
             }
 
@@ -3335,7 +2742,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $result['content'] .= $tab['content'];
             }
          }
-         if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+         if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
             $result['content'] .= "</table>";
          }
       }
@@ -3352,16 +2759,16 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param $parent_fields_id
     * @param $return_value
     */
-   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false, $lang='') {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '') {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
       //      $style_title = "style='background-color: #cccccc;'";
 
-      if (empty($label = PluginMetademandsField::displayField($field['id'], 'name',$lang))) {
+      if (empty($label = PluginMetademandsField::displayField($field['id'], 'name', $lang))) {
          $label = Toolbox::stripslashes_deep($field['name']);
       }
-      if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2',$lang))) {
+      if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2', $lang))) {
          $label2 = Toolbox::stripslashes_deep($field['label2']);
       }
 
@@ -3388,11 +2795,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
          switch ($field['type']) {
             case 'title' :
             case 'title-block' :
-               if($hideTable == false) {
+               if ($formatAsTable == true) {
                   $result[$field['rank']]['content'] .= "<th colspan='2'>";
                }
                $result[$field['rank']]['content'] .= $label;
-               if($hideTable == false) {
+               if ($formatAsTable == true) {
                   $result[$field['rank']]['content'] .= "</th>";
                }
                break;
@@ -3403,7 +2810,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                    && $field['item'] == 'other') {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                   foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k,$lang))) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                         $custom_values[$k] = $ret;
                      }
                   }
@@ -3411,15 +2818,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      if ($return_value == true) {
                         return $custom_values[$field['value']];
                      } else {
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td $style_title>";
                         }
                         $result[$field['rank']]['content'] .= $label;
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td><td>";
                         }
                         $result[$field['rank']]['content'] .= $custom_values[$field['value']];
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
 
@@ -3433,12 +2840,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($field['value'] != 0) {
                      switch ($field['item']) {
                         case 'User':
-                           if($hideTable == false) {
-                              $result[$field['rank']]['content'] .= "<td $style_title>" ;
+                           if ($formatAsTable == true) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
-                           $result[$field['rank']]['content'] .= $label ;
-                           if($hideTable == false) {
-                              $result[$field['rank']]['content'] .="</td>";
+                           $result[$field['rank']]['content'] .= $label;
+                           if ($formatAsTable == true) {
+                              $result[$field['rank']]['content'] .= "</td>";
                            }
 
                            $result[$field['rank']]['display'] = true;
@@ -3466,21 +2873,21 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                            }
                            if (empty($content)) {
-                              if($hideTable == false) {
+                              if ($formatAsTable == true) {
                                  $result[$field['rank']]['content'] .= "<td>";
                               }
-                              $result[$field['rank']]['content'] .= getUserName($field['value']) ;
-                              if($hideTable == false) {
+                              $result[$field['rank']]['content'] .= getUserName($field['value']);
+                              if ($formatAsTable == true) {
                                  $result[$field['rank']]['content'] .= "</td>";
                               }
 
                            } else {
-                              if($hideTable == false) {
-                                 $result[$field['rank']]['content'] .= "<td>" ;
+                              if ($formatAsTable == true) {
+                                 $result[$field['rank']]['content'] .= "<td>";
                               }
-                              $result[$field['rank']]['content'] .= $content ;
-                              if($hideTable == false) {
-                                 $result[$field['rank']]['content'] .="</td>";
+                              $result[$field['rank']]['content'] .= $content;
+                              if ($formatAsTable == true) {
+                                 $result[$field['rank']]['content'] .= "</td>";
                               }
 
                            }
@@ -3493,17 +2900,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         case 'ITILCategory_Metademands':
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td><td>";
                            }
 
                            $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'),
                                                                                            $field['value']);
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
                            if ($return_value == true) {
@@ -3514,15 +2921,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         case 'mydevices':
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td><td>";
                            }
 
-                           $splitter                          = explode("_", $field['value']);
+                           $splitter = explode("_", $field['value']);
                            if (count($splitter) == 2) {
                               $itemtype = $splitter[0];
                               $items_id = $splitter[1];
@@ -3531,7 +2938,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($itemtype),
                                                                                               $items_id);
                            }
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
                            if ($return_value == true) {
@@ -3546,16 +2953,16 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            break;
                         case 'urgency':
                            $result[$field['rank']]['display'] = true;
-                           if($hideTable == false) {
-                              $result[$field['rank']]['content'] .= "<td $style_title>" ;
+                           if ($formatAsTable == true) {
+                              $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
-                           $result[$field['rank']]['content'] .= $label ;
-                           if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= $label;
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                               $result[$field['rank']]['content'] .= "<td>";
                            }
                            $result[$field['rank']]['content'] .= Ticket::getUrgencyName($field['value']);
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
 
@@ -3566,16 +2973,16 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            break;
                         case 'impact':
                            $result[$field['rank']]['display'] = true;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
                            }
                            $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
                               $result[$field['rank']]['content'] .= "<td>";
                            }
                            $result[$field['rank']]['content'] .= Ticket::getImpactName($field['value']);
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
 
@@ -3586,16 +2993,16 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            break;
                         case 'priority':
                            $result[$field['rank']]['display'] = true;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                               $result[$field['rank']]['content'] .= "<td>";
                            }
-                           $result[$field['rank']]['content'] .= Ticket::getPriorityName($field['value']) ;
-                           if($hideTable == false) {
+                           $result[$field['rank']]['content'] .= Ticket::getPriorityName($field['value']);
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
 
@@ -3607,19 +3014,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         default:
                            $dbu                               = new DbUtils();
                            $result[$field['rank']]['display'] = true;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "<td $style_title>";
                            }
                            $result[$field['rank']]['content'] .= $label;
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td><td>";
                            }
                            $result[$field['rank']]['content'] .= Dropdown::getDropdownName($dbu->getTableForItemType($field['item']),
                                                                                            $field['value']);
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $result[$field['rank']]['content'] .= "</td>";
                            }
-
 
 
                            if ($return_value == true) {
@@ -3647,15 +3053,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         return implode(', ', $parseValue);
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td $style_title>";
                         }
                         $result[$field['rank']]['content'] .= $label;
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td><td>";
                         }
                         $result[$field['rank']]['content'] .= implode('<br>', $parseValue);
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
 
@@ -3663,29 +3069,30 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                   } else {
                      $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+
                      foreach ($custom_values as $k => $val) {
-                        if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k,$lang))) {
+                        if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                            $custom_values[$k] = $ret;
                         }
                      }
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                      $parseValue     = [];
-                     foreach ($field['value'] as $value) {
+                     foreach ($field['value'] as $k => $value) {
                         array_push($parseValue, $custom_values[$value]);
                      }
                      if ($return_value == true) {
                         return implode(', ', $parseValue);
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td $style_title>";
                         }
                         $result[$field['rank']]['content'] .= $label;
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td><td>";
                         }
                         $result[$field['rank']]['content'] .= implode('<br>', $parseValue);
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
 
@@ -3696,73 +3103,73 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                   $information = json_decode($field['informations_to_display']);
                   $parseValue  = [];
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $dataItems = "<table>";
                   }
-                  $item        = new $field["item"]();
+                  $item = new $field["item"]();
                   foreach ($field['value'] as $value) {
 
 
                      if ($item->getFromDB($value)) {
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $dataItems .= "<tr>";
                         }
 
                         if (in_array('full_name', $information)) {
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
-                           $dataItems .= $field["item"]::getFriendlyNameById($value) ;
-                           if($hideTable == false) {
+                           $dataItems .= $field["item"]::getFriendlyNameById($value);
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
 
                         }
                         if (in_array('realname', $information)) {
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
-                           $dataItems .=  $item->fields["realname"] ;
-                           if($hideTable == false) {
+                           $dataItems .= $item->fields["realname"];
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
                         }
                         if (in_array('firstname', $information)) {
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
-                           $dataItems .= $item->fields["firstname"] ;
-                           if($hideTable == false) {
+                           $dataItems .= $item->fields["firstname"];
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
                         }
                         if (in_array('name', $information)) {
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
-                           $dataItems .= $item->fields["name"] ;
-                           if($hideTable == false) {
+                           $dataItems .= $item->fields["name"];
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
                         }
                         if (in_array('email', $information)) {
-                           if($hideTable == false) {
+                           if ($formatAsTable == true) {
                               $dataItems .= "<td>";
                            }
-                           $dataItems .= $item->getDefaultEmail() ;
-                           if($hideTable == false) {
+                           $dataItems .= $item->getDefaultEmail();
+                           if ($formatAsTable == true) {
                               $dataItems .= "</td>";
                            }
 
                         }
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $dataItems .= "</tr>";
                         }
                      }
 
                      array_push($parseValue, $field["item"]::getFriendlyNameById($value));
                   }
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $dataItems .= "</table>";
                   }
                   //TODO MAKE TABLE IN A TABLE
@@ -3770,15 +3177,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      return implode(',', $parseValue);
                   } else {
                      $result[$field['rank']]['display'] = true;
-                     if($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "<td $style_title>";
                      }
                      $result[$field['rank']]['content'] .= $label;
-                     if($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "</td><td>";
                      }
-                     $result[$field['rank']]['content'] .= $dataItems ;
-                     if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= $dataItems;
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "</td>";
                      }
 
@@ -3795,15 +3202,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
-                     $result[$field['rank']]['content'] .= "<td $style_title>" ;
+                  if ($formatAsTable == true) {
+                     $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
-                  $result[$field['rank']]['content'] .=  $label;
-                  if($hideTable == false) {
+                  $result[$field['rank']]['content'] .= $label;
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . $field['value'] . '</a>';
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= '</td>';
                   }
 
@@ -3818,15 +3225,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
-                  $result[$field['rank']]['content'] .= $label ;
-                  if($hideTable == false) {
+                  $result[$field['rank']]['content'] .= $label;
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= ($field['value']);
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3836,25 +3243,25 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if (!empty($field['custom_values'])) {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                   foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k,$lang))) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                         $custom_values[$k] = $ret;
                      }
                   }
                   if (!empty($field['value'])) {
-                     if(is_string($field['value'])) {
+                     if (is_string($field['value'])) {
                         $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                      } else {
-                        $field['value'] = json_decode(json_encode($field['value']),true);
+                        $field['value'] = json_decode(json_encode($field['value']), true);
                      }
 
                   }
                   $custom_checkbox                   = [];
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3867,11 +3274,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($return_value == true) {
                      return implode(',', $custom_checkbox);
                   } else {
-                     if($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "<td>";
                      }
                      $result[$field['rank']]['content'] .= implode('<br>', $custom_checkbox);
-                     if($hideTable == false) {
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "</td>";
                      }
 
@@ -3882,11 +3289,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         return $field['value'];
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td>";
                         }
                         $result[$field['rank']]['content'] .= $field['value'];
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
 
@@ -3898,7 +3305,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if (!empty($field['custom_values'])) {
                   $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                   foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k,$lang))) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                         $custom_values[$k] = $ret;
                      }
                   }
@@ -3906,15 +3313,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                   }
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
-                  $custom_radio                      = "";
+                  $custom_radio = "";
                   foreach ($custom_values as $key => $val) {
                      if ($field['value'] == $key && $field['value'] !== "") {
                         $custom_radio = $val;
@@ -3923,11 +3330,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($return_value == true) {
                      return $custom_radio;
                   } else {
-                     if($hideTable == false) {
-                        $result[$field['rank']]['content'] .= "<td>" ;
+                     if ($formatAsTable == true) {
+                        $result[$field['rank']]['content'] .= "<td>";
                      }
-                     $result[$field['rank']]['content'] .= $custom_radio ;
-                     if($hideTable == false) {
+                     $result[$field['rank']]['content'] .= $custom_radio;
+                     if ($formatAsTable == true) {
                         $result[$field['rank']]['content'] .= "</td>";
                      }
 
@@ -3938,11 +3345,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         return $label;
                      } else {
                         $result[$field['rank']]['display'] = true;
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "<td>";
                         }
                         $result[$field['rank']]['content'] .= $label;
-                        if($hideTable == false) {
+                        if ($formatAsTable == true) {
                            $result[$field['rank']]['content'] .= "</td>";
                         }
                      }
@@ -3962,15 +3369,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return Html::convDate($field['value']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDate($field['value']);
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -3981,15 +3388,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return Html::convDateTime($field['value']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
-                  $result[$field['rank']]['content'] .=  Html::convDateTime($field['value']);
-                  if($hideTable == false) {
+                  $result[$field['rank']]['content'] .= Html::convDateTime($field['value']);
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -4000,24 +3407,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return Html::convDate($field['value']) . " - " . Html::convDate($field['value2']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDate($field['value']);
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td></tr>";
                      $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label2;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDate($field['value2']);
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -4029,24 +3436,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return Html::convDateTime($field['value']) . " - " . Html::convDateTime($field['value2']);
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDateTime($field['value']);
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td></tr>";
                      $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label2;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= Html::convDateTime($field['value2']);
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -4058,15 +3465,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return $field['value'];
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
                   $result[$field['rank']]['content'] .= $field['value'];
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -4082,15 +3489,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   return $val;
                } else {
                   $result[$field['rank']]['display'] = true;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<td $style_title>";
                   }
                   $result[$field['rank']]['content'] .= $label;
-                  if($hideTable == false) {
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td><td>";
                   }
-                  $result[$field['rank']]['content'] .= $val ;
-                  if($hideTable == false) {
+                  $result[$field['rank']]['content'] .= $val;
+                  if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
 
@@ -4103,7 +3510,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $parent_field  = $field;
                   $custom_values = PluginMetademandsField::_unserialize($metademand_field->fields['custom_values']);
                   foreach ($custom_values as $k => $val) {
-                     if (!empty($ret = PluginMetademandsField::displayField($field["parent_field_id"], "custom" . $k,$lang))) {
+                     if (!empty($ret = PluginMetademandsField::displayField($field["parent_field_id"], "custom" . $k, $lang))) {
                         $custom_values[$k] = $ret;
                      }
                   }
@@ -4111,7 +3518,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $parent_field['type']          = $metademand_field->fields['type'];
                   $parent_field['item']          = $metademand_field->fields['item'];
 
-                  self::getContentWithField($parent_fields, $fields_id, $parent_field, $result, $parent_fields_id,false,false,$lang);
+                  self::getContentWithField($parent_fields, $fields_id, $parent_field, $result, $parent_fields_id, false, false, $lang);
                }
 
                break;
@@ -4156,7 +3563,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     *
     * @return array
     */
-   function formatTicketFields($metademands_id, $itilcategory, $values,$users_id_requester) {
+   function formatTicketFields($metademands_id, $itilcategory, $values, $users_id_requester) {
       $inputs              = [];
       $ticket_field        = new PluginMetademandsTicketField();
       $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
@@ -4204,26 +3611,26 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  case "requester.login" :
                                     $user = new User();
                                     $user->getFromDB($users_id);
-                                    $v = $user->fields['name'];
-                                    $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                    $v              = $user->fields['name'];
+                                    $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                     break;
                                  case "requester.name" :
                                     $user = new User();
                                     $user->getFromDB($users_id);
-                                    $v = $user->fields['realname'];
-                                    $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                    $v              = $user->fields['realname'];
+                                    $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                     break;
                                  case "requester.firstname" :
                                     $user = new User();
                                     $user->getFromDB($users_id);
-                                    $v = $user->fields['firstname'];
-                                    $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                    $v              = $user->fields['firstname'];
+                                    $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                     break;
                                  case "requester.email" :
                                     $user = new UserEmail();
-                                    $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                    $v = $user->fields['email'];
-                                    $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                    $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
+                                    $v              = $user->fields['email'];
+                                    $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                     break;
                               }
                               if(is_numeric($title)) {
@@ -4268,26 +3675,26 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     case "requester.login" :
                                        $user = new User();
                                        $user->getFromDB($users_id);
-                                       $v = $user->fields['name'];
-                                       $str                                = str_replace("#" . $title . "#", $v, $str);
+                                       $v   = $user->fields['name'];
+                                       $str = str_replace("#" . $title . "#", $v, $str);
                                        break;
                                     case "requester.name" :
                                        $user = new User();
                                        $user->getFromDB($users_id);
-                                       $v = $user->fields['realname'];
-                                       $str                                = str_replace("#" . $title . "#", $v, $str);
+                                       $v   = $user->fields['realname'];
+                                       $str = str_replace("#" . $title . "#", $v, $str);
                                        break;
                                     case "requester.firstname" :
                                        $user = new User();
                                        $user->getFromDB($users_id);
-                                       $v = $user->fields['firstname'];
-                                       $str                                = str_replace("#" . $title . "#", $v, $str);
+                                       $v   = $user->fields['firstname'];
+                                       $str = str_replace("#" . $title . "#", $v, $str);
                                        break;
                                     case "requester.email" :
                                        $user = new UserEmail();
-                                       $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                       $v = $user->fields['email'];
-                                       $str                                = str_replace("#" . $title . "#", $v, $str);
+                                       $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
+                                       $v   = $user->fields['email'];
+                                       $str = str_replace("#" . $title . "#", $v, $str);
                                        break;
                                  }
                                  if(is_numeric($title)) {
@@ -4338,26 +3745,26 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            case "requester.login" :
                               $user = new User();
                               $user->getFromDB($users_id);
-                              $v = $user->fields['name'];
-                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                              $v              = $user->fields['name'];
+                              $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                               break;
                            case "requester.name" :
                               $user = new User();
                               $user->getFromDB($users_id);
-                              $v = $user->fields['realname'];
-                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                              $v              = $user->fields['realname'];
+                              $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                               break;
                            case "requester.firstname" :
                               $user = new User();
                               $user->getFromDB($users_id);
-                              $v = $user->fields['firstname'];
-                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                              $v              = $user->fields['firstname'];
+                              $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                               break;
                            case "requester.email" :
                               $user = new UserEmail();
-                              $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                              $v = $user->fields['email'];
-                              $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                              $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
+                              $v              = $user->fields['email'];
+                              $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                               break;
                         }
                         if(is_numeric($title)) {
@@ -4442,7 +3849,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $list_fields  = $line['form'];
                      $searchOption = Search::getOptions('Ticket');
                      $task->getFromDB($son_ticket_data['tasks_id']);
-                     if($task->fields['useBlock'] == 1) {
+                     if ($task->fields['useBlock'] == 1) {
                         $blocks = json_decode($task->fields["block_use"], true);
                         if (!empty($blocks)) {
                            foreach ($line['form'] as $i => $l) {
@@ -4451,7 +3858,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  unset($values_form[$i]);
                               }
                            }
-                           $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form],['hideTable' => $task->fields['hideTable']]);
+                           $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
                            $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
                         } else {
                            $parent_fields_content['content'] = $parent_fields['content'];
@@ -4510,13 +3917,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
             $config->getFromDB(1);
 
             if (!empty($son_ticket_data['content'])) {
-               if($task->fields['hideTable'] == false) {
+               if ($task->fields['formatastable'] == true) {
                   $content = "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                              "</th></tr><tr><td colspan='2'>";
                }
 
-               $content .= $son_ticket_data['content'];
-               if($task->fields['hideTable'] == false) {
+               $content .= Glpi\RichText\RichText::getSafeHtml($son_ticket_data['content']);
+
+               if ($task->fields['formatastable'] == true) {
                   $content .= "</td></tr></table><br>";
                }
             }
@@ -4524,7 +3932,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             if ($config->getField('childs_parent_content') == 1) {
                if (!empty($parent_fields_content['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Parent tickets', 'metademands') .
+                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
                               "</th></tr><tr><td colspan='2'>" . $parent_fields_content['content'];
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "</td></tr></table><br>";
@@ -4536,7 +3944,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
             if (isset($parent_fields['_groups_id_assign'])) {
                $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
             }
-            $son_ticket_data = $this->mergeFields($son_ticket_data,$inputFieldMain);
+            $son_ticket_data = $this->mergeFields($son_ticket_data, $inputFieldMain);
             if ($son_tickets_id = $ticket->add(Toolbox::addslashes_deep($son_ticket_data))) {
 
                if (Plugin::isPluginActive('fields')) {
@@ -4601,9 +4009,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $result = $DB->query($query);
 
          if ($DB->numrows($result)) {
-            $values  = [];
+            $values       = [];
             $ticket_field = new PluginMetademandsTicket_Field();
-            $ticket_id = PluginMetademandsTicket_Task::getFirstTicket($tickets_data['id']);
+            $ticket_id    = PluginMetademandsTicket_Task::getFirstTicket($tickets_data['id']);
             $fields       = $ticket_field->find(['tickets_id' => $ticket_id]);
             foreach ($fields as $f) {
                $values['fields'][$f['plugin_metademands_fields_id']] = json_decode($f['value']);
@@ -4637,14 +4045,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      }
                      $parent_groups_tickets_data = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
                                                                          'type'       => CommonITILActor::ASSIGN]);
-                     $requesters = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
+                     $requesters                 = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
                                                                          'type'       => CommonITILActor::REQUESTER]);
-                     if(!empty($requesters)) {
-                        $requester = array_shift($requesters);
-                        $parent_fields['_users_id_requester'] =$requester['users_id'];
+                     if (!empty($requesters)) {
+                        $requester                            = array_shift($requesters);
+                        $parent_fields['_users_id_requester'] = $requester['users_id'];
                      } else {
                         $parent_fields['_users_id_requester'] = Session::getLoginUserID();
-                        }
+                     }
 
                      if (count($parent_groups_tickets_data)) {
                         $parent_groups_tickets_data         = reset($parent_groups_tickets_data);
@@ -4670,85 +4078,28 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                     $fields['value2'] = $values['fields'][$title . '-2'];
                                  }
-                                 $resultData                                  = [];
-                                 $resultData['content']                       = "";
-                                 $resultData[$fields['rank']]['content']      = "";
-                                 $resultData[$fields['rank']]['display']      = false;
-                                 $parent_fields_id                        = 0;
-                                 $value                                   = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                 $resultData                                      = [];
+                                 $resultData['content']                           = "";
+                                 $resultData[$fields['rank']]['content']          = "";
+                                 $resultData[$fields['rank']]['display']          = false;
+                                 $parent_fields_id                                = 0;
+                                 $value                                           = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
                                  $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
                               } else {
                                  $explodeTitle2 = explode(".", $title);
 
-                                 if(isset($values['fields'][$explodeTitle2[0]])) {
+                                 if (isset($values['fields'][$explodeTitle2[0]])) {
                                     $field_object = new PluginMetademandsField();
-                                    if($field_object->getFromDB($explodeTitle2[0])) {
-                                       if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                          $users_id = $values['fields'][$explodeTitle2[0]];
-                                          switch ($explodeTitle2[1]) {
-                                             case "login" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['name'];
-                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                                break;
-                                             case "name" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['realname'];
-                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                                break;
-                                             case "firstname" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['firstname'];
-                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                                break;
-                                             case "email" :
-                                                $user = new UserEmail();
-                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                $value = $user->fields['email'];
-                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                                break;
-                                          }
+                                    if ($field_object->getFromDB($explodeTitle2[0])) {
+                                       if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                          $users_id                                        = $values['fields'][$explodeTitle2[0]];
+                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                        }
                                     }
-
                                  }
-
-
                                  $users_id = $parent_fields['_users_id_requester']; // TODO
-//                                 $users_id = Session::getLoginUserID(); // TODO
-                                 switch ($title) {
-                                    case "requester.login" :
-                                       $user = new User();
-                                       $user->getFromDB($users_id);
-                                       $value = $user->fields['name'];
-                                       $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                       break;
-                                    case "requester.name" :
-                                       $user = new User();
-                                       $user->getFromDB($users_id);
-                                       $value = $user->fields['realname'];
-                                       $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                       break;
-                                    case "requester.firstname" :
-                                       $user = new User();
-                                       $user->getFromDB($users_id);
-                                       $value = $user->fields['firstname'];
-                                       $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                       break;
-                                    case "requester.email" :
-                                       $user = new UserEmail();
-                                       $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                       $value = $user->fields['email'];
-                                       $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                       break;
-                                 }
-                                 if(is_numeric($title)) {
-                                    $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", "", $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                 }
-
+                                 //                                 $users_id = Session::getLoginUserID(); // TODO
+                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
                               }
                            }
                         } else {
@@ -4776,83 +4127,27 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $resultData['content']                  = "";
                                     $resultData[$fields['rank']]['content'] = "";
                                     $resultData[$fields['rank']]['display'] = false;
-                                    $parent_fields_id                   = 0;
-                                    $value                              = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
-                                    $str                                = str_replace("#" . $title . "#", $value, $str);
+                                    $parent_fields_id                       = 0;
+                                    $value                                  = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                    $str                                    = str_replace("#" . $title . "#", $value, $str);
                                     if (!is_null($value) && !empty($value)) {
                                        $find = true;
                                     }
                                  } else {
                                     $explodeTitle2 = explode(".", $title);
 
-                                    if(isset($values['fields'][$explodeTitle2[0]])) {
+                                    if (isset($values['fields'][$explodeTitle2[0]])) {
                                        $field_object = new PluginMetademandsField();
-                                       if($field_object->getFromDB($explodeTitle2[0])) {
-                                          if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                       if ($field_object->getFromDB($explodeTitle2[0])) {
+                                          if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                              $users_id = $values['fields'][$explodeTitle2[0]];
-                                             switch ($explodeTitle2[1]) {
-                                                case "login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                                case "email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $str                                = str_replace("#" . $title . "#", $value, $str);
-                                                   break;
-                                             }
+                                             $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                           }
                                        }
-
                                     }
-
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    switch ($title) {
-                                       case "requester.login" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['name'];
-                                          $str                                = str_replace("#" . $title . "#", $value, $str);
-                                          break;
-                                       case "requester.name" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['realname'];
-                                          $str                                = str_replace("#" . $title . "#", $value, $str);
-                                          break;
-                                       case "requester.firstname" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['firstname'];
-                                          $str                                = str_replace("#" . $title . "#", $value, $str);
-                                          break;
-                                       case "requester.email" :
-                                          $user = new UserEmail();
-                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                          $value = $user->fields['email'];
-                                          $str                                = str_replace("#" . $title . "#", $value, $str);
-                                          break;
-                                    }
-                                    if(is_numeric($title)) {
-                                       $str = str_replace("#" . $title . "#", "", $str);
-                                    }
+                                    $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                  }
-
                               }
                               if ($find == true) {
                                  break;
@@ -4861,10 +4156,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                            if (strpos($match, "#") !== false) {
                               $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                              $l['tickettasks_name']                   = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
+                              $l['tickettasks_name']                           = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
                            } else {
                               $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $tasks_data[$child_tasks_id]['tickettasks_name']);
-                              $l['tickettasks_name']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
+                              $l['tickettasks_name']                           = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
                            }
                            //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                         }
@@ -4872,8 +4167,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                      $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("<@", "[", $tasks_data[$child_tasks_id]['tickettasks_name']);
                      $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("@>", "]", $tasks_data[$child_tasks_id]['tickettasks_name']);
-                     $l['tickettasks_name']                   = str_replace("<@", "[", $l['tickettasks_name']);
-                     $l['tickettasks_name']                   = str_replace("@>", "]", $l['tickettasks_name']);
+                     $l['tickettasks_name']                           = str_replace("<@", "[", $l['tickettasks_name']);
+                     $l['tickettasks_name']                           = str_replace("@>", "]", $l['tickettasks_name']);
 
                      $explodeTitle = explode("#", $l['tickettasks_name']);
                      foreach ($explodeTitle as $title) {
@@ -4891,85 +4186,29 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                && isset($values['fields'][$title . '-2'])) {
                               $fields['value2'] = $values['fields'][$title . '-2'];
                            }
-                           $resultData                                  = [];
-                           $resultData['content']                       = "";
-                           $resultData[$fields['rank']]['content']      = "";
-                           $resultData[$fields['rank']]['display']      = false;
-                           $parent_fields_id                        = 0;
-                           $value                                   = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                           $resultData                                      = [];
+                           $resultData['content']                           = "";
+                           $resultData[$fields['rank']]['content']          = "";
+                           $resultData[$fields['rank']]['display']          = false;
+                           $parent_fields_id                                = 0;
+                           $value                                           = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
                            $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
                         } else {
                            $explodeTitle2 = explode(".", $title);
 
-                           if(isset($values['fields'][$explodeTitle2[0]])) {
+                           if (isset($values['fields'][$explodeTitle2[0]])) {
                               $field_object = new PluginMetademandsField();
-                              if($field_object->getFromDB($explodeTitle2[0])) {
-                                 if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                    $users_id = $values['fields'][$explodeTitle2[0]];
-                                    switch ($explodeTitle2[1]) {
-                                       case "login" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['name'];
-                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                          break;
-                                       case "name" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['realname'];
-                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                          break;
-                                       case "firstname" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['firstname'];
-                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                          break;
-                                       case "email" :
-                                          $user = new UserEmail();
-                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                          $value = $user->fields['email'];
-                                          $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                          break;
-                                    }
+                              if ($field_object->getFromDB($explodeTitle2[0])) {
+                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                    $users_id                                        = $values['fields'][$explodeTitle2[0]];
+                                    $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                  }
                               }
-
                            }
-
                            $users_id = $parent_fields['_users_id_requester'];
-                           switch ($title) {
-                              case "requester.login" :
-                                 $user = new User();
-                                 $user->getFromDB($users_id);
-                                 $value = $user->fields['name'];
-                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                 break;
-                              case "requester.name" :
-                                 $user = new User();
-                                 $user->getFromDB($users_id);
-                                 $value = $user->fields['realname'];
-                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                 break;
-                              case "requester.firstname" :
-                                 $user = new User();
-                                 $user->getFromDB($users_id);
-                                 $value = $user->fields['firstname'];
-                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                 break;
-                              case "requester.email" :
-                                 $user = new UserEmail();
-                                 $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                 $value = $user->fields['email'];
-                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                 break;
-                           }
-                           if(is_numeric($title)) {
-                              $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", "", $tasks_data[$child_tasks_id]['tickettasks_name']);
-                           }
+                           $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
                         }
                      }
-
 
                      //replace #id# in content with the value
                      do {
@@ -4993,79 +4232,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  $resultData['content']                  = "";
                                  $resultData[$fields['rank']]['content'] = "";
                                  $resultData[$fields['rank']]['display'] = false;
-                                 $parent_fields_id                   = 0;
-                                 $value                              = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
-                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                                 $parent_fields_id                       = 0;
+                                 $value                                  = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                 $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
                               } else {
 
                                  $explodeContent2 = explode(".", $content);
 
-                                 if(isset($values['fields'][$explodeContent2[0]])) {
+                                 if (isset($values['fields'][$explodeContent2[0]])) {
                                     $field_object = new PluginMetademandsField();
-                                    if($field_object->getFromDB($explodeContent2[0])) {
-                                       if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                          $users_id = $values['fields'][$explodeContent2[0]];
-                                          switch ($explodeContent2[1]) {
-                                             case "login" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['name'];
-                                                $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                                break;
-                                             case "name" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['realname'];
-                                                $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                                break;
-                                             case "firstname" :
-                                                $user = new User();
-                                                $user->getFromDB($users_id);
-                                                $value = $user->fields['firstname'];
-                                                $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                                break;
-                                             case "email" :
-                                                $user = new UserEmail();
-                                                $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                $value = $user->fields['email'];
-                                                $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                                break;
-                                          }
+                                    if ($field_object->getFromDB($explodeContent2[0])) {
+                                       if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                          $users_id                               = $values['fields'][$explodeContent2[0]];
+                                          $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $tasks_data[$child_tasks_id]['content']);
                                        }
                                     }
-
                                  }
-
                                  $users_id = $parent_fields['_users_id_requester'];
-                                 switch ($content) {
-                                    case "requester.login" :
-                                       $user = new User();
-                                       $user->getFromDB($users_id);
-                                       $value = $user->fields['name'];
-                                       $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                       break;
-                                    case "requester.name" :
-                                       $user = new User();
-                                       $user->getFromDB($users_id);
-                                       $value = $user->fields['realname'];
-                                       $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                       break;
-                                    case "requester.firstname" :
-                                       $user = new User();
-                                       $user->getFromDB($users_id);
-                                       $value = $user->fields['firstname'];
-                                       $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                       break;
-                                    case "requester.email" :
-                                       $user = new UserEmail();
-                                       $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                       $value = $user->fields['email'];
-                                       $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                       break;
-                                 }
-                                 if(is_numeric($sontent)) {
-                                    $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", "", $tasks_data[$child_tasks_id]['content']);
-                                 }
+                                 $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
                               }
                            }
                         } else {
@@ -5093,9 +4277,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                     $resultData['content']                  = "";
                                     $resultData[$fields['rank']]['content'] = "";
                                     $resultData[$fields['rank']]['display'] = false;
-                                    $parent_fields_id                   = 0;
-                                    $value                              = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
-                                    $str                                = str_replace("#" . $content . "#", $value, $str);
+                                    $parent_fields_id                       = 0;
+                                    $value                                  = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                    $str                                    = str_replace("#" . $content . "#", $value, $str);
                                     if (!is_null($value) && !empty($value)) {
                                        $find = true;
                                     }
@@ -5103,71 +4287,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                                     $explodeContent2 = explode(".", $content);
 
-                                    if(isset($values['fields'][$explodeContent2[0]])) {
+                                    if (isset($values['fields'][$explodeContent2[0]])) {
                                        $field_object = new PluginMetademandsField();
-                                       if($field_object->getFromDB($explodeContent2[0])) {
-                                          if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
+                                       if ($field_object->getFromDB($explodeContent2[0])) {
+                                          if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                              $users_id = $values['fields'][$explodeContent2[0]];
-                                             switch ($explodeContent2[1]) {
-                                                case "login" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['name'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "name" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['realname'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "firstname" :
-                                                   $user = new User();
-                                                   $user->getFromDB($users_id);
-                                                   $value = $user->fields['firstname'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                                case "email" :
-                                                   $user = new UserEmail();
-                                                   $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                                   $value = $user->fields['email'];
-                                                   $str                                = str_replace("#" . $content . "#", $value, $str);
-                                                   break;
-                                             }
+                                             $str      = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
                                           }
                                        }
-
                                     }
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    switch ($content) {
-                                       case "requester.login" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['name'];
-                                          $str                                = str_replace("#" . $content . "#", $value, $str);
-                                          break;
-                                       case "requester.name" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['realname'];
-                                          $str                                = str_replace("#" . $content . "#", $value, $str);
-                                          break;
-                                       case "requester.firstname" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['firstname'];
-                                          $str                                = str_replace("#" . $content . "#", $value, $str);
-                                          break;
-                                       case "requester.email" :
-                                          $user = new UserEmail();
-                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                          $value = $user->fields['email'];
-                                          $str                                = str_replace("#" . $content . "#", $value, $str);
-                                          break;
-                                    }
-                                    if(is_numeric($content)) {
-                                       $str = str_replace("#" . $content . "#", "", $str);
-                                    }
+                                    $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                  }
                               }
                               if ($find == true) {
@@ -5177,10 +4307,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            //                                    $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['content']);
                            if (strpos($match, "#") !== false) {
                               $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['content']);
-                              $l['content']                   = str_replace("[" . $match . "]", $str, $l['content']);
+                              $l['content']                           = str_replace("[" . $match . "]", $str, $l['content']);
                            } else {
                               $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $tasks_data[$child_tasks_id]['content']);
-                              $l['content']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
+                              $l['content']                           = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
                            }
                            //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                         }
@@ -5188,8 +4318,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                      $tasks_data[$child_tasks_id]['content'] = str_replace("<@", "[", $tasks_data[$child_tasks_id]['content']);
                      $tasks_data[$child_tasks_id]['content'] = str_replace("@>", "]", $tasks_data[$child_tasks_id]['content']);
-                     $l['content']                   = str_replace("<@", "[", $l['content']);
-                     $l['content']                   = str_replace("@>", "]", $l['content']);
+                     $l['content']                           = str_replace("<@", "[", $l['content']);
+                     $l['content']                           = str_replace("@>", "]", $l['content']);
 
                      $explodeContent = explode("#", $l['content']);
                      foreach ($explodeContent as $content) {
@@ -5211,79 +4341,24 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            $resultData['content']                  = "";
                            $resultData[$fields['rank']]['content'] = "";
                            $resultData[$fields['rank']]['display'] = false;
-                           $parent_fields_id                   = 0;
-                           $value                              = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
-                           $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
+                           $parent_fields_id                       = 0;
+                           $value                                  = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                           $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
                         } else {
 
                            $explodeContent2 = explode(".", $content);
 
-                           if(isset($values['fields'][$explodeContent2[0]])) {
+                           if (isset($values['fields'][$explodeContent2[0]])) {
                               $field_object = new PluginMetademandsField();
-                              if($field_object->getFromDB($explodeContent2[0])) {
-                                 if($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType() ) {
-                                    $users_id = $values['fields'][$explodeContent2[0]];
-                                    switch ($explodeContent2[1]) {
-                                       case "login" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['name'];
-                                          $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                          break;
-                                       case "name" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['realname'];
-                                          $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                          break;
-                                       case "firstname" :
-                                          $user = new User();
-                                          $user->getFromDB($users_id);
-                                          $value = $user->fields['firstname'];
-                                          $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                          break;
-                                       case "email" :
-                                          $user = new UserEmail();
-                                          $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                          $value = $user->fields['email'];
-                                          $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                          break;
-                                    }
+                              if ($field_object->getFromDB($explodeContent2[0])) {
+                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                    $users_id                               = $values['fields'][$explodeContent2[0]];
+                                    $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $tasks_data[$child_tasks_id]['content']);
                                  }
                               }
-
                            }
-
                            $users_id = $parent_fields['_users_id_requester'];
-                           switch ($content) {
-                              case "requester.login" :
-                                 $user = new User();
-                                 $user->getFromDB($users_id);
-                                 $value = $user->fields['name'];
-                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                 break;
-                              case "requester.name" :
-                                 $user = new User();
-                                 $user->getFromDB($users_id);
-                                 $value = $user->fields['realname'];
-                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                 break;
-                              case "requester.firstname" :
-                                 $user = new User();
-                                 $user->getFromDB($users_id);
-                                 $value = $user->fields['firstname'];
-                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                 break;
-                              case "requester.email" :
-                                 $user = new UserEmail();
-                                 $user->getFromDBByCrit(['users_id'=>$users_id,'is_default'=>1]);
-                                 $value = $user->fields['email'];
-                                 $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
-                                 break;
-                           }
-                           if(is_numeric($content)) {
-                              $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", "", $tasks_data[$child_tasks_id]['content']);
-                           }
+                           $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
                         }
                      }
 
@@ -5306,18 +4381,39 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    function showPluginForTicket($ticket) {
-
+      global $CFG_GLPI;
       if (!$this->canView()) {
          return false;
       }
       $metaValidation = new PluginMetademandsMetademandValidation();
-      if ($metaValidation->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])) {
-         if ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE) {
-            echo "<div align='center'><table class='tab_cadre_fixe'>";
-            echo "<tr><th colspan='6'>" . __('Metademand need a validation', 'metademands') . "</th></tr>";
-            echo "</table></div>";
-         }
+      if ($metaValidation->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
+          && ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE
+              || $metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK)
+          && Session::haveRight('plugin_metademands', UPDATE)) {
+         echo "<div align='center'><table class='tab_cadre_fixe'>";
+         echo "<tr><th colspan='6'>" . __('Metademand need a validation', 'metademands') . "</th></tr>";
+         echo "</table></div>";
+         echo "<div class='alert center'>";
+         echo __('Metademand need a validation', 'metademands');
+         echo "<br>";
+         echo __('Do you want to validate her?', 'metademands');
+         $style = "btn-orange";
+         echo "<br>";
+         echo "<br>";
+         echo "<a class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
+              . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</a>";
+
+         echo Ajax::createIframeModalWindow('metavalidation',
+                                            PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $ticket->fields['id'],
+                                            ['title'         => __('Metademand validation', 'metademands'),
+                                             'display'       => false,
+                                             'width'         => 200,
+                                             'height'        => 400,
+                                             'reloadonclose' => true]);
+
+         echo "</div>";
       }
+
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
       $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
       $tickets_found          = [];
@@ -5405,7 +4501,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                if (!empty($values['tickets_id'])) {
                   echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
-                       "?id=" . $ticket->fields['id'] . "'>" . $ticket->fields['name'] . "</a>";
+                       "?id=" . $ticket->fields['id'] . "&glpi_tab=Ticket$".'main'."'>" . $ticket->fields['name'] . "</a>";
                } else {
                   echo self::$SON_PREFIX . $values['tasks_name'];
                }
@@ -5578,6 +4674,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
             echo "</table></div>";
          }
+      } else {
+         echo "<div class='alert alert-important alert-info center'>";
+         echo __('There is no childs tickets / tasks', 'metademands');
+         echo "</div>";
       }
    }
 
@@ -5757,7 +4857,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
             // Redirect on finish
             if (isset($options['redirect'])) {
-               Html::redirect($CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/metademand.form.php?id=" . $new_metademands_id);
+               Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/metademand.form.php?id=" . $new_metademands_id);
             }
          }
          return true;
@@ -5870,7 +4970,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     *
     */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
-                                                       array $ids) {
+                                                       array         $ids) {
       switch ($ma->getAction()) {
          case 'duplicate' :
             if (__CLASS__ == $item->getType()) {
@@ -5947,7 +5047,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @global type $DB
     *
     */
-   static function displayField($id, $field,$lang='') {
+   static function displayField($id, $field, $lang = '') {
       global $DB;
 
       $res = "";
@@ -5962,29 +5062,29 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                   ]]);
 
       if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
-      $iterator2 = $DB->request([
-                                   'FROM'  => 'glpi_plugin_metademands_metademandtranslations',
-                                   'WHERE' => [
-                                      'itemtype' => self::getType(),
-                                      'items_id' => $id,
-                                      'field'    => $field,
-                                      'language' => $lang
-                                   ]]);
-   }
-
+         $iterator2 = $DB->request([
+                                      'FROM'  => 'glpi_plugin_metademands_metademandtranslations',
+                                      'WHERE' => [
+                                         'itemtype' => self::getType(),
+                                         'items_id' => $id,
+                                         'field'    => $field,
+                                         'language' => $lang
+                                      ]]);
+      }
 
 
       if (count($iterator)) {
-         while ($data = $iterator->next()) {
+         foreach ($iterator as $data) {
             $res = $data['value'];
          }
-      } else{
+      } else {
          //            $res = Dropdown::getDropdownName('glpi_plugin_metademands_metademandtranslations',$id);
       }
-      if($lang != $_SESSION['glpilanguage'] && $lang != '') {
+      if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
          if (count($iterator2)) {
-            while ($data2 = $iterator2->next()) {
+            foreach ($iterator2 as $data2) {
                $res .= ' / ' . $data2['value'];
+               $iterator2->next();
             }
          }
       }
@@ -6828,12 +5928,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo __("Metademand file to import", 'metademands');
       echo "</td>";
       echo "<td>";
-      echo "<input type='file' name='meta_file' accept='text/*'>";
+      //      echo Html::file(['name'=>'meta_file', 'accept' => 'text/*']);
+      echo "<input class='form-control' type='file' name='meta_file' accept='text/*'>";
       echo "</td>";
       echo "</tr>";
       echo "<tr>";
       echo "<td  class='center' colspan='2'>";
-      echo Html::submit(__('Import', 'metademands'), ['name' => 'import_file']);
+      echo Html::submit(__('Import', 'metademands'), ['name' => 'import_file', 'class' => 'btn btn-primary']);
       echo "</td>";
       echo "</tr>";
       echo "</table>";
@@ -6855,4 +5956,50 @@ class PluginMetademandsMetademand extends CommonDBTM {
       }
    }
 
+   /**
+    * @param       $field
+    * @param       $users_id
+    * @param       $title
+    * @param       $line
+    * @param false $bypass
+    *
+    * @return array|string|string[]|void
+    */
+   static function getContentForUser($field, $users_id, $title, $line, $bypass = false) {
+
+      if ($bypass === true && is_numeric($title)) {
+         return str_replace("#" . $title . "#", "", $line);
+      }
+      switch ($field) {
+         case "login" :
+         case "requester.login" :
+            $user = new User();
+            $user->getFromDB($users_id);
+            $value = $user->fields['name'];
+            return str_replace("#" . $title . "#", $value, $line);
+            break;
+         case "name" :
+         case "requester.name" :
+            $user = new User();
+            $user->getFromDB($users_id);
+            $value = $user->fields['realname'];
+            return str_replace("#" . $title . "#", $value, $line);
+            break;
+         case "firstname" :
+         case "requester.firstname" :
+            $user = new User();
+            $user->getFromDB($users_id);
+            $value = $user->fields['firstname'];
+            return str_replace("#" . $title . "#", $value, $line);
+            break;
+         case "email" :
+         case "requester.email" :
+            $user = new UserEmail();
+            $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
+            $value = $user->fields['email'];
+            return str_replace("#" . $title . "#", $value, $line);
+            break;
+      }
+      return $line;
+   }
 }

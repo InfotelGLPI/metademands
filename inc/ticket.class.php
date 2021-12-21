@@ -563,9 +563,9 @@ class PluginMetademandsTicket extends CommonDBTM {
          }
       }
 
-      echo "<input type='hidden' name='_from_helpdesk' value='1'>";
-      echo "<input type='hidden' name='requesttypes_id' value='" . RequestType::getDefault('helpdesk') . "'>";
-      echo "<input type='hidden' name='entities_id' value='" . $entities_id . "'>";
+      echo Html::hidden('_from_helpdesk', ['value' => 1]);
+      echo Html::hidden('requesttypes_id', ['value' => RequestType::getDefault('helpdesk')]);
+      echo Html::hidden('entities_id', ['value' => $entities_id]);
 
       echo "<div class='center'><table class='tab_cadre_fixe'>";
       // URGENCY
@@ -584,15 +584,21 @@ class PluginMetademandsTicket extends CommonDBTM {
       echo "<td>" . __('Title');
       echo $tt->getMandatoryMark('name');
       echo "</td>";
-      echo "<td><input type='text' maxlength='250' size='80' name='name'
-                       value=\"" . $fields['name'] . "\"></td></tr>";
+      echo "<td>";
+      echo Html::input('name', ['value' => $fields['name'], 'size' => 80]);
+      echo "</td></tr>";
 
       // CONTENT
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . __('Description');
       echo $tt->getMandatoryMark('content');
       echo "</td>";
-      echo "<td><textarea name='content' cols='80' rows='14'>" . $fields['content'] . "</textarea>";
+      echo "<td>";
+      Html::textarea(['name'            => 'content',
+                      'value'           => $fields['content'],
+                      'cols'       => 80,
+                      'rows'       => 14,
+                      'enable_richtext' => false]);
       echo "</td></tr>";
 
       echo "</table></div>";

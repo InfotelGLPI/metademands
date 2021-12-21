@@ -443,7 +443,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                      $value = $fields[$elt['id']];
                      $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
                      $value = (Toolbox::addslashes_deep($value));
-                     $value = Html::cleanPostForTextArea(Html::clean($value));
+                     $value = Html::cleanPostForTextArea($value);
 
                      // Draw line
                      $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -737,7 +737,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $label2 = str_replace("’", "'", $label2);
                         $label2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label2));
                         $label2 = (Toolbox::addslashes_deep($label2));
-                        $label2 = Html::cleanPostForTextArea(Html::clean($label2));
+                        $label2 = Html::cleanPostForTextArea($label2);
                      }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -757,7 +757,7 @@ class PluginMetaDemandsMetaDemandPdf extends FPDF {
                         $label2 = str_replace("’", "'", $label2);
                         $label2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label2));
                         $label2 = (Toolbox::addslashes_deep($label2));
-                        $label2 = Html::cleanPostForTextArea(Html::clean($label2));
+                        $label2 = Html::cleanPostForTextArea($label2);
                      }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
