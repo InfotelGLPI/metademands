@@ -1865,7 +1865,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                   case 'yesno':
                      $script2 = "";
                      $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
                         $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
                         $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
@@ -1894,8 +1893,29 @@ class PluginMetademandsWizard extends CommonDBTM {
                                  }
                               }
                            }
+
                         }
                      }
+
+                     if (isset($data['childs_blocks'])) {
+                        $childs_blocks = json_decode($data['childs_blocks'], true);
+                        $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
+                        if (is_array($check_value) && count($check_value) > 0) {
+                           foreach ($childs_blocks as $customvalue => $childs) {
+                              $script .= "
+                          if($(this).val() != $check_value[$customvalue]){";
+                              foreach ($childs as $v) {
+                                 $script .= PluginMetademandsField::getJStorersetFields($v);
+                              }
+
+                              $script .= "}
+                           ";
+
+
+                           }
+                        }
+                     }
+
                      $script .= "});";
                      //Initialize id default value
                      if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
@@ -2222,6 +2242,35 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                            }
                         }
+                        if (isset($data['childs_blocks'])) {
+                           $childs_blocks = json_decode($data['childs_blocks'], true);
+                           $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              foreach ($childs_blocks as $customvalue => $childs) {
+                                 if (isset($check_value[$customvalue]) && $check_value[$customvalue] == 1) {
+                                    $script .= "
+                               if($(this).val().trim().length < 1){";
+                                    foreach ($childs as $v) {
+                                       $script .= PluginMetademandsField::getJStorersetFields($v);
+                                    }
+
+                                    $script .= "}
+                           ";
+                                 }else {
+                                    $script .= "
+                               if($(this).val().trim().length >= 1){";
+                                    foreach ($childs as $v) {
+                                       $script .= PluginMetademandsField::getJStorersetFields($v);
+                                    }
+
+                                    $script .= "}
+                           ";
+                                 }
+
+                              }
+                           }
+                        }
+
                         if (isset($data['childs_blocks'])) {
                            $childs_blocks = json_decode($data['childs_blocks'], true);
                            $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
