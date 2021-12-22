@@ -2690,17 +2690,8 @@ JAVASCRIPT
          }
 
          if (!empty($options['resources_id'])) {
-            $resource = new PluginResourcesResource();
-            $resource->getFromDB($options['resources_id']);
-            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-               $result['content'] .= "<tr><th colspan='2'>";
-            }
-            $result['content'] .= $resource->fields['name'] . " " . $resource->fields['firstname'];
-            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-               $result['content'] .= "</th></tr>";
-            }
-
-
+            $resourceMeta = new PluginMetademandsMetademand_Resource();
+            $result['content'] .= $resourceMeta::getTableResource($options);
          }
          //      $result['content'] .= "</table>";
          $resultTemp = [];
