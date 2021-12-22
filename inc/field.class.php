@@ -65,6 +65,7 @@ class PluginMetademandsField extends CommonDBChild {
 
    static $not_null = 'NOT_NULL';
 
+
    static function getIcon() {
       return PluginMetademandsMetademand::getIcon();
    }
@@ -2241,10 +2242,6 @@ class PluginMetademandsField extends CommonDBChild {
                   $inline = 'custom-control-inline';
                }
                $field = "";
-               $childs_blocks = [];
-               if (isset($data['childs_blocks'])) {
-                  $childs_blocks = json_decode($data['childs_blocks'], true);
-               }
 
                $childs_blocks = [];
                if (isset($data['childs_blocks'])) {
@@ -2277,6 +2274,7 @@ class PluginMetademandsField extends CommonDBChild {
                      $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').not(':checked')) { ";
 
                      foreach ($childs_blocks[$key] as $customvalue => $childs) {
+
                         $script .= self::getJStorersetFields($childs);
                         //                        if ($customvalue != $key) {
                         //                           foreach ($childs as $k => $v) {
@@ -2339,7 +2337,6 @@ class PluginMetademandsField extends CommonDBChild {
                if ($data['row_display'] == 1) {
                   $inline = 'custom-control-inline';
                }
-
                $field = "";
 
                $childs_blocks = [];
@@ -3074,13 +3071,6 @@ class PluginMetademandsField extends CommonDBChild {
          $params['hidden_block'] = 0;
       } else {
          $params['hidden_block'] = $params['hidden_block'][$optid];
-      }
-      $params['childs_blocks'] = json_decode($params['childs_blocks'], true);
-
-      if (isset($params['childs_blocks'][$optid])) {
-         $params['childs_blocks'] = $params['childs_blocks'][$optid];
-      } else {
-         $params['childs_blocks'] = [];
       }
 
       $params['childs_blocks'] = json_decode($params['childs_blocks'], true);
