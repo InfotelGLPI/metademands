@@ -2690,8 +2690,17 @@ JAVASCRIPT
          }
 
          if (!empty($options['resources_id'])) {
-            $resourceMeta = new PluginMetademandsMetademand_Resource();
-            $result['content'] .= $resourceMeta::getTableResource($options);
+            $resource = new PluginResourcesResource();
+            $resource->getFromDB($options['resources_id']);
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+               $result['content'] .= "<tr><th colspan='2'>";
+            }
+            $result['content'] .= $resource->fields['name'] . " " . $resource->fields['firstname'];
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+               $result['content'] .= "</th></tr>";
+            }
+
+
          }
          //      $result['content'] .= "</table>";
          $resultTemp = [];
@@ -3633,9 +3642,6 @@ JAVASCRIPT
                                     $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                     break;
                               }
-                              if(is_numeric($title)) {
-                                 $value['value'] = str_replace("#" . $title . "#", "", $value['value']);
-                              }
                            }
                         }
                      } else {
@@ -3696,9 +3702,6 @@ JAVASCRIPT
                                        $v   = $user->fields['email'];
                                        $str = str_replace("#" . $title . "#", $v, $str);
                                        break;
-                                 }
-                                 if(is_numeric($title)) {
-                                    $str = str_replace("#" . $title . "#", "", $str);
                                  }
                               }
                            }
@@ -3766,9 +3769,6 @@ JAVASCRIPT
                               $v              = $user->fields['email'];
                               $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                               break;
-                        }
-                        if(is_numeric($title)) {
-                           $value['value'] = str_replace("#" . $title . "#", "", $value['value']);
                         }
                      }
                   }
