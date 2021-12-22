@@ -211,7 +211,7 @@ function plugin_metademands_install() {
    if (!$DB->tableExists("glpi_plugin_metademands_pluginfields")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.8.sql");
    }
-   if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "hideTable")) {
+   if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "useBlock")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.9.sql");
    }
    //version 3.0.0
