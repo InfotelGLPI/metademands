@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-22 10:19+0000\n"
+"POT-Creation-Date: 2021-12-22 11:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:397
+#: hook.php:403
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:410
+#: hook.php:416
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:426
+#: hook.php:432
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:437
+#: hook.php:443
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:449
+#: hook.php:455
 msgid "Technician child ticket"
 msgstr ""
 
