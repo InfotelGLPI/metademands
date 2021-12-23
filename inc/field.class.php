@@ -2257,7 +2257,7 @@ class PluginMetademandsField extends CommonDBChild {
                   } elseif (isset($defaults[$key]) && $on_basket == false) {
                      $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
-                  $field .= "<input class='custom-control-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                  $field .= "<input class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                   $nbr++;
                   $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
@@ -2316,7 +2316,7 @@ class PluginMetademandsField extends CommonDBChild {
 
             } else {
                $checked = $value ? 'checked' : '';
-               $field   = "<input class='custom-control-input' type='checkbox' name='" . $namefield . "[" . $data['id'] . "]' value='checkbox' $checked>";
+               $field   = "<input class='form-check-input' type='checkbox' name='" . $namefield . "[" . $data['id'] . "]' value='checkbox' $checked>";
             }
             break;
 
@@ -2355,7 +2355,7 @@ class PluginMetademandsField extends CommonDBChild {
                      $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
 
-                  $field .= "<input class='custom-control-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                  $field .= "<input class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                   $nbr++;
 
 

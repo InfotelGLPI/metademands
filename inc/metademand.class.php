@@ -1711,8 +1711,8 @@ JAVASCRIPT
                                        $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                        $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     } else if ($fields_field->fields['type'] == 'yesno') {
-                                       $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
-                                       $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
+                                       $input[$fields_field->fields['name']]          = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
+                                       $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
                                     } else {
                                        $input[$fields_field->fields['name']]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                        $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
@@ -1756,7 +1756,7 @@ JAVASCRIPT
                                     if ($fields_field->fields['type'] == 'dropdown') {
                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     } else if ($fields_field->fields['type'] == 'yesno') {
-                                       $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] -1;
+                                       $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
                                     } else {
                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                     }
@@ -1936,7 +1936,7 @@ JAVASCRIPT
                                                 }
                                              }
                                           }
-                                          $users_id = $parent_fields['_users_id_requester'];
+                                          $users_id                                = $parent_fields['_users_id_requester'];
                                           $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                        }
                                     }
@@ -1984,7 +1984,7 @@ JAVASCRIPT
                                                 }
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             $str = self::getContentForUser($title, $users_id, $title, $str, true);
+                                             $str      = self::getContentForUser($title, $users_id, $title, $str, true);
                                           }
                                        }
                                        if ($find == true) {
@@ -2043,7 +2043,7 @@ JAVASCRIPT
                                           }
                                        }
                                     }
-                                    $users_id = $parent_fields['_users_id_requester'];
+                                    $users_id                                = $parent_fields['_users_id_requester'];
                                     $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                  }
                               }
@@ -2092,7 +2092,7 @@ JAVASCRIPT
                                                 }
                                              }
                                           }
-                                          $users_id = $parent_fields['_users_id_requester'];
+                                          $users_id                       = $parent_fields['_users_id_requester'];
                                           $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                        }
                                     }
@@ -2146,7 +2146,7 @@ JAVASCRIPT
                                                 }
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             $str = self::getContentForUser($content, $users_id, $content, $str, true);
+                                             $str      = self::getContentForUser($content, $users_id, $content, $str, true);
                                           }
                                        }
                                        if ($find == true) {
@@ -2211,7 +2211,7 @@ JAVASCRIPT
                                           }
                                        }
                                     }
-                                    $users_id = $parent_fields['_users_id_requester'];
+                                    $users_id                       = $parent_fields['_users_id_requester'];
                                     $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                  }
                               }
@@ -2271,7 +2271,7 @@ JAVASCRIPT
                                                 }
                                              }
                                           }
-                                          $users_id = $parent_fields['_users_id_requester'];
+                                          $users_id                                = $parent_fields['_users_id_requester'];
                                           $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                        }
                                     }
@@ -2320,7 +2320,7 @@ JAVASCRIPT
                                                 }
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             $str = self::getContentForUser($title, $users_id, $title, $str, true);
+                                             $str      = self::getContentForUser($title, $users_id, $title, $str, true);
                                           }
 
                                        }
@@ -2383,7 +2383,7 @@ JAVASCRIPT
                                        }
                                     }
 
-                                    $users_id = $parent_fields['_users_id_requester'];
+                                    $users_id                                = $parent_fields['_users_id_requester'];
                                     $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                  }
                               }
@@ -2431,7 +2431,7 @@ JAVASCRIPT
                                                 }
                                              }
                                           }
-                                          $users_id = $parent_fields['_users_id_requester'];
+                                          $users_id                       = $parent_fields['_users_id_requester'];
                                           $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                        }
                                     }
@@ -2486,7 +2486,7 @@ JAVASCRIPT
                                                 }
                                              }
                                              $users_id = $parent_fields['_users_id_requester'];
-                                             $str = self::getContentForUser($content, $users_id, $content, $str, true);
+                                             $str      = self::getContentForUser($content, $users_id, $content, $str, true);
                                           }
                                        }
                                        if ($find == true) {
@@ -2551,7 +2551,7 @@ JAVASCRIPT
                                           }
                                        }
                                     }
-                                    $users_id = $parent_fields['_users_id_requester'];
+                                    $users_id                       = $parent_fields['_users_id_requester'];
                                     $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                  }
                               }
@@ -2690,7 +2690,7 @@ JAVASCRIPT
          }
 
          if (!empty($options['resources_id'])) {
-            $resourceMeta = new PluginMetademandsMetademand_Resource();
+            $resourceMeta      = new PluginMetademandsMetademand_Resource();
             $result['content'] .= $resourceMeta::getTableResource($options);
          }
          //      $result['content'] .= "</table>";
@@ -4196,7 +4196,7 @@ JAVASCRIPT
                                  }
                               }
                            }
-                           $users_id = $parent_fields['_users_id_requester'];
+                           $users_id                                        = $parent_fields['_users_id_requester'];
                            $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
                         }
                      }
@@ -4239,7 +4239,7 @@ JAVASCRIPT
                                        }
                                     }
                                  }
-                                 $users_id = $parent_fields['_users_id_requester'];
+                                 $users_id                               = $parent_fields['_users_id_requester'];
                                  $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
                               }
                            }
@@ -4288,7 +4288,7 @@ JAVASCRIPT
                                        }
                                     }
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    $str = self::getContentForUser($content, $users_id, $content, $str, true);
+                                    $str      = self::getContentForUser($content, $users_id, $content, $str, true);
                                  }
                               }
                               if ($find == true) {
@@ -4348,7 +4348,7 @@ JAVASCRIPT
                                  }
                               }
                            }
-                           $users_id = $parent_fields['_users_id_requester'];
+                           $users_id                               = $parent_fields['_users_id_requester'];
                            $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
                         }
                      }
@@ -4492,7 +4492,7 @@ JAVASCRIPT
 
                if (!empty($values['tickets_id'])) {
                   echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
-                       "?id=" . $ticket->fields['id'] . "&glpi_tab=Ticket$".'main'."'>" . $ticket->fields['name'] . "</a>";
+                       "?id=" . $ticket->fields['id'] . "&glpi_tab=Ticket$" . 'main' . "'>" . $ticket->fields['name'] . "</a>";
                } else {
                   echo self::$SON_PREFIX . $values['tasks_name'];
                }
@@ -4885,7 +4885,9 @@ JAVASCRIPT
 
             $sla_state = self::SLA_LATE;
          } else {
-            if (!in_array($ticket->fields['status'], $status)) {
+            if (!in_array($ticket->fields['status'], $status)
+                && $ticket->fields['time_to_resolve'] != null
+                && $ticket->fields['date'] != null) {
                $total_time   = (strtotime($ticket->fields['time_to_resolve']) - strtotime($ticket->fields['date']));
                $current_time = $total_time - (strtotime($ticket->fields['time_to_resolve']) - time());
 
