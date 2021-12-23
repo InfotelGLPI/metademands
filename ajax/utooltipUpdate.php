@@ -42,8 +42,13 @@ if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']]) && 
 
 $user = new User();
 if (isset($_POST['value']) && $_POST["value"] > 0) {
+   $id = $_POST['id_fielduser'];
    if ($user->getFromDB($_POST["value"])) {
-      PluginMetademandsWizard::showUserInformations($user);
+      $opt = ['applyto' => $id,
+
+      ];
+      $content = PluginMetademandsWizard::showUserInformations($user);
+      Html::showToolTip($content, ['display' => false]);
    }
 }
 

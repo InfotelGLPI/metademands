@@ -289,7 +289,7 @@ button.clear-basket {
 
 .mydraft {
     float: right;
-    color: #e3e0e0;
+    color: #898787;
 }
 
 .mydraft-text {
@@ -391,5 +391,9 @@ button.clear-basket {
 }
 
 .md-title {
-    margin-top: 10px!important;
+    /*margin-top: 10px!important;*/
+}
+
+.md-bottom {
+    margin-bottom: 10px;
 }

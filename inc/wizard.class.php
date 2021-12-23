@@ -85,8 +85,6 @@ class PluginMetademandsWizard extends CommonDBTM {
     */
    static function showUserInformations(User $user) {
 
-      echo "<span class='speech'>";
-      echo "<button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>";
       $infos = getUserName($user->getID(), 2);
       echo $infos['comment'];
 
@@ -108,7 +106,6 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "</div>";
       }
-      echo "</span>";
    }
 
    /**
@@ -145,7 +142,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $parameters['resources_step'] = $_SESSION['plugin_metademands']['fields']['resources_step'];
       }
       Html::requireJs("metademands");
-            echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_main.css");
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_main.css");
       //      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_ticket.css");
 
       echo "<div id ='content'>";
@@ -190,21 +187,21 @@ class PluginMetademandsWizard extends CommonDBTM {
             // Wizard title
             echo "<div class=\"row\">";
             echo "<div class=\"col-md-12\">";
-            echo "<h3><div class='alert alert-secondary' role='alert'>";
+            echo "<h4><div class='alert alert-dark' role='alert'>";
             $icon = "fa-share-alt";
             if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                $icon = $meta->fields['icon'];
             }
             echo "<i class='fa-2x fas $icon'></i>&nbsp;";
             echo __('Demand choice', 'metademands');
-            echo "</div></h3></div></div>";
+            echo "</div></h4></div></div>";
 
          } else if ($parameters['step'] >= PluginMetademandsMetademand::STEP_LIST) {
 
             // Wizard title
             echo "<div class=\"row\">";
             echo "<div class=\"col-md-12 md-title\">";
-            echo "<h3 class=\"alert alert-secondary\"><span>";
+            echo "<h4><div class='alert alert-dark'><span>";
             $meta = new PluginMetademandsMetademand();
             if ($meta->getFromDB($parameters['metademands_id'])) {
                if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
@@ -244,7 +241,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                 data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
                echo "</span>";
             }
-            echo "</h3>";
+            echo "</h4>";
             if ($meta->getFromDB($parameters['metademands_id'])
                 && !empty($meta->fields['comment'])) {
                if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
@@ -270,38 +267,47 @@ class PluginMetademandsWizard extends CommonDBTM {
                      }
                   }
                   $helpdesk_category = new PluginServicecatalogCategory();
-                  if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)) {
-                     echo "<div class=\"row\">";
-                     echo "<div class=\"bt-feature col-md-12 \">";
+                  if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
+                      && ($helpdesk_category->fields['comment'] != null
+                          || $helpdesk_category->fields['service_detail'] != null
+                          || $helpdesk_category->fields['service_users'] != null
+                          || $helpdesk_category->fields['service_ttr'] != null
+                          || $helpdesk_category->fields['service_use'] != null
+                          || $helpdesk_category->fields['service_supervision'] != null
+                          || $helpdesk_category->fields['service_rules'] != null)) {
+
+                     echo "<div class='alert alert-important alert-info d-flex alert-dismissible' role='alert'>";
+                     echo "<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>";
                      echo ($helpdesk_category->fields['comment'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['comment']) . "</p>" : "";
+                        "
+                    <span class='titlespeech'>" . __('Description') . "</span><br>" .
+                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['comment']) . "" : "";
                      echo ($helpdesk_category->fields['service_detail'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                        "
                     <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_detail']) . "</p>" : "";
+                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_detail']) . "" : "";
                      echo ($helpdesk_category->fields['service_users'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                        "
                     <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_users']) . "</p>" : "";
+                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_users']) . "" : "";
                      echo ($helpdesk_category->fields['service_ttr'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                        "
                     <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_ttr']) . "</p>" : "";
+                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_ttr']) . "" : "";
                      echo ($helpdesk_category->fields['service_use'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                        "
                     <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_use']) . "</p>" : "";
+                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_use']) . "" : "";
                      echo ($helpdesk_category->fields['service_supervision'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                        "
                         <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_supervision']) . "</p>" : "";
+                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_supervision']) . "" : "";
                      echo ($helpdesk_category->fields['service_rules'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                        "
                     <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getTextFromHtml($helpdesk_category->fields['service_rules']) . "</p>" : "";
-                     echo "</div></div>";
+                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_rules']) . "" : "";
+
+                     echo "</div>";
                   }
                }
             }
@@ -777,7 +783,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $title = "<i class='fas fa-save'></i>&nbsp;";
                         $title .= _sx('button', 'Validate your basket', 'metademands');
                         echo Html::submit($title, ['name'  => 'next_button',
-                                                   'form' => '',
+                                                   'form'  => '',
                                                    'id'    => 'submitjob',
                                                    'class' => 'metademand_next_button btn btn-success']);
                         $ID = $metademands->fields['id'];
@@ -818,7 +824,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                      $title .= _sx('button', 'Post');
                      echo Html::submit($title, ['name'  => 'next_button',
-                                                'form' => '',
+                                                'form'  => '',
                                                 'id'    => 'submitjob',
                                                 'class' => 'btn btn-success metademand_next_button']);
 
@@ -1161,14 +1167,25 @@ class PluginMetademandsWizard extends CommonDBTM {
                $class = "";
                if ($data['type'] == 'informations') {
                   $color = $data['color'];
-                  $style = "style='background-color: $color;'";
-                  $class = "metademands_wizard_informations";
+                  $style = "style='background-color: $color!important;'";
+//                  $class = "metademands_wizard_informations";
+                  $class = "alert alert-important alert-warning d-flex alert-dismissible";
+               }
+               $bottomclass ="";
+               if ($data['type'] != 'informations') {
+                  $bottomclass ="md-bottom";
                }
                if ($data['row_display'] == 1) {
-                  echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-11 $class\">";
+                  echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group $bottomclass $class\">";
+                  if ($data['type'] == 'informations') {
+                     echo "<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>";
+                  }
                   $count++;
                } else {
-                  echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-5 $class\">";
+                  echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-5 $bottomclass $class\">";
+                  if ($data['type'] == 'informations') {
+                     echo "<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>";
+                  }
                }
                //see fields
                PluginMetademandsField::getFieldType($metademands_data, $data, $preview, $config_link, $itilcategories_id);
@@ -1182,9 +1199,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
 
                   if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                     echo "</div><div class=\"form-group col-md-5\">";
+                     echo "</div><div class=\"form-group col-md-5 md-bottom\">";
                   } else {
-                     echo "<div class=\"form-group metademands_wizard_label2\">";
+                     $class = "alert alert-warning";
+                     echo "<div class=\"form-group metademands_wizard_label2 $class\">";
                   }
                   if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                      $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
@@ -1878,7 +1896,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                           }else{
                            $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
                               $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                              $script .="}
+                              $script .= "}
                            ";
                               if ($check_value[$key] == $data["custom_values"]) {
                                  $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
@@ -2192,8 +2210,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $script  .= "
                            if($(this).val().trim().length < 1){
                               $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                              $script .= " 
+                              $script  .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                              $script  .= " 
                            }else{
                               $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                            }
@@ -2236,7 +2254,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                                     $script .= "}
                            ";
-                                 }else {
+                                 } else {
                                     $script .= "
                                if($(this).val().trim().length >= 1){";
                                     foreach ($childs as $v) {

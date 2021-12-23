@@ -1933,14 +1933,15 @@ class PluginMetademandsField extends CommonDBChild {
                                        'display'  => false,
                                        'toupdate' => $toupdate
                                       ]);
-                  $config = PluginMetademandsConfig::getInstance();
-                  if ($config['show_requester_informations'] && $on_basket == false) {
-                     echo "<div id='tooltip_user" . $data['id'] . "' class=\"input-group\">";
-                     $_POST['value']        = $value;
-                     $_POST['id_fielduser'] = $data['id'];
-                     include(PLUGIN_METADEMANDS_DIR . "/ajax/utooltipUpdate.php");
-                     echo "</div>";
-                  }
+//                  $config = PluginMetademandsConfig::getInstance();
+//                  if ($config['show_requester_informations'] && $on_basket == false) {
+//
+//                     echo "<div id='tooltip_user" . $data['id'] . "'>";
+//                     $_POST['value']        = $value;
+//                     $_POST['id_fielduser'] = $data['id'];
+//                     include(PLUGIN_METADEMANDS_DIR . "/ajax/utooltipUpdate.php");
+//                     echo "</div>";
+//                  }
 
                   break;
                case 'Group':
@@ -1984,7 +1985,7 @@ class PluginMetademandsField extends CommonDBChild {
                      $field .= Group::dropdown(['name'      => $name,
                                                 'entity'    => $_SESSION['glpiactiveentities'],
                                                 'value'     => $val_group,
-                                                'readonly'  => true,
+                                                //                                                'readonly'  => true,
                                                 'condition' => $cond,
                                                 'display'   => false
                                                ]);
@@ -2147,7 +2148,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $opt = ['value'     => $value,
                           'entity'    => $_SESSION['glpiactiveentities'],
                           'name'      => $namefield . "[" . $data['id'] . "]",
-                          'readonly'  => true,
+                          //                          'readonly'  => true,
                           'condition' => $cond,
                           'display'   => false];
                   if (!($item = getItemForItemtype($data['item']))) {
@@ -2278,29 +2279,29 @@ class PluginMetademandsField extends CommonDBChild {
                         $script .= self::getJStorersetFields($childs);
                         //                        if ($customvalue != $key) {
                         //                           foreach ($childs as $k => $v) {
-//                        $script .= "$('div[bloc-id=\"bloc$childs\"]').find(':input').each(function() {
-//                                     switch(this.type) {
-//                                            case 'password':
-//                                            case 'text':
-//                                            case 'textarea':
-//                                            case 'file':
-//                                            case 'date':
-//                                            case 'number':
-//                                            case 'tel':
-//                                            case 'email':
-//                                                jQuery(this).val('');
-//                                                break;
-//                                            case 'select-one':
-//                                            case 'select-multiple':
-//                                                jQuery(this).val('0').trigger('change');
-//                                                jQuery(this).val('0');
-//                                                break;
-//                                            case 'checkbox':
-//                                            case 'radio':
-//                                                this.checked = false;
-//                                                break;
-//                                        }
-//                                    });";
+                        //                        $script .= "$('div[bloc-id=\"bloc$childs\"]').find(':input').each(function() {
+                        //                                     switch(this.type) {
+                        //                                            case 'password':
+                        //                                            case 'text':
+                        //                                            case 'textarea':
+                        //                                            case 'file':
+                        //                                            case 'date':
+                        //                                            case 'number':
+                        //                                            case 'tel':
+                        //                                            case 'email':
+                        //                                                jQuery(this).val('');
+                        //                                                break;
+                        //                                            case 'select-one':
+                        //                                            case 'select-multiple':
+                        //                                                jQuery(this).val('0').trigger('change');
+                        //                                                jQuery(this).val('0');
+                        //                                                break;
+                        //                                            case 'checkbox':
+                        //                                            case 'radio':
+                        //                                                this.checked = false;
+                        //                                                break;
+                        //                                        }
+                        //                                    });";
                         $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";
                         //                           }
                         //                        }
@@ -2396,26 +2397,26 @@ class PluginMetademandsField extends CommonDBChild {
                         if ($customvalue != $key) {
                            foreach ($childs as $k => $v) {
                               $script .= self::getJStorersetFields($v);
-//                              $script .= "$('div[bloc-id=\"bloc$v\"]').find(':input').each(function() {
-//                                     switch(this.type) {
-//                                            case 'password':
-//                                            case 'text':
-//                                            case 'textarea':
-//                                            case 'file':
-//                                            case 'select-one':
-//                                            case 'select-multiple':
-//                                            case 'date':
-//                                            case 'number':
-//                                            case 'tel':
-//                                            case 'email':
-//                                                jQuery(this).val('');
-//                                                break;
-//                                            case 'checkbox':
-//                                            case 'radio':
-//                                                this.checked = false;
-//                                                break;
-//                                        }
-//                                    });";
+                              //                              $script .= "$('div[bloc-id=\"bloc$v\"]').find(':input').each(function() {
+                              //                                     switch(this.type) {
+                              //                                            case 'password':
+                              //                                            case 'text':
+                              //                                            case 'textarea':
+                              //                                            case 'file':
+                              //                                            case 'select-one':
+                              //                                            case 'select-multiple':
+                              //                                            case 'date':
+                              //                                            case 'number':
+                              //                                            case 'tel':
+                              //                                            case 'email':
+                              //                                                jQuery(this).val('');
+                              //                                                break;
+                              //                                            case 'checkbox':
+                              //                                            case 'radio':
+                              //                                                this.checked = false;
+                              //                                                break;
+                              //                                        }
+                              //                                    });";
                               $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
                            }
                         }
@@ -3200,7 +3201,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $html .= Group::dropdown(['name'      => $name,
                                             'entity'    => $_SESSION['glpiactiveentities'],
                                             'value'     => $params['check_value'],
-                                            'readonly'  => true,
+                                            //                                            'readonly'  => true,
                                             'condition' => $cond,
                                             'display'   => false
                                            ]);

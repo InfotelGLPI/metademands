@@ -41,5 +41,5 @@ if (isset($_POST["value"])) {
 //       && ($userid != Session::getLoginUserID())) {
 //      $userid = $_POST["old_value"];
 //   }
-   PluginMetademandsWizard::showUserInformations($user);
+//   PluginMetademandsWizard::showUserInformations($user);
 }

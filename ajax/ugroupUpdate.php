@@ -45,7 +45,8 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                                         'type'         => "dropdown_object",
                                         'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                         'item'         => Group::getType()])) {
-         $_POST["field"] = "field[" . $fieldGroup->fields['id'] . "]";
+         $id = $fieldGroup->fields['id'];
+         $_POST["field"] = "field[$id]";
       }
    } else {
       if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
@@ -90,7 +91,7 @@ $rand = mt_rand();
 Group::dropdown(['name'      => $_POST["field"],
                  'entity'    => $_SESSION['glpiactiveentities'],
                  'value'     => $groups_id,
-                 'readonly'  => true,
+//                 'readonly'  => true,
                  'condition' => $cond,
                  'rand' => $rand
                 ]);
