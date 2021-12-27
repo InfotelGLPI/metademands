@@ -3792,7 +3792,8 @@ JAVASCRIPT
       $task          = new PluginMetademandsTask();
       $ticket        = new Ticket();
       $KO            = [];
-
+//Toolbox::logInfo($tickettasks_data);
+//die();
       foreach ($tickettasks_data as $son_ticket_data) {
 
          if ($son_ticket_data['level'] == $tasklevel) {
@@ -3834,47 +3835,49 @@ JAVASCRIPT
                }
             }
             $metademands_data = $this->constructMetademands($this->getID());
+
             if (count($metademands_data)) {
                foreach ($metademands_data as $form_step => $data) {
                   foreach ($data as $form_metademands_id => $line) {
                      $list_fields  = $line['form'];
                      $searchOption = Search::getOptions('Ticket');
-                     $task->getFromDB($son_ticket_data['tasks_id']);
-                     if ($task->fields['useBlock'] == 1) {
-                        $blocks = json_decode($task->fields["block_use"], true);
-                        if (!empty($blocks)) {
-                           foreach ($line['form'] as $i => $l) {
-                              if (!in_array($l['rank'], $blocks)) {
-                                 unset($line['form'][$i]);
-                                 unset($values_form[$i]);
+                     if ($task->getFromDB($son_ticket_data['tasks_id'])) {
+                        if (isset($task->fields['useBlock']) && $task->fields['useBlock'] == 1) {
+                           $blocks = json_decode($task->fields["block_use"], true);
+                           if (!empty($blocks)) {
+                              foreach ($line['form'] as $i => $l) {
+                                 if (!in_array($l['rank'], $blocks)) {
+                                    unset($line['form'][$i]);
+                                    unset($values_form[$i]);
+                                 }
                               }
+                              $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
+                              $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
+                           } else {
+                              $parent_fields_content['content'] = $parent_fields['content'];
                            }
-                           $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
-                           $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
-                        } else {
-                           $parent_fields_content['content'] = $parent_fields['content'];
                         }
-                     }
-                     foreach ($list_fields as $id => $fields_values) {
-                        if ($fields_values['used_by_ticket'] > 0 && $fields_values['used_by_child'] == 1) {
-                           //                           foreach ($values_form as $k => $v) {
-                           if (isset($values_form[$id])) {
-                              $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
-                              if ($fields_values['used_by_ticket'] == 4) {
-                                 $name = "_users_id_requester";
+                        foreach ($list_fields as $id => $fields_values) {
+                           if ($fields_values['used_by_ticket'] > 0 && $fields_values['used_by_child'] == 1) {
+                              //                           foreach ($values_form as $k => $v) {
+                              if (isset($values_form[$id])) {
+                                 $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
+                                 if ($fields_values['used_by_ticket'] == 4) {
+                                    $name = "_users_id_requester";
+                                 }
+                                 if ($fields_values['used_by_ticket'] == 71) {
+                                    $name = "_groups_id_requester";
+                                 }
+                                 if ($fields_values['used_by_ticket'] == 66) {
+                                    $name = "_users_id_observer";
+                                 }
+                                 if ($fields_values['used_by_ticket'] == 65) {
+                                    $name = "_groups_id_observer";
+                                 }
+                                 $son_ticket_data[$name] = $values_form[$id];
                               }
-                              if ($fields_values['used_by_ticket'] == 71) {
-                                 $name = "_groups_id_requester";
-                              }
-                              if ($fields_values['used_by_ticket'] == 66) {
-                                 $name = "_users_id_observer";
-                              }
-                              if ($fields_values['used_by_ticket'] == 65) {
-                                 $name = "_groups_id_observer";
-                              }
-                              $son_ticket_data[$name] = $values_form[$id];
+                              //                           }
                            }
-                           //                           }
                         }
                      }
                   }
@@ -3908,14 +3911,14 @@ JAVASCRIPT
             $config->getFromDB(1);
 
             if (!empty($son_ticket_data['content'])) {
-               if ($task->fields['formatastable'] == true) {
+               if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
                   $content = "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                              "</th></tr><tr><td colspan='2'>";
                }
 
                $content .= Glpi\RichText\RichText::getSafeHtml($son_ticket_data['content']);
 
-               if ($task->fields['formatastable'] == true) {
+               if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
                   $content .= "</td></tr></table><br>";
                }
             }
@@ -4392,7 +4395,7 @@ JAVASCRIPT
          echo "<br>";
          echo "<br>";
          echo "<a class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-              . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</a>";
+              . "<i class='fas fa-thumbs-up'></i>&nbsp;" . __('Metademand validation', 'metademands') . "</a>";
 
          echo Ajax::createIframeModalWindow('metavalidation',
                                             PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $ticket->fields['id'],

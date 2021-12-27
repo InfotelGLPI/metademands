@@ -145,12 +145,20 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       $meta_tasks = json_decode($this->fields["tickets_to_create"], true);
       if (is_array($meta_tasks)) {
          foreach ($meta_tasks as $key => $val) {
-            $meta_tasks[$key]['tickettasks_name']   = urldecode($val['tickettasks_name']);
-            $meta_tasks[$key]['tasks_completename'] = urldecode($val['tasks_completename']);
-            $meta_tasks[$key]['content']            = urldecode($val['content']);
+            $task = new PluginMetademandsTicketTask();
+            if (isset($val['tickettasks_id'])
+                && $task->getFromDB($val['tickettasks_id'])) {
+               $meta_tasks[$key]['tickettasks_name']   = urldecode($val['tickettasks_name']);
+               $meta_tasks[$key]['tasks_completename'] = urldecode($val['tasks_completename']);
+               $meta_tasks[$key]['content']            = urldecode($val['content']);
+            } else {
+               unset($meta_tasks[$key]);
+            }
          }
       }
 
+//      Toolbox::logInfo($meta_tasks);
+//      die();
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
       //      $ticket->fields["_users_id_requester"] = Session::getLoginUserID();
@@ -282,7 +290,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
             $style = "btn-orange";
          }
          echo "<li class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-              . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
+              . "<i class='fas fa-thumbs-up'></i>&nbsp;" . __('Metademand validation', 'metademands') . "</li>";
 
          echo Ajax::createIframeModalWindow('metavalidation',
                                             PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $item->fields['id'],
