@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-23 09:20+0000\n"
+"POT-Creation-Date: 2021-12-23 16:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -688,31 +688,31 @@ msgstr ""
 msgid "There is no childs tickets / tasks"
 msgstr ""
 
-#: inc/metademand.class.php:5000
+#: inc/metademand.class.php:5002
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:5132 inc/metademand.class.php:5187
+#: inc/metademand.class.php:5134 inc/metademand.class.php:5189
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:5144 inc/metademand.class.php:5309
+#: inc/metademand.class.php:5146 inc/metademand.class.php:5311
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:5156 inc/metademand.class.php:5367
+#: inc/metademand.class.php:5158 inc/metademand.class.php:5369
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:5168 inc/metademand.class.php:5239
+#: inc/metademand.class.php:5170 inc/metademand.class.php:5241
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: inc/metademand.class.php:5919
+#: inc/metademand.class.php:5921
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:5928
+#: inc/metademand.class.php:5930
 msgid "Import"
 msgstr ""
 
