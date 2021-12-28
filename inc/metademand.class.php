@@ -258,6 +258,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   // Redirect if not linked to a resource contract type
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
                                                   ["plugin_metademands_metademands_id" => $meta_concerned])) {
+                     unset($_SESSION['plugin_metademands']);
                      return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=" .
                             $object->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned . "&tickets_id=" . $object->fields["id"] . "&step=" . self::STEP_SHOW;
                   }
@@ -736,7 +737,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $objects    = self::getObjectTypes();
          $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
          Ajax::updateItemOnEvent("dropdown_object_to_create" . $idDropdown, "define_object",
-                                 PLUGIN_METADEMANDS_WEBDIRL . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
+                                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/type_object.php", ['object_to_create' => '__VALUE__']);
       } else {
          echo self::getObjectTypeName($this->fields['object_to_create']);
          echo Html::hidden('object_to_create', ['value' => $this->fields['object_to_create']]);
@@ -1736,6 +1737,7 @@ JAVASCRIPT
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $object->add($input);
+                  //delete drafts
                   if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
                      $draft = new PluginMetademandsDraft();
                      $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
@@ -3792,8 +3794,7 @@ JAVASCRIPT
       $task          = new PluginMetademandsTask();
       $ticket        = new Ticket();
       $KO            = [];
-//Toolbox::logInfo($tickettasks_data);
-//die();
+
       foreach ($tickettasks_data as $son_ticket_data) {
 
          if ($son_ticket_data['level'] == $tasklevel) {
