@@ -31,7 +31,7 @@ define('PLUGIN_METADEMANDS_VERSION', '3.0.0-rc2');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
    define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
-   define("PLUGIN_METADEMANDS_DIR_NOFULL", Plugin::getPhpDir("metademands",false));
+   define("PLUGIN_METADEMANDS_DIR_NOFULL", Plugin::getPhpDir("metademands", false));
    define("PLUGIN_METADEMANDS_WEBDIR", Plugin::getWebDir("metademands"));
 }
 
@@ -42,14 +42,14 @@ function plugin_init_metademands() {
    $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
    $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'initProfile'];
    $PLUGIN_HOOKS['add_javascript']['metademands'] = ['scripts/metademands.js'];
-   $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL."/scripts/metademands.js"];
+   $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL . "/scripts/metademands.js"];
    $PLUGIN_HOOKS['add_css']['metademands']        = ['css/metademands.css'];
 
    // add minidashboard
    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = ['PluginMetademandsMetademand', 'getMetademandDashboards'];
 
    $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
-   $plugin = new Plugin();
+   $plugin                                            = new Plugin();
 
    if (Session::getLoginUserID()) {
 
@@ -60,6 +60,7 @@ function plugin_init_metademands() {
       }
 
       Plugin::registerClass('PluginMetademandsMetademand', ['addtabon' => 'Ticket']);
+      Plugin::registerClass('PluginMetademandsForm', ['addtabon' => ['Ticket', 'Change', 'User']]);
       Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
 
@@ -105,7 +106,7 @@ function plugin_init_metademands() {
 
       if (Session::haveRight("plugin_metademands", READ)
           && !$plugin->isActivated('servicecatalog')) {
-         $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = PLUGIN_METADEMANDS_DIR_NOFULL.'/front/wizard.form.php';
+         $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = PLUGIN_METADEMANDS_DIR_NOFULL . '/front/wizard.form.php';
       }
 
       if (Session::haveRight("config", UPDATE)) {
@@ -128,9 +129,9 @@ function plugin_init_metademands() {
    }
 
    // Import webservice
-   $PLUGIN_HOOKS['webservices']['metademands']   = 'plugin_metademands_registerMethods';
-   $PLUGIN_HOOKS['timeline_actions']['metademands'] = ['PluginMetademandsMetademandValidation',
-                                                          'showActionsForm'];
+   $PLUGIN_HOOKS['webservices']['metademands']                   = 'plugin_metademands_registerMethods';
+   $PLUGIN_HOOKS['timeline_actions']['metademands']              = ['PluginMetademandsMetademandValidation',
+                                                                    'showActionsForm'];
    $PLUGIN_HOOKS['plugin_datainjection_populate']['metademands'] = 'plugin_datainjection_populate_metademands';
 
 }
@@ -143,12 +144,12 @@ function plugin_init_metademands() {
 function plugin_version_metademands() {
 
    return [
-      'name'           => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
-      'version'        => PLUGIN_METADEMANDS_VERSION,
-      'author'         => "<a href='http://blogglpi.infotel.com'>Infotel</a>",
-      'license'        => 'GPLv2+',
-      'homepage'       => 'https://github.com/InfotelGLPI/metademands',
-      'requirements'   => [
+      'name'         => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
+      'version'      => PLUGIN_METADEMANDS_VERSION,
+      'author'       => "<a href='http://blogglpi.infotel.com'>Infotel</a>",
+      'license'      => 'GPLv2+',
+      'homepage'     => 'https://github.com/InfotelGLPI/metademands',
+      'requirements' => [
          'glpi' => [
             'min' => '10.0',
             'max' => '11.0',

@@ -68,7 +68,7 @@ if (isset($_POST["type"])) {
                if (!empty($meta->fields['icon'])) {
                   $icon = $meta->fields['icon'];
                }
-               $return .= "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
+               $return .= "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
                $return .= "</div>";
                $return .= "<br><p>";
                $return .= $meta->getName();
@@ -77,13 +77,15 @@ if (isset($_POST["type"])) {
                   $return .= $meta->fields['comment'];
                   $return .= "</span></em>";
                }
-
-               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
-               if ($count_drafts > 0) {
-                  $return .= "<br><em><span class='mydraft-comment'>";
-                  $return .= sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                               $count_drafts);
-                  $return .= "</span>";
+               $config = PluginMetademandsConfig::getInstance();
+               if ($config['use_draft']) {
+                  $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
+                  if ($count_drafts > 0) {
+                     $return .= "<br><em><span class='mydraft-comment'>";
+                     $return .= sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                                        $count_drafts);
+                     $return .= "</span>";
+                  }
                }
 
                $return .= "</p></div></a>";

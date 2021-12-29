@@ -119,6 +119,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       $parameters = ['step'              => PluginMetademandsMetademand::STEP_INIT,
                      'metademands_id'    => 0,
                      'preview'           => false,
+                     'seeform'           => false,
                      'tickets_id'        => 0,
                      'resources_id'      => 0,
                      'resources_step'    => '',
@@ -142,6 +143,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $parameters['resources_step'] = $_SESSION['plugin_metademands']['fields']['resources_step'];
       }
       Html::requireJs("metademands");
+      echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
       echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_main.css");
       //      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_ticket.css");
 
@@ -222,23 +224,32 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
             echo "</span>";
             //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
-            if (Session::haveRight('plugin_metademands', UPDATE)) {
+            if (Session::haveRight('plugin_metademands', UPDATE) && !$parameters['seeform']) {
                echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
                         <i class='fas fa-wrench'></i></a>";
             }
             echo "</span>";
-            if (!$parameters['preview']) {
+            $config = PluginMetademandsConfig::getInstance();
+            //            if (!$parameters['preview']
+            //                && !$parameters['seeform']
+            //                && $config['use_draft']) {
+            //               echo "<span class='mydraft'>";
+            //               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
+            //               if ($count_drafts > 0) {
+            //                  echo "<span class='mydraft-text'>";
+            //                  echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+            //                               $count_drafts);
+            //                  echo "</span>&nbsp;";
+            //               }
+            //
+            //               echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-cloud-download-alt pointer' title='" . _sx('button', 'Your drafts', 'metademands') . "'
+            //                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
+            //               echo "</span>";
+            //            }
+            if (!$parameters['preview'] && !$parameters['seeform']) {
                echo "<span class='mydraft'>";
-               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
-               if ($count_drafts > 0) {
-                  echo "<span class='mydraft-text'>";
-                  echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                               $count_drafts);
-                  echo "</span>&nbsp;";
-               }
-
-               echo "<i class='fas fa-2x mydraft-fa fa-cloud-download-alt pointer' title='" . _sx('button', 'Your drafts', 'metademands') . "' 
-                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
+               echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx('button', 'Your forms', 'metademands') . "' 
+                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divnavforms\").toggle();' ></i>";
                echo "</span>";
             }
             echo "</h4>";
@@ -251,10 +262,52 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
 
             echo "</div></div>";
-            echo "<div id='divdrafts' class=\"input-draft card bg-light mb-3\" style='display:none;'>";
-            echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
-            echo "</div>";
+            if (!$parameters['seeform']) {
+               echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;width: 550px;'>";
+               echo "<ul class='nav nav-tabs' id= 'myTab' role = 'tablist'>";
+               echo "<li class='nav-item' role='presentation'>";
+               echo "<button class='nav-link active' id='divformmodels-tab' data-bs-toggle='tab' 
+    data-bs-target='#divformmodels' type='button' role='tab' aria-controls='divformmodels' aria-selected='true'>";
+               echo __("Your models", 'metademands');
+               echo "</button>";
+               echo "</li>";
+               echo "<li class='nav-item' role='presentation'>";
+               echo "<button class='nav-link' id='divforms-tab' data-bs-toggle='tab' 
+    data-bs-target='#divforms' type='button' role='tab' aria-controls='divforms' aria-selected='true'>";
+               echo __("Your created forms", 'metademands');
+               echo "</button>";
+               echo "</li>";
 
+               if ($config['use_draft']) {
+                  echo "<li class='nav-item' role='presentation'>";
+                  echo "<button class='nav-link' id='divdrafts-tab' data-bs-toggle='tab' 
+    data-bs-target='#divdrafts' type='button' role='tab' aria-controls='divdrafts' aria-selected='true'>";
+                  echo __("Your drafts", 'metademands');
+                  echo "</button>";
+                  echo "</li>";
+               }
+               echo "</ul>";
+
+               echo "<div class='tab-content' id='myTabContent'>";
+
+               echo "<div id='divformmodels' class='tab-pane fade show active' role='tabpanel' aria-labelledby='divformmodels-tab'>";
+               echo PluginMetademandsForm::showFormsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id'], true);
+               echo "</div>";
+
+               echo "<div id='divforms' class='tab-pane fade' role='tabpanel' aria-labelledby='divforms-tab'>";
+               echo PluginMetademandsForm::showFormsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id'], false);
+               echo "</div>";
+
+               if ($config['use_draft']) {
+                  //
+                  echo "<div id='divdrafts' class='tab-pane fade' role='tabpanel' aria-labelledby='divdrafts-tab'>";
+                  echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
+                  echo "</div>";
+               }
+            }
+
+            echo "</div>";
+            echo "</div>";
             $plugin = new Plugin();
             if ($plugin->isActivated('servicecatalog')) {
                $configsc = new PluginServicecatalogConfig();
@@ -335,7 +388,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                $canuse = 1;
             }
             // Rights management
-            if (!empty($parameters['tickets_id'])
+            if (Session::getCurrentInterface() == 'central'
+                && !empty($parameters['tickets_id'])
                 && !Session::haveRight('ticket', UPDATE)) {
                self::showMessage(__("You don't have the right to update tickets", 'metademands'), true);
                return false;
@@ -354,7 +408,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          $options['resources_id']      = $parameters['resources_id'];
          $options['itilcategories_id'] = $parameters['itilcategories_id'];
-         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options);
+         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['seeform']);
          Html::closeForm();
          echo "</div>";
          if (!$parameters['preview']) {
@@ -372,7 +426,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
+   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $seeform = false) {
 
       if ($preview == false) {
          echo "<div id='ajax_loader' class=\"ajax_loader\">";
@@ -403,7 +457,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          //            break;
 
          default:
-            self::showMetademands($metademands_id, $step, $preview, $options);
+            self::showMetademands($metademands_id, $step, $preview, $options, $seeform);
             break;
 
       }
@@ -533,10 +587,11 @@ class PluginMetademandsWizard extends CommonDBTM {
       echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
 
       $metademands = self::selectMetademands();
-      $config      = new PluginMetademandsConfig();
-      $config->getFromDB(1);
+      $config      = PluginMetademandsConfig::getInstance();
+
       $meta = new PluginMetademandsMetademand();
-      if ($config->getField('display_type') == 1) {
+      if ($config['display_type'] == 1) {
+
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
@@ -581,7 +636,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                if (!empty($meta->fields['icon'])) {
                   $icon = $meta->fields['icon'];
                }
-               echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
+               echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
                echo "</div>";
 
                echo "<br><p>";
@@ -601,13 +656,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "</span></em>";
                }
 
-
-               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
-               if ($count_drafts > 0) {
-                  echo "<br><em><span class='mydraft-comment'>";
-                  echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                               $count_drafts);
-                  echo "</span>";
+               if ($config['use_draft']) {
+                  $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
+                  if ($count_drafts > 0) {
+                     echo "<br><em><span class='mydraft-comment'>";
+                     echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                                  $count_drafts);
+                     echo "</span>";
+                  }
                }
 
                echo "</p></div></a>";
@@ -664,7 +720,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   static function showMetademands($metademands_id, $step, $preview = false, $options = []) {
+   static function showMetademands($metademands_id, $step, $preview = false, $options = [], $seeform = false) {
       global $CFG_GLPI;
 
       $parameters = ['itilcategories_id' => 0];
@@ -700,7 +756,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if (count($metademands_data)) {
          if ($step - 1 > count($metademands_data) && !$preview) {
-            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview);
+            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform);
          } else {
             echo "</div>";
 
@@ -748,7 +804,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
             }
 
-            if (!$preview) {
+            if (!$preview && !$seeform) {
 
                echo "<div class=\"middle-div bt-container-fluid\">";
                echo "<div class=\"bt-feature col-md-12 \">";
@@ -822,13 +878,15 @@ class PluginMetademandsWizard extends CommonDBTM {
                      echo "</div>";
 
                      $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-                     $title .= _sx('button', 'Post');
+                     $title .= _sx('button', 'Save & Post', 'metademands');
                      echo Html::submit($title, ['name'  => 'next_button',
                                                 'form'  => '',
+                                                'title' => _sx('button', 'Save & Post', 'metademands'),
                                                 'id'    => 'submitjob',
                                                 'class' => 'btn btn-success metademand_next_button']);
 
-                     $ID = $metademands->fields['id'];
+                     $ID   = $metademands->fields['id'];
+                     $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
                      echo "<script>
                        $('#submitjob').click(function() {
                           var meta_id = {$ID};
@@ -838,6 +896,21 @@ class PluginMetademandsWizard extends CommonDBTM {
                           jQuery('.resume_builder_input').trigger('change');
                           $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                           $('#ajax_loader').show();
+                          arrayDatas = $('form').serializeArray();
+                          arrayDatas.push({name: \"save_form\", value: true});
+                          arrayDatas.push({name: \"form_name\", value: '$name'});
+                          $.ajax({
+                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                type: 'POST',
+                                data: arrayDatas,
+                                success: function(response){
+                                 },
+                                error: function(xhr, status, error) {
+                                   console.log(xhr);
+                                   console.log(status);
+                                   console.log(error);
+                                 } 
+                             });
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
                                 type: 'POST',
@@ -859,7 +932,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                        });
                      </script>";
                   }
-
                } else {
                   $title = "<i class='fas fa-chevron-right' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                   $title .= __('Next');
@@ -1168,12 +1240,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                if ($data['type'] == 'informations') {
                   $color = $data['color'];
                   $style = "style='background-color: $color!important;'";
-//                  $class = "metademands_wizard_informations";
+                  //                  $class = "metademands_wizard_informations";
                   $class = "alert alert-important alert-warning d-flex alert-dismissible";
                }
-               $bottomclass ="";
+               $bottomclass = "";
                if ($data['type'] != 'informations') {
-                  $bottomclass ="md-bottom";
+                  $bottomclass = "md-bottom";
                }
                if ($data['row_display'] == 1) {
                   echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group $bottomclass $class\">";

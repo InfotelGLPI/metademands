@@ -905,17 +905,17 @@ JAVASCRIPT
          echo "<td colspan='2'></td>";
       }
 
-
-      echo "</tr>";
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
-      Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
-      echo "</td>";
-      echo "<td>" . __('Hide the "No" values of Yes / No fields in the tickets', 'metademands') . "</td><td>";
-      Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
-      echo "</td>";
-      echo "</tr>";
-
+      if ($this->fields['object_to_create'] != 'Change') {
+         echo "</tr>";
+         echo "<tr class='tab_bg_1'>";
+         echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
+         Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
+         echo "</td>";
+         echo "<td>" . __('Hide the "No" values of Yes / No fields in the tickets', 'metademands') . "</td><td>";
+         Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
+         echo "</td>";
+         echo "</tr>";
+      }
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . __('Background color', 'metademands') . "</td><td>";
       Html::showColorField('background_color', ['value' => $this->fields["background_color"]]);
@@ -1741,6 +1741,13 @@ JAVASCRIPT
                   if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
                      $draft = new PluginMetademandsDraft();
                      $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
+                  }
+                  //Link object to forms_id
+                  if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_id'])) {
+                     $form = new PluginMetademandsForm();
+                     $form->update(['id' => $_SESSION['plugin_metademands']['plugin_metademands_forms_id'],
+                                    'items_id' => $parent_tickets_id,
+                                    'itemtype' => $object_class]);
                   }
                   $inputField = [];
                   if (Plugin::isPluginActive('fields')) {
