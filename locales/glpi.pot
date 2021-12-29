@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-28 16:19+0000\n"
+"POT-Creation-Date: 2021-12-29 17:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,7 +45,7 @@ msgid_plural "Meta-Demands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ajax/adddraft.php:146
+#: ajax/adddraft.php:140
 msgid "Draft name is required"
 msgstr ""
 
@@ -53,17 +53,17 @@ msgstr ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/deletedraft.php:54 inc/draft.class.php:145
+#: ajax/deletedraft.php:58 inc/draft.class.php:158
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
-#: ajax/deletedraft.php:60 inc/draft.class.php:151
+#: ajax/deletedraft.php:64 inc/draft.class.php:164
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: ajax/deletedraft.php:66 inc/draft.class.php:158
+#: ajax/deletedraft.php:70 inc/draft.class.php:171
 msgid "No draft available for this form"
 msgstr ""
 
@@ -175,34 +175,34 @@ msgstr ""
 msgid "Icon for Service Catalog widget"
 msgstr ""
 
-#: inc/draft.class.php:82
+#: inc/draft.class.php:95
 msgid "Current draft"
 msgstr ""
 
-#: inc/draft.class.php:88
+#: inc/draft.class.php:101
 msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:95 inc/draft.class.php:121
+#: inc/draft.class.php:108 inc/draft.class.php:134
 msgctxt "button"
 msgid "Clean form"
 msgstr ""
 
-#: inc/draft.class.php:102
+#: inc/draft.class.php:115
 msgid "New draft"
 msgstr ""
 
-#: inc/draft.class.php:111
+#: inc/draft.class.php:124
 msgid "Draft name"
 msgstr ""
 
-#: inc/draft.class.php:114
+#: inc/draft.class.php:127
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
 
-#: inc/draft.class.php:132
+#: inc/draft.class.php:145
 msgid "Your drafts"
 msgstr ""
 
@@ -658,9 +658,9 @@ msgid "Do you want to validate her?"
 msgstr ""
 
 #: inc/metademand.class.php:4399 inc/metademand.class.php:4403
-#: inc/metademandvalidation.class.php:56 inc/metademandvalidation.class.php:293
-#: inc/metademandvalidation.class.php:297
-#: inc/metademandvalidation.class.php:319
+#: inc/metademandvalidation.class.php:56 inc/metademandvalidation.class.php:291
+#: inc/metademandvalidation.class.php:295
+#: inc/metademandvalidation.class.php:317
 msgid "Metademand validation"
 msgstr ""
 
@@ -772,62 +772,62 @@ msgstr ""
 msgid "This demand is already used in"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:267
-#: inc/metademandvalidation.class.php:360
+#: inc/metademandvalidation.class.php:265
+#: inc/metademandvalidation.class.php:358
 msgid "Tasks are created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:269
-#: inc/metademandvalidation.class.php:371
+#: inc/metademandvalidation.class.php:267
+#: inc/metademandvalidation.class.php:369
 msgid "Sub-tickets are created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:271
+#: inc/metademandvalidation.class.php:269
 msgid "The metademand is validated and affected"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:325
+#: inc/metademandvalidation.class.php:323
 msgid "Create sub-tickets"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:328
+#: inc/metademandvalidation.class.php:326
 msgid "Create tasks"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:347
+#: inc/metademandvalidation.class.php:345
 msgid "Attribute ticket to "
 msgstr ""
 
-#: inc/metademandvalidation.class.php:377
+#: inc/metademandvalidation.class.php:375
 #, php-format
 msgid "Validated by %s on %s"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:386
+#: inc/metademandvalidation.class.php:384
 msgid "Validate metademands"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:489
+#: inc/metademandvalidation.class.php:487
 msgid "To validate"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:491
+#: inc/metademandvalidation.class.php:489
 msgid "Child tickets created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:493
+#: inc/metademandvalidation.class.php:491
 msgid "Tasks created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:495
+#: inc/metademandvalidation.class.php:493
 msgid "To validate without child"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:497
+#: inc/metademandvalidation.class.php:495
 msgid "Validate without child"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:500
+#: inc/metademandvalidation.class.php:498
 msgid "Not subject to validation"
 msgstr ""
 
