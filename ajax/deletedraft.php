@@ -37,6 +37,10 @@ $draft_id                          = $_POST['drafts_id'];
 
 $self = new PluginMetademandsDraft();
 $self->deleteByCriteria(['id' => $draft_id]);
+
+$values = new PluginMetademandsDraft_Value();
+$values->deleteByCriteria(['plugin_metademands_drafts_id' => $draft_id]);
+
 $drafts = $self->find(['users_id'                          => $users_id,
                        'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id]);
 if($_POST['self_delete'] == true){

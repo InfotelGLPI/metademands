@@ -57,14 +57,6 @@ if (isset($_POST['save_draft'])) {
 
       for ($i = 0; $i < $nblines; $i++) {
 
-
-         //            //Clean $post & $data & $_POST
-         //            $data  = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id']]);
-         //            $dataOld = $data;
-         //            // Double appel for prevent order fields
-         //            PluginMetademandsWizard::unsetHidden($data, $post);
-         //            PluginMetademandsWizard::unsetHidden($dataOld, $post);
-
          $_POST['field']   = $post;
          $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
          if (count($metademands_data)) {
@@ -73,7 +65,8 @@ if (isset($_POST['save_draft'])) {
                foreach ($data as $form_metademands_id => $line) {
                   foreach ($line['form'] as $id => $value) {
                      if (!isset($post[$id])) {
-                        if (isset($_SESSION['plugin_metademands']['fields'][$id]) && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
+                        if (isset($_SESSION['plugin_metademands']['fields'][$id])
+                            && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
                            $_POST['field'][$id] = $_SESSION['plugin_metademands']['fields'][$id];
                         } else {
                            $_POST['field'][$id] = [];
@@ -99,7 +92,7 @@ if (isset($_POST['save_draft'])) {
                         }
                      }
                      if ($value['item'] == 'ITILCategory_Metademands') {
-                        $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+                        $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                      }
                   }
 
@@ -118,14 +111,15 @@ if (isset($_POST['save_draft'])) {
             $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
 
             //Category id if have category field
-            $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+            $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
             $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
                (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
             $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
          }
 
          $drafts = new PluginMetademandsDraft();
-         if (isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])) {
+         if (isset($_POST['plugin_metademands_drafts_id'])
+             && !empty($_POST['plugin_metademands_drafts_id'])) {
             $draft_id = $_POST['plugin_metademands_drafts_id'];
             $drafts->getFromDB($_POST['plugin_metademands_drafts_id']);
             $drafts_values = new PluginMetademandsDraft_Value();
@@ -135,11 +129,11 @@ if (isset($_POST['save_draft'])) {
                foreach ($metademands_data as $form_step => $data) {
                   $docitem = null;
                   foreach ($data as $form_metademands_id => $line) {
-                     PluginMetademandsDraft::setDraftValues($line['form'], $_POST['field'], $draft_id);
+                     PluginMetademandsDraft_Value::setDraftValues($line['form'], $_POST['field'], $draft_id);
                   }
                }
             }
-            PluginMetademandsDraft::loadDraftValues($draft_id);
+            PluginMetademandsDraft_Value::loadDraftValues($draft_id);
             $_POST['draft_name'] = $drafts->getField('name');
          } else {
             if (!isset($_POST['draft_name']) || (isset($_POST['draft_name']) && empty($_POST['draft_name']))) {
@@ -160,7 +154,7 @@ if (isset($_POST['save_draft'])) {
                foreach ($metademands_data as $form_step => $data) {
                   $docitem = null;
                   foreach ($data as $form_metademands_id => $line) {
-                     PluginMetademandsDraft::setDraftValues($line['form'], $_POST['field'], $draft_id);
+                     PluginMetademandsDraft_Value::setDraftValues($line['form'], $_POST['field'], $draft_id);
                   }
                }
             }
@@ -168,11 +162,8 @@ if (isset($_POST['save_draft'])) {
          $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']   = $draft_id;
          $_SESSION['plugin_metademands']['plugin_metademands_drafts_name'] = $_POST['draft_name'];
 
-
       }
    }
-   //   Session::addMessageAfterRedirect(__('Draft saved', 'metademands'), false);
-   //   Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
 }
 if ($KO === false) {
    echo 0;

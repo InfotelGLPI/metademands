@@ -157,8 +157,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          }
       }
 
-//      Toolbox::logInfo($meta_tasks);
-//      die();
       $ticket = new Ticket();
       $ticket->getFromDB($ticket_id);
       //      $ticket->fields["_users_id_requester"] = Session::getLoginUserID();

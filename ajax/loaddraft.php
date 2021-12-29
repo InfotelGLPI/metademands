@@ -44,7 +44,7 @@ $draft      = new PluginMetademandsDraft();
 if ($draft->getFromDB($_POST['plugin_metademands_drafts_id'])) {
 
    $metademands->getFromDB($_POST['metademands_id']);
-   PluginMetademandsDraft::loadDraftValues($_POST['plugin_metademands_drafts_id']);
+   PluginMetademandsDraft_Value::loadDraftValues($_POST['plugin_metademands_drafts_id']);
    $draft_name = $draft->getField('name');
    //      PluginMetademandsDraft::loadDraftValues(6);
    $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
