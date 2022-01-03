@@ -60,6 +60,10 @@ class PluginMetademandsTicketField extends CommonDBChild {
       return _n('Ticket field', 'Ticket fields', $nb, 'metademands');
    }
 
+   static function getIcon() {
+      return PluginMetademandsMetademand::getIcon();
+   }
+
    /**
     * @return bool|int
     */

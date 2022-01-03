@@ -51,7 +51,7 @@ class PluginMetademandsForm extends CommonDBTM {
       } else {
          $condition['is_model'] = 0;
       }
-      $forms = $self->find($condition);
+      $forms = $self->find($condition, ['date DESC']);
 
       if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_name'])) {
          $formname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands']['plugin_metademands_forms_name'])) ?? '';
@@ -64,7 +64,7 @@ class PluginMetademandsForm extends CommonDBTM {
          $form_id = 0;
       }
       $return = "<span class=''>";
-      $rand = mt_rand();
+      $rand   = mt_rand();
       if ($is_model == true) {
 
          if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_name'])) {
@@ -84,15 +84,15 @@ class PluginMetademandsForm extends CommonDBTM {
                                                  'placeholder' => __('Form name', 'metademands')]);
             $self->getFromDB($form_id);
             if ($self->fields['is_model'] == true) {
-               $title  .= _sx('button', 'Save model', 'metademands');
+               $title .= _sx('button', 'Save model', 'metademands');
             } else {
-               $title  .= _sx('button', 'Save as model', 'metademands');
+               $title .= _sx('button', 'Save as model', 'metademands');
             }
 
             $return .= "&nbsp;";
             $return .= Html::submit($title, ['name'  => 'save_model',
                                              'form'  => '',
-                                             'id'    => 'FormSave'.$rand,
+                                             'id'    => 'FormSave' . $rand,
                                              'class' => 'btn btn-success btn-sm']);
             $return .= "&nbsp;";
             $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
@@ -111,15 +111,15 @@ class PluginMetademandsForm extends CommonDBTM {
             $return .= "<td colspan='4' class='center'>";
             $return .= "<br>";
             $return .= Html::input('form_name', ['maxlength'   => 250,
-                                                  'size'        => 40,
-                                                  'placeholder' => __('Form name', 'metademands')]);
+                                                 'size'        => 40,
+                                                 'placeholder' => __('Form name', 'metademands')]);
             $return .= "<br>";
             $title  = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
             $title  .= _sx('button', 'Save as model', 'metademands');
 
             $return .= Html::submit($title, ['name'  => 'save_form',
                                              'form'  => '',
-                                             'id'    => 'FormAdd'.$rand,
+                                             'id'    => 'FormAdd' . $rand,
                                              'class' => 'btn btn-success btn-sm']);
             $return .= "&nbsp;";
             $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
@@ -314,10 +314,12 @@ class PluginMetademandsForm extends CommonDBTM {
     */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
-      if ($item->getType() == 'Ticket' || $item->getType() == 'Change') {
+      if (($item->getType() == 'Ticket' && $_SESSION['glpiactiveprofile']['interface'] == 'helpdesk')
+          || $item->getType() == 'Change') {
          if ($this->canView()
              && !$withtemplate
-             && countElementsInTable("glpi_plugin_metademands_forms", ["itemtype" => $item->getType(), "items_id" => $item->fields['id']])) {
+             && countElementsInTable("glpi_plugin_metademands_forms", ["itemtype" => $item->getType(),
+                                                                       "items_id" => $item->fields['id']])) {
 
             $form_metademand_data = $this->find(['itemtype' => $item->getType(), 'items_id' => $item->fields['id']]);
             $total                = count($form_metademand_data);
@@ -382,11 +384,12 @@ class PluginMetademandsForm extends CommonDBTM {
       if (!$this->canView()) {
          return false;
       }
-      $form_metademand_data = $this->find(['itemtype' => $item->getType(), 'items_id' => $item->fields['id']]);
-      $name                 = _n('Initial form', 'Initial forms', 1, 'metademands');
+      $form_metademand_data = $this->find(['itemtype' => $item->getType(),
+                                           'items_id' => $item->fields['id'],
+                                           'is_model' => 0], ['date DESC']);
 
       if (count($form_metademand_data)) {
-
+         $name = _n('Initial form', 'Initial forms', count($form_metademand_data), 'metademands');
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='center'>";
          echo "<th colspan='3'>" . $name . "</th>";
@@ -464,10 +467,11 @@ class PluginMetademandsForm extends CommonDBTM {
       if (!$this->canView()) {
          return false;
       }
-      $forms_metademands = $this->find(['users_id' => $user->fields['id']]);
+      $forms_metademands = $this->find(['users_id' => $user->fields['id'],
+                                        'is_model' => 0], ['date DESC']);
 
       if (count($forms_metademands)) {
-         $name = _n('Associated form', 'Associated forms', 1, 'metademands');
+         $name = _n('Associated form', 'Associated forms', count($forms_metademands), 'metademands');
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr class='center'>";
          echo "<th colspan='3'>" . $name . "</th>";

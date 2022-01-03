@@ -57,6 +57,9 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
    }
 
 
+   static function getIcon() {
+      return PluginMetademandsMetademand::getIcon();
+   }
    /**
     * Get the standard massive actions which are forbidden
     *

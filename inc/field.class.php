@@ -913,18 +913,20 @@ class PluginMetademandsField extends CommonDBChild {
             echo "<td>" . self::getFieldItemsName($value['item']) . "</td>";
             echo "<td>" . Dropdown::getYesNo($value['is_mandatory']) . "</td>";
             echo "<td>";
-            $name = Dropdown::getDropdownName('glpi_plugin_metademands_tasks', $value['plugin_metademands_tasks_id']);
-            if ($name == '&nbsp;') {
-               $check_value = self::_unserialize($value['check_value']);
-               if (!is_array($check_value)) {
-                  if (!empty($value['check_value'])) {
-                     $name = PluginMetademandsMetademandTask::getMetademandTaskName($value['plugin_metademands_tasks_id']);
+            if (is_int($value['plugin_metademands_tasks_id'])) {
+               $name = Dropdown::getDropdownName('glpi_plugin_metademands_tasks', $value['plugin_metademands_tasks_id']);
+               if ($name == '&nbsp;') {
+                  $check_value = self::_unserialize($value['check_value']);
+                  if (!is_array($check_value)) {
+                     if (!empty($value['check_value'])) {
+                        $name = PluginMetademandsMetademandTask::getMetademandTaskName($value['plugin_metademands_tasks_id']);
+                     } else {
+                        $name = '-----';
+                     }
                   } else {
-                     $name = '-----';
-                  }
-               } else {
-                  if (count($check_value) > 0) {
-                     $name = __('Multiples', 'metademands');
+                     if (count($check_value) > 0) {
+                        $name = __('Multiples', 'metademands');
+                     }
                   }
                }
             }

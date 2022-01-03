@@ -134,11 +134,12 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
 
       echo "<td>";
-      echo __('Display metademands list into ServiceCatalog plugin', 'metademands');
+      echo __('Use drafts', 'metademands');
       echo "</td>";
       echo "<td>";
-      Dropdown::showYesNo('display_buttonlist_servicecatalog', $config['display_buttonlist_servicecatalog']);
+      Dropdown::showYesNo('use_draft', $config['use_draft']);
       echo "</td>";
+
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
@@ -151,10 +152,10 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
 
       echo "<td>";
-      echo __('Use drafts', 'metademands');
+      echo __('Display metademands list into ServiceCatalog plugin', 'metademands');
       echo "</td>";
       echo "<td>";
-      Dropdown::showYesNo('use_draft', $config['use_draft']);
+      Dropdown::showYesNo('display_buttonlist_servicecatalog', $config['display_buttonlist_servicecatalog']);
       echo "</td>";
 
       echo "</tr>";

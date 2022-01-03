@@ -121,8 +121,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
       ) {
          if (!$withtemplate
              && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
-            if (($item->getType() == 'Ticket' || $item->getType() == 'PluginResourcesResource')
-                && $this->canView()) {
+            if ($item->getType() == 'Ticket' && $this->canView()) {
 
                $ticket_metademand      = new PluginMetademandsTicket_Metademand();
                $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
@@ -170,6 +169,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       switch ($item->getType()) {
          case 'Ticket':
+            $form = new PluginMetademandsForm();
+            $form->showFormsForItilObject($item);
             $metademands->showPluginForTicket($item);
             break;
       }
@@ -396,7 +397,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          }
       }
 
-      if (empty($input['object_to_create'])) {
+      if (empty($input['object_to_create']) && empty($this->fields['object_to_create'])) {
          Session::addMessageAfterRedirect(__('Object to create is mandatory', 'metademands'), false, ERROR);
          return false;
       }
@@ -4461,7 +4462,7 @@ JAVASCRIPT
             echo "<th>" . __('Assigned to') . "</th>";
             echo "<th>" . __('Status') . "</th>";
             echo "<th>" . __('Due date', 'metademands') . "</th>";
-            echo "<th>" . __('Status') . " " . __('SLT') . "</th></tr>";
+            echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
 
             $status = [Ticket::SOLVED, Ticket::CLOSED];
 
@@ -4590,7 +4591,7 @@ JAVASCRIPT
             echo "<th>" . __('Assigned to') . "</th>";
             echo "<th>" . __('Status') . "</th>";
             echo "<th>" . __('Due date', 'metademands') . "</th>";
-            echo "<th>" . __('Status') . " " . __('SLT') . "</th></tr>";
+            echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
 
             foreach ($tickets_next as $values) {
 
