@@ -420,7 +420,7 @@ class PluginMetademandsForm extends CommonDBTM {
 
             echo "<td>";
             $rand = mt_rand();
-            echo "<button form='' class='btn btn-success btn-sm' onclick=\"loadForm$rand(" . $form_metademand_fields['id'] . ", " . $form_metademand_fields['plugin_metademands_metademands_id'] . ")\">";
+            echo "<button form='' class='btn btn-info btn-sm' onclick=\"loadForm$rand(" . $form_metademand_fields['id'] . ", " . $form_metademand_fields['plugin_metademands_metademands_id'] . ")\">";
             echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
             echo "</button>";
