@@ -2569,10 +2569,14 @@ JAVASCRIPT
 
                            $tasks = $line['tasks'];
                            foreach ($tasks as $key => $val) {
-                              $tasks[$key]['tickettasks_name']   = urlencode($val['tickettasks_name']);
-                              $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
-                              $tasks[$key]['content']            = urlencode($val['content']);
-                              $tasks[$key]['block_use']          = json_decode($val["block_use"], true);
+                              if (PluginMetademandsTicket_Field::checkTicketCreation($val['tasks_id'], $parent_tickets_id)) {
+                                 $tasks[$key]['tickettasks_name']   = urlencode($val['tickettasks_name']);
+                                 $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
+                                 $tasks[$key]['content']            = urlencode($val['content']);
+                                 $tasks[$key]['block_use']          = json_decode($val["block_use"], true);
+                              } else {
+                                 unset($tasks[$key]);
+                              }
                            }
 
                            $paramIn["tickets_to_create"] = json_encode($tasks);
@@ -2723,6 +2727,13 @@ JAVASCRIPT
             if ($field['type'] == 'radio' && $field['value'] === "") {
                continue;
             }
+            if ($field['type'] == 'number' && $field['value'] != "0") {
+               continue;
+            }
+            if ($field['type'] == 'checkbox' && $field['value'] != "") {
+               continue;
+            }
+
             $self = new self();
             $self->getFromDB($metademands_id);
             if ($self->getField('hide_no_field') == 1) {
@@ -3868,7 +3879,6 @@ JAVASCRIPT
                         }
                         foreach ($list_fields as $id => $fields_values) {
                            if ($fields_values['used_by_ticket'] > 0 && $fields_values['used_by_child'] == 1) {
-                              //                           foreach ($values_form as $k => $v) {
                               if (isset($values_form[$id])) {
                                  $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
                                  if ($fields_values['used_by_ticket'] == 4) {
@@ -3885,7 +3895,6 @@ JAVASCRIPT
                                  }
                                  $son_ticket_data[$name] = $values_form[$id];
                               }
-                              //                           }
                            }
                         }
                      }
@@ -4384,18 +4393,19 @@ JAVASCRIPT
     * @throws \GlpitestSQLError
     */
    function showPluginForTicket($ticket) {
-      global $CFG_GLPI;
+
       if (!$this->canView()) {
          return false;
       }
+      $tovalidate = 0;
       $metaValidation = new PluginMetademandsMetademandValidation();
       if ($metaValidation->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
           && ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE
               || $metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK)
           && Session::haveRight('plugin_metademands', UPDATE)) {
-         echo "<div align='center'><table class='tab_cadre_fixe'>";
-         echo "<tr><th colspan='6'>" . __('Metademand need a validation', 'metademands') . "</th></tr>";
-         echo "</table></div>";
+
+         $tovalidate = 1;
+
          echo "<div class='alert center'>";
          echo __('Metademand need a validation', 'metademands');
          echo "<br>";
@@ -4415,6 +4425,66 @@ JAVASCRIPT
                                              'reloadonclose' => true]);
 
          echo "</div>";
+
+
+         $sons = json_decode($metaValidation->fields['tickets_to_create'], true);
+         if (is_array($sons)) {
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr class='tab_bg_2'>";
+            echo "<th class='left b' colspan='4'>" . __('List of tickets / tasks which be created after validation', 'metademands') . "</th>";
+            echo "</tr>";
+            echo "<tr class='tab_bg_2'>";
+            echo "<th class='center b'>" . __('Name') . "</th>";
+            echo "<th class='center b'>" . __('Type') . "</th>";
+            echo "<th class='center b'>" . __('Category') . "</th>";
+            echo "<th class='center b'>" . __('Assigned to') . "</th>";
+            echo "</tr>";
+            foreach ($sons as $son) {
+               if (PluginMetademandsTicket_Field::checkTicketCreation($son['tasks_id'], $ticket->fields['id'])) {
+                  echo "<tr class='tab_bg_1'>";
+                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                     $color_class = '';
+                  } else {
+                     $color_class = "class='metademand_metademandtasks'";
+                  }
+
+                  echo "<td $color_class>" . urldecode($son['tickettasks_name']) . "</td>";
+
+                  // Type
+                  echo "<td $color_class>" . PluginMetademandsTask::getTaskTypeName($son['type']) . "</td>";
+
+                  $cat = "";
+                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE
+                      && isset($son['itilcategories_id'])
+                      && $son['itilcategories_id'] > 0) {
+                     $cat = Dropdown::getDropdownName("glpi_itilcategories", $son['itilcategories_id']);
+                  }
+                  echo "<td $color_class>";
+                  echo $cat;
+                  echo "</td>";
+
+                  //assign
+                  $techdata = "";
+                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                     if (isset($son['users_id_assign'])
+                         && $son['users_id_assign'] > 0) {
+                        $techdata .= getUserName($son['users_id_assign']);
+                        $techdata .= "<br>";
+                     }
+                     if (isset($son['groups_id_assign'])
+                         && $son['groups_id_assign'] > 0) {
+                        $techdata .= Dropdown::getDropdownName("glpi_groups", $son['groups_id_assign']);
+                     }
+                  }
+                  echo "<td $color_class>";
+                  echo $techdata;
+                  echo "</td>";
+
+                  echo "</tr>";
+               }
+            }
+            echo "</table>";
+         }
       }
 
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
@@ -4437,250 +4507,252 @@ JAVASCRIPT
       $tickets_existant = [];
       $tickets_next     = [];
 
-      if (count($tickets_found)) {
+      if ($tovalidate == 0) {
+         if (count($tickets_found)) {
 
-         echo "<div align='center'><table class='tab_cadre_fixe'>";
-         echo "<tr><th colspan='6'>" . __('Demand followup', 'metademands') . "</th></tr>";
-         echo "</table></div>";
-
-         foreach ($tickets_found as $tickets) {
-            if (!empty($tickets['tickets_id'])) {
-               $tickets_existant[] = $tickets;
-            } else {
-               $tickets_next[] = $tickets;
-            }
-         }
-
-         if (count($tickets_existant)) {
             echo "<div align='center'><table class='tab_cadre_fixe'>";
-            echo "<tr class='center'>";
-            echo "<td colspan='6'><h3>" . __('Existent tickets', 'metademands') . "</h3></td></tr>";
-
-            echo "<tr>";
-            echo "<th>" . __('Ticket') . "</th>";
-            echo "<th>" . __('Opening date') . "</th>";
-            echo "<th>" . __('Assigned to') . "</th>";
-            echo "<th>" . __('Status') . "</th>";
-            echo "<th>" . __('Due date', 'metademands') . "</th>";
-            echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
-
-            $status = [Ticket::SOLVED, Ticket::CLOSED];
-
-            foreach ($tickets_existant as $values) {
-               $color_class = '';
-               // Get ticket values if it exists
-               $ticket->getFromDB($values['tickets_id']);
-
-               // SLA State
-               $sla_state = Dropdown::EMPTY_VALUE;
-               $is_late   = false;
-               switch ($this->checkSlaState($values)) {
-                  case self::SLA_FINISHED:
-                     $sla_state = __('Task completed.');
-                     break;
-                  case self::SLA_LATE:
-                     $is_late     = true;
-                     $color_class = "metademand_metademandfollowup_red";
-                     $sla_state   = __('Late');
-                     break;
-                  case self::SLA_PLANNED:
-                     $sla_state = __('Processing');
-                     break;
-                  case self::SLA_TODO:
-                     $sla_state   = __('To do');
-                     $color_class = "metademand_metademandfollowup_yellow";
-                     break;
-               }
-
-               echo "<tr class='tab_bg_1'>";
-               echo "<td class='$color_class'>";
-               // Name
-               if ($values['type'] == PluginMetademandsTask::TICKET_TYPE) {
-                  if ($values['level'] > 1) {
-                     $width = (20 * $values['level']);
-                     echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
-                  }
-               }
-
-               if (!empty($values['tickets_id'])) {
-                  echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
-                       "?id=" . $ticket->fields['id'] . "&glpi_tab=Ticket$" . 'main' . "'>" . $ticket->fields['name'] . "</a>";
-               } else {
-                  echo self::$SON_PREFIX . $values['tasks_name'];
-               }
-
-               echo "</td>";
-
-               //date
-               echo "<td class='$color_class'>";
-               echo Html::convDateTime($ticket->fields['date']);
-               echo "</td>";
-
-               //group
-               $techdata = '';
-               if ($ticket->countUsers(CommonITILActor::ASSIGN)) {
-
-                  foreach ($ticket->getUsers(CommonITILActor::ASSIGN) as $u) {
-                     $k = $u['users_id'];
-                     if ($k) {
-                        $techdata .= getUserName($k);
-                     }
-
-                     if ($ticket->countUsers(CommonITILActor::ASSIGN) > 1) {
-                        $techdata .= "<br>";
-                     }
-                  }
-                  $techdata .= "<br>";
-               }
-
-               if ($ticket->countGroups(CommonITILActor::ASSIGN)) {
-
-                  foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $u) {
-                     $k = $u['groups_id'];
-                     if ($k) {
-                        $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
-                     }
-
-                     if ($ticket->countGroups(CommonITILActor::ASSIGN) > 1) {
-                        $techdata .= "<br>";
-                     }
-                  }
-               }
-               echo "<td class='$color_class'>";
-               echo $techdata;
-               echo "</td>";
-
-               //status
-               echo "<td class='$color_class center'>";
-               if (in_array($ticket->fields['status'], $status)) {
-                  echo "<i class='fas fa-check-circle fa-2x' style='color:forestgreen'></i> ";
-               }
-               if ($is_late && !in_array($ticket->fields['status'], $status)) {
-                  echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:darkred'></i> ";
-               }
-               if (!in_array($ticket->fields['status'], $status)) {
-                  echo "<i class='fas fa-cog fa-2x' style='color:orange'></i> ";
-               }
-               echo Ticket::getStatus($ticket->fields['status']);
-               echo "</td>";
-
-               //due date
-               echo "<td class='$color_class'>";
-               echo Html::convDateTime($ticket->fields['time_to_resolve']);
-               echo "</td>";
-
-               //sla state
-               echo "<td class='$color_class'>";
-               echo $sla_state;
-               echo "</td>";
-               echo "</tr>";
-            }
+            echo "<tr><th colspan='6'>" . __('Demand followup', 'metademands') . "</th></tr>";
             echo "</table></div>";
-         }
 
-         if (count($tickets_next)) {
-
-            $color_class = "metademand_metademandfollowup_grey";
-            echo "<div align='center'><table class='tab_cadre_fixe'>";
-            echo "<tr class='center'>";
-            echo "<td colspan='6'><h3>" . __('Next tickets', 'metademands') . "</h3></td></tr>";
-
-            echo "<tr>";
-            echo "<th>" . __('Ticket') . "</th>";
-            echo "<th>" . __('Opening date') . "</th>";
-            echo "<th>" . __('Assigned to') . "</th>";
-            echo "<th>" . __('Status') . "</th>";
-            echo "<th>" . __('Due date', 'metademands') . "</th>";
-            echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
-
-            foreach ($tickets_next as $values) {
-
-               $ticket->getEmpty();
-
-               // SLA State
-               $sla_state = Dropdown::EMPTY_VALUE;
-
-               echo "<tr class='tab_bg_1'>";
-               echo "<td class='$color_class'>";
-               // Name
-               if ($values['type'] == PluginMetademandsTask::TICKET_TYPE) {
-                  if ($values['level'] > 1) {
-                     $width = (20 * $values['level']);
-                     echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
-                  }
-               }
-
-               if (!empty($values['tickets_id'])) {
-                  echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
-                       "?id=" . $ticket->fields['id'] . "'>" . $ticket->fields['name'] . "</a>";
+            foreach ($tickets_found as $tickets) {
+               if (!empty($tickets['tickets_id'])) {
+                  $tickets_existant[] = $tickets;
                } else {
-                  echo self::$SON_PREFIX . $values['tasks_name'];
+                  $tickets_next[] = $tickets;
                }
-
-               echo "</td>";
-
-               //date
-               echo "<td class='$color_class'>";
-               echo Html::convDateTime($ticket->fields['date']);
-               echo "</td>";
-
-               //group
-               $techdata = '';
-               if ($ticket->countUsers(CommonITILActor::ASSIGN)) {
-
-                  foreach ($ticket->getUsers(CommonITILActor::ASSIGN) as $u) {
-                     $k = $u['users_id'];
-                     if ($k) {
-                        $techdata .= getUserName($k);
-                     }
-
-                     if ($ticket->countUsers(CommonITILActor::ASSIGN) > 1) {
-                        $techdata .= "<br>";
-                     }
-                  }
-                  $techdata .= "<br>";
-               }
-
-               if ($ticket->countGroups(CommonITILActor::ASSIGN)) {
-
-                  foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $u) {
-                     $k = $u['groups_id'];
-                     if ($k) {
-                        $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
-                     }
-
-                     if ($ticket->countGroups(CommonITILActor::ASSIGN) > 1) {
-                        $techdata .= "<br>";
-                     }
-                  }
-               }
-               echo "<td class='$color_class'>";
-               echo "</td>";
-
-               //status
-               echo "<td class='$color_class center'>";
-               echo "<i class='fas fa-hourglass-half fa-2x'></i> ";
-               echo __('Coming', 'metademands');
-
-               echo "</td>";
-
-               //due date
-               echo "<td class='$color_class'>";
-               echo Html::convDateTime($ticket->fields['time_to_resolve']);
-               echo "</td>";
-
-               //sla state
-               echo "<td class='$color_class'>";
-               echo $sla_state;
-               echo "</td>";
-               echo "</tr>";
             }
-            echo "</table></div>";
+
+            if (count($tickets_existant)) {
+               echo "<div align='center'><table class='tab_cadre_fixe'>";
+               echo "<tr class='center'>";
+               echo "<td colspan='6'><h3>" . __('Existent tickets', 'metademands') . "</h3></td></tr>";
+
+               echo "<tr>";
+               echo "<th>" . __('Ticket') . "</th>";
+               echo "<th>" . __('Opening date') . "</th>";
+               echo "<th>" . __('Assigned to') . "</th>";
+               echo "<th>" . __('Status') . "</th>";
+               echo "<th>" . __('Due date', 'metademands') . "</th>";
+               echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
+
+               $status = [Ticket::SOLVED, Ticket::CLOSED];
+
+               foreach ($tickets_existant as $values) {
+                  $color_class = '';
+                  // Get ticket values if it exists
+                  $ticket->getFromDB($values['tickets_id']);
+
+                  // SLA State
+                  $sla_state = Dropdown::EMPTY_VALUE;
+                  $is_late   = false;
+                  switch ($this->checkSlaState($values)) {
+                     case self::SLA_FINISHED:
+                        $sla_state = __('Task completed.');
+                        break;
+                     case self::SLA_LATE:
+                        $is_late     = true;
+                        $color_class = "metademand_metademandfollowup_red";
+                        $sla_state   = __('Late');
+                        break;
+                     case self::SLA_PLANNED:
+                        $sla_state = __('Processing');
+                        break;
+                     case self::SLA_TODO:
+                        $sla_state   = __('To do');
+                        $color_class = "metademand_metademandfollowup_yellow";
+                        break;
+                  }
+
+                  echo "<tr class='tab_bg_1'>";
+                  echo "<td class='$color_class'>";
+                  // Name
+                  if ($values['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                     if ($values['level'] > 1) {
+                        $width = (20 * $values['level']);
+                        echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
+                     }
+                  }
+
+                  if (!empty($values['tickets_id'])) {
+                     echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
+                          "?id=" . $ticket->fields['id'] . "&glpi_tab=Ticket$" . 'main' . "'>" . $ticket->fields['name'] . "</a>";
+                  } else {
+                     echo self::$SON_PREFIX . $values['tasks_name'];
+                  }
+
+                  echo "</td>";
+
+                  //date
+                  echo "<td class='$color_class'>";
+                  echo Html::convDateTime($ticket->fields['date']);
+                  echo "</td>";
+
+                  //group
+                  $techdata = '';
+                  if ($ticket->countUsers(CommonITILActor::ASSIGN)) {
+
+                     foreach ($ticket->getUsers(CommonITILActor::ASSIGN) as $u) {
+                        $k = $u['users_id'];
+                        if ($k) {
+                           $techdata .= getUserName($k);
+                        }
+
+                        if ($ticket->countUsers(CommonITILActor::ASSIGN) > 1) {
+                           $techdata .= "<br>";
+                        }
+                     }
+                     $techdata .= "<br>";
+                  }
+
+                  if ($ticket->countGroups(CommonITILActor::ASSIGN)) {
+
+                     foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $u) {
+                        $k = $u['groups_id'];
+                        if ($k) {
+                           $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
+                        }
+
+                        if ($ticket->countGroups(CommonITILActor::ASSIGN) > 1) {
+                           $techdata .= "<br>";
+                        }
+                     }
+                  }
+                  echo "<td class='$color_class'>";
+                  echo $techdata;
+                  echo "</td>";
+
+                  //status
+                  echo "<td class='$color_class center'>";
+                  if (in_array($ticket->fields['status'], $status)) {
+                     echo "<i class='fas fa-check-circle fa-2x' style='color:forestgreen'></i> ";
+                  }
+                  if ($is_late && !in_array($ticket->fields['status'], $status)) {
+                     echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:darkred'></i> ";
+                  }
+                  if (!in_array($ticket->fields['status'], $status)) {
+                     echo "<i class='fas fa-cog fa-2x' style='color:orange'></i> ";
+                  }
+                  echo Ticket::getStatus($ticket->fields['status']);
+                  echo "</td>";
+
+                  //due date
+                  echo "<td class='$color_class'>";
+                  echo Html::convDateTime($ticket->fields['time_to_resolve']);
+                  echo "</td>";
+
+                  //sla state
+                  echo "<td class='$color_class'>";
+                  echo $sla_state;
+                  echo "</td>";
+                  echo "</tr>";
+               }
+               echo "</table></div>";
+            }
+
+            if (count($tickets_next)) {
+
+               $color_class = "metademand_metademandfollowup_grey";
+               echo "<div align='center'><table class='tab_cadre_fixe'>";
+               echo "<tr class='center'>";
+               echo "<td colspan='6'><h3>" . __('Next tickets', 'metademands') . "</h3></td></tr>";
+
+               echo "<tr>";
+               echo "<th>" . __('Ticket') . "</th>";
+               echo "<th>" . __('Opening date') . "</th>";
+               echo "<th>" . __('Assigned to') . "</th>";
+               echo "<th>" . __('Status') . "</th>";
+               echo "<th>" . __('Due date', 'metademands') . "</th>";
+               echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
+
+               foreach ($tickets_next as $values) {
+
+                  $ticket->getEmpty();
+
+                  // SLA State
+                  $sla_state = Dropdown::EMPTY_VALUE;
+
+                  echo "<tr class='tab_bg_1'>";
+                  echo "<td class='$color_class'>";
+                  // Name
+                  if ($values['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                     if ($values['level'] > 1) {
+                        $width = (20 * $values['level']);
+                        echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
+                     }
+                  }
+
+                  if (!empty($values['tickets_id'])) {
+                     echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
+                          "?id=" . $ticket->fields['id'] . "'>" . $ticket->fields['name'] . "</a>";
+                  } else {
+                     echo self::$SON_PREFIX . $values['tasks_name'];
+                  }
+
+                  echo "</td>";
+
+                  //date
+                  echo "<td class='$color_class'>";
+                  echo Html::convDateTime($ticket->fields['date']);
+                  echo "</td>";
+
+                  //group
+                  $techdata = '';
+                  if ($ticket->countUsers(CommonITILActor::ASSIGN)) {
+
+                     foreach ($ticket->getUsers(CommonITILActor::ASSIGN) as $u) {
+                        $k = $u['users_id'];
+                        if ($k) {
+                           $techdata .= getUserName($k);
+                        }
+
+                        if ($ticket->countUsers(CommonITILActor::ASSIGN) > 1) {
+                           $techdata .= "<br>";
+                        }
+                     }
+                     $techdata .= "<br>";
+                  }
+
+                  if ($ticket->countGroups(CommonITILActor::ASSIGN)) {
+
+                     foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $u) {
+                        $k = $u['groups_id'];
+                        if ($k) {
+                           $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
+                        }
+
+                        if ($ticket->countGroups(CommonITILActor::ASSIGN) > 1) {
+                           $techdata .= "<br>";
+                        }
+                     }
+                  }
+                  echo "<td class='$color_class'>";
+                  echo "</td>";
+
+                  //status
+                  echo "<td class='$color_class center'>";
+                  echo "<i class='fas fa-hourglass-half fa-2x'></i> ";
+                  echo __('Coming', 'metademands');
+
+                  echo "</td>";
+
+                  //due date
+                  echo "<td class='$color_class'>";
+                  echo Html::convDateTime($ticket->fields['time_to_resolve']);
+                  echo "</td>";
+
+                  //sla state
+                  echo "<td class='$color_class'>";
+                  echo $sla_state;
+                  echo "</td>";
+                  echo "</tr>";
+               }
+               echo "</table></div>";
+            }
+         } else {
+            echo "<div class='alert alert-important alert-info center'>";
+            echo __('There is no childs tickets', 'metademands');
+            echo "</div>";
          }
-      } else {
-         echo "<div class='alert alert-important alert-info center'>";
-         echo __('There is no childs tickets / tasks', 'metademands');
-         echo "</div>";
       }
    }
 

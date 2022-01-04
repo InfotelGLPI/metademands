@@ -2486,8 +2486,12 @@ class PluginMetademandsField extends CommonDBChild {
             if ($value == "") {
                $value = $data['custom_values'];
             }
+            if (is_array($value)) {
+               $value = "";
+            }
             $field = "";
             $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
+                                                                                              'class' => '',
                                                                                               'display' => false]);
             break;
          case 'upload':
@@ -2949,7 +2953,6 @@ class PluginMetademandsField extends CommonDBChild {
                      echo "</td>";
                      echo "</tr>";
                   }
-
                   echo "</table>";
                   echo "</td></tr>";
                }
@@ -2996,8 +2999,6 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   echo "</td></tr>";
                }
-
-
                echo "</tbody></table>";
                echo "</div>";
             }
@@ -3903,8 +3904,8 @@ class PluginMetademandsField extends CommonDBChild {
                $linkVal  = '';
                if (isset($params['custom_values']) && !empty($params['custom_values'])) {
                   $params['custom_values'] = self::_unserialize($params['custom_values']);
-                  $linkType                = $params['custom_values'][0];
-                  $linkVal                 = $params['custom_values'][1];
+                  $linkType                = $params['custom_values'][0]??"";
+                  $linkVal                 = $params['custom_values'][1]??"";
                }
                echo '<label>' . __("Link") . '</label>';
                echo Html::input('comment_values[1]', ['value' => $linkVal, 'size' => 30]);
