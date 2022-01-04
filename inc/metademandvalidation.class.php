@@ -79,7 +79,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    function showForm($ID, $options = []) {
-      global $CFG_GLPI;
 
       if (!$this->canview()) {
          return false;
@@ -175,7 +174,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
          if ($values_form[$f['plugin_metademands_fields_id']] === null) {
             $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
          }
-
          $f['plugin_metademands_fields_id'];
       }
       $inputField   = [];
@@ -272,7 +270,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
    }
 
    static function showActionsForm($params) {
-      global $CFG_GLPI;
 
       $item = $params['item'];
       $metaValidation = new PluginMetademandsMetademandValidation();
@@ -301,7 +298,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
    }
 
    function viewValidation($params) {
-      global $CFG_GLPI;
 
       $ticket_id = $params["tickets_id"];
       $this->getFromDBByCrit(['tickets_id' => $ticket_id]);
@@ -381,7 +377,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       ) {
          echo "<tr class='tab_bg_1'>";
          echo "<td colspan='2' class='center'>";
-         echo Html::submit(__("Validate metademands", 'metademands'), ['name' => 'btnAddAll', 'name' => 'btnAddAll', 'class' => 'btn btn-primary']);
+         echo Html::submit(__("Validate metademands", 'metademands'), ['name' => 'btnAddAll', 'class' => 'btn btn-primary']);
          echo "</td>";
          echo "</tr>";
       }

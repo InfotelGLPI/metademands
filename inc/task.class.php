@@ -847,7 +847,8 @@ class PluginMetademandsTask extends CommonDBTM {
                                        'width'    => '100%',
                                        'multiple' => true,
                                     ]);
-            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
+            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction',
+                                                     'class' => 'btn btn-primary']);
             return true;
             break;
 
