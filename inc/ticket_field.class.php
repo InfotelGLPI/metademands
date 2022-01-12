@@ -322,6 +322,9 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                   if ($check_value == 0 && is_array($value) && count($value) == 0) {
                      return false;
                   }
+                  if(!in_array($check_value,$value)){
+                     return false;
+                  }
                   break;
 
                default:
