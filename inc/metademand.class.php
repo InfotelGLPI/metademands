@@ -5063,7 +5063,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        $tasks_data[$child_tasks_id]['content']     = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
                                        break;
                                  }
-                                 if(is_numeric($sontent)) {
+                                 if(is_numeric($content)) {
                                     $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", "", $tasks_data[$child_tasks_id]['content']);
                                  }
                               }
