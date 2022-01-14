@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2019 by the Metademands Development Team.
+ Copyright (C) 2018-2022 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -614,7 +614,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          //            echo "</p></div></a>";
          //         }
          echo "<div style='margin-bottom: 10px'>";
-         $rand = Dropdown::showFromArray("type", $data, ["value" => Ticket::DEMAND_TYPE]);
+         $rand = Dropdown::showFromArray("type", $data, ["display_emptychoice" => true]);
          echo "</div>";
 
          $params = ['type' => '__VALUE__', "action" => "icon"];
@@ -678,7 +678,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data['Change'] = __('Change');
 
          echo "<div style='margin-bottom: 10px'>";
-         $rand = Dropdown::showFromArray("type", $data, ["value" => Ticket::DEMAND_TYPE]);
+         $rand = Dropdown::showFromArray("type", $data, ["display_emptychoice" => true]);
          echo "</div>";
          $params = ['type' => '__VALUE__', "action" => "dropdown"];
          Ajax::updateItemOnSelectEvent("dropdown_type$rand",
@@ -689,7 +689,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
          // METADEMAND list
          echo Ticket::getTicketTypeName(Ticket::DEMAND_TYPE) . "&nbsp;";
-         $options['empty_value'] = true;
+         $options['display_emptychoice'] = true;
          $options['type']        = Ticket::DEMAND_TYPE;
          $data                   = $meta->listMetademands(false, $options);
          Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
@@ -701,14 +701,10 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 right\">";
          echo Html::submit(__('Next'), ['name' => 'next', 'class' => 'btn btn-primary']);
          echo "</div>";
+
          echo "</div>";
       }
-      if (count($metademands) == 0) {
-         echo '<div class="bt-feature bt-col-sm-5 bt-col-md-2">';
-         echo '<h5 class="bt-title">';
-         echo '<span class="de-em">' . __('No advanced request found', 'metademands') . '</span></h5></a>';
-         echo '</div>';
-      }
+
    }
 
    /**

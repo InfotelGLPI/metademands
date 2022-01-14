@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2019 by the Metademands Development Team.
+ Copyright (C) 2018-2022 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -56,6 +56,11 @@ class PluginMetademandsMetademand extends CommonDBTM {
    const STEP_LIST   = 1;
    const STEP_SHOW   = 2;
    const STEP_CREATE = "create_metademands";
+
+   const TODO = 1; // todo
+   const DONE = 2; // done
+   const FAIL = 3; // Failed
+
 
    var     $dohistory = true;
    private $config;
@@ -147,6 +152,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                return self::createTabEntry($name,
                                            $total);
             }
+         } else {
+            if ($item->getType() == 'Ticket' && $this->canView()) {
+               $name = __('Demand Progression', 'metademands');
+               return self::createTabEntry($name,
+                                           1);
+            }
          }
       }
       return '';
@@ -169,9 +180,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       switch ($item->getType()) {
          case 'Ticket':
-            $form = new PluginMetademandsForm();
-            $form->showFormsForItilObject($item);
-            $metademands->showPluginForTicket($item);
+            if ($_SESSION['glpiactiveprofile']['interface'] == 'central') {
+               $form = new PluginMetademandsForm();
+               $form->showFormsForItilObject($item);
+               $metademands->showPluginForTicket($item);
+               $metademands->showProgressionForm($item);
+            } else {
+               $metademands->showProgressionForm($item);
+            }
             break;
       }
 
@@ -1746,7 +1762,7 @@ JAVASCRIPT
                   //Link object to forms_id
                   if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_id'])) {
                      $form = new PluginMetademandsForm();
-                     $form->update(['id' => $_SESSION['plugin_metademands']['plugin_metademands_forms_id'],
+                     $form->update(['id'       => $_SESSION['plugin_metademands']['plugin_metademands_forms_id'],
                                     'items_id' => $parent_tickets_id,
                                     'itemtype' => $object_class]);
                   }
@@ -4397,7 +4413,7 @@ JAVASCRIPT
       if (!$this->canView()) {
          return false;
       }
-      $tovalidate = 0;
+      $tovalidate     = 0;
       $metaValidation = new PluginMetademandsMetademandValidation();
       if ($metaValidation->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
           && ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE
@@ -6078,5 +6094,145 @@ JAVASCRIPT
             break;
       }
       return $line;
+   }
+
+   /**
+    * @param $state
+    *
+    * @return string
+    */
+   public static function getStateItem($state) {
+      switch ($state) {
+         case self::TODO :
+            return "<span><i class=\"fas fa-3x fa-hourglass-half\"></i></span>";
+            break;
+         case self::DONE :
+            return "<span><i class=\"fas fa-3x fa-check\"></i></span>";
+            break;
+         case self::FAIL :
+            return "<span><i class=\"fas fa-3x fa-times\"></i></span>";
+            break;
+      }
+   }
+
+   function showProgressionForm($item) {
+
+      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/timeline_user.css");
+
+      echo "<table class='tab_cadre_fixe' id='mainformtable'>";
+      echo "<tr class='tab_bg_1 center'>";
+      echo "<th>";
+      echo __('Progression of your demand', 'metademands');
+      echo "</th>";
+      echo "</tr>";
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>";
+
+      echo "<section id='timeline'>";
+
+      //begin ticket
+      echo "<article>";
+      echo "<div class='inner'>";
+      echo "<span class='bulle bulleMarge'>";
+      echo "<span style='margin-left: 5px;'><i class='fas fa-3x fa-play'></i></span>";
+      echo "</span>";
+      echo "<h2 class='dateColor'>" . __("Creation date") . "<i class='fas fa-calendar' style='float: right;'></i></h2>";
+      echo "<p>" . Html::convDateTime($item->fields["date"]) . "</p>";
+      echo "</div>";
+      echo "</article>";
+
+      $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+      $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
+      $tickets_found          = [];
+      // If ticket is Parent : Check if all sons ticket are closed
+      if (count($ticket_metademand_data)) {
+         $ticket_metademand_data = reset($ticket_metademand_data);
+         $tickets_found          = PluginMetademandsTicket::getSonTickets($item->fields['id'],
+                                                                          $ticket_metademand_data['plugin_metademands_metademands_id']);
+
+      } else {
+         //         $ticket_task      = new PluginMetademandsTicket_Task();
+         //         $ticket_task_data = $ticket_task->find(['tickets_id' => $item->fields['id']]);
+         //
+         //         if (count($ticket_task_data)) {
+         //            $tickets_found = PluginMetademandsTicket::getAncestorTickets($item->fields['id'], true);
+         //         }
+      }
+      $tickets_existant = [];
+
+      if (count($tickets_found)) {
+
+         foreach ($tickets_found as $tickets) {
+            if (!empty($tickets['tickets_id'])) {
+               $tickets_existant[] = $tickets;
+            } else {
+               $tickets_next[] = $tickets;
+            }
+         }
+         $plugin = new Plugin();
+         if (count($tickets_existant)) {
+
+            $ticket = new Ticket();
+            foreach ($tickets_existant as $values) {
+               // Get ticket values if it exists
+               $ticket->getFromDB($values['tickets_id']);
+               $class = "";
+               $fa    = "fa-tasks";
+               $state = self::TODO;
+               if (in_array($ticket->fields['status'], $ticket->getSolvedStatusArray())) {
+                  $state = self::DONE;
+               }
+               $class_state = "";
+
+
+               if ($plugin->isActivated("servicecatalog")) {
+
+                  $fa          = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], 'icon');
+                  $color      = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], "background_color");
+                  $class = "background-color: $color;box-shadow: 0 0 0 7px $color !important;";
+                  $class_state = "box-shadow: 0 0 0 7px $color !important;";
+               }
+
+               echo "<article>";
+               echo "<div class='inner'>";
+               echo "<span class='bulle bulleMarge bulleDefault' style='$class_state'>";
+               echo self::getStateItem($state);
+               echo "</span>";
+               echo "<h2 style='$class'><i class='fas $fa' style='float: right;'></i>" . $ticket->getLink() . "</h2>";
+
+               $statusicon = CommonITILObject::getStatusClass($ticket->fields['status']);
+
+               $dateEnd = (!empty($ticket->fields["solvedate"])) ? __('Done on', 'metademands') . " " . Html::convDateTime($ticket->fields["solvedate"]) : __("In progress", 'metademands');
+               echo "<p>";
+               echo "<i class='" . $statusicon . "'></i>&nbsp;";
+               echo $dateEnd;
+               echo "</p>";
+               echo "<p></p>";
+               echo "</div>";
+               echo "</article>";
+            }
+         }
+      }
+
+      //end ticket
+      $dateEnd   = (!empty($item->fields["solvedate"])) ? Html::convDateTime($item->fields["solvedate"]) : __("Not yet completed", 'metademands');
+      $class_end = (!empty($item->fields["solvedate"])) ? "bulleDone" : "";
+      $fa_end    = (!empty($item->fields["solvedate"])) ? "fa-check" : "fa-hourglass-half";
+      echo "<article>";
+      echo "<div class='inner'>";
+      echo "<span class='bulle bulleMarge $class_end'>";
+      echo "<span><i class=\"fas fa-3x $fa_end\"></i></span>";
+      echo "</span>";
+
+      echo "<h2 class='dateColor'>" . __("End date") . "<i class='fas fa-calendar' style='float: right;'></i></h2>";
+      echo " <p>" . $dateEnd . "</p>";
+      echo "</div>";
+      echo "</article>";
+
+      echo "</section>";
+
+      echo "</td>";
+      echo "</tr>";
+      echo "</table>";
    }
 }

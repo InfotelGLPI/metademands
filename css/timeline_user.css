@@ -1,0 +1,4496 @@
+
+.bulleDefault {
+   /*background-color: #9FDDFF;*/
+   color: #535353;
+   /*box-shadow: 0 0 0 7px #9FDDFF !important;*/
+}
+
+
+.bulleDone {
+   color: forestgreen !important;
+}
+
+h2.dateColor {
+   background-color: #64748b;
+   color: white !important;
+}
+
+/***CSS***/
+
+.progress-circle {
+   position: relative; /* pour servir de référent */
+   box-sizing: border-box; /* prise en compte bordure dans la dimension */
+   font-size: 6em; /* pour définir les dimensions */
+   width: 1em; /* fixe la largeur */
+   height: 1em; /* fixe la hauteur */
+   border-radius: 50%; /* rendu aspect circulaire */
+   border: .15em solid #CDE; /* couleur de fond de l'anneau */
+   background-color: #FFF; /* couleur de fond de la progress bar */
+}
+
+.progress-masque {
+   position: absolute;
+   width: 1em; /* 100% de la largeur */
+   height: 1em; /* 100% de la hauteur */
+   left: -.15em; /* décalage de la largeur bordure de la gauge */
+   top: -.15em; /* décalage de la largeur bordure de la gauge */
+   clip: rect(0, 1em, 1em, .5em); /* par défaut seule la partie droite est visible */
+}
+
+.progress-circle[data-value^='5']:not([data-value='5']):not([data-value^='5.']) .progress-masque,
+.progress-circle[data-value^='6']:not([data-value='6']):not([data-value^='6.']) .progress-masque,
+.progress-circle[data-value^='7']:not([data-value='7']):not([data-value^='7.']) .progress-masque,
+.progress-circle[data-value^='8']:not([data-value='8']):not([data-value^='8.']) .progress-masque,
+.progress-circle[data-value^='9']:not([data-value='9']):not([data-value^='9.']) .progress-masque,
+.progress-circle[data-value^='100'] .progress-masque {
+   clip: rect(auto, auto, auto, auto);
+}
+
+.progress-barre,
+.progress-sup50 {
+   position: absolute;
+   box-sizing: border-box; /* prise en compte bordure dans la dimension */
+   border-width: .15em; /* largeur bordure de la gauge */
+   border-style: solid;
+   border-color: #069;
+   border-radius: 50%; /* rendu aspect circulaire */
+   width: 1em; /* largeur à 100% */
+   height: 1em; /* hauteur à 100% */
+   clip: rect(0, .5em, 1em, 0); /* on ne garde que la partie gauche */
+}
+
+.progress-circle[data-value="0"] .progress-barre,
+.progress-circle[data-value="0."] .progress-barre,
+.progress-circle[data-value="0.0"] .progress-barre {
+   transform: rotate(0.00deg)
+}
+
+.progress-circle[data-value="0.1"] .progress-barre {
+   transform: rotate(0.36deg)
+}
+
+.progress-circle[data-value="0.2"] .progress-barre {
+   transform: rotate(0.72deg)
+}
+
+.progress-circle[data-value="0.3"] .progress-barre {
+   transform: rotate(1.08deg)
+}
+
+.progress-circle[data-value="0.4"] .progress-barre {
+   transform: rotate(1.44deg)
+}
+
+.progress-circle[data-value="0.5"] .progress-barre {
+   transform: rotate(1.80deg)
+}
+
+.progress-circle[data-value="0.6"] .progress-barre {
+   transform: rotate(2.16deg)
+}
+
+.progress-circle[data-value="0.7"] .progress-barre {
+   transform: rotate(2.52deg)
+}
+
+.progress-circle[data-value="0.8"] .progress-barre {
+   transform: rotate(2.88deg)
+}
+
+.progress-circle[data-value="0.9"] .progress-barre {
+   transform: rotate(3.24deg)
+}
+
+.progress-circle[data-value="1"] .progress-barre,
+.progress-circle[data-value="1."] .progress-barre,
+.progress-circle[data-value="1.0"] .progress-barre {
+   transform: rotate(3.60deg)
+}
+
+.progress-circle[data-value="1.1"] .progress-barre {
+   transform: rotate(3.96deg)
+}
+
+.progress-circle[data-value="1.2"] .progress-barre {
+   transform: rotate(4.32deg)
+}
+
+.progress-circle[data-value="1.3"] .progress-barre {
+   transform: rotate(4.68deg)
+}
+
+.progress-circle[data-value="1.4"] .progress-barre {
+   transform: rotate(5.04deg)
+}
+
+.progress-circle[data-value="1.5"] .progress-barre {
+   transform: rotate(5.40deg)
+}
+
+.progress-circle[data-value="1.6"] .progress-barre {
+   transform: rotate(5.76deg)
+}
+
+.progress-circle[data-value="1.7"] .progress-barre {
+   transform: rotate(6.12deg)
+}
+
+.progress-circle[data-value="1.8"] .progress-barre {
+   transform: rotate(6.48deg)
+}
+
+.progress-circle[data-value="1.9"] .progress-barre {
+   transform: rotate(6.84deg)
+}
+
+.progress-circle[data-value="2"] .progress-barre,
+.progress-circle[data-value="2."] .progress-barre,
+.progress-circle[data-value="2.0"] .progress-barre {
+   transform: rotate(7.20deg)
+}
+
+.progress-circle[data-value="2.1"] .progress-barre {
+   transform: rotate(7.56deg)
+}
+
+.progress-circle[data-value="2.2"] .progress-barre {
+   transform: rotate(7.92deg)
+}
+
+.progress-circle[data-value="2.3"] .progress-barre {
+   transform: rotate(8.28deg)
+}
+
+.progress-circle[data-value="2.4"] .progress-barre {
+   transform: rotate(8.64deg)
+}
+
+.progress-circle[data-value="2.5"] .progress-barre {
+   transform: rotate(9.00deg)
+}
+
+.progress-circle[data-value="2.6"] .progress-barre {
+   transform: rotate(9.36deg)
+}
+
+.progress-circle[data-value="2.7"] .progress-barre {
+   transform: rotate(9.72deg)
+}
+
+.progress-circle[data-value="2.8"] .progress-barre {
+   transform: rotate(10.08deg)
+}
+
+.progress-circle[data-value="2.9"] .progress-barre {
+   transform: rotate(10.44deg)
+}
+
+.progress-circle[data-value="3"] .progress-barre,
+.progress-circle[data-value="3."] .progress-barre,
+.progress-circle[data-value="3.0"] .progress-barre {
+   transform: rotate(10.80deg)
+}
+
+.progress-circle[data-value="3.1"] .progress-barre {
+   transform: rotate(11.16deg)
+}
+
+.progress-circle[data-value="3.2"] .progress-barre {
+   transform: rotate(11.52deg)
+}
+
+.progress-circle[data-value="3.3"] .progress-barre {
+   transform: rotate(11.88deg)
+}
+
+.progress-circle[data-value="3.4"] .progress-barre {
+   transform: rotate(12.24deg)
+}
+
+.progress-circle[data-value="3.5"] .progress-barre {
+   transform: rotate(12.60deg)
+}
+
+.progress-circle[data-value="3.6"] .progress-barre {
+   transform: rotate(12.96deg)
+}
+
+.progress-circle[data-value="3.7"] .progress-barre {
+   transform: rotate(13.32deg)
+}
+
+.progress-circle[data-value="3.8"] .progress-barre {
+   transform: rotate(13.68deg)
+}
+
+.progress-circle[data-value="3.9"] .progress-barre {
+   transform: rotate(14.04deg)
+}
+
+.progress-circle[data-value="4"] .progress-barre,
+.progress-circle[data-value="4."] .progress-barre,
+.progress-circle[data-value="4.0"] .progress-barre {
+   transform: rotate(14.40deg)
+}
+
+.progress-circle[data-value="4.1"] .progress-barre {
+   transform: rotate(14.76deg)
+}
+
+.progress-circle[data-value="4.2"] .progress-barre {
+   transform: rotate(15.12deg)
+}
+
+.progress-circle[data-value="4.3"] .progress-barre {
+   transform: rotate(15.48deg)
+}
+
+.progress-circle[data-value="4.4"] .progress-barre {
+   transform: rotate(15.84deg)
+}
+
+.progress-circle[data-value="4.5"] .progress-barre {
+   transform: rotate(16.20deg)
+}
+
+.progress-circle[data-value="4.6"] .progress-barre {
+   transform: rotate(16.56deg)
+}
+
+.progress-circle[data-value="4.7"] .progress-barre {
+   transform: rotate(16.92deg)
+}
+
+.progress-circle[data-value="4.8"] .progress-barre {
+   transform: rotate(17.28deg)
+}
+
+.progress-circle[data-value="4.9"] .progress-barre {
+   transform: rotate(17.64deg)
+}
+
+.progress-circle[data-value="5"] .progress-barre,
+.progress-circle[data-value="5."] .progress-barre,
+.progress-circle[data-value="5.0"] .progress-barre {
+   transform: rotate(18.00deg)
+}
+
+.progress-circle[data-value="5.1"] .progress-barre {
+   transform: rotate(18.36deg)
+}
+
+.progress-circle[data-value="5.2"] .progress-barre {
+   transform: rotate(18.72deg)
+}
+
+.progress-circle[data-value="5.3"] .progress-barre {
+   transform: rotate(19.08deg)
+}
+
+.progress-circle[data-value="5.4"] .progress-barre {
+   transform: rotate(19.44deg)
+}
+
+.progress-circle[data-value="5.5"] .progress-barre {
+   transform: rotate(19.80deg)
+}
+
+.progress-circle[data-value="5.6"] .progress-barre {
+   transform: rotate(20.16deg)
+}
+
+.progress-circle[data-value="5.7"] .progress-barre {
+   transform: rotate(20.52deg)
+}
+
+.progress-circle[data-value="5.8"] .progress-barre {
+   transform: rotate(20.88deg)
+}
+
+.progress-circle[data-value="5.9"] .progress-barre {
+   transform: rotate(21.24deg)
+}
+
+.progress-circle[data-value="6"] .progress-barre,
+.progress-circle[data-value="6."] .progress-barre,
+.progress-circle[data-value="6.0"] .progress-barre {
+   transform: rotate(21.60deg)
+}
+
+.progress-circle[data-value="6.1"] .progress-barre {
+   transform: rotate(21.96deg)
+}
+
+.progress-circle[data-value="6.2"] .progress-barre {
+   transform: rotate(22.32deg)
+}
+
+.progress-circle[data-value="6.3"] .progress-barre {
+   transform: rotate(22.68deg)
+}
+
+.progress-circle[data-value="6.4"] .progress-barre {
+   transform: rotate(23.04deg)
+}
+
+.progress-circle[data-value="6.5"] .progress-barre {
+   transform: rotate(23.40deg)
+}
+
+.progress-circle[data-value="6.6"] .progress-barre {
+   transform: rotate(23.76deg)
+}
+
+.progress-circle[data-value="6.7"] .progress-barre {
+   transform: rotate(24.12deg)
+}
+
+.progress-circle[data-value="6.8"] .progress-barre {
+   transform: rotate(24.48deg)
+}
+
+.progress-circle[data-value="6.9"] .progress-barre {
+   transform: rotate(24.84deg)
+}
+
+.progress-circle[data-value="7"] .progress-barre,
+.progress-circle[data-value="7."] .progress-barre,
+.progress-circle[data-value="7.0"] .progress-barre {
+   transform: rotate(25.20deg)
+}
+
+.progress-circle[data-value="7.1"] .progress-barre {
+   transform: rotate(25.56deg)
+}
+
+.progress-circle[data-value="7.2"] .progress-barre {
+   transform: rotate(25.92deg)
+}
+
+.progress-circle[data-value="7.3"] .progress-barre {
+   transform: rotate(26.28deg)
+}
+
+.progress-circle[data-value="7.4"] .progress-barre {
+   transform: rotate(26.64deg)
+}
+
+.progress-circle[data-value="7.5"] .progress-barre {
+   transform: rotate(27.00deg)
+}
+
+.progress-circle[data-value="7.6"] .progress-barre {
+   transform: rotate(27.36deg)
+}
+
+.progress-circle[data-value="7.7"] .progress-barre {
+   transform: rotate(27.72deg)
+}
+
+.progress-circle[data-value="7.8"] .progress-barre {
+   transform: rotate(28.08deg)
+}
+
+.progress-circle[data-value="7.9"] .progress-barre {
+   transform: rotate(28.44deg)
+}
+
+.progress-circle[data-value="8"] .progress-barre,
+.progress-circle[data-value="8."] .progress-barre,
+.progress-circle[data-value="8.0"] .progress-barre {
+   transform: rotate(28.80deg)
+}
+
+.progress-circle[data-value="8.1"] .progress-barre {
+   transform: rotate(29.16deg)
+}
+
+.progress-circle[data-value="8.2"] .progress-barre {
+   transform: rotate(29.52deg)
+}
+
+.progress-circle[data-value="8.3"] .progress-barre {
+   transform: rotate(29.88deg)
+}
+
+.progress-circle[data-value="8.4"] .progress-barre {
+   transform: rotate(30.24deg)
+}
+
+.progress-circle[data-value="8.5"] .progress-barre {
+   transform: rotate(30.60deg)
+}
+
+.progress-circle[data-value="8.6"] .progress-barre {
+   transform: rotate(30.96deg)
+}
+
+.progress-circle[data-value="8.7"] .progress-barre {
+   transform: rotate(31.32deg)
+}
+
+.progress-circle[data-value="8.8"] .progress-barre {
+   transform: rotate(31.68deg)
+}
+
+.progress-circle[data-value="8.9"] .progress-barre {
+   transform: rotate(32.04deg)
+}
+
+.progress-circle[data-value="9"] .progress-barre,
+.progress-circle[data-value="9."] .progress-barre,
+.progress-circle[data-value="9.0"] .progress-barre {
+   transform: rotate(32.40deg)
+}
+
+.progress-circle[data-value="9.1"] .progress-barre {
+   transform: rotate(32.76deg)
+}
+
+.progress-circle[data-value="9.2"] .progress-barre {
+   transform: rotate(33.12deg)
+}
+
+.progress-circle[data-value="9.3"] .progress-barre {
+   transform: rotate(33.48deg)
+}
+
+.progress-circle[data-value="9.4"] .progress-barre {
+   transform: rotate(33.84deg)
+}
+
+.progress-circle[data-value="9.5"] .progress-barre {
+   transform: rotate(34.20deg)
+}
+
+.progress-circle[data-value="9.6"] .progress-barre {
+   transform: rotate(34.56deg)
+}
+
+.progress-circle[data-value="9.7"] .progress-barre {
+   transform: rotate(34.92deg)
+}
+
+.progress-circle[data-value="9.8"] .progress-barre {
+   transform: rotate(35.28deg)
+}
+
+.progress-circle[data-value="9.9"] .progress-barre {
+   transform: rotate(35.64deg)
+}
+
+.progress-circle[data-value="10"] .progress-barre,
+.progress-circle[data-value="10."] .progress-barre,
+.progress-circle[data-value="10.0"] .progress-barre {
+   transform: rotate(36.00deg)
+}
+
+.progress-circle[data-value="10.1"] .progress-barre {
+   transform: rotate(36.36deg)
+}
+
+.progress-circle[data-value="10.2"] .progress-barre {
+   transform: rotate(36.72deg)
+}
+
+.progress-circle[data-value="10.3"] .progress-barre {
+   transform: rotate(37.08deg)
+}
+
+.progress-circle[data-value="10.4"] .progress-barre {
+   transform: rotate(37.44deg)
+}
+
+.progress-circle[data-value="10.5"] .progress-barre {
+   transform: rotate(37.80deg)
+}
+
+.progress-circle[data-value="10.6"] .progress-barre {
+   transform: rotate(38.16deg)
+}
+
+.progress-circle[data-value="10.7"] .progress-barre {
+   transform: rotate(38.52deg)
+}
+
+.progress-circle[data-value="10.8"] .progress-barre {
+   transform: rotate(38.88deg)
+}
+
+.progress-circle[data-value="10.9"] .progress-barre {
+   transform: rotate(39.24deg)
+}
+
+.progress-circle[data-value="11"] .progress-barre,
+.progress-circle[data-value="11."] .progress-barre,
+.progress-circle[data-value="11.0"] .progress-barre {
+   transform: rotate(39.60deg)
+}
+
+.progress-circle[data-value="11.1"] .progress-barre {
+   transform: rotate(39.96deg)
+}
+
+.progress-circle[data-value="11.2"] .progress-barre {
+   transform: rotate(40.32deg)
+}
+
+.progress-circle[data-value="11.3"] .progress-barre {
+   transform: rotate(40.68deg)
+}
+
+.progress-circle[data-value="11.4"] .progress-barre {
+   transform: rotate(41.04deg)
+}
+
+.progress-circle[data-value="11.5"] .progress-barre {
+   transform: rotate(41.40deg)
+}
+
+.progress-circle[data-value="11.6"] .progress-barre {
+   transform: rotate(41.76deg)
+}
+
+.progress-circle[data-value="11.7"] .progress-barre {
+   transform: rotate(42.12deg)
+}
+
+.progress-circle[data-value="11.8"] .progress-barre {
+   transform: rotate(42.48deg)
+}
+
+.progress-circle[data-value="11.9"] .progress-barre {
+   transform: rotate(42.84deg)
+}
+
+.progress-circle[data-value="12"] .progress-barre,
+.progress-circle[data-value="12."] .progress-barre,
+.progress-circle[data-value="12.0"] .progress-barre {
+   transform: rotate(43.20deg)
+}
+
+.progress-circle[data-value="12.1"] .progress-barre {
+   transform: rotate(43.56deg)
+}
+
+.progress-circle[data-value="12.2"] .progress-barre {
+   transform: rotate(43.92deg)
+}
+
+.progress-circle[data-value="12.3"] .progress-barre {
+   transform: rotate(44.28deg)
+}
+
+.progress-circle[data-value="12.4"] .progress-barre {
+   transform: rotate(44.64deg)
+}
+
+.progress-circle[data-value="12.5"] .progress-barre {
+   transform: rotate(45.00deg)
+}
+
+.progress-circle[data-value="12.6"] .progress-barre {
+   transform: rotate(45.36deg)
+}
+
+.progress-circle[data-value="12.7"] .progress-barre {
+   transform: rotate(45.72deg)
+}
+
+.progress-circle[data-value="12.8"] .progress-barre {
+   transform: rotate(46.08deg)
+}
+
+.progress-circle[data-value="12.9"] .progress-barre {
+   transform: rotate(46.44deg)
+}
+
+.progress-circle[data-value="13"] .progress-barre,
+.progress-circle[data-value="13."] .progress-barre,
+.progress-circle[data-value="13.0"] .progress-barre {
+   transform: rotate(46.80deg)
+}
+
+.progress-circle[data-value="13.1"] .progress-barre {
+   transform: rotate(47.16deg)
+}
+
+.progress-circle[data-value="13.2"] .progress-barre {
+   transform: rotate(47.52deg)
+}
+
+.progress-circle[data-value="13.3"] .progress-barre {
+   transform: rotate(47.88deg)
+}
+
+.progress-circle[data-value="13.4"] .progress-barre {
+   transform: rotate(48.24deg)
+}
+
+.progress-circle[data-value="13.5"] .progress-barre {
+   transform: rotate(48.60deg)
+}
+
+.progress-circle[data-value="13.6"] .progress-barre {
+   transform: rotate(48.96deg)
+}
+
+.progress-circle[data-value="13.7"] .progress-barre {
+   transform: rotate(49.32deg)
+}
+
+.progress-circle[data-value="13.8"] .progress-barre {
+   transform: rotate(49.68deg)
+}
+
+.progress-circle[data-value="13.9"] .progress-barre {
+   transform: rotate(50.04deg)
+}
+
+.progress-circle[data-value="14"] .progress-barre,
+.progress-circle[data-value="14."] .progress-barre,
+.progress-circle[data-value="14.0"] .progress-barre {
+   transform: rotate(50.40deg)
+}
+
+.progress-circle[data-value="14.1"] .progress-barre {
+   transform: rotate(50.76deg)
+}
+
+.progress-circle[data-value="14.2"] .progress-barre {
+   transform: rotate(51.12deg)
+}
+
+.progress-circle[data-value="14.3"] .progress-barre {
+   transform: rotate(51.48deg)
+}
+
+.progress-circle[data-value="14.4"] .progress-barre {
+   transform: rotate(51.84deg)
+}
+
+.progress-circle[data-value="14.5"] .progress-barre {
+   transform: rotate(52.20deg)
+}
+
+.progress-circle[data-value="14.6"] .progress-barre {
+   transform: rotate(52.56deg)
+}
+
+.progress-circle[data-value="14.7"] .progress-barre {
+   transform: rotate(52.92deg)
+}
+
+.progress-circle[data-value="14.8"] .progress-barre {
+   transform: rotate(53.28deg)
+}
+
+.progress-circle[data-value="14.9"] .progress-barre {
+   transform: rotate(53.64deg)
+}
+
+.progress-circle[data-value="15"] .progress-barre,
+.progress-circle[data-value="15."] .progress-barre,
+.progress-circle[data-value="15.0"] .progress-barre {
+   transform: rotate(54.00deg)
+}
+
+.progress-circle[data-value="15.1"] .progress-barre {
+   transform: rotate(54.36deg)
+}
+
+.progress-circle[data-value="15.2"] .progress-barre {
+   transform: rotate(54.72deg)
+}
+
+.progress-circle[data-value="15.3"] .progress-barre {
+   transform: rotate(55.08deg)
+}
+
+.progress-circle[data-value="15.4"] .progress-barre {
+   transform: rotate(55.44deg)
+}
+
+.progress-circle[data-value="15.5"] .progress-barre {
+   transform: rotate(55.80deg)
+}
+
+.progress-circle[data-value="15.6"] .progress-barre {
+   transform: rotate(56.16deg)
+}
+
+.progress-circle[data-value="15.7"] .progress-barre {
+   transform: rotate(56.52deg)
+}
+
+.progress-circle[data-value="15.8"] .progress-barre {
+   transform: rotate(56.88deg)
+}
+
+.progress-circle[data-value="15.9"] .progress-barre {
+   transform: rotate(57.24deg)
+}
+
+.progress-circle[data-value="16"] .progress-barre,
+.progress-circle[data-value="16."] .progress-barre,
+.progress-circle[data-value="16.0"] .progress-barre {
+   transform: rotate(57.60deg)
+}
+
+.progress-circle[data-value="16.1"] .progress-barre {
+   transform: rotate(57.96deg)
+}
+
+.progress-circle[data-value="16.2"] .progress-barre {
+   transform: rotate(58.32deg)
+}
+
+.progress-circle[data-value="16.3"] .progress-barre {
+   transform: rotate(58.68deg)
+}
+
+.progress-circle[data-value="16.4"] .progress-barre {
+   transform: rotate(59.04deg)
+}
+
+.progress-circle[data-value="16.5"] .progress-barre {
+   transform: rotate(59.40deg)
+}
+
+.progress-circle[data-value="16.6"] .progress-barre {
+   transform: rotate(59.76deg)
+}
+
+.progress-circle[data-value="16.7"] .progress-barre {
+   transform: rotate(60.12deg)
+}
+
+.progress-circle[data-value="16.8"] .progress-barre {
+   transform: rotate(60.48deg)
+}
+
+.progress-circle[data-value="16.9"] .progress-barre {
+   transform: rotate(60.84deg)
+}
+
+.progress-circle[data-value="17"] .progress-barre,
+.progress-circle[data-value="17."] .progress-barre,
+.progress-circle[data-value="17.0"] .progress-barre {
+   transform: rotate(61.20deg)
+}
+
+.progress-circle[data-value="17.1"] .progress-barre {
+   transform: rotate(61.56deg)
+}
+
+.progress-circle[data-value="17.2"] .progress-barre {
+   transform: rotate(61.92deg)
+}
+
+.progress-circle[data-value="17.3"] .progress-barre {
+   transform: rotate(62.28deg)
+}
+
+.progress-circle[data-value="17.4"] .progress-barre {
+   transform: rotate(62.64deg)
+}
+
+.progress-circle[data-value="17.5"] .progress-barre {
+   transform: rotate(63.00deg)
+}
+
+.progress-circle[data-value="17.6"] .progress-barre {
+   transform: rotate(63.36deg)
+}
+
+.progress-circle[data-value="17.7"] .progress-barre {
+   transform: rotate(63.72deg)
+}
+
+.progress-circle[data-value="17.8"] .progress-barre {
+   transform: rotate(64.08deg)
+}
+
+.progress-circle[data-value="17.9"] .progress-barre {
+   transform: rotate(64.44deg)
+}
+
+.progress-circle[data-value="18"] .progress-barre,
+.progress-circle[data-value="18."] .progress-barre,
+.progress-circle[data-value="18.0"] .progress-barre {
+   transform: rotate(64.80deg)
+}
+
+.progress-circle[data-value="18.1"] .progress-barre {
+   transform: rotate(65.16deg)
+}
+
+.progress-circle[data-value="18.2"] .progress-barre {
+   transform: rotate(65.52deg)
+}
+
+.progress-circle[data-value="18.3"] .progress-barre {
+   transform: rotate(65.88deg)
+}
+
+.progress-circle[data-value="18.4"] .progress-barre {
+   transform: rotate(66.24deg)
+}
+
+.progress-circle[data-value="18.5"] .progress-barre {
+   transform: rotate(66.60deg)
+}
+
+.progress-circle[data-value="18.6"] .progress-barre {
+   transform: rotate(66.96deg)
+}
+
+.progress-circle[data-value="18.7"] .progress-barre {
+   transform: rotate(67.32deg)
+}
+
+.progress-circle[data-value="18.8"] .progress-barre {
+   transform: rotate(67.68deg)
+}
+
+.progress-circle[data-value="18.9"] .progress-barre {
+   transform: rotate(68.04deg)
+}
+
+.progress-circle[data-value="19"] .progress-barre,
+.progress-circle[data-value="19."] .progress-barre,
+.progress-circle[data-value="19.0"] .progress-barre {
+   transform: rotate(68.40deg)
+}
+
+.progress-circle[data-value="19.1"] .progress-barre {
+   transform: rotate(68.76deg)
+}
+
+.progress-circle[data-value="19.2"] .progress-barre {
+   transform: rotate(69.12deg)
+}
+
+.progress-circle[data-value="19.3"] .progress-barre {
+   transform: rotate(69.48deg)
+}
+
+.progress-circle[data-value="19.4"] .progress-barre {
+   transform: rotate(69.84deg)
+}
+
+.progress-circle[data-value="19.5"] .progress-barre {
+   transform: rotate(70.20deg)
+}
+
+.progress-circle[data-value="19.6"] .progress-barre {
+   transform: rotate(70.56deg)
+}
+
+.progress-circle[data-value="19.7"] .progress-barre {
+   transform: rotate(70.92deg)
+}
+
+.progress-circle[data-value="19.8"] .progress-barre {
+   transform: rotate(71.28deg)
+}
+
+.progress-circle[data-value="19.9"] .progress-barre {
+   transform: rotate(71.64deg)
+}
+
+.progress-circle[data-value="20"] .progress-barre,
+.progress-circle[data-value="20."] .progress-barre,
+.progress-circle[data-value="20.0"] .progress-barre {
+   transform: rotate(72.00deg)
+}
+
+.progress-circle[data-value="20.1"] .progress-barre {
+   transform: rotate(72.36deg)
+}
+
+.progress-circle[data-value="20.2"] .progress-barre {
+   transform: rotate(72.72deg)
+}
+
+.progress-circle[data-value="20.3"] .progress-barre {
+   transform: rotate(73.08deg)
+}
+
+.progress-circle[data-value="20.4"] .progress-barre {
+   transform: rotate(73.44deg)
+}
+
+.progress-circle[data-value="20.5"] .progress-barre {
+   transform: rotate(73.80deg)
+}
+
+.progress-circle[data-value="20.6"] .progress-barre {
+   transform: rotate(74.16deg)
+}
+
+.progress-circle[data-value="20.7"] .progress-barre {
+   transform: rotate(74.52deg)
+}
+
+.progress-circle[data-value="20.8"] .progress-barre {
+   transform: rotate(74.88deg)
+}
+
+.progress-circle[data-value="20.9"] .progress-barre {
+   transform: rotate(75.24deg)
+}
+
+.progress-circle[data-value="21"] .progress-barre,
+.progress-circle[data-value="21."] .progress-barre,
+.progress-circle[data-value="21.0"] .progress-barre {
+   transform: rotate(75.60deg)
+}
+
+.progress-circle[data-value="21.1"] .progress-barre {
+   transform: rotate(75.96deg)
+}
+
+.progress-circle[data-value="21.2"] .progress-barre {
+   transform: rotate(76.32deg)
+}
+
+.progress-circle[data-value="21.3"] .progress-barre {
+   transform: rotate(76.68deg)
+}
+
+.progress-circle[data-value="21.4"] .progress-barre {
+   transform: rotate(77.04deg)
+}
+
+.progress-circle[data-value="21.5"] .progress-barre {
+   transform: rotate(77.40deg)
+}
+
+.progress-circle[data-value="21.6"] .progress-barre {
+   transform: rotate(77.76deg)
+}
+
+.progress-circle[data-value="21.7"] .progress-barre {
+   transform: rotate(78.12deg)
+}
+
+.progress-circle[data-value="21.8"] .progress-barre {
+   transform: rotate(78.48deg)
+}
+
+.progress-circle[data-value="21.9"] .progress-barre {
+   transform: rotate(78.84deg)
+}
+
+.progress-circle[data-value="22"] .progress-barre,
+.progress-circle[data-value="22."] .progress-barre,
+.progress-circle[data-value="22.0"] .progress-barre {
+   transform: rotate(79.20deg)
+}
+
+.progress-circle[data-value="22.1"] .progress-barre {
+   transform: rotate(79.56deg)
+}
+
+.progress-circle[data-value="22.2"] .progress-barre {
+   transform: rotate(79.92deg)
+}
+
+.progress-circle[data-value="22.3"] .progress-barre {
+   transform: rotate(80.28deg)
+}
+
+.progress-circle[data-value="22.4"] .progress-barre {
+   transform: rotate(80.64deg)
+}
+
+.progress-circle[data-value="22.5"] .progress-barre {
+   transform: rotate(81.00deg)
+}
+
+.progress-circle[data-value="22.6"] .progress-barre {
+   transform: rotate(81.36deg)
+}
+
+.progress-circle[data-value="22.7"] .progress-barre {
+   transform: rotate(81.72deg)
+}
+
+.progress-circle[data-value="22.8"] .progress-barre {
+   transform: rotate(82.08deg)
+}
+
+.progress-circle[data-value="22.9"] .progress-barre {
+   transform: rotate(82.44deg)
+}
+
+.progress-circle[data-value="23"] .progress-barre,
+.progress-circle[data-value="23."] .progress-barre,
+.progress-circle[data-value="23.0"] .progress-barre {
+   transform: rotate(82.80deg)
+}
+
+.progress-circle[data-value="23.1"] .progress-barre {
+   transform: rotate(83.16deg)
+}
+
+.progress-circle[data-value="23.2"] .progress-barre {
+   transform: rotate(83.52deg)
+}
+
+.progress-circle[data-value="23.3"] .progress-barre {
+   transform: rotate(83.88deg)
+}
+
+.progress-circle[data-value="23.4"] .progress-barre {
+   transform: rotate(84.24deg)
+}
+
+.progress-circle[data-value="23.5"] .progress-barre {
+   transform: rotate(84.60deg)
+}
+
+.progress-circle[data-value="23.6"] .progress-barre {
+   transform: rotate(84.96deg)
+}
+
+.progress-circle[data-value="23.7"] .progress-barre {
+   transform: rotate(85.32deg)
+}
+
+.progress-circle[data-value="23.8"] .progress-barre {
+   transform: rotate(85.68deg)
+}
+
+.progress-circle[data-value="23.9"] .progress-barre {
+   transform: rotate(86.04deg)
+}
+
+.progress-circle[data-value="24"] .progress-barre,
+.progress-circle[data-value="24."] .progress-barre,
+.progress-circle[data-value="24.0"] .progress-barre {
+   transform: rotate(86.40deg)
+}
+
+.progress-circle[data-value="24.1"] .progress-barre {
+   transform: rotate(86.76deg)
+}
+
+.progress-circle[data-value="24.2"] .progress-barre {
+   transform: rotate(87.12deg)
+}
+
+.progress-circle[data-value="24.3"] .progress-barre {
+   transform: rotate(87.48deg)
+}
+
+.progress-circle[data-value="24.4"] .progress-barre {
+   transform: rotate(87.84deg)
+}
+
+.progress-circle[data-value="24.5"] .progress-barre {
+   transform: rotate(88.20deg)
+}
+
+.progress-circle[data-value="24.6"] .progress-barre {
+   transform: rotate(88.56deg)
+}
+
+.progress-circle[data-value="24.7"] .progress-barre {
+   transform: rotate(88.92deg)
+}
+
+.progress-circle[data-value="24.8"] .progress-barre {
+   transform: rotate(89.28deg)
+}
+
+.progress-circle[data-value="24.9"] .progress-barre {
+   transform: rotate(89.64deg)
+}
+
+.progress-circle[data-value="25"] .progress-barre,
+.progress-circle[data-value="25."] .progress-barre,
+.progress-circle[data-value="25.0"] .progress-barre {
+   transform: rotate(90.00deg)
+}
+
+.progress-circle[data-value="25.1"] .progress-barre {
+   transform: rotate(90.36deg)
+}
+
+.progress-circle[data-value="25.2"] .progress-barre {
+   transform: rotate(90.72deg)
+}
+
+.progress-circle[data-value="25.3"] .progress-barre {
+   transform: rotate(91.08deg)
+}
+
+.progress-circle[data-value="25.4"] .progress-barre {
+   transform: rotate(91.44deg)
+}
+
+.progress-circle[data-value="25.5"] .progress-barre {
+   transform: rotate(91.80deg)
+}
+
+.progress-circle[data-value="25.6"] .progress-barre {
+   transform: rotate(92.16deg)
+}
+
+.progress-circle[data-value="25.7"] .progress-barre {
+   transform: rotate(92.52deg)
+}
+
+.progress-circle[data-value="25.8"] .progress-barre {
+   transform: rotate(92.88deg)
+}
+
+.progress-circle[data-value="25.9"] .progress-barre {
+   transform: rotate(93.24deg)
+}
+
+.progress-circle[data-value="26"] .progress-barre,
+.progress-circle[data-value="26."] .progress-barre,
+.progress-circle[data-value="26.0"] .progress-barre {
+   transform: rotate(93.60deg)
+}
+
+.progress-circle[data-value="26.1"] .progress-barre {
+   transform: rotate(93.96deg)
+}
+
+.progress-circle[data-value="26.2"] .progress-barre {
+   transform: rotate(94.32deg)
+}
+
+.progress-circle[data-value="26.3"] .progress-barre {
+   transform: rotate(94.68deg)
+}
+
+.progress-circle[data-value="26.4"] .progress-barre {
+   transform: rotate(95.04deg)
+}
+
+.progress-circle[data-value="26.5"] .progress-barre {
+   transform: rotate(95.40deg)
+}
+
+.progress-circle[data-value="26.6"] .progress-barre {
+   transform: rotate(95.76deg)
+}
+
+.progress-circle[data-value="26.7"] .progress-barre {
+   transform: rotate(96.12deg)
+}
+
+.progress-circle[data-value="26.8"] .progress-barre {
+   transform: rotate(96.48deg)
+}
+
+.progress-circle[data-value="26.9"] .progress-barre {
+   transform: rotate(96.84deg)
+}
+
+.progress-circle[data-value="27"] .progress-barre,
+.progress-circle[data-value="27."] .progress-barre,
+.progress-circle[data-value="27.0"] .progress-barre {
+   transform: rotate(97.20deg)
+}
+
+.progress-circle[data-value="27.1"] .progress-barre {
+   transform: rotate(97.56deg)
+}
+
+.progress-circle[data-value="27.2"] .progress-barre {
+   transform: rotate(97.92deg)
+}
+
+.progress-circle[data-value="27.3"] .progress-barre {
+   transform: rotate(98.28deg)
+}
+
+.progress-circle[data-value="27.4"] .progress-barre {
+   transform: rotate(98.64deg)
+}
+
+.progress-circle[data-value="27.5"] .progress-barre {
+   transform: rotate(99.00deg)
+}
+
+.progress-circle[data-value="27.6"] .progress-barre {
+   transform: rotate(99.36deg)
+}
+
+.progress-circle[data-value="27.7"] .progress-barre {
+   transform: rotate(99.72deg)
+}
+
+.progress-circle[data-value="27.8"] .progress-barre {
+   transform: rotate(100.08deg)
+}
+
+.progress-circle[data-value="27.9"] .progress-barre {
+   transform: rotate(100.44deg)
+}
+
+.progress-circle[data-value="28"] .progress-barre,
+.progress-circle[data-value="28."] .progress-barre,
+.progress-circle[data-value="28.0"] .progress-barre {
+   transform: rotate(100.80deg)
+}
+
+.progress-circle[data-value="28.1"] .progress-barre {
+   transform: rotate(101.16deg)
+}
+
+.progress-circle[data-value="28.2"] .progress-barre {
+   transform: rotate(101.52deg)
+}
+
+.progress-circle[data-value="28.3"] .progress-barre {
+   transform: rotate(101.88deg)
+}
+
+.progress-circle[data-value="28.4"] .progress-barre {
+   transform: rotate(102.24deg)
+}
+
+.progress-circle[data-value="28.5"] .progress-barre {
+   transform: rotate(102.60deg)
+}
+
+.progress-circle[data-value="28.6"] .progress-barre {
+   transform: rotate(102.96deg)
+}
+
+.progress-circle[data-value="28.7"] .progress-barre {
+   transform: rotate(103.32deg)
+}
+
+.progress-circle[data-value="28.8"] .progress-barre {
+   transform: rotate(103.68deg)
+}
+
+.progress-circle[data-value="28.9"] .progress-barre {
+   transform: rotate(104.04deg)
+}
+
+.progress-circle[data-value="29"] .progress-barre,
+.progress-circle[data-value="29."] .progress-barre,
+.progress-circle[data-value="29.0"] .progress-barre {
+   transform: rotate(104.40deg)
+}
+
+.progress-circle[data-value="29.1"] .progress-barre {
+   transform: rotate(104.76deg)
+}
+
+.progress-circle[data-value="29.2"] .progress-barre {
+   transform: rotate(105.12deg)
+}
+
+.progress-circle[data-value="29.3"] .progress-barre {
+   transform: rotate(105.48deg)
+}
+
+.progress-circle[data-value="29.4"] .progress-barre {
+   transform: rotate(105.84deg)
+}
+
+.progress-circle[data-value="29.5"] .progress-barre {
+   transform: rotate(106.20deg)
+}
+
+.progress-circle[data-value="29.6"] .progress-barre {
+   transform: rotate(106.56deg)
+}
+
+.progress-circle[data-value="29.7"] .progress-barre {
+   transform: rotate(106.92deg)
+}
+
+.progress-circle[data-value="29.8"] .progress-barre {
+   transform: rotate(107.28deg)
+}
+
+.progress-circle[data-value="29.9"] .progress-barre {
+   transform: rotate(107.64deg)
+}
+
+.progress-circle[data-value="30"] .progress-barre,
+.progress-circle[data-value="30."] .progress-barre,
+.progress-circle[data-value="30.0"] .progress-barre {
+   transform: rotate(108.00deg)
+}
+
+.progress-circle[data-value="30.1"] .progress-barre {
+   transform: rotate(108.36deg)
+}
+
+.progress-circle[data-value="30.2"] .progress-barre {
+   transform: rotate(108.72deg)
+}
+
+.progress-circle[data-value="30.3"] .progress-barre {
+   transform: rotate(109.08deg)
+}
+
+.progress-circle[data-value="30.4"] .progress-barre {
+   transform: rotate(109.44deg)
+}
+
+.progress-circle[data-value="30.5"] .progress-barre {
+   transform: rotate(109.80deg)
+}
+
+.progress-circle[data-value="30.6"] .progress-barre {
+   transform: rotate(110.16deg)
+}
+
+.progress-circle[data-value="30.7"] .progress-barre {
+   transform: rotate(110.52deg)
+}
+
+.progress-circle[data-value="30.8"] .progress-barre {
+   transform: rotate(110.88deg)
+}
+
+.progress-circle[data-value="30.9"] .progress-barre {
+   transform: rotate(111.24deg)
+}
+
+.progress-circle[data-value="31"] .progress-barre,
+.progress-circle[data-value="31."] .progress-barre,
+.progress-circle[data-value="31.0"] .progress-barre {
+   transform: rotate(111.60deg)
+}
+
+.progress-circle[data-value="31.1"] .progress-barre {
+   transform: rotate(111.96deg)
+}
+
+.progress-circle[data-value="31.2"] .progress-barre {
+   transform: rotate(112.32deg)
+}
+
+.progress-circle[data-value="31.3"] .progress-barre {
+   transform: rotate(112.68deg)
+}
+
+.progress-circle[data-value="31.4"] .progress-barre {
+   transform: rotate(113.04deg)
+}
+
+.progress-circle[data-value="31.5"] .progress-barre {
+   transform: rotate(113.40deg)
+}
+
+.progress-circle[data-value="31.6"] .progress-barre {
+   transform: rotate(113.76deg)
+}
+
+.progress-circle[data-value="31.7"] .progress-barre {
+   transform: rotate(114.12deg)
+}
+
+.progress-circle[data-value="31.8"] .progress-barre {
+   transform: rotate(114.48deg)
+}
+
+.progress-circle[data-value="31.9"] .progress-barre {
+   transform: rotate(114.84deg)
+}
+
+.progress-circle[data-value="32"] .progress-barre,
+.progress-circle[data-value="32."] .progress-barre,
+.progress-circle[data-value="32.0"] .progress-barre {
+   transform: rotate(115.20deg)
+}
+
+.progress-circle[data-value="32.1"] .progress-barre {
+   transform: rotate(115.56deg)
+}
+
+.progress-circle[data-value="32.2"] .progress-barre {
+   transform: rotate(115.92deg)
+}
+
+.progress-circle[data-value="32.3"] .progress-barre {
+   transform: rotate(116.28deg)
+}
+
+.progress-circle[data-value="32.4"] .progress-barre {
+   transform: rotate(116.64deg)
+}
+
+.progress-circle[data-value="32.5"] .progress-barre {
+   transform: rotate(117.00deg)
+}
+
+.progress-circle[data-value="32.6"] .progress-barre {
+   transform: rotate(117.36deg)
+}
+
+.progress-circle[data-value="32.7"] .progress-barre {
+   transform: rotate(117.72deg)
+}
+
+.progress-circle[data-value="32.8"] .progress-barre {
+   transform: rotate(118.08deg)
+}
+
+.progress-circle[data-value="32.9"] .progress-barre {
+   transform: rotate(118.44deg)
+}
+
+.progress-circle[data-value="33"] .progress-barre,
+.progress-circle[data-value="33."] .progress-barre,
+.progress-circle[data-value="33.0"] .progress-barre {
+   transform: rotate(118.80deg)
+}
+
+.progress-circle[data-value="33.1"] .progress-barre {
+   transform: rotate(119.16deg)
+}
+
+.progress-circle[data-value="33.2"] .progress-barre {
+   transform: rotate(119.52deg)
+}
+
+.progress-circle[data-value="33.3"] .progress-barre {
+   transform: rotate(119.88deg)
+}
+
+.progress-circle[data-value="33.4"] .progress-barre {
+   transform: rotate(120.24deg)
+}
+
+.progress-circle[data-value="33.5"] .progress-barre {
+   transform: rotate(120.60deg)
+}
+
+.progress-circle[data-value="33.6"] .progress-barre {
+   transform: rotate(120.96deg)
+}
+
+.progress-circle[data-value="33.7"] .progress-barre {
+   transform: rotate(121.32deg)
+}
+
+.progress-circle[data-value="33.8"] .progress-barre {
+   transform: rotate(121.68deg)
+}
+
+.progress-circle[data-value="33.9"] .progress-barre {
+   transform: rotate(122.04deg)
+}
+
+.progress-circle[data-value="34"] .progress-barre,
+.progress-circle[data-value="34."] .progress-barre,
+.progress-circle[data-value="34.0"] .progress-barre {
+   transform: rotate(122.40deg)
+}
+
+.progress-circle[data-value="34.1"] .progress-barre {
+   transform: rotate(122.76deg)
+}
+
+.progress-circle[data-value="34.2"] .progress-barre {
+   transform: rotate(123.12deg)
+}
+
+.progress-circle[data-value="34.3"] .progress-barre {
+   transform: rotate(123.48deg)
+}
+
+.progress-circle[data-value="34.4"] .progress-barre {
+   transform: rotate(123.84deg)
+}
+
+.progress-circle[data-value="34.5"] .progress-barre {
+   transform: rotate(124.20deg)
+}
+
+.progress-circle[data-value="34.6"] .progress-barre {
+   transform: rotate(124.56deg)
+}
+
+.progress-circle[data-value="34.7"] .progress-barre {
+   transform: rotate(124.92deg)
+}
+
+.progress-circle[data-value="34.8"] .progress-barre {
+   transform: rotate(125.28deg)
+}
+
+.progress-circle[data-value="34.9"] .progress-barre {
+   transform: rotate(125.64deg)
+}
+
+.progress-circle[data-value="35"] .progress-barre,
+.progress-circle[data-value="35."] .progress-barre,
+.progress-circle[data-value="35.0"] .progress-barre {
+   transform: rotate(126.00deg)
+}
+
+.progress-circle[data-value="35.1"] .progress-barre {
+   transform: rotate(126.36deg)
+}
+
+.progress-circle[data-value="35.2"] .progress-barre {
+   transform: rotate(126.72deg)
+}
+
+.progress-circle[data-value="35.3"] .progress-barre {
+   transform: rotate(127.08deg)
+}
+
+.progress-circle[data-value="35.4"] .progress-barre {
+   transform: rotate(127.44deg)
+}
+
+.progress-circle[data-value="35.5"] .progress-barre {
+   transform: rotate(127.80deg)
+}
+
+.progress-circle[data-value="35.6"] .progress-barre {
+   transform: rotate(128.16deg)
+}
+
+.progress-circle[data-value="35.7"] .progress-barre {
+   transform: rotate(128.52deg)
+}
+
+.progress-circle[data-value="35.8"] .progress-barre {
+   transform: rotate(128.88deg)
+}
+
+.progress-circle[data-value="35.9"] .progress-barre {
+   transform: rotate(129.24deg)
+}
+
+.progress-circle[data-value="36"] .progress-barre,
+.progress-circle[data-value="36."] .progress-barre,
+.progress-circle[data-value="36.0"] .progress-barre {
+   transform: rotate(129.60deg)
+}
+
+.progress-circle[data-value="36.1"] .progress-barre {
+   transform: rotate(129.96deg)
+}
+
+.progress-circle[data-value="36.2"] .progress-barre {
+   transform: rotate(130.32deg)
+}
+
+.progress-circle[data-value="36.3"] .progress-barre {
+   transform: rotate(130.68deg)
+}
+
+.progress-circle[data-value="36.4"] .progress-barre {
+   transform: rotate(131.04deg)
+}
+
+.progress-circle[data-value="36.5"] .progress-barre {
+   transform: rotate(131.40deg)
+}
+
+.progress-circle[data-value="36.6"] .progress-barre {
+   transform: rotate(131.76deg)
+}
+
+.progress-circle[data-value="36.7"] .progress-barre {
+   transform: rotate(132.12deg)
+}
+
+.progress-circle[data-value="36.8"] .progress-barre {
+   transform: rotate(132.48deg)
+}
+
+.progress-circle[data-value="36.9"] .progress-barre {
+   transform: rotate(132.84deg)
+}
+
+.progress-circle[data-value="37"] .progress-barre,
+.progress-circle[data-value="37."] .progress-barre,
+.progress-circle[data-value="37.0"] .progress-barre {
+   transform: rotate(133.20deg)
+}
+
+.progress-circle[data-value="37.1"] .progress-barre {
+   transform: rotate(133.56deg)
+}
+
+.progress-circle[data-value="37.2"] .progress-barre {
+   transform: rotate(133.92deg)
+}
+
+.progress-circle[data-value="37.3"] .progress-barre {
+   transform: rotate(134.28deg)
+}
+
+.progress-circle[data-value="37.4"] .progress-barre {
+   transform: rotate(134.64deg)
+}
+
+.progress-circle[data-value="37.5"] .progress-barre {
+   transform: rotate(135.00deg)
+}
+
+.progress-circle[data-value="37.6"] .progress-barre {
+   transform: rotate(135.36deg)
+}
+
+.progress-circle[data-value="37.7"] .progress-barre {
+   transform: rotate(135.72deg)
+}
+
+.progress-circle[data-value="37.8"] .progress-barre {
+   transform: rotate(136.08deg)
+}
+
+.progress-circle[data-value="37.9"] .progress-barre {
+   transform: rotate(136.44deg)
+}
+
+.progress-circle[data-value="38"] .progress-barre,
+.progress-circle[data-value="38."] .progress-barre,
+.progress-circle[data-value="38.0"] .progress-barre {
+   transform: rotate(136.80deg)
+}
+
+.progress-circle[data-value="38.1"] .progress-barre {
+   transform: rotate(137.16deg)
+}
+
+.progress-circle[data-value="38.2"] .progress-barre {
+   transform: rotate(137.52deg)
+}
+
+.progress-circle[data-value="38.3"] .progress-barre {
+   transform: rotate(137.88deg)
+}
+
+.progress-circle[data-value="38.4"] .progress-barre {
+   transform: rotate(138.24deg)
+}
+
+.progress-circle[data-value="38.5"] .progress-barre {
+   transform: rotate(138.60deg)
+}
+
+.progress-circle[data-value="38.6"] .progress-barre {
+   transform: rotate(138.96deg)
+}
+
+.progress-circle[data-value="38.7"] .progress-barre {
+   transform: rotate(139.32deg)
+}
+
+.progress-circle[data-value="38.8"] .progress-barre {
+   transform: rotate(139.68deg)
+}
+
+.progress-circle[data-value="38.9"] .progress-barre {
+   transform: rotate(140.04deg)
+}
+
+.progress-circle[data-value="39"] .progress-barre,
+.progress-circle[data-value="39."] .progress-barre,
+.progress-circle[data-value="39.0"] .progress-barre {
+   transform: rotate(140.40deg)
+}
+
+.progress-circle[data-value="39.1"] .progress-barre {
+   transform: rotate(140.76deg)
+}
+
+.progress-circle[data-value="39.2"] .progress-barre {
+   transform: rotate(141.12deg)
+}
+
+.progress-circle[data-value="39.3"] .progress-barre {
+   transform: rotate(141.48deg)
+}
+
+.progress-circle[data-value="39.4"] .progress-barre {
+   transform: rotate(141.84deg)
+}
+
+.progress-circle[data-value="39.5"] .progress-barre {
+   transform: rotate(142.20deg)
+}
+
+.progress-circle[data-value="39.6"] .progress-barre {
+   transform: rotate(142.56deg)
+}
+
+.progress-circle[data-value="39.7"] .progress-barre {
+   transform: rotate(142.92deg)
+}
+
+.progress-circle[data-value="39.8"] .progress-barre {
+   transform: rotate(143.28deg)
+}
+
+.progress-circle[data-value="39.9"] .progress-barre {
+   transform: rotate(143.64deg)
+}
+
+.progress-circle[data-value="40"] .progress-barre,
+.progress-circle[data-value="40."] .progress-barre,
+.progress-circle[data-value="40.0"] .progress-barre {
+   transform: rotate(144.00deg)
+}
+
+.progress-circle[data-value="40.1"] .progress-barre {
+   transform: rotate(144.36deg)
+}
+
+.progress-circle[data-value="40.2"] .progress-barre {
+   transform: rotate(144.72deg)
+}
+
+.progress-circle[data-value="40.3"] .progress-barre {
+   transform: rotate(145.08deg)
+}
+
+.progress-circle[data-value="40.4"] .progress-barre {
+   transform: rotate(145.44deg)
+}
+
+.progress-circle[data-value="40.5"] .progress-barre {
+   transform: rotate(145.80deg)
+}
+
+.progress-circle[data-value="40.6"] .progress-barre {
+   transform: rotate(146.16deg)
+}
+
+.progress-circle[data-value="40.7"] .progress-barre {
+   transform: rotate(146.52deg)
+}
+
+.progress-circle[data-value="40.8"] .progress-barre {
+   transform: rotate(146.88deg)
+}
+
+.progress-circle[data-value="40.9"] .progress-barre {
+   transform: rotate(147.24deg)
+}
+
+.progress-circle[data-value="41"] .progress-barre,
+.progress-circle[data-value="41."] .progress-barre,
+.progress-circle[data-value="41.0"] .progress-barre {
+   transform: rotate(147.60deg)
+}
+
+.progress-circle[data-value="41.1"] .progress-barre {
+   transform: rotate(147.96deg)
+}
+
+.progress-circle[data-value="41.2"] .progress-barre {
+   transform: rotate(148.32deg)
+}
+
+.progress-circle[data-value="41.3"] .progress-barre {
+   transform: rotate(148.68deg)
+}
+
+.progress-circle[data-value="41.4"] .progress-barre {
+   transform: rotate(149.04deg)
+}
+
+.progress-circle[data-value="41.5"] .progress-barre {
+   transform: rotate(149.40deg)
+}
+
+.progress-circle[data-value="41.6"] .progress-barre {
+   transform: rotate(149.76deg)
+}
+
+.progress-circle[data-value="41.7"] .progress-barre {
+   transform: rotate(150.12deg)
+}
+
+.progress-circle[data-value="41.8"] .progress-barre {
+   transform: rotate(150.48deg)
+}
+
+.progress-circle[data-value="41.9"] .progress-barre {
+   transform: rotate(150.84deg)
+}
+
+.progress-circle[data-value="42"] .progress-barre,
+.progress-circle[data-value="42."] .progress-barre,
+.progress-circle[data-value="42.0"] .progress-barre {
+   transform: rotate(151.20deg)
+}
+
+.progress-circle[data-value="42.1"] .progress-barre {
+   transform: rotate(151.56deg)
+}
+
+.progress-circle[data-value="42.2"] .progress-barre {
+   transform: rotate(151.92deg)
+}
+
+.progress-circle[data-value="42.3"] .progress-barre {
+   transform: rotate(152.28deg)
+}
+
+.progress-circle[data-value="42.4"] .progress-barre {
+   transform: rotate(152.64deg)
+}
+
+.progress-circle[data-value="42.5"] .progress-barre {
+   transform: rotate(153.00deg)
+}
+
+.progress-circle[data-value="42.6"] .progress-barre {
+   transform: rotate(153.36deg)
+}
+
+.progress-circle[data-value="42.7"] .progress-barre {
+   transform: rotate(153.72deg)
+}
+
+.progress-circle[data-value="42.8"] .progress-barre {
+   transform: rotate(154.08deg)
+}
+
+.progress-circle[data-value="42.9"] .progress-barre {
+   transform: rotate(154.44deg)
+}
+
+.progress-circle[data-value="43"] .progress-barre,
+.progress-circle[data-value="43."] .progress-barre,
+.progress-circle[data-value="43.0"] .progress-barre {
+   transform: rotate(154.80deg)
+}
+
+.progress-circle[data-value="43.1"] .progress-barre {
+   transform: rotate(155.16deg)
+}
+
+.progress-circle[data-value="43.2"] .progress-barre {
+   transform: rotate(155.52deg)
+}
+
+.progress-circle[data-value="43.3"] .progress-barre {
+   transform: rotate(155.88deg)
+}
+
+.progress-circle[data-value="43.4"] .progress-barre {
+   transform: rotate(156.24deg)
+}
+
+.progress-circle[data-value="43.5"] .progress-barre {
+   transform: rotate(156.60deg)
+}
+
+.progress-circle[data-value="43.6"] .progress-barre {
+   transform: rotate(156.96deg)
+}
+
+.progress-circle[data-value="43.7"] .progress-barre {
+   transform: rotate(157.32deg)
+}
+
+.progress-circle[data-value="43.8"] .progress-barre {
+   transform: rotate(157.68deg)
+}
+
+.progress-circle[data-value="43.9"] .progress-barre {
+   transform: rotate(158.04deg)
+}
+
+.progress-circle[data-value="44"] .progress-barre,
+.progress-circle[data-value="44."] .progress-barre,
+.progress-circle[data-value="44.0"] .progress-barre {
+   transform: rotate(158.40deg)
+}
+
+.progress-circle[data-value="44.1"] .progress-barre {
+   transform: rotate(158.76deg)
+}
+
+.progress-circle[data-value="44.2"] .progress-barre {
+   transform: rotate(159.12deg)
+}
+
+.progress-circle[data-value="44.3"] .progress-barre {
+   transform: rotate(159.48deg)
+}
+
+.progress-circle[data-value="44.4"] .progress-barre {
+   transform: rotate(159.84deg)
+}
+
+.progress-circle[data-value="44.5"] .progress-barre {
+   transform: rotate(160.20deg)
+}
+
+.progress-circle[data-value="44.6"] .progress-barre {
+   transform: rotate(160.56deg)
+}
+
+.progress-circle[data-value="44.7"] .progress-barre {
+   transform: rotate(160.92deg)
+}
+
+.progress-circle[data-value="44.8"] .progress-barre {
+   transform: rotate(161.28deg)
+}
+
+.progress-circle[data-value="44.9"] .progress-barre {
+   transform: rotate(161.64deg)
+}
+
+.progress-circle[data-value="45"] .progress-barre,
+.progress-circle[data-value="45."] .progress-barre,
+.progress-circle[data-value="45.0"] .progress-barre {
+   transform: rotate(162.00deg)
+}
+
+.progress-circle[data-value="45.1"] .progress-barre {
+   transform: rotate(162.36deg)
+}
+
+.progress-circle[data-value="45.2"] .progress-barre {
+   transform: rotate(162.72deg)
+}
+
+.progress-circle[data-value="45.3"] .progress-barre {
+   transform: rotate(163.08deg)
+}
+
+.progress-circle[data-value="45.4"] .progress-barre {
+   transform: rotate(163.44deg)
+}
+
+.progress-circle[data-value="45.5"] .progress-barre {
+   transform: rotate(163.80deg)
+}
+
+.progress-circle[data-value="45.6"] .progress-barre {
+   transform: rotate(164.16deg)
+}
+
+.progress-circle[data-value="45.7"] .progress-barre {
+   transform: rotate(164.52deg)
+}
+
+.progress-circle[data-value="45.8"] .progress-barre {
+   transform: rotate(164.88deg)
+}
+
+.progress-circle[data-value="45.9"] .progress-barre {
+   transform: rotate(165.24deg)
+}
+
+.progress-circle[data-value="46"] .progress-barre,
+.progress-circle[data-value="46."] .progress-barre,
+.progress-circle[data-value="46.0"] .progress-barre {
+   transform: rotate(165.60deg)
+}
+
+.progress-circle[data-value="46.1"] .progress-barre {
+   transform: rotate(165.96deg)
+}
+
+.progress-circle[data-value="46.2"] .progress-barre {
+   transform: rotate(166.32deg)
+}
+
+.progress-circle[data-value="46.3"] .progress-barre {
+   transform: rotate(166.68deg)
+}
+
+.progress-circle[data-value="46.4"] .progress-barre {
+   transform: rotate(167.04deg)
+}
+
+.progress-circle[data-value="46.5"] .progress-barre {
+   transform: rotate(167.40deg)
+}
+
+.progress-circle[data-value="46.6"] .progress-barre {
+   transform: rotate(167.76deg)
+}
+
+.progress-circle[data-value="46.7"] .progress-barre {
+   transform: rotate(168.12deg)
+}
+
+.progress-circle[data-value="46.8"] .progress-barre {
+   transform: rotate(168.48deg)
+}
+
+.progress-circle[data-value="46.9"] .progress-barre {
+   transform: rotate(168.84deg)
+}
+
+.progress-circle[data-value="47"] .progress-barre,
+.progress-circle[data-value="47."] .progress-barre,
+.progress-circle[data-value="47.0"] .progress-barre {
+   transform: rotate(169.20deg)
+}
+
+.progress-circle[data-value="47.1"] .progress-barre {
+   transform: rotate(169.56deg)
+}
+
+.progress-circle[data-value="47.2"] .progress-barre {
+   transform: rotate(169.92deg)
+}
+
+.progress-circle[data-value="47.3"] .progress-barre {
+   transform: rotate(170.28deg)
+}
+
+.progress-circle[data-value="47.4"] .progress-barre {
+   transform: rotate(170.64deg)
+}
+
+.progress-circle[data-value="47.5"] .progress-barre {
+   transform: rotate(171.00deg)
+}
+
+.progress-circle[data-value="47.6"] .progress-barre {
+   transform: rotate(171.36deg)
+}
+
+.progress-circle[data-value="47.7"] .progress-barre {
+   transform: rotate(171.72deg)
+}
+
+.progress-circle[data-value="47.8"] .progress-barre {
+   transform: rotate(172.08deg)
+}
+
+.progress-circle[data-value="47.9"] .progress-barre {
+   transform: rotate(172.44deg)
+}
+
+.progress-circle[data-value="48"] .progress-barre,
+.progress-circle[data-value="48."] .progress-barre,
+.progress-circle[data-value="48.0"] .progress-barre {
+   transform: rotate(172.80deg)
+}
+
+.progress-circle[data-value="48.1"] .progress-barre {
+   transform: rotate(173.16deg)
+}
+
+.progress-circle[data-value="48.2"] .progress-barre {
+   transform: rotate(173.52deg)
+}
+
+.progress-circle[data-value="48.3"] .progress-barre {
+   transform: rotate(173.88deg)
+}
+
+.progress-circle[data-value="48.4"] .progress-barre {
+   transform: rotate(174.24deg)
+}
+
+.progress-circle[data-value="48.5"] .progress-barre {
+   transform: rotate(174.60deg)
+}
+
+.progress-circle[data-value="48.6"] .progress-barre {
+   transform: rotate(174.96deg)
+}
+
+.progress-circle[data-value="48.7"] .progress-barre {
+   transform: rotate(175.32deg)
+}
+
+.progress-circle[data-value="48.8"] .progress-barre {
+   transform: rotate(175.68deg)
+}
+
+.progress-circle[data-value="48.9"] .progress-barre {
+   transform: rotate(176.04deg)
+}
+
+.progress-circle[data-value="49"] .progress-barre,
+.progress-circle[data-value="49."] .progress-barre,
+.progress-circle[data-value="49.0"] .progress-barre {
+   transform: rotate(176.40deg)
+}
+
+.progress-circle[data-value="49.1"] .progress-barre {
+   transform: rotate(176.76deg)
+}
+
+.progress-circle[data-value="49.2"] .progress-barre {
+   transform: rotate(177.12deg)
+}
+
+.progress-circle[data-value="49.3"] .progress-barre {
+   transform: rotate(177.48deg)
+}
+
+.progress-circle[data-value="49.4"] .progress-barre {
+   transform: rotate(177.84deg)
+}
+
+.progress-circle[data-value="49.5"] .progress-barre {
+   transform: rotate(178.20deg)
+}
+
+.progress-circle[data-value="49.6"] .progress-barre {
+   transform: rotate(178.56deg)
+}
+
+.progress-circle[data-value="49.7"] .progress-barre {
+   transform: rotate(178.92deg)
+}
+
+.progress-circle[data-value="49.8"] .progress-barre {
+   transform: rotate(179.28deg)
+}
+
+.progress-circle[data-value="49.9"] .progress-barre {
+   transform: rotate(179.64deg)
+}
+
+.progress-circle[data-value="50"] .progress-barre,
+.progress-circle[data-value="50."] .progress-barre,
+.progress-circle[data-value="50.0"] .progress-barre {
+   transform: rotate(180.00deg)
+}
+
+.progress-circle[data-value="50.1"] .progress-barre {
+   transform: rotate(180.36deg)
+}
+
+.progress-circle[data-value="50.2"] .progress-barre {
+   transform: rotate(180.72deg)
+}
+
+.progress-circle[data-value="50.3"] .progress-barre {
+   transform: rotate(181.08deg)
+}
+
+.progress-circle[data-value="50.4"] .progress-barre {
+   transform: rotate(181.44deg)
+}
+
+.progress-circle[data-value="50.5"] .progress-barre {
+   transform: rotate(181.80deg)
+}
+
+.progress-circle[data-value="50.6"] .progress-barre {
+   transform: rotate(182.16deg)
+}
+
+.progress-circle[data-value="50.7"] .progress-barre {
+   transform: rotate(182.52deg)
+}
+
+.progress-circle[data-value="50.8"] .progress-barre {
+   transform: rotate(182.88deg)
+}
+
+.progress-circle[data-value="50.9"] .progress-barre {
+   transform: rotate(183.24deg)
+}
+
+.progress-circle[data-value="51"] .progress-barre,
+.progress-circle[data-value="51."] .progress-barre,
+.progress-circle[data-value="51.0"] .progress-barre {
+   transform: rotate(183.60deg)
+}
+
+.progress-circle[data-value="51.1"] .progress-barre {
+   transform: rotate(183.96deg)
+}
+
+.progress-circle[data-value="51.2"] .progress-barre {
+   transform: rotate(184.32deg)
+}
+
+.progress-circle[data-value="51.3"] .progress-barre {
+   transform: rotate(184.68deg)
+}
+
+.progress-circle[data-value="51.4"] .progress-barre {
+   transform: rotate(185.04deg)
+}
+
+.progress-circle[data-value="51.5"] .progress-barre {
+   transform: rotate(185.40deg)
+}
+
+.progress-circle[data-value="51.6"] .progress-barre {
+   transform: rotate(185.76deg)
+}
+
+.progress-circle[data-value="51.7"] .progress-barre {
+   transform: rotate(186.12deg)
+}
+
+.progress-circle[data-value="51.8"] .progress-barre {
+   transform: rotate(186.48deg)
+}
+
+.progress-circle[data-value="51.9"] .progress-barre {
+   transform: rotate(186.84deg)
+}
+
+.progress-circle[data-value="52"] .progress-barre,
+.progress-circle[data-value="52."] .progress-barre,
+.progress-circle[data-value="52.0"] .progress-barre {
+   transform: rotate(187.20deg)
+}
+
+.progress-circle[data-value="52.1"] .progress-barre {
+   transform: rotate(187.56deg)
+}
+
+.progress-circle[data-value="52.2"] .progress-barre {
+   transform: rotate(187.92deg)
+}
+
+.progress-circle[data-value="52.3"] .progress-barre {
+   transform: rotate(188.28deg)
+}
+
+.progress-circle[data-value="52.4"] .progress-barre {
+   transform: rotate(188.64deg)
+}
+
+.progress-circle[data-value="52.5"] .progress-barre {
+   transform: rotate(189.00deg)
+}
+
+.progress-circle[data-value="52.6"] .progress-barre {
+   transform: rotate(189.36deg)
+}
+
+.progress-circle[data-value="52.7"] .progress-barre {
+   transform: rotate(189.72deg)
+}
+
+.progress-circle[data-value="52.8"] .progress-barre {
+   transform: rotate(190.08deg)
+}
+
+.progress-circle[data-value="52.9"] .progress-barre {
+   transform: rotate(190.44deg)
+}
+
+.progress-circle[data-value="53"] .progress-barre,
+.progress-circle[data-value="53."] .progress-barre,
+.progress-circle[data-value="53.0"] .progress-barre {
+   transform: rotate(190.80deg)
+}
+
+.progress-circle[data-value="53.1"] .progress-barre {
+   transform: rotate(191.16deg)
+}
+
+.progress-circle[data-value="53.2"] .progress-barre {
+   transform: rotate(191.52deg)
+}
+
+.progress-circle[data-value="53.3"] .progress-barre {
+   transform: rotate(191.88deg)
+}
+
+.progress-circle[data-value="53.4"] .progress-barre {
+   transform: rotate(192.24deg)
+}
+
+.progress-circle[data-value="53.5"] .progress-barre {
+   transform: rotate(192.60deg)
+}
+
+.progress-circle[data-value="53.6"] .progress-barre {
+   transform: rotate(192.96deg)
+}
+
+.progress-circle[data-value="53.7"] .progress-barre {
+   transform: rotate(193.32deg)
+}
+
+.progress-circle[data-value="53.8"] .progress-barre {
+   transform: rotate(193.68deg)
+}
+
+.progress-circle[data-value="53.9"] .progress-barre {
+   transform: rotate(194.04deg)
+}
+
+.progress-circle[data-value="54"] .progress-barre,
+.progress-circle[data-value="54."] .progress-barre,
+.progress-circle[data-value="54.0"] .progress-barre {
+   transform: rotate(194.40deg)
+}
+
+.progress-circle[data-value="54.1"] .progress-barre {
+   transform: rotate(194.76deg)
+}
+
+.progress-circle[data-value="54.2"] .progress-barre {
+   transform: rotate(195.12deg)
+}
+
+.progress-circle[data-value="54.3"] .progress-barre {
+   transform: rotate(195.48deg)
+}
+
+.progress-circle[data-value="54.4"] .progress-barre {
+   transform: rotate(195.84deg)
+}
+
+.progress-circle[data-value="54.5"] .progress-barre {
+   transform: rotate(196.20deg)
+}
+
+.progress-circle[data-value="54.6"] .progress-barre {
+   transform: rotate(196.56deg)
+}
+
+.progress-circle[data-value="54.7"] .progress-barre {
+   transform: rotate(196.92deg)
+}
+
+.progress-circle[data-value="54.8"] .progress-barre {
+   transform: rotate(197.28deg)
+}
+
+.progress-circle[data-value="54.9"] .progress-barre {
+   transform: rotate(197.64deg)
+}
+
+.progress-circle[data-value="55"] .progress-barre,
+.progress-circle[data-value="55."] .progress-barre,
+.progress-circle[data-value="55.0"] .progress-barre {
+   transform: rotate(198.00deg)
+}
+
+.progress-circle[data-value="55.1"] .progress-barre {
+   transform: rotate(198.36deg)
+}
+
+.progress-circle[data-value="55.2"] .progress-barre {
+   transform: rotate(198.72deg)
+}
+
+.progress-circle[data-value="55.3"] .progress-barre {
+   transform: rotate(199.08deg)
+}
+
+.progress-circle[data-value="55.4"] .progress-barre {
+   transform: rotate(199.44deg)
+}
+
+.progress-circle[data-value="55.5"] .progress-barre {
+   transform: rotate(199.80deg)
+}
+
+.progress-circle[data-value="55.6"] .progress-barre {
+   transform: rotate(200.16deg)
+}
+
+.progress-circle[data-value="55.7"] .progress-barre {
+   transform: rotate(200.52deg)
+}
+
+.progress-circle[data-value="55.8"] .progress-barre {
+   transform: rotate(200.88deg)
+}
+
+.progress-circle[data-value="55.9"] .progress-barre {
+   transform: rotate(201.24deg)
+}
+
+.progress-circle[data-value="56"] .progress-barre,
+.progress-circle[data-value="56."] .progress-barre,
+.progress-circle[data-value="56.0"] .progress-barre {
+   transform: rotate(201.60deg)
+}
+
+.progress-circle[data-value="56.1"] .progress-barre {
+   transform: rotate(201.96deg)
+}
+
+.progress-circle[data-value="56.2"] .progress-barre {
+   transform: rotate(202.32deg)
+}
+
+.progress-circle[data-value="56.3"] .progress-barre {
+   transform: rotate(202.68deg)
+}
+
+.progress-circle[data-value="56.4"] .progress-barre {
+   transform: rotate(203.04deg)
+}
+
+.progress-circle[data-value="56.5"] .progress-barre {
+   transform: rotate(203.40deg)
+}
+
+.progress-circle[data-value="56.6"] .progress-barre {
+   transform: rotate(203.76deg)
+}
+
+.progress-circle[data-value="56.7"] .progress-barre {
+   transform: rotate(204.12deg)
+}
+
+.progress-circle[data-value="56.8"] .progress-barre {
+   transform: rotate(204.48deg)
+}
+
+.progress-circle[data-value="56.9"] .progress-barre {
+   transform: rotate(204.84deg)
+}
+
+.progress-circle[data-value="57"] .progress-barre,
+.progress-circle[data-value="57."] .progress-barre,
+.progress-circle[data-value="57.0"] .progress-barre {
+   transform: rotate(205.20deg)
+}
+
+.progress-circle[data-value="57.1"] .progress-barre {
+   transform: rotate(205.56deg)
+}
+
+.progress-circle[data-value="57.2"] .progress-barre {
+   transform: rotate(205.92deg)
+}
+
+.progress-circle[data-value="57.3"] .progress-barre {
+   transform: rotate(206.28deg)
+}
+
+.progress-circle[data-value="57.4"] .progress-barre {
+   transform: rotate(206.64deg)
+}
+
+.progress-circle[data-value="57.5"] .progress-barre {
+   transform: rotate(207.00deg)
+}
+
+.progress-circle[data-value="57.6"] .progress-barre {
+   transform: rotate(207.36deg)
+}
+
+.progress-circle[data-value="57.7"] .progress-barre {
+   transform: rotate(207.72deg)
+}
+
+.progress-circle[data-value="57.8"] .progress-barre {
+   transform: rotate(208.08deg)
+}
+
+.progress-circle[data-value="57.9"] .progress-barre {
+   transform: rotate(208.44deg)
+}
+
+.progress-circle[data-value="58"] .progress-barre,
+.progress-circle[data-value="58."] .progress-barre,
+.progress-circle[data-value="58.0"] .progress-barre {
+   transform: rotate(208.80deg)
+}
+
+.progress-circle[data-value="58.1"] .progress-barre {
+   transform: rotate(209.16deg)
+}
+
+.progress-circle[data-value="58.2"] .progress-barre {
+   transform: rotate(209.52deg)
+}
+
+.progress-circle[data-value="58.3"] .progress-barre {
+   transform: rotate(209.88deg)
+}
+
+.progress-circle[data-value="58.4"] .progress-barre {
+   transform: rotate(210.24deg)
+}
+
+.progress-circle[data-value="58.5"] .progress-barre {
+   transform: rotate(210.60deg)
+}
+
+.progress-circle[data-value="58.6"] .progress-barre {
+   transform: rotate(210.96deg)
+}
+
+.progress-circle[data-value="58.7"] .progress-barre {
+   transform: rotate(211.32deg)
+}
+
+.progress-circle[data-value="58.8"] .progress-barre {
+   transform: rotate(211.68deg)
+}
+
+.progress-circle[data-value="58.9"] .progress-barre {
+   transform: rotate(212.04deg)
+}
+
+.progress-circle[data-value="59"] .progress-barre,
+.progress-circle[data-value="59."] .progress-barre,
+.progress-circle[data-value="59.0"] .progress-barre {
+   transform: rotate(212.40deg)
+}
+
+.progress-circle[data-value="59.1"] .progress-barre {
+   transform: rotate(212.76deg)
+}
+
+.progress-circle[data-value="59.2"] .progress-barre {
+   transform: rotate(213.12deg)
+}
+
+.progress-circle[data-value="59.3"] .progress-barre {
+   transform: rotate(213.48deg)
+}
+
+.progress-circle[data-value="59.4"] .progress-barre {
+   transform: rotate(213.84deg)
+}
+
+.progress-circle[data-value="59.5"] .progress-barre {
+   transform: rotate(214.20deg)
+}
+
+.progress-circle[data-value="59.6"] .progress-barre {
+   transform: rotate(214.56deg)
+}
+
+.progress-circle[data-value="59.7"] .progress-barre {
+   transform: rotate(214.92deg)
+}
+
+.progress-circle[data-value="59.8"] .progress-barre {
+   transform: rotate(215.28deg)
+}
+
+.progress-circle[data-value="59.9"] .progress-barre {
+   transform: rotate(215.64deg)
+}
+
+.progress-circle[data-value="60"] .progress-barre,
+.progress-circle[data-value="60."] .progress-barre,
+.progress-circle[data-value="60.0"] .progress-barre {
+   transform: rotate(216.00deg)
+}
+
+.progress-circle[data-value="60.1"] .progress-barre {
+   transform: rotate(216.36deg)
+}
+
+.progress-circle[data-value="60.2"] .progress-barre {
+   transform: rotate(216.72deg)
+}
+
+.progress-circle[data-value="60.3"] .progress-barre {
+   transform: rotate(217.08deg)
+}
+
+.progress-circle[data-value="60.4"] .progress-barre {
+   transform: rotate(217.44deg)
+}
+
+.progress-circle[data-value="60.5"] .progress-barre {
+   transform: rotate(217.80deg)
+}
+
+.progress-circle[data-value="60.6"] .progress-barre {
+   transform: rotate(218.16deg)
+}
+
+.progress-circle[data-value="60.7"] .progress-barre {
+   transform: rotate(218.52deg)
+}
+
+.progress-circle[data-value="60.8"] .progress-barre {
+   transform: rotate(218.88deg)
+}
+
+.progress-circle[data-value="60.9"] .progress-barre {
+   transform: rotate(219.24deg)
+}
+
+.progress-circle[data-value="61"] .progress-barre,
+.progress-circle[data-value="61."] .progress-barre,
+.progress-circle[data-value="61.0"] .progress-barre {
+   transform: rotate(219.60deg)
+}
+
+.progress-circle[data-value="61.1"] .progress-barre {
+   transform: rotate(219.96deg)
+}
+
+.progress-circle[data-value="61.2"] .progress-barre {
+   transform: rotate(220.32deg)
+}
+
+.progress-circle[data-value="61.3"] .progress-barre {
+   transform: rotate(220.68deg)
+}
+
+.progress-circle[data-value="61.4"] .progress-barre {
+   transform: rotate(221.04deg)
+}
+
+.progress-circle[data-value="61.5"] .progress-barre {
+   transform: rotate(221.40deg)
+}
+
+.progress-circle[data-value="61.6"] .progress-barre {
+   transform: rotate(221.76deg)
+}
+
+.progress-circle[data-value="61.7"] .progress-barre {
+   transform: rotate(222.12deg)
+}
+
+.progress-circle[data-value="61.8"] .progress-barre {
+   transform: rotate(222.48deg)
+}
+
+.progress-circle[data-value="61.9"] .progress-barre {
+   transform: rotate(222.84deg)
+}
+
+.progress-circle[data-value="62"] .progress-barre,
+.progress-circle[data-value="62."] .progress-barre,
+.progress-circle[data-value="62.0"] .progress-barre {
+   transform: rotate(223.20deg)
+}
+
+.progress-circle[data-value="62.1"] .progress-barre {
+   transform: rotate(223.56deg)
+}
+
+.progress-circle[data-value="62.2"] .progress-barre {
+   transform: rotate(223.92deg)
+}
+
+.progress-circle[data-value="62.3"] .progress-barre {
+   transform: rotate(224.28deg)
+}
+
+.progress-circle[data-value="62.4"] .progress-barre {
+   transform: rotate(224.64deg)
+}
+
+.progress-circle[data-value="62.5"] .progress-barre {
+   transform: rotate(225.00deg)
+}
+
+.progress-circle[data-value="62.6"] .progress-barre {
+   transform: rotate(225.36deg)
+}
+
+.progress-circle[data-value="62.7"] .progress-barre {
+   transform: rotate(225.72deg)
+}
+
+.progress-circle[data-value="62.8"] .progress-barre {
+   transform: rotate(226.08deg)
+}
+
+.progress-circle[data-value="62.9"] .progress-barre {
+   transform: rotate(226.44deg)
+}
+
+.progress-circle[data-value="63"] .progress-barre,
+.progress-circle[data-value="63."] .progress-barre,
+.progress-circle[data-value="63.0"] .progress-barre {
+   transform: rotate(226.80deg)
+}
+
+.progress-circle[data-value="63.1"] .progress-barre {
+   transform: rotate(227.16deg)
+}
+
+.progress-circle[data-value="63.2"] .progress-barre {
+   transform: rotate(227.52deg)
+}
+
+.progress-circle[data-value="63.3"] .progress-barre {
+   transform: rotate(227.88deg)
+}
+
+.progress-circle[data-value="63.4"] .progress-barre {
+   transform: rotate(228.24deg)
+}
+
+.progress-circle[data-value="63.5"] .progress-barre {
+   transform: rotate(228.60deg)
+}
+
+.progress-circle[data-value="63.6"] .progress-barre {
+   transform: rotate(228.96deg)
+}
+
+.progress-circle[data-value="63.7"] .progress-barre {
+   transform: rotate(229.32deg)
+}
+
+.progress-circle[data-value="63.8"] .progress-barre {
+   transform: rotate(229.68deg)
+}
+
+.progress-circle[data-value="63.9"] .progress-barre {
+   transform: rotate(230.04deg)
+}
+
+.progress-circle[data-value="64"] .progress-barre,
+.progress-circle[data-value="64."] .progress-barre,
+.progress-circle[data-value="64.0"] .progress-barre {
+   transform: rotate(230.40deg)
+}
+
+.progress-circle[data-value="64.1"] .progress-barre {
+   transform: rotate(230.76deg)
+}
+
+.progress-circle[data-value="64.2"] .progress-barre {
+   transform: rotate(231.12deg)
+}
+
+.progress-circle[data-value="64.3"] .progress-barre {
+   transform: rotate(231.48deg)
+}
+
+.progress-circle[data-value="64.4"] .progress-barre {
+   transform: rotate(231.84deg)
+}
+
+.progress-circle[data-value="64.5"] .progress-barre {
+   transform: rotate(232.20deg)
+}
+
+.progress-circle[data-value="64.6"] .progress-barre {
+   transform: rotate(232.56deg)
+}
+
+.progress-circle[data-value="64.7"] .progress-barre {
+   transform: rotate(232.92deg)
+}
+
+.progress-circle[data-value="64.8"] .progress-barre {
+   transform: rotate(233.28deg)
+}
+
+.progress-circle[data-value="64.9"] .progress-barre {
+   transform: rotate(233.64deg)
+}
+
+.progress-circle[data-value="65"] .progress-barre,
+.progress-circle[data-value="65."] .progress-barre,
+.progress-circle[data-value="65.0"] .progress-barre {
+   transform: rotate(234.00deg)
+}
+
+.progress-circle[data-value="65.1"] .progress-barre {
+   transform: rotate(234.36deg)
+}
+
+.progress-circle[data-value="65.2"] .progress-barre {
+   transform: rotate(234.72deg)
+}
+
+.progress-circle[data-value="65.3"] .progress-barre {
+   transform: rotate(235.08deg)
+}
+
+.progress-circle[data-value="65.4"] .progress-barre {
+   transform: rotate(235.44deg)
+}
+
+.progress-circle[data-value="65.5"] .progress-barre {
+   transform: rotate(235.80deg)
+}
+
+.progress-circle[data-value="65.6"] .progress-barre {
+   transform: rotate(236.16deg)
+}
+
+.progress-circle[data-value="65.7"] .progress-barre {
+   transform: rotate(236.52deg)
+}
+
+.progress-circle[data-value="65.8"] .progress-barre {
+   transform: rotate(236.88deg)
+}
+
+.progress-circle[data-value="65.9"] .progress-barre {
+   transform: rotate(237.24deg)
+}
+
+.progress-circle[data-value="66"] .progress-barre,
+.progress-circle[data-value="66."] .progress-barre,
+.progress-circle[data-value="66.0"] .progress-barre {
+   transform: rotate(237.60deg)
+}
+
+.progress-circle[data-value="66.1"] .progress-barre {
+   transform: rotate(237.96deg)
+}
+
+.progress-circle[data-value="66.2"] .progress-barre {
+   transform: rotate(238.32deg)
+}
+
+.progress-circle[data-value="66.3"] .progress-barre {
+   transform: rotate(238.68deg)
+}
+
+.progress-circle[data-value="66.4"] .progress-barre {
+   transform: rotate(239.04deg)
+}
+
+.progress-circle[data-value="66.5"] .progress-barre {
+   transform: rotate(239.40deg)
+}
+
+.progress-circle[data-value="66.6"] .progress-barre {
+   transform: rotate(239.76deg)
+}
+
+.progress-circle[data-value="66.7"] .progress-barre {
+   transform: rotate(240.12deg)
+}
+
+.progress-circle[data-value="66.8"] .progress-barre {
+   transform: rotate(240.48deg)
+}
+
+.progress-circle[data-value="66.9"] .progress-barre {
+   transform: rotate(240.84deg)
+}
+
+.progress-circle[data-value="67"] .progress-barre,
+.progress-circle[data-value="67."] .progress-barre,
+.progress-circle[data-value="67.0"] .progress-barre {
+   transform: rotate(241.20deg)
+}
+
+.progress-circle[data-value="67.1"] .progress-barre {
+   transform: rotate(241.56deg)
+}
+
+.progress-circle[data-value="67.2"] .progress-barre {
+   transform: rotate(241.92deg)
+}
+
+.progress-circle[data-value="67.3"] .progress-barre {
+   transform: rotate(242.28deg)
+}
+
+.progress-circle[data-value="67.4"] .progress-barre {
+   transform: rotate(242.64deg)
+}
+
+.progress-circle[data-value="67.5"] .progress-barre {
+   transform: rotate(243.00deg)
+}
+
+.progress-circle[data-value="67.6"] .progress-barre {
+   transform: rotate(243.36deg)
+}
+
+.progress-circle[data-value="67.7"] .progress-barre {
+   transform: rotate(243.72deg)
+}
+
+.progress-circle[data-value="67.8"] .progress-barre {
+   transform: rotate(244.08deg)
+}
+
+.progress-circle[data-value="67.9"] .progress-barre {
+   transform: rotate(244.44deg)
+}
+
+.progress-circle[data-value="68"] .progress-barre,
+.progress-circle[data-value="68."] .progress-barre,
+.progress-circle[data-value="68.0"] .progress-barre {
+   transform: rotate(244.80deg)
+}
+
+.progress-circle[data-value="68.1"] .progress-barre {
+   transform: rotate(245.16deg)
+}
+
+.progress-circle[data-value="68.2"] .progress-barre {
+   transform: rotate(245.52deg)
+}
+
+.progress-circle[data-value="68.3"] .progress-barre {
+   transform: rotate(245.88deg)
+}
+
+.progress-circle[data-value="68.4"] .progress-barre {
+   transform: rotate(246.24deg)
+}
+
+.progress-circle[data-value="68.5"] .progress-barre {
+   transform: rotate(246.60deg)
+}
+
+.progress-circle[data-value="68.6"] .progress-barre {
+   transform: rotate(246.96deg)
+}
+
+.progress-circle[data-value="68.7"] .progress-barre {
+   transform: rotate(247.32deg)
+}
+
+.progress-circle[data-value="68.8"] .progress-barre {
+   transform: rotate(247.68deg)
+}
+
+.progress-circle[data-value="68.9"] .progress-barre {
+   transform: rotate(248.04deg)
+}
+
+.progress-circle[data-value="69"] .progress-barre,
+.progress-circle[data-value="69."] .progress-barre,
+.progress-circle[data-value="69.0"] .progress-barre {
+   transform: rotate(248.40deg)
+}
+
+.progress-circle[data-value="69.1"] .progress-barre {
+   transform: rotate(248.76deg)
+}
+
+.progress-circle[data-value="69.2"] .progress-barre {
+   transform: rotate(249.12deg)
+}
+
+.progress-circle[data-value="69.3"] .progress-barre {
+   transform: rotate(249.48deg)
+}
+
+.progress-circle[data-value="69.4"] .progress-barre {
+   transform: rotate(249.84deg)
+}
+
+.progress-circle[data-value="69.5"] .progress-barre {
+   transform: rotate(250.20deg)
+}
+
+.progress-circle[data-value="69.6"] .progress-barre {
+   transform: rotate(250.56deg)
+}
+
+.progress-circle[data-value="69.7"] .progress-barre {
+   transform: rotate(250.92deg)
+}
+
+.progress-circle[data-value="69.8"] .progress-barre {
+   transform: rotate(251.28deg)
+}
+
+.progress-circle[data-value="69.9"] .progress-barre {
+   transform: rotate(251.64deg)
+}
+
+.progress-circle[data-value="70"] .progress-barre,
+.progress-circle[data-value="70."] .progress-barre,
+.progress-circle[data-value="70.0"] .progress-barre {
+   transform: rotate(252.00deg)
+}
+
+.progress-circle[data-value="70.1"] .progress-barre {
+   transform: rotate(252.36deg)
+}
+
+.progress-circle[data-value="70.2"] .progress-barre {
+   transform: rotate(252.72deg)
+}
+
+.progress-circle[data-value="70.3"] .progress-barre {
+   transform: rotate(253.08deg)
+}
+
+.progress-circle[data-value="70.4"] .progress-barre {
+   transform: rotate(253.44deg)
+}
+
+.progress-circle[data-value="70.5"] .progress-barre {
+   transform: rotate(253.80deg)
+}
+
+.progress-circle[data-value="70.6"] .progress-barre {
+   transform: rotate(254.16deg)
+}
+
+.progress-circle[data-value="70.7"] .progress-barre {
+   transform: rotate(254.52deg)
+}
+
+.progress-circle[data-value="70.8"] .progress-barre {
+   transform: rotate(254.88deg)
+}
+
+.progress-circle[data-value="70.9"] .progress-barre {
+   transform: rotate(255.24deg)
+}
+
+.progress-circle[data-value="71"] .progress-barre,
+.progress-circle[data-value="71."] .progress-barre,
+.progress-circle[data-value="71.0"] .progress-barre {
+   transform: rotate(255.60deg)
+}
+
+.progress-circle[data-value="71.1"] .progress-barre {
+   transform: rotate(255.96deg)
+}
+
+.progress-circle[data-value="71.2"] .progress-barre {
+   transform: rotate(256.32deg)
+}
+
+.progress-circle[data-value="71.3"] .progress-barre {
+   transform: rotate(256.68deg)
+}
+
+.progress-circle[data-value="71.4"] .progress-barre {
+   transform: rotate(257.04deg)
+}
+
+.progress-circle[data-value="71.5"] .progress-barre {
+   transform: rotate(257.40deg)
+}
+
+.progress-circle[data-value="71.6"] .progress-barre {
+   transform: rotate(257.76deg)
+}
+
+.progress-circle[data-value="71.7"] .progress-barre {
+   transform: rotate(258.12deg)
+}
+
+.progress-circle[data-value="71.8"] .progress-barre {
+   transform: rotate(258.48deg)
+}
+
+.progress-circle[data-value="71.9"] .progress-barre {
+   transform: rotate(258.84deg)
+}
+
+.progress-circle[data-value="72"] .progress-barre,
+.progress-circle[data-value="72."] .progress-barre,
+.progress-circle[data-value="72.0"] .progress-barre {
+   transform: rotate(259.20deg)
+}
+
+.progress-circle[data-value="72.1"] .progress-barre {
+   transform: rotate(259.56deg)
+}
+
+.progress-circle[data-value="72.2"] .progress-barre {
+   transform: rotate(259.92deg)
+}
+
+.progress-circle[data-value="72.3"] .progress-barre {
+   transform: rotate(260.28deg)
+}
+
+.progress-circle[data-value="72.4"] .progress-barre {
+   transform: rotate(260.64deg)
+}
+
+.progress-circle[data-value="72.5"] .progress-barre {
+   transform: rotate(261.00deg)
+}
+
+.progress-circle[data-value="72.6"] .progress-barre {
+   transform: rotate(261.36deg)
+}
+
+.progress-circle[data-value="72.7"] .progress-barre {
+   transform: rotate(261.72deg)
+}
+
+.progress-circle[data-value="72.8"] .progress-barre {
+   transform: rotate(262.08deg)
+}
+
+.progress-circle[data-value="72.9"] .progress-barre {
+   transform: rotate(262.44deg)
+}
+
+.progress-circle[data-value="73"] .progress-barre,
+.progress-circle[data-value="73."] .progress-barre,
+.progress-circle[data-value="73.0"] .progress-barre {
+   transform: rotate(262.80deg)
+}
+
+.progress-circle[data-value="73.1"] .progress-barre {
+   transform: rotate(263.16deg)
+}
+
+.progress-circle[data-value="73.2"] .progress-barre {
+   transform: rotate(263.52deg)
+}
+
+.progress-circle[data-value="73.3"] .progress-barre {
+   transform: rotate(263.88deg)
+}
+
+.progress-circle[data-value="73.4"] .progress-barre {
+   transform: rotate(264.24deg)
+}
+
+.progress-circle[data-value="73.5"] .progress-barre {
+   transform: rotate(264.60deg)
+}
+
+.progress-circle[data-value="73.6"] .progress-barre {
+   transform: rotate(264.96deg)
+}
+
+.progress-circle[data-value="73.7"] .progress-barre {
+   transform: rotate(265.32deg)
+}
+
+.progress-circle[data-value="73.8"] .progress-barre {
+   transform: rotate(265.68deg)
+}
+
+.progress-circle[data-value="73.9"] .progress-barre {
+   transform: rotate(266.04deg)
+}
+
+.progress-circle[data-value="74"] .progress-barre,
+.progress-circle[data-value="74."] .progress-barre,
+.progress-circle[data-value="74.0"] .progress-barre {
+   transform: rotate(266.40deg)
+}
+
+.progress-circle[data-value="74.1"] .progress-barre {
+   transform: rotate(266.76deg)
+}
+
+.progress-circle[data-value="74.2"] .progress-barre {
+   transform: rotate(267.12deg)
+}
+
+.progress-circle[data-value="74.3"] .progress-barre {
+   transform: rotate(267.48deg)
+}
+
+.progress-circle[data-value="74.4"] .progress-barre {
+   transform: rotate(267.84deg)
+}
+
+.progress-circle[data-value="74.5"] .progress-barre {
+   transform: rotate(268.20deg)
+}
+
+.progress-circle[data-value="74.6"] .progress-barre {
+   transform: rotate(268.56deg)
+}
+
+.progress-circle[data-value="74.7"] .progress-barre {
+   transform: rotate(268.92deg)
+}
+
+.progress-circle[data-value="74.8"] .progress-barre {
+   transform: rotate(269.28deg)
+}
+
+.progress-circle[data-value="74.9"] .progress-barre {
+   transform: rotate(269.64deg)
+}
+
+.progress-circle[data-value="75"] .progress-barre,
+.progress-circle[data-value="75."] .progress-barre,
+.progress-circle[data-value="75.0"] .progress-barre {
+   transform: rotate(270.00deg)
+}
+
+.progress-circle[data-value="75.1"] .progress-barre {
+   transform: rotate(270.36deg)
+}
+
+.progress-circle[data-value="75.2"] .progress-barre {
+   transform: rotate(270.72deg)
+}
+
+.progress-circle[data-value="75.3"] .progress-barre {
+   transform: rotate(271.08deg)
+}
+
+.progress-circle[data-value="75.4"] .progress-barre {
+   transform: rotate(271.44deg)
+}
+
+.progress-circle[data-value="75.5"] .progress-barre {
+   transform: rotate(271.80deg)
+}
+
+.progress-circle[data-value="75.6"] .progress-barre {
+   transform: rotate(272.16deg)
+}
+
+.progress-circle[data-value="75.7"] .progress-barre {
+   transform: rotate(272.52deg)
+}
+
+.progress-circle[data-value="75.8"] .progress-barre {
+   transform: rotate(272.88deg)
+}
+
+.progress-circle[data-value="75.9"] .progress-barre {
+   transform: rotate(273.24deg)
+}
+
+.progress-circle[data-value="76"] .progress-barre,
+.progress-circle[data-value="76."] .progress-barre,
+.progress-circle[data-value="76.0"] .progress-barre {
+   transform: rotate(273.60deg)
+}
+
+.progress-circle[data-value="76.1"] .progress-barre {
+   transform: rotate(273.96deg)
+}
+
+.progress-circle[data-value="76.2"] .progress-barre {
+   transform: rotate(274.32deg)
+}
+
+.progress-circle[data-value="76.3"] .progress-barre {
+   transform: rotate(274.68deg)
+}
+
+.progress-circle[data-value="76.4"] .progress-barre {
+   transform: rotate(275.04deg)
+}
+
+.progress-circle[data-value="76.5"] .progress-barre {
+   transform: rotate(275.40deg)
+}
+
+.progress-circle[data-value="76.6"] .progress-barre {
+   transform: rotate(275.76deg)
+}
+
+.progress-circle[data-value="76.7"] .progress-barre {
+   transform: rotate(276.12deg)
+}
+
+.progress-circle[data-value="76.8"] .progress-barre {
+   transform: rotate(276.48deg)
+}
+
+.progress-circle[data-value="76.9"] .progress-barre {
+   transform: rotate(276.84deg)
+}
+
+.progress-circle[data-value="77"] .progress-barre,
+.progress-circle[data-value="77."] .progress-barre,
+.progress-circle[data-value="77.0"] .progress-barre {
+   transform: rotate(277.20deg)
+}
+
+.progress-circle[data-value="77.1"] .progress-barre {
+   transform: rotate(277.56deg)
+}
+
+.progress-circle[data-value="77.2"] .progress-barre {
+   transform: rotate(277.92deg)
+}
+
+.progress-circle[data-value="77.3"] .progress-barre {
+   transform: rotate(278.28deg)
+}
+
+.progress-circle[data-value="77.4"] .progress-barre {
+   transform: rotate(278.64deg)
+}
+
+.progress-circle[data-value="77.5"] .progress-barre {
+   transform: rotate(279.00deg)
+}
+
+.progress-circle[data-value="77.6"] .progress-barre {
+   transform: rotate(279.36deg)
+}
+
+.progress-circle[data-value="77.7"] .progress-barre {
+   transform: rotate(279.72deg)
+}
+
+.progress-circle[data-value="77.8"] .progress-barre {
+   transform: rotate(280.08deg)
+}
+
+.progress-circle[data-value="77.9"] .progress-barre {
+   transform: rotate(280.44deg)
+}
+
+.progress-circle[data-value="78"] .progress-barre,
+.progress-circle[data-value="78."] .progress-barre,
+.progress-circle[data-value="78.0"] .progress-barre {
+   transform: rotate(280.80deg)
+}
+
+.progress-circle[data-value="78.1"] .progress-barre {
+   transform: rotate(281.16deg)
+}
+
+.progress-circle[data-value="78.2"] .progress-barre {
+   transform: rotate(281.52deg)
+}
+
+.progress-circle[data-value="78.3"] .progress-barre {
+   transform: rotate(281.88deg)
+}
+
+.progress-circle[data-value="78.4"] .progress-barre {
+   transform: rotate(282.24deg)
+}
+
+.progress-circle[data-value="78.5"] .progress-barre {
+   transform: rotate(282.60deg)
+}
+
+.progress-circle[data-value="78.6"] .progress-barre {
+   transform: rotate(282.96deg)
+}
+
+.progress-circle[data-value="78.7"] .progress-barre {
+   transform: rotate(283.32deg)
+}
+
+.progress-circle[data-value="78.8"] .progress-barre {
+   transform: rotate(283.68deg)
+}
+
+.progress-circle[data-value="78.9"] .progress-barre {
+   transform: rotate(284.04deg)
+}
+
+.progress-circle[data-value="79"] .progress-barre,
+.progress-circle[data-value="79."] .progress-barre,
+.progress-circle[data-value="79.0"] .progress-barre {
+   transform: rotate(284.40deg)
+}
+
+.progress-circle[data-value="79.1"] .progress-barre {
+   transform: rotate(284.76deg)
+}
+
+.progress-circle[data-value="79.2"] .progress-barre {
+   transform: rotate(285.12deg)
+}
+
+.progress-circle[data-value="79.3"] .progress-barre {
+   transform: rotate(285.48deg)
+}
+
+.progress-circle[data-value="79.4"] .progress-barre {
+   transform: rotate(285.84deg)
+}
+
+.progress-circle[data-value="79.5"] .progress-barre {
+   transform: rotate(286.20deg)
+}
+
+.progress-circle[data-value="79.6"] .progress-barre {
+   transform: rotate(286.56deg)
+}
+
+.progress-circle[data-value="79.7"] .progress-barre {
+   transform: rotate(286.92deg)
+}
+
+.progress-circle[data-value="79.8"] .progress-barre {
+   transform: rotate(287.28deg)
+}
+
+.progress-circle[data-value="79.9"] .progress-barre {
+   transform: rotate(287.64deg)
+}
+
+.progress-circle[data-value="80"] .progress-barre,
+.progress-circle[data-value="80."] .progress-barre,
+.progress-circle[data-value="80.0"] .progress-barre {
+   transform: rotate(288.00deg)
+}
+
+.progress-circle[data-value="80.1"] .progress-barre {
+   transform: rotate(288.36deg)
+}
+
+.progress-circle[data-value="80.2"] .progress-barre {
+   transform: rotate(288.72deg)
+}
+
+.progress-circle[data-value="80.3"] .progress-barre {
+   transform: rotate(289.08deg)
+}
+
+.progress-circle[data-value="80.4"] .progress-barre {
+   transform: rotate(289.44deg)
+}
+
+.progress-circle[data-value="80.5"] .progress-barre {
+   transform: rotate(289.80deg)
+}
+
+.progress-circle[data-value="80.6"] .progress-barre {
+   transform: rotate(290.16deg)
+}
+
+.progress-circle[data-value="80.7"] .progress-barre {
+   transform: rotate(290.52deg)
+}
+
+.progress-circle[data-value="80.8"] .progress-barre {
+   transform: rotate(290.88deg)
+}
+
+.progress-circle[data-value="80.9"] .progress-barre {
+   transform: rotate(291.24deg)
+}
+
+.progress-circle[data-value="81"] .progress-barre,
+.progress-circle[data-value="81."] .progress-barre,
+.progress-circle[data-value="81.0"] .progress-barre {
+   transform: rotate(291.60deg)
+}
+
+.progress-circle[data-value="81.1"] .progress-barre {
+   transform: rotate(291.96deg)
+}
+
+.progress-circle[data-value="81.2"] .progress-barre {
+   transform: rotate(292.32deg)
+}
+
+.progress-circle[data-value="81.3"] .progress-barre {
+   transform: rotate(292.68deg)
+}
+
+.progress-circle[data-value="81.4"] .progress-barre {
+   transform: rotate(293.04deg)
+}
+
+.progress-circle[data-value="81.5"] .progress-barre {
+   transform: rotate(293.40deg)
+}
+
+.progress-circle[data-value="81.6"] .progress-barre {
+   transform: rotate(293.76deg)
+}
+
+.progress-circle[data-value="81.7"] .progress-barre {
+   transform: rotate(294.12deg)
+}
+
+.progress-circle[data-value="81.8"] .progress-barre {
+   transform: rotate(294.48deg)
+}
+
+.progress-circle[data-value="81.9"] .progress-barre {
+   transform: rotate(294.84deg)
+}
+
+.progress-circle[data-value="82"] .progress-barre,
+.progress-circle[data-value="82."] .progress-barre,
+.progress-circle[data-value="82.0"] .progress-barre {
+   transform: rotate(295.20deg)
+}
+
+.progress-circle[data-value="82.1"] .progress-barre {
+   transform: rotate(295.56deg)
+}
+
+.progress-circle[data-value="82.2"] .progress-barre {
+   transform: rotate(295.92deg)
+}
+
+.progress-circle[data-value="82.3"] .progress-barre {
+   transform: rotate(296.28deg)
+}
+
+.progress-circle[data-value="82.4"] .progress-barre {
+   transform: rotate(296.64deg)
+}
+
+.progress-circle[data-value="82.5"] .progress-barre {
+   transform: rotate(297.00deg)
+}
+
+.progress-circle[data-value="82.6"] .progress-barre {
+   transform: rotate(297.36deg)
+}
+
+.progress-circle[data-value="82.7"] .progress-barre {
+   transform: rotate(297.72deg)
+}
+
+.progress-circle[data-value="82.8"] .progress-barre {
+   transform: rotate(298.08deg)
+}
+
+.progress-circle[data-value="82.9"] .progress-barre {
+   transform: rotate(298.44deg)
+}
+
+.progress-circle[data-value="83"] .progress-barre,
+.progress-circle[data-value="83."] .progress-barre,
+.progress-circle[data-value="83.0"] .progress-barre {
+   transform: rotate(298.80deg)
+}
+
+.progress-circle[data-value="83.1"] .progress-barre {
+   transform: rotate(299.16deg)
+}
+
+.progress-circle[data-value="83.2"] .progress-barre {
+   transform: rotate(299.52deg)
+}
+
+.progress-circle[data-value="83.3"] .progress-barre {
+   transform: rotate(299.88deg)
+}
+
+.progress-circle[data-value="83.4"] .progress-barre {
+   transform: rotate(300.24deg)
+}
+
+.progress-circle[data-value="83.5"] .progress-barre {
+   transform: rotate(300.60deg)
+}
+
+.progress-circle[data-value="83.6"] .progress-barre {
+   transform: rotate(300.96deg)
+}
+
+.progress-circle[data-value="83.7"] .progress-barre {
+   transform: rotate(301.32deg)
+}
+
+.progress-circle[data-value="83.8"] .progress-barre {
+   transform: rotate(301.68deg)
+}
+
+.progress-circle[data-value="83.9"] .progress-barre {
+   transform: rotate(302.04deg)
+}
+
+.progress-circle[data-value="84"] .progress-barre,
+.progress-circle[data-value="84."] .progress-barre,
+.progress-circle[data-value="84.0"] .progress-barre {
+   transform: rotate(302.40deg)
+}
+
+.progress-circle[data-value="84.1"] .progress-barre {
+   transform: rotate(302.76deg)
+}
+
+.progress-circle[data-value="84.2"] .progress-barre {
+   transform: rotate(303.12deg)
+}
+
+.progress-circle[data-value="84.3"] .progress-barre {
+   transform: rotate(303.48deg)
+}
+
+.progress-circle[data-value="84.4"] .progress-barre {
+   transform: rotate(303.84deg)
+}
+
+.progress-circle[data-value="84.5"] .progress-barre {
+   transform: rotate(304.20deg)
+}
+
+.progress-circle[data-value="84.6"] .progress-barre {
+   transform: rotate(304.56deg)
+}
+
+.progress-circle[data-value="84.7"] .progress-barre {
+   transform: rotate(304.92deg)
+}
+
+.progress-circle[data-value="84.8"] .progress-barre {
+   transform: rotate(305.28deg)
+}
+
+.progress-circle[data-value="84.9"] .progress-barre {
+   transform: rotate(305.64deg)
+}
+
+.progress-circle[data-value="85"] .progress-barre,
+.progress-circle[data-value="85."] .progress-barre,
+.progress-circle[data-value="85.0"] .progress-barre {
+   transform: rotate(306.00deg)
+}
+
+.progress-circle[data-value="85.1"] .progress-barre {
+   transform: rotate(306.36deg)
+}
+
+.progress-circle[data-value="85.2"] .progress-barre {
+   transform: rotate(306.72deg)
+}
+
+.progress-circle[data-value="85.3"] .progress-barre {
+   transform: rotate(307.08deg)
+}
+
+.progress-circle[data-value="85.4"] .progress-barre {
+   transform: rotate(307.44deg)
+}
+
+.progress-circle[data-value="85.5"] .progress-barre {
+   transform: rotate(307.80deg)
+}
+
+.progress-circle[data-value="85.6"] .progress-barre {
+   transform: rotate(308.16deg)
+}
+
+.progress-circle[data-value="85.7"] .progress-barre {
+   transform: rotate(308.52deg)
+}
+
+.progress-circle[data-value="85.8"] .progress-barre {
+   transform: rotate(308.88deg)
+}
+
+.progress-circle[data-value="85.9"] .progress-barre {
+   transform: rotate(309.24deg)
+}
+
+.progress-circle[data-value="86"] .progress-barre,
+.progress-circle[data-value="86."] .progress-barre,
+.progress-circle[data-value="86.0"] .progress-barre {
+   transform: rotate(309.60deg)
+}
+
+.progress-circle[data-value="86.1"] .progress-barre {
+   transform: rotate(309.96deg)
+}
+
+.progress-circle[data-value="86.2"] .progress-barre {
+   transform: rotate(310.32deg)
+}
+
+.progress-circle[data-value="86.3"] .progress-barre {
+   transform: rotate(310.68deg)
+}
+
+.progress-circle[data-value="86.4"] .progress-barre {
+   transform: rotate(311.04deg)
+}
+
+.progress-circle[data-value="86.5"] .progress-barre {
+   transform: rotate(311.40deg)
+}
+
+.progress-circle[data-value="86.6"] .progress-barre {
+   transform: rotate(311.76deg)
+}
+
+.progress-circle[data-value="86.7"] .progress-barre {
+   transform: rotate(312.12deg)
+}
+
+.progress-circle[data-value="86.8"] .progress-barre {
+   transform: rotate(312.48deg)
+}
+
+.progress-circle[data-value="86.9"] .progress-barre {
+   transform: rotate(312.84deg)
+}
+
+.progress-circle[data-value="87"] .progress-barre,
+.progress-circle[data-value="87."] .progress-barre,
+.progress-circle[data-value="87.0"] .progress-barre {
+   transform: rotate(313.20deg)
+}
+
+.progress-circle[data-value="87.1"] .progress-barre {
+   transform: rotate(313.56deg)
+}
+
+.progress-circle[data-value="87.2"] .progress-barre {
+   transform: rotate(313.92deg)
+}
+
+.progress-circle[data-value="87.3"] .progress-barre {
+   transform: rotate(314.28deg)
+}
+
+.progress-circle[data-value="87.4"] .progress-barre {
+   transform: rotate(314.64deg)
+}
+
+.progress-circle[data-value="87.5"] .progress-barre {
+   transform: rotate(315.00deg)
+}
+
+.progress-circle[data-value="87.6"] .progress-barre {
+   transform: rotate(315.36deg)
+}
+
+.progress-circle[data-value="87.7"] .progress-barre {
+   transform: rotate(315.72deg)
+}
+
+.progress-circle[data-value="87.8"] .progress-barre {
+   transform: rotate(316.08deg)
+}
+
+.progress-circle[data-value="87.9"] .progress-barre {
+   transform: rotate(316.44deg)
+}
+
+.progress-circle[data-value="88"] .progress-barre,
+.progress-circle[data-value="88."] .progress-barre,
+.progress-circle[data-value="88.0"] .progress-barre {
+   transform: rotate(316.80deg)
+}
+
+.progress-circle[data-value="88.1"] .progress-barre {
+   transform: rotate(317.16deg)
+}
+
+.progress-circle[data-value="88.2"] .progress-barre {
+   transform: rotate(317.52deg)
+}
+
+.progress-circle[data-value="88.3"] .progress-barre {
+   transform: rotate(317.88deg)
+}
+
+.progress-circle[data-value="88.4"] .progress-barre {
+   transform: rotate(318.24deg)
+}
+
+.progress-circle[data-value="88.5"] .progress-barre {
+   transform: rotate(318.60deg)
+}
+
+.progress-circle[data-value="88.6"] .progress-barre {
+   transform: rotate(318.96deg)
+}
+
+.progress-circle[data-value="88.7"] .progress-barre {
+   transform: rotate(319.32deg)
+}
+
+.progress-circle[data-value="88.8"] .progress-barre {
+   transform: rotate(319.68deg)
+}
+
+.progress-circle[data-value="88.9"] .progress-barre {
+   transform: rotate(320.04deg)
+}
+
+.progress-circle[data-value="89"] .progress-barre,
+.progress-circle[data-value="89."] .progress-barre,
+.progress-circle[data-value="89.0"] .progress-barre {
+   transform: rotate(320.40deg)
+}
+
+.progress-circle[data-value="89.1"] .progress-barre {
+   transform: rotate(320.76deg)
+}
+
+.progress-circle[data-value="89.2"] .progress-barre {
+   transform: rotate(321.12deg)
+}
+
+.progress-circle[data-value="89.3"] .progress-barre {
+   transform: rotate(321.48deg)
+}
+
+.progress-circle[data-value="89.4"] .progress-barre {
+   transform: rotate(321.84deg)
+}
+
+.progress-circle[data-value="89.5"] .progress-barre {
+   transform: rotate(322.20deg)
+}
+
+.progress-circle[data-value="89.6"] .progress-barre {
+   transform: rotate(322.56deg)
+}
+
+.progress-circle[data-value="89.7"] .progress-barre {
+   transform: rotate(322.92deg)
+}
+
+.progress-circle[data-value="89.8"] .progress-barre {
+   transform: rotate(323.28deg)
+}
+
+.progress-circle[data-value="89.9"] .progress-barre {
+   transform: rotate(323.64deg)
+}
+
+.progress-circle[data-value="90"] .progress-barre,
+.progress-circle[data-value="90."] .progress-barre,
+.progress-circle[data-value="90.0"] .progress-barre {
+   transform: rotate(324.00deg)
+}
+
+.progress-circle[data-value="90.1"] .progress-barre {
+   transform: rotate(324.36deg)
+}
+
+.progress-circle[data-value="90.2"] .progress-barre {
+   transform: rotate(324.72deg)
+}
+
+.progress-circle[data-value="90.3"] .progress-barre {
+   transform: rotate(325.08deg)
+}
+
+.progress-circle[data-value="90.4"] .progress-barre {
+   transform: rotate(325.44deg)
+}
+
+.progress-circle[data-value="90.5"] .progress-barre {
+   transform: rotate(325.80deg)
+}
+
+.progress-circle[data-value="90.6"] .progress-barre {
+   transform: rotate(326.16deg)
+}
+
+.progress-circle[data-value="90.7"] .progress-barre {
+   transform: rotate(326.52deg)
+}
+
+.progress-circle[data-value="90.8"] .progress-barre {
+   transform: rotate(326.88deg)
+}
+
+.progress-circle[data-value="90.9"] .progress-barre {
+   transform: rotate(327.24deg)
+}
+
+.progress-circle[data-value="91"] .progress-barre,
+.progress-circle[data-value="91."] .progress-barre,
+.progress-circle[data-value="91.0"] .progress-barre {
+   transform: rotate(327.60deg)
+}
+
+.progress-circle[data-value="91.1"] .progress-barre {
+   transform: rotate(327.96deg)
+}
+
+.progress-circle[data-value="91.2"] .progress-barre {
+   transform: rotate(328.32deg)
+}
+
+.progress-circle[data-value="91.3"] .progress-barre {
+   transform: rotate(328.68deg)
+}
+
+.progress-circle[data-value="91.4"] .progress-barre {
+   transform: rotate(329.04deg)
+}
+
+.progress-circle[data-value="91.5"] .progress-barre {
+   transform: rotate(329.40deg)
+}
+
+.progress-circle[data-value="91.6"] .progress-barre {
+   transform: rotate(329.76deg)
+}
+
+.progress-circle[data-value="91.7"] .progress-barre {
+   transform: rotate(330.12deg)
+}
+
+.progress-circle[data-value="91.8"] .progress-barre {
+   transform: rotate(330.48deg)
+}
+
+.progress-circle[data-value="91.9"] .progress-barre {
+   transform: rotate(330.84deg)
+}
+
+.progress-circle[data-value="92"] .progress-barre,
+.progress-circle[data-value="92."] .progress-barre,
+.progress-circle[data-value="92.0"] .progress-barre {
+   transform: rotate(331.20deg)
+}
+
+.progress-circle[data-value="92.1"] .progress-barre {
+   transform: rotate(331.56deg)
+}
+
+.progress-circle[data-value="92.2"] .progress-barre {
+   transform: rotate(331.92deg)
+}
+
+.progress-circle[data-value="92.3"] .progress-barre {
+   transform: rotate(332.28deg)
+}
+
+.progress-circle[data-value="92.4"] .progress-barre {
+   transform: rotate(332.64deg)
+}
+
+.progress-circle[data-value="92.5"] .progress-barre {
+   transform: rotate(333.00deg)
+}
+
+.progress-circle[data-value="92.6"] .progress-barre {
+   transform: rotate(333.36deg)
+}
+
+.progress-circle[data-value="92.7"] .progress-barre {
+   transform: rotate(333.72deg)
+}
+
+.progress-circle[data-value="92.8"] .progress-barre {
+   transform: rotate(334.08deg)
+}
+
+.progress-circle[data-value="92.9"] .progress-barre {
+   transform: rotate(334.44deg)
+}
+
+.progress-circle[data-value="93"] .progress-barre,
+.progress-circle[data-value="93."] .progress-barre,
+.progress-circle[data-value="93.0"] .progress-barre {
+   transform: rotate(334.80deg)
+}
+
+.progress-circle[data-value="93.1"] .progress-barre {
+   transform: rotate(335.16deg)
+}
+
+.progress-circle[data-value="93.2"] .progress-barre {
+   transform: rotate(335.52deg)
+}
+
+.progress-circle[data-value="93.3"] .progress-barre {
+   transform: rotate(335.88deg)
+}
+
+.progress-circle[data-value="93.4"] .progress-barre {
+   transform: rotate(336.24deg)
+}
+
+.progress-circle[data-value="93.5"] .progress-barre {
+   transform: rotate(336.60deg)
+}
+
+.progress-circle[data-value="93.6"] .progress-barre {
+   transform: rotate(336.96deg)
+}
+
+.progress-circle[data-value="93.7"] .progress-barre {
+   transform: rotate(337.32deg)
+}
+
+.progress-circle[data-value="93.8"] .progress-barre {
+   transform: rotate(337.68deg)
+}
+
+.progress-circle[data-value="93.9"] .progress-barre {
+   transform: rotate(338.04deg)
+}
+
+.progress-circle[data-value="94"] .progress-barre,
+.progress-circle[data-value="94."] .progress-barre,
+.progress-circle[data-value="94.0"] .progress-barre {
+   transform: rotate(338.40deg)
+}
+
+.progress-circle[data-value="94.1"] .progress-barre {
+   transform: rotate(338.76deg)
+}
+
+.progress-circle[data-value="94.2"] .progress-barre {
+   transform: rotate(339.12deg)
+}
+
+.progress-circle[data-value="94.3"] .progress-barre {
+   transform: rotate(339.48deg)
+}
+
+.progress-circle[data-value="94.4"] .progress-barre {
+   transform: rotate(339.84deg)
+}
+
+.progress-circle[data-value="94.5"] .progress-barre {
+   transform: rotate(340.20deg)
+}
+
+.progress-circle[data-value="94.6"] .progress-barre {
+   transform: rotate(340.56deg)
+}
+
+.progress-circle[data-value="94.7"] .progress-barre {
+   transform: rotate(340.92deg)
+}
+
+.progress-circle[data-value="94.8"] .progress-barre {
+   transform: rotate(341.28deg)
+}
+
+.progress-circle[data-value="94.9"] .progress-barre {
+   transform: rotate(341.64deg)
+}
+
+.progress-circle[data-value="95"] .progress-barre,
+.progress-circle[data-value="95."] .progress-barre,
+.progress-circle[data-value="95.0"] .progress-barre {
+   transform: rotate(342.00deg)
+}
+
+.progress-circle[data-value="95.1"] .progress-barre {
+   transform: rotate(342.36deg)
+}
+
+.progress-circle[data-value="95.2"] .progress-barre {
+   transform: rotate(342.72deg)
+}
+
+.progress-circle[data-value="95.3"] .progress-barre {
+   transform: rotate(343.08deg)
+}
+
+.progress-circle[data-value="95.4"] .progress-barre {
+   transform: rotate(343.44deg)
+}
+
+.progress-circle[data-value="95.5"] .progress-barre {
+   transform: rotate(343.80deg)
+}
+
+.progress-circle[data-value="95.6"] .progress-barre {
+   transform: rotate(344.16deg)
+}
+
+.progress-circle[data-value="95.7"] .progress-barre {
+   transform: rotate(344.52deg)
+}
+
+.progress-circle[data-value="95.8"] .progress-barre {
+   transform: rotate(344.88deg)
+}
+
+.progress-circle[data-value="95.9"] .progress-barre {
+   transform: rotate(345.24deg)
+}
+
+.progress-circle[data-value="96"] .progress-barre,
+.progress-circle[data-value="96."] .progress-barre,
+.progress-circle[data-value="96.0"] .progress-barre {
+   transform: rotate(345.60deg)
+}
+
+.progress-circle[data-value="96.1"] .progress-barre {
+   transform: rotate(345.96deg)
+}
+
+.progress-circle[data-value="96.2"] .progress-barre {
+   transform: rotate(346.32deg)
+}
+
+.progress-circle[data-value="96.3"] .progress-barre {
+   transform: rotate(346.68deg)
+}
+
+.progress-circle[data-value="96.4"] .progress-barre {
+   transform: rotate(347.04deg)
+}
+
+.progress-circle[data-value="96.5"] .progress-barre {
+   transform: rotate(347.40deg)
+}
+
+.progress-circle[data-value="96.6"] .progress-barre {
+   transform: rotate(347.76deg)
+}
+
+.progress-circle[data-value="96.7"] .progress-barre {
+   transform: rotate(348.12deg)
+}
+
+.progress-circle[data-value="96.8"] .progress-barre {
+   transform: rotate(348.48deg)
+}
+
+.progress-circle[data-value="96.9"] .progress-barre {
+   transform: rotate(348.84deg)
+}
+
+.progress-circle[data-value="97"] .progress-barre,
+.progress-circle[data-value="97."] .progress-barre,
+.progress-circle[data-value="97.0"] .progress-barre {
+   transform: rotate(349.20deg)
+}
+
+.progress-circle[data-value="97.1"] .progress-barre {
+   transform: rotate(349.56deg)
+}
+
+.progress-circle[data-value="97.2"] .progress-barre {
+   transform: rotate(349.92deg)
+}
+
+.progress-circle[data-value="97.3"] .progress-barre {
+   transform: rotate(350.28deg)
+}
+
+.progress-circle[data-value="97.4"] .progress-barre {
+   transform: rotate(350.64deg)
+}
+
+.progress-circle[data-value="97.5"] .progress-barre {
+   transform: rotate(351.00deg)
+}
+
+.progress-circle[data-value="97.6"] .progress-barre {
+   transform: rotate(351.36deg)
+}
+
+.progress-circle[data-value="97.7"] .progress-barre {
+   transform: rotate(351.72deg)
+}
+
+.progress-circle[data-value="97.8"] .progress-barre {
+   transform: rotate(352.08deg)
+}
+
+.progress-circle[data-value="97.9"] .progress-barre {
+   transform: rotate(352.44deg)
+}
+
+.progress-circle[data-value="98"] .progress-barre,
+.progress-circle[data-value="98."] .progress-barre,
+.progress-circle[data-value="98.0"] .progress-barre {
+   transform: rotate(352.80deg)
+}
+
+.progress-circle[data-value="98.1"] .progress-barre {
+   transform: rotate(353.16deg)
+}
+
+.progress-circle[data-value="98.2"] .progress-barre {
+   transform: rotate(353.52deg)
+}
+
+.progress-circle[data-value="98.3"] .progress-barre {
+   transform: rotate(353.88deg)
+}
+
+.progress-circle[data-value="98.4"] .progress-barre {
+   transform: rotate(354.24deg)
+}
+
+.progress-circle[data-value="98.5"] .progress-barre {
+   transform: rotate(354.60deg)
+}
+
+.progress-circle[data-value="98.6"] .progress-barre {
+   transform: rotate(354.96deg)
+}
+
+.progress-circle[data-value="98.7"] .progress-barre {
+   transform: rotate(355.32deg)
+}
+
+.progress-circle[data-value="98.8"] .progress-barre {
+   transform: rotate(355.68deg)
+}
+
+.progress-circle[data-value="98.9"] .progress-barre {
+   transform: rotate(356.04deg)
+}
+
+.progress-circle[data-value="99"] .progress-barre,
+.progress-circle[data-value="99."] .progress-barre,
+.progress-circle[data-value="99.0"] .progress-barre {
+   transform: rotate(356.40deg)
+}
+
+.progress-circle[data-value="99.1"] .progress-barre {
+   transform: rotate(356.76deg)
+}
+
+.progress-circle[data-value="99.2"] .progress-barre {
+   transform: rotate(357.12deg)
+}
+
+.progress-circle[data-value="99.3"] .progress-barre {
+   transform: rotate(357.48deg)
+}
+
+.progress-circle[data-value="99.4"] .progress-barre {
+   transform: rotate(357.84deg)
+}
+
+.progress-circle[data-value="99.5"] .progress-barre {
+   transform: rotate(358.20deg)
+}
+
+.progress-circle[data-value="99.6"] .progress-barre {
+   transform: rotate(358.56deg)
+}
+
+.progress-circle[data-value="99.7"] .progress-barre {
+   transform: rotate(358.92deg)
+}
+
+.progress-circle[data-value="99.8"] .progress-barre {
+   transform: rotate(359.28deg)
+}
+
+.progress-circle[data-value="99.9"] .progress-barre {
+   transform: rotate(359.64deg)
+}
+
+.progress-circle[data-value="100"] .progress-barre,
+.progress-circle[data-value="100."] .progress-barre,
+.progress-circle[data-value="100.0"] .progress-barre {
+   transform: rotate(360.00deg)
+}
+
+.progress-sup50 {
+   display: none;
+   clip: rect(0, 1em, 1em, .5em);
+}
+
+.progress-circle[data-value^='5']:not([data-value='5']):not([data-value^='5.']) .progress-sup50,
+.progress-circle[data-value^='6']:not([data-value='6']):not([data-value^='6.']) .progress-sup50,
+.progress-circle[data-value^='7']:not([data-value='7']):not([data-value^='7.']) .progress-sup50,
+.progress-circle[data-value^='8']:not([data-value='8']):not([data-value^='8.']) .progress-sup50,
+.progress-circle[data-value^='9']:not([data-value='9']):not([data-value^='9.']) .progress-sup50,
+.progress-circle[data-value^='100'] .progress-sup50 {
+   display: block;
+}
+
+.progress-circle:after {
+   content: attr(data-value) "%"; /* récup. valeur de progression */
+   font-size: 0.15em; /* taille de la font en % du parent */
+   height: 100%; /* centrage dans le parent */
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   /*-- pour effet shadow intérieur --*/
+   border-radius: 50%;
+   box-shadow: 0 0 .5em rgba(0, 0, 0, .5) inset;
+}
+
+
+.multi-steps > li.is-active:before, .multi-steps > li.is-active ~ li:before {
+   content: counter(stepNum);
+   font-family: inherit;
+   font-weight: 700;
+}
+
+.multi-steps > li.is-active:after, .multi-steps > li.is-active ~ li:after {
+   background-color: #ededed;
+}
+
+.multi-steps {
+   display: table;
+   table-layout: fixed;
+   width: 100%;
+}
+
+.multi-steps > li {
+   counter-increment: stepNum;
+   text-align: center;
+   display: table-cell;
+   position: relative;
+   color: #004F91;
+   z-index: 0;
+}
+
+.multi-steps > li:before {
+   content: '\f00c';
+   content: '\2713;';
+   content: '\10003';
+   content: '\10004';
+   content: '\2713';
+   display: block;
+   margin: 0 auto 4px;
+   background-color: #fff;
+   width: 36px;
+   height: 36px;
+   line-height: 32px;
+   text-align: center;
+   font-weight: bold;
+   border-width: 2px;
+   border-style: solid;
+   border-color: #004F91;
+   border-radius: 50%;
+   z-index: 4;
+}
+
+.multi-steps > li:after {
+   content: '';
+   height: 2px;
+   width: 100%;
+   background-color: #004F91;
+   position: absolute;
+   top: 16px;
+   left: 50%;
+   z-index: -1;
+}
+
+.multi-steps > li:last-child:after {
+   display: none;
+}
+
+.multi-steps > li.is-active:before {
+   background-color: #fff;
+   border-color: #004F91;
+   border-width: 3px;
+}
+
+.multi-steps > li.is-active ~ li {
+   color: #808080;
+}
+
+.multi-steps > li.is-active ~ li:before {
+   background-color: #ededed;
+   border-color: #ededed;
+}
+
+
+section#timeline {
+   width: 60%;
+   margin: 20px auto;
+   position: relative;
+}
+
+section#timeline:before {
+   content: '';
+   display: block;
+   position: absolute;
+   left: 50%;
+   top: 7%;
+   margin: 0 0 0 -1px;
+   width: 2px;
+   height: 90%;
+
+   background: black;
+}
+
+section#timeline article {
+   width: 100%;
+   margin: 0 0 20px 0;
+   position: relative;
+}
+
+section#timeline article:after {
+   content: '';
+   display: block;
+   clear: both;
+}
+
+section#timeline article div.inner {
+   width: 40%;
+   float: left;
+   margin: 5px 0 0 0;
+   border-radius: 6px;
+   border: 1px solid #CCC;
+}
+
+section#timeline article div.inner span.bulle {
+   display: block;
+   width: 60px;
+   height: 50px;
+   padding: 5px 0;
+   position: absolute;
+   top: 0;
+   left: 50%;
+   margin: 0 0 0 -32px;
+   border-radius: 100%;
+   font-size: 12px;
+   font-weight: 900;
+   text-transform: uppercase;
+   background: white;
+   /*color: rgba(255,255,255,0.5);*/
+   border: 2px solid rgba(255, 255, 255, 0.2);
+   box-shadow: 0 0 0 7px #25303B;
+   z-index: 100;
+}
+
+section#timeline article div.inner span.bulle span {
+   display: block;
+   text-align: center;
+}
+
+.bulleMarge span {
+   /*margin-top: 8px;*/
+}
+
+section#timeline article div.inner span.bulle span.percent {
+   font-size: 16px;
+}
+
+section#timeline article div.inner h2 {
+   padding: 15px;
+   margin: 0;
+   color: black;
+   font-size: 20px;
+   text-transform: uppercase;
+   letter-spacing: -1px;
+   border-radius: 6px 6px 0 0;
+   position: relative;
+}
+
+section#timeline article div.inner h2:after {
+   content: '';
+   position: absolute;
+   top: 20px;
+   right: -5px;
+   width: 10px;
+   height: 10px;
+   -webkit-transform: rotate(-45deg);
+}
+
+section#timeline article div.inner p {
+   padding: 15px;
+   margin: 0;
+   font-size: 14px;
+   background: #fff;
+   color: #656565;
+   border-radius: 0 0 6px 6px;
+}
+
+section#timeline article:nth-child(2n+2) div.inner {
+   float: right;
+}
+
+section#timeline article:nth-child(2n+2) div.inner h2:after {
+   left: -5px;
+}
+
+section#timeline article div.inner span.date span.day {
+   font-size: 10px;
+   margin-top: 0px !important;
+}
+
+section#timeline article div.inner span.date span.month {
+   font-size: 18px;
+   margin-top: 0px !important;
+}
+
+section#timeline article div.inner span.date span.year {
+   font-size: 10px;
+   margin-top: 0px !important;
+}
