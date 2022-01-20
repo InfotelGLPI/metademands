@@ -260,6 +260,9 @@ function plugin_metademands_uninstall() {
               "glpi_plugin_metademands_fieldtranslations",
               "glpi_plugin_metademands_metademandtranslations",
               "glpi_plugin_metademands_metademandvalidations",
+              "glpi_plugin_metademands_drafts",
+              "glpi_plugin_metademands_drafts_values",
+              "glpi_plugin_metademands_pluginfields",
               "glpi_plugin_metademands_forms",
               "glpi_plugin_metademands_forms_values"];
    foreach ($tables as $table) {
