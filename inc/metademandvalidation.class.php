@@ -256,7 +256,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
 
       $inputVal['id']       = $this->getID();
       $inputVal['users_id'] = Session::getLoginUserID();
-      $inputVal['date']     = $_SESSION["glpi_currenttime"];;
+      $inputVal['date']     = $_SESSION["glpi_currenttime"];
       $this->update($inputVal);
 
       if ($inputVal['validate'] == self::TASK_CREATION) {
