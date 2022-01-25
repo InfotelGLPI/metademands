@@ -185,13 +185,13 @@ class PluginMetademandsBasketline extends CommonDBTM {
       }
       echo "<div class='row'>";
       echo "<div class='form-group col-md-5 center'>";
-      echo "<button type='submit' class='btn btn-primary' name='update_basket_line' value='$idline' title='"
+      echo "<button type='submit' class='submit btn btn-primary' name='update_basket_line' value='$idline' title='"
            . _sx('button', 'Update this line', 'metademands') . "'>";
       echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>";
       echo "</button>";
       echo "</div>";
       echo "<div class='form-group col-md-5 center'>";
-      echo "<button type='submit' class='btn btn-danger' name='delete_basket_line' value='$idline' title='"
+      echo "<button type='submit' class='submit btn btn-danger' name='delete_basket_line' value='$idline' title='"
            . _sx('button', 'Delete this line', 'metademands') . "'>";
       echo "<i class='fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
       echo "</button>";

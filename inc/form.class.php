@@ -155,14 +155,14 @@ class PluginMetademandsForm extends CommonDBTM {
             //            data-bs-toggle='tooltip' data-bs-placement='right' role='button'></i>";
             //            $return .= "</td>";
             $return .= "<td>";
-            $return .= "<button form='' class='btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
+            $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm(" . $form['id'] . ")\">";
             $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
             $return .= "</button>";
             $return .= "</td>";
             if ($is_model == true) {
                $return .= "<td>";
-               $return .= "<button form='' class='btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
+               $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
                $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete form', 'metademands') . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
                $return .= "</button>";
@@ -420,7 +420,7 @@ class PluginMetademandsForm extends CommonDBTM {
 
             echo "<td>";
             $rand = mt_rand();
-            echo "<button form='' class='btn btn-info btn-sm' onclick=\"loadForm$rand(" . $form_metademand_fields['id'] . ", " . $form_metademand_fields['plugin_metademands_metademands_id'] . ")\">";
+            echo "<button form='' class='submit btn btn-info btn-sm' onclick=\"loadForm$rand(" . $form_metademand_fields['id'] . ", " . $form_metademand_fields['plugin_metademands_metademands_id'] . ")\">";
             echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
             echo "</button>";
@@ -501,7 +501,7 @@ class PluginMetademandsForm extends CommonDBTM {
 
             echo "<td>";
             $rand = mt_rand();
-            echo "<button form='' class='btn btn-success btn-sm' onclick=\"loadForm$rand(" . $forms_metademand['id'] . ", " . $forms_metademand['plugin_metademands_metademands_id'] . ")\">";
+            echo "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadForm$rand(" . $forms_metademand['id'] . ", " . $forms_metademand['plugin_metademands_metademands_id'] . ")\">";
             echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "'
                            data-hasqtip='0' aria-hidden='true'></i>";
             echo "</button>";

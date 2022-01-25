@@ -315,7 +315,7 @@ class PluginMetademandsTask extends CommonDBTM {
       echo "<tr class='tab_bg_1 center'>";
       echo "<td>";
 
-      echo "<a href='#' class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#tags' title='" . __('Show list of available tags') . "' >";
+      echo "<a href='#' class='submit btn btn-primary' data-bs-toggle='modal' data-bs-target='#tags' title='" . __('Show list of available tags') . "' >";
       echo  __('Show list of available tags');
       echo "</a>";
       echo Ajax::createIframeModalWindow('tags',

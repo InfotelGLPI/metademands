@@ -2215,7 +2215,7 @@ class PluginMetademandsField extends CommonDBChild {
                         $btnLabel = $label2;
                      }
 
-                     $field = "<input type='submit' class='btn btn-primary' value ='" . Toolbox::stripTags($btnLabel) . "' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
+                     $field = "<input type='submit' class='submit btn btn-primary' value ='" . Toolbox::stripTags($btnLabel) . "' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
 
                      break;
                   case 'link_a' :

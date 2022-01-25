@@ -31,12 +31,10 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-require_once(PLUGIN_METADEMANDS_DIR. "/fpdf/fpdf.php");
-
 /**
  * Class PluginMetaDemandsMetaDemandPdf
  */
-class PluginMetaDemandsMetaDemandPdf extends FPDF {
+class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
 
    /* Constantes pour paramétrer certaines données. */
    var $line_height      = 6;     // Hauteur d'une ligne simple.

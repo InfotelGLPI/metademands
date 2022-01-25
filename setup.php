@@ -35,6 +35,8 @@ if (!defined("PLUGIN_METADEMANDS_DIR")) {
    define("PLUGIN_METADEMANDS_WEBDIR", Plugin::getWebDir("metademands"));
 }
 
+include_once PLUGIN_METADEMANDS_DIR . "/vendor/autoload.php";
+
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands() {
    global $PLUGIN_HOOKS;
