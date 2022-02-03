@@ -912,26 +912,23 @@ class PluginMetademandsField extends CommonDBChild {
             echo "</td>";
             echo "<td>" . self::getFieldItemsName($value['item']) . "</td>";
             echo "<td>" . Dropdown::getYesNo($value['is_mandatory']) . "</td>";
+
             echo "<td>";
-            if (is_int($value['plugin_metademands_tasks_id'])) {
-               $name = Dropdown::getDropdownName('glpi_plugin_metademands_tasks', $value['plugin_metademands_tasks_id']);
-               if ($name == '&nbsp;') {
-                  $check_value = self::_unserialize($value['check_value']);
-                  if (!is_array($check_value)) {
-                     if (!empty($value['check_value'])) {
-                        $name = PluginMetademandsMetademandTask::getMetademandTaskName($value['plugin_metademands_tasks_id']);
-                     } else {
-                        $name = '-----';
-                     }
-                  } else {
-                     if (count($check_value) > 0) {
-                        $name = __('Multiples', 'metademands');
-                     }
-                  }
-               }
+
+            $tasks = "";
+            if (!empty($value['plugin_metademands_tasks_id'])) {
+               $tasks = json_decode($value['plugin_metademands_tasks_id']);
             }
-            echo !empty($name) ? $name : Dropdown::EMPTY_VALUE;
+            if (is_array($tasks)) {
+               foreach ($tasks as $k => $task) {
+                  echo Dropdown::getDropdownName('glpi_plugin_metademands_tasks', $task);
+                  echo "<br>";
+               }
+            } else {
+               echo Dropdown::EMPTY_VALUE;
+            }
             echo "</td>";
+
             echo "<td>";
             if (!empty($value['check_value'])) {
                $check_value = self::_unserialize($value['check_value']);
@@ -3668,7 +3665,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                      echo '<td class="rowhandler control center">';
                      echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                     echo "<i class=\"fas fa-arrows-alt\"></i>";
+                     echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
                      if (isset($params['id'])) {
                         echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
                                                   _x('button', 'Delete permanently'),
@@ -3831,7 +3828,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                      echo '<td class="rowhandler control center">';
                      echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                     echo "<i class=\"fas fa-arrows-alt\"></i>";
+                     echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
                      if (isset($params['id'])) {
                         echo self::showSimpleForm($this->getFormURL(), 'delete_field_custom_values',
                                                   _x('button', 'Delete permanently'),

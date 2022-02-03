@@ -246,7 +246,7 @@ a.metademand_middle_button {
     vertical-align: middle;
     border-style: none;
     max-width: 100%;
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .basket-data {
