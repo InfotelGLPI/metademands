@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-22 15:49+0000\n"
+"POT-Creation-Date: 2022-01-25 08:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,7 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: setup.php:147 inc/menu.class.php:40 inc/metademand.class.php:85
+#: setup.php:149 inc/menu.class.php:40 inc/metademand.class.php:85
 #: inc/profile.class.php:160
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -844,7 +844,7 @@ msgstr ""
 msgid "Resource manager"
 msgstr ""
 
-#: inc/metademandpdf.class.php:212
+#: inc/metademandpdf.class.php:210
 msgid "Created on"
 msgstr ""
 
