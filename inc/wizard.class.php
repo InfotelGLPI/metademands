@@ -1262,8 +1262,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                if (!empty($data['label2'])
                    && $data['type'] != 'link') {
                   $required = "";
+                  $required_icon = "";
                   if ($data['is_mandatory']) {
-                     $required = "required";
+                     $required = "required style='color:red'";
+                     $required_icon = " * ";
                   }
 
                   if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
@@ -1279,7 +1281,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
                      echo "<label class='col-form-label'>" . $label2 . "</label>";
                   } else {
-                     echo "<label  $required for='field[" . $data['id'] . "-2]' class='col-form-label'>" . $label2 . "</label>";
+                     echo "<label  $required for='field[" . $data['id'] . "-2]' class='col-form-label'>" . \Glpi\RichText\RichText::getTextFromHtml($label2) . $required_icon . "</label>";
                   }
                   $value2 = '';
                   if (isset($data['value-2'])) {

@@ -1507,7 +1507,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       $required = "";
       if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
-         $required = "required";
+         $required = "required style='color:red'";
       }
 
       $upload = "";
@@ -1932,15 +1932,15 @@ class PluginMetademandsField extends CommonDBChild {
                                        'display'  => false,
                                        'toupdate' => $toupdate
                                       ]);
-//                  $config = PluginMetademandsConfig::getInstance();
-//                  if ($config['show_requester_informations'] && $on_basket == false) {
-//
-//                     echo "<div id='tooltip_user" . $data['id'] . "'>";
-//                     $_POST['value']        = $value;
-//                     $_POST['id_fielduser'] = $data['id'];
-//                     include(PLUGIN_METADEMANDS_DIR . "/ajax/utooltipUpdate.php");
-//                     echo "</div>";
-//                  }
+                  //                  $config = PluginMetademandsConfig::getInstance();
+                  //                  if ($config['show_requester_informations'] && $on_basket == false) {
+                  //
+                  //                     echo "<div id='tooltip_user" . $data['id'] . "'>";
+                  //                     $_POST['value']        = $value;
+                  //                     $_POST['id_fielduser'] = $data['id'];
+                  //                     include(PLUGIN_METADEMANDS_DIR . "/ajax/utooltipUpdate.php");
+                  //                     echo "</div>";
+                  //                  }
 
                   break;
                case 'Group':
@@ -2470,11 +2470,11 @@ class PluginMetademandsField extends CommonDBChild {
          case 'number':
             $data['custom_values'] = self::_unserialize($data['custom_values']);
             $field                 = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", ['value'   => $value,
-                                                                                                 'min'     => ((isset($data['custom_values']['min']) && $data['custom_values']['min'] != "") ? $data['custom_values']['min'] : 0),
-                                                                                                 'max'     => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 360),
-                                                                                                 'step'    => ((isset($data['custom_values']['step']) && $data['custom_values']['step'] != "") ? $data['custom_values']['step'] : 1),
-                                                                                                 'display' => false
-                                                                                                 //                                                   'toadd' => [0 => __('Infinite')]
+                'min'     => ((isset($data['custom_values']['min']) && $data['custom_values']['min'] != "") ? $data['custom_values']['min'] : 0),
+                'max'     => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 360),
+                'step'    => ((isset($data['custom_values']['step']) && $data['custom_values']['step'] != "") ? $data['custom_values']['step'] : 1),
+                'display' => false
+                //                                                   'toadd' => [0 => __('Infinite')]
             ]);
             break;
          case 'yesno':
@@ -2488,7 +2488,7 @@ class PluginMetademandsField extends CommonDBChild {
             }
             $field = "";
             $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
-                                                                                              'class' => '',
+                                                                                              'class'   => '',
                                                                                               'display' => false]);
             break;
          case 'upload':
@@ -3901,8 +3901,8 @@ class PluginMetademandsField extends CommonDBChild {
                $linkVal  = '';
                if (isset($params['custom_values']) && !empty($params['custom_values'])) {
                   $params['custom_values'] = self::_unserialize($params['custom_values']);
-                  $linkType                = $params['custom_values'][0]??"";
-                  $linkVal                 = $params['custom_values'][1]??"";
+                  $linkType                = $params['custom_values'][0] ?? "";
+                  $linkVal                 = $params['custom_values'][1] ?? "";
                }
                echo '<label>' . __("Link") . '</label>';
                echo Html::input('comment_values[1]', ['value' => $linkVal, 'size' => 30]);

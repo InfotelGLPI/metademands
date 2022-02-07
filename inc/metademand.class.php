@@ -1475,6 +1475,9 @@ JAVASCRIPT
 
                foreach ($values['fields'] as $id => $datav) {
                   $metademands_fields = new PluginMetademandsField();
+                  if (strpos($id, '-2')) {
+                     $id = str_replace("-2", "", $id);
+                  }
                   if ($metademands_fields->getFromDB($id)) {
                      switch ($metademands_fields->fields['item']) {
                         case 'ITILCategory_Metademands':
@@ -2743,7 +2746,7 @@ JAVASCRIPT
             if ($field['type'] == 'radio' && $field['value'] === "") {
                continue;
             }
-            if ($field['type'] == 'number' && $field['value'] != "0") {
+            if ($field['type'] == 'number' && $field['value'] == "0") {
                continue;
             }
             if ($field['type'] == 'checkbox' && $field['value'] != "") {
