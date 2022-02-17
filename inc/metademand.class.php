@@ -2821,7 +2821,10 @@ JAVASCRIPT
       }
 
       if ((!empty($field['value']) || $field['value'] == "0")
-          && $field['value'] != 'NULL' || $field['type'] == 'title' || $field['type'] == 'title-block' || $field['type'] == 'radio') {
+          && $field['value'] != 'NULL'
+          || $field['type'] == 'title'
+          || $field['type'] == 'title-block'
+          || $field['type'] == 'radio') {
          //         if (isset($parent_fields[$parent_fields_id]['rank'])
          //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
          //            $result['content'] .= "<tr>";
@@ -2843,12 +2846,14 @@ JAVASCRIPT
          switch ($field['type']) {
             case 'title' :
             case 'title-block' :
-               if ($formatAsTable == true) {
-                  $result[$field['rank']]['content'] .= "<th colspan='2'>";
-               }
-               $result[$field['rank']]['content'] .= $label;
-               if ($formatAsTable == true) {
-                  $result[$field['rank']]['content'] .= "</th>";
+               if ($field['is_basket'] == true) {
+                  if ($formatAsTable == true) {
+                     $result[$field['rank']]['content'] .= "<th colspan='2'>";
+                  }
+                  $result[$field['rank']]['content'] .= $label;
+                  if ($formatAsTable == true) {
+                     $result[$field['rank']]['content'] .= "</th>";
+                  }
                }
                break;
             case 'dropdown':
@@ -6199,8 +6204,8 @@ JAVASCRIPT
                if ($plugin->isActivated("servicecatalog")) {
 
                   $fa          = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], 'icon');
-                  $color      = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], "background_color");
-                  $class = "background-color: $color;box-shadow: 0 0 0 7px $color !important;";
+                  $color       = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], "background_color");
+                  $class       = "background-color: $color;box-shadow: 0 0 0 7px $color !important;";
                   $class_state = "box-shadow: 0 0 0 7px $color !important;";
                }
 

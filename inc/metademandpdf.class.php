@@ -361,7 +361,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
          $widths  = [];
 
          foreach ($form as $key => $elt) {
-
+            if ($elt['is_basket'] == false) {
+               continue;
+            }
             if (isset($fields[$key])
                 || $elt['type'] == 'title'
                 || $elt['type'] == 'title-block'

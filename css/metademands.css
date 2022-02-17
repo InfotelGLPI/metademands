@@ -253,6 +253,7 @@ a.metademand_middle_button {
     background-color: #f8f7f3;
     border: 2px solid #efeeee;
     margin-bottom: 15px;
+    padding: 0.5rem 0.5rem;
 }
 
 @media (min-width: 1600px) {
