@@ -807,7 +807,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "</div>";
                echo "</div>";
 
-               echo "<div class=\"row\" style='padding-top: 15px;'>";
+               echo "<div class=\"row\" style='padding-top: 15px;width: 100%;'>";
 
                echo "<div class=\"bt-feature col-md-12 \">";
                echo Html::hidden('metademands_id', ['value' => $metademands_id]);
@@ -974,8 +974,8 @@ class PluginMetademandsWizard extends CommonDBTM {
       $columns = 2;
 
       if (count($line)) {
-         $style            = '';
-         $style_left_right = '';
+         $style            = 'padding: 0.5rem 0.5rem;';
+         $style_left_right = 'padding: 0.5rem 0.5rem;';
          $keys             = array_keys($line);
          $keyIndexes       = array_flip($keys);
 
@@ -1156,6 +1156,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
 
                echo "<div bloc-hideid='bloc" . $data["rank"] . "'>";
+
                if ($preview) {
                   $rank  = $data['rank'];
                   $color = PluginMetademandsField::setColor($data['rank']);
@@ -1180,7 +1181,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                             border-right :3px solid #' . $color;
                   echo "<div class=\"row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
                } else {
-                  echo "<div class=\"row\" style='$style'>";
+                  echo "<div class=\"row\" style='padding: 0.5rem 0.5rem;'>";
                }
 
                $count = 0;
@@ -1233,11 +1234,14 @@ class PluginMetademandsWizard extends CommonDBTM {
             } else if ($data['type'] != 'title-block') {
                $style = "";
                $class = "";
+               if ($data['row_display'] == 1 && $data['type'] == "link") {
+                  $class = "center";
+               }
                if ($data['type'] == 'informations') {
                   $color = $data['color'];
                   $style = "style='background-color: $color!important;'";
                   //                  $class = "metademands_wizard_informations";
-                  $class = "alert alert-important alert-warning d-flex alert-dismissible";
+                  $class = "alert d-flex alert-important";  //alert-important alert-warning alert-dismissible
                }
                $bottomclass = "";
                if ($data['type'] != 'informations') {

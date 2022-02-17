@@ -13,7 +13,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     `id`                   int unsigned NOT NULL AUTO_INCREMENT,                      -- id metademands
     `name`                 varchar(255)                            default NULL, -- name metademands
     `entities_id`          int unsigned NOT NULL default '0',                         -- entites_id
-    `is_recursive`         int(1) NOT NULL default '0',                          -- is_recursive
+    `is_recursive`         int unsigned NOT NULL default '0',                          -- is_recursive
     `is_active`            tinyint NOT NULL DEFAULT '1',
     `maintenance_mode`     tinyint NOT NULL DEFAULT '0',
     `comment`              text COLLATE utf8mb4_unicode_ci         default NULL,
@@ -74,20 +74,20 @@ CREATE TABLE `glpi_plugin_metademands_fields`
 (
     `id`                                int unsigned NOT NULL AUTO_INCREMENT,
     `entities_id`                       int unsigned NOT NULL default '0', -- entites_id
-    `is_recursive`                      int(1) NOT NULL default '0',  -- is_recursive
+    `is_recursive`                      int unsigned NOT NULL default '0',  -- is_recursive
     `comment`                           text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
     `custom_values`                     text COLLATE utf8mb4_unicode_ci default NULL,
     `default_values`                    text COLLATE utf8mb4_unicode_ci default NULL,
     `comment_values`                    text COLLATE utf8mb4_unicode_ci default NULL,
     `check_value`                       varchar(255)                    default NULL,
-    `rank`                              int(1) NOT NULL default '0',
-    `order`                             int(1) NOT NULL default '0',
+    `rank`                              int unsigned NOT NULL default '0',
+    `order`                             int unsigned NOT NULL default '0',
     `name`                              varchar(255)                    default NULL,
     `hide_title`                        tinyint NOT NULL DEFAULT '0',
     `label2`                            text COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL,
     `type`                              varchar(255)                    default NULL,
     `item`                              varchar(255)                    default NULL,
-    `is_mandatory`                      int(1) NOT NULL default '0',
+    `is_mandatory`                      int unsigned NOT NULL default '0',
     `plugin_metademands_fields_id`      int unsigned NOT NULL default '0',
     `plugin_metademands_metademands_id` int unsigned NOT NULL default '0',
     `plugin_metademands_tasks_id`       varchar(255)                    DEFAULT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `used_by_ticket`                    int unsigned NOT NULL DEFAULT '0',
     `used_by_child`                     tinyint default 0,
     `link_to_user`                      int unsigned default 0,
-    `default_use_id_requester`          tinyint DEFAULT '1',
+    `default_use_id_requester`          int unsigned default 0,
     `use_date_now`                      tinyint default 0,
     `additional_number_day`             int unsigned default 0,
     `informations_to_display`           varchar(255) NOT NULL           default '[]',
@@ -149,9 +149,9 @@ CREATE TABLE `glpi_plugin_metademands_ticketfields`
     `num`                               int unsigned default NULL,
     `value`                             text COLLATE utf8mb4_unicode_ci default NULL,
     `entities_id`                       int unsigned NOT NULL default '0', -- entites_id
-    `is_recursive`                      int(1) NOT NULL default '0',  -- is_recursive
-    `is_mandatory`                      int(1) NOT NULL default '0',
-    `is_deletable`                      int(1) NOT NULL default '1',
+    `is_recursive`                      int unsigned NOT NULL default '0',  -- is_recursive
+    `is_mandatory`                      int unsigned NOT NULL default '0',
+    `is_deletable`                      int unsigned NOT NULL default '1',
     `plugin_metademands_metademands_id` int unsigned NOT NULL default '0',
     PRIMARY KEY (`id`),
     KEY                                 `entities_id` (`entities_id`),

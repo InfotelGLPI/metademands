@@ -29,3 +29,6 @@ CREATE TABLE `glpi_plugin_metademands_forms_values`
     `value2`                       TEXT NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+ALTER TABLE `glpi_plugin_metademands_fields`
+    CHANGE `default_use_id_requester` `default_use_id_requester` int unsigned default 0;

@@ -2212,7 +2212,8 @@ class PluginMetademandsField extends CommonDBChild {
                         $btnLabel = $label2;
                      }
 
-                     $field = "<input type='submit' class='submit btn btn-primary' value ='" . Toolbox::stripTags($btnLabel) . "' target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
+                     $field = "<input type='submit' class='submit btn btn-primary' value ='" . Toolbox::stripTags($btnLabel) . "' 
+                     target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
 
                      break;
                   case 'link_a' :
@@ -3811,7 +3812,7 @@ class PluginMetademandsField extends CommonDBChild {
                         if (isset($comment[$key])) {
                            $value_comment = $comment[$key];
                         }
-                        $name = "comment_values[' . $key . ']";
+                        $name  = "comment_values[" . $key . "]";
                         echo Html::input($name, ['value' => $value_comment, 'size' => 30]);
                      }
                      echo '</p>';
@@ -3905,7 +3906,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $linkVal                 = $params['custom_values'][1] ?? "";
                }
                echo '<label>' . __("Link") . '</label>';
-               echo Html::input('comment_values[1]', ['value' => $linkVal, 'size' => 30]);
+               echo Html::input('custom_values[1]', ['value' => $linkVal, 'size' => 30]);
                echo "</td>";
                echo "<td>";
 
@@ -3991,7 +3992,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
       echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
 
-      echo "&nbsp;<i class='fa-1x fas fa-plus-square' style='cursor:pointer' 
+      echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer' 
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");' 
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
 
@@ -4023,7 +4024,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo '<p id=\'comment_values' . $valueId . '\'>';
       if ($display_comment) {
          echo " " . __('Comment') . " ";
-         $name = "comment_values[' . $valueId . ']";
+         $name  = "comment_values[$valueId]";
          echo Html::input($name, ['size' => 30]);
       }
       echo '</p>';
@@ -4034,7 +4035,7 @@ class PluginMetademandsField extends CommonDBChild {
       if ($display_default) {
          echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
          //         echo '<input type="checkbox" name="default_values[' . $valueId . ']"  value="1"/>';
-         $name  = "default_values[" . $valueId . "]";
+         $name  = "default_values[$valueId]";
          $value = 0;
          Dropdown::showYesNo($name, $value);
       }

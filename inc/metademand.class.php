@@ -1488,7 +1488,8 @@ JAVASCRIPT
                            break;
                      }
 
-                     if (isset($metademands_fields->fields['users_id_validate']) && !empty($metademands_fields->fields['users_id_validate'])) {
+                     if (isset($metademands_fields->fields['users_id_validate'])
+                         && !empty($metademands_fields->fields['users_id_validate'])) {
                         if (isset($metademands_fields->fields['check_value']) && is_array($datav)) {
                            $checkeValue   = json_decode($metademands_fields->fields['check_value'], 1);
                            $usersValidate = json_decode($metademands_fields->fields['users_id_validate'], 1);
@@ -1753,7 +1754,9 @@ JAVASCRIPT
                         }
                      }
                   }
-
+                  if ($input['name'] == 0) {
+                     $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
+                  }
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   $parent_tickets_id = $object->add($input);
@@ -2740,7 +2743,8 @@ JAVASCRIPT
                $field['value'] = $values[$fields_id];
             }
             $field['value2'] = '';
-            if (($field['type'] == 'date_interval' || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
+            if (($field['type'] == 'date_interval'
+                 || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
                $field['value2'] = $values[$fields_id . '-2'];
             }
             if ($field['type'] == 'radio' && $field['value'] === "") {
@@ -2761,7 +2765,8 @@ JAVASCRIPT
                }
             }
 
-            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+            if (!isset($options['formatastable'])
+                || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                if ($nb % 2 == 0) {
                   $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
                } else {
@@ -2772,7 +2777,8 @@ JAVASCRIPT
             $formatAsTable = $options['formatastable'] ?? true;
             self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
 
-            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+            if (!isset($options['formatastable'])
+                || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                $resultTemp[$field['rank']]['content'] .= "</tr>";
             }
 
@@ -2782,7 +2788,8 @@ JAVASCRIPT
                $result['content'] .= $tab['content'];
             }
          }
-         if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+         if (!isset($options['formatastable'])
+             || (isset($options['formatastable']) && $options['formatastable'] == true)) {
             $result['content'] .= "</table>";
          }
       }
@@ -2810,6 +2817,7 @@ JAVASCRIPT
       }
       if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2', $lang))) {
          $label2 = Toolbox::stripslashes_deep($field['label2']);
+         $label2 = Glpi\RichText\RichText::getTextFromHtml($field['label2']);
       }
 
       if ((!empty($field['value']) || $field['value'] == "0")
