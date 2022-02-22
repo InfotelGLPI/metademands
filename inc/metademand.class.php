@@ -3314,6 +3314,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
                }
             }
 
+            if( $field['type'] == "dropdown_meta" && $field['item'] =="PluginResourcesResource"){
+               $result['items_id'] = ['PluginResourcesResource' => [$field['value'] ]];
+            }
+
             if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
                if ($nb % 2 == 0) {
                   $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
