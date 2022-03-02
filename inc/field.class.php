@@ -1999,19 +1999,19 @@ class PluginMetademandsField extends CommonDBChild {
                      $nameitil = 'basket';
                   }
                   $values = json_decode($metademand->fields['itilcategories_id']);
-                  if (!empty($values) && count($values) == 1) {
-                     foreach ($values as $key => $val)
-                        $itilcategories_id = $val;
-                  }
-                  if ($itilcategories_id > 0) {
-                     // itilcat from service catalog
-                     $itilCategory = new ITILCategory();
-                     $itilCategory->getFromDB($itilcategories_id);
-                     $field = "<span>" . $itilCategory->getField('name');
-                     $field .= "<input type='hidden' name='" . $nameitil . "_type' value='" . $metademand->fields['type'] . "' >";
-                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
-                     $field .= "<span>";
-                  } else {
+//                  if (!empty($values) && count($values) == 1) {
+//                     foreach ($values as $key => $val)
+//                        $itilcategories_id = $val;
+//                  }
+//                  if ($itilcategories_id > 0) {
+//                     // itilcat from service catalog
+//                     $itilCategory = new ITILCategory();
+//                     $itilCategory->getFromDB($itilcategories_id);
+//                     $field = "<span>" . $itilCategory->getField('name');
+//                     $field .= "<input type='hidden' name='" . $nameitil . "_type' value='" . $metademand->fields['type'] . "' >";
+//                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
+//                     $field .= "<span>";
+//                  } else {
                      $opt = ['name'      => $nameitil . "_plugin_servicecatalog_itilcategories_id",
                              'right'     => 'all',
                              'value'     => $value,
@@ -2020,7 +2020,8 @@ class PluginMetademandsField extends CommonDBChild {
 
                      $field = "";
                      $field .= ITILCategory::dropdown($opt);
-                  }
+                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
+//                  }
                   break;
                case 'mydevices':
                   if ($on_basket == false) {

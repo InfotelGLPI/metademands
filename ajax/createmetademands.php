@@ -35,18 +35,18 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-$KO   = false;
-$step = $_POST['step'] + 1;
+$KO          = false;
+$step        = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
-$fields = new PluginMetademandsField();
+$fields      = new PluginMetademandsField();
 
 if (isset($_POST['update_fields'])) {
    if ($metademands->canCreate()
        || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
 
 
-      $data  = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+      $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
       $metademands->getFromDB($_POST['form_metademands_id']);
       $plugin = new Plugin();
       $meta   = [];
@@ -92,7 +92,11 @@ if (isset($_POST['update_fields'])) {
             }
          }
          if ($nblines == 0) {
-            $post    = $_POST['field'];
+            $post = $_POST['field'];
+            if (isset($_POST['field_plugin_servicecatalog_itilcategories_id_key'])
+                && isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
+               $post[$_POST['field_plugin_servicecatalog_itilcategories_id_key']] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
+            }
             $nblines = 1;
          }
          if ($KO === false) {
@@ -115,8 +119,8 @@ if (isset($_POST['update_fields'])) {
                $_POST['field'] = $post;
 
                foreach ($data as $id => $value) {
-                  $toBeMandatory = PluginMetademandsWizard::getMandatoryFields($id,$value,$_POST['field']);
-                  if(is_array($toBeMandatory) && !empty($toBeMandatory)){
+                  $toBeMandatory = PluginMetademandsWizard::getMandatoryFields($id, $value, $_POST['field']);
+                  if (is_array($toBeMandatory) && !empty($toBeMandatory)) {
                      foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
                         if (isset($data[$valueMandatory]['type'])) {
                            $data[$valueMandatory]['is_mandatory'] = true;
@@ -149,11 +153,11 @@ if (isset($_POST['update_fields'])) {
                      }
 
                      foreach ($checkchild as $keyId => $check_value) {
-                        $value['check_value']                 = $check_value;
+                        $value['check_value'] = $check_value;
                         if (isset(PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId])) {
                            $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId];
                         }
-                        $value['fields_link']                 = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
+                        $value['fields_link'] = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
                      }
                   }
 
@@ -198,9 +202,9 @@ if (isset($_POST['update_fields'])) {
                   $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
 
                   //Category id if have category field
-                  $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+                  $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                   $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
-                     (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
+                     (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'];
                   $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
 
                }

@@ -5624,7 +5624,8 @@ JAVASCRIPT
    public function exportAsXML() {
       $fields          = $this->fields;
       $metatranslation = new PluginMetademandsMetademandTranslation();
-      $translations    = $metatranslation->find(['items_id' => $this->getID(), 'itemtype' => PluginMetademandsMetademand::getType()]);
+      $translations    = $metatranslation->find(['items_id' => $this->getID(),
+                                                 'itemtype' => PluginMetademandsMetademand::getType()]);
       foreach ($translations as $id => $translation) {
          $fields['translations']['meta_translation' . $id] = $translation;
       }
@@ -5637,7 +5638,8 @@ JAVASCRIPT
       //      $fields['metafields'] = $metafields;
       $fieldtranslation = new PluginMetademandsFieldTranslation();
       foreach ($fields['metafields'] as $id => $f) {
-         $translationsfield = $fieldtranslation->find(['items_id' => $f['id'], 'itemtype' => PluginMetademandsField::getType()]);
+         $translationsfield = $fieldtranslation->find(['items_id' => $f['id'],
+                                                       'itemtype' => PluginMetademandsField::getType()]);
          foreach ($translationsfield as $k => $v) {
             $fields['metafields'][$id]['fieldtranslations']['translation'] = $v;
          }

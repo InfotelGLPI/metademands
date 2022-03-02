@@ -1241,7 +1241,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   $color = $data['color'];
                   $style = "style='background-color: $color!important;'";
                   //                  $class = "metademands_wizard_informations";
-                  $class = "alert d-flex alert-important";  //alert-important alert-warning alert-dismissible
+                  $class = "alert d-flex";  //alert-important alert-warning alert-dismissible
                }
                $bottomclass = "";
                if ($data['type'] != 'informations') {
@@ -2759,6 +2759,9 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (isset($post[$fieldname][$id])
           && $value['type'] != 'checkbox'
           && $value['type'] != 'radio'
+          && $value['type'] != 'title'
+          && $value['type'] != 'title-block'
+          && $value['type'] != 'informations'
           && $value['item'] != 'ITILCategory_Metademands'
           && $value['type'] != 'upload') {
 
@@ -2777,16 +2780,23 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       } else if ($value['item'] == 'ITILCategory_Metademands') {
 
-         $content[$id]['plugin_metademands_fields_id'] = $id;
-         if ($on_basket == false) {
-            $content[$id]['value'] = $post['field_plugin_servicecatalog_itilcategories_id'];
+         if (!self::checkMandatoryFields($fieldname, $value, ['id'    => $id,
+                                                              'value' => $post[$fieldname][$id]],
+                                         $post)) {
+            $KO = true;
          } else {
-            $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id'];
-         }
+            $content[$id]['plugin_metademands_fields_id'] = $id;
+            if ($on_basket == false) {
+               $content[$id]['value'] = $post['field_plugin_servicecatalog_itilcategories_id'];
+            } else {
+               $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id'];
+            }
 
-         $content[$id]['value2'] = "";
-         $content[$id]['item']   = $value['item'];
-         $content[$id]['type']   = $value['type'];
+            $content[$id]['value2'] = "";
+            $content[$id]['item'] = $value['item'];
+            $content[$id]['type'] = $value['type'];
+            $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
+         }
 
       } else if ($value['type'] == 'checkbox') {
 
