@@ -50,6 +50,19 @@ if (empty($_GET['tickets_id'])) {
 
 if (empty($_GET['resources_id'])) {
    $_GET['resources_id'] = 0;
+   if(isset($_SESSION['plugin_metademands']['fields'])){
+      foreach ($_SESSION['plugin_metademands']['fields'] as $fieldKey => $field){
+         if(!is_array($field)){
+            $metademandsField = new PluginMetademandsField();
+            $metademandsField->getFromDB($fieldKey);
+            if($metademandsField->getField('item') == 'PluginResourcesResource'){
+               $_GET['resources_id'] = $field;
+               $_SESSION['plugin_metademands']['fields']['resources_id'] =$field;
+            }
+         }
+      }
+
+   }
 }
 
 if (empty($_GET['resources_step'])) {
