@@ -2764,6 +2764,10 @@ JAVASCRIPT
                   continue;
                }
             }
+          
+            if($field['type'] == "dropdown_meta" && $field['item'] == "PluginResourcesResource"){
+               $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
+            }
 
             if (!isset($options['formatastable'])
                 || (isset($options['formatastable']) && $options['formatastable'] == true)) {
