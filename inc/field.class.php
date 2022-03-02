@@ -2011,6 +2011,7 @@ class PluginMetademandsField extends CommonDBChild {
 
                      $field = "";
                      $field .= ITILCategory::dropdown($opt);
+                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
                   }
                   break;
                case 'mydevices':
