@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-02 16:20+0000\n"
+"POT-Creation-Date: 2022-03-04 08:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,7 +90,7 @@ msgstr ""
 msgid "Attribute ticket/tasks to "
 msgstr ""
 
-#: ajax/updatelistmeta.php:85 inc/wizard.class.php:663
+#: ajax/updatelistmeta.php:85 inc/wizard.class.php:677
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
@@ -1052,69 +1052,53 @@ msgstr ""
 msgid "Your created forms"
 msgstr ""
 
-#: inc/wizard.class.php:340
-msgid "How can i use it"
+#: inc/wizard.class.php:366 inc/wizard.class.php:372
+msgid "More informations"
 msgstr ""
 
-#: inc/wizard.class.php:344
-msgid "Who can benefit from this service?"
+#: inc/wizard.class.php:367
+msgid "More informations of this category ? click here"
 msgstr ""
 
-#: inc/wizard.class.php:348
-msgid "Lead time"
-msgstr ""
-
-#: inc/wizard.class.php:352
-msgid "How to obtain the software in case of request?"
-msgstr ""
-
-#: inc/wizard.class.php:356
-msgid "Availability of service"
-msgstr ""
-
-#: inc/wizard.class.php:360
-msgid "What are the rules to follow ?"
-msgstr ""
-
-#: inc/wizard.class.php:394
+#: inc/wizard.class.php:408
 msgid "You don't have the right to update tickets"
 msgstr ""
 
-#: inc/wizard.class.php:401
+#: inc/wizard.class.php:415
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: inc/wizard.class.php:788 inc/wizard.class.php:827
+#: inc/wizard.class.php:802 inc/wizard.class.php:841
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:836
+#: inc/wizard.class.php:850
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:877 inc/wizard.class.php:880
+#: inc/wizard.class.php:891 inc/wizard.class.php:894
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/wizard.class.php:2966
+#: inc/wizard.class.php:2980
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2975
+#: inc/wizard.class.php:2989
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3022
+#: inc/wizard.class.php:3036
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3026
+#: inc/wizard.class.php:3040
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
