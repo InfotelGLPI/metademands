@@ -117,6 +117,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    function showWizard($options) {
+global $CFG_GLPI;
 
       $parameters = ['step'              => PluginMetademandsMetademand::STEP_INIT,
                      'metademands_id'    => 0,
@@ -132,6 +133,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $parameters[$key] = $value;
          }
       }
+
       $_SESSION['servicecatalog']['sc_itilcategories_id'] = $parameters['itilcategories_id'];
       // Retrieve session values
       if (isset($_SESSION['plugin_metademands']['fields']['tickets_id'])) {
@@ -270,31 +272,46 @@ class PluginMetademandsWizard extends CommonDBTM {
                if ($_SESSION['servicecatalog']['sc_itilcategories_id'] > 0
                    && $configsc->seeCategoryDetails()) {
                   $helpdesk_category = new PluginServicecatalogCategory();
-                  if ($helpdesk_category->getFromDBByCategory($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
-                     echo "<div class=\"form-row\">";
-                     echo "<div class=\"bt-feature col-md-12 \">";
-                     echo ($helpdesk_category->fields['comment'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" . nl2br($helpdesk_category->fields['comment']) . "</p>" : "";
-                     echo ($helpdesk_category->fields['service_detail'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_detail'])) . "</p>" : "";
-                     echo ($helpdesk_category->fields['service_users'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_users'])) . "</p>" : "";
-                     echo ($helpdesk_category->fields['service_ttr'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_ttr'])) . "</p>" : "";
-                     echo ($helpdesk_category->fields['service_use'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_use'])) . "</p>" : "";
-                     echo ($helpdesk_category->fields['service_supervision'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_supervision'])) . "</p>" : "";
-                     echo ($helpdesk_category->fields['service_rules'] != null) ?
-                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_rules'])) . "</p>" : "";
-                     echo "</div></div>";
+                  $sc_itilcategories_id = $_SESSION['servicecatalog']['sc_itilcategories_id'];
+                  $type = $meta->fields['type'];
+                  if ($helpdesk_category->getFromDBByCategory($sc_itilcategories_id)) {
+//                     echo "<div class=\"form-row\">";
+//                     echo "<div class=\"bt-feature col-md-12 \">";
+//                     echo ($helpdesk_category->fields['comment'] != null) ?
+//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+//                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" . nl2br($helpdesk_category->fields['comment']) . "</p>" : "";
+//                     echo ($helpdesk_category->fields['service_detail'] != null) ?
+//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+//                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_detail'])) . "</p>" : "";
+//                     echo ($helpdesk_category->fields['service_users'] != null) ?
+//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+//                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_users'])) . "</p>" : "";
+//                     echo ($helpdesk_category->fields['service_ttr'] != null) ?
+//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+//                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_ttr'])) . "</p>" : "";
+//                     echo ($helpdesk_category->fields['service_use'] != null) ?
+//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+//                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_use'])) . "</p>" : "";
+//                     echo ($helpdesk_category->fields['service_supervision'] != null) ?
+//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+//                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_supervision'])) . "</p>" : "";
+//                     echo ($helpdesk_category->fields['service_rules'] != null) ?
+//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+//                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_rules'])) . "</p>" : "";
+//                     echo "</div></div>";
+
+                     echo "<div class='alert alert-light' style='margin-bottom: 1px;'>";
+                     echo Ajax::createIframeModalWindow('categorydetails' . $sc_itilcategories_id,
+                        $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/categorydetail.form.php?type=".$type."&category_id=" . $sc_itilcategories_id,
+                        ['title'   => __('More informations', 'servicecatalog'),
+                           'display' => false,
+                           'width'   => 1050,
+                           'height'  => 500]);
+
+                     echo "<button class='btn btn-info btn-submit' href='#' onClick=\"" . Html::jsGetElementbyID("categorydetails" . $sc_itilcategories_id) . ".dialog('open'); return false;\"> ";
+                     echo __('More informations of this category ? click here', 'servicecatalog');
+                     echo "</button>";
+                     echo "</div>";
                   }
                }
             }
