@@ -319,6 +319,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $itilcategories_id = $cat;
                      }
                   }
+                  $type = $meta->fields['type'];
                   $helpdesk_category = new PluginServicecatalogCategory();
                   if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
                       && ($helpdesk_category->fields['comment'] != null
@@ -329,38 +330,51 @@ class PluginMetademandsWizard extends CommonDBTM {
                           || $helpdesk_category->fields['service_supervision'] != null
                           || $helpdesk_category->fields['service_rules'] != null)) {
 
-                     echo "<div class='alert alert-important alert-info d-flex alert-dismissible' role='alert'>";
-                     echo "<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>";
-                     echo ($helpdesk_category->fields['comment'] != null) ?
-                        "
-                    <span class='titlespeech'>" . __('Description') . "</span><br>" .
-                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['comment']) . "" : "";
-                     echo ($helpdesk_category->fields['service_detail'] != null) ?
-                        "
-                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_detail']) . "" : "";
-                     echo ($helpdesk_category->fields['service_users'] != null) ?
-                        "
-                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_users']) . "" : "";
-                     echo ($helpdesk_category->fields['service_ttr'] != null) ?
-                        "
-                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_ttr']) . "" : "";
-                     echo ($helpdesk_category->fields['service_use'] != null) ?
-                        "
-                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_use']) . "" : "";
-                     echo ($helpdesk_category->fields['service_supervision'] != null) ?
-                        "
-                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_supervision']) . "" : "";
-                     echo ($helpdesk_category->fields['service_rules'] != null) ?
-                        "
-                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" .
-                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_rules']) . "" : "";
-
+//                     echo "<div class='alert alert-important alert-info d-flex alert-dismissible' role='alert'>";
+//                     echo "<a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>";
+//                     echo ($helpdesk_category->fields['comment'] != null) ?
+//                        "
+//                    <span class='titlespeech'>" . __('Description') . "</span><br>" .
+//                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['comment']) . "" : "";
+//                     echo ($helpdesk_category->fields['service_detail'] != null) ?
+//                        "
+//                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" .
+//                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_detail']) . "" : "";
+//                     echo ($helpdesk_category->fields['service_users'] != null) ?
+//                        "
+//                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" .
+//                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_users']) . "" : "";
+//                     echo ($helpdesk_category->fields['service_ttr'] != null) ?
+//                        "
+//                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" .
+//                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_ttr']) . "" : "";
+//                     echo ($helpdesk_category->fields['service_use'] != null) ?
+//                        "
+//                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" .
+//                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_use']) . "" : "";
+//                     echo ($helpdesk_category->fields['service_supervision'] != null) ?
+//                        "
+//                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" .
+//                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_supervision']) . "" : "";
+//                     echo ($helpdesk_category->fields['service_rules'] != null) ?
+//                        "
+//                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" .
+//                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_rules']) . "" : "";
+//
+//                     echo "</div>";
+                     echo "<div class='alert alert-light' style='margin-bottom: 1px;'>";
+                     echo "<button form='' class='btn btn-info btn-submit' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __('More informations', 'servicecatalog') . "\"> ";
+                     echo __('More informations of this category ? click here', 'servicecatalog');
+                     echo "</button>";
                      echo "</div>";
+                     echo Ajax::createIframeModalWindow('categorydetails' . $itilcategories_id,
+                                                        PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=".$type."&category_id=" . $itilcategories_id,
+                                                        ['title'   => __('More informations', 'servicecatalog'),
+                                                         'display' => false,
+                                                         'width'   => 1050,
+                                                         'height'  => 500]);
+
+
                   }
                }
             }
