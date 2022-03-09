@@ -2170,6 +2170,9 @@ class PluginMetademandsField extends CommonDBChild {
                      }
 
                   } else {
+                     if($data['item'] == "PluginResourcesResource"){
+                        $opt['showHabilitations'] = true;
+                     }
                      $container_class = new $data['item']();
                      $field           = "";
                      $field           .= $container_class::dropdown($opt);
