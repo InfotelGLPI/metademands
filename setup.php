@@ -32,6 +32,7 @@ define('PLUGIN_METADEMANDS_VERSION', '2.7.10');
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
    define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
    define("PLUGIN_METADEMANDS_DIR_NOFULL", Plugin::getPhpDir("metademands",false));
+   define("PLUGIN_METADEMANDS_WEBDIR", Plugin::getWebDir("metademands"));
 }
 
 // Init the hooks of the plugins -Needed
@@ -59,6 +60,7 @@ function plugin_init_metademands() {
       }
 
       Plugin::registerClass('PluginMetademandsMetademand', ['addtabon' => 'Ticket']);
+      Plugin::registerClass('PluginMetademandsForm', ['addtabon' => ['Ticket', 'Change', 'User','PluginResourcesResource']]);
       Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
 

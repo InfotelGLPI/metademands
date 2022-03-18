@@ -845,16 +845,17 @@ class PluginMetademandsMetademand extends CommonDBTM {
          echo "<td colspan='2'></td>";
       }
 
-
-      echo "</tr>";
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
-      Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
-      echo "</td>";
-      echo "<td>" . __('Hide the "No" values of Yes / No fields in the tickets', 'metademands') . "</td><td>";
-      Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
-      echo "</td>";
-      echo "</tr>";
+      if ($this->fields['object_to_create'] != 'Change') {
+         echo "</tr>";
+         echo "<tr class='tab_bg_1'>";
+         echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
+         Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
+         echo "</td>";
+         echo "<td>" . __('Hide the "No" values of Yes / No fields in the tickets', 'metademands') . "</td><td>";
+         Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
+         echo "</td>";
+         echo "</tr>";
+      }
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>" . __('Background color', 'metademands') . "</td><td>";
@@ -1154,7 +1155,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @return array
     * @throws \GlpitestSQLError
     */
-   function listMetademands($forceview = false, $options = []) {
+   function listMetademands($forceview = false, $options = [],$getAll =false) {
       global $DB;
 
       $dbu                 = new DbUtils();
@@ -1200,7 +1201,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if ($this->canCreate() || PluginMetademandsGroup::isUserHaveRight($data['id'])) {
 
                   if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
-                                                  ["plugin_metademands_metademands_id" => $data['id']])) {
+                                                  ["plugin_metademands_metademands_id" => $data['id']]) || $getAll) {
                      if (empty($name = PluginMetademandsMetademand::displayField($data['id'], 'name'))) {
                         $name = $data['name'];
                      }
@@ -1671,6 +1672,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
                      $draft = new PluginMetademandsDraft();
                      $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
+                  }
+                  //Link object to forms_id
+                  if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_id'])) {
+                     $form = new PluginMetademandsForm();
+                     $form->update(['id' => $_SESSION['plugin_metademands']['plugin_metademands_forms_id'],
+                                    'items_id' => $parent_tickets_id,
+                                    'itemtype' => $object_class]);
                   }
                   $inputField = [];
                   if (Plugin::isPluginActive('fields')) {
@@ -2497,6 +2505,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            foreach ($line['tasks'] as $key => $l) {
                               //replace #id# in title with the value
                               do {
+
+                                 if(isset($resource_id)){
+                                    $resource = new PluginResourcesResource();
+                                    if($resource->getFromDB($resource_id)) {
+                                       $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField('name') . " " . $resource->getField('firstname');
+                                    }
+                                    $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
+                                 }
                                  $match = $this->getBetween($l['tickettasks_name'], '[', ']');
                                  if (empty($match)) {
                                     $explodeTitle = [];

@@ -2172,6 +2172,9 @@ class PluginMetademandsField extends CommonDBChild {
                   } else {
                      if($data['item'] == "PluginResourcesResource"){
                         $opt['showHabilitations'] = true;
+                        if(isset($_GET['resources_id'])){
+                           $opt['value'] = $_GET['resources_id'];
+                        }
                      }
                      $container_class = new $data['item']();
                      $field           = "";

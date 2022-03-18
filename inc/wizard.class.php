@@ -46,6 +46,7 @@ class PluginMetademandsWizard extends CommonDBTM {
    static function getTable($classname = null) {
       return CommonDBTM::getTable("PluginMetademandsMetademand");
    }
+
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
@@ -117,11 +118,12 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @throws \GlpitestSQLError
     */
    function showWizard($options) {
-global $CFG_GLPI;
+      global $CFG_GLPI;
 
       $parameters = ['step'              => PluginMetademandsMetademand::STEP_INIT,
                      'metademands_id'    => 0,
                      'preview'           => false,
+                     'seeform'           => false,
                      'tickets_id'        => 0,
                      'resources_id'      => 0,
                      'resources_step'    => '',
@@ -166,8 +168,8 @@ global $CFG_GLPI;
          echo "<h3>";
          echo "<div class='alert alert-warning center'>";
          echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i><br><br>";
-         echo __('This form is in maintenance mode', 'metademands'). "<br><br>";
-         echo __('Please come back later', 'metademands'). "</div></h3>";
+         echo __('This form is in maintenance mode', 'metademands') . "<br><br>";
+         echo __('Please come back later', 'metademands') . "</div></h3>";
       } else {
 
          if (!$parameters['preview']) {
@@ -233,23 +235,16 @@ global $CFG_GLPI;
             }
             echo "</span>";
             //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
-            if (Session::haveRight('plugin_metademands', UPDATE)) {
+            if (Session::haveRight('plugin_metademands', UPDATE) && !$parameters['seeform']) {
                echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
                         <i class='fas fa-wrench'></i></a>";
             }
             echo "</span>";
-            if (!$parameters['preview']) {
+            $config = PluginMetademandsConfig::getInstance();
+            if (!$parameters['preview'] && !$parameters['seeform']) {
                echo "<span class='mydraft'>";
-               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
-               if ($count_drafts > 0) {
-                  echo "<span class='mydraft-text'>";
-                  echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                               $count_drafts);
-                  echo "</span>";
-               }
-
-               echo "<i class='fas fa-2x mydraft-fa fa-cloud-download-alt pointer' title='" . _sx('button', 'Your drafts', 'metademands') . "' 
-                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
+               echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx('button', 'Your forms', 'metademands') . "' 
+                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divnavforms\").toggle();' ></i>";
                echo "</span>";
             }
             echo "</h3>";
@@ -262,8 +257,51 @@ global $CFG_GLPI;
             }
 
             echo "</div></div>";
-            echo "<div id='divdrafts' class=\"input-draft card bg-light mb-3\" style='display:none;'>";
-            echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
+            if (!$parameters['seeform']) {
+               echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;width: 550px;'>";
+               echo "<ul class='nav nav-tabs' id= 'myTab' role = 'tablist'>";
+               echo "<li class='nav-item' role='presentation'>";
+               echo "<button class='nav-link active' id='divformmodels-tab' data-bs-toggle='tab' 
+    data-bs-target='#divformmodels' type='button' role='tab' aria-controls='divformmodels' aria-selected='true'>";
+               echo __("Your models", 'metademands');
+               echo "</button>";
+               echo "</li>";
+               echo "<li class='nav-item' role='presentation'>";
+               echo "<button class='nav-link' id='divforms-tab' data-bs-toggle='tab' 
+    data-bs-target='#divforms' type='button' role='tab' aria-controls='divforms' aria-selected='true'>";
+               echo __("Your created forms", 'metademands');
+               echo "</button>";
+               echo "</li>";
+
+               if ($config['use_draft']) {
+                  echo "<li class='nav-item' role='presentation'>";
+                  echo "<button class='nav-link' id='divdrafts-tab' data-bs-toggle='tab' 
+    data-bs-target='#divdrafts' type='button' role='tab' aria-controls='divdrafts' aria-selected='true'>";
+                  echo __("Your drafts", 'metademands');
+                  echo "</button>";
+                  echo "</li>";
+               }
+               echo "</ul>";
+
+               echo "<div class='tab-content' id='myTabContent'>";
+
+               echo "<div id='divformmodels' class='tab-pane fade show active' role='tabpanel' aria-labelledby='divformmodels-tab'>";
+               echo PluginMetademandsForm::showFormsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id'], true);
+               echo "</div>";
+
+               echo "<div id='divforms' class='tab-pane fade' role='tabpanel' aria-labelledby='divforms-tab'>";
+               echo PluginMetademandsForm::showFormsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id'], false);
+               echo "</div>";
+
+               if ($config['use_draft']) {
+                  //
+                  echo "<div id='divdrafts' class='tab-pane fade' role='tabpanel' aria-labelledby='divdrafts-tab'>";
+                  echo PluginMetademandsDraft::showDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
+                  echo "</div>";
+               }
+            }
+
+            echo "</div>";
             echo "</div>";
 
             $plugin = new Plugin();
@@ -271,42 +309,42 @@ global $CFG_GLPI;
                $configsc = new PluginServicecatalogConfig();
                if ($_SESSION['servicecatalog']['sc_itilcategories_id'] > 0
                    && $configsc->seeCategoryDetails()) {
-                  $helpdesk_category = new PluginServicecatalogCategory();
+                  $helpdesk_category    = new PluginServicecatalogCategory();
                   $sc_itilcategories_id = $_SESSION['servicecatalog']['sc_itilcategories_id'];
-                  $type = $meta->fields['type'];
+                  $type                 = $meta->fields['type'];
                   if ($helpdesk_category->getFromDBByCategory($sc_itilcategories_id)) {
-//                     echo "<div class=\"form-row\">";
-//                     echo "<div class=\"bt-feature col-md-12 \">";
-//                     echo ($helpdesk_category->fields['comment'] != null) ?
-//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-//                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" . nl2br($helpdesk_category->fields['comment']) . "</p>" : "";
-//                     echo ($helpdesk_category->fields['service_detail'] != null) ?
-//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-//                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_detail'])) . "</p>" : "";
-//                     echo ($helpdesk_category->fields['service_users'] != null) ?
-//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-//                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_users'])) . "</p>" : "";
-//                     echo ($helpdesk_category->fields['service_ttr'] != null) ?
-//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-//                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_ttr'])) . "</p>" : "";
-//                     echo ($helpdesk_category->fields['service_use'] != null) ?
-//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-//                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_use'])) . "</p>" : "";
-//                     echo ($helpdesk_category->fields['service_supervision'] != null) ?
-//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-//                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_supervision'])) . "</p>" : "";
-//                     echo ($helpdesk_category->fields['service_rules'] != null) ?
-//                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
-//                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_rules'])) . "</p>" : "";
-//                     echo "</div></div>";
+                     //                     echo "<div class=\"form-row\">";
+                     //                     echo "<div class=\"bt-feature col-md-12 \">";
+                     //                     echo ($helpdesk_category->fields['comment'] != null) ?
+                     //                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                     //                    <span class='titlespeech'>" . __('Description') . "</span><br><br>" . nl2br($helpdesk_category->fields['comment']) . "</p>" : "";
+                     //                     echo ($helpdesk_category->fields['service_detail'] != null) ?
+                     //                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                     //                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_detail'])) . "</p>" : "";
+                     //                     echo ($helpdesk_category->fields['service_users'] != null) ?
+                     //                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                     //                    <span class='titlespeech'>" . __('Who can benefit from this service?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_users'])) . "</p>" : "";
+                     //                     echo ($helpdesk_category->fields['service_ttr'] != null) ?
+                     //                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                     //                    <span class='titlespeech'>" . __('Lead time', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_ttr'])) . "</p>" : "";
+                     //                     echo ($helpdesk_category->fields['service_use'] != null) ?
+                     //                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                     //                    <span class='titlespeech'>" . __('How to obtain the software in case of request?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_use'])) . "</p>" : "";
+                     //                     echo ($helpdesk_category->fields['service_supervision'] != null) ?
+                     //                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                     //                        <span class='titlespeech'>" . __('Availability of service', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_supervision'])) . "</p>" : "";
+                     //                     echo ($helpdesk_category->fields['service_rules'] != null) ?
+                     //                        "<p class='speech'><button type='button' class='speechcloseButton' onclick='$(this).parent().hide();'>x</button>
+                     //                    <span class='titlespeech'>" . __('What are the rules to follow ?', 'servicecatalog') . "</span><br><br>" . Html::clean(nl2br($helpdesk_category->fields['service_rules'])) . "</p>" : "";
+                     //                     echo "</div></div>";
 
                      echo "<div class='alert alert-light' style='margin-bottom: 1px;'>";
                      echo Ajax::createIframeModalWindow('categorydetails' . $sc_itilcategories_id,
-                        $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/categorydetail.form.php?type=".$type."&category_id=" . $sc_itilcategories_id,
-                        ['title'   => __('More informations', 'servicecatalog'),
-                           'display' => false,
-                           'width'   => 1050,
-                           'height'  => 500]);
+                                                        $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/categorydetail.form.php?type=" . $type . "&category_id=" . $sc_itilcategories_id,
+                                                        ['title'   => __('More informations', 'servicecatalog'),
+                                                         'display' => false,
+                                                         'width'   => 1050,
+                                                         'height'  => 500]);
 
                      echo "<button class='btn btn-info btn-submit' href='#' onClick=\"" . Html::jsGetElementbyID("categorydetails" . $sc_itilcategories_id) . ".dialog('open'); return false;\"> ";
                      echo __('More informations of this category ? click here', 'servicecatalog');
@@ -335,11 +373,12 @@ global $CFG_GLPI;
             $user->getFromDB($userid);
 
             $canuse = PluginMetademandsGroup::isUserHaveRight($parameters['metademands_id']);
-            if ($parameters['preview'] == 1){
+            if ($parameters['preview'] == 1) {
                $canuse = 1;
             }
             // Rights management
-            if (!empty($parameters['tickets_id'])
+            if (Session::getCurrentInterface() == 'central'
+                && !empty($parameters['tickets_id'])
                 && !Session::haveRight('ticket', UPDATE)) {
                self::showMessage(__("You don't have the right to update tickets", 'metademands'), true);
                return false;
@@ -358,7 +397,7 @@ global $CFG_GLPI;
          }
          $options['resources_id']      = $parameters['resources_id'];
          $options['itilcategories_id'] = $parameters['itilcategories_id'];
-         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options);
+         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['seeform']);
          Html::closeForm();
          echo "</div>";
          if (!$parameters['preview']) {
@@ -376,7 +415,7 @@ global $CFG_GLPI;
     *
     * @throws \GlpitestSQLError
     */
-   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = []) {
+   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $seeform = false) {
 
       if ($preview == false) {
          echo "<div id='ajax_loader' class=\"ajax_loader\">";
@@ -407,7 +446,7 @@ global $CFG_GLPI;
          //            break;
 
          default:
-            self::showMetademands($metademands_id, $step, $preview, $options);
+            self::showMetademands($metademands_id, $step, $preview, $options, $seeform);
             break;
 
       }
@@ -537,10 +576,9 @@ global $CFG_GLPI;
       echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
 
       $metademands = self::selectMetademands();
-      $config      = new PluginMetademandsConfig();
-      $config->getFromDB(1);
-      $meta = new PluginMetademandsMetademand();
-      if ($config->getField('display_type') == 1) {
+      $config      = PluginMetademandsConfig::getInstance();
+      $meta        = new PluginMetademandsMetademand();
+      if ($config['display_type'] == 1) {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
@@ -585,7 +623,7 @@ global $CFG_GLPI;
                if (!empty($meta->fields['icon'])) {
                   $icon = $meta->fields['icon'];
                }
-               echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
+               echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
                echo "</div>";
 
                echo "<br><p>";
@@ -603,12 +641,14 @@ global $CFG_GLPI;
                }
                echo "</span></em>";
 
-               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
-               if ($count_drafts > 0) {
-                  echo "<br><em><span class='mydraft-comment'>";
-                  echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                               $count_drafts);
-                  echo "</span>";
+               if ($config['use_draft']) {
+                  $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
+                  if ($count_drafts > 0) {
+                     echo "<br><em><span class='mydraft-comment'>";
+                     echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                                  $count_drafts);
+                     echo "</span>";
+                  }
                }
 
                echo "</p></div></a>";
@@ -648,12 +688,12 @@ global $CFG_GLPI;
          echo "</div>";
          echo "</div>";
       }
-//      if (count($metademands) == 0) {
-//         echo '<div class="bt-feature bt-col-sm-5 bt-col-md-2">';
-//         echo '<h5 class="bt-title">';
-//         echo '<span class="de-em">' . __('No advanced request found', 'metademands') . '</span></h5></a>';
-//         echo '</div>';
-//      }
+      //      if (count($metademands) == 0) {
+      //         echo '<div class="bt-feature bt-col-sm-5 bt-col-md-2">';
+      //         echo '<h5 class="bt-title">';
+      //         echo '<span class="de-em">' . __('No advanced request found', 'metademands') . '</span></h5></a>';
+      //         echo '</div>';
+      //      }
    }
 
    /**
@@ -665,7 +705,7 @@ global $CFG_GLPI;
     *
     * @throws \GlpitestSQLError
     */
-   static function showMetademands($metademands_id, $step, $preview = false, $options = []) {
+   static function showMetademands($metademands_id, $step, $preview = false, $options = [], $seeform = false) {
       global $CFG_GLPI;
 
       $parameters = ['itilcategories_id' => 0];
@@ -701,7 +741,7 @@ global $CFG_GLPI;
 
       if (count($metademands_data)) {
          if ($step - 1 > count($metademands_data) && !$preview) {
-            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview);
+            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform);
          } else {
             echo "</div>";
 
@@ -818,11 +858,15 @@ global $CFG_GLPI;
                   } else {
                      echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                      echo "</div>";
-                     echo "<button form='' class='btn btn-success btn-sm metademand_next_button' id='submitjob' name='next_button' title='" . _sx('button', 'Post') . "'>";
-                     echo "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-                     echo _sx('button', 'Post');
-                     echo "</button>";
-                     $ID = $metademands->fields['id'];
+                     $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+                     $title .= _sx('button', 'Save & Post', 'metademands');
+                     echo Html::submit($title, ['name'  => 'next_button',
+                                                'form'  => '',
+                                                'title' => _sx('button', 'Save & Post', 'metademands'),
+                                                'id'    => 'submitjob',
+                                                'class' => 'btn btn-success metademand_next_button']);
+                     $ID   = $metademands->fields['id'];
+                     $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
                      echo "<script>
                        $('#submitjob').click(function() {
                           var meta_id = {$ID};
@@ -832,6 +876,21 @@ global $CFG_GLPI;
                           jQuery('.resume_builder_input').trigger('change');
                           $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                           $('#ajax_loader').show();
+                          arrayDatas = $('form').serializeArray();
+                          arrayDatas.push({name: \"save_form\", value: true});
+                          arrayDatas.push({name: \"form_name\", value: '$name'});
+                          $.ajax({
+                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                type: 'POST',
+                                data: arrayDatas,
+                                success: function(response){
+                                 },
+                                error: function(xhr, status, error) {
+                                   console.log(xhr);
+                                   console.log(status);
+                                   console.log(error);
+                                 } 
+                             });
                           $.ajax({
                              url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
                                 type: 'POST',
@@ -1853,8 +1912,8 @@ global $CFG_GLPI;
                             
                           }else{
                            $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                           $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                              $script .="}
+                              $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                              $script .= "}
                            ";
                               if ($check_value[$key] == $data["custom_values"]) {
                                  $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
@@ -2189,8 +2248,8 @@ global $CFG_GLPI;
                               $script  .= "
                            if($(this).val().trim().length < 1){
                               $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                              $script .= " 
+                              $script  .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                              $script  .= " 
                            }else{
                               $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                            }
@@ -2207,8 +2266,8 @@ global $CFG_GLPI;
                                  $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                               }else{
                                  $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                             $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                             $script .= " }
+                              $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                              $script .= " }
                          ";
 
                               $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
@@ -2234,7 +2293,7 @@ global $CFG_GLPI;
 
                                     $script .= "}
                            ";
-                                 }else {
+                                 } else {
                                     $script .= "
                                if($(this).val().trim().length >= 1){";
                                     foreach ($childs as $v) {
@@ -2687,8 +2746,8 @@ global $CFG_GLPI;
       } else if ($value['item'] == 'ITILCategory_Metademands') {
 
          if (!self::checkMandatoryFields($fieldname, $value, ['id'    => $id,
-            'value' => $post[$fieldname][$id]],
-            $post)) {
+                                                              'value' => $post[$fieldname][$id]],
+                                         $post)) {
             $KO = true;
          } else {
             $content[$id]['plugin_metademands_fields_id'] = $id;
@@ -2698,9 +2757,9 @@ global $CFG_GLPI;
                $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id'];
             }
 
-            $content[$id]['value2'] = "";
-            $content[$id]['item'] = $value['item'];
-            $content[$id]['type'] = $value['type'];
+            $content[$id]['value2']                        = "";
+            $content[$id]['item']                          = $value['item'];
+            $content[$id]['type']                          = $value['type'];
             $_SESSION['plugin_metademands']['fields'][$id] = $post[$fieldname][$id];
          }
       } else if ($value['type'] == 'checkbox') {
@@ -3017,8 +3076,8 @@ global $CFG_GLPI;
          $unserialisedCheck      = PluginMetademandsField::_unserialize($value['check_value']);
          $unserialisedHiddenLink = PluginMetademandsField::_unserialize($value['hidden_link']);
          $unserialisedHiddenBloc = PluginMetademandsField::_unserialize($value['hidden_block']);
-         $unserialisedTaskChild = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
-         $toKeep = [];
+         $unserialisedTaskChild  = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
+         $toKeep                 = [];
          if (is_array($unserialisedCheck) && is_array($unserialisedHiddenLink)) {
             foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
                if (!isset($toKeep[$hiddenFields])) {
@@ -3047,41 +3106,41 @@ global $CFG_GLPI;
                   }
                }
             }
-             if(is_array($unserialisedHiddenBloc)){
-                foreach ($unserialisedHiddenBloc as $key => $hiddenBloc) {
-                   $metademandsFields = new PluginMetademandsField();
-                   $metademandsFields = $metademandsFields->find(["rank" => $hiddenBloc,'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id']],'order');
+            if (is_array($unserialisedHiddenBloc)) {
+               foreach ($unserialisedHiddenBloc as $key => $hiddenBloc) {
+                  $metademandsFields = new PluginMetademandsField();
+                  $metademandsFields = $metademandsFields->find(["rank" => $hiddenBloc, 'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id']], 'order');
 
-                   foreach ($metademandsFields as $metademandField){
-                      if (!isset($toKeep[$metademandField['id']])) {
-                         $toKeep[$metademandField['id']] = false;
-                      }
-                      if (isset($post[$id]) && isset($metademandField['id'])) {
-                         $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
-                      } else {
-                         $test = false;
-                      }
+                  foreach ($metademandsFields as $metademandField) {
+                     if (!isset($toKeep[$metademandField['id']])) {
+                        $toKeep[$metademandField['id']] = false;
+                     }
+                     if (isset($post[$id]) && isset($metademandField['id'])) {
+                        $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
+                     } else {
+                        $test = false;
+                     }
 
-                      if ($test == true) {
-                         $toKeep[$metademandField['id']] = true;
-                         if ($unserialisedTaskChild[$key] != 0) {
-                            $metaTask = new PluginMetademandsMetademandTask();
-                            $metaTask->getFromDB($unserialisedTaskChild[$key]);
-                            $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                            unset($_SESSION['metademands_hide'][$idChild]);
-                         }
-                      } else {
-                         if ($unserialisedTaskChild[$key] != 0) {
-                            $metaTask = new PluginMetademandsMetademandTask();
-                            $metaTask->getFromDB($unserialisedTaskChild[$key]);
-                            $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
-                            $_SESSION['metademands_hide'][$idChild] = $idChild;
-                         }
-                      }
-                   }
-                }
+                     if ($test == true) {
+                        $toKeep[$metademandField['id']] = true;
+                        if ($unserialisedTaskChild[$key] != 0) {
+                           $metaTask = new PluginMetademandsMetademandTask();
+                           $metaTask->getFromDB($unserialisedTaskChild[$key]);
+                           $idChild = $metaTask->getField('plugin_metademands_metademands_id');
+                           unset($_SESSION['metademands_hide'][$idChild]);
+                        }
+                     } else {
+                        if ($unserialisedTaskChild[$key] != 0) {
+                           $metaTask = new PluginMetademandsMetademandTask();
+                           $metaTask->getFromDB($unserialisedTaskChild[$key]);
+                           $idChild                                = $metaTask->getField('plugin_metademands_metademands_id');
+                           $_SESSION['metademands_hide'][$idChild] = $idChild;
+                        }
+                     }
+                  }
+               }
 
-             }
+            }
             foreach ($toKeep as $k => $v) {
                if ($v == false) {
                   if (isset($post[$k])) unset($post[$k]);
