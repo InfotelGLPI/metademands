@@ -2850,7 +2850,7 @@ JAVASCRIPT
          switch ($field['type']) {
             case 'title' :
             case 'title-block' :
-               if ($field['is_basket'] == true) {
+//               if ($field['is_basket'] == true) {
                   if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "<th colspan='2'>";
                   }
@@ -2858,7 +2858,7 @@ JAVASCRIPT
                   if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</th>";
                   }
-               }
+//               }
                break;
             case 'dropdown':
             case 'dropdown_object':
