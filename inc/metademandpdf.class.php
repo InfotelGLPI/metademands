@@ -386,9 +386,11 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                $widths[] = $this->GetStringWidth($elt['name']);
             }
          }
-         $max_width         = max($widths);
-         $this->label_width = $max_width;
-         $this->value_width = $this->page_width - $max_width;
+         if (count($widths) > 0) {
+            $max_width         = max($widths);
+            $this->label_width = $max_width;
+            $this->value_width = $this->page_width - $max_width;
+         }
 
          $dbu = new DbUtils();
 
