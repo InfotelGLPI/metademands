@@ -50,7 +50,7 @@ function plugin_metademands_install() {
    }
 
    if ($DB->tableExists("glpi_plugin_metademands_fields")
-    && !$DB->fieldExists("glpi_plugin_metademands_fields", "order")) {
+       && !$DB->fieldExists("glpi_plugin_metademands_fields", "order")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.0.3.sql");
    }
 
@@ -490,12 +490,18 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
    switch ($table . "." . $field) {
       case "glpi_plugin_metademands_tickets_metademands.status":
          return $link . " `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
+         break;
+
       case "glpi_plugin_metademands_metademandvalidations.validate":
          $AND = "";
-         if($val == PluginMetademandsMetademandValidation::TO_VALIDATE || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK ) {
+         if($val == PluginMetademandsMetademandValidation::TO_VALIDATE
+            || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK ) {
             $AND = "AND glpi_tickets.status IN ( ".implode(",", Ticket::getNotSolvedStatusArray()).")";
          }
-         return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";
+         return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
+                        AND `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";
+         break;
+
       case "glpi_plugin_metademands_tickets_tasks.id":
          switch ($searchtype) {
             case 'equals' :
@@ -509,8 +515,6 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                   return " $link (`glpi_groups_metademands`.`id` IN ('" . $val . "')) ";
                }
                break;
-
-
             case 'notequals' :
                return " $link (`glpi_groups_metademands`.`id` NOT IN ('" . implode("','",
                                                                                    $_SESSION['glpigroups']) . "')) ";
@@ -519,8 +523,6 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                return " ";
                break;
          }
-
-
          break;
 
       case "glpi_plugin_metademands_tickets_tasks.plugin_metademands_tasks_id":
@@ -529,12 +531,8 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                if ($val === '0') {
                   return " ";
                }
-
                return " $link (`glpi_users_metademands`.`id` IN ('" . $val . "')) ";
-
                break;
-
-
             case 'notequals' :
                return " $link (`glpi_users_metademands`.`id` NOT IN ('" . $val . "')) ";
                break;
@@ -543,11 +541,9 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
                break;
          }
 
-
          break;
       case "glpi_plugin_metademands_tickets_tasks.tickets_id":
          return " ";
-
          break;
    }
    return "";
@@ -646,7 +642,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
             $out   .= PluginMetademandsMetademandValidation::getStatusName($data['raw']["ITEM_" . $num]);
             $out   .= "</div>";
          } else {
-            $out   = "";
+            $out = "";
          }
          return $out;
          break;
@@ -707,20 +703,20 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
          break;
       case 9504 :
          $result = "";
-                  if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
-                     if (isset($data["Ticket_9504"]["count"])) {
-                        $count = $data["Ticket_9504"]["count"];
-                        $i     = 0;
-                        for ($i; $i < $count; $i++) {
-                           if ($i != 0) {
-                              $result .= "\n";
-                           }
-                           $result .= getUserName($data["Ticket_9504"][$i]["name"]);
-
-
-                        }
-                     }
+         if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
+            if (isset($data["Ticket_9504"]["count"])) {
+               $count = $data["Ticket_9504"]["count"];
+               $i     = 0;
+               for ($i; $i < $count; $i++) {
+                  if ($i != 0) {
+                     $result .= "\n";
                   }
+                  $result .= getUserName($data["Ticket_9504"][$i]["name"]);
+
+
+               }
+            }
+         }
          return $result;
          break;
 
