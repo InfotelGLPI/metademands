@@ -61,7 +61,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     * @return bool
     */
    static function canCreate() {
-      return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+      return Session::haveRight(self::$rightname, CREATE);
    }
 
    /**
@@ -69,6 +69,7 @@ class PluginMetademandsTicket extends CommonDBTM {
     */
    static function emptyTicket(Ticket $ticket) {
       // Metademand redirection on ticket creation
+
       if (isset($_REQUEST['id'])
           && $_REQUEST['id'] == 0
           && isset($_REQUEST['type'])

@@ -1506,8 +1506,8 @@ class PluginMetademandsField extends CommonDBChild {
       global $PLUGIN_HOOKS;
 
       $required = "";
-      if ($data['is_mandatory'] && $data['type'] != 'parent_field') {
-         $required = "required style='color:red'";
+      if ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field') {
+         $required = "required=required style='color:red'";
       }
 
       $upload = "";
@@ -1519,7 +1519,7 @@ class PluginMetademandsField extends CommonDBChild {
 
          $upload = "$max (" . Document::getMaxUploadSize() . ")";
       }
-      if ($data['is_mandatory']) {
+      if ($data['is_mandatory'] == 1) {
          $required = "style='color:red'";
       }
 
@@ -1565,7 +1565,7 @@ class PluginMetademandsField extends CommonDBChild {
             echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
          }
          echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
-         if ($data['is_mandatory']
+         if ($data['is_mandatory'] == 1
              && $data['type'] != 'parent_field') {
             echo "*";
          }
@@ -1680,8 +1680,12 @@ class PluginMetademandsField extends CommonDBChild {
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
                                </div>";
 
+               $required = "";
+//               if ($data['is_mandatory'] == 1) {
+//                  $required = "required=required";
+//               }
                $field .= "<div class=\"zone\">
-                                   <select class='form-select' name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+                                   <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                if (is_array($value) && count($value) > 0) {
                   foreach ($value as $k => $val) {
                      $field .= "<option selected value=\"$val\" >" . getUserName($val) . "</option>";
@@ -1760,8 +1764,12 @@ class PluginMetademandsField extends CommonDBChild {
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
                                </div>";
 
+                     $required = "";
+//                     if ($data['is_mandatory'] == 1) {
+//                        $required = "required=required";
+//                     }
                      $field .= "<div class=\"zone\">
-                                   <select class='form-select' name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+                                   <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                      foreach ($data['custom_values'] as $k => $val) {
                         if (in_array($k, $value)) {
                            $field .= "<option selected value=\"$k\" >$val</option>";
@@ -1792,7 +1800,8 @@ class PluginMetademandsField extends CommonDBChild {
                                                       ['values'   => $value,
                                                        'width'    => '250px',
                                                        'multiple' => true,
-                                                       'display'  => false
+                                                       'display'  => false,
+                                                       'required' => ($data['is_mandatory'] ? "required" : "")
                                                       ]);
                   }
 
@@ -1823,15 +1832,14 @@ class PluginMetademandsField extends CommonDBChild {
                         }
                      }
                      $value = !empty($value) ? $value : $default_values;
-
-
                      //                     ksort($data['custom_values']);
                      $field = "";
                      $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]",
                                                        $data['custom_values'],
                                                        ['value'   => $value,
                                                         'width'   => '200px',
-                                                        'display' => false
+                                                        'display' => false,
+                                                        'required' => ($data['is_mandatory'] ? "required" : ""),
                                                        ]);
                   }
                   break;
@@ -1924,14 +1932,18 @@ class PluginMetademandsField extends CommonDBChild {
                   if (empty($value)) {
                      $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                   }
-                  echo User::dropdown(['name'     => $namefield . "[" . $data['id'] . "]",
-                                       'entity'   => $_SESSION['glpiactiveentities'],
-                                       'right'    => 'all',
-                                       'rand'     => $userrand,
-                                       'value'    => $value,
-                                       'display'  => false,
-                                       'toupdate' => $toupdate
-                                      ]);
+                  $opt = ['name'     => $namefield . "[" . $data['id'] . "]",
+                          'entity'   => $_SESSION['glpiactiveentities'],
+                          'right'    => 'all',
+                          'rand'     => $userrand,
+                          'value'    => $value,
+                          'display'  => false,
+                          'toupdate' => $toupdate,
+                  ];
+                  if ($data['is_mandatory'] == 1) {
+                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
+                  }
+                  echo User::dropdown($opt);
                   //                  $config = PluginMetademandsConfig::getInstance();
                   //                  if ($config['show_requester_informations'] && $on_basket == false) {
                   //
@@ -1967,6 +1979,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                      $_POST['id_fielduser'] = $data['link_to_user'];
                      $_POST['fields_id']    = $data['id'];
+                     $_POST['is_mandatory']    = $data['is_mandatory'] ?? 0;
                      include(PLUGIN_METADEMANDS_DIR . "/ajax/ugroupUpdate.php");
                      echo "</div>";
                   } else {
@@ -1981,13 +1994,16 @@ class PluginMetademandsField extends CommonDBChild {
                      $val_group = (isset($_SESSION['plugin_metademands']['fields'][$data['id']])
                                    && !is_array($_SESSION['plugin_metademands']['fields'][$data['id']])) ? $_SESSION['plugin_metademands']['fields'][$data['id']] : 0;
 
-                     $field .= Group::dropdown(['name'      => $name,
-                                                'entity'    => $_SESSION['glpiactiveentities'],
-                                                'value'     => $val_group,
-                                                //                                                'readonly'  => true,
-                                                'condition' => $cond,
-                                                'display'   => false
-                                               ]);
+                     $opt = ['name'          => $name,
+                             'entity'        => $_SESSION['glpiactiveentities'],
+                             'value'         => $val_group,
+                             'condition'     => $cond,
+                             'display'       => false];
+                     if ($data['is_mandatory'] == 1) {
+                        $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
+                     }
+
+                     $field .= Group::dropdown($opt);
                   }
 
 
@@ -1999,29 +2015,31 @@ class PluginMetademandsField extends CommonDBChild {
                      $nameitil = 'basket';
                   }
                   $values = json_decode($metademand->fields['itilcategories_id']);
-//                  if (!empty($values) && count($values) == 1) {
-//                     foreach ($values as $key => $val)
-//                        $itilcategories_id = $val;
-//                  }
-//                  if ($itilcategories_id > 0) {
-//                     // itilcat from service catalog
-//                     $itilCategory = new ITILCategory();
-//                     $itilCategory->getFromDB($itilcategories_id);
-//                     $field = "<span>" . $itilCategory->getField('name');
-//                     $field .= "<input type='hidden' name='" . $nameitil . "_type' value='" . $metademand->fields['type'] . "' >";
-//                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
-//                     $field .= "<span>";
-//                  } else {
-                     $opt = ['name'      => $nameitil . "_plugin_servicecatalog_itilcategories_id",
-                             'right'     => 'all',
-                             'value'     => $value,
-                             'condition' => ["id" => $values],
-                             'display'   => false];
-
-                     $field = "";
-                     $field .= ITILCategory::dropdown($opt);
-                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
-//                  }
+                  //                  if (!empty($values) && count($values) == 1) {
+                  //                     foreach ($values as $key => $val)
+                  //                        $itilcategories_id = $val;
+                  //                  }
+                  //                  if ($itilcategories_id > 0) {
+                  //                     // itilcat from service catalog
+                  //                     $itilCategory = new ITILCategory();
+                  //                     $itilCategory->getFromDB($itilcategories_id);
+                  //                     $field = "<span>" . $itilCategory->getField('name');
+                  //                     $field .= "<input type='hidden' name='" . $nameitil . "_type' value='" . $metademand->fields['type'] . "' >";
+                  //                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
+                  //                     $field .= "<span>";
+                  //                  } else {
+                  $opt = ['name'      => $nameitil . "_plugin_servicecatalog_itilcategories_id",
+                          'right'     => 'all',
+                          'value'     => $value,
+                          'condition' => ["id" => $values],
+                          'display'   => false];
+                  if ($data['is_mandatory'] == 1) {
+                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
+                  }
+                  $field = "";
+                  $field .= ITILCategory::dropdown($opt);
+                  $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
+                  //                  }
                   break;
                case 'mydevices':
                   if ($on_basket == false) {
@@ -2086,6 +2104,7 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   $options['name']    = $namefield . "[" . $data['id'] . "]";
                   $options['display'] = false;
+                  $options['required'] = ($data['is_mandatory'] ? "required" : "");
                   $field              .= Ticket::dropdownUrgency($options);
                   break;
                case 'impact':
@@ -2108,6 +2127,7 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   $options['name']    = $namefield . "[" . $data['id'] . "]";
                   $options['display'] = false;
+                  $options['required'] = ($data['is_mandatory'] ? "required" : "");
                   $field              .= Ticket::dropdownImpact($options);
                   break;
                case 'priority':
@@ -2130,10 +2150,12 @@ class PluginMetademandsField extends CommonDBChild {
                   }
                   $options['name']    = $namefield . "[" . $data['id'] . "]";
                   $options['display'] = false;
+                  $options['required'] = ($data['is_mandatory'] ? "required" : "");
                   $field              .= Ticket::dropdownPriority($options);
                   break;
                default:
                   $cond = [];
+
                   if (!empty($data['custom_values']) && $data['item'] == 'Group') {
                      $options = self::_unserialize($data['custom_values']);
                      foreach ($options as $k => $val) {
@@ -2151,6 +2173,9 @@ class PluginMetademandsField extends CommonDBChild {
                           //                          'readonly'  => true,
                           'condition' => $cond,
                           'display'   => false];
+                  if ($data['is_mandatory'] == 1) {
+                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
+                  }
                   if (!($item = getItemForItemtype($data['item']))) {
                      break;
                   }
@@ -2174,6 +2199,9 @@ class PluginMetademandsField extends CommonDBChild {
                      } else {
                         $options['name']    = $namefield . "[" . $data['id'] . "]";
                         $options['display'] = false;
+                        if ($data['is_mandatory'] == 1) {
+                            $options['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
+                        }
                         //TODO Error if mode basket : $value good value - not $_SESSION['plugin_metademands']['fields'][$data['id']]
                         $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0;
                         $field            .= Location::dropdown($options);
@@ -2192,9 +2220,13 @@ class PluginMetademandsField extends CommonDBChild {
             break;
          case 'text':
             $name  = $namefield . "[" . $data['id'] . "]";
-            $field = Html::input($name, ['value'       => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
-                                         'placeholder' => Glpi\RichText\RichText::getTextFromHtml($comment),
-                                         'size'        => 40]);
+            $opt = ['value'       => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
+                    'placeholder' => (!$comment == null) ? Glpi\RichText\RichText::getTextFromHtml($comment) : "",
+                    'size'        => 40];
+            if ($data['is_mandatory'] == 1) {
+               $opt['required'] = "required";
+            }
+            $field = Html::input($name, $opt);
             break;
          case 'informations':
             if ($on_basket == false) {
@@ -2261,7 +2293,11 @@ class PluginMetademandsField extends CommonDBChild {
                   } elseif (isset($defaults[$key]) && $on_basket == false) {
                      $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
-                  $field .= "<input class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                  $required ="";
+                  if ($data['is_mandatory'] == 1) {
+                     $required = "required=required";
+                  }
+                  $field .= "<input $required class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                   $nbr++;
                   $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
@@ -2358,8 +2394,11 @@ class PluginMetademandsField extends CommonDBChild {
                   } elseif ($value == NULL && isset($defaults[$key]) && $on_basket == false) {
                      $checked = ($defaults[$key] == 1) ? 'checked' : '';
                   }
-
-                  $field .= "<input class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
+                  $required ="";
+                  if ($data['is_mandatory'] == 1) {
+                     $required = "required=required";
+                  }
+                  $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                   $nbr++;
 
 
@@ -2435,7 +2474,11 @@ class PluginMetademandsField extends CommonDBChild {
             }
             break;
          case 'textarea':
-            $value = Html::cleanPostForTextArea($value);
+            $value    = Html::cleanPostForTextArea($value);
+            $required = "";
+            if ($data['is_mandatory'] == 1) {
+               $required = "required='required'";
+            }
             if ($data['use_richtext'] == 1) {
                $field = Html::textarea(['name'              => $namefield . "[" . $data['id'] . "]",
                                         'value'             => $value,
@@ -2444,11 +2487,12 @@ class PluginMetademandsField extends CommonDBChild {
                                         'enable_fileupload' => false,
                                         'enable_images'     => false,
                                         'display'           => false,
+                                        'required'          => ($data['is_mandatory'] ? "required" : ""),
                                         'cols'              => 80,
                                         'rows'              => 3]);
             } else {
 
-               $field = "<textarea class='form-control' rows='3' cols='80' 
+               $field = "<textarea $required class='form-control' rows='3' cols='80' 
                placeholder=\"" . Glpi\RichText\RichText::getTextFromHtml($comment) . "\" 
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
             }
@@ -2458,6 +2502,7 @@ class PluginMetademandsField extends CommonDBChild {
             $field = "<span style='width: 50%!important;display: -webkit-box;'>";
             $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
                                                                                  'display' => false,
+                                                                                 'required'          => ($data['is_mandatory'] ? "required" : ""),
                                                                                  'size'    => 40
             ]);
             $field .= "</span>";
@@ -2468,19 +2513,23 @@ class PluginMetademandsField extends CommonDBChild {
             $field = "<span style='width: 50%!important;display: -webkit-box;'>";
             $field .= Html::showDateTimeField($namefield . "[" . $data['id'] . "]", ['value'   => $value,
                                                                                      'display' => false,
+                                                                                     'required'          => ($data['is_mandatory'] ? "required" : ""),
                                                                                      'size'    => 40
             ]);
             $field .= "</span>";
             break;
          case 'number':
             $data['custom_values'] = self::_unserialize($data['custom_values']);
-            $field                 = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", ['value'   => $value,
-                'min'     => ((isset($data['custom_values']['min']) && $data['custom_values']['min'] != "") ? $data['custom_values']['min'] : 0),
-                'max'     => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 360),
-                'step'    => ((isset($data['custom_values']['step']) && $data['custom_values']['step'] != "") ? $data['custom_values']['step'] : 1),
-                'display' => false
-                //                                                   'toadd' => [0 => __('Infinite')]
-            ]);
+            $opt = ['value'   => $value,
+                    'min'     => ((isset($data['custom_values']['min']) && $data['custom_values']['min'] != "") ? $data['custom_values']['min'] : 0),
+                    'max'     => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 360),
+                    'step'    => ((isset($data['custom_values']['step']) && $data['custom_values']['step'] != "") ? $data['custom_values']['step'] : 1),
+                    'display' => false,
+            ];
+            if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
+               $opt['specific_tags'] = ['required' => 'required'];
+            }
+            $field                 = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt );
             break;
          case 'yesno':
             $option[1] = __('No');
@@ -2493,7 +2542,9 @@ class PluginMetademandsField extends CommonDBChild {
             }
             $field = "";
             $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'   => $value,
+                                                                                              'display_emptychoice' => false,
                                                                                               'class'   => '',
+                                                                                              'required'          => ($data['is_mandatory'] ? "required" : ""),
                                                                                               'display' => false]);
             break;
          case 'upload':
@@ -3816,7 +3867,7 @@ class PluginMetademandsField extends CommonDBChild {
                         if (isset($comment[$key])) {
                            $value_comment = $comment[$key];
                         }
-                        $name  = "comment_values[" . $key . "]";
+                        $name = "comment_values[" . $key . "]";
                         echo Html::input($name, ['value' => $value_comment, 'size' => 30]);
                      }
                      echo '</p>';
@@ -4028,7 +4079,7 @@ class PluginMetademandsField extends CommonDBChild {
       echo '<p id=\'comment_values' . $valueId . '\'>';
       if ($display_comment) {
          echo " " . __('Comment') . " ";
-         $name  = "comment_values[$valueId]";
+         $name = "comment_values[$valueId]";
          echo Html::input($name, ['size' => 30]);
       }
       echo '</p>';

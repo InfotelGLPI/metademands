@@ -88,13 +88,16 @@ if (isset($_POST['groups_id'])) {
 }
 
 $rand = mt_rand();
-Group::dropdown(['name'      => $_POST["field"],
-                 'entity'    => $_SESSION['glpiactiveentities'],
-                 'value'     => $groups_id,
-//                 'readonly'  => true,
-                 'condition' => $cond,
-                 'rand' => $rand
-                ]);
+$opt = ['name'      => $_POST["field"],
+        'entity'    => $_SESSION['glpiactiveentities'],
+        'value'     => $groups_id,
+        'condition' => $cond,
+        'rand' => $rand
+];
+if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
+   $opt['specific_tags'] = ['required' => 'required'];
+}
+Group::dropdown($opt);
 
 $_POST['name'] = "group_user";
 $_POST['rand'] = $rand;

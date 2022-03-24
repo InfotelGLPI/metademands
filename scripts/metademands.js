@@ -58,7 +58,7 @@
        */
       this.metademands_show_field = function (params) {
          var item = document.getElementById(params.id);
-         if (item.value == params.value || item.value == params.value2  || item.value == params.value3 || item.value == params.value4) {
+         if (item.value == params.value || item.value == params.value2 || item.value == params.value3 || item.value == params.value4) {
             document.getElementById(params.valueDisplay).style.display = "inline";
             if (params.titleDisplay != undefined) {
                document.getElementById(params.titleDisplay).style.display = "inline";
@@ -68,7 +68,7 @@
             if (params.titleDisplay != undefined) {
                document.getElementById(params.titleDisplay_title).style.display = "none";
             }
-         } else if (item.value == params.value_title || item.value == params.value_informations || item.value == params.value_title_block ) {
+         } else if (item.value == params.value_title || item.value == params.value_informations || item.value == params.value_title_block) {
             document.getElementById(params.valueDisplay).style.display = "none";
             if (params.titleDisplay != undefined) {
                document.getElementById(params.titleDisplay).style.display = "none";
@@ -196,19 +196,33 @@
          }
          // const zerodiff = (currentValue) => currentValue == 0;
          var op1 = (!Array.isArray(check_value) &&
-             check_value != 0 &&
-             obs.val() == check_value);
+            check_value != 0 &&
+            obs.val() == check_value);
          var op2 = (Array.isArray(check_value) &&
-             (obs.val() != 0 || ((type == 'radio' || type == 'checkbox') && obs.val() == 0 )) &&
-             check_value.includes(parseInt(obs.val(),10)));
-         if (  op1|| op2
+            (obs.val() != 0 || ((type == 'radio' || type == 'checkbox') && obs.val() == 0)) &&
+            check_value.includes(parseInt(obs.val(), 10)));
+         if (op1 || op2
             //  ||
             // check_value == 'NOT_NULL' &&
             // $("[name='" + toobserve + "']").val() != 0
          ) {
             $('#' + toupdate).html('*');
+            id_field = toupdate.substring(22);
+            // if ($("[name='field[" + id_field + "]']").length > 0) {
+               $("[name='field[" + id_field + "]']").attr('required', 'required');
+               $("[name='field[" + id_field + "]']").css('color', 'red');
+               //hack for date field..
+               $("[name='field[" + id_field + "]']").next('input').attr('required', 'required');
+            // }
          } else {
-            $('#' + toupdate).html('');
+            if (type != 'checkbox') {
+               $('#' + toupdate).html('');
+               id_field = toupdate.substring(22);
+               $("[name='field[" + id_field + "]']").removeAttr('required');
+               $("[name='field[" + id_field + "]']").css('color', 'unset');
+               //hack for date field..
+               $("[name='field[" + id_field + "]']").next('input').removeAttr('required');
+            }
          }
       };
 
