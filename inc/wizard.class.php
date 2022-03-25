@@ -261,22 +261,22 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;width: 550px;'>";
                echo "<ul class='nav nav-tabs' id= 'myTab' role = 'tablist'>";
                echo "<li class='nav-item' role='presentation'>";
-               echo "<button class='nav-link active' id='divformmodels-tab' data-bs-toggle='tab' 
-    data-bs-target='#divformmodels' type='button' role='tab' aria-controls='divformmodels' aria-selected='true'>";
+               echo "<button class='nav-link active' id='divformmodels-tab' data-toggle='tab' 
+    data-target='#divformmodels' type='button' role='tab' aria-controls='divformmodels' aria-selected='true'>";
                echo __("Your models", 'metademands');
                echo "</button>";
                echo "</li>";
                echo "<li class='nav-item' role='presentation'>";
-               echo "<button class='nav-link' id='divforms-tab' data-bs-toggle='tab' 
-    data-bs-target='#divforms' type='button' role='tab' aria-controls='divforms' aria-selected='true'>";
+               echo "<button class='nav-link' id='divforms-tab' data-toggle='tab' 
+    data-target='#divforms' type='button' role='tab' aria-controls='divforms' aria-selected='true'>";
                echo __("Your created forms", 'metademands');
                echo "</button>";
                echo "</li>";
 
                if ($config['use_draft']) {
                   echo "<li class='nav-item' role='presentation'>";
-                  echo "<button class='nav-link' id='divdrafts-tab' data-bs-toggle='tab' 
-    data-bs-target='#divdrafts' type='button' role='tab' aria-controls='divdrafts' aria-selected='true'>";
+                  echo "<button class='nav-link' id='divdrafts-tab' data-toggle='tab' 
+    data-target='#divdrafts' type='button' role='tab' aria-controls='divdrafts' aria-selected='true'>";
                   echo __("Your drafts", 'metademands');
                   echo "</button>";
                   echo "</li>";
