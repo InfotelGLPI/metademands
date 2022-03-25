@@ -1730,8 +1730,10 @@ JAVASCRIPT
                               if ($fields_container->fields['type'] == 'dom') {
                                  if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
                                     if ($fields_field->fields['type'] == 'dropdown') {
-                                       $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
-                                       $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
+                                          $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                          $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       }
                                     } else if ($fields_field->fields['type'] == 'yesno') {
                                        $input[$fields_field->fields['name']]          = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
                                        $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
@@ -1786,7 +1788,9 @@ JAVASCRIPT
                               if ($fields_container->fields['type'] == 'tab') {
                                  if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
                                     if ($fields_field->fields['type'] == 'dropdown') {
-                                       $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
+                                          $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                       }
                                     } else if ($fields_field->fields['type'] == 'yesno') {
                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
                                     } else {
