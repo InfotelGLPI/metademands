@@ -278,10 +278,12 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       $content .= "<td>" . __("Secondaries services", "resources") . "</td><td>";
       if($config->useServiceDepartmentAD()){
          $secondaryService = json_decode($resource->fields['secondary_services']);
-         foreach ($secondaryService as $srvID) {
-            $userCat = new UserCategory();
-            $userCat->getFromDB($srvID);
-            $content .= $userCat->getField('name')."<br />";
+         if(!empty($secondaryService)){
+            foreach ($secondaryService as $srvID) {
+               $userCat = new UserCategory();
+               $userCat->getFromDB($srvID);
+               $content .= $userCat->getField('name')."<br />";
+            }
          }
       }
       $content .= "</td></tr>";
