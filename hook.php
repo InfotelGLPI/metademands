@@ -519,12 +519,16 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
    switch ($table . "." . $field) {
       case "glpi_plugin_metademands_tickets_metademands.status":
          return $link . " `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
-      case "glpi_plugin_metademands_metademandvalidations.validate":
+       case "glpi_plugin_metademands_metademandvalidations.validate":
          $AND = "";
-         if($val == PluginMetademandsMetademandValidation::TO_VALIDATE || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK ) {
+         if($val == PluginMetademandsMetademandValidation::TO_VALIDATE
+              || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK ) {
             $AND = "AND glpi_tickets.status IN ( ".implode(",", Ticket::getNotSolvedStatusArray()).")";
          }
-         return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";
+        return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
+                        AND `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";
+        break;
+         
       case "glpi_plugin_metademands_tickets_tasks.id":
          switch ($searchtype) {
             case 'equals' :
