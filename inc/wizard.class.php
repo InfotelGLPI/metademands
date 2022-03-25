@@ -162,6 +162,7 @@ class PluginMetademandsWizard extends CommonDBTM {
             $background_color = $meta->fields['background_color'];
          }
          $maintenance_mode = $meta->fields['maintenance_mode'];
+         $_SESSION['servicecatalog']['sc_itilcategories_id'] = $meta->fields['itilcategories_id'];
       }
 
       if ($maintenance_mode == 1 && !$parameters['preview']) {
@@ -307,12 +308,24 @@ class PluginMetademandsWizard extends CommonDBTM {
             $plugin = new Plugin();
             if ($plugin->isActivated('servicecatalog')) {
                $configsc = new PluginServicecatalogConfig();
-               if ($_SESSION['servicecatalog']['sc_itilcategories_id'] > 0
-                   && $configsc->seeCategoryDetails()) {
-                  $helpdesk_category    = new PluginServicecatalogCategory();
-                  $sc_itilcategories_id = $_SESSION['servicecatalog']['sc_itilcategories_id'];
-                  $type                 = $meta->fields['type'];
-                  if ($helpdesk_category->getFromDBByCategory($sc_itilcategories_id)) {
+               if ($configsc->seeCategoryDetails()) {
+                  $itilcategories_id = 0;
+                  $cats              = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                  if (is_array($cats) && count($cats) == 1) {
+                     foreach ($cats as $cat) {
+                        $itilcategories_id = $cat;
+                     }
+                  }
+                  $type              = $meta->fields['type'];
+                  $helpdesk_category = new PluginServicecatalogCategory();
+                  if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
+                     && ($helpdesk_category->fields['comment'] != null
+                        || $helpdesk_category->fields['service_detail'] != null
+                        || $helpdesk_category->fields['service_users'] != null
+                        || $helpdesk_category->fields['service_ttr'] != null
+                        || $helpdesk_category->fields['service_use'] != null
+                        || $helpdesk_category->fields['service_supervision'] != null
+                        || $helpdesk_category->fields['service_rules'] != null)) {
                      //                     echo "<div class=\"form-row\">";
                      //                     echo "<div class=\"bt-feature col-md-12 \">";
                      //                     echo ($helpdesk_category->fields['comment'] != null) ?
@@ -339,14 +352,14 @@ class PluginMetademandsWizard extends CommonDBTM {
                      //                     echo "</div></div>";
 
                      echo "<div class='alert alert-light' style='margin-bottom: 1px;'>";
-                     echo Ajax::createIframeModalWindow('categorydetails' . $sc_itilcategories_id,
-                                                        $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/categorydetail.form.php?type=" . $type . "&category_id=" . $sc_itilcategories_id,
+                     echo Ajax::createIframeModalWindow('categorydetails' . $itilcategories_id,
+                                                        $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/categorydetail.form.php?type=" . $type . "&category_id=" . $itilcategories_id,
                                                         ['title'   => __('More informations', 'servicecatalog'),
                                                          'display' => false,
                                                          'width'   => 1050,
                                                          'height'  => 500]);
 
-                     echo "<button class='btn btn-info btn-submit' href='#' onClick=\"" . Html::jsGetElementbyID("categorydetails" . $sc_itilcategories_id) . ".dialog('open'); return false;\"> ";
+                     echo "<button class='btn btn-info btn-submit' href='#' onClick=\"" . Html::jsGetElementbyID("categorydetails" . $itilcategories_id) . ".dialog('open'); return false;\"> ";
                      echo __('More informations of this category ? click here', 'servicecatalog');
                      echo "</button>";
                      echo "</div>";
