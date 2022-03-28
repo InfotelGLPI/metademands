@@ -892,18 +892,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                           arrayDatas = $('form').serializeArray();
                           arrayDatas.push({name: \"save_form\", value: true});
                           arrayDatas.push({name: \"form_name\", value: '$name'});
-                          $.ajax({
-                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                                type: 'POST',
-                                data: arrayDatas,
-                                success: function(response){
-                                 },
-                                error: function(xhr, status, error) {
-                                   console.log(xhr);
-                                   console.log(status);
-                                   console.log(error);
-                                 } 
-                             });
+                          
                           $.ajax({
                              url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
                                 type: 'POST',
@@ -913,6 +902,18 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     if (response == 1) {
                                        document.location.reload();
                                     } else {
+                                       $.ajax({
+                                         url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                            type: 'POST',
+                                            data: arrayDatas,
+                                            success: function(response){
+                                             },
+                                            error: function(xhr, status, error) {
+                                               console.log(xhr);
+                                               console.log(status);
+                                               console.log(error);
+                                             } 
+                                         });
                                        window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
                                     }                                  
                                  },
