@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-25 08:30+0000\n"
+"POT-Creation-Date: 2022-03-29 08:25+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -724,9 +724,9 @@ msgid "Do you want to validate her?"
 msgstr ""
 
 #: inc/metademand.class.php:4457 inc/metademand.class.php:4461
-#: inc/metademandvalidation.class.php:56 inc/metademandvalidation.class.php:288
-#: inc/metademandvalidation.class.php:292
-#: inc/metademandvalidation.class.php:313
+#: inc/metademandvalidation.class.php:56 inc/metademandvalidation.class.php:296
+#: inc/metademandvalidation.class.php:300
+#: inc/metademandvalidation.class.php:321
 msgid "Metademand validation"
 msgstr ""
 
@@ -858,62 +858,62 @@ msgstr ""
 msgid "This demand is already used in"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:263
-#: inc/metademandvalidation.class.php:354
+#: inc/metademandvalidation.class.php:271
+#: inc/metademandvalidation.class.php:362
 msgid "Tasks are created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:265
-#: inc/metademandvalidation.class.php:365
+#: inc/metademandvalidation.class.php:273
+#: inc/metademandvalidation.class.php:373
 msgid "Sub-tickets are created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:267
+#: inc/metademandvalidation.class.php:275
 msgid "The metademand is validated and affected"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:319
+#: inc/metademandvalidation.class.php:327
 msgid "Create sub-tickets"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:322
+#: inc/metademandvalidation.class.php:330
 msgid "Create tasks"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:341
+#: inc/metademandvalidation.class.php:349
 msgid "Attribute ticket to "
 msgstr ""
 
-#: inc/metademandvalidation.class.php:371
+#: inc/metademandvalidation.class.php:379
 #, php-format
 msgid "Validated by %s on %s"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:380
+#: inc/metademandvalidation.class.php:388
 msgid "Validate metademands"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:483
+#: inc/metademandvalidation.class.php:491
 msgid "To validate"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:485
+#: inc/metademandvalidation.class.php:493
 msgid "Child tickets created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:487
+#: inc/metademandvalidation.class.php:495
 msgid "Tasks created"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:489
+#: inc/metademandvalidation.class.php:497
 msgid "To validate without child"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:491
+#: inc/metademandvalidation.class.php:499
 msgid "Validate without child"
 msgstr ""
 
-#: inc/metademandvalidation.class.php:494
+#: inc/metademandvalidation.class.php:502
 msgid "Not subject to validation"
 msgstr ""
 
@@ -980,11 +980,11 @@ msgctxt "button"
 msgid "Update block to use"
 msgstr ""
 
-#: inc/ticket.class.php:50
+#: inc/ticket.class.php:52
 msgid "Linked ticket"
 msgstr ""
 
-#: inc/ticket.class.php:267
+#: inc/ticket.class.php:283
 msgid ""
 "The demand cannot be resolved or closed until all child tickets are not "
 "resolved"
@@ -1078,39 +1078,39 @@ msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2660
+#: inc/wizard.class.php:2650
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:2663 inc/wizard.class.php:2687
+#: inc/wizard.class.php:2653 inc/wizard.class.php:2677
 msgid "Next"
 msgstr ""
 
-#: inc/wizard.class.php:2688
+#: inc/wizard.class.php:2678
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/wizard.class.php:2697
+#: inc/wizard.class.php:2687
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:3362
+#: inc/wizard.class.php:3353
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3371
+#: inc/wizard.class.php:3362
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3418
+#: inc/wizard.class.php:3409
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3422
+#: inc/wizard.class.php:3413
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
