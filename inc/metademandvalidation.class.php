@@ -192,7 +192,11 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
                         if ($fields_field->fields['type'] == 'dropdown') {
                            $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
                         } else if ($fields_field->fields['type'] == 'yesno') {
-                           $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']]-1;
+                           $val = $values_form[$plfield['plugin_metademands_fields_id']];
+                           if (is_int($val)) {
+                              $val = $val -1;
+                           }
+                           $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $val;
                         } else {
                            $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
                         }
@@ -204,7 +208,11 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
                         if ($fields_field->fields['type'] == 'dropdown') {
                            $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
                         } else if ($fields_field->fields['type'] == 'yesno') {
-                           $inputFieldMain[$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']]-1;
+                           $val = $values_form[$plfield['plugin_metademands_fields_id']];
+                           if (is_int($val)) {
+                              $val = $val -1;
+                           }
+                           $inputFieldMain[$fields_field->fields['name']] = $val;
                         } else {
                            $inputFieldMain[$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
                         }

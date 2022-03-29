@@ -1603,13 +1603,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $script .= "});";
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                     $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                      $('[id-field =\"field'+key+'\"]').hide();
+                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
-                                    $('[id-field =\"field'+key+'\"]').show();
-                            
+                                       $('[id-field =\"field'+key+'\"]').show();
                                     }
-                                   
                                  });";
                               $script .= "});";
 
@@ -1679,13 +1677,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $script .= "});";
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                     $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                      $('[id-field =\"field'+key+'\"]').hide();
+                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
-                                    $('[id-field =\"field'+key+'\"]').show();
-                            
+                                       $('[id-field =\"field'+key+'\"]').show();
                                     }
-                                   
                                  });";
                               $script .= "});";
                               //                           $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified', function(){
@@ -1749,13 +1745,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                     $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                       $('[id-field =\"field'+key+'\"]').hide();
+                                       $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
-                                    $('[id-field =\"field'+key+'\"]').show();
-                            
+                                       $('[id-field =\"field'+key+'\"]').show();
                                     }
-                                   
                                  });";
                               $script .= "} else {";
                               foreach ($hidden_link as $key => $fields) {
@@ -1790,13 +1784,11 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                     $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                       $('[id-field =\"field'+key+'\"]').hide();
+                                       $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
-                                    $('[id-field =\"field'+key+'\"]').show();
-                            
+                                       $('[id-field =\"field'+key+'\"]').show();
                                     }
-                                   
                                  });";
                               $script .= "}";
                            }
@@ -1908,13 +1900,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                            }
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                     $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                      $('[id-field =\"field'+key+'\"]').hide();
+                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
-                                    $('[id-field =\"field'+key+'\"]').show();
-                                    
+                                       $('[id-field =\"field'+key+'\"]').show();
                                     }
-                                   
                                  });";
                         }
                         //                     else {
@@ -1989,10 +1979,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                     $('[id-field =\"field'+key+'\"]').hide();
-                                 
+                                       $('[id-field =\"field'+key+'\"]').hide();
+                                       $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
-                                    $('[id-field =\"field'+key+'\"]').show();
+                                       $('[id-field =\"field'+key+'\"]').show();
                                     }
                                  });";
                            }
@@ -2776,18 +2766,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         arrayDatas = $('form').serializeArray();
                         arrayDatas.push({name: 'save_form', value: true});
                         arrayDatas.push({name: 'form_name', value: '$name'});
-                        $.ajax({
-                           url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                           type: 'POST',
-                           data: arrayDatas,
-                           success: function (response) {
-                           },
-                           error: function (xhr, status, error) {
-                              console.log(xhr);
-                              console.log(status);
-                              console.log(error);
-                           }
-                        });
+                        
                         $.ajax({
                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
                            type: 'POST',
@@ -2797,6 +2776,18 @@ class PluginMetademandsWizard extends CommonDBTM {
                               if (response == 1) {
                                  window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
                               } else {
+                                 $.ajax({
+                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                    type: 'POST',
+                                    data: arrayDatas,
+                                    success: function (response) {
+                                    },
+                                    error: function (xhr, status, error) {
+                                       console.log(xhr);
+                                       console.log(status);
+                                       console.log(error);
+                                    }
+                                 });
                                  window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
                               }
                            },

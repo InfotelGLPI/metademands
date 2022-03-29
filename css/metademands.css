@@ -315,6 +315,7 @@ button.clear-basket {
     float: right;
     z-index: 2;
 }
+
 .draft {
     position: relative;
     width: 300px;
@@ -329,6 +330,7 @@ button.clear-basket {
     vertical-align: top;
     margin-top: 15px;
 }
+
 .draft::before {
     content: '';
     position: absolute;
