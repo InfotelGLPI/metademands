@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-29 08:25+0000\n"
+"POT-Creation-Date: 2022-04-02 09:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -808,39 +808,39 @@ msgid_plural "Link with metademands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/metademand_resource.class.php:170
+#: inc/metademand_resource.class.php:173
 msgid "Meta-demands linked"
 msgstr ""
 
-#: inc/metademand_resource.class.php:261
+#: inc/metademand_resource.class.php:264
 msgid "Firstname"
 msgstr ""
 
-#: inc/metademand_resource.class.php:265
+#: inc/metademand_resource.class.php:268
 msgid "Lastname"
 msgstr ""
 
-#: inc/metademand_resource.class.php:269
+#: inc/metademand_resource.class.php:272
 msgid "ContractType"
 msgstr ""
 
-#: inc/metademand_resource.class.php:273
+#: inc/metademand_resource.class.php:276
 msgid "Service"
 msgstr ""
 
-#: inc/metademand_resource.class.php:277
+#: inc/metademand_resource.class.php:281
 msgid "Secondaries services"
 msgstr ""
 
-#: inc/metademand_resource.class.php:288
+#: inc/metademand_resource.class.php:291
 msgid "Arrival date"
 msgstr ""
 
-#: inc/metademand_resource.class.php:292
+#: inc/metademand_resource.class.php:295
 msgid "Departure date"
 msgstr ""
 
-#: inc/metademand_resource.class.php:298
+#: inc/metademand_resource.class.php:301
 msgid "Resource manager"
 msgstr ""
 
