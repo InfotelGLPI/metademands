@@ -68,7 +68,8 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
     * Display tab for each users
     *
     * @param CommonGLPI $item
-    * @param int $withtemplate
+    * @param int        $withtemplate
+    *
     * @return array|string
     */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
@@ -91,9 +92,11 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
     * Display content for each users
     *
     * @static
+    *
     * @param CommonGLPI $item
-    * @param int $tabnum
-    * @param int $withtemplate
+    * @param int        $tabnum
+    * @param int        $withtemplate
+    *
     * @return bool|true
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
@@ -121,7 +124,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       }
 
       $used_data = [];
-      $data = $this->getDataForResourceContractType($resourceContractType->fields['id'], ['entities_id' => $_SESSION['glpiactiveentities']]);
+      $data      = $this->getDataForResourceContractType($resourceContractType->fields['id'], ['entities_id' => $_SESSION['glpiactiveentities']]);
       if ($data) {
          foreach ($data as $field) {
             $used_data[] = $field['plugin_metademands_metademands_id'];
@@ -129,16 +132,16 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       }
       $canedit = $this->canCreate();
       if ($canedit) {
-         echo "<form name='form' method='post' action='".
-            Toolbox::getItemTypeFormURL('PluginMetademandsMetademand_Resource')."'>";
+         echo "<form name='form' method='post' action='" .
+              Toolbox::getItemTypeFormURL('PluginMetademandsMetademand_Resource') . "'>";
 
          echo "<div align='center'><table class='tab_cadre_fixe'>";
-         echo "<tr class='tab_bg_1'><th>".self::getTypeName(1)."</th></tr>";
+         echo "<tr class='tab_bg_1'><th>" . self::getTypeName(1) . "</th></tr>";
          echo "<tr class='tab_bg_1'><td class='center'>";
-         echo PluginMetademandsMetademand::getTypeName(1).'&nbsp;';
-         Dropdown::show('PluginMetademandsMetademand', ['name'       => 'plugin_metademands_metademands_id',
-                                                             'used'       => $used_data,
-                                                             'entity'     => $_SESSION['glpiactive_entity']]);
+         echo PluginMetademandsMetademand::getTypeName(1) . '&nbsp;';
+         Dropdown::show('PluginMetademandsMetademand', ['name'   => 'plugin_metademands_metademands_id',
+                                                        'used'   => $used_data,
+                                                        'entity' => $_SESSION['glpiactive_entity']]);
          echo "</td></tr>";
          echo "<tr class='tab_bg_1'><td class='tab_bg_2 center'>";
          echo Html::submit(_sx('button', 'Add'), ['name' => 'update', 'class' => 'btn btn-primary']);
@@ -161,20 +164,20 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
          $rand = mt_rand();
          echo "<div class='center'>";
          if ($canedit) {
-            Html::openMassiveActionsForm('mass'.__CLASS__.$rand);
-            $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass'.__CLASS__.$rand];
+            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
+            $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
             Html::showMassiveActions($massiveactionparams);
          }
          echo "<table class='tab_cadre_fixe'>";
          echo "<tr>";
-         echo "<th colspan='3'>".__('Meta-demands linked', 'metademands')."</th>";
+         echo "<th colspan='3'>" . __('Meta-demands linked', 'metademands') . "</th>";
          echo "</tr>";
          echo "<tr>";
          if ($canedit) {
-            echo "<th width='10'>".Html::getCheckAllAsCheckbox('mass'.__CLASS__.$rand)."</th>";
+            echo "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand) . "</th>";
          }
-         echo "<th>".__('Name')."</th>";
-         echo "<th>".__('Entity')."</th>";
+         echo "<th>" . __('Name') . "</th>";
+         echo "<th>" . __('Entity') . "</th>";
          foreach ($fields as $field) {
             echo "<tr class='tab_bg_1'>";
             if ($canedit) {
@@ -183,8 +186,8 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
                echo "</td>";
             }
             //DATA LINE
-            echo "<td>".Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $field['plugin_metademands_metademands_id'])."</td>";
-            echo "<td>".Dropdown::getDropdownName('glpi_entities', $field['entities_id'])."</td>";
+            echo "<td>" . Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $field['plugin_metademands_metademands_id']) . "</td>";
+            echo "<td>" . Dropdown::getDropdownName('glpi_entities', $field['entities_id']) . "</td>";
             echo "</tr>";
          }
 
@@ -203,7 +206,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
    static function redirectFormForResource(PluginResourcesResource $resources) {
 
       $metademand_resource = new self();
-      $resources_step = $resources->fields['resources_step'];
+      $resources_step      = $resources->fields['resources_step'];
 
       if (isset($resources->fields["plugin_resources_resources_id"]) && !empty($resources->fields["plugin_resources_resources_id"])) {
          $resources->getFromDB($resources->fields["plugin_resources_resources_id"]);
@@ -213,7 +216,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
          $data = $metademand_resource->getDataForResourceContractType($resources->fields['plugin_resources_contracttypes_id'], ['entities_id' => $_SESSION['glpiactive_entity']]);
          $data = array_shift($data);
          if (!empty($data["plugin_metademands_metademands_id"])) {
-            Html::redirect(PLUGIN_METADEMANDS_WEBDIR."/front/wizard.form.php?metademands_id=".$data["plugin_metademands_metademands_id"]."&resources_id=".$resources->fields['id']."&resources_step=".$resources_step."&step=2");
+            Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $data["plugin_metademands_metademands_id"] . "&resources_id=" . $resources->fields['id'] . "&resources_step=" . $resources_step . "&step=2");
          }
       }
    }
@@ -223,10 +226,10 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
     * @param array  $condition
     *
     * @return array
-*/
+    */
    function getDataForResourceContractType($resourceContractType_id, $condition = []) {
-      $cond  = ['plugin_resources_contracttypes_id' => $resourceContractType_id]
-                    + $condition;
+      $cond = ['plugin_resources_contracttypes_id' => $resourceContractType_id]
+              + $condition;
       $data = $this->find($cond);
       return $data;
    }
@@ -236,22 +239,22 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       $resource->getFromDB($options['resources_id']);
       $content = "";
 
-      if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+      if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
          $content .= "<tr><th colspan='2'>";
       }
       $content .= $resource->fields['name'] . " " . $resource->fields['firstname'];
-      if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+      if (!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false)) {
          $content .= "</th></tr>";
       }
 
       $contractype = new PluginResourcesContractType();
       $contractype->getFromDB($resource->fields['plugin_resources_contracttypes_id']);
       $config = new PluginResourcesConfig();
-      if($config->useServiceDepartmentAD()){
+      if ($config->useServiceDepartmentAD()) {
          $userCat = new UserCategory();
          $userCat->getFromDB($resource->fields['plugin_resources_services_id']);
          $service = $userCat->getField('name');
-      } else{
+      } else {
          $service = new PluginResourcesService();
          $service->getFromDB($resource->fields['plugin_resources_services_id']);
          $service = $service->getField('name');
@@ -274,26 +277,26 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       $content .= "<td>" . $service . "</td>";
       $content .= "</tr>";
       $content .= "<tr>";
-      $content .= "<td>" . __("Secondaries services", "resources") . "</td><td>";
-      if($config->useServiceDepartmentAD()){
+      if ($config->useSecondaryService() && $config->useServiceDepartmentAD()) {
+         $content          .= "<td>" . __("Secondaries services", "resources") . "</td><td>";
          $secondaryService = json_decode($resource->fields['secondary_services']);
          foreach ($secondaryService as $srvID) {
             $userCat = new UserCategory();
             $userCat->getFromDB($srvID);
-            $content .= $userCat->getField('name')."<br />";
+            $content .= $userCat->getField('name') . "<br />";
          }
+         $content .= "</td></tr>";
       }
-      $content .= "</td></tr>";
       $content .= "<tr>";
       $content .= "<td>" . __("Arrival date", "resources") . "</td>";
-      $content .= "<td>" .  Html::convDate($resource->fields['date_begin']) . "</td>";
+      $content .= "<td>" . Html::convDate($resource->fields['date_begin']) . "</td>";
       $content .= "</tr>";
       $content .= "<tr>";
       $content .= "<td>" . __("Departure date", "resources") . "</td>";
       $content .= "<td>" . Html::convDate($resource->fields['date_end']) . "</td>";
       $content .= "</tr>";
       $content .= "<tr>";
-      $user = new User();
+      $user    = new User();
       $user->getFromDB($resource->fields['users_id']);
       $content .= "<td>" . __("Resource manager", "resources") . "</td>";
       $content .= "<td>" . $user->getField('name') . "</td>";
