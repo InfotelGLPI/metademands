@@ -802,7 +802,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
             }
 
-            if (!$preview && !$seeform) {
+            if (!$preview  && (!$seeform || isset($options['resources_id']))) {
 
                echo "<div class=\"middle-div bt-container-fluid\">";
                echo "<div class=\"bt-feature col-md-12 \">";
