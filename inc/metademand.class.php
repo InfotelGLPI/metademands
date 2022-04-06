@@ -2597,6 +2597,12 @@ JAVASCRIPT
                            foreach ($tasks as $key => $val) {
                               if (PluginMetademandsTicket_Field::checkTicketCreation($val['tasks_id'], $parent_tickets_id)) {
                                  $tasks[$key]['tickettasks_name']   = urlencode($val['tickettasks_name']);
+                                 if(isset($input['items_id']['PluginResourcesResource'])){
+                                    if($resource->getFromDB($resource_id)){
+                                       $tasks[$key]['tickettasks_name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
+                                       $tasks[$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
+                                    }
+                                 }
                                  $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
                                  $tasks[$key]['content']            = urlencode($val['content']);
                                  $tasks[$key]['block_use']          = json_decode($val["block_use"], true);

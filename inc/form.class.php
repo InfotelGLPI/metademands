@@ -398,6 +398,7 @@ class PluginMetademandsForm extends CommonDBTM {
          echo "<tr class='tab_bg_1'>";
          echo "<th>" . __('Name') . "</th>";
          echo "<th>" . __('Creation date') . "</th>";
+         echo "<th>" . __('Created By', 'metademands') . "</th>";
          echo "<th>" . __('See form', 'metademands') . "</th>";
          echo "</tr>";
 
@@ -416,6 +417,10 @@ class PluginMetademandsForm extends CommonDBTM {
 
             echo "<td>";
             echo Html::convDateTime($form_metademand_fields['date']);
+            echo "</td>";
+
+            echo "<td>";
+            echo User::getFriendlyNameById($form_metademand_fields['users_id']);
             echo "</td>";
 
             echo "<td>";
