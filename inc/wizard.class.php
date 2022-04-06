@@ -1377,8 +1377,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                         if (is_array($check_value) && count($check_value) > 0) {
                            foreach ($hidden_link as $key => $fields) {
+                              $val = Toolbox::addslashes_deep($check_value[$key]);
                               $script .= "
-                          if($(this).val() == $check_value[$key]){
+                          if($(this).val() == $val){
                             $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
                             
                           }else{
@@ -1446,8 +1447,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                            foreach ($check_value as $key => $fields) {
                               if ($fields != 0) {
                                  if ($data["item"] == "other") {
+                                    $val = Toolbox::addslashes_deep($custom_value[$fields]);
                                     $script .= "
-                                       if($(value).attr('title') == '$custom_value[$fields]'){
+                                       if($(value).attr('title') == '$val'){
                                           tohide[" . $hidden_link[$key] . "] = false;
                                        }
                                     ";
@@ -1525,7 +1527,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            ";
                            }
                            $script .= "
-                          $.each($('#multiselect" . $data["id"] . "_to').children(), function( key, value ) {
+                          $.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {
                           ";
                            foreach ($check_value as $key => $fields) {
                               if ($fields != 0) {
@@ -2013,8 +2015,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                           ";
                         foreach ($check_value as $key => $fields) {
                            if ($fields != 0) {
+                              $val = Toolbox::addslashes_deep($custom_value[$fields]);
                               $script  .= "
-                           if($(value).attr('title') == '$custom_value[$fields]'){
+                           if($(value).attr('title') == '$val'){
                               tohide[" . $hidden_block[$key] . "] = false;
                            }
                         ";
@@ -2544,6 +2547,100 @@ class PluginMetademandsWizard extends CommonDBTM {
                      echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                      break;
                   default:
+                     break;
+               }
+
+            }
+            if (!empty($data['checkbox_id']) && !empty($data['checkbox_value'])) {
+               switch ($data['type']) {
+                  case 'dropdown_multiple':
+                     if ($data["display_type"] == PluginMetademandsField::CLASSIC_DISPLAY) {
+                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        if (is_array(PluginMetademandsField::_unserialize($data['checkbox_id'])) &&
+                            is_array(PluginMetademandsField::_unserialize($data['checkbox_value'])) ) {
+                           $checkbox_id  = PluginMetademandsField::_unserialize($data['checkbox_id']);
+                           $checkbox_value  = PluginMetademandsField::_unserialize($data['checkbox_value']);
+                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                           $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+                           $script .= "
+                          $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
+                          ";
+                           foreach ($check_value as $key => $fields) {
+                              if ($fields != 0 &&
+                                  (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0) &&
+                                  (isset($checkbox_id[$key]) && $checkbox_value[$key] > 0)) {
+                                 if ($data["item"] == "other") {
+                                    $title = Toolbox::addslashes_deep($custom_value[$fields]);
+                                    $script .= "
+                                       if($(value).attr('title') == '$title'){
+                                          document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
+                                       }
+                                    ";
+                                 } else {
+                                    $script .= "
+                                       if($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($fields) . "'){
+                                          document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
+                                       }
+                                    ";
+                                 }
+                              }
+                           }
+
+                           $script .= "});
+                           });";
+
+                        }
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+                     } else {
+//                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
+
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                           $checkbox_id  = PluginMetademandsField::_unserialize($data['checkbox_id']);
+                           $checkbox_value  = PluginMetademandsField::_unserialize($data['checkbox_value']);
+                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                           $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+
+                           $script .= "
+                          $.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {
+                          ";
+                           foreach ($check_value as $key => $fields) {
+                              if ($fields != 0 &&
+                                  (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0) &&
+                                  (isset($checkbox_id[$key]) && $checkbox_value[$key] > 0)) {
+                                 $fields = Toolbox::addslashes_deep($fields);
+                                 $script  .= " 
+                           if($(value).attr('value') == '$fields'){
+                              document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
+                           }
+                        ";
+                              }
+                           }
+
+                           $script .= "});
+                           });";
+
+                        }
+
+                        //Initialize id default value
+//                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+//                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+//                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+//                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
+//                           $check_value    = array_flip($check_value);
+//                           foreach ($default_values as $k => $v) {
+//                              if ($v == 1) {
+//                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+//                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+//                                 if ($idv > 0) {
+//                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+//                                 }
+//                              }
+//                           }
+//                        }
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+                     }
+
                      break;
                }
 

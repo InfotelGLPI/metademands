@@ -775,7 +775,9 @@ class PluginMetademandsField extends CommonDBChild {
                          'check_value'             => $this->fields['check_value'],
                          'drop'                    => $this->fields["dropdown"],
                          'link_to_user'            => $this->fields["link_to_user"],
-                         'metademands_id'          => $this->fields["plugin_metademands_metademands_id"]];
+                         'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
+                         'checkbox_value'          => $this->fields["checkbox_value"],
+                         'checkbox_id'          => $this->fields["checkbox_id"]];
 
       $this->getEditValue(self::_unserialize($this->fields['custom_values']),
                           self::_unserialize($this->fields['comment_values']),
@@ -3120,6 +3122,18 @@ class PluginMetademandsField extends CommonDBChild {
       } else {
          $params['users_id_validate'] = $params['users_id_validate'][$optid];
       }
+      $params['checkbox_id'] = self::_unserialize($params['checkbox_id']);
+      if (!isset($params['checkbox_id'][$optid])) {
+         $params['checkbox_id'] = 0;
+      } else {
+         $params['checkbox_id'] = $params['checkbox_id'][$optid];
+      }
+      $params['checkbox_value'] = self::_unserialize($params['checkbox_value']);
+      if (!isset($params['checkbox_value'][$optid])) {
+         $params['checkbox_value'] = 0;
+      } else {
+         $params['checkbox_value'] = $params['checkbox_value'][$optid];
+      }
 
       //Hook to get values saves from plugin
       if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -3443,6 +3457,16 @@ class PluginMetademandsField extends CommonDBChild {
             $res .= self::showValidationDropdown($metademands_id, $params['users_id_validate'], $this->getID(), false);
             $res .= "</td></tr>";
          }
+
+         if($this->getField("type") == "dropdown_multiple"){
+            $res .= "<tr><td>";
+            $res .= __('Link to value in checkbox', 'metademands');
+            $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the value in this dropdown is check', 'metademands') . '</span>';
+            $res .= '</td>';
+            $res .= "<td>";
+            $res .= self::showCheckBoxDropdown($metademands_id, $params['checkbox_value'],$params['checkbox_id'], false);
+            $res .= "</td></tr>";
+         }
       }
 
       //Hook to print new options from plugins
@@ -3606,6 +3630,39 @@ class PluginMetademandsField extends CommonDBChild {
                              'value' => $selected_value,
                              'display' => $display,
                              'right'=> $right]);
+   }
+   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param bool $display
+    * @param      $idF
+    *
+    * @return int|string
+    */
+   static function showCheckBoxDropdown($metademands_id, $selected_value, $selected_id, $display = true) {
+      global $CFG_GLPI;
+
+      $fields = new self();
+      $checkboxes = $fields->find(['plugin_metademands_metademands_id' => $metademands_id,'type' => 'checkbox']);
+      $dropdown_values =[];
+      foreach ($checkboxes as $checkbox){
+         $dropdown_values[$checkbox['id']]=$checkbox['name'];
+      }
+      $rand = mt_rand();
+      $return = Dropdown::showFromArray('checkbox_id[]',$dropdown_values,['rand'=> $rand,'display' => $display,'display_emptychoice'=> true,'value' => $selected_id]);
+      $params = ['checkbox_id_val' => '__VALUE__',
+                 'metademands_id'      => $metademands_id];
+      $return .= Ajax::updateItemOnSelectEvent('dropdown_checkbox_id__'.$rand, "checkbox_value".$rand, $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL .
+                                                                               "/ajax/checkboxValues.php", $params, ['rand'=> $rand,'display' => $display]);
+      if(!empty($selected_id)){
+         $fields->getFromDB($selected_id);
+         $arrayValues = PluginMetademandsField::_unserialize($fields->getField('custom_values'), true);
+      }
+      $return .= "<span id='checkbox_value$rand'>\n";
+      $return .= Dropdown::showFromArray('checkbox_value[]',isset($arrayValues)?$arrayValues:[],['display' => $display,'display_emptychoice'=> true,'value' => $selected_value]);
+      $return .= "</span>\n";
+
+      return $return;
    }
 
    /**

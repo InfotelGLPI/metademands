@@ -58,6 +58,22 @@ if (!isset($_POST["check_value"])) {
    }
 }
 
+//if(isset($_POST['checkbox_id']) && is_array($_POST['checkbox_id'])){
+
+   if (isset($_POST["checkbox_id"]) && is_array($_POST["checkbox_id"])) {
+      $_POST["checkbox_id"] = PluginMetademandsField::_serialize($_POST["checkbox_id"]);
+   }
+   if (isset($_POST["checkbox_value"]) && is_array($_POST["checkbox_value"])) {
+      $_POST["checkbox_value"] = PluginMetademandsField::_serialize($_POST["checkbox_value"]);
+   }
+//   $_POST["check_value"] = PluginMetademandsField::_serialize([]);
+//   foreach ($_POST['checkbox_id'] as $key => $choice){
+//      if($choice > 0 && isset($_POST['checkbox_id'][$key])){
+//
+//      }
+//   }
+//}
+
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
     && isset($_POST['item']) && $_POST['item'] == 'Group') {
    if (isset($_POST['is_assign']) && $_POST['is_assign'] > 0) {
