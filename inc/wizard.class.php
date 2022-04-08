@@ -2553,8 +2553,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                           ";
                            foreach ($check_value as $key => $fields) {
                               if ($fields != 0 &&
-                                  (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0) &&
-                                  (isset($checkbox_id[$key]) && $checkbox_value[$key] > 0)) {
+                                  (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0)) {
                                  if ($data["item"] == "other") {
                                     $title = Toolbox::addslashes_deep($custom_value[$fields]);
                                     $script .= "
@@ -2591,8 +2590,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                           ";
                            foreach ($check_value as $key => $fields) {
                               if ($fields != 0 &&
-                                  (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0) &&
-                                  (isset($checkbox_id[$key]) && $checkbox_value[$key] > 0)) {
+                                  (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0)) {
                                  $fields = Toolbox::addslashes_deep($fields);
                                  $script  .= " 
                            if($(value).attr('value') == '$fields'){

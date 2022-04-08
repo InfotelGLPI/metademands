@@ -3708,12 +3708,15 @@ class PluginMetademandsField extends CommonDBChild {
                  'metademands_id'      => $metademands_id];
       $return .= Ajax::updateItemOnSelectEvent('dropdown_checkbox_id__'.$rand, "checkbox_value".$rand, $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL .
                                                                                "/ajax/checkboxValues.php", $params, ['rand'=> $rand,'display' => $display]);
+
+      $arrayValues = [];
+      $arrayValues[0] = Dropdown::EMPTY_VALUE;
       if(!empty($selected_id)){
          $fields->getFromDB($selected_id);
          $arrayValues = PluginMetademandsField::_unserialize($fields->getField('custom_values'), true);
       }
       $return .= "<span id='checkbox_value$rand'>\n";
-      $return .= Dropdown::showFromArray('checkbox_value[]',isset($arrayValues)?$arrayValues:[],['display' => $display,'display_emptychoice'=> true,'value' => $selected_value]);
+      $return .= Dropdown::showFromArray('checkbox_value[]',isset($arrayValues)?$arrayValues:[],['display' => $display,'display_emptychoice'=> false,'value' => $selected_value]);
       $return .= "</span>\n";
 
       return $return;
