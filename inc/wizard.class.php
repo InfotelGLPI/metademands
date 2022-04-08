@@ -1564,10 +1564,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                                    
                                  });";
                            $script .= "});";
-                           //                           $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified', function(){
-                           //                                     console.log('changed');
-                           //                                 });";
-
                         }
 
                         //Initialize id default value
@@ -1592,7 +1588,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                      break;
                   case 'checkbox':
                      $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
                      if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
                         $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
@@ -1800,15 +1795,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                                    
                                  });";
                      }
-                     //                     else {
-                     //                        $script .= "if($(this).val() == " . $data['check_value'] . "){
-                     //                           $('[id-field =\"field" . $data['hidden_link'] . "\"]').show();
-                     //                        }else{
-                     //                            $('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();
-                     //                        }
-                     //                         ";
-                     //                        $script2 = "$('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();";
-                     //                     }
                      $script .= "});";
                      //Initialize id default value
                      if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
@@ -2592,7 +2578,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
                         echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                      } else {
-//                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
                         $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
 
                         if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
@@ -2622,22 +2607,6 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                         }
 
-                        //Initialize id default value
-//                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-//                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-//                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-//                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-//                           $check_value    = array_flip($check_value);
-//                           foreach ($default_values as $k => $v) {
-//                              if ($v == 1) {
-//                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-//                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-//                                 if ($idv > 0) {
-//                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-//                                 }
-//                              }
-//                           }
-//                        }
                         echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                      }
 

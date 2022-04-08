@@ -1686,23 +1686,77 @@ class PluginMetademandsField extends CommonDBChild {
 
                $field .= "</div>";
 
-               $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.js\" type=\"text/javascript\"></script>
-                           <script type=\"text/javascript\">
+               $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
+                           <script type="text/javascript">
                            jQuery(document).ready(function($) {
-                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
+                                  $("#multiselect'.$namefield . $data["id"] . '").multiselect({
                                       search: {
-                                          left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
-                                          right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"" . __('Search') . "...\" />',
+                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
+                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
                                       },
                                       keepRenderingSort: true,
                                       fireSearch: function(value) {
                                           return value.length > 2;
                                       },
+                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
+                                        var self = Multiselect;
+                        
+                                        $options.each(function(index, option) {
+                                            var $option = $(option);
+                        
+                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
+                                                return true;
+                                            }
+                        
+                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
+                                                var $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
+                                                var optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
+                                                var $destinationGroup = $destination.find(optgroupSelector);
+                        
+                                                if (!$destinationGroup.length) {
+                                                    $destinationGroup = $sourceGroup.clone(true);
+                                                    $destinationGroup.empty();
+                        
+                                                    $destination.move($destinationGroup);
+                                                }
+                        
+                                                if ($option.is("optgroup")) {
+                                                    var disabledSelector = "";
+                        
+                                                    if (self.options.ignoreDisabled) {
+                                                        disabledSelector = ":not(:disabled)";
+                                                    }
+                        
+                                                    $destinationGroup.move($option.find("option" + disabledSelector));
+                                                } else {
+                                                    $destinationGroup.move($option);
+                                                }
+                        
+                                                $sourceGroup.removeIfEmpty();
+                                            } else {
+                                                $destination.move($option);
+                                                //Color change when multiselect value is switch
+                                                $destination[0].value = $options[index].value;
+                                                var selected = $destination[0].selectedIndex;
+                                                var destOption = $destination[0].options[selected];
+                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
+                                                    if($destination[0].name=="from"){
+                                                        destOption.style.color = "red";
+                                                    } else{
+                                                        destOption.style.color = "green";
+                                                    }
+                                                } else{
+                                                    destOption.style.color="#555555";
+                                                }
+                                            }
+                                        });
+                        
+                                        return self;
+                                          
+                                      }
                                   });
                               });
-                           </script>";
-
-
+                           </script>';
             } else {
                if (!empty($data['custom_values'])) {
 
