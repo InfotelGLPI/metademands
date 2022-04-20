@@ -2512,9 +2512,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                                  if(isset($resource_id)){
                                     $resource = new PluginResourcesResource();
-                                    if($resource->getFromDB($resource_id)) {
-                                       $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField('name') . " " . $resource->getField('firstname');
-                                    }
                                     $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
                                  }
                                  $match = $this->getBetween($l['tickettasks_name'], '[', ']');
