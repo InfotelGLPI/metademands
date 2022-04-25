@@ -296,10 +296,8 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       $content .= "<td>" . Html::convDate($resource->fields['date_end']) . "</td>";
       $content .= "</tr>";
       $content .= "<tr>";
-      $user    = new User();
-      $user->getFromDB($resource->fields['users_id']);
       $content .= "<td>" . __("Resource manager", "resources") . "</td>";
-      $content .= "<td>" . $user->getField('name') . "</td>";
+      $content .= "<td>" . getUserName($resource->fields['users_id']). "</td>";
       $content .= "</tr>";
 
       return $content;
