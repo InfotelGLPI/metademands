@@ -2405,7 +2405,7 @@ class PluginMetademandsField extends CommonDBChild {
                   $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
                   if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
                      $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-                     $field .= Html::showToolTip(RichText::getSafeHtml($data['comment_values'][$key]),
+                     $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($data['comment_values'][$key]),
                                                  ['awesome-class' => 'fa-info-circle',
                                                   'display'       => false]);
                      $field .= "</span>";
