@@ -2763,7 +2763,7 @@ JAVASCRIPT
             if ($field['type'] == 'number' && $field['value'] == "0") {
                continue;
             }
-            if ($field['type'] == 'checkbox' && $field['value'] != "") {
+            if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
                continue;
             }
 
