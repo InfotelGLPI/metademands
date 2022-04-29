@@ -125,11 +125,19 @@ class PluginMetademandsProfile extends Profile {
 
       echo "<table class='tab_cadre_fixehov'>";
       $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_requester']);
+
       echo "<tr class='tab_bg_2'>";
       echo "<td width='20%'>".__('Right to update the requester of a meta-demand', 'metademands')."</td>";
       echo "<td colspan='5'>";
       Html::showCheckbox(['name'    => '_plugin_metademands_requester[1_0]',
                                'checked' => $effective_rights['plugin_metademands_requester']]);
+      echo "</td></tr>\n";
+      echo "<tr class='tab_bg_2'>";
+      echo "<td width='20%'>".__('Right to update a meta-demand from a ticket', 'metademands')."</td>";
+      echo "<td colspan='5'>";
+      $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_updatemeta']);
+      Html::showCheckbox(['name'    => '_plugin_metademands_updatemeta[1_0]',
+                               'checked' => $effective_rights['plugin_metademands_updatemeta']]);
       echo "</td></tr>\n";
       echo "</table>";
 
@@ -166,6 +174,11 @@ class PluginMetademandsProfile extends Profile {
          $rights[] = ['itemtype'  => 'PluginMetademandsWizard',
                            'label'     => __('Right to update the requester of a meta-demand', 'metademands'),
                            'field'     => 'plugin_metademands_requester'
+                     ];
+
+         $rights[] = ['itemtype'  => 'PluginMetademandsWizard',
+                           'label'     => __('Right to update a meta-demand from ticket', 'metademands'),
+                           'field'     => 'plugin_metademands_updatemeta'
                      ];
       }
 
@@ -299,7 +312,9 @@ class PluginMetademandsProfile extends Profile {
    static function createFirstAccess($profiles_id) {
 
       $rights = ['plugin_metademands'               => ALLSTANDARDRIGHT,
-                      'plugin_metademands_requester'     => 1];
+                      'plugin_metademands_requester'     => 1,
+                      'plugin_metademands_updatemeta'     => 1,
+         ];
 
       self::addDefaultProfileInfos($profiles_id,
                                    $rights, true);

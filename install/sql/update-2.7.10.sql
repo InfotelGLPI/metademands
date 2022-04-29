@@ -29,3 +29,4 @@ CREATE TABLE `glpi_plugin_metademands_forms_values`
 
 ALTER TABLE `glpi_plugin_metademands_fields` ADD `checkbox_value` VARCHAR (255) NOT NULL DEFAULT '[]';
 ALTER TABLE `glpi_plugin_metademands_fields` ADD `checkbox_id` VARCHAR (255) NOT NULL DEFAULT '[]';
+ALTER TABLE `glpi_plugin_metademands_metademands` ADD `can_modify` tinyint(1) NOT NULL DEFAULT '0';

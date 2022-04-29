@@ -434,6 +434,11 @@ class PluginMetademandsForm extends CommonDBTM {
                            data-hasqtip='0' aria-hidden='true'></i>";
             echo "</button>";
             $step = 2;
+            $is_validate = 1;
+            $metaValidation = new PluginMetademandsMetademandValidation();
+            if ($metaValidation->getFromDBByCrit(['tickets_id' => $items_id])) {
+               $is_validate = $metaValidation->fields['validate'];
+            }
             echo "<script>
                       var step = {$step};
                       function loadForm$rand(form_id, meta_id) {
@@ -450,7 +455,7 @@ class PluginMetademandsForm extends CommonDBTM {
                                 success: function(response){
                                     if (response == 0) {
                                        $('#ajax_loader').hide();
-                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?see_form=1&metademands_id=' + meta_id + '&step=' + step;
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?current_ticket_id=$items_id&meta_validated=$is_validate&see_form=1&metademands_id=' + meta_id + '&step=' + step;
                                     }
                                 }
                              });

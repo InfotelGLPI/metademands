@@ -125,6 +125,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                      'preview'           => false,
                      'seeform'           => false,
                      'tickets_id'        => 0,
+                     'current_ticket_id'        => 0,
+                     'meta_validated'        => 1,
                      'resources_id'      => 0,
                      'resources_step'    => '',
                      'itilcategories_id' => 0];
@@ -410,7 +412,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          $options['resources_id']      = $parameters['resources_id'];
          $options['itilcategories_id'] = $parameters['itilcategories_id'];
-         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['seeform']);
+         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['seeform'],$parameters['current_ticket_id'],$parameters['meta_validated']);
          Html::closeForm();
          echo "</div>";
          if (!$parameters['preview']) {
@@ -428,7 +430,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $seeform = false) {
+   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $seeform = false, $current_ticket = 0, $meta_validated = 1) {
 
       if ($preview == false) {
          echo "<div id='ajax_loader' class=\"ajax_loader\">";
@@ -459,7 +461,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          //            break;
 
          default:
-            self::showMetademands($metademands_id, $step, $preview, $options, $seeform);
+            self::showMetademands($metademands_id, $step, $preview, $options, $seeform, $current_ticket, $meta_validated);
             break;
 
       }
@@ -718,7 +720,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   static function showMetademands($metademands_id, $step, $preview = false, $options = [], $seeform = false) {
+   static function showMetademands($metademands_id, $step, $preview = false, $options = [], $seeform = false,$current_ticket, $meta_validated) {
       global $CFG_GLPI;
 
       $parameters = ['itilcategories_id' => 0];
@@ -754,7 +756,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if (count($metademands_data)) {
          if ($step - 1 > count($metademands_data) && !$preview) {
-            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform);
+            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform, $current_ticket ,$meta_validated);
          } else {
             echo "</div>";
 
@@ -802,7 +804,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
             }
 
-            if (!$preview  && (!$seeform || isset($options['resources_id']))) {
+            if (!$preview  && (!$seeform
+                               || (isset($options['resources_id'])
+                                   && $options['resources_id'] > 0)
+                               ||($current_ticket > 0
+                                  && (!$meta_validated ||
+                                    ($meta_validated
+                                     && $metademands->fields['can_modify'] == true))
+                                  && Session::haveRight('plugin_metademands_updatemeta',READ)))
+
+            ) {
 
                echo "<div class=\"middle-div bt-container-fluid\">";
                echo "<div class=\"bt-feature col-md-12 \">";
@@ -812,6 +823,11 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<div class=\"form-row\">";
 
                echo "<div class=\"bt-feature col-md-12 \">";
+               $paramUrl = "";
+               if($current_ticket > 0 && !$meta_validated) {
+                  $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+                  Html::hidden('current_ticket_id',['value' => $current_ticket]);
+               }
                echo "<input type='hidden' name='metademands_id' value='" . $metademands_id . "'>";
                echo "<input type='hidden' name='update_fields'>";
                //verify if have sons metademand
@@ -914,7 +930,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                console.log(error);
                                              } 
                                          });
-                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=create_metademands';
                                     }                                  
                                  },
                                 error: function(xhr, status, error) {

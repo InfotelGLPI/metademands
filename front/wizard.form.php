@@ -669,7 +669,17 @@ if (isset($_POST['next'])) {
       if (isset($_GET['see_form']) && $_GET['see_form'] > 0) {
          $options['seeform'] = true;
       }
+      if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
+         $options['current_ticket_id'] = $_GET['current_ticket_id'];
+      }
+      if (isset($_GET['meta_validated'])) {
+         if($_GET['meta_validated'] > 0) {
+            $options['meta_validated'] = true;
+         } else {
+            $options['meta_validated'] = false;
+         }
 
+      }
       $wizard->showWizard($options);
 
       if (Session::getCurrentInterface() != 'central'

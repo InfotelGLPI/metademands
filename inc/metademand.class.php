@@ -676,7 +676,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td colspan='2'></td>";
+      echo "<td>" . __('Allow form modification after creation and validation') . "</td>";
+      echo "<td>";
+      Dropdown::showYesNo("can_modify", $this->fields['can_modify']);
+      echo "</td>";
 
       echo "<td>" . __('Maintenance mode') . "</td>";
       echo "<td>";
@@ -1670,7 +1673,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
-                  $parent_tickets_id = $object->add($input);
+                  if(isset($options['current_ticket_id']) && $options['current_ticket_id'] > 0 && !$options['meta_validated']) {
+                     $inputUpdate['id'] = $options['current_ticket_id'];
+                     $inputUpdate['content'] = $input['content'];
+                     $inputUpdate['name'] = $input['name'];
+                     $parent_tickets_id = $inputUpdate['id'];
+                     $object->update($inputUpdate);
+                     $object->getFromDB($inputUpdate['id']);
+                     $ticket_exists_array[]          = 1;
+                  } else {
+                     $parent_tickets_id = $object->add($input);
+                  }
+
                   if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
                      $draft = new PluginMetademandsDraft();
                      $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
@@ -3182,7 +3196,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            }
 
                            $paramIn["tickets_to_create"] = json_encode($tasks);
-                           $metaValid->add($paramIn);
+                           if($metaValid->getFromDBByCrit(['tickets_id' =>   $paramIn["tickets_id"]])) {
+                              $paramIn['id'] = $metaValid->getID();
+                              $metaValid->update($paramIn);
+                           } else {
+                              $metaValid->add($paramIn);
+                           }
+
                         }
                      } else {
                         if ($this->fields["validation_subticket"] == 1) {
@@ -3194,7 +3214,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            $paramIn["date"]                              = date("Y-m-d H:i:s");
 
                            $paramIn["tickets_to_create"] = "";
-                           $metaValid->add($paramIn);
+                           if($metaValid->getFromDBByCrit(['tickets_id' =>   $paramIn["tickets_id"]])) {
+                              $paramIn['id'] = $metaValid->getID();
+                              $metaValid->update($paramIn);
+                           } else {
+                              $metaValid->add($paramIn);
+                           }
                         }
                      }
 
