@@ -65,8 +65,13 @@ if (isset($_POST['fields_id'])
    $locations_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
 }
 
-Location::dropdown(['name'  => $_POST["field"],
-                    'value' => $locations_id]);
+$opt = ['name'  => $_POST["field"],
+        'value' => $locations_id];
+if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
+   $opt['specific_tags'] = ['required' => 'required'];
+}
+
+Location::dropdown($opt);
 
 $_POST['name'] = "location_user";
 $_POST['rand'] = "";

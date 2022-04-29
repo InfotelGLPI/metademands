@@ -461,7 +461,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          //            break;
 
          default:
-            self::showMetademands($metademands_id, $step, $preview, $options, $seeform, $current_ticket, $meta_validated);
+            self::showMetademands($metademands_id, $step, $current_ticket, $meta_validated, $preview, $options, $seeform);
             break;
 
       }
@@ -720,7 +720,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   static function showMetademands($metademands_id, $step, $preview = false, $options = [], $seeform = false,$current_ticket, $meta_validated) {
+   static function showMetademands($metademands_id, $step,$current_ticket, $meta_validated, $preview = false, $options = [], $seeform = false) {
       global $CFG_GLPI;
 
       $parameters = ['itilcategories_id' => 0];
@@ -774,12 +774,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (!isset($_POST['form_metademands_id']) ||
                          (isset($_POST['form_metademands_id']) && $form_metademands_id != $_POST['form_metademands_id'])) {
                         if (!isset($_SESSION['metademands_hide'][$form_metademands_id])) {
-                           self::constructForm($metademands_data, $line['form'], $preview, $parameters['itilcategories_id']);
+                           self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket ,$meta_validated);
                         } else {
                            $step++;
                         }
                      } else {
-                        self::constructForm($metademands_data, $line['form'], $preview, $parameters['itilcategories_id']);
+                        self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket ,$meta_validated);
 
                      }
                      if ($metademands->fields['is_order'] == 1) {
@@ -804,6 +804,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                }
             }
 
+            $use_as_step = 0;
+            if ($preview || $seeform) {
+               $use_as_step = 0;
+            }
             if (!$preview  && (!$seeform
                                || (isset($options['resources_id'])
                                    && $options['resources_id'] > 0)
@@ -823,9 +827,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<div class=\"form-row\">";
 
                echo "<div class=\"bt-feature col-md-12 \">";
-               $paramUrl = "";
+
                if($current_ticket > 0 && !$meta_validated) {
-                  $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
                   Html::hidden('current_ticket_id',['value' => $current_ticket]);
                }
                echo "<input type='hidden' name='metademands_id' value='" . $metademands_id . "'>";
@@ -885,62 +888,62 @@ class PluginMetademandsWizard extends CommonDBTM {
                         </script>";
                      }
                   } else {
-                     echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-                     echo "</div>";
-                     $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-                     $title .= _sx('button', 'Save & Post', 'metademands');
-                     echo Html::submit($title, ['name'  => 'next_button',
-                                                'form'  => '',
-                                                'title' => _sx('button', 'Save & Post', 'metademands'),
-                                                'id'    => 'submitjob',
-                                                'class' => 'btn btn-success metademand_next_button']);
-                     $ID   = $metademands->fields['id'];
-                     $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-                     echo "<script>
-                       $('#submitjob').click(function() {
-                          var meta_id = {$ID};
-                          if(typeof tinyMCE !== 'undefined'){
-                                tinyMCE.triggerSave();
-                             }
-                          jQuery('.resume_builder_input').trigger('change');
-                          $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                          $('#ajax_loader').show();
-                          arrayDatas = $('form').serializeArray();
-                          arrayDatas.push({name: \"save_form\", value: true});
-                          arrayDatas.push({name: \"form_name\", value: '$name'});
-                          
-                          $.ajax({
-                             url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
-                                type: 'POST',
-                                data: $('form').serializeArray(),
-                                success: function(response){
-                                    $('#ajax_loader').hide();
-                                    if (response == 1) {
-                                       document.location.reload();
-                                    } else {
-                                       $.ajax({
-                                         url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                                            type: 'POST',
-                                            data: arrayDatas,
-                                            success: function(response){
-                                             },
-                                            error: function(xhr, status, error) {
-                                               console.log(xhr);
-                                               console.log(status);
-                                               console.log(error);
-                                             } 
-                                         });
-                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=create_metademands';
-                                    }                                  
-                                 },
-                                error: function(xhr, status, error) {
-                                   console.log(xhr);
-                                   console.log(status);
-                                   console.log(error);
-                                 } 
-                             });
-                       });
-                     </script>";
+//                     echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+//                     echo "</div>";
+//                     $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+//                     $title .= _sx('button', 'Save & Post', 'metademands');
+//                     echo Html::submit($title, ['name'  => 'next_button',
+//                                                'form'  => '',
+//                                                'title' => _sx('button', 'Save & Post', 'metademands'),
+//                                                'id'    => 'submitjob',
+//                                                'class' => 'btn btn-success metademand_next_button']);
+//                     $ID   = $metademands->fields['id'];
+//                     $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+//                     echo "<script>
+//                       $('#submitjob').click(function() {
+//                          var meta_id = {$ID};
+//                          if(typeof tinyMCE !== 'undefined'){
+//                                tinyMCE.triggerSave();
+//                             }
+//                          jQuery('.resume_builder_input').trigger('change');
+//                          $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+//                          $('#ajax_loader').show();
+//                          arrayDatas = $('form').serializeArray();
+//                          arrayDatas.push({name: \"save_form\", value: true});
+//                          arrayDatas.push({name: \"form_name\", value: '$name'});
+//
+//                          $.ajax({
+//                             url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
+//                                type: 'POST',
+//                                data: $('form').serializeArray(),
+//                                success: function(response){
+//                                    $('#ajax_loader').hide();
+//                                    if (response == 1) {
+//                                       document.location.reload();
+//                                    } else {
+//                                       $.ajax({
+//                                         url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+//                                            type: 'POST',
+//                                            data: arrayDatas,
+//                                            success: function(response){
+//                                             },
+//                                            error: function(xhr, status, error) {
+//                                               console.log(xhr);
+//                                               console.log(status);
+//                                               console.log(error);
+//                                             }
+//                                         });
+//                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=create_metademands';
+//                                    }
+//                                 },
+//                                error: function(xhr, status, error) {
+//                                   console.log(xhr);
+//                                   console.log(status);
+//                                   console.log(error);
+//                                 }
+//                             });
+//                       });
+//                     </script>";
                   }
 
                } else {
@@ -949,10 +952,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "&nbsp;<i class='fas fa-chevron-right' data-hasqtip='0' aria-hidden='true'></i>";
                   echo "</button>";
                }
-               echo "<button class='btn btn-primary btn-sm metademand_previous_button' name='previous' title='" . __('Previous') . "'>";
-               echo "<i class='fas fa-chevron-left' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-               echo __('Previous');
-               echo "</button>";
+               if ($use_as_step == 0) {
+                 echo "<button class='btn btn-primary btn-sm metademand_previous_button' name='previous' title='" . __('Previous') . "'>";
+                 echo "<i class='fas fa-chevron-left' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+                 echo __('Previous');
+                 echo "</button>";
+               }
                echo "</div>";
                echo "</div>";
             }
@@ -984,42 +989,106 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param bool  $preview
     * @param int   $itilcategories_id
     */
-   static function constructForm($metademands_data, $line = [], $preview = false, $itilcategories_id = 0) {
+   static function constructForm($metademands_id, $metademands_data, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0 ,$meta_validated = 1) {
+        global $CFG_GLPI;
+
+       $metademands = new PluginMetademandsMetademand();
+      $metademands->getFromDB($metademands_id);
+
+      $paramUrl = "";
+      if($current_ticket > 0 && !$meta_validated) {
+         $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+      }
+
+      $ranks = [];
+      foreach ($line as $fields) {
+         $ranks[] = $fields["rank"];
+      }
+      $allranks = array_unique($ranks);
+
+      $allfields   = [];
+      $use_as_step = 0;
+      if ($preview || $seeform) {
+         $use_as_step = 0;
+      }
+      $hidden_blocks     = [];
+      $all_hidden_blocks = [];
+      foreach ($allranks as $rank) {
+         foreach ($line as $fields) {
+            if ($rank == $fields["rank"]) {
+               $allfields[$rank][] = $fields;
+
+               if ($use_as_step == 1) {
+                  $allhidden = PluginMetademandsField::_unserialize($fields['hidden_block']);
+                  if (is_array($allhidden) && count($allhidden) > 0) {
+                     foreach ($allhidden as $k => $hidden) {
+                        $hidden_blocks[$rank][] = $hidden;
+                        $all_hidden_blocks[]    = $hidden;
+                     }
+                     $hidden_blocks[$rank] = array_filter($hidden_blocks[$rank]);
+                  }
+               }
+            }
+         }
+      }
+
+      $all_hidden_blocks = array_unique($all_hidden_blocks);
 
       $count   = 0;
       $columns = 2;
+      $cpt     = 0;
 
       if (count($line)) {
-         $style            = '';
-         $style_left_right = '';
-         $keys             = array_keys($line);
-         $keyIndexes       = array_flip($keys);
 
-         $rank = $line[$keys[0]]['rank'];
-         echo "<div bloc-id='bloc" . $rank . "'>";
-         // Color
-         if ($preview) {
+         if ($use_as_step == 0) {
+            echo "<div class='tab-nostep'>";
+            $cpt = 1;
+         }
 
-            $color = PluginMetademandsField::setColor($rank);
-            $style = 'padding-top:5px; 
+         foreach ($allfields as $blocks => $line) {
+
+            if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
+               if (!in_array($blocks, $all_hidden_blocks)) {
+                  //                  continue;
+
+                  echo "<div class='tab-step'>";
+                  $cpt++;
+               } else {
+//                  echo "<div class='tab-sc-child-" . $blocks . "'>";
+               }
+            }
+
+            $style            = 'padding: 0.5rem 0.5rem;';
+            $style_left_right = 'padding: 0.5rem 0.5rem;';
+            $keys             = array_keys($line);
+            $keyIndexes       = array_flip($keys);
+
+            $rank = $line[$keys[0]]['rank'];
+            echo "<div bloc-id='bloc" . $rank . "' class='tab-sc-child-" . $rank . "'>";
+            // Color
+            if ($preview) {
+
+               $color = PluginMetademandsField::setColor($rank);
+               $style = 'padding-top:5px;
+                      padding-bottom:10px;
                       border-top :3px solid #' . $color . ';
                       border-left :3px solid #' . $color . ';
                       border-right :3px solid #' . $color;
-            echo '<style type="text/css">
+               echo '<style type="text/css">
                        .preview-md-';
-            echo $rank;
-            echo ':before {
+               echo $rank;
+               echo ':before {
                          content: attr(data-title);
                          background: #';
-            echo $color . ";";
-            echo 'position: absolute;
+               echo $color . ";";
+               echo 'position: absolute;
                                padding: 0 20px;
                                color: #fff;
                                right: 0;
                                top: 0;
                            }
                           </style>';
-         }
+            }
 
 
          if ($line[$keys[0]]['type'] == 'title-block') {
@@ -1496,7 +1565,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                     $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
                             
@@ -1572,7 +1641,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                     $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
                             
@@ -1640,7 +1709,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                     $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
                             
@@ -1681,7 +1750,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                     $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
                             
@@ -1803,7 +1872,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
-                                   
+                                     $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
                                     
@@ -1875,7 +1944,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
-                                 
+                                     $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
                                    
@@ -2630,6 +2699,354 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
          }
 
+      if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
+               if (!in_array($blocks, $all_hidden_blocks)) {
+                  echo "</div>";
+               }
+            }
+         }
+         if ($use_as_step == 0) {
+            echo "</div>";
+         }
+
+            if ($metademands->fields['is_order'] == 0 && !$preview && (!$seeform
+                  || (isset($options['resources_id'])
+                     && $options['resources_id'] > 0)
+                  || ($current_ticket > 0
+                     && ((!$meta_validated
+                        && $metademands->fields['can_update'] == true) ||
+                     ($meta_validated
+                        && $metademands->fields['can_clone'] == true))
+                     && Session::haveRight('plugin_metademands_updatemeta', READ)))
+
+            ) {
+//            $use_as_step == 1
+//            &&
+            //            if (!$ticket_template) {
+            echo "<div class=\"form-sc-group\">";
+            echo "<div class='center'>";
+            //               if ($tt->isField('id') && ($tt->fields['id'] > 0)) {
+            //                  echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
+            //                  echo Html::hidden('_predefined_fields', ['value' => Toolbox::prepareArrayForInput($predefined_fields)]);
+            //               }
+            //               if ($config->getBypassCategories() == 0) {
+            //                  echo Html::hidden('itilcategories_id', ['value' => $category_id]);
+            //               }
+            //               echo Html::hidden('type', ['value' => $type]);
+            //               echo Html::hidden('add', ['value' => 1]);
+            echo "<div style='overflow:auto;'>";
+
+            echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
+            echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
+
+            echo "<button type='button' id='nextBtn' class='btn btn-primary ticket-button' onclick='nextPrev(1)'>";
+            echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
+
+            echo "</div>";
+            echo "</div>";
+            echo "</div>";
+            echo "<br>";
+            //            }
+
+
+            //Circles which indicates the steps of the form:
+            echo "<div style='text-align:center;margin-top:40px;'>";
+            //            $cpt--;
+
+            if ($cpt > 1) {
+               for ($j = 1; $j <= $cpt; $j++) {
+                  echo "<span class='step_wizard'></span>";
+               }
+            } else {
+               echo "<span class='step_wizard' style='display: none'></span>";
+            }
+
+
+            echo "</div>";
+
+            $nexttitle   = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+            $title       = _sx('button', 'Save & Post', 'metademands');
+            $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
+            echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+            echo "</div>";
+
+            $ID   = $metademands->fields['id'];
+            $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+//            Toolbox::logInfo($hidden_blocks);
+            $json_hidden_blocks = json_encode($hidden_blocks);
+            $alert = __('Thanks to fill mandatory fields', 'metademands');
+            echo "<script>
+                  var use_as_step = '$use_as_step';
+                  var nexttitle = '$nexttitle';
+                  var submittitle = '$submittitle';
+                  var hiddenblocs = {$json_hidden_blocks};
+                  var msg = '$alert';
+                  var currentTab = 0; // Current tab is set to be the first tab (0)
+                  showTab(currentTab, nexttitle, submittitle); // Display the current tab
+                  
+                  function showTab(n) {
+                     // This function will display the specified tab of the form...
+                     if (use_as_step == 1) {
+                        var x = document.getElementsByClassName('tab-step');
+                     } else {
+                        var x = document.getElementsByClassName('tab-nostep');
+                     }
+                     x[n].style.display = 'block';
+                     //... and fix the Previous/Next buttons:
+                     if (n == 0) {
+                        document.getElementById('prevBtn').style.display = 'none';
+                     } else {
+                        document.getElementById('prevBtn').style.display = 'inline';
+                     }
+                     if (n == (x.length - 1)) {
+                        document.getElementById('nextBtn').innerHTML = submittitle;
+                     } else {
+                        document.getElementById('nextBtn').innerHTML = nexttitle;
+                     }
+                     //... and run a function that will display the correct step indicator:
+                     if (use_as_step == 1) {
+                        fixStepIndicator(n);
+                     }
+                     //hide hidden blocks
+                  //                     if (n == 0) {
+                  //                        var output = Object.entries(hiddenblocs).map(([key, value]) => ({key,value}));
+                  //                        for(var j = 0; j < output.length; j++) {
+                  //                           var values = output[j].value;
+                  //                          for(var v = 0; v < values.length; v++) {
+                  //                             var y = document.getElementsByClassName('tab-sc-child-' + values[v]);
+                  //                             if (y[n] !== undefined) {
+                  //                                 y[n].style.display = 'none';
+                  //                             }
+                  //                          }
+                  //                        }
+                  //                     }
+                  }
+                  
+                  function nextPrev(n) {
+                     // This function will figure out which tab to display
+                     if (use_as_step == 1) {
+                        var x = document.getElementsByClassName('tab-step');
+                     } else {
+                        var x = document.getElementsByClassName('tab-nostep');
+                     }
+                     // Exit the function if any field in the current tab is invalid:
+                     if (n == 1 && !validateForm()) return false;
+                  
+                     // Increase or decrease the current tab by 1:
+                     nextTab = currentTab + n;
+                     // Hide the current tab:
+                     x[currentTab].style.display = 'none';
+                  
+                     // Increase or decrease the current tab by 1:
+                     currentTab = currentTab + n;
+                     // if you have reached the end of the form...
+                     if (currentTab >= x.length) {
+                  
+                        document.getElementById('nextBtn').style.display = 'none';
+                        // ... the form gets submitted:
+                        var meta_id = {$ID};
+                        if (typeof tinyMCE !== 'undefined') {
+                           tinyMCE.triggerSave();
+                        }
+                        jQuery('.resume_builder_input').trigger('change');
+                        $('select[id$=\"_to\"] option').each(function () {
+                           $(this).prop('selected', true);
+                        });
+                        $('#ajax_loader').show();
+                        arrayDatas = $('form').serializeArray();
+                        arrayDatas.push({name: 'save_form', value: true});
+                        arrayDatas.push({name: 'form_name', value: '$name'});
+                        
+                        $.ajax({
+                           url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/createmetademands.php',
+                           type: 'POST',
+                           data: $('form').serializeArray(),
+                           success: function (response) {
+                              $('#ajax_loader').hide();
+                              console.log(response)
+                              if (response == 1) {
+                                 window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
+                              } else {
+                                 $.ajax({
+                                    url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/addform.php',
+                                    type: 'POST',
+                                    data: arrayDatas,
+                                    success: function (response) {
+                                    },
+                                    error: function (xhr, status, error) {
+                                       console.log(xhr);
+                                       console.log(status);
+                                       console.log(error);
+                                    }
+                                 });
+                                 window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=create_metademands';
+                              }
+                           },
+                           error: function (xhr, status, error) {
+                              console.log(xhr);
+                              console.log(status);
+                              console.log(error);
+                           }
+                        });
+                  
+                        return false;
+                     }
+                     // Otherwise, display the correct tab:
+                     showTab(currentTab);
+                  }
+                  
+                  function validateForm() {
+                     // This function deals with validation of the form fields
+                     var x, y, i, valid = true, ko = 0, radioexists = 0, lengthr = 0;
+                  
+                     if (use_as_step == 1) {
+                        var x = document.getElementsByClassName('tab-step');
+                     } else {
+                        var x = document.getElementsByClassName('tab-nostep');
+                     }
+                     y = x[currentTab].getElementsByTagName('input');
+                     z = x[currentTab].getElementsByTagName('select');
+                     w = x[currentTab].getElementsByTagName('textarea');
+                  
+                     // A loop that checks every input field in the current tab:
+                     for (i = 0; i < y.length; i++) {
+                  
+                        // If a field is empty...
+                        fieldname = y[i].name;
+                        fieldtype = y[i].type;
+                        fieldmandatory = y[i].required;
+                        if (fieldname != '_uploader_filename[]'
+                           && fieldname != '_uploader_content[]'
+                           //                                    && fieldtype != 'hidden'
+                           && fieldmandatory == true) {
+                  
+                           var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                  
+                           if (res != 'none' && y[i].value == '') {
+                              $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                              $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                              //hack for date
+                              $('[name=\"' + fieldname + '\"]').next('input').addClass('invalid');
+                              $('[name=\"' + fieldname + '\"]').next('input').attr('required', 'required');
+                              ko++;
+                           } else {
+                              $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                              $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                              //hack for date
+                              $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
+                              $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
+                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                           }
+                  
+                  //                           if (y[i].value == '') {
+                  //                              // add an 'invalid' class to the field:
+                  //                              y[i].classList.add('invalid');
+                  //                              // and set the current valid status to false
+                  //                              ko++;
+                  //                           } else {
+                  //                              y[i].classList.remove('invalid');
+                  //                           }
+                        }
+                        if (y[i].type == 'radio' && fieldmandatory == true) {
+                           if (y[i].checked) lengthr++;
+                           var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                           if (res != 'none' && lengthr == 0) {
+                              $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                              $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                              ko++;
+                           } else {
+                              $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                              $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                           }
+                        }
+                        if (y[i].type == 'checkbox' && fieldmandatory == true) {
+                           var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                           if (res != 'none') {
+                              result = fieldname.substring(0, fieldname.length - 3);
+                              var boxes =  $('[check*=\"' + result + '\"]:checked');
+                              if (boxes.length > 0) {
+                                 $('[check*=\"' + result + '\"]').removeClass('invalid');
+                                 $('[check*=\"' + result + '\"]').removeAttr('required');
+                              } else {
+                                 $('[check*=\"' + result + '\"]').addClass('invalid');
+                                 $('[check*=\"' + result + '\"]').attr('required', 'required');
+                                 ko++;
+                              }
+                           }
+                        }
+                     }
+                  
+                     //for textarea
+                     if (w.length > 0) {
+                        for (i = 0; i < w.length; i++) {
+                           fieldmandatory = w[i].required;
+                           // If a field is empty...
+                           if (w[i].value == '' && fieldmandatory == true) {
+                              var fieldname = w[i].name;
+                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                              if (res != 'none') {
+                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                                 ko++;
+                              } else {
+                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                              }
+                           } else {
+                              w[i].classList.remove('invalid');
+                           }
+                        }
+                     }
+                     //for select
+                     if (z.length > 0) {
+                        for (i = 0; i < z.length; i++) {
+                           fieldmandatory = z[i].required;
+                           // If a field is empty...
+                           if (z[i].value == 0 && fieldmandatory == true) {
+                              // add an 'invalid' class to the field:
+                              var fieldname = z[i].name;
+                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                              if (res != 'none') {
+                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                                 ko++;
+                              } else {
+                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                              }
+                  
+                           } else {
+                              z[i].classList.remove('invalid');
+                           }
+                        }
+                     }
+                     if (ko > 0) {
+//                                       console.log(ko)
+                        valid = false;
+                        alert(msg);
+                     }
+                  
+                     return valid; // return the valid status
+                  }
+                  
+                  function fixStepIndicator(n) {
+                     // This function removes the 'active' class of all steps...
+                     var i, x = document.getElementsByClassName('step_wizard');
+                     for (i = 0; i < x.length; i++) {
+                        x[i].className = x[i].className.replace(' active', '');
+                     }
+                     //... and adds the 'active' class on the current step:
+                     x[n].className += ' active';
+                  }
+               </script>";
+         }
       } else {
          echo "<div class='center'><b>" . __('No item to display') . "</b></div>";
       }

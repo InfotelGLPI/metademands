@@ -309,7 +309,8 @@ class PluginMetademandsForm extends CommonDBTM {
       if ($item->getType() == 'Ticket' || $item->getType() == 'Change') {
          if ($this->canView()
              && !$withtemplate
-             && countElementsInTable("glpi_plugin_metademands_forms", ["itemtype" => $item->getType(), "items_id" => $item->fields['id']])) {
+             && countElementsInTable("glpi_plugin_metademands_forms", ["itemtype" => $item->getType(),
+               "items_id" => $item->fields['id']])) {
 
             $form_metademand_data = $this->find(['itemtype' => $item->getType(), 'items_id' => $item->fields['id']]);
             $total                = count($form_metademand_data);
@@ -390,7 +391,8 @@ class PluginMetademandsForm extends CommonDBTM {
          return false;
       }
       $form_metademand_data = $this->find(['itemtype' => $item->getType(), 'items_id' => $item->fields['id']]);
-      $name                 = _n('Initial form', 'Initial forms', 1, 'metademands');
+      $total                = count($form_metademand_data);
+      $name                 = _n('Initial form', 'Initial forms', $total, 'metademands');
 
       if (count($form_metademand_data)) {
 

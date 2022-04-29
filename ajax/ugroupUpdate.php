@@ -81,13 +81,17 @@ if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])) {
    $groups_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
 }
-
-Group::dropdown(['name'      => $_POST["field"],
-                 'entity'    => $_SESSION['glpiactiveentities'],
-                 'value'     => $groups_id,
-                 'readonly'  => true,
-                 'condition' => $cond,
-                ]);
+$rand = mt_rand();
+$opt = ['name'      => $_POST["field"],
+        'entity'    => $_SESSION['glpiactiveentities'],
+        'value'     => $groups_id,
+        'condition' => $cond,
+        'rand' => $rand
+];
+if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
+   $opt['specific_tags'] = ['required' => 'required'];
+}
+Group::dropdown($opt);
 
 $_POST['name'] = "group_user";
 $_POST['rand'] = "";

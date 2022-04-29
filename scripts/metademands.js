@@ -207,8 +207,22 @@
             // $("[name='" + toobserve + "']").val() != 0
          ) {
             $('#' + toupdate).html('*');
+            id_field = toupdate.substring(22);
+            if ($("[name='field[" + id_field + "]']").length > 0) {
+               $("[name='field[" + id_field + "]']").attr('required', 'required');
+               $("[name='field[" + id_field + "]']").css('color', 'red');
+               //hack for date field..
+               $("[name='field[" + id_field + "]']").next('input').attr('required', 'required');
+            }
          } else {
-            $('#' + toupdate).html('');
+            if (type != 'checkbox') {
+               $('#' + toupdate).html('');
+               id_field = toupdate.substring(22);
+               $("[name='field[" + id_field + "]']").removeAttr('required');
+               $("[name='field[" + id_field + "]']").css('color', 'unset');
+               //hack for date field..
+               $("[name='field[" + id_field + "]']").next('input').removeAttr('required');
+            }
          }
       };
 

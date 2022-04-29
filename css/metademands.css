@@ -389,3 +389,60 @@ button.clear-basket {
 .select2-container {
     max-width: 250px!important;
 }
+
+/* step  by step */
+.tab-step {
+    display: none;
+}
+
+.alertelt .alertelttext {
+    visibility: hidden;
+    color: red;
+    text-align: left;
+    padding-top: 5px;
+    z-index: 1;
+}
+
+.alertelt.active .alertelttext {
+    visibility: visible;
+}
+
+.buttonelt-title {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    padding-top: 10px!important;
+    font-weight: unset;
+}
+
+input.invalid {
+    background-color: #ffdddd!important;
+}
+
+.invalid + .select2-container,
+textarea.invalid,
+.invalid + .form-select[multiple],
+.invalid + .form-select[size]:not([size="1"]) {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+
+/* Make circles that indicate the steps of the form: */
+.step_wizard {
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #3f7cb7;
+    border: none;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.5;
+}
+
+.step_wizard.active {
+    opacity: 1;
+}
+
+.mt-2 {
+    margin-top: unset!important;
+}

@@ -676,9 +676,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . __('Allow form modification after creation and validation') . "</td>";
+      echo "<td>" . __('Allow form modification before validation', 'metademands') . "</td>";
       echo "<td>";
-      Dropdown::showYesNo("can_modify", $this->fields['can_modify']);
+      Dropdown::showYesNo("can_update", $this->fields['can_update']);
       echo "</td>";
 
       echo "<td>" . __('Maintenance mode') . "</td>";
@@ -1673,7 +1673,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
-                  if(isset($options['current_ticket_id']) && $options['current_ticket_id'] > 0 && !$options['meta_validated']) {
+                  if(isset($options['current_ticket_id'])
+                     && $options['current_ticket_id'] > 0
+                     && !$options['meta_validated']) {
+
                      $inputUpdate['id'] = $options['current_ticket_id'];
                      $inputUpdate['content'] = $input['content'];
                      $inputUpdate['name'] = $input['name'];
@@ -1681,6 +1684,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $object->update($inputUpdate);
                      $object->getFromDB($inputUpdate['id']);
                      $ticket_exists_array[]          = 1;
+
                   } else {
                      $parent_tickets_id = $object->add($input);
                   }
@@ -3352,6 +3356,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $field['value2'] = $values[$fields_id . '-2'];
             }
             if ($field['type'] == 'radio' && $field['value'] === "") {
+               continue;
+            }
+            if ($field['type'] == 'number' && $field['value'] == "0") {
+               continue;
+            }
+            if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
                continue;
             }
             $self = new self();
