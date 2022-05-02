@@ -680,7 +680,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "<td>";
       Dropdown::showYesNo("can_update", $this->fields['can_update']);
       echo "</td>";
+      echo "<td>" . __('Allow form modification after validation', 'metademands') . "</td>";
+      echo "<td>";
+      Dropdown::showYesNo("can_clone", $this->fields['can_clone']);
+      echo "</td>";
+      echo "</tr>";
 
+      echo "<tr class='tab_bg_1'>";
+      echo "<td colspan='2'></td>";
       echo "<td>" . __('Maintenance mode') . "</td>";
       echo "<td>";
       Dropdown::showYesNo("maintenance_mode", $this->fields['maintenance_mode']);
@@ -1827,11 +1834,15 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   if ($object_class == 'Ticket') {
                      // Metademands - ticket relation
                      //TODO Change / problem ?
-                     $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
-                                              'parent_tickets_id'                 => $ancestor_tickets_id,
-                                              'plugin_metademands_metademands_id' => $form_metademands_id,
-                                              'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
-
+                     if(!$ticket_metademand->getFromDBByCrit(['tickets_id'                        => $parent_tickets_id,
+                                                              'parent_tickets_id'                 => $ancestor_tickets_id,
+                                                              'plugin_metademands_metademands_id' => $form_metademands_id,
+                                                             ])) {
+                        $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
+                                                 'parent_tickets_id'                 => $ancestor_tickets_id,
+                                                 'plugin_metademands_metademands_id' => $form_metademands_id,
+                                                 'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
+                     }
                      // Save all form values of the ticket
                      if (count($line['form']) && isset($values['fields'])) {
                         //TODO Change / problem ?
