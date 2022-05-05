@@ -159,6 +159,16 @@ class PluginMetademandsConfig extends CommonDBTM {
 
       echo "</tr>";
 
+      echo "<tr class='tab_bg_1'>";
+      echo "<td>";
+      echo __('Show only differences between last form and new form in ticket content', 'metademands');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showYesNo('show_form_changes', $config['show_form_changes']);
+      echo "</td>";
+
+      echo "</tr>";
+
       if ($config['display_buttonlist_servicecatalog'] == 1) {
 
          echo "<tr><th colspan='6'>" . __('Configuration of the Service Catalog plugin', 'metademands') . "</th></tr>";

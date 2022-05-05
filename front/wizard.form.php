@@ -66,6 +66,8 @@ if (empty($_GET['resources_id'])) {
       }
 
    }
+} else{
+   $_SESSION['plugin_metademands']['fields']['resources_id'] = $_GET['resources_id'];
 }
 
 if (empty($_GET['resources_step'])) {
