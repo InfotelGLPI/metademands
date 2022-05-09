@@ -784,7 +784,9 @@ class PluginMetademandsField extends CommonDBChild {
                          'check_value'             => $this->fields['check_value'],
                          'drop'                    => $this->fields["dropdown"],
                          'link_to_user'            => $this->fields["link_to_user"],
-                         'metademands_id'          => $this->fields["plugin_metademands_metademands_id"]];
+                         'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
+                         'checkbox_value'          => $this->fields["checkbox_value"],
+                         'checkbox_id'          => $this->fields["checkbox_id"]];
 
       $this->getEditValue(self::_unserialize($this->fields['custom_values']),
                           self::_unserialize($this->fields['comment_values']),
@@ -1696,21 +1698,76 @@ class PluginMetademandsField extends CommonDBChild {
 
                $field .= "</div>";
 
-               $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.js\" type=\"text/javascript\"></script>
-                           <script type=\"text/javascript\">
+               $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
+                           <script type="text/javascript">
                            jQuery(document).ready(function($) {
-                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
+                                  $("#multiselect'.$namefield . $data["id"] . '").multiselect({
                                       search: {
-                                          left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
-                                          right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
+                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
+                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
                                       },
                                       keepRenderingSort: true,
                                       fireSearch: function(value) {
                                           return value.length > 2;
                                       },
+                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
+                                        var self = Multiselect;
+                        
+                                        $options.each(function(index, option) {
+                                            var $option = $(option);
+                        
+                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
+                                                return true;
+                                            }
+                        
+                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
+                                                var $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
+                                                var optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
+                                                var $destinationGroup = $destination.find(optgroupSelector);
+                        
+                                                if (!$destinationGroup.length) {
+                                                    $destinationGroup = $sourceGroup.clone(true);
+                                                    $destinationGroup.empty();
+                        
+                                                    $destination.move($destinationGroup);
+                                                }
+                        
+                                                if ($option.is("optgroup")) {
+                                                    var disabledSelector = "";
+                        
+                                                    if (self.options.ignoreDisabled) {
+                                                        disabledSelector = ":not(:disabled)";
+                                                    }
+                        
+                                                    $destinationGroup.move($option.find("option" + disabledSelector));
+                                                } else {
+                                                    $destinationGroup.move($option);
+                                                }
+                        
+                                                $sourceGroup.removeIfEmpty();
+                                            } else {
+                                                $destination.move($option);
+                                                //Color change when multiselect value is switch
+                                                $destination[0].value = $options[index].value;
+                                                var selected = $destination[0].selectedIndex;
+                                                var destOption = $destination[0].options[selected];
+                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
+                                                    if($destination[0].name=="from"){
+                                                        destOption.style.color = "red";
+                                                    } else{
+                                                        destOption.style.color = "green";
+                                                    }
+                                                } else{
+                                                    destOption.style.color="#555555";
+                                                }
+                                            }
+                                        });                        
+                                        return self;
+                                          
+                                      }
                                   });
                               });
-                           </script>";
+                           </script>';
 
 
             } else {
@@ -1780,21 +1837,92 @@ class PluginMetademandsField extends CommonDBChild {
 
                      $field .= "</div>";
 
-                     $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.min.js\" type=\"text/javascript\"></script>
-                           <script type=\"text/javascript\">
+                     $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
+                           <script type="text/javascript">
                            jQuery(document).ready(function($) {
-                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
+                                  $("#multiselect'.$namefield . $data["id"] . '").multiselect({
                                       search: {
-                                          left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
-                                          right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
+                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
+                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
                                       },
                                       keepRenderingSort: true,
                                       fireSearch: function(value) {
                                           return value.length > 2;
                                       },
+                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
+                                        var self = Multiselect;
+                        
+                                        $options.each(function(index, option) {
+                                            var $option = $(option);
+                        
+                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
+                                                return true;
+                                            }
+                        
+                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
+                                                var $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
+                                                var optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
+                                                var $destinationGroup = $destination.find(optgroupSelector);
+                        
+                                                if (!$destinationGroup.length) {
+                                                    $destinationGroup = $sourceGroup.clone(true);
+                                                    $destinationGroup.empty();
+                        
+                                                    $destination.move($destinationGroup);
+                                                }
+                        
+                                                if ($option.is("optgroup")) {
+                                                    var disabledSelector = "";
+                        
+                                                    if (self.options.ignoreDisabled) {
+                                                        disabledSelector = ":not(:disabled)";
+                                                    }
+                        
+                                                    $destinationGroup.move($option.find("option" + disabledSelector));
+                                                } else {
+                                                    $destinationGroup.move($option);
+                                                }
+                        
+                                                $sourceGroup.removeIfEmpty();
+                                            } else {
+                                                $destination.move($option);
+                                                //Color change when multiselect value is switch
+                                                $destination[0].value = $options[index].value;
+                                                var selected = $destination[0].selectedIndex;
+                                                var destOption = $destination[0].options[selected];
+                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
+                                                    if($destination[0].name=="from"){
+                                                        destOption.style.color = "red";
+                                                    } else{
+                                                        destOption.style.color = "green";
+                                                    }
+                                                } else{
+                                                    destOption.style.color="#555555";
+                                                }
+                                            }
+                                        });                        
+                                        return self;
+                                          
+                                      }
                                   });
                               });
-                           </script>";
+                           </script>';
+//
+//                     $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.min.js\" type=\"text/javascript\"></script>
+//                           <script type=\"text/javascript\">
+//                           jQuery(document).ready(function($) {
+//                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
+//                                      search: {
+//                                          left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
+//                                          right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
+//                                      },
+//                                      keepRenderingSort: true,
+//                                      fireSearch: function(value) {
+//                                          return value.length > 2;
+//                                      },
+//                                  });
+//                              });
+//                           </script>";
                   } else {
                      $field = Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $data['custom_values'],
                                                       ['values'   => $value,
@@ -3144,6 +3272,18 @@ class PluginMetademandsField extends CommonDBChild {
       } else {
          $params['users_id_validate'] = $params['users_id_validate'][$optid];
       }
+      $params['checkbox_id'] = self::_unserialize($params['checkbox_id']);
+      if (!isset($params['checkbox_id'][$optid])) {
+         $params['checkbox_id'] = 0;
+      } else {
+         $params['checkbox_id'] = $params['checkbox_id'][$optid];
+      }
+      $params['checkbox_value'] = self::_unserialize($params['checkbox_value']);
+      if (!isset($params['checkbox_value'][$optid])) {
+         $params['checkbox_value'] = 0;
+      } else {
+         $params['checkbox_value'] = $params['checkbox_value'][$optid];
+      }
 
       //Hook to get values saves from plugin
       if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -3466,6 +3606,15 @@ class PluginMetademandsField extends CommonDBChild {
             $res .= self::showValidationDropdown($metademands_id, $params['users_id_validate'], $this->getID(), false);
             $res .= "</td></tr>";
          }
+         if($this->getField("type") == "dropdown_multiple"){
+            $res .= "<tr><td>";
+            $res .= __('Link to value in checkbox', 'metademands');
+            $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the value in this dropdown is check', 'metademands') . '</span>';
+            $res .= '</td>';
+            $res .= "<td>";
+            $res .= self::showCheckBoxDropdown($metademands_id, $params['checkbox_value'],$params['checkbox_id'], false);
+            $res .= "</td></tr>";
+         }
       }
 
       //Hook to print new options from plugins
@@ -3629,6 +3778,43 @@ class PluginMetademandsField extends CommonDBChild {
                              'value'   => $selected_value,
                              'display' => $display,
                              'right'   => $right]);
+   }
+
+   /**
+    * @param      $metademands_id
+    * @param      $selected_value
+    * @param bool $display
+    * @param      $idF
+    *
+    * @return int|string
+    */
+   static function showCheckBoxDropdown($metademands_id, $selected_value, $selected_id, $display = true) {
+      global $CFG_GLPI;
+
+      $fields = new self();
+      $checkboxes = $fields->find(['plugin_metademands_metademands_id' => $metademands_id,'type' => 'checkbox']);
+      $dropdown_values =[];
+      foreach ($checkboxes as $checkbox){
+         $dropdown_values[$checkbox['id']]=$checkbox['name'];
+      }
+      $rand = mt_rand();
+      $return = Dropdown::showFromArray('checkbox_id[]',$dropdown_values,['rand'=> $rand,'display' => $display,'display_emptychoice'=> true,'value' => $selected_id]);
+      $params = ['checkbox_id_val' => '__VALUE__',
+                 'metademands_id'      => $metademands_id];
+      $return .= Ajax::updateItemOnSelectEvent('dropdown_checkbox_id__'.$rand, "checkbox_value".$rand, $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL .
+                                                                                                       "/ajax/checkboxValues.php", $params, ['rand'=> $rand,'display' => $display]);
+
+      $arrayValues = [];
+      $arrayValues[0] = Dropdown::EMPTY_VALUE;
+      if(!empty($selected_id)){
+         $fields->getFromDB($selected_id);
+         $arrayValues = PluginMetademandsField::_unserialize($fields->getField('custom_values'), true);
+      }
+      $return .= "<span id='checkbox_value$rand'>\n";
+      $return .= Dropdown::showFromArray('checkbox_value[]',isset($arrayValues)?$arrayValues:[],['display' => $display,'display_emptychoice'=> false,'value' => $selected_value]);
+      $return .= "</span>\n";
+
+      return $return;
    }
 
    /**

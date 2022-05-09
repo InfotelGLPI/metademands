@@ -113,6 +113,8 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `informations_to_display`           varchar(255) NOT NULL           default '[]',
     `use_richtext`                      tinyint NOT NULL DEFAULT '1',
     `childs_blocks`                     VARCHAR(255) NOT NULL           DEFAULT '[]',
+    `checkbox_id` VARCHAR (255) NOT NULL DEFAULT '[]',
+    `checkbox_value` VARCHAR (255) NOT NULL DEFAULT '[]',
     PRIMARY KEY (`id`),
     KEY                                 `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY                                 `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
@@ -304,6 +306,7 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `fa_servicecatalog`                 varchar(100) NOT NULL DEFAULT 'fas fa-share-alt',
     `languageTech`                      varchar(100)          DEFAULT NULL,
     `use_draft`                         tinyint default 0,
+    `show_form_changes`                 tinyint(1) default 0,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 

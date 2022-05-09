@@ -152,6 +152,18 @@ if (isset($_POST['save_form'])) {
             $inputs['is_model'] = $_POST['is_model'];
          }
 
+         if (isset($_POST['resources_id'])) {
+            $resForm = $forms->find(['plugin_metademands_metademands_id' => $_POST['metademands_id'], 'resources_id' => $_POST['resources_id']]);
+            if (count($resForm)) {
+               foreach ($resForm as $res) {
+                  $last = $res['id'];
+               }
+            } else {
+               $last = 0;
+            }
+            $_SESSION['plugin_metademands']['form_to_compare'] = $last;
+         }
+
          if ($form_new_id = $forms->add($inputs)) {
             $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
             $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
