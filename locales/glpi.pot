@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-09 12:05+0000\n"
+"POT-Creation-Date: 2022-05-09 15:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:430
+#: hook.php:432
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:443
+#: hook.php:445
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:459
+#: hook.php:461
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:470
+#: hook.php:472
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:482
+#: hook.php:484
 msgid "Technician child ticket"
 msgstr ""
 
@@ -501,13 +501,13 @@ msgid ""
 msgstr ""
 
 #: inc/field.class.php:3611
-msgid "Link to value in checkbox"
+msgid "Bind to the value of this checkbox"
 msgstr ""
 
 #: inc/field.class.php:3612
 msgid ""
-"If the value selected equals the value to check, the value in this dropdown "
-"is check"
+"If the selected value is equal to the value to check, the checkbox value is "
+"set"
 msgstr ""
 
 #: inc/field.class.php:3742 inc/task.class.php:489 inc/task.class.php:840
@@ -712,115 +712,105 @@ msgstr ""
 msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:2786
+#: inc/metademand.class.php:2787
 #, php-format
-msgid "Ticket \"%s\" updated to metademand with success"
+msgid "%s %d successfully updated"
 msgstr ""
 
-#: inc/metademand.class.php:2789
-#, php-format
-msgid "Problem \"%s\" added with success"
-msgstr ""
-
-#: inc/metademand.class.php:2791
-#, php-format
-msgid "Change \"%s\" added with success"
-msgstr ""
-
-#: inc/metademand.class.php:4128
+#: inc/metademand.class.php:4134
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:4142
+#: inc/metademand.class.php:4148
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/metademand.class.php:4605
+#: inc/metademand.class.php:4611
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:4607
+#: inc/metademand.class.php:4613
 msgid "Do you want to validate her?"
 msgstr ""
 
-#: inc/metademand.class.php:4612 inc/metademand.class.php:4616
+#: inc/metademand.class.php:4618 inc/metademand.class.php:4622
 #: inc/metademandvalidation.class.php:56 inc/metademandvalidation.class.php:296
 #: inc/metademandvalidation.class.php:300
 #: inc/metademandvalidation.class.php:321
 msgid "Metademand validation"
 msgstr ""
 
-#: inc/metademand.class.php:4629
+#: inc/metademand.class.php:4635
 msgid "List of tickets / tasks which be created after validation"
 msgstr ""
 
-#: inc/metademand.class.php:4709
+#: inc/metademand.class.php:4715
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:4723
+#: inc/metademand.class.php:4729
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:4730 inc/metademand.class.php:4859
+#: inc/metademand.class.php:4736 inc/metademand.class.php:4865
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:4852
+#: inc/metademand.class.php:4858
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:4929
+#: inc/metademand.class.php:4935
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:4948
+#: inc/metademand.class.php:4954
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5281
+#: inc/metademand.class.php:5287
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:5413 inc/metademand.class.php:5468
+#: inc/metademand.class.php:5419 inc/metademand.class.php:5474
 msgid "Running metademands"
 msgstr ""
 
-#: inc/metademand.class.php:5425 inc/metademand.class.php:5590
+#: inc/metademand.class.php:5431 inc/metademand.class.php:5596
 msgid "Metademands to be closed"
 msgstr ""
 
-#: inc/metademand.class.php:5437 inc/metademand.class.php:5648
+#: inc/metademand.class.php:5443 inc/metademand.class.php:5654
 msgid "Metademands to be validated"
 msgstr ""
 
-#: inc/metademand.class.php:5449 inc/metademand.class.php:5520
+#: inc/metademand.class.php:5455 inc/metademand.class.php:5526
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: inc/metademand.class.php:6202
+#: inc/metademand.class.php:6208
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:6211
+#: inc/metademand.class.php:6217
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:6306
+#: inc/metademand.class.php:6312
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:6386
+#: inc/metademand.class.php:6392
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:6386
+#: inc/metademand.class.php:6392
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:6399
+#: inc/metademand.class.php:6405
 msgid "Not yet completed"
 msgstr ""
 
@@ -949,12 +939,8 @@ msgstr[1] ""
 msgid "Right to update the requester of a meta-demand"
 msgstr ""
 
-#: inc/profile.class.php:137
-msgid "Right to update a meta-demand from a ticket"
-msgstr ""
-
-#: inc/profile.class.php:180
-msgid "Right to update a meta-demand from ticket"
+#: inc/profile.class.php:137 inc/profile.class.php:180
+msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
 #: inc/servicecatalog.class.php:69
