@@ -4,6 +4,7 @@ UPDATE `glpi_plugin_metademands_tasks` SET `formatastable` = '0' WHERE `formatas
 UPDATE `glpi_plugin_metademands_tasks` SET `formatastable` = '1' WHERE `formatastable` = 0;
 
 ALTER TABLE `glpi_plugin_metademands_configs` ADD `use_draft` tinyint(1) default 1;
+ALTER TABLE `glpi_plugin_metademands_configs` ADD `show_form_changes` tinyint(1) default 0;
 
 DROP TABLE IF EXISTS `glpi_plugin_metademands_forms`;
 CREATE TABLE `glpi_plugin_metademands_forms`
@@ -32,3 +33,6 @@ CREATE TABLE `glpi_plugin_metademands_forms_values`
 
 ALTER TABLE `glpi_plugin_metademands_fields`
     CHANGE `default_use_id_requester` `default_use_id_requester` int unsigned default 0;
+
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `checkbox_value` VARCHAR (255) NOT NULL DEFAULT '[]';
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `checkbox_id` VARCHAR (255) NOT NULL DEFAULT '[]';

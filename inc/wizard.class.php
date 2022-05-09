@@ -1487,8 +1487,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                            if (is_array($check_value) && count($check_value) > 0) {
                               foreach ($hidden_link as $key => $fields) {
+                                 $val = Toolbox::addslashes_deep($check_value[$key]);
                                  $script .= "
-                                               if($(this).val() == $check_value[$key]){
+                                               if($(this).val() == $val){
                                                  $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
                                                  
                                                }else{
@@ -1572,8 +1573,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                               foreach ($check_value as $key => $fields) {
                                  if ($fields != 0) {
                                     if ($data["item"] == "other") {
+                                       $val = Toolbox::addslashes_deep($custom_value[$fields]);
                                        $script .= "
-                                                      if($(value).attr('title') == '$custom_value[$fields]'){
+                                                      if($(value).attr('title') == '$val'){
                                                          tohide[" . $hidden_link[$key] . "] = false;
                                                       }
                                                    ";
@@ -1649,7 +1651,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                           ";
                               }
                               $script .= "
-                          $.each($('#multiselect" . $data["id"] . "_to').children(), function( key, value ) {
+                          $.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {
                           ";
                               foreach ($check_value as $key => $fields) {
                                  if ($fields != 0) {
@@ -1684,10 +1686,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                  });";
                               $script .= "});";
-                              //                           $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified', function(){
-                              //                                     console.log('changed');
-                              //                                 });";
-
                            }
 
                            //Initialize id default value
@@ -1712,7 +1710,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                         break;
                      case 'checkbox':
                         $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                        //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
                         if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
                            $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
@@ -1907,15 +1904,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                  });";
                         }
-                        //                     else {
-                        //                        $script .= "if($(this).val() == " . $data['check_value'] . "){
-                        //                           $('[id-field =\"field" . $data['hidden_link'] . "\"]').show();
-                        //                        }else{
-                        //                            $('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();
-                        //                        }
-                        //                         ";
-                        //                        $script2 = "$('[id-field =\"field" . $data['hidden_link'] . "\"]').hide();";
-                        //                     }
                         $script .= "});";
                         //Initialize id default value
                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
@@ -2098,8 +2086,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                           ";
                            foreach ($check_value as $key => $fields) {
                               if ($fields != 0) {
+                                 $val = Toolbox::addslashes_deep($custom_value[$fields]);
                                  $script  .= "
-                                    if($(value).attr('title') == '$custom_value[$fields]'){
+                                    if($(value).attr('title') == '$val'){
                                        tohide[" . $hidden_block[$key] . "] = false;
                                     }
                                  ";
@@ -2615,6 +2604,81 @@ class PluginMetademandsWizard extends CommonDBTM {
                      default:
                         break;
                   }
+               }
+               if (!empty($data['checkbox_id']) && !empty($data['checkbox_value'])) {
+                  switch ($data['type']) {
+                     case 'dropdown_multiple':
+                        if ($data["display_type"] == PluginMetademandsField::CLASSIC_DISPLAY) {
+                           $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                           if (is_array(PluginMetademandsField::_unserialize($data['checkbox_id'])) &&
+                               is_array(PluginMetademandsField::_unserialize($data['checkbox_value'])) ) {
+                              $checkbox_id  = PluginMetademandsField::_unserialize($data['checkbox_id']);
+                              $checkbox_value  = PluginMetademandsField::_unserialize($data['checkbox_value']);
+                              $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                              $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+                              $script .= "
+                          $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
+                          ";
+                              foreach ($check_value as $key => $fields) {
+                                 if ($fields != 0 &&
+                                     (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0)) {
+                                    if ($data["item"] == "other") {
+                                       $title = Toolbox::addslashes_deep($custom_value[$fields]);
+                                       $script .= "
+                                       if($(value).attr('title') == '$title'){
+                                          document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
+                                       }
+                                    ";
+                                    } else {
+                                       $script .= "
+                                       if($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($fields) . "'){
+                                          document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
+                                       }
+                                    ";
+                                    }
+                                 }
+                              }
+
+                              $script .= "});
+                           });";
+
+                           }
+                           echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+                        } else {
+                           $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
+
+                           if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                              $checkbox_id  = PluginMetademandsField::_unserialize($data['checkbox_id']);
+                              $checkbox_value  = PluginMetademandsField::_unserialize($data['checkbox_value']);
+                              $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                              $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+
+                              $script .= "
+                          $.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {
+                          ";
+                              foreach ($check_value as $key => $fields) {
+                                 if ($fields != 0 &&
+                                     (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0)) {
+                                    $fields = Toolbox::addslashes_deep($fields);
+                                    $script  .= " 
+                           if($(value).attr('value') == '$fields'){
+                              document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
+                           }
+                        ";
+                                 }
+                              }
+
+                              $script .= "});
+                           });";
+
+                           }
+
+                           echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+                        }
+
+                        break;
+                  }
+
 
                }
             }

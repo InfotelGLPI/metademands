@@ -1507,6 +1507,51 @@ JAVASCRIPT
                if ($metademand->fields['is_order'] == 0) {
                   if (count($line['form'])
                       && isset($values['fields'])) {
+                     $forms_id = 0;
+                     if(isset($_SESSION['plugin_metademands']['form_to_compare'])){
+                        $forms_id = $_SESSION['plugin_metademands']['form_to_compare'];
+                     } else if(isset($values['plugin_metademands_forms_id'])){
+                        $forms_id = $values['plugin_metademands_forms_id'];
+                     }
+                     if ($config['show_form_changes'] && $forms_id > 0) {
+                        foreach ($values['fields'] as $idField => $valueField) {
+                           $diffRemove ="";
+                           $oldFormValues = new PluginMetademandsForm_Value();
+                           if ($oldFormValues->getFromDBByCrit(['plugin_metademands_forms_id'  => $forms_id,
+                                                                'plugin_metademands_fields_id' => $idField])) {
+                              $jsonDecode = json_decode($oldFormValues->getField('value'), true);
+                              if (is_array($jsonDecode)) {
+                                 if(empty($valueField)){
+                                    $valueField = [];
+                                 }
+                                 $diffAdd    = array_diff($valueField, $jsonDecode);
+                                 $diffRemove = array_diff($jsonDecode, $valueField);
+                              } else if (is_array($oldFormValues->getField('value'))) {
+                                 if(empty($valueField)){
+                                    $valueField = [];
+                                 }
+                                 $diffRemove = array_diff($oldFormValues->getField('value'), $valueField);
+                                 $diffAdd    = array_diff($valueField, $oldFormValues->getField('value'));
+                              } else if($oldFormValues->getField('value') != $valueField){
+                                 $values['fields'][$idField . '#orange'] = $valueField;
+                              }
+                              if ($oldFormValues->getField('value') == $valueField ||
+                                  (isset($diffRemove) && empty($diffRemove) && empty($diffAdd))) {
+                                 unset($values['fields'][$idField]);
+                              } else {
+                                 if (isset($diffRemove) && !empty($diffRemove)) {
+                                    if(!empty($diffAdd)){
+                                       $values['fields'][$idField . '#green'] = $diffAdd;
+                                    }
+                                    $values['fields'][$idField . '#red'] = $diffRemove;
+                                 } else if(!isset($values['fields'][$idField . '#orange'])){
+                                    $values['fields'][$idField. '#green'] = $valueField;
+                                 }
+                              }
+                           }
+                        }
+                     }
+                     unset($_SESSION['plugin_metademands']['form_to_compare']);
                      $values_form[0]           = $values['fields'];
                      $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
                      $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
@@ -2270,6 +2315,14 @@ JAVASCRIPT
                            foreach ($line['tasks'] as $key => $l) {
                               //replace #id# in title with the value
                               do {
+
+                                 if(isset($resource_id)){
+                                    $resource = new PluginResourcesResource();
+                                    if($resource->getFromDB($resource_id)) {
+                                       $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField('name') . " " . $resource->getField('firstname');
+                                    }
+                                    $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
+                                 }
                                  $match = $this->getBetween($l['tickettasks_name'], '[', ']');
                                  if (empty($match)) {
                                     $explodeTitle = [];
@@ -2666,6 +2719,9 @@ JAVASCRIPT
       if (count($KO)) {
          $message = __('Demand add failed', 'metademands');
       } else {
+         if(isset($_SESSION['plugin_metademands'])){
+            unset($_SESSION['plugin_metademands']);
+         }
          if ($object_class == 'Ticket') {
             if (!in_array(1, $ticket_exists_array)) {
                $message = sprintf(__('Demand "%s" added with success', 'metademands'), $parent_metademands_name);
@@ -2724,9 +2780,19 @@ JAVASCRIPT
       $result            = [];
       $result['content'] = "";
       $parent_fields_id  = 0;
+      $colors =[];
 
 
       foreach ($values_form as $k => $values) {
+         if (is_array($values) && $config_data['show_form_changes']) {
+            foreach ($values as $key => $val) {
+               if (strpos($key, '#') > 0) {
+                  $newKey       = substr($key, 0, strpos($key, '#'));
+                  $colors[$key] = $val;//substr($key,strpos($key,'#')+1);
+                  unset($values_form[$k][$newKey]);
+               }
+            }
+         }
          if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name', $langTech))) {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
          }
@@ -2789,11 +2855,33 @@ JAVASCRIPT
             }
             $nb++;
             $formatAsTable = $options['formatastable'] ?? true;
-            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
 
-            if (!isset($options['formatastable'])
-                || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+            if(isset($colors) && !empty($colors)){
+               $i = 0;
+               foreach ($colors as $key => $val){
+                  $newKey = substr($key,0,strpos($key,'#'));
+                  if($field['id'] == $newKey){
+                     if($i>0){
+                        $resultTemp[$field['rank']]['content'] .= "<tr>";
+                     }
+                     $i++;
+                     $field['value'] = $val;
+                     $color = substr($key,strpos($key,'#')+1);
+                     self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id,false, $formatAsTable,$langTech,$color);
+                     unset($colors[$key]);
+                     if (!isset($options['formatastable'])
+                         || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                $resultTemp[$field['rank']]['content'] .= "</tr>";
+            }
+                  }
+               }
+            } else{
+               self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id,false, $formatAsTable,$langTech);
+
+               if (!isset($options['formatastable'])
+                   || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                  $resultTemp[$field['rank']]['content'] .= "</tr>";
+               }
             }
 
          }
@@ -2820,10 +2908,13 @@ JAVASCRIPT
     * @param $parent_fields_id
     * @param $return_value
     */
-   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '') {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color='') {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
+      if($color != ""){
+         $style_title .= " style='color:$color'";
+      }
       //      $style_title = "style='background-color: #cccccc;'";
 
       if (empty($label = PluginMetademandsField::displayField($field['id'], 'name', $lang))) {
