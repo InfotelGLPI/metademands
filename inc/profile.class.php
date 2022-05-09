@@ -134,7 +134,7 @@ class PluginMetademandsProfile extends Profile {
       echo "</td></tr>\n";
 
       echo "<tr class='tab_bg_2'>";
-      echo "<td width='20%'>" . __('Right to update a meta-demand from a ticket', 'metademands') . "</td>";
+      echo "<td width='20%'>" . __('Right to update a meta-demand form from the ticket', 'metademands') . "</td>";
       echo "<td colspan='5'>";
       $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_updatemeta']);
       Html::showCheckbox(['name'    => '_plugin_metademands_updatemeta[1_0]',
@@ -177,7 +177,7 @@ class PluginMetademandsProfile extends Profile {
                       'field'    => 'plugin_metademands_requester'
          ];
          $rights[] = ['itemtype'  => 'PluginMetademandsWizard',
-                      'label'     => __('Right to update a meta-demand from ticket', 'metademands'),
+                      'label'     => __('Right to update a meta-demand form from the ticket', 'metademands'),
                       'field'     => 'plugin_metademands_updatemeta'
          ];
       }

@@ -2783,12 +2783,18 @@ JAVASCRIPT
             if (!in_array(1, $ticket_exists_array)) {
                $message = sprintf(__('Demand "%s" added with success', 'metademands'), $parent_metademands_name);
             } else {
-               $message = sprintf(__('Ticket "%s" updated to metademand with success', 'metademands'), $parent_metademands_name);
+               $message = sprintf(
+                  __('%s %d successfully updated', 'metademands'),
+                  $object::getTypeName(1),
+                  $object->getID(),
+               );
             }
-         } else if ($object_class == 'Problem') {
-            $message = sprintf(__('Problem "%s" added with success', 'metademands'), $parent_metademands_name);
-         } else if ($object_class == 'Change') {
-            $message = sprintf(__('Change "%s" added with success', 'metademands'), $parent_metademands_name);
+         } else {
+            $message = sprintf(
+               __('%s %d successfully created'),
+               $object::getTypeName(1),
+               $object->getID(),
+            );
          }
       }
 

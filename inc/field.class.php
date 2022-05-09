@@ -3608,8 +3608,8 @@ class PluginMetademandsField extends CommonDBChild {
          }
          if($this->getField("type") == "dropdown_multiple"){
             $res .= "<tr><td>";
-            $res .= __('Link to value in checkbox', 'metademands');
-            $res .= '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the value in this dropdown is check', 'metademands') . '</span>';
+            $res .= __('Bind to the value of this checkbox', 'metademands');
+            $res .= '</br><span class="metademands_wizard_comments">' . __('If the selected value is equal to the value to check, the checkbox value is set', 'metademands') . '</span>';
             $res .= '</td>';
             $res .= "<td>";
             $res .= self::showCheckBoxDropdown($metademands_id, $params['checkbox_value'],$params['checkbox_id'], false);

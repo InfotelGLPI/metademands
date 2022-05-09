@@ -207,13 +207,15 @@ function plugin_metademands_install() {
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "informations_to_display")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.6.sql");
    }
-
+   //version 2.7.8
    if (!$DB->tableExists("glpi_plugin_metademands_pluginfields")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.8.sql");
    }
+   //version 2.7.9
    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "useBlock")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.9.sql");
    }
+   //version 2.7.10 - released after 3.0.0
    //version 3.0.0
    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "formatastable")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.0.0.sql");
