@@ -812,9 +812,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                                || (isset($options['resources_id'])
                                    && $options['resources_id'] > 0)
                                ||($current_ticket > 0
-                                  && (!$meta_validated ||
+                                  && ((!$meta_validated
+                                  && $metademands->fields['can_update'] == true) ||
                                     ($meta_validated
-                                     && $metademands->fields['can_modify'] == true))
+                                     && $metademands->fields['can_clone'] == true))
                                   && Session::haveRight('plugin_metademands_updatemeta',READ)))
 
             ) {
@@ -2865,7 +2866,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $('#ajax_loader').hide();
                               console.log(response)
                               if (response == 1) {
-                                 window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
+                                 window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=2';
                               } else {
                                  $.ajax({
                                     url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/addform.php',

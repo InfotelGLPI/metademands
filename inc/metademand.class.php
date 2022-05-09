@@ -351,8 +351,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
          } else {
             $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
          }
-      } else {
-         $input['itilcategories_id'] = '';
       }
 
       if (isset($input['is_order']) && $input['is_order'] == 1) {
@@ -367,7 +365,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          }
       }
 
-      if (empty($input['object_to_create'])) {
+      if (isset($input['object_to_create']) && empty($input['object_to_create'])) {
          Session::addMessageAfterRedirect(__('Object to create is mandatory', 'metademands'), false, ERROR);
          return false;
       }
@@ -507,7 +505,23 @@ class PluginMetademandsMetademand extends CommonDBTM {
          'name'     => __('Maintenance mode'),
          'datatype' => 'bool',
       ];
-
+      
+      $tab[] = [
+         'id'       => '10',
+         'table'    => $this->getTable(),
+         'field'    => 'can_update',
+         'name'     => __('Allow form modification before validation', 'metademands'),
+         'datatype' => 'bool',
+      ];
+      
+      $tab[] = [
+         'id'       => '11',
+         'table'    => $this->getTable(),
+         'field'    => 'can_clone',
+         'name'     => __('Allow form modification after validation', 'metademands'),
+         'datatype' => 'bool',
+      ];
+      
       $tab[] = [
          'id'            => '92',
          'table'         => $this->getTable(),
@@ -1732,7 +1746,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $inputUpdate['id'] = $options['current_ticket_id'];
                      $inputUpdate['content'] = $input['content'];
                      $inputUpdate['name'] = $input['name'];
+                     
                      $parent_tickets_id = $inputUpdate['id'];
+                     
                      $object->update($inputUpdate);
                      $object->getFromDB($inputUpdate['id']);
                      $ticket_exists_array[]          = 1;
@@ -1891,6 +1907,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      // Save all form values of the ticket
                      if (count($line['form']) && isset($values['fields'])) {
                         //TODO Change / problem ?
+                        $ticket_field->deleteByCriteria(['tickets_id' => $parent_tickets_id]);
                         $ticket_field->setTicketFieldsValues($line['form'], $values['fields'], $parent_tickets_id);
                      }
 
@@ -5476,6 +5493,67 @@ class PluginMetademandsMetademand extends CommonDBTM {
             echo "</table></div>";
          }
       }
+      
+      
+      $sons = json_decode($metaValidation->fields['tickets_to_create'], true);
+       if (is_array($sons)) {
+          echo "<table class='tab_cadre_fixe'>";
+          echo "<tr class='tab_bg_2'>";
+          echo "<th class='left b' colspan='4'>" . __('List of tickets / tasks which be created after validation', 'metademands') . "</th>";
+          echo "</tr>";
+          echo "<tr class='tab_bg_2'>";
+          echo "<th class='center b'>" . __('Name') . "</th>";
+          echo "<th class='center b'>" . __('Type') . "</th>";
+          echo "<th class='center b'>" . __('Category') . "</th>";
+          echo "<th class='center b'>" . __('Assigned to') . "</th>";
+          echo "</tr>";
+          foreach ($sons as $son) {
+             if (PluginMetademandsTicket_Field::checkTicketCreation($son['tasks_id'], $ticket->fields['id'])) {
+                echo "<tr class='tab_bg_1'>";
+                if ($son['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                   $color_class = '';
+                } else {
+                   $color_class = "class='metademand_metademandtasks'";
+                }
+
+                echo "<td $color_class>" . urldecode($son['tickettasks_name']) . "</td>";
+
+                // Type
+                echo "<td $color_class>" . PluginMetademandsTask::getTaskTypeName($son['type']) . "</td>";
+
+                $cat = "";
+                if ($son['type'] == PluginMetademandsTask::TICKET_TYPE
+                    && isset($son['itilcategories_id'])
+                    && $son['itilcategories_id'] > 0) {
+                   $cat = Dropdown::getDropdownName("glpi_itilcategories", $son['itilcategories_id']);
+                }
+                echo "<td $color_class>";
+                echo $cat;
+                echo "</td>";
+
+                //assign
+                $techdata = "";
+                if ($son['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                   if (isset($son['users_id_assign'])
+                       && $son['users_id_assign'] > 0) {
+                      $techdata .= getUserName($son['users_id_assign']);
+                      $techdata .= "<br>";
+                   }
+                   if (isset($son['groups_id_assign'])
+                       && $son['groups_id_assign'] > 0) {
+                      $techdata .= Dropdown::getDropdownName("glpi_groups", $son['groups_id_assign']);
+                   }
+                }
+                echo "<td $color_class>";
+                echo $techdata;
+                echo "</td>";
+
+                echo "</tr>";
+             }
+          }
+          echo "</table>";
+       }
+         
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
       $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
       $tickets_found          = [];

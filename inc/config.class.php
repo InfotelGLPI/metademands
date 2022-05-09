@@ -167,6 +167,9 @@ class PluginMetademandsConfig extends CommonDBTM {
       Dropdown::showYesNo('show_form_changes', $config['show_form_changes']);
       echo "</td>";
 
+      echo "<td> </td>";
+      echo "<td> </td>";
+      
       echo "</tr>";
 
       if ($config['display_buttonlist_servicecatalog'] == 1) {
