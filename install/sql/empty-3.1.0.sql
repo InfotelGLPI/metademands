@@ -82,6 +82,8 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `default_values`                    text COLLATE utf8mb4_unicode_ci default NULL,
     `comment_values`                    text COLLATE utf8mb4_unicode_ci default NULL,
     `check_value`                       varchar(255)                    default NULL,
+    `checkbox_value`                    varchar (255) NOT NULL DEFAULT '[]',
+    `checkbox_id`                       varchar (255) NOT NULL DEFAULT '[]',
     `rank`                              int unsigned NOT NULL default '0',
     `order`                             int unsigned NOT NULL default '0',
     `name`                              varchar(255)                    default NULL,
@@ -306,6 +308,7 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `fa_servicecatalog`                 varchar(100) NOT NULL DEFAULT 'fas fa-share-alt',
     `languageTech`                      varchar(100)          DEFAULT NULL,
     `use_draft`                         tinyint default 0,
+    `show_form_changes`                 tinyint NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
