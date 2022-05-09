@@ -397,8 +397,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
          } else {
             $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
          }
-      } else {
-         $input['itilcategories_id'] = '';
       }
 
       if (isset($input['is_order']) && $input['is_order'] == 1) {
@@ -573,6 +571,22 @@ class PluginMetademandsMetademand extends CommonDBTM {
       ];
 
       $tab[] = [
+         'id'       => '12',
+         'table'    => $this->getTable(),
+         'field'    => 'can_update',
+         'name'     => __('Allow form modification before validation', 'metademands'),
+         'datatype' => 'bool',
+      ];
+
+      $tab[] = [
+         'id'       => '13',
+         'table'    => $this->getTable(),
+         'field'    => 'can_clone',
+         'name'     => __('Allow form modification after validation', 'metademands'),
+         'datatype' => 'bool',
+      ];
+
+      $tab[] = [
          'id'            => '92',
          'table'         => $this->getTable(),
          'field'         => 'itilcategories_id',
@@ -733,6 +747,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
       Dropdown::showYesNo("is_active", $this->fields['is_active']);
       echo "</td>";
 
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+
+      echo "<td>" . __('Allow form modification before validation', 'metademands') . "</td>";
+      echo "<td>";
+      Dropdown::showYesNo("can_update", $this->fields['can_update']);
+      echo "</td>";
+      echo "<td>" . __('Allow form modification after validation', 'metademands') . "</td>";
+      echo "<td>";
+      Dropdown::showYesNo("can_clone", $this->fields['can_clone']);
+      echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
@@ -928,7 +954,7 @@ JAVASCRIPT
          echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
          Dropdown::showYesNo("validation_subticket", $this->fields['validation_subticket']);
          echo "</td>";
-         echo "<td>" . __('Hide the "No" values of Yes / No fields in the tickets', 'metademands') . "</td><td>";
+         echo "<td>" . __('Hide the "No" and empty values of fields in the tickets', 'metademands') . "</td><td>";
          Dropdown::showYesNo("hide_no_field", $this->fields['hide_no_field']);
          echo "</td>";
          echo "</tr>";
@@ -1761,7 +1787,22 @@ JAVASCRIPT
                   }
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
-                  $parent_tickets_id = $object->add($input);
+                  if (isset($options['current_ticket_id'])
+                      && $options['current_ticket_id'] > 0
+                      && !$options['meta_validated']) {
+
+                     $inputUpdate['id']      = $options['current_ticket_id'];
+                     $inputUpdate['content'] = $input['content'];
+                     $inputUpdate['name']    = $input['name'];
+                     $parent_tickets_id      = $inputUpdate['id'];
+                     $object->update($inputUpdate);
+                     $object->getFromDB($inputUpdate['id']);
+                     $ticket_exists_array[] = 1;
+
+                  } else {
+
+                     $parent_tickets_id = $object->add($input);
+                  }
                   //delete drafts
                   if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
                      $draft = new PluginMetademandsDraft();
@@ -1903,14 +1944,20 @@ JAVASCRIPT
                   if ($object_class == 'Ticket') {
                      // Metademands - ticket relation
                      //TODO Change / problem ?
-                     $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
-                                              'parent_tickets_id'                 => $ancestor_tickets_id,
-                                              'plugin_metademands_metademands_id' => $form_metademands_id,
-                                              'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
+                     if (!$ticket_metademand->getFromDBByCrit(['tickets_id'                        => $parent_tickets_id,
+                                                               'parent_tickets_id'                 => $ancestor_tickets_id,
+                                                               'plugin_metademands_metademands_id' => $form_metademands_id,
+                                                              ])) {
+                        $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
+                                                 'parent_tickets_id'                 => $ancestor_tickets_id,
+                                                 'plugin_metademands_metademands_id' => $form_metademands_id,
+                                                 'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
+                     }
 
                      // Save all form values of the ticket
                      if (count($line['form']) && isset($values['fields'])) {
                         //TODO Change / problem ?
+                        $ticket_field->deleteByCriteria(['tickets_id' => $parent_tickets_id]);
                         $ticket_field->setTicketFieldsValues($line['form'], $values['fields'], $parent_tickets_id);
                      }
 
@@ -2596,11 +2643,11 @@ JAVASCRIPT
                            $tasks = $line['tasks'];
                            foreach ($tasks as $key => $val) {
                               if (PluginMetademandsTicket_Field::checkTicketCreation($val['tasks_id'], $parent_tickets_id)) {
-                                 $tasks[$key]['tickettasks_name']   = urlencode($val['tickettasks_name']);
-                                 if(isset($input['items_id']['PluginResourcesResource'])){
-                                    if($resource->getFromDB($resource_id)){
+                                 $tasks[$key]['tickettasks_name'] = urlencode($val['tickettasks_name']);
+                                 if (isset($input['items_id']['PluginResourcesResource'])) {
+                                    if ($resource->getFromDB($resource_id)) {
                                        $tasks[$key]['tickettasks_name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
-                                       $tasks[$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
+                                       $tasks[$key]['items_id']         = ['PluginResourcesResource' => [$resource_id]];
                                     }
                                  }
                                  $tasks[$key]['tasks_completename'] = urlencode($val['tasks_completename']);
@@ -2612,7 +2659,12 @@ JAVASCRIPT
                            }
 
                            $paramIn["tickets_to_create"] = json_encode($tasks);
-                           $metaValid->add($paramIn);
+                           if ($metaValid->getFromDBByCrit(['tickets_id' => $paramIn["tickets_id"]])) {
+                              $paramIn['id'] = $metaValid->getID();
+                              $metaValid->update($paramIn);
+                           } else {
+                              $metaValid->add($paramIn);
+                           }
                         }
                      } else {
                         if ($this->fields["validation_subticket"] == 1) {
@@ -2624,7 +2676,12 @@ JAVASCRIPT
                            $paramIn["date"]                              = date("Y-m-d H:i:s");
 
                            $paramIn["tickets_to_create"] = "";
-                           $metaValid->add($paramIn);
+                           if ($metaValid->getFromDBByCrit(['tickets_id' => $paramIn["tickets_id"]])) {
+                              $paramIn['id'] = $metaValid->getID();
+                              $metaValid->update($paramIn);
+                           } else {
+                              $metaValid->add($paramIn);
+                           }
                         }
                      }
 
@@ -2757,25 +2814,26 @@ JAVASCRIPT
                  || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
                $field['value2'] = $values[$fields_id . '-2'];
             }
-            if ($field['type'] == 'radio' && $field['value'] === "") {
-               continue;
-            }
-            if ($field['type'] == 'number' && $field['value'] == "0") {
-               continue;
-            }
-            if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
-               continue;
-            }
 
             $self = new self();
             $self->getFromDB($metademands_id);
             if ($self->getField('hide_no_field') == 1) {
+               if ($field['type'] == 'radio' && $field['value'] === "") {
+                  continue;
+               }
+               if ($field['type'] == 'number' && $field['value'] == "0") {
+                  continue;
+               }
+               if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
+                  continue;
+               }
                if ($field['type'] == 'yesno' && $field['value'] != "2") {
                   continue;
                }
             }
-          
-            if($field['type'] == "dropdown_meta" && $field['item'] == "PluginResourcesResource"){
+
+            if ($field['type'] == "dropdown_meta"
+                && $field['item'] == "PluginResourcesResource") {
                $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
             }
 
@@ -2860,15 +2918,15 @@ JAVASCRIPT
          switch ($field['type']) {
             case 'title' :
             case 'title-block' :
-//               if ($field['is_basket'] == true) {
-                  if ($formatAsTable == true) {
-                     $result[$field['rank']]['content'] .= "<th colspan='2'>";
-                  }
-                  $result[$field['rank']]['content'] .= $label;
-                  if ($formatAsTable == true) {
-                     $result[$field['rank']]['content'] .= "</th>";
-                  }
-//               }
+               //               if ($field['is_basket'] == true) {
+               if ($formatAsTable == true) {
+                  $result[$field['rank']]['content'] .= "<th colspan='2'>";
+               }
+               $result[$field['rank']]['content'] .= $label;
+               if ($formatAsTable == true) {
+                  $result[$field['rank']]['content'] .= "</th>";
+               }
+               //               }
                break;
             case 'dropdown':
             case 'dropdown_object':

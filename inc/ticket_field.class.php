@@ -39,7 +39,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
    public $itemtype = 'PluginMetademandsMetademand';
 
    static $rightname = 'plugin_metademands';
-   
+
    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
@@ -115,19 +115,19 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
          while ($data = $DB->fetchAssoc($result)) {
 
             $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($data['plugin_metademands_tasks_id']);
-            $check_values = PluginMetademandsField::_unserialize($data['check_value']);
-            if(is_array($tasks_id)) {
+            $check_values                = PluginMetademandsField::_unserialize($data['check_value']);
+            if (is_array($tasks_id)) {
                foreach ($tasks_id as $task) {
                   if (is_array($plugin_metademands_tasks_id) && is_array($check_values) && in_array($task, $plugin_metademands_tasks_id)) {
-                     foreach ($plugin_metademands_tasks_id as $key => $task_id){
-                        if($task == $task_id){
+                     foreach ($plugin_metademands_tasks_id as $key => $task_id) {
+                        if ($task == $task_id) {
                            $test    = self::isCheckValueOKFieldsLinks(PluginMetademandsField::_unserialize($data['field_value']) ?? $data['field_value'], $check_values[$key], $data['type']);
                            $check[] = ($test == false) ? 0 : 1;
                         }
                      }
                   }
                }
-            }else{
+            } else {
                if (is_array($plugin_metademands_tasks_id) && is_array($check_values) && !empty($check_values) && in_array($tasks_id, $plugin_metademands_tasks_id)) {
                   foreach ($plugin_metademands_tasks_id as $key => $task_id) {
                      if ($tasks_id == $task_id) {
@@ -142,7 +142,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
 
       if (in_array(1, $check)) {
          return true;
-      }else if(in_array(0, $check)){
+      } else if (in_array(0, $check)) {
          return false;
       }
 
@@ -187,7 +187,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                case 'checkbox':
                   if (!empty($value)) {
                      $ok = false;
-                     if($check_value == -1){
+                     if ($check_value == -1) {
                         $ok = true;
                      }
                      if (is_array($value)) {
@@ -250,90 +250,89 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
    static function isCheckValueOKFieldsLinks($value, $check_value, $type) {
 
 
+      if (isset($check_value)) {
+         switch ($type) {
+            case 'yesno':
+            case 'dropdown':
+            case 'dropdown_object':
+            case 'dropdown_meta':
+               if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
+                  return false;
+               } else if ($check_value != $value
+                          && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
+                  return false;
+               }
+               break;
+            case 'radio':
+               if (is_null($value)) {
+                  return false;
+               } else if ($check_value !== strval($value)) {
+                  return false;
+               }
+               break;
 
-         if (isset($check_value)) {
-            switch ($type) {
-               case 'yesno':
-               case 'dropdown':
-               case 'dropdown_object':
-               case 'dropdown_meta':
-                  if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
-                     return false;
-                  } else if ($check_value != $value
-                             && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
-                     return false;
+            case 'checkbox':
+               if (!empty($value)) {
+                  $ok = false;
+                  if ($check_value == -1) {
+                     $ok = true;
                   }
-                  break;
-               case 'radio':
-                  if (is_null($value)) {
-                     return false;
-                  } else if ($check_value !== strval($value)) {
-                     return false;
-                  }
-                  break;
-
-               case 'checkbox':
-                  if (!empty($value)) {
-                     $ok = false;
-                     if($check_value == -1){
-                        $ok = true;
-                     }
-                     if (is_array($value)) {
-                        foreach ($value as $key => $v) {
-                           //                     if ($key != 0) {
-                           if ($check_value == $key) {
-                              $ok = true;
-                           }
-                           //                     }
+                  if (is_array($value)) {
+                     foreach ($value as $key => $v) {
+                        //                     if ($key != 0) {
+                        if ($check_value == $key) {
+                           $ok = true;
                         }
-                     } else if (is_array(json_decode($value, true))) {
-                        foreach (json_decode($value, true) as $key => $v) {
-                           //                     if ($key != 0) {
-                           if ($check_value == $key) {
-                              $ok = true;
-                           }
-                           //                     }
+                        //                     }
+                     }
+                  } else if (is_array(json_decode($value, true))) {
+                     foreach (json_decode($value, true) as $key => $v) {
+                        //                     if ($key != 0) {
+                        if ($check_value == $key) {
+                           $ok = true;
                         }
+                        //                     }
                      }
-                     if (!$ok) {
-                        return false;
-                     }
-                  } else {
+                  }
+                  if (!$ok) {
                      return false;
                   }
-                  break;
-               case 'link':
-                  if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value))) {
-                     return false;
-                  }
-                  break;
-               case 'text':
-               case 'textarea':
-                  if (($check_value == 2 && $value != "")) {
-                     return false;
-                  } elseif ($check_value == 1 && $value == "") {
-                     return false;
-                  }
-                  break;
-               case 'dropdown_multiple':
-                  if (empty($value)) {
-                     $value = [];
-                  }
-                  if ($check_value == 0 && is_array($value) && count($value) == 0) {
-                     return false;
-                  }
-                  if(!in_array($check_value,$value)){
-                     return false;
-                  }
-                  break;
+               } else {
+                  return false;
+               }
+               break;
+            case 'link':
+               if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value))) {
+                  return false;
+               }
+               break;
+            case 'text':
+            case 'textarea':
+               if (($check_value == 2 && $value != "")) {
+                  return false;
+               } elseif ($check_value == 1 && $value == "") {
+                  return false;
+               }
+               break;
+            case 'dropdown_multiple':
+               if (empty($value)) {
+                  $value = [];
+               }
+               if ($check_value == 0 && is_array($value) && count($value) == 0) {
+                  return false;
+               }
+               if (is_array($value) && !in_array($check_value, $value)) {
+                  return false;
+               }
+               break;
 
-               default:
-                  if ($check_value == PluginMetademandsField::$not_null && empty($value)) {
-                     return false;
-                  }
-                  break;
-            }
+            default:
+               if ($check_value == PluginMetademandsField::$not_null && empty($value)) {
+                  return false;
+               }
+               break;
          }
+      }
 
       return true;
    }

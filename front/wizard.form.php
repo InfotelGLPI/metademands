@@ -638,9 +638,9 @@ if (isset($_POST['next'])) {
       if (isset($_GET['itilcategories_id']) && $_GET['itilcategories_id'] > 0) {
          $itilcategories_id = $_GET['itilcategories_id'];
       }
-//      if (!isset($_GET['itilcategories_id']) && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
-//         $itilcategories_id = $_SESSION['servicecatalog']['sc_itilcategories_id'];
-//      }
+      //      if (!isset($_GET['itilcategories_id']) && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+      //         $itilcategories_id = $_SESSION['servicecatalog']['sc_itilcategories_id'];
+      //      }
 
       $options = ['step'              => $_GET['step'],
                   'metademands_id'    => $_GET['metademands_id'],
@@ -652,6 +652,16 @@ if (isset($_POST['next'])) {
 
       if (isset($_GET['see_form']) && $_GET['see_form'] > 0) {
          $options['seeform'] = true;
+      }
+      if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
+         $options['current_ticket_id'] = $_GET['current_ticket_id'];
+      }
+      if (isset($_GET['meta_validated'])) {
+         if ($_GET['meta_validated'] > 0) {
+            $options['meta_validated'] = true;
+         } else {
+            $options['meta_validated'] = false;
+         }
       }
 
       $wizard->showWizard($options);

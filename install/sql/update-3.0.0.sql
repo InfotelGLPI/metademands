@@ -3,9 +3,8 @@ ALTER TABLE `glpi_plugin_metademands_tasks`
 UPDATE `glpi_plugin_metademands_tasks` SET `formatastable` = '0' WHERE `formatastable` = 1;
 UPDATE `glpi_plugin_metademands_tasks` SET `formatastable` = '1' WHERE `formatastable` = 0;
 
-ALTER TABLE `glpi_plugin_metademands_configs` ADD `use_draft` tinyint(1) default 1;
+ALTER TABLE `glpi_plugin_metademands_configs` ADD `use_draft` tinyint default 1;
 
-DROP TABLE IF EXISTS `glpi_plugin_metademands_forms`;
 CREATE TABLE `glpi_plugin_metademands_forms`
 (
     `id`                                int unsigned NOT NULL AUTO_INCREMENT,
@@ -19,7 +18,6 @@ CREATE TABLE `glpi_plugin_metademands_forms`
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
-DROP TABLE IF EXISTS `glpi_plugin_metademands_forms_values`;
 CREATE TABLE `glpi_plugin_metademands_forms_values`
 (
     `id`                           int unsigned NOT NULL AUTO_INCREMENT,

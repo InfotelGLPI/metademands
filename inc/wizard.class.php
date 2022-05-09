@@ -128,6 +128,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                      'preview'           => false,
                      'seeform'           => false,
                      'tickets_id'        => 0,
+                     'current_ticket_id' => 0,
+                     'meta_validated'    => 1,
                      'resources_id'      => 0,
                      'resources_step'    => '',
                      'itilcategories_id' => 0];
@@ -150,8 +152,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          $parameters['resources_step'] = $_SESSION['plugin_metademands']['fields']['resources_step'];
       }
       Html::requireJs("metademands");
-//      echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
-//      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_main.css");
+      //      echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
+      //      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_main.css");
       //      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_ticket.css");
 
       echo "<div id ='content'>";
@@ -429,7 +431,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          $options['resources_id']      = $parameters['resources_id'];
          $options['itilcategories_id'] = $parameters['itilcategories_id'];
-         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['seeform']);
+         self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['seeform'], $parameters['current_ticket_id'], $parameters['meta_validated']);
          Html::closeForm();
          echo "</div>";
          if (!$parameters['preview']) {
@@ -447,7 +449,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $seeform = false) {
+   static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $seeform = false, $current_ticket = 0, $meta_validated = 1) {
 
       if ($preview == false) {
          echo "<div id='ajax_loader' class=\"ajax_loader\">";
@@ -478,7 +480,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          //            break;
 
          default:
-            self::showMetademands($metademands_id, $step, $preview, $options, $seeform);
+            self::showMetademands($metademands_id, $step, $current_ticket, $meta_validated, $preview, $options, $seeform);
             break;
 
       }
@@ -570,7 +572,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       $dbu   = new DbUtils();
       $query = "SELECT `id`,`name`
                    FROM `glpi_plugin_metademands_metademands`
-                   WHERE (is_order = 1  OR `glpi_plugin_metademands_metademands`.`itilcategories_id` <> '')
+                   WHERE (is_order = 1  OR `itilcategories_id` <> '')
                    AND $crit  
                         AND `id` NOT IN (SELECT `plugin_metademands_metademands_id` FROM `glpi_plugin_metademands_metademands_resources`) "
                . $dbu->getEntitiesRestrictRequest(" AND ", 'glpi_plugin_metademands_metademands', '', '', true);
@@ -737,7 +739,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     *
     * @throws \GlpitestSQLError
     */
-   static function showMetademands($metademands_id, $step, $preview = false, $options = [], $seeform = false) {
+   static function showMetademands($metademands_id, $step, $current_ticket, $meta_validated, $preview = false, $options = [], $seeform = false) {
       global $CFG_GLPI;
 
       $parameters = ['itilcategories_id' => 0];
@@ -773,7 +775,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if (count($metademands_data)) {
          if ($step - 1 > count($metademands_data) && !$preview) {
-            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform);
+            self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform, $current_ticket, $meta_validated);
          } else {
             echo "</div>";
 
@@ -791,12 +793,12 @@ class PluginMetademandsWizard extends CommonDBTM {
                      if (!isset($_POST['form_metademands_id']) ||
                          (isset($_POST['form_metademands_id']) && $form_metademands_id != $_POST['form_metademands_id'])) {
                         if (!isset($_SESSION['metademands_hide'][$form_metademands_id])) {
-                           self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform);
+                           self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
                         } else {
                            $step++;
                         }
                      } else {
-                        self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform);
+                        self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
 
                      }
                      if ($metademands->fields['is_order'] == 1) {
@@ -826,7 +828,17 @@ class PluginMetademandsWizard extends CommonDBTM {
             if ($preview || $seeform) {
                $use_as_step = 0;
             }
-            if (!$preview && (!$seeform || isset($options['resources_id']))) {
+            if (!$preview && (!$seeform
+                              || (isset($options['resources_id'])
+                                  && $options['resources_id'] > 0)
+                              || ($current_ticket > 0
+                                  && ((!$meta_validated
+                                       && $metademands->fields['can_update'] == true) ||
+                                      ($meta_validated
+                                       && $metademands->fields['can_clone'] == true))
+                                  && Session::haveRight('plugin_metademands_updatemeta', READ)))
+
+            ) {
                echo "<div class=\"middle-div bt-container-fluid\">";
                echo "<div class=\"bt-feature col-md-12 \">";
                echo "</div>";
@@ -835,6 +847,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                echo "<div class=\"row\" style='padding-top: 15px;width: 100%;'>";
 
                echo "<div class=\"bt-feature col-md-12 \">";
+               if ($current_ticket > 0 && !$meta_validated) {
+                  Html::hidden('current_ticket_id', ['value' => $current_ticket]);
+               }
                echo Html::hidden('metademands_id', ['value' => $metademands_id]);
                echo Html::hidden('update_fields', ['value' => 1]);
                //verify if have sons metademand
@@ -896,65 +911,65 @@ class PluginMetademandsWizard extends CommonDBTM {
                         </script>";
                      }
                   } else {
-//                     if ($use_as_step == 0) {
-//                        echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-//                        echo "</div>";
-//
-//                        $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-//                        $title .= _sx('button', 'Save & Post', 'metademands');
-//                        echo Html::submit($title, ['name'  => 'next_button',
-//                                                   'form'  => '',
-//                                                   'title' => _sx('button', 'Save & Post', 'metademands'),
-//                                                   'id'    => 'submitjob',
-//                                                   'class' => 'btn btn-success metademand_next_button']);
-//
-//                        $ID   = $metademands->fields['id'];
-//                        $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-//                        echo "<script>
-//                       $('#submitjob').click(function() {
-//                          var meta_id = {$ID};
-//                          if(typeof tinyMCE !== 'undefined'){
-//                                tinyMCE.triggerSave();
-//                             }
-//                          jQuery('.resume_builder_input').trigger('change');
-//                          $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-//                          $('#ajax_loader').show();
-//                          arrayDatas = $('form').serializeArray();
-//                          arrayDatas.push({name: \"save_form\", value: true});
-//                          arrayDatas.push({name: \"form_name\", value: '$name'});
-//                          $.ajax({
-//                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-//                                type: 'POST',
-//                                data: arrayDatas,
-//                                success: function(response){
-//                                 },
-//                                error: function(xhr, status, error) {
-//                                   console.log(xhr);
-//                                   console.log(status);
-//                                   console.log(error);
-//                                 }
-//                             });
-//                          $.ajax({
-//                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-//                                type: 'POST',
-//                                data: $('form').serializeArray(),
-//                                success: function(response){
-//                                    $('#ajax_loader').hide();
-//                                    if (response == 1) {
-//                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
-//                                    } else {
-//                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
-//                                    }
-//                                 },
-//                                error: function(xhr, status, error) {
-//                                   console.log(xhr);
-//                                   console.log(status);
-//                                   console.log(error);
-//                                 }
-//                             });
-//                       });
-//                     </script>";
-//                     }
+                     //                     if ($use_as_step == 0) {
+                     //                        echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+                     //                        echo "</div>";
+                     //
+                     //                        $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+                     //                        $title .= _sx('button', 'Save & Post', 'metademands');
+                     //                        echo Html::submit($title, ['name'  => 'next_button',
+                     //                                                   'form'  => '',
+                     //                                                   'title' => _sx('button', 'Save & Post', 'metademands'),
+                     //                                                   'id'    => 'submitjob',
+                     //                                                   'class' => 'btn btn-success metademand_next_button']);
+                     //
+                     //                        $ID   = $metademands->fields['id'];
+                     //                        $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+                     //                        echo "<script>
+                     //                       $('#submitjob').click(function() {
+                     //                          var meta_id = {$ID};
+                     //                          if(typeof tinyMCE !== 'undefined'){
+                     //                                tinyMCE.triggerSave();
+                     //                             }
+                     //                          jQuery('.resume_builder_input').trigger('change');
+                     //                          $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                     //                          $('#ajax_loader').show();
+                     //                          arrayDatas = $('form').serializeArray();
+                     //                          arrayDatas.push({name: \"save_form\", value: true});
+                     //                          arrayDatas.push({name: \"form_name\", value: '$name'});
+                     //                          $.ajax({
+                     //                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                     //                                type: 'POST',
+                     //                                data: arrayDatas,
+                     //                                success: function(response){
+                     //                                 },
+                     //                                error: function(xhr, status, error) {
+                     //                                   console.log(xhr);
+                     //                                   console.log(status);
+                     //                                   console.log(error);
+                     //                                 }
+                     //                             });
+                     //                          $.ajax({
+                     //                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                     //                                type: 'POST',
+                     //                                data: $('form').serializeArray(),
+                     //                                success: function(response){
+                     //                                    $('#ajax_loader').hide();
+                     //                                    if (response == 1) {
+                     //                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
+                     //                                    } else {
+                     //                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                     //                                    }
+                     //                                 },
+                     //                                error: function(xhr, status, error) {
+                     //                                   console.log(xhr);
+                     //                                   console.log(status);
+                     //                                   console.log(error);
+                     //                                 }
+                     //                             });
+                     //                       });
+                     //                     </script>";
+                     //                     }
                   }
                } else {
                   $title = "<i class='fas fa-chevron-right' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
@@ -966,8 +981,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                   $title .= __('Previous');
                   echo Html::submit($title, ['name' => 'previous', 'class' => 'btn btn-primary metademand_previous_button']);
                }
-
-
                echo "</div>";
                echo "</div>";
             }
@@ -998,10 +1011,15 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param bool  $preview
     * @param int   $itilcategories_id
     */
-   static function constructForm($metademands_id, $metademands_data, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false) {
+   static function constructForm($metademands_id, $metademands_data, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1) {
 
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
+
+      $paramUrl = "";
+      if ($current_ticket > 0 && !$meta_validated) {
+         $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+      }
 
       $ranks = [];
       foreach ($line as $fields) {
@@ -1057,7 +1075,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "<div class='tab-step'>";
                   $cpt++;
                } else {
-//                  echo "<div class='tab-sc-child-" . $blocks . "'>";
+                  //                  echo "<div class='tab-sc-child-" . $blocks . "'>";
                }
             }
 
@@ -2629,10 +2647,19 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "</div>";
          }
 
-         if ($metademands->fields['is_order'] == 0 && !$preview && !$seeform) {
-//            $use_as_step == 1
-//            &&
-            //            if (!$ticket_template) {
+         if ($metademands->fields['is_order'] == 0
+             && !$preview
+             && (!$seeform
+                 || (isset($options['resources_id'])
+                     && $options['resources_id'] > 0)
+                 || ($current_ticket > 0
+                     && ((!$meta_validated
+                          && $metademands->fields['can_update'] == true) ||
+                         ($meta_validated
+                          && $metademands->fields['can_clone'] == true))
+                     && Session::haveRight('plugin_metademands_updatemeta', READ)))
+
+         ) {
             echo "<div class=\"form-sc-group\">";
             echo "<div class='center'>";
             //               if ($tt->isField('id') && ($tt->fields['id'] > 0)) {
@@ -2682,9 +2709,9 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             $ID   = $metademands->fields['id'];
             $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-//            Toolbox::logInfo($hidden_blocks);
+            //            Toolbox::logInfo($hidden_blocks);
             $json_hidden_blocks = json_encode($hidden_blocks);
-            $alert = __('Thanks to fill mandatory fields', 'metademands');
+            $alert              = __('Thanks to fill mandatory fields', 'metademands');
             echo "<script>
                   var use_as_step = '$use_as_step';
                   var nexttitle = '$nexttitle';
@@ -2774,7 +2801,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            success: function (response) {
                               $('#ajax_loader').hide();
                               if (response == 1) {
-                                 window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
+                                 window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=2';
                               } else {
                                  $.ajax({
                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
@@ -2788,7 +2815,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                        console.log(error);
                                     }
                                  });
-                                 window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                 window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
                               }
                            },
                            error: function (xhr, status, error) {

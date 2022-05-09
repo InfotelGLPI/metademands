@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.0.0.sql");
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.1.0.sql");
    }
 
    if ($DB->tableExists("glpi_plugin_metademands_profiles")
@@ -221,6 +221,28 @@ function plugin_metademands_install() {
          $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `childs_blocks` VARCHAR (255) NOT NULL DEFAULT '[]';";
          $DB->query($query);
       }
+   }
+
+   //version 3.1.0
+   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "checkbox_value")) {
+      $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `checkbox_value` VARCHAR (255) NOT NULL DEFAULT '[]';";
+      $DB->query($query);
+   }
+   if (!$DB->fieldExists("glpi_plugin_metademands_fields", "checkbox_id")) {
+      $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `checkbox_id` VARCHAR (255) NOT NULL DEFAULT '[]';";
+      $DB->query($query);
+   }
+   if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "can_update")) {
+      $query = "ALTER TABLE `glpi_plugin_metademands_metademands` ADD `can_update` tinyint NOT NULL DEFAULT '0';;";
+      $DB->query($query);
+   }
+   if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "can_clone")) {
+      $query = "ALTER TABLE `glpi_plugin_metademands_metademands` ADD `can_clone` tinyint NOT NULL DEFAULT '0';;";
+      $DB->query($query);
+   }
+   if (!$DB->fieldExists("glpi_plugin_metademands_configs", "show_form_changes")) {
+      $query = "ALTER TABLE `glpi_plugin_metademands_configs` ADD `show_form_changes` tinyint NOT NULL DEFAULT '0';";
+      $DB->query($query);
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";

@@ -67,8 +67,8 @@ class PluginMetademandsProfile extends Profile {
     */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
-      if ($item->getType()=='Profile') {
-            return PluginMetademandsMetademand::getTypeName(2);
+      if ($item->getType() == 'Profile') {
+         return PluginMetademandsMetademand::getTypeName(2);
       }
       return '';
    }
@@ -83,12 +83,13 @@ class PluginMetademandsProfile extends Profile {
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
-      if ($item->getType()=='Profile') {
-         $ID = $item->getID();
+      if ($item->getType() == 'Profile') {
+         $ID   = $item->getID();
          $prof = new self();
 
          $rights = ['plugin_metademands'           => ALLSTANDARDRIGHT,
-                         'plugin_metademands_requester' => 1];
+                    'plugin_metademands_requester'     => 1,
+                    'plugin_metademands_updatemeta'     => 1];
 
          self::addDefaultProfileInfos($ID, $rights);
          $prof->showForm($ID);
@@ -111,7 +112,7 @@ class PluginMetademandsProfile extends Profile {
       if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
           && $openform) {
          $profile = new Profile();
-         echo "<form method='post' action='".$profile->getFormURL()."'>";
+         echo "<form method='post' action='" . $profile->getFormURL() . "'>";
       }
 
       $profile = new Profile();
@@ -120,16 +121,24 @@ class PluginMetademandsProfile extends Profile {
       $rights = $this->getAllRights();
 
       $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
-                                                         'default_class' => 'tab_bg_2',
-                                                         'title'         => __('General')]);
+                                                    'default_class' => 'tab_bg_2',
+                                                    'title'         => __('General')]);
 
       echo "<table class='tab_cadre_fixehov'>";
       $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_requester']);
       echo "<tr class='tab_bg_2'>";
-      echo "<td width='20%'>".__('Right to update the requester of a meta-demand', 'metademands')."</td>";
+      echo "<td width='20%'>" . __('Right to update the requester of a meta-demand', 'metademands') . "</td>";
       echo "<td colspan='5'>";
       Html::showCheckbox(['name'    => '_plugin_metademands_requester[1_0]',
-                               'checked' => $effective_rights['plugin_metademands_requester']]);
+                          'checked' => $effective_rights['plugin_metademands_requester']]);
+      echo "</td></tr>\n";
+
+      echo "<tr class='tab_bg_2'>";
+      echo "<td width='20%'>" . __('Right to update a meta-demand from a ticket', 'metademands') . "</td>";
+      echo "<td colspan='5'>";
+      $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_updatemeta']);
+      Html::showCheckbox(['name'    => '_plugin_metademands_updatemeta[1_0]',
+                          'checked' => $effective_rights['plugin_metademands_updatemeta']]);
       echo "</td></tr>\n";
       echo "</table>";
 
@@ -157,16 +166,20 @@ class PluginMetademandsProfile extends Profile {
 
       $rights = [
          ['itemtype' => 'PluginMetademandsMetademand',
-          'label'  => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
-          'field'  => 'plugin_metademands'
+          'label'    => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands'),
+          'field'    => 'plugin_metademands'
          ],
       ];
 
       if ($all) {
+         $rights[] = ['itemtype' => 'PluginMetademandsWizard',
+                      'label'    => __('Right to update the requester of a meta-demand', 'metademands'),
+                      'field'    => 'plugin_metademands_requester'
+         ];
          $rights[] = ['itemtype'  => 'PluginMetademandsWizard',
-                           'label'     => __('Right to update the requester of a meta-demand', 'metademands'),
-                           'field'     => 'plugin_metademands_requester'
-                     ];
+                      'label'     => __('Right to update a meta-demand from ticket', 'metademands'),
+                      'field'     => 'plugin_metademands_updatemeta'
+         ];
       }
 
       return $rights;
@@ -180,13 +193,13 @@ class PluginMetademandsProfile extends Profile {
     */
    static function getItemRights($interface = 'central') {
       if ($interface == 'central') {
-         $values = [CREATE  => __('Create'),
-                         READ    => __('Read'),
-                         UPDATE  => __('Update'),
-                         PURGE   => ['short' => __('Purge'),
-                                          'long'  => _x('button', 'Delete permanently')]];
+         $values = [CREATE => __('Create'),
+                    READ   => __('Read'),
+                    UPDATE => __('Update'),
+                    PURGE  => ['short' => __('Purge'),
+                               'long'  => _x('button', 'Delete permanently')]];
       } else {
-          $values = [READ    => __('Read')];
+         $values = [READ => __('Read')];
       }
 
       return $values;
@@ -237,9 +250,9 @@ class PluginMetademandsProfile extends Profile {
 
       foreach ($datas as $profile_data) {
          $matching = ['metademands' => 'plugin_metademands',
-                           'requester'   => 'plugin_metademands_requester'];
+                      'requester'   => 'plugin_metademands_requester'];
          // Search existing rights
-         $used = [];
+         $used           = [];
          $existingRights = $dbu->getAllDataFromTable('glpi_profilerights',
                                                      ["`profiles_id`" => $profile_data['profiles_id']]);
          foreach ($existingRights as $right) {
@@ -250,11 +263,11 @@ class PluginMetademandsProfile extends Profile {
          foreach ($matching as $old => $new) {
             if (isset($used[$profile_data['profiles_id']][$new])) {
                $query = "UPDATE `glpi_profilerights` 
-                         SET `rights`='".self::translateARight($profile_data[$old])."' 
-                         WHERE `name`='$new' AND `profiles_id`='".$profile_data['profiles_id']."'";
+                         SET `rights`='" . self::translateARight($profile_data[$old]) . "' 
+                         WHERE `name`='$new' AND `profiles_id`='" . $profile_data['profiles_id'] . "'";
                $DB->query($query);
             } else {
-               $query = "INSERT INTO `glpi_profilerights` (`profiles_id`, `name`, `rights`) VALUES ('".$profile_data['profiles_id']."', '$new', '".self::translateARight($profile_data[$old])."');";
+               $query = "INSERT INTO `glpi_profilerights` (`profiles_id`, `name`, `rights`) VALUES ('" . $profile_data['profiles_id'] . "', '$new', '" . self::translateARight($profile_data[$old]) . "');";
                $DB->query($query);
             }
          }
@@ -263,8 +276,8 @@ class PluginMetademandsProfile extends Profile {
 
 
    /**
-   * Initialize profiles, and migrate it necessary
-   */
+    * Initialize profiles, and migrate it necessary
+    */
    static function initProfile() {
       global $DB;
       $profile = new self();
@@ -273,7 +286,7 @@ class PluginMetademandsProfile extends Profile {
       //Add new rights in glpi_profilerights table
       foreach ($profile->getAllRights(true) as $data) {
          if ($dbu->countElementsInTable("glpi_profilerights",
-                                  ["name" => $data['field']]) == 0) {
+                                        ["name" => $data['field']]) == 0) {
             ProfileRight::addProfileRights([$data['field']]);
          }
       }
@@ -285,7 +298,7 @@ class PluginMetademandsProfile extends Profile {
 
       foreach ($DB->request("SELECT *
                              FROM `glpi_profilerights` 
-                             WHERE `profiles_id`='".$_SESSION['glpiactiveprofile']['id']."' 
+                             WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "' 
                              AND `name` LIKE '%plugin_metademands%'") as $prof) {
          $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
       }
@@ -296,8 +309,9 @@ class PluginMetademandsProfile extends Profile {
     */
    static function createFirstAccess($profiles_id) {
 
-      $rights = ['plugin_metademands'               => ALLSTANDARDRIGHT,
-                      'plugin_metademands_requester'     => 1];
+      $rights = ['plugin_metademands'           => ALLSTANDARDRIGHT,
+                 'plugin_metademands_requester'     => 1,
+                 'plugin_metademands_updatemeta'     => 1];
 
       self::addDefaultProfileInfos($profiles_id,
                                    $rights, true);
@@ -325,15 +339,15 @@ class PluginMetademandsProfile extends Profile {
     * @param bool $drop_existing
     */
    static function addDefaultProfileInfos($profiles_id, $rights, $drop_existing = false) {
-      $dbu = new DbUtils();
+      $dbu          = new DbUtils();
       $profileRight = new ProfileRight();
       foreach ($rights as $right => $value) {
          if ($dbu->countElementsInTable('glpi_profilerights',
-                                   ["profiles_id" => $profiles_id, "name" => $right]) && $drop_existing) {
+                                        ["profiles_id" => $profiles_id, "name" => $right]) && $drop_existing) {
             $profileRight->deleteByCriteria(['profiles_id' => $profiles_id, 'name' => $right]);
          }
          if (!$dbu->countElementsInTable('glpi_profilerights',
-                                   ["profiles_id" => $profiles_id, "name" => $right])) {
+                                         ["profiles_id" => $profiles_id, "name" => $right])) {
             $myright['profiles_id'] = $profiles_id;
             $myright['name']        = $right;
             $myright['rights']      = $value;
