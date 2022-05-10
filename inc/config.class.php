@@ -109,11 +109,12 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
+
       echo "<td>";
-      echo __('Show requester informations', 'metademands');
+      echo __('Childs tickets get parent content', 'metademands');
       echo "</td>";
       echo "<td>";
-      Dropdown::showYesNo('show_requester_informations', $config['show_requester_informations']);
+      Dropdown::showYesNo('childs_parent_content', $config['childs_parent_content']);
       echo "</td>";
 
       echo "<td>";
@@ -127,17 +128,17 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
 
       echo "<td>";
-      echo __('Childs tickets get parent content', 'metademands');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showYesNo('childs_parent_content', $config['childs_parent_content']);
-      echo "</td>";
-
-      echo "<td>";
       echo __('Use drafts', 'metademands');
       echo "</td>";
       echo "<td>";
       Dropdown::showYesNo('use_draft', $config['use_draft']);
+      echo "</td>";
+
+      echo "<td>";
+      echo __('Show only differences between last form and new form in ticket content', 'metademands');
+      echo "</td>";
+      echo "<td>";
+      Dropdown::showYesNo('show_form_changes', $config['show_form_changes']);
       echo "</td>";
 
       echo "</tr>";
@@ -156,16 +157,6 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
       echo "<td>";
       Dropdown::showYesNo('display_buttonlist_servicecatalog', $config['display_buttonlist_servicecatalog']);
-      echo "</td>";
-
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>";
-      echo __('Show only differences between last form and new form in ticket content', 'metademands');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showYesNo('show_form_changes', $config['show_form_changes']);
       echo "</td>";
 
       echo "</tr>";

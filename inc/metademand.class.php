@@ -4111,7 +4111,8 @@ JAVASCRIPT
             $son_ticket_data['type']                = $parent_fields['type'];
             $son_ticket_data['entities_id']         = $parent_fields['entities_id'];
             $son_ticket_data['users_id_recipient']  = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
-            $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
+            //Must use used_by_child parameter - disabled
+//            $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
             $son_ticket_data['requesttypes_id']     = $parent_fields['requesttypes_id'];
             $son_ticket_data['_auto_import']        = 1;
             $son_ticket_data['status']              = Ticket::INCOMING;
