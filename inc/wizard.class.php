@@ -184,7 +184,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "<div id='meta-form' class='bt-block bt-features' $style> ";
 
-         echo "<form name='wizard_form' id ='wizard_form'
+         echo "<form novalidate name='wizard_form' id ='wizard_form'
                         method='post'
                         action= '" . Toolbox::getItemTypeFormURL(__CLASS__) . "'
                         enctype='multipart/form-data'
