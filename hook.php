@@ -247,6 +247,11 @@ function plugin_metademands_install() {
       $DB->query($query);
    }
 
+   if (!$DB->fieldExists("glpi_plugin_metademands_forms", "resources_id")) {
+      $query = "ALTER TABLE `glpi_plugin_metademands_forms` ADD `resources_id` int unsigned NOT NULL default '0';";
+      $DB->query($query);
+   }
+
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
    if (!is_dir($rep_files_metademands)) {
       mkdir($rep_files_metademands);

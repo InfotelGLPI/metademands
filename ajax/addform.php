@@ -153,7 +153,8 @@ if (isset($_POST['save_form'])) {
          }
 
          if (isset($_POST['resources_id'])) {
-            $resForm = $forms->find(['plugin_metademands_metademands_id' => $_POST['metademands_id'], 'resources_id' => $_POST['resources_id']]);
+            $resForm = $forms->find(['plugin_metademands_metademands_id' => $_POST['metademands_id'],
+                                     'resources_id'                      => $_POST['resources_id']]);
             if (count($resForm)) {
                foreach ($resForm as $res) {
                   $last = $res['id'];
