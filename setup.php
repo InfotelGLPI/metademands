@@ -47,6 +47,7 @@ function plugin_init_metademands() {
 
    // add minidashboard
    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = ['PluginMetademandsMetademand', 'getMetademandDashboards'];
+   $PLUGIN_HOOKS['timeline_items']['metademands'] =  ['PluginMetademandsInterticketfollowup', 'getlistItems'];
 
    $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
    $plugin = new Plugin();

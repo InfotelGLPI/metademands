@@ -389,16 +389,30 @@ function plugin_metademands_timeline_actions($data) {
 
 
    $metaValidation = new PluginMetademandsMetademandValidation();
+   $ticket_task = new PluginMetademandsTicket_Task();
+   $rand = $data['rand'];
    if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']])
        && $_SESSION['glpiactiveprofile']['interface'] == 'central'
        && ($data['item']->fields['status'] != Ticket::SOLVED
            && $data['item']->fields['status'] != Ticket::CLOSED)) {
-      $rand = $data['rand'];
+
       echo "<script type='text/javascript' >\n
 //      $(document).ready(function() {
 //                $('.ajax_box').show();
 //      });
       function viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
+
+      $params = ['action'     => 'viewsubitem',
+                 'type'       => 'itemtype',
+                 'tickets_id' => $data['item']->fields['id'],
+                 'id'         => -1];
+      $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
+                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php",
+                                       $params, "", false);
+      echo str_replace("\"itemtype\"", "itemtype", $out);
+      echo "};
+      
+      function viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
 
       $params = ['action'     => 'viewsubitem',
                  'type'       => 'itemtype',
@@ -415,6 +429,43 @@ function plugin_metademands_timeline_actions($data) {
       echo "<li class='metavalidation' onclick='" .
            "javascript:viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(\"Solution\");'>"
            . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
+      echo "<li class='interticketfollow' onclick='" .
+           "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"".PluginMetademandsInterticketfollowup::getType()."\");'>"
+           . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
+   } else if($ticket_task->find(['tickets_id' => $data['item']->fields['id']]) || $ticket_task->find(['parent_tickets_id' => $data['item']->fields['id']])) {
+      echo "<script type='text/javascript' >\n
+//      $(document).ready(function() {
+//                $('.ajax_box').show();
+//      });
+      function viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
+
+      $params = ['action'     => 'viewsubitem',
+                 'type'       => 'itemtype',
+                 'tickets_id' => $data['item']->fields['id'],
+                 'id'         => -1];
+      $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
+                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php",
+                                       $params, "", false);
+      echo str_replace("\"itemtype\"", "itemtype", $out);
+      echo "};
+      
+      function viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
+
+      $params = ['action'     => 'viewsubitem',
+                 'type'       => 'itemtype',
+                 'tickets_id' => $data['item']->fields['id'],
+                 'id'         => -1];
+      $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
+                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php",
+                                       $params, "", false);
+      echo str_replace("\"itemtype\"", "itemtype", $out);
+      echo "};
+      ";
+
+      echo "</script>\n";
+      echo "<li class='interticketfollow' onclick='" .
+           "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"".PluginMetademandsInterticketfollowup::getType()."\");'>"
+           . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
    }
 }
 

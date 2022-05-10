@@ -1846,6 +1846,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      // Save all form values of the ticket
                      if (count($line['form']) && isset($values['fields'])) {
                         //TODO Change / problem ?
+                        $ticket_field->deleteByCriteria(['tickets_id' => $parent_tickets_id]);
                         $ticket_field->setTicketFieldsValues($line['form'], $values['fields'], $parent_tickets_id);
                      }
 
