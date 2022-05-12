@@ -2950,6 +2950,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
                         if (y[i].type == 'radio' && fieldmandatory == true) {
                            if (y[i].checked) lengthr++;
+                           console.log(lengthr)
                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
                            if (res != 'none' && lengthr == 0) {
                               $('[name=\"' + fieldname + '\"]').addClass('invalid');
@@ -2960,6 +2961,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                               $('[name=\"' + fieldname + '\"]').removeAttr('required');
                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                              ko--;
                            }
                         }
                         if (y[i].type == 'checkbox' && fieldmandatory == true) {
