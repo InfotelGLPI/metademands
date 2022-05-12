@@ -1827,7 +1827,7 @@ JAVASCRIPT
                         }
                      }
                   }
-                  if ($input['name'] == 0) {
+                  if ($input['name'] === 0 || $input['name'] ==="0" || empty($input['name']) ) {
                      $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                   }
                   $input = Toolbox::addslashes_deep($input);
@@ -3828,6 +3828,18 @@ JAVASCRIPT
                               $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                               $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
                            } else {
+                              $explodeTitle2 = explode(".", $title);
+
+                              if (isset($values['fields'][$explodeTitle2[0]])) {
+                                 $field_object = new PluginMetademandsField();
+                                 if ($field_object->getFromDB($explodeTitle2[0])) {
+                                    if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                       $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                       $value['value'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $value['value']);
+                                    }
+                                 }
+                              }
+
                               $users_id = $users_id_requester;
                               switch ($title) {
                                  case "requester.login" :
