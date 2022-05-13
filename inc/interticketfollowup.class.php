@@ -100,6 +100,9 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
       return $targets;
    }
    static function getlistItems($item) {
+      $self = new self();
+      $ticket = $item['item'];
+
       $items_id = $item['item']->fields['id'];
       $first_tickets_id = self::getFirstTicket($items_id);
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
@@ -155,6 +158,30 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
             'type' => self::getType(),
             'item' => $follow
          ];
+      }
+      $document_item_obj     = new Document_Item();
+      //add documents to timeline
+      $document_obj   = new Document();
+      $document_items = $document_item_obj->find([
+                                                    $self->getAssociatedDocumentsCriteria($ticket,$list_tickets),
+                                                    'timeline_position'  => ['>', CommonITILObject::NO_TIMELINE]
+                                                 ]);
+      foreach ($document_items as $document_item) {
+         $document_obj->getFromDB($document_item['documents_id']);
+
+         $date = $document_item['date'] ?? $document_item['date_creation'];
+
+         $item = $document_obj->fields;
+         $item['date'] = $date;
+         // #1476 - set date_mod and owner to attachment ones
+         $item['date_mod'] = $document_item['date_mod'];
+         $item['users_id'] = $document_item['users_id'];
+         $item['documents_item_id'] = $document_item['id'];
+
+         $item['timeline_position'] = $document_item['timeline_position'];
+
+         $data[$date."_document_".$document_item['documents_id']]
+            = ['type' => 'Document_Item', 'item' => $item];
       }
 
       return $data;
@@ -300,20 +327,8 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
 //                               ]);
          echo "</div>";
 
-         echo "<div class='fa-label'>
-            <i class='fas fa-lock fa-fw' title='".__('Private')."'></i>";
-         echo "<span class='switch pager_controls'>
-            <label for='is_privateswitch$rand' title='".__('Private')."'>
-               <input type='hidden' name='is_private' value='0'>
-               <input type='checkbox' id='is_privateswitch$rand' name='is_private' value='1'".
-              ($this->fields["is_private"]
-                 ? "checked='checked'"
-                 : "")."
-               >
-               <span class='lever'></span>
-            </label>
-         </span>";
-         echo "</div></td></tr>";
+
+         echo "</td></tr>";
 
          $this->showFormButtons($options);
 
@@ -358,8 +373,7 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
 
 
       if (empty($input['content'])
-          && !isset($input['add_close'])
-          && !isset($input['add_reopen'])) {
+        ) {
          Session::addMessageAfterRedirect(__("You can't add a followup without description"),
                                           false, ERROR);
          return false;
@@ -378,18 +392,123 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
 
 
 
-      if (!isset($input["is_private"])) {
-         $input['is_private'] = 0;
-      }
+
 
 
 
       $itemtype = $input['itemtype'];
-      $input['timeline_position'] = $itemtype::getTimelinePosition($input["items_id"], $this->getType(), $input["users_id"]);
+      $input['timeline_position'] = $itemtype::getTimelinePosition($input["tickets_id"], ITILFollowup::getType(), $input["users_id"]);
 
       if (!isset($input['date'])) {
          $input["date"] = $_SESSION["glpi_currenttime"];
       }
       return $input;
+   }
+
+   function post_addItem() {
+
+      global $CFG_GLPI;
+
+      // Add screenshots if needed, without notification
+      $this->input = $this->addFiles($this->input, [
+         'force_update'  => true,
+         'name'          => 'content',
+         'content_field' => 'content',
+         'date' => $this->fields['date'],
+      ]);
+
+      // Add documents if needed, without notification
+      $this->input = $this->addFiles($this->input, [
+         'force_update'  => true,
+         'date' => $this->fields['date'],
+      ]);
+
+      $donotif = !isset($this->input['_disablenotif']) && $CFG_GLPI["use_notifications"];
+
+//      // Check if stats should be computed after this change
+//      $no_stat = isset($this->input['_do_not_compute_takeintoaccount']);
+      $no_stat = true;
+
+      $parentitem = new Ticket();
+      $parentitem->updateDateMod(
+         $this->input["tickets_id"],
+         $no_stat,
+         $this->input["users_id"]
+      );
+
+
+      //manage reopening of ITILObject
+      $reopened = false;
+      if (!isset($this->input['_status'])) {
+         $this->input['_status'] = $parentitem->fields["status"];
+      }
+
+
+
+
+      if ($donotif) {
+         $options = ['interticketfollowup_id' => $this->fields["id"],
+                     ];
+         NotificationEvent::raiseEvent("add_interticketfollowup", $parentitem, $options);
+      }
+
+      // Add log entry in the ITILObject
+      $changes = [
+         0,
+         '',
+         $this->fields['id'],
+      ];
+
+      Log::history($this->getField('items_id'), get_class($parentitem), $changes, $this->getType(),
+                   Log::HISTORY_ADD_SUBITEM);
+   }
+
+   /**
+    * Returns criteria that can be used to get documents related to current instance.
+    *
+    * @return array
+    */
+   public function getAssociatedDocumentsCriteria($item,$list_tickets , $bypass_rights = false): array {
+
+
+
+      $items_id = $item->getID();
+      // documents associated to followups
+      if ($bypass_rights || self::canView()) {
+//         $fup_crits = [
+//            self::getTableField('tickets_id') => $item->getID(),
+//         ];
+
+         $fup_crits[] = [
+            'OR' => [
+
+               'AND' => [
+                  self::getTableField('tickets_id') => $list_tickets,
+                  self::getTableField('targets_id') => -1
+               ],
+               [self::getTableField('targets_id') => $items_id],
+               [self::getTableField('tickets_id') => $items_id],
+
+            ],
+         ];
+
+
+         $or_crits[] = [
+            Document_Item::getTableField('itemtype') => self::getType(),
+            Document_Item::getTableField('items_id') => new QuerySubQuery(
+               [
+                  'SELECT' => 'id',
+                  'FROM'   => self::getTable(),
+                  'WHERE'  => $fup_crits,
+               ]
+            ),
+         ];
+      }
+
+
+
+
+
+      return ['OR' => $or_crits];
    }
 }
