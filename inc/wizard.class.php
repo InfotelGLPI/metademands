@@ -801,6 +801,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
 
                      }
+                     unset($_SESSION['plugin_metademands']['fields']);
                      if ($metademands->fields['is_order'] == 1) {
                         if (!$preview && countElementsInTable("glpi_plugin_metademands_basketlines",
                                                               ["plugin_metademands_metademands_id" => $metademands->fields['id'],
