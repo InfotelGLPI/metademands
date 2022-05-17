@@ -3177,7 +3177,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      }
                   
                      //for textarea
-                     if (w.length > 0) {
+                     /*if (w.length > 0) {
                         for (i = 0; i < w.length; i++) {
                            fieldmandatory = w[i].required;
                            // If a field is empty...
@@ -3198,7 +3198,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               w[i].classList.remove('invalid');
                            }
                         }
-                     }
+                     }*/
                      //for select
                      if (z.length > 0) {
                         for (i = 0; i < z.length; i++) {
