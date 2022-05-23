@@ -59,6 +59,21 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
 //      }
 //   }
 
+
+   /**
+    * functions mandatory
+    * getTypeName(), canCreate(), canView()
+    *
+    * @param int $nb
+    *
+    * @return string
+    */
+   static function getTypeName($nb = 0) {
+
+      return _n('Inter ticket followup', 'Inter ticket followups', $nb, 'metademands');
+   }
+
+
    static function getFirstTicket($tickets_id) {
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
       $ticket_metademand_data = $ticket_metademand->getFromDBByCrit(['tickets_id' => $tickets_id]);
@@ -153,7 +168,7 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
       }
       $data = [];
       foreach ($follows as $follow) {
-         $follow['can_edit'] = false;
+         $follow['can_edit'] = ($follow['tickets_id'] == $items_id && $follow['users_id'] == Session::getLoginUserID() )?true:false;
          $data[$follow['date']."_interTicketFollowup_".$follow['id']] = [
             'type' => self::getType(),
             'item' => $follow
@@ -448,8 +463,10 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
 
       if ($donotif) {
          $options = ['interticketfollowup_id' => $this->fields["id"],
+                     'ticket' => $parentitem,
+                     'entities_id' => $parentitem->getEntityID()
                      ];
-         NotificationEvent::raiseEvent("add_interticketfollowup", $parentitem, $options);
+         NotificationEvent::raiseEvent("add_interticketfollowup", $this, $options);
       }
 
       // Add log entry in the ITILObject

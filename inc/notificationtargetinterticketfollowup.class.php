@@ -34,7 +34,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access this file directly");
 }
 
-abstract class NotificationTargetInterTicketFollowup extends NotificationTarget {
+class PluginMetademandsNotificationTargetInterticketfollowup extends NotificationTarget {
 
    public $private_profiles = [];
    const TARGET_TICKET_TECH                   = 5300;
@@ -98,9 +98,9 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
    function getEvents() {
 
       $events = [
-         'add_followup'      => __("New inter ticket followup"),
-         'update_followup'   => __('Update of a inter ticket followup'),
-         'delete_followup'   => __('Deletion of a inter ticket followup'),
+         'add_interticketfollowup'      => __("New inter ticket followup"),
+//         'update_followup'   => __('Update of a inter ticket followup'),
+//         'delete_followup'   => __('Deletion of a inter ticket followup'),
       ];
 
       asort($events);
@@ -117,6 +117,7 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
    }
 
    function addSpecificTargets($data, $options) {
+      $this->obj = $options['ticket'];
       switch ($data['items_id']) {
          case self::TARGET_TICKET_TECH :
             return $this->addTechOfTargets($options);
@@ -129,37 +130,41 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
 
    function addGroupOfTargets($data) {
       global $DB;
+      $this->obj = $data['ticket'];
        $item = $this->obj;
-       if($item instanceof  PluginMetademandsInterticketfollowup)
-          if ($item->fields['targets_id'] == -1) {
-             $first_tickets_id = self::getFirstTicket($item->fields['tickets_id']);
+       $inter = new PluginMetademandsInterticketfollowup();
+       $inter->getFromDB($data['interticketfollowup_id']);
+
+          if ($inter->fields['targets_id'] == -1) {
+             $first_tickets_id = PluginMetademandsInterticketfollowup::getFirstTicket($item->fields['id']);
              $ticket_metademand      = new PluginMetademandsTicket_Metademand();
              $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
              $tickets_found          = [];
              // If ticket is Parent : Check if all sons ticket are closed
+             $list_tickets           = "";
              if (count($ticket_metademand_data)) {
                 $ticket_metademand_data = reset($ticket_metademand_data);
                 $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
                                                                                  $ticket_metademand_data['plugin_metademands_metademands_id']);
                 $list_tickets           = [];
                 foreach ($tickets_found as $ticket_found) {
-                   if ($ticket_found['tickets_id'] != $item->fields['tickets_id']) {
+                   if ($ticket_found['tickets_id'] != $item->fields['id']) {
                       $list_tickets[] = $ticket_found['tickets_id'];
                    }
                 }
-                if ($item->fields['tickets_id'] != $first_tickets_id) {
+                if ($item->fields['id'] != $first_tickets_id) {
                    $list_tickets[] = $first_tickets_id;
                 }
              }
              $tickets_id = $list_tickets;
           } else {
-             $tickets_id = [$item->fields['targets_id'],$item->fields['tickets_id']];
+             $tickets_id = [$inter->fields['targets_id'],$inter->fields['tickets_id']];
           }
 
 
       $ticket = new Ticket();
 
-      $grouplinktable = "Group_Ticket";
+      $grouplinktable = "glpi_groups_tickets";
       $fkfield        =$ticket->getForeignKeyField();
 
       $iterator = $DB->request([
@@ -175,33 +180,60 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
          $this->addForGroup(0, $data['groups_id']);
       }
    }
+
    function addTechOfTargets($data) {
       global $DB, $CFG_GLPI;
-
+      $this->obj = $data['ticket'];
       $item = $this->obj;
       $type = CommonITILActor::ASSIGN;
+      $inter = new PluginMetademandsInterticketfollowup();
+      $inter->getFromDB($data['interticketfollowup_id']);
+      if ($inter->fields['targets_id'] == -1) {
+         $first_tickets_id       = PluginMetademandsInterticketfollowup::getFirstTicket($inter->fields['tickets_id']);
+         $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+         $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
+         $tickets_found          = [];
+         // If ticket is Parent : Check if all sons ticket are closed
+         if (count($ticket_metademand_data)) {
+            $ticket_metademand_data = reset($ticket_metademand_data);
+            $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
+                                                                             $ticket_metademand_data['plugin_metademands_metademands_id']);
+            $list_tickets           = [];
+            foreach ($tickets_found as $ticket_found) {
+               if ($ticket_found['tickets_id'] != $inter->fields['tickets_id']) {
+                  $list_tickets[] = $ticket_found['tickets_id'];
+               }
+            }
+            if ($inter->fields['tickets_id'] != $first_tickets_id) {
+               $list_tickets[] = $first_tickets_id;
+            }
+         }
+         $tickets_id = $list_tickets;
+      } else {
+         $tickets_id = [$inter->fields['targets_id'], $inter->fields['tickets_id']];
+      }
 
-      $userlinktable = getTableForItemType($this->obj->userlinkclass);
+      $userlinktable = "glpi_tickets_users";
       $fkfield       = $this->obj->getForeignKeyField();
 
       //Look for the user by his id
-      $criteria = ['LEFT JOIN' => [
+      $criteria                                     = ['LEFT JOIN' => [
             User::getTable() => [
                'ON' => [
-                  $userlinktable    => 'users_id',
-                  User::getTable()  => 'id'
+                  $userlinktable   => 'users_id',
+                  User::getTable() => 'id'
                ]
             ]
          ]] + $this->getDistinctUserCriteria() + $this->getProfileJoinCriteria();
-      $criteria['FROM'] = $userlinktable;
-      $criteria['FIELDS'] = array_merge(
+      $criteria['FROM']                             = $userlinktable;
+      $criteria['FIELDS']                           = array_merge(
          $criteria['FIELDS'], [
                                "$userlinktable.use_notification AS notif",
                                "$userlinktable.alternative_email AS altemail"
                             ]
       );
-      $criteria['WHERE']["$userlinktable.$fkfield"] = $this->obj->fields['id'];
-      $criteria['WHERE']["$userlinktable.type"] = $type;
+      $criteria['WHERE']["$userlinktable.$fkfield"] = $tickets_id;
+      $criteria['WHERE']["$userlinktable.type"]     = $type;
 
       $iterator = $DB->request($criteria);
       while ($data = $iterator->next()) {
@@ -239,10 +271,10 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
                                   'SELECT' => 'alternative_email',
                                   'FROM'   => $userlinktable,
                                   'WHERE'  => [
-                                     $fkfield             => $this->obj->fields['id'],
-                                     'users_id'           => 0,
-                                     'use_notification'   => 1,
-                                     'type'               => $type
+                                     $fkfield           => $this->obj->fields['id'],
+                                     'users_id'         => 0,
+                                     'use_notification' => 1,
+                                     'type'             => $type
                                   ]
                                ]);
       while ($data = $iterator->next()) {
@@ -255,46 +287,24 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
                                           ]);
             }
          }
+      }
    }
 
 
    function addDataForTemplate($event, $options = []) {
       $events    = $this->getAllEvents();
+      $this->obj = $options['ticket'];
       $objettype = strtolower($this->obj->getType());
 
       // Get data from ITIL objects
-      if ($event != 'alertnotclosed') {
-         $this->data = $this->getDataForObject($this->obj, $options);
 
-      } else {
-         if (isset($options['entities_id'])
-             && isset($options['items'])) {
-            $entity = new Entity();
-            if ($entity->getFromDB($options['entities_id'])) {
-               $this->data["##$objettype.entity##"]      = $entity->getField('completename');
-               $this->data["##$objettype.shortentity##"] = $entity->getField('name');
-            }
-            if ($item = getItemForItemtype($objettype)) {
-               $objettypes = Toolbox::strtolower(getPlural($objettype));
-               $items      = [];
-               foreach ($options['items'] as $object) {
-                  $item->getFromDB($object['id']);
-                  $tmp = $this->getDataForObject($item, $options, true);
-                  $this->data[$objettypes][] = $tmp;
-               }
-            }
-         }
-      }
+      $this->data = $this->getDataForObject($this->obj, $options);
 
-      if (($event == 'validation')
-          && isset($options['validation_status'])) {
-         $this->data["##$objettype.action##"]
-                     //TRANS: %s id of the approval's state
-                     = sprintf(__('%1$s - %2$s'), CommonITILValidation::getTypeName(1),
-                               TicketValidation::getStatus($options['validation_status']));
-      } else {
-         $this->data["##$objettype.action##"] = $events[$event];
-      }
+
+
+
+      $this->data["##$objettype.action##"] = $events[$event];
+
 
       $this->getTags();
 
@@ -319,6 +329,7 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
    function getDataForObject(CommonDBTM $item, array $options, $simple = false) {
       global $CFG_GLPI, $DB;
 
+      $item = $options['ticket'];
       $objettype = strtolower($item->getType());
 
       $data["##$objettype.title##"]        = $item->getField('name');
@@ -613,6 +624,86 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
 
          $data["##$objettype.numberoffollowups##"] = count($data['followups']);
 
+         $items_id = $item->fields['id'];
+         $first_tickets_id = PluginMetademandsInterticketfollowup::getFirstTicket($items_id);
+         $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+         $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
+         $tickets_found          = [];
+         // If ticket is Parent : Check if all sons ticket are closed
+         if (count($ticket_metademand_data)) {
+            $ticket_metademand_data = reset($ticket_metademand_data);
+            $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
+                                                                             $ticket_metademand_data['plugin_metademands_metademands_id']);
+            $list_tickets           = [];
+            foreach ($tickets_found as $ticket_found) {
+               if ($ticket_found['tickets_id'] != $items_id) {
+                  $list_tickets[] = $ticket_found['tickets_id'];
+               }
+            }
+            if ($items_id != $first_tickets_id) {
+               $list_tickets[] = $first_tickets_id;
+            }
+            if (empty($list_tickets)) {
+               $list_tickets = 0;
+            }
+            $followup_restrict_intern               = [];
+            $followup_restrict_intern['tickets_id'] = $item->getField('id');
+            $followup_restrict_intern['itemtype']   = $objettype;
+
+            //Followup infos
+            $followups_intern         = getAllDataFromTable(
+               'glpi_plugin_metademands_interticketfollowups', [
+                                      'WHERE' => [
+                                         'OR'  => [
+
+                                            'AND' => [
+                                               'tickets_id' => $list_tickets,
+                                               'targets_id' => -1
+                                            ],
+                                            ['targets_id' => $items_id],
+                                            ['tickets_id' => $items_id],
+
+                                         ],
+                                         'AND' => [
+                                            'OR' => [
+
+                                               'AND' => [
+                                                  'tickets_id' => $list_tickets,
+                                                  'targets_id' => -1
+                                               ],
+                                               ['targets_id' => $items_id],
+                                               ['tickets_id' => $items_id],
+
+                                            ]
+                                         ]
+                                      ],
+                                      'ORDER' => ['date_mod DESC', 'id ASC']
+                                   ]
+            );
+            $data['followups_intern'] = [];
+            foreach ($followups_intern as $followup_intern) {
+               $tmp = [];
+
+
+               // Check if the author need to be anonymized
+               if (Entity::getUsedConfig('anonymize_support_agents', $item->getField('entities_id'))
+                   && ITILFollowup::getById($followup_intern['id'])->isFromSupportAgent()
+               ) {
+                  $tmp['##followup_intern.author##'] = __("Helpdesk");
+               } else {
+                  $tmp['##followup_intern.author##'] = Html::clean(getUserName($followup_intern['users_id']));
+               }
+
+               $tmp['##followup_intern.requesttype##'] = Dropdown::getDropdownName('glpi_requesttypes',
+                                                                                   $followup_intern['requesttypes_id']);
+               $tmp['##followup_intern.date##']        = Html::convDateTime($followup_intern['date']);
+               $tmp['##followup_intern.description##'] = $followup_intern['content'];
+
+               $data['followups_intern'][] = $tmp;
+            }
+
+            $data["##$objettype.numberoffollowups_intern##"] = count($data['followups_intern']);
+         }
          $data['log'] = [];
          // Use list_limit_max or load the full history ?
          foreach (Log::getHistoryData($item, 0, $CFG_GLPI['list_limit_max']) as $log) {
@@ -791,6 +882,8 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
    function getTags() {
 
       $itemtype  = $this->obj->getType();
+      $this->obj = new Ticket();
+      $itemtype  = Ticket::getType();
       $objettype = strtolower($itemtype);
 
       //Locales
@@ -851,7 +944,15 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
                     'followup.author'                   => __('Writer'),
                     'followup.description'              => __('Description'),
                     'followup.requesttype'              => RequestType::getTypeName(1),
+
+                    'followup_intern.date'                     => __('Opening date'),
+
+                    'followup_intern.author'                   => __('Writer'),
+                    'followup_intern.description'              => __('Description'),
+                    'followup_intern.target'              => __('Target ticket(s)','metademands'),
+
                     $objettype.'.numberoffollowups'     => _x('quantity', 'Number of followups'),
+                    $objettype.'.numberoffollowups_intern'     => _x('quantity', 'Number of intern followups','metademands'),
                     $objettype.'.numberofunresolved'    => __('Number of unresolved items'),
                     $objettype.'.numberofdocuments'     => _x('quantity', 'Number of documents'),
                     $objettype.'.costtime'              => __('Time cost'),
@@ -923,6 +1024,7 @@ abstract class NotificationTargetInterTicketFollowup extends NotificationTarget 
       //Foreach global tags
       $tags = ['log'       => __('Historical'),
                     'followups' => _n('Followup', 'Followups', Session::getPluralNumber()),
+                    'followups_intern' => PluginMetademandsInterticketfollowup::getTypeName(2),
                     'tasks'     => _n('Task', 'Tasks', Session::getPluralNumber()),
                     'costs'     => _n('Cost', 'Costs', Session::getPluralNumber()),
                     'authors'   => _n('Requester', 'Requesters', Session::getPluralNumber()),

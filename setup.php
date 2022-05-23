@@ -65,6 +65,9 @@ function plugin_init_metademands() {
       Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
 
+      Plugin::registerClass('PluginMetademandsInterticketfollowup',
+                            ['notificationtemplates_types' => true]);
+
       $PLUGIN_HOOKS['item_show']['metademands']  = ['PluginResourcesResource' =>
                                                        ['PluginMetademandsMetademand_Resource', 'redirectFormForResource']];
       $PLUGIN_HOOKS['item_empty']['metademands'] = ['Ticket' =>
