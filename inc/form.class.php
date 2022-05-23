@@ -404,7 +404,7 @@ class PluginMetademandsForm extends CommonDBTM {
          echo "<tr class='tab_bg_1'>";
          echo "<th>" . __('Name') . "</th>";
          echo "<th>" . __('Creation date') . "</th>";
-         echo "<th>" . __('Created By', 'metademands') . "</th>";
+         echo "<th>" . __('By') . "</th>";
          echo "<th>" . __('See form', 'metademands') . "</th>";
          echo "</tr>";
 

@@ -184,7 +184,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          echo "<div id='meta-form' class='bt-block bt-features' $style> ";
 
-         echo "<form name='wizard_form' id ='wizard_form'
+         echo "<form novalidate name='wizard_form' id ='wizard_form'
                         method='post'
                         action= '" . Toolbox::getItemTypeFormURL(__CLASS__) . "'
                         enctype='multipart/form-data'
@@ -782,6 +782,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket ,$meta_validated);
 
                      }
+                     unset($_SESSION['plugin_metademands']['fields']);
                      if ($metademands->fields['is_order'] == 1) {
                         if (!$preview && countElementsInTable("glpi_plugin_metademands_basketlines",
                                                               ["plugin_metademands_metademands_id" => $metademands->fields['id'],
@@ -812,9 +813,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                                || (isset($options['resources_id'])
                                    && $options['resources_id'] > 0)
                                ||($current_ticket > 0
-                                  && (!$meta_validated ||
+                                  && ((!$meta_validated
+                                  && $metademands->fields['can_update'] == true) ||
                                     ($meta_validated
-                                     && $metademands->fields['can_modify'] == true))
+                                     && $metademands->fields['can_clone'] == true))
                                   && Session::haveRight('plugin_metademands_updatemeta',READ)))
 
             ) {
@@ -1469,6 +1471,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                             
                           }else{
                            $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
+                           " .  PluginMetademandsField::getJStorersetFieldsByField($hidden_link[$key])."
                           }
                            ";
                               if ($check_value[$key] == $data["custom_values"]) {
@@ -1565,6 +1568,38 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
+                                     $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
+                                     
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                this.checked = false;
+                                                break;
+                                        }
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
@@ -1641,6 +1676,38 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
+                                     $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
+                                     
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                this.checked = false;
+                                                break;
+                                        }
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
@@ -1709,6 +1776,38 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
+                                     $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
+                                     
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                this.checked = false;
+                                                break;
+                                        }
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
@@ -1750,6 +1849,38 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
+                                     $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
+                                     
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                this.checked = false;
+                                                break;
+                                        }
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
@@ -1793,6 +1924,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $script  .= "
                            if($(this).val().trim().length < 1){
                               $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
+                              " .  PluginMetademandsField::getJStorersetFieldsByField($hidden_link[$key])."
                            }else{
                               $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
                            }
@@ -1809,6 +1941,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                  $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
                               }else{
                                  $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
+                                 " .  PluginMetademandsField::getJStorersetFieldsByField($hidden_link[$key])."
                               }
                          ";
 
@@ -1872,6 +2005,38 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
+                                     $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
+                                     
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                this.checked = false;
+                                                break;
+                                        }
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
@@ -1944,6 +2109,38 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
+                                     $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
+                                     
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                this.checked = false;
+                                                break;
+                                        }
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
                                      $('[name =\"field['+key+']\"]').removeAttr('required');
                                     }else{
                                     $('[id-field =\"field'+key+'\"]').show();
@@ -2865,7 +3062,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $('#ajax_loader').hide();
                               console.log(response)
                               if (response == 1) {
-                                 window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
+                                 window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=2';
                               } else {
                                  $.ajax({
                                     url: '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/addform.php',
@@ -2981,7 +3178,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      }
                   
                      //for textarea
-                     if (w.length > 0) {
+                     /*if (w.length > 0) {
                         for (i = 0; i < w.length; i++) {
                            fieldmandatory = w[i].required;
                            // If a field is empty...
@@ -3002,7 +3199,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               w[i].classList.remove('invalid');
                            }
                         }
-                     }
+                     }*/
                      //for select
                      if (z.length > 0) {
                         for (i = 0; i < z.length; i++) {

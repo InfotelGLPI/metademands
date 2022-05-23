@@ -351,8 +351,6 @@ class PluginMetademandsMetademand extends CommonDBTM {
          } else {
             $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
          }
-      } else {
-         $input['itilcategories_id'] = '';
       }
 
       if (isset($input['is_order']) && $input['is_order'] == 1) {
@@ -367,7 +365,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          }
       }
 
-      if (empty($input['object_to_create'])) {
+      if (isset($input['object_to_create']) && empty($input['object_to_create'])) {
          Session::addMessageAfterRedirect(__('Object to create is mandatory', 'metademands'), false, ERROR);
          return false;
       }
@@ -507,7 +505,23 @@ class PluginMetademandsMetademand extends CommonDBTM {
          'name'     => __('Maintenance mode'),
          'datatype' => 'bool',
       ];
-
+      
+      $tab[] = [
+         'id'       => '10',
+         'table'    => $this->getTable(),
+         'field'    => 'can_update',
+         'name'     => __('Allow form modification before validation', 'metademands'),
+         'datatype' => 'bool',
+      ];
+      
+      $tab[] = [
+         'id'       => '11',
+         'table'    => $this->getTable(),
+         'field'    => 'can_clone',
+         'name'     => __('Allow form modification after validation', 'metademands'),
+         'datatype' => 'bool',
+      ];
+      
       $tab[] = [
          'id'            => '92',
          'table'         => $this->getTable(),
@@ -1431,6 +1445,51 @@ class PluginMetademandsMetademand extends CommonDBTM {
                if ($metademand->fields['is_order'] == 0) {
                   if (count($line['form'])
                       && isset($values['fields'])) {
+                     $forms_id = 0;
+                     if(isset($_SESSION['plugin_metademands']['form_to_compare'])){
+                        $forms_id = $_SESSION['plugin_metademands']['form_to_compare'];
+                     } else if(isset($values['plugin_metademands_forms_id'])){
+                        $forms_id = $values['plugin_metademands_forms_id'];
+                     }
+                     if ($config['show_form_changes'] && $forms_id > 0) {
+                        foreach ($values['fields'] as $idField => $valueField) {
+                           $diffRemove ="";
+                           $oldFormValues = new PluginMetademandsForm_Value();
+                           if ($oldFormValues->getFromDBByCrit(['plugin_metademands_forms_id'  => $forms_id,
+                                                                'plugin_metademands_fields_id' => $idField])) {
+                              $jsonDecode = json_decode($oldFormValues->getField('value'), true);
+                              if (is_array($jsonDecode)) {
+                                 if(empty($valueField)){
+                                    $valueField = [];
+                                 }
+                                 $diffAdd    = array_diff($valueField, $jsonDecode);
+                                 $diffRemove = array_diff($jsonDecode, $valueField);
+                              } else if (is_array($oldFormValues->getField('value'))) {
+                                 if(empty($valueField)){
+                                    $valueField = [];
+                                 }
+                                 $diffRemove = array_diff($oldFormValues->getField('value'), $valueField);
+                                 $diffAdd    = array_diff($valueField, $oldFormValues->getField('value'));
+                              } else if($oldFormValues->getField('value') != $valueField){
+                                 $values['fields'][$idField . '#orange'] = $valueField;
+                              }
+                              if ($oldFormValues->getField('value') == $valueField ||
+                                  (isset($diffRemove) && empty($diffRemove) && empty($diffAdd))) {
+                                 unset($values['fields'][$idField]);
+                              } else {
+                                 if (isset($diffRemove) && !empty($diffRemove)) {
+                                    if(!empty($diffAdd)){
+                                       $values['fields'][$idField . '#green'] = $diffAdd;
+                                    }
+                                    $values['fields'][$idField . '#red'] = $diffRemove;
+                                 } else if(!isset($values['fields'][$idField . '#orange'])){
+                                    $values['fields'][$idField. '#green'] = $valueField;
+                                 }
+                              }
+                           }
+                        }
+                     }
+                     unset($_SESSION['plugin_metademands']['form_to_compare']);
                      $values_form[0]           = $values['fields'];
                      $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
                      $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
@@ -1687,7 +1746,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $inputUpdate['id'] = $options['current_ticket_id'];
                      $inputUpdate['content'] = $input['content'];
                      $inputUpdate['name'] = $input['name'];
+                     
                      $parent_tickets_id = $inputUpdate['id'];
+                     
                      $object->update($inputUpdate);
                      $object->getFromDB($inputUpdate['id']);
                      $ticket_exists_array[]          = 1;
@@ -2542,6 +2603,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
                                  if(isset($resource_id)){
                                     $resource = new PluginResourcesResource();
+                                    if($resource->getFromDB($resource_id)) {
+                                       $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField('name') . " " . $resource->getField('firstname');
+                                    }
                                     $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
                                  }
                                  $match = $this->getBetween($l['tickettasks_name'], '[', ']');
@@ -3277,6 +3341,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
       if (count($KO)) {
          $message = __('Demand add failed', 'metademands');
       } else {
+         if(isset($_SESSION['plugin_metademands'])){
+            unset($_SESSION['plugin_metademands']);
+         }
          if ($object_class == 'Ticket') {
             if (!in_array(1, $ticket_exists_array)) {
                $message = sprintf(__('Demand "%s" added with success', 'metademands'), $parent_metademands_name);
@@ -3335,9 +3402,19 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $result            = [];
       $result['content'] = "";
       $parent_fields_id  = 0;
+      $colors =[];
 
 
       foreach ($values_form as $k => $values) {
+         if (is_array($values) && $config_data['show_form_changes']) {
+            foreach ($values as $key => $val) {
+               if (strpos($key, '#') > 0) {
+                  $newKey       = substr($key, 0, strpos($key, '#'));
+                  $colors[$key] = $val;//substr($key,strpos($key,'#')+1);
+                  unset($values_form[$k][$newKey]);
+               }
+            }
+         }
          if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name',$langTech))) {
             $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
          }
@@ -3397,10 +3474,31 @@ class PluginMetademandsMetademand extends CommonDBTM {
             }
             $nb++;
             $hideTable = $options['hideTable'] ?? false;
-            self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id,false, $hideTable,$langTech);
 
-            if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
-               $resultTemp[$field['rank']]['content'] .= "</tr>";
+            if(isset($colors) && !empty($colors)){
+               $i = 0;
+               foreach ($colors as $key => $val){
+                  $newKey = substr($key,0,strpos($key,'#'));
+                  if($field['id'] == $newKey){
+                     if($i>0){
+                        $resultTemp[$field['rank']]['content'] .= "<tr>";
+                     }
+                     $i++;
+                     $field['value'] = $val;
+                     $color = substr($key,strpos($key,'#')+1);
+                     self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id,false, $hideTable,$langTech,$color);
+                     unset($colors[$key]);
+                     if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+                        $resultTemp[$field['rank']]['content'] .= "</tr>";
+                     }
+                  }
+               }
+            } else{
+               self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id,false, $hideTable,$langTech);
+
+               if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
+                  $resultTemp[$field['rank']]['content'] .= "</tr>";
+               }
             }
 
          }
@@ -3426,10 +3524,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param $parent_fields_id
     * @param $return_value
     */
-   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false, $lang='') {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false, $lang='', $color='') {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
+      if($color != ""){
+         $style_title .= " style='color:$color'";
+      }
       //      $style_title = "style='background-color: #cccccc;'";
 
       if (empty($label = PluginMetademandsField::displayField($field['id'], 'name',$lang))) {
@@ -5391,7 +5492,66 @@ class PluginMetademandsMetademand extends CommonDBTM {
             echo "<tr><th colspan='6'>" . __('Metademand need a validation', 'metademands') . "</th></tr>";
             echo "</table></div>";
          }
-      }
+      
+        $sons = json_decode($metaValidation->fields['tickets_to_create'], true);
+         if (is_array($sons)) {
+            echo "<table class='tab_cadre_fixe'>";
+            echo "<tr class='tab_bg_2'>";
+            echo "<th class='left b' colspan='4'>" . __('List of tickets / tasks which be created after validation', 'metademands') . "</th>";
+            echo "</tr>";
+            echo "<tr class='tab_bg_2'>";
+            echo "<th class='center b'>" . __('Name') . "</th>";
+            echo "<th class='center b'>" . __('Type') . "</th>";
+            echo "<th class='center b'>" . __('Category') . "</th>";
+            echo "<th class='center b'>" . __('Assigned to') . "</th>";
+            echo "</tr>";
+            foreach ($sons as $son) {
+               if (PluginMetademandsTicket_Field::checkTicketCreation($son['tasks_id'], $ticket->fields['id'])) {
+                  echo "<tr class='tab_bg_1'>";
+                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                     $color_class = '';
+                  } else {
+                     $color_class = "class='metademand_metademandtasks'";
+                  }
+
+                  echo "<td $color_class>" . urldecode($son['tickettasks_name']) . "</td>";
+
+                  // Type
+                  echo "<td $color_class>" . PluginMetademandsTask::getTaskTypeName($son['type']) . "</td>";
+
+                  $cat = "";
+                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE
+                      && isset($son['itilcategories_id'])
+                      && $son['itilcategories_id'] > 0) {
+                     $cat = Dropdown::getDropdownName("glpi_itilcategories", $son['itilcategories_id']);
+                  }
+                  echo "<td $color_class>";
+                  echo $cat;
+                  echo "</td>";
+
+                  //assign
+                  $techdata = "";
+                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                     if (isset($son['users_id_assign'])
+                         && $son['users_id_assign'] > 0) {
+                        $techdata .= getUserName($son['users_id_assign']);
+                        $techdata .= "<br>";
+                     }
+                     if (isset($son['groups_id_assign'])
+                         && $son['groups_id_assign'] > 0) {
+                        $techdata .= Dropdown::getDropdownName("glpi_groups", $son['groups_id_assign']);
+                     }
+                  }
+                  echo "<td $color_class>";
+                  echo $techdata;
+                  echo "</td>";
+
+                  echo "</tr>";
+               }
+            }
+            echo "</table>";
+         }
+       }  
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
       $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
       $tickets_found          = [];

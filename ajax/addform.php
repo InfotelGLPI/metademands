@@ -129,24 +129,19 @@ if (isset($_POST['save_form'])) {
             $inputs['is_model'] = $_POST['is_model'];
          }
 
-//         if($forms->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['metademands_id'], 'resources_id' => $_POST['resources_id']])){
-//            $inputs['id'] = $forms->getField('id');
-//            $form_id = $forms->update($inputs);
-//            $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_id;
-//            $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
-//
-//            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
-//            if (count($metademands_data) && $form_id > 0) {
-//               foreach ($metademands_data as $form_step => $data) {
-//                  $docitem = null;
-//                  foreach ($data as $form_metademands_id => $line) {
-//                     PluginMetademandsForm_Value::setFormValues($line['form'], $_POST['field'], $form_id);
-//                  }
-//               }
-//            }
-//         }
-//         else
-            if ($form_new_id = $forms->add($inputs)) {
+         if (isset($_POST['resources_id'])) {
+            $resForm = $forms->find(['plugin_metademands_metademands_id' => $_POST['metademands_id'], 'resources_id' => $_POST['resources_id']]);
+            if (count($resForm)) {
+               foreach ($resForm as $res) {
+                  $last = $res['id'];
+               }
+            } else {
+               $last = 0;
+            }
+            $_SESSION['plugin_metademands']['form_to_compare'] = $last;
+         }
+
+         if ($form_new_id = $forms->add($inputs)) {
             $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
             $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
 
