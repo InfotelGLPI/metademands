@@ -4807,8 +4807,8 @@ class PluginMetademandsField extends CommonDBChild {
             Networkequipment::class => Networkequipment::getTypeName(2),
             Peripheral::class       => Peripheral::getTypeName(2),
             Printer::class          => Printer::getTypeName(2),
-            Cartridgeitem::class    => Cartridgeitem::getTypeName(2),
-            Consumableitem::class   => Consumableitem::getTypeName(2),
+            CartridgeItem::class    => CartridgeItem::getTypeName(2),
+            ConsumableItem::class   => ConsumableItem::getTypeName(2),
             Phone::class            => Phone::getTypeName(2),
             Line::class             => Line::getTypeName(2)],
          __("Assistance")     => [
