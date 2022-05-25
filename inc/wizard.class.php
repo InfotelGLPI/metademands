@@ -3053,6 +3053,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         $('#ajax_loader').show();
                         arrayDatas = $('form').serializeArray();
                         arrayDatas.push({name: 'save_form', value: true});
+                        arrayDatas.push({name: 'step', value: 2});
                         arrayDatas.push({name: 'form_name', value: '$name'});
                         
                         $.ajax({
@@ -3069,6 +3070,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     type: 'POST',
                                     data: arrayDatas,
                                     success: function (response) {
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
                                     },
                                     error: function (xhr, status, error) {
                                        console.log(xhr);
@@ -3076,7 +3078,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                                        console.log(error);
                                     }
                                  });
-                                 window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
                               }
                            },
                            error: function (xhr, status, error) {
