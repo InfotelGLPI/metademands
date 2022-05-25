@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-24 15:32+0000\n"
+"POT-Creation-Date: 2022-05-25 12:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,7 +49,7 @@ msgstr[1] ""
 msgid "Draft name is required"
 msgstr ""
 
-#: ajax/addform.php:143
+#: ajax/addform.php:144
 msgid "Form name is required"
 msgstr ""
 
@@ -1107,22 +1107,22 @@ msgstr ""
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:3643
+#: inc/wizard.class.php:3644
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3652
+#: inc/wizard.class.php:3653
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3699
+#: inc/wizard.class.php:3700
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3703
+#: inc/wizard.class.php:3704
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
