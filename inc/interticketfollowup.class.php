@@ -152,7 +152,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
       $ticket = $item['item'];
 
       $items_id = $item['item']->fields['id'];
-
+      $origin_time_line = $item['timeline'];
       $first_tickets_id       = self::getFirstTicket($items_id);
       $ticket_metademand      = new PluginMetademandsTicket_Metademand();
       $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
@@ -203,7 +203,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
 
       foreach ($follows as $follow) {
          $follow['can_edit']                                                          = ($follow['tickets_id'] == $items_id && $follow['users_id'] == Session::getLoginUserID()) ? true : false;
-         $item['timeline'][$follow['date'] . "_interTicketFollowup_" . $follow['id']] = [
+         $item['timeline'][self::getType() . "_" . $follow['id']] = [
             'type'     => self::getType(),
             'item'     => $follow,
             'itiltype' => 'Interticketfollowup'
@@ -221,22 +221,22 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
 
          $date = $document_item['date'] ?? $document_item['date_creation'];
 
-         $item         = $document_obj->fields;
-         $item['date'] = $date;
+         $item_doc         = $document_obj->fields;
+         $item_doc['date'] = $date;
          // #1476 - set date_mod and owner to attachment ones
-         $item['date_mod']          = $document_item['date_mod'];
-         $item['users_id']          = $document_item['users_id'];
-         $item['documents_item_id'] = $document_item['id'];
+         $item_doc['date_mod']          = $document_item['date_mod'];
+         $item_doc['users_id']          = $document_item['users_id'];
+         $item_doc['documents_item_id'] = $document_item['id'];
 
-         $item['timeline_position'] = $document_item['timeline_position'];
+         $item_doc['timeline_position'] = $document_item['timeline_position'];
 
-         $item['timeline'][$date . "_document_" . $document_item['documents_id']]
-            = ['type' => 'Document_Item', 'item' => $item];
+         $item['timeline'][$document_item['itemtype']. "_" . $document_item['items_id']]['documents'][]
+            = ['type' => 'Document_Item', 'item' => $item_doc];
       }
 
       $timeline = $item['timeline'];
 
-      return $timeline;
+//      return $timeline;
 
    }
 
