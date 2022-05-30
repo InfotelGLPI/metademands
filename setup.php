@@ -65,7 +65,8 @@ function plugin_init_metademands() {
       Plugin::registerClass('PluginMetademandsForm', ['addtabon' => ['Ticket', 'Change', 'User']]);
       Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
-
+      Plugin::registerClass('PluginMetademandsInterticketfollowup',
+                            ['notificationtemplates_types' => true]);
       $PLUGIN_HOOKS['item_show']['metademands']  = ['PluginResourcesResource' =>
                                                        ['PluginMetademandsMetademand_Resource', 'redirectFormForResource']];
       $PLUGIN_HOOKS['item_empty']['metademands'] = ['Ticket' =>
@@ -135,6 +136,12 @@ function plugin_init_metademands() {
    $PLUGIN_HOOKS['webservices']['metademands']                   = 'plugin_metademands_registerMethods';
    $PLUGIN_HOOKS['timeline_actions']['metademands']              = ['PluginMetademandsMetademandValidation',
                                                                     'showActionsForm'];
+
+   //Add another actions into answer
+   $PLUGIN_HOOKS['timeline_answer_actions']['metademands'] = ['PluginMetademandsInterticketfollowup',
+                                                                 'addToTimeline'];
+   $PLUGIN_HOOKS['show_in_timeline']['metademands'] = ['PluginMetademandsInterticketfollowup',
+                                                          'getlistItems'];
    $PLUGIN_HOOKS['plugin_datainjection_populate']['metademands'] = 'plugin_datainjection_populate_metademands';
 
 }

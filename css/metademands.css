@@ -457,3 +457,16 @@ textarea.invalid,
 .mt-2 {
     margin-top: unset!important;
 }
+
+.timeline-item.ITILInterticketfollowup .timeline-content, .timeline-item.ITILInterticketfollowup .timeline-content {
+    background-color: #E8DCCA;
+    color: #425B64;
+    border-color: #ccc;
+    /*background-image: url(../pics/timeline/followup.png);*/
+    background-repeat: no-repeat;
+}
+
+.itil-footer .action-interticketfollowup {
+    background-color: #E8DCCA;
+    color: #425b64;
+}

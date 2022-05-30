@@ -252,6 +252,26 @@ function plugin_metademands_install() {
       $DB->query($query);
    }
 
+   if (!$DB->tableExists("glpi_plugin_metademands_interticketfollowups")) {
+      $query = "CREATE TABLE `glpi_plugin_metademands_interticketfollowups`
+         (
+             `id` int unsigned NOT NULL AUTO_INCREMENT,
+             `tickets_id` int unsigned NOT NULL DEFAULT '0',
+             `targets_id` int unsigned NOT NULL DEFAULT '0',
+             `date` timestamp NULL DEFAULT NULL,
+             `users_id` int unsigned NOT NULL DEFAULT '0',
+             `users_id_editor` int unsigned NOT NULL DEFAULT '0',
+             `content` longtext COLLATE utf8_unicode_ci,
+             `is_private` tinyint NOT NULL DEFAULT '0',
+             `requesttypes_id` int unsigned NOT NULL DEFAULT '0', -- todo keep it ?
+             `date_mod` timestamp NULL DEFAULT NULL,
+             `date_creation` timestamp NULL DEFAULT NULL,
+             `timeline_position` tinyint NOT NULL DEFAULT '0',
+             PRIMARY KEY (`id`)
+         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;";
+      $DB->query($query);
+   }
+
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
    if (!is_dir($rep_files_metademands)) {
       mkdir($rep_files_metademands);
@@ -293,7 +313,8 @@ function plugin_metademands_uninstall() {
               "glpi_plugin_metademands_drafts_values",
               "glpi_plugin_metademands_pluginfields",
               "glpi_plugin_metademands_forms",
-              "glpi_plugin_metademands_forms_values"];
+              "glpi_plugin_metademands_forms_values",
+              "glpi_plugin_metademands_interticketfollowups"];
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
@@ -523,9 +544,9 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
 
       case "glpi_plugin_metademands_metademandvalidations.validate":
          $AND = "";
-         if($val == PluginMetademandsMetademandValidation::TO_VALIDATE
-            || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK ) {
-            $AND = "AND glpi_tickets.status IN ( ".implode(",", Ticket::getNotSolvedStatusArray()).")";
+         if ($val == PluginMetademandsMetademandValidation::TO_VALIDATE
+             || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK) {
+            $AND = "AND glpi_tickets.status IN ( " . implode(",", Ticket::getNotSolvedStatusArray()) . ")";
          }
          return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
                         AND `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";

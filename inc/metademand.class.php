@@ -4778,7 +4778,7 @@ JAVASCRIPT
                   }
 
                   echo "<tr class='tab_bg_1'>";
-                  echo "<td class='$color_class'>";
+                  echo "<td>";
                   // Name
                   if ($values['type'] == PluginMetademandsTask::TICKET_TYPE) {
                      if ($values['level'] > 1) {
@@ -4797,7 +4797,7 @@ JAVASCRIPT
                   echo "</td>";
 
                   //date
-                  echo "<td class='$color_class'>";
+                  echo "<td>";
                   echo Html::convDateTime($ticket->fields['date']);
                   echo "</td>";
 
@@ -4831,12 +4831,12 @@ JAVASCRIPT
                         }
                      }
                   }
-                  echo "<td class='$color_class'>";
+                  echo "<td>";
                   echo $techdata;
                   echo "</td>";
 
                   //status
-                  echo "<td class='$color_class center'>";
+                  echo "<td class='center'>";
                   if (in_array($ticket->fields['status'], $status)) {
                      echo "<i class='fas fa-check-circle fa-2x' style='color:forestgreen'></i> ";
                   }
@@ -4855,7 +4855,7 @@ JAVASCRIPT
                   echo "</td>";
 
                   //sla state
-                  echo "<td class='$color_class'>";
+                  echo "<td>";
                   echo $sla_state;
                   echo "</td>";
                   echo "</tr>";
