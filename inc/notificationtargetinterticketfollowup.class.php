@@ -98,7 +98,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
    function getEvents() {
 
       $events = [
-         'add_interticketfollowup'      => __("New inter ticket followup"),
+         'add_interticketfollowup'      => __("New inter ticket followup",'metademands'),
 //         'update_followup'   => __('Update of a inter ticket followup'),
 //         'delete_followup'   => __('Deletion of a inter ticket followup'),
       ];
