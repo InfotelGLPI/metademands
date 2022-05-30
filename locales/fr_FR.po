@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-30 09:13+0000\n"
+"POT-Creation-Date: 2022-05-30 09:57+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2022\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -632,16 +632,12 @@ msgstr "Ajouter un groupe"
 msgid "Groups allowed to enter a demand"
 msgstr "Groupes autorisés à saisir une demande"
 
-#: inc/interticketfollowup.class.php:48
+#: inc/interticketfollowup.class.php:48 inc/interticketfollowup.class.php:74
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] "Suivi inter ticket"
 msgstr[1] "Suivi inter tickets"
 msgstr[2] "Suivi inter tickets"
-
-#: inc/interticketfollowup.class.php:74
-msgid "Inter Ticket Followup"
-msgstr "Suivi inter ticket"
 
 #: inc/interticketfollowup.class.php:126
 msgid "All tickets"
@@ -998,8 +994,8 @@ msgstr "Ticket(s) cible(s)"
 
 #: inc/notificationtargetinterticketfollowup.class.php:947
 msgctxt "quantity"
-msgid "Number of intern followups"
-msgstr "Nombre de suivis internes"
+msgid "Number of inter ticket followups"
+msgstr "Nombre de suivis inter tickets"
 
 #: inc/profile.class.php:45
 msgid "Right management"
