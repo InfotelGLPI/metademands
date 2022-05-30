@@ -216,7 +216,7 @@ function plugin_metademands_install() {
    //version 2.7.10
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.10.sql");
-      install_notifications_metademands
+      install_notifications_metademands();
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
@@ -909,7 +909,7 @@ Ticket ###ticket.id##
    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
    $DB->query($query);
-  
+
 
    $migration->executeMigration();
 
