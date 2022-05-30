@@ -71,7 +71,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
             'type'  => 'PluginMetademandsInterticketfollowup',
             'class' => 'PluginMetademandsInterticketfollowup',
             'icon'  => 'fas fa-comments',
-            'label' => __('Inter Ticket Followup', 'metademands'),
+            'label' => _n('Inter ticket followup', 'Inter ticket followups', 1, 'metademands'),
             'item'  => new PluginMetademandsInterticketfollowup()
          ];
       }

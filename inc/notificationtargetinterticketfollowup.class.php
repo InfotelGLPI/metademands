@@ -944,7 +944,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                'followup_intern.target'      => __('Target ticket(s)', 'metademands'),
 
                $objettype . '.numberoffollowups'        => _x('quantity', 'Number of followups'),
-               $objettype . '.numberoffollowups_intern' => _x('quantity', 'Number of intern followups', 'metademands'),
+               $objettype . '.numberoffollowups_intern' => _x('quantity', 'Number of inter ticket followups', 'metademands'),
                $objettype . '.numberofunresolved'       => __('Number of unresolved items'),
                $objettype . '.numberofdocuments'        => _x('quantity', 'Number of documents'),
                $objettype . '.costtime'                 => __('Time cost'),
