@@ -131,7 +131,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
       $inter     = new PluginMetademandsInterticketfollowup();
       $inter->getFromDB($data['interticketfollowup_id']);
 
-      if ($inter->fields['targets_id'] == -1) {
+      if ($inter->fields['targets_id'] == 0) {
          $first_tickets_id       = PluginMetademandsInterticketfollowup::getFirstTicket($item->fields['id']);
          if ($first_tickets_id) {
             $ticket_metademand      = new PluginMetademandsTicket_Metademand();
@@ -187,7 +187,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
       $type      = CommonITILActor::ASSIGN;
       $inter     = new PluginMetademandsInterticketfollowup();
       $inter->getFromDB($data['interticketfollowup_id']);
-      if ($inter->fields['targets_id'] == -1) {
+      if ($inter->fields['targets_id'] == 0) {
          $first_tickets_id       = PluginMetademandsInterticketfollowup::getFirstTicket($inter->fields['tickets_id']);
          $ticket_metademand      = new PluginMetademandsTicket_Metademand();
          $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
@@ -655,7 +655,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
 
                                                                       'AND' => [
                                                                          'tickets_id' => $list_tickets,
-                                                                         'targets_id' => -1
+                                                                         'targets_id' => 0
                                                                       ],
                                                                       ['targets_id' => $items_id],
                                                                       ['tickets_id' => $items_id],
@@ -666,7 +666,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
 
                                                                          'AND' => [
                                                                             'tickets_id' => $list_tickets,
-                                                                            'targets_id' => -1
+                                                                            'targets_id' => 0
                                                                          ],
                                                                          ['targets_id' => $items_id],
                                                                          ['tickets_id' => $items_id],

@@ -131,7 +131,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
                                                                              $ticket_metademand_data['plugin_metademands_metademands_id']);
             $targets                = [];
             $ticket                 = new Ticket();
-            $targets[-1]            = __('All tickets', 'metademands');
+            $targets[0]            = __('All tickets', 'metademands');
             if ($first_tickets_id != $items_id) {
                $ticket->getFromDB($first_tickets_id);
                $targets[$first_tickets_id] = $ticket->getFriendlyName();
@@ -189,7 +189,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
 
                                            'AND' => [
                                               'tickets_id' => $list_tickets,
-                                              'targets_id' => -1
+                                              'targets_id' => 0
                                            ],
                                            ['targets_id' => $items_id],
                                            ['tickets_id' => $items_id],
@@ -200,7 +200,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
 
                                               'AND' => [
                                                  'tickets_id' => $list_tickets,
-                                                 'targets_id' => -1
+                                                 'targets_id' => 0
                                               ],
                                               ['targets_id' => $items_id],
                                               ['tickets_id' => $items_id],
@@ -471,7 +471,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
 
                'AND' => [
                   self::getTableField('tickets_id') => $list_tickets,
-                  self::getTableField('targets_id') => -1
+                  self::getTableField('targets_id') => 0
                ],
                [self::getTableField('targets_id') => $items_id],
                [self::getTableField('tickets_id') => $items_id],
