@@ -207,12 +207,12 @@ function plugin_metademands_install() {
    if (!$DB->tableExists("glpi_plugin_metademands_pluginfields")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.8.sql");
    }
-   
+
    //version 2.7.9
    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "hideTable")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.9.sql");
    }
-   
+
    //version 2.7.10
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.10.sql");
@@ -420,8 +420,8 @@ function plugin_metademands_timeline_actions($data) {
 
 
    $metaValidation = new PluginMetademandsMetademandValidation();
-   $ticket_task = new PluginMetademandsTicket_Task();
-   $rand = $data['rand'];
+   $ticket_task    = new PluginMetademandsTicket_Task();
+   $rand           = $data['rand'];
    if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']])
        && $_SESSION['glpiactiveprofile']['interface'] == 'central'
        && ($data['item']->fields['status'] != Ticket::SOLVED
@@ -460,10 +460,13 @@ function plugin_metademands_timeline_actions($data) {
       echo "<li class='metavalidation' onclick='" .
            "javascript:viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(\"Solution\");'>"
            . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
-      echo "<li class='interticketfollow' onclick='" .
-           "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"".PluginMetademandsInterticketfollowup::getType()."\");'>"
-           . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
-   } else if($ticket_task->find(['tickets_id' => $data['item']->fields['id']]) || $ticket_task->find(['parent_tickets_id' => $data['item']->fields['id']])) {
+
+      if ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TICKET_CREATION) {
+         echo "<li class='interticketfollow' onclick='" .
+              "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"" . PluginMetademandsInterticketfollowup::getType() . "\");'>"
+              . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
+      }
+   } else if ($ticket_task->find(['tickets_id' => $data['item']->fields['id']]) || $ticket_task->find(['parent_tickets_id' => $data['item']->fields['id']])) {
       echo "<script type='text/javascript' >\n
 //      $(document).ready(function() {
 //                $('.ajax_box').show();
@@ -495,7 +498,7 @@ function plugin_metademands_timeline_actions($data) {
 
       echo "</script>\n";
       echo "<li class='interticketfollow' onclick='" .
-           "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"".PluginMetademandsInterticketfollowup::getType()."\");'>"
+           "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"" . PluginMetademandsInterticketfollowup::getType() . "\");'>"
            . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
    }
 }
@@ -601,16 +604,16 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
    switch ($table . "." . $field) {
       case "glpi_plugin_metademands_tickets_metademands.status":
          return $link . " `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
-       case "glpi_plugin_metademands_metademandvalidations.validate":
+      case "glpi_plugin_metademands_metademandvalidations.validate":
          $AND = "";
-         if($val == PluginMetademandsMetademandValidation::TO_VALIDATE
-              || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK ) {
-            $AND = "AND glpi_tickets.status IN ( ".implode(",", Ticket::getNotSolvedStatusArray()).")";
+         if ($val == PluginMetademandsMetademandValidation::TO_VALIDATE
+             || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK) {
+            $AND = "AND glpi_tickets.status IN ( " . implode(",", Ticket::getNotSolvedStatusArray()) . ")";
          }
-        return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
+         return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
                         AND `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";
-        break;
-         
+         break;
+
       case "glpi_plugin_metademands_tickets_tasks.id":
          switch ($searchtype) {
             case 'equals' :
@@ -761,7 +764,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
             $out   .= PluginMetademandsMetademandValidation::getStatusName($data['raw']["ITEM_" . $num]);
             $out   .= "</div>";
          } else {
-            $out   = "";
+            $out = "";
          }
          return $out;
          break;
@@ -822,20 +825,20 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
          break;
       case 9504 :
          $result = "";
-                  if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
-                     if (isset($data["Ticket_9504"]["count"])) {
-                        $count = $data["Ticket_9504"]["count"];
-                        $i     = 0;
-                        for ($i; $i < $count; $i++) {
-                           if ($i != 0) {
-                              $result .= "\n";
-                           }
-                           $result .= getUserName($data["Ticket_9504"][$i]["name"]);
-
-
-                        }
-                     }
+         if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
+            if (isset($data["Ticket_9504"]["count"])) {
+               $count = $data["Ticket_9504"]["count"];
+               $i     = 0;
+               for ($i; $i < $count; $i++) {
+                  if ($i != 0) {
+                     $result .= "\n";
                   }
+                  $result .= getUserName($data["Ticket_9504"][$i]["name"]);
+
+
+               }
+            }
+         }
          return $result;
          break;
 

@@ -135,49 +135,52 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
        $inter = new PluginMetademandsInterticketfollowup();
        $inter->getFromDB($data['interticketfollowup_id']);
 
-          if ($inter->fields['targets_id'] == -1) {
+          if ($inter->fields['targets_id'] == -0) {
              $first_tickets_id = PluginMetademandsInterticketfollowup::getFirstTicket($item->fields['id']);
-             $ticket_metademand      = new PluginMetademandsTicket_Metademand();
-             $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
-             $tickets_found          = [];
-             // If ticket is Parent : Check if all sons ticket are closed
-             $list_tickets           = "";
-             if (count($ticket_metademand_data)) {
-                $ticket_metademand_data = reset($ticket_metademand_data);
-                $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
-                                                                                 $ticket_metademand_data['plugin_metademands_metademands_id']);
-                $list_tickets           = [];
-                foreach ($tickets_found as $ticket_found) {
-                   if ($ticket_found['tickets_id'] != $item->fields['id']) {
-                      $list_tickets[] = $ticket_found['tickets_id'];
+             if ($first_tickets_id) {
+                $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+                $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
+                $tickets_found          = [];
+                // If ticket is Parent : Check if all sons ticket are closed
+                $list_tickets = "";
+                if (count($ticket_metademand_data)) {
+                   $ticket_metademand_data = reset($ticket_metademand_data);
+                   $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
+                                                                                    $ticket_metademand_data['plugin_metademands_metademands_id']);
+                   $list_tickets           = [];
+                   foreach ($tickets_found as $ticket_found) {
+                      if ($ticket_found['tickets_id'] != $item->fields['id']) {
+                         $list_tickets[] = $ticket_found['tickets_id'];
+                      }
+                   }
+                   if ($item->fields['id'] != $first_tickets_id) {
+                      $list_tickets[] = $first_tickets_id;
                    }
                 }
-                if ($item->fields['id'] != $first_tickets_id) {
-                   $list_tickets[] = $first_tickets_id;
-                }
+                $tickets_id = $list_tickets;
              }
-             $tickets_id = $list_tickets;
           } else {
              $tickets_id = [$inter->fields['targets_id'],$inter->fields['tickets_id']];
           }
 
+      if ($tickets_id) {
+         $ticket = new Ticket();
 
-      $ticket = new Ticket();
+         $grouplinktable = "glpi_groups_tickets";
+         $fkfield        = $ticket->getForeignKeyField();
 
-      $grouplinktable = "glpi_groups_tickets";
-      $fkfield        =$ticket->getForeignKeyField();
-
-      $iterator = $DB->request([
-                                  'SELECT' => 'groups_id',
-                                  'FROM'   => $grouplinktable,
-                                  'WHERE'  => [
-                                     $fkfield => $tickets_id,
-                                     'type'   => CommonITILActor::ASSIGN
-                                  ]
-                               ]);
-      while ($data = $iterator->next()) {
-         //Add the group in the notified users list
-         $this->addForGroup(0, $data['groups_id']);
+         $iterator = $DB->request([
+                                     'SELECT' => 'groups_id',
+                                     'FROM'   => $grouplinktable,
+                                     'WHERE'  => [
+                                        $fkfield => $tickets_id,
+                                        'type'   => CommonITILActor::ASSIGN
+                                     ]
+                                  ]);
+         while ($data = $iterator->next()) {
+            //Add the group in the notified users list
+            $this->addForGroup(0, $data['groups_id']);
+         }
       }
    }
 
@@ -188,7 +191,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
       $type = CommonITILActor::ASSIGN;
       $inter = new PluginMetademandsInterticketfollowup();
       $inter->getFromDB($data['interticketfollowup_id']);
-      if ($inter->fields['targets_id'] == -1) {
+      if ($inter->fields['targets_id'] == 0) {
          $first_tickets_id       = PluginMetademandsInterticketfollowup::getFirstTicket($inter->fields['tickets_id']);
          $ticket_metademand      = new PluginMetademandsTicket_Metademand();
          $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
@@ -658,7 +661,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
 
                                             'AND' => [
                                                'tickets_id' => $list_tickets,
-                                               'targets_id' => -1
+                                               'targets_id' => 0
                                             ],
                                             ['targets_id' => $items_id],
                                             ['tickets_id' => $items_id],
@@ -669,7 +672,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
 
                                                'AND' => [
                                                   'tickets_id' => $list_tickets,
-                                                  'targets_id' => -1
+                                                  'targets_id' => 0
                                                ],
                                                ['targets_id' => $items_id],
                                                ['tickets_id' => $items_id],

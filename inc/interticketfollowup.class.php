@@ -82,37 +82,43 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
       } else {
          $ticket_task = new PluginMetademandsTicket_Task();
          $ticket_task->getFromDBByCrit(['tickets_id' => $tickets_id]);
-         return self::getFirstTicket($ticket_task->fields['parent_tickets_id']);
+         if (isset($ticket_task->fields['parent_tickets_id'])
+             && $ticket_task->fields['parent_tickets_id'] > 0) {
+            return self::getFirstTicket($ticket_task->fields['parent_tickets_id']);
+         }
       }
+      return false;
    }
 
 
    static function getTargets($items_id) {
       $first_tickets_id = self::getFirstTicket($items_id);
-      $ticket_metademand      = new PluginMetademandsTicket_Metademand();
-      $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
-      $tickets_found          = [];
-      // If ticket is Parent : Check if all sons ticket are closed
-      if (count($ticket_metademand_data)) {
-         $ticket_metademand_data = reset($ticket_metademand_data);
-         $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
-                                                                          $ticket_metademand_data['plugin_metademands_metademands_id']);
-         $targets           = [];
-         $ticket = new Ticket();
-         $targets[-1] = __('All tickets','metademands');
-         if($first_tickets_id != $items_id) {
-            $ticket->getFromDB($first_tickets_id);
-            $targets[$first_tickets_id] = $ticket->getFriendlyName();
-         }
-         foreach ($tickets_found as $ticket_found) {
-            if ($ticket_found['tickets_id'] != $items_id) {
-               $ticket->getFromDB($ticket_found['tickets_id']);
-               $targets[$ticket_found['tickets_id']] = $ticket->getFriendlyName();
+      if ($first_tickets_id) {
+         $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+         $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
+         $tickets_found          = [];
+         // If ticket is Parent : Check if all sons ticket are closed
+         if (count($ticket_metademand_data)) {
+            $ticket_metademand_data = reset($ticket_metademand_data);
+            $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
+                                                                             $ticket_metademand_data['plugin_metademands_metademands_id']);
+            $targets                = [];
+            $ticket                 = new Ticket();
+            $targets[0]            = __('All tickets', 'metademands');
+            if ($first_tickets_id != $items_id) {
+               $ticket->getFromDB($first_tickets_id);
+               $targets[$first_tickets_id] = $ticket->getFriendlyName();
             }
-         }
+            foreach ($tickets_found as $ticket_found) {
+               if ($ticket_found['tickets_id'] != $items_id) {
+                  $ticket->getFromDB($ticket_found['tickets_id']);
+                  $targets[$ticket_found['tickets_id']] = $ticket->getFriendlyName();
+               }
+            }
 
+         }
+         return $targets;
       }
-      return $targets;
    }
    static function getlistItems($item) {
       $self = new self();
@@ -120,86 +126,88 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
 
       $items_id = $item['item']->fields['id'];
       $first_tickets_id = self::getFirstTicket($items_id);
-      $ticket_metademand      = new PluginMetademandsTicket_Metademand();
-      $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
-      $tickets_found          = [];
-      // If ticket is Parent : Check if all sons ticket are closed
-      if (count($ticket_metademand_data)) {
-         $ticket_metademand_data = reset($ticket_metademand_data);
-         $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
-                                                                          $ticket_metademand_data['plugin_metademands_metademands_id']);
-         $list_tickets = [];
-         foreach ($tickets_found as $ticket_found) {
-            if($ticket_found['tickets_id'] != $items_id) {
-               $list_tickets[] = $ticket_found['tickets_id'];
+      if ($first_tickets_id) {
+         $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+         $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
+         $tickets_found          = [];
+         // If ticket is Parent : Check if all sons ticket are closed
+         if (count($ticket_metademand_data)) {
+            $ticket_metademand_data = reset($ticket_metademand_data);
+            $tickets_found          = PluginMetademandsTicket::getSonTickets($first_tickets_id,
+                                                                             $ticket_metademand_data['plugin_metademands_metademands_id']);
+            $list_tickets           = [];
+            foreach ($tickets_found as $ticket_found) {
+               if ($ticket_found['tickets_id'] != $items_id) {
+                  $list_tickets[] = $ticket_found['tickets_id'];
+               }
             }
+            if ($items_id != $first_tickets_id) {
+               $list_tickets[] = $first_tickets_id;
+            }
+            if (empty($list_tickets)) {
+               $list_tickets = 0;
+            }
+            $follow  = new self();
+            $follows = $follow->find([
+                                        'OR'  => [
+
+                                           'AND' => [
+                                              'tickets_id' => $list_tickets,
+                                              'targets_id' => 0
+                                           ],
+                                           ['targets_id' => $items_id],
+                                           ['tickets_id' => $items_id],
+
+                                        ],
+                                        'AND' => [
+                                           'OR' => [
+
+                                              'AND' => [
+                                                 'tickets_id' => $list_tickets,
+                                                 'targets_id' => 0
+                                              ],
+                                              ['targets_id' => $items_id],
+                                              ['tickets_id' => $items_id],
+
+                                           ]
+                                        ]
+                                     ]);
          }
-         if($items_id != $first_tickets_id) {
-            $list_tickets[] = $first_tickets_id;
+         $data = [];
+         foreach ($follows as $follow) {
+            $follow['can_edit']                                              = ($follow['tickets_id'] == $items_id && $follow['users_id'] == Session::getLoginUserID()) ? true : false;
+            $data[$follow['date'] . "_interTicketFollowup_" . $follow['id']] = [
+               'type' => self::getType(),
+               'item' => $follow
+            ];
          }
-         if(empty($list_tickets)) {
-            $list_tickets = 0;
+         $document_item_obj = new Document_Item();
+         //add documents to timeline
+         $document_obj   = new Document();
+         $document_items = $document_item_obj->find([
+                                                       $self->getAssociatedDocumentsCriteria($ticket, $list_tickets),
+                                                       'timeline_position' => ['>', CommonITILObject::NO_TIMELINE]
+                                                    ]);
+         foreach ($document_items as $document_item) {
+            $document_obj->getFromDB($document_item['documents_id']);
+
+            $date = $document_item['date'] ?? $document_item['date_creation'];
+
+            $item         = $document_obj->fields;
+            $item['date'] = $date;
+            // #1476 - set date_mod and owner to attachment ones
+            $item['date_mod']          = $document_item['date_mod'];
+            $item['users_id']          = $document_item['users_id'];
+            $item['documents_item_id'] = $document_item['id'];
+
+            $item['timeline_position'] = $document_item['timeline_position'];
+
+            $data[$date . "_document_" . $document_item['documents_id']]
+               = ['type' => 'Document_Item', 'item' => $item];
          }
-         $follow = new self();
-         $follows = $follow->find([
-            'OR' => [
 
-               'AND' => [
-                  'tickets_id' => $list_tickets,
-                  'targets_id' => -1
-               ],
-               ['targets_id' => $items_id],
-               ['tickets_id' => $items_id],
-
-            ],
-            'AND' => [
-               'OR' => [
-
-                  'AND' => [
-                     'tickets_id' => $list_tickets,
-                     'targets_id' => -1
-                  ],
-                  ['targets_id' => $items_id],
-                  ['tickets_id' => $items_id],
-
-               ]
-            ]
-                                  ]);
+         return $data;
       }
-      $data = [];
-      foreach ($follows as $follow) {
-         $follow['can_edit'] = ($follow['tickets_id'] == $items_id && $follow['users_id'] == Session::getLoginUserID() )?true:false;
-         $data[$follow['date']."_interTicketFollowup_".$follow['id']] = [
-            'type' => self::getType(),
-            'item' => $follow
-         ];
-      }
-      $document_item_obj     = new Document_Item();
-      //add documents to timeline
-      $document_obj   = new Document();
-      $document_items = $document_item_obj->find([
-                                                    $self->getAssociatedDocumentsCriteria($ticket,$list_tickets),
-                                                    'timeline_position'  => ['>', CommonITILObject::NO_TIMELINE]
-                                                 ]);
-      foreach ($document_items as $document_item) {
-         $document_obj->getFromDB($document_item['documents_id']);
-
-         $date = $document_item['date'] ?? $document_item['date_creation'];
-
-         $item = $document_obj->fields;
-         $item['date'] = $date;
-         // #1476 - set date_mod and owner to attachment ones
-         $item['date_mod'] = $document_item['date_mod'];
-         $item['users_id'] = $document_item['users_id'];
-         $item['documents_item_id'] = $document_item['id'];
-
-         $item['timeline_position'] = $document_item['timeline_position'];
-
-         $data[$date."_document_".$document_item['documents_id']]
-            = ['type' => 'Document_Item', 'item' => $item];
-      }
-
-      return $data;
    }
 
    function showForm($ID, $options = []) {
@@ -408,9 +416,6 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
 
 
 
-
-
-
       $itemtype = $input['itemtype'];
       $input['timeline_position'] = $itemtype::getTimelinePosition($input["tickets_id"], ITILFollowup::getType(), $input["users_id"]);
 
@@ -476,7 +481,7 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
          $this->fields['id'],
       ];
 
-      Log::history($this->getField('items_id'), get_class($parentitem), $changes, $this->getType(),
+      Log::history($this->getField('tickets_id'), get_class($parentitem), $changes, $this->getType(),
                    Log::HISTORY_ADD_SUBITEM);
    }
 
@@ -501,7 +506,7 @@ class PluginMetademandsInterticketfollowup extends CommonDBTM {
 
                'AND' => [
                   self::getTableField('tickets_id') => $list_tickets,
-                  self::getTableField('targets_id') => -1
+                  self::getTableField('targets_id') => 0
                ],
                [self::getTableField('targets_id') => $items_id],
                [self::getTableField('tickets_id') => $items_id],

@@ -400,6 +400,13 @@ button.clear-basket {
     border-color: #E8DCCA;
 }
 
+.timeline-item.PluginMetademandsInterticketfollowup  .timeline-content {
+    background-color: #E8DCCA;
+    color: #425B64;
+    border-color: #E8DCCA;
+    border-left: 1em transparent solid;
+}
+
 .select2-container {
     max-width: 250px!important;
 }
