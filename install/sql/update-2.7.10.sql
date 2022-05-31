@@ -48,7 +48,6 @@ CREATE TABLE `glpi_plugin_metademands_interticketfollowups`
     `date_mod` timestamp NULL DEFAULT NULL,
     `date_creation` timestamp NULL DEFAULT NULL,
     `timeline_position` tinyint(1) NOT NULL DEFAULT '0',
-
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 

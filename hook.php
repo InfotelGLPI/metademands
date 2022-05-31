@@ -464,7 +464,7 @@ function plugin_metademands_timeline_actions($data) {
       if ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TICKET_CREATION) {
          echo "<li class='interticketfollow' onclick='" .
               "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"" . PluginMetademandsInterticketfollowup::getType() . "\");'>"
-              . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
+              . "<i class='fas fa-comments'></i>" . __('Inter ticket Followup', 'metademands') . "</li>";
       }
    } else if ($ticket_task->find(['tickets_id' => $data['item']->fields['id']]) || $ticket_task->find(['parent_tickets_id' => $data['item']->fields['id']])) {
       echo "<script type='text/javascript' >\n
@@ -499,7 +499,7 @@ function plugin_metademands_timeline_actions($data) {
       echo "</script>\n";
       echo "<li class='interticketfollow' onclick='" .
            "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"" . PluginMetademandsInterticketfollowup::getType() . "\");'>"
-           . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
+           . "<i class='fas fa-comments'></i>" . __('Inter ticket Followup', 'metademands') . "</li>";
    }
 }
 
@@ -863,8 +863,8 @@ function install_notifications_metademands() {
 
    $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
 VALUES('" . $templates_id . "',
-'',
-'##ticket.action##Ticket : ##ticket.title## (##ticket.id##)
+'##ticket.action## : ##ticket.title##',
+'##ticket.action## : ##ticket.title## (##ticket.id##)
 ##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate## 
 ##ENDIFticket.storestatus## ##lang.ticket.creationdate## : ##ticket.creationdate####IFticket.authors##
 ##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors## 
