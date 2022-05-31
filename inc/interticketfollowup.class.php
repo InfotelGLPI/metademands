@@ -229,9 +229,15 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
          $item_doc['documents_item_id'] = $document_item['id'];
 
          $item_doc['timeline_position'] = $document_item['timeline_position'];
-
+         $docpath = GLPI_DOC_DIR . "/" .  $document_obj->fields['filepath'];
+         $is_image = Document::isImage($docpath);
+         $sub_document = ['type' => 'Document_Item', 'item' => $item_doc];
+         if ($is_image) {
+            $sub_document['_is_image'] = true;
+            $sub_document['_size'] = getimagesize($docpath);
+         }
          $item['timeline'][$document_item['itemtype']. "_" . $document_item['items_id']]['documents'][]
-            = ['type' => 'Document_Item', 'item' => $item_doc];
+            = $sub_document;
       }
 
       $timeline = $item['timeline'];
