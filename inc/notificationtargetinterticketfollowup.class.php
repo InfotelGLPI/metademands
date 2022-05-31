@@ -132,7 +132,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
       $inter->getFromDB($data['interticketfollowup_id']);
 
       if ($inter->fields['targets_id'] == 0) {
-         $first_tickets_id       = PluginMetademandsInterticketfollowup::getFirstTicket($item->fields['id']);
+         $first_tickets_id = PluginMetademandsInterticketfollowup::getFirstTicket($item->fields['id']);
          if ($first_tickets_id) {
             $ticket_metademand      = new PluginMetademandsTicket_Metademand();
             $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);

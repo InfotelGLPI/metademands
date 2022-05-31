@@ -61,8 +61,10 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
 
       $metaValidation = new PluginMetademandsMetademandValidation();
       $ticket_task    = new PluginMetademandsTicket_Task();
-      if (($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
-           || $ticket_task->find(['tickets_id' => $item->fields['id']]) || $ticket_task->find(['parent_tickets_id' => $item->fields['id']]))
+      if ((($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
+            && $metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TICKET_CREATION)
+           || $ticket_task->find(['tickets_id' => $item->fields['id']])
+           || $ticket_task->find(['parent_tickets_id' => $item->fields['id']]))
           && $_SESSION['glpiactiveprofile']['interface'] == 'central'
           && ($item->fields['status'] != Ticket::SOLVED
               && $item->fields['status'] != Ticket::CLOSED)) {
@@ -118,7 +120,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
     */
    static function getTargets($items_id) {
 
-      $first_tickets_id       = self::getFirstTicket($items_id);
+      $first_tickets_id = self::getFirstTicket($items_id);
 
       if ($first_tickets_id) {
          $ticket_metademand      = new PluginMetademandsTicket_Metademand();
@@ -131,7 +133,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
                                                                              $ticket_metademand_data['plugin_metademands_metademands_id']);
             $targets                = [];
             $ticket                 = new Ticket();
-            $targets[0]            = __('All tickets', 'metademands');
+            $targets[0]             = __('All tickets', 'metademands');
             if ($first_tickets_id != $items_id) {
                $ticket->getFromDB($first_tickets_id);
                $targets[$first_tickets_id] = $ticket->getFriendlyName();

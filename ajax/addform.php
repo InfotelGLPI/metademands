@@ -41,8 +41,6 @@ $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
 $fields      = new PluginMetademandsField();
 
-Toolbox::logInfo($_POST);
-
 if (isset($_POST['save_form'])) {
    $nblines = 0;
    $KO      = false;
