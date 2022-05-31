@@ -448,7 +448,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
          $this->fields['id'],
       ];
 
-      Log::history($this->getField('items_id'), get_class($parentitem), $changes, $this->getType(),
+      Log::history($this->getField('id'), get_class($parentitem), $changes, $this->getType(),
                    Log::HISTORY_ADD_SUBITEM);
    }
 
