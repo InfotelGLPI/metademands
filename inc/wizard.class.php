@@ -3069,7 +3069,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     type: 'POST',
                                     data: arrayDatas,
                                     success: function (response) {
-                                     window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=create_metademands';
+
+                                       window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=create_metademands';
+
                                     },
                                     error: function (xhr, status, error) {
                                        console.log(xhr);
@@ -3077,7 +3079,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                        console.log(error);
                                     }
                                  });
-                                
+
                               }
                            },
                            error: function (xhr, status, error) {

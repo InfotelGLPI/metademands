@@ -50,11 +50,22 @@ if ($_REQUEST['action'] == 'change_task_state' || $_REQUEST['action'] == 'done_f
 switch ($_REQUEST['action']) {
    case "viewsubitem":
 
-      Html::header_nocache();
+      if($_REQUEST['type'] == PluginMetademandsInterticketfollowup::getType()) {
+         $interticket = new PluginMetademandsInterticketfollowup();
+         $ticket = new Ticket();
+         $ticket->getFromDB($_REQUEST['tickets_id']);
+         $opt = [
+            'parent' => $ticket
+         ];
+         $interticket->showForm($_REQUEST['id'],$opt);
+      } else {
 
-      $metavalidation = new PluginMetademandsMetademandValidation();
-      $metavalidation->viewValidation($_REQUEST);
 
+         Html::header_nocache();
+
+         $metavalidation = new PluginMetademandsMetademandValidation();
+         $metavalidation->viewValidation($_REQUEST);
+      }
       //      Html::ajaxFooter();
       break;
    case "validationMeta":

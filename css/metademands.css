@@ -385,6 +385,27 @@ button.clear-basket {
     color:#425B64;
 }
 
+.timeline_choices li.interticketfollow {
+    background-color: #E8DCCA;
+    color:#425B64;
+}
+
+.timeline_history .h_content.PluginMetademandsInterticketfollowup {
+    background-color: #E8DCCA;
+    color: #425B64;
+    background-image: url(../../../pics/timeline/followup.png);
+    background-repeat: no-repeat;
+}
+.timeline_history .PluginMetademandsInterticketfollowup:after {
+    border-color: #E8DCCA;
+}
+
+.timeline-item.PluginMetademandsInterticketfollowup  .timeline-content {
+    background-color: #E8DCCA;
+    color: #425B64;
+    border-color: #E8DCCA;
+    border-left: 1em transparent solid;
+}
 
 .select2-container {
     max-width: 250px!important;

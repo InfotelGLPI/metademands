@@ -37,7 +37,8 @@ function plugin_metademands_install() {
    include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_metademands")) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-2.7.9.sql");
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-2.7.10.sql");
+      install_notifications_metademands();
    }
 
    if ($DB->tableExists("glpi_plugin_metademands_profiles")
@@ -206,15 +207,16 @@ function plugin_metademands_install() {
    if (!$DB->tableExists("glpi_plugin_metademands_pluginfields")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.8.sql");
    }
-   
+
    //version 2.7.9
    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "hideTable")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.9.sql");
    }
-   
+
    //version 2.7.10
    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks")) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.10.sql");
+      install_notifications_metademands();
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
@@ -255,9 +257,38 @@ function plugin_metademands_uninstall() {
               "glpi_plugin_metademands_metademandtranslations",
               "glpi_plugin_metademands_metademandvalidations",
               "glpi_plugin_metademands_forms",
+              "glpi_plugin_metademands_interticketfollowups",
               "glpi_plugin_metademands_forms_values"];
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
+   }
+   $options = ['itemtype' => 'PluginMetademandsInterticketfollowup',
+               'event'    => 'add_interticketfollowup',
+               'FIELDS'   => 'id'];
+
+   $notif = new Notification();
+   foreach ($DB->request('glpi_notifications', $options) as $data) {
+      $notif->delete($data);
+   }
+
+   //templates
+   $template       = new NotificationTemplate();
+   $translation    = new NotificationTemplateTranslation();
+   $notif_template = new Notification_NotificationTemplate();
+   $options        = ['itemtype' => 'PluginMetademandsInterticketfollowup',
+                      'FIELDS'   => 'id'];
+
+   foreach ($DB->request('glpi_notificationtemplates', $options) as $data) {
+      $options_template = ['notificationtemplates_id' => $data['id'],
+                           'FIELDS'                   => 'id'];
+      foreach ($DB->request('glpi_notificationtemplatetranslations', $options_template) as $data_template) {
+         $translation->delete($data_template);
+      }
+      $template->delete($data);
+
+      foreach ($DB->request('glpi_notifications_notificationtemplates', $options_template) as $data_template) {
+         $notif_template->delete($data_template);
+      }
    }
 
    include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
@@ -389,16 +420,30 @@ function plugin_metademands_timeline_actions($data) {
 
 
    $metaValidation = new PluginMetademandsMetademandValidation();
+   $ticket_task    = new PluginMetademandsTicket_Task();
+   $rand           = $data['rand'];
    if ($metaValidation->getFromDBByCrit(['tickets_id' => $data['item']->fields['id']])
        && $_SESSION['glpiactiveprofile']['interface'] == 'central'
        && ($data['item']->fields['status'] != Ticket::SOLVED
            && $data['item']->fields['status'] != Ticket::CLOSED)) {
-      $rand = $data['rand'];
+
       echo "<script type='text/javascript' >\n
 //      $(document).ready(function() {
 //                $('.ajax_box').show();
 //      });
       function viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
+
+      $params = ['action'     => 'viewsubitem',
+                 'type'       => 'itemtype',
+                 'tickets_id' => $data['item']->fields['id'],
+                 'id'         => -1];
+      $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
+                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php",
+                                       $params, "", false);
+      echo str_replace("\"itemtype\"", "itemtype", $out);
+      echo "};
+      
+      function viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
 
       $params = ['action'     => 'viewsubitem',
                  'type'       => 'itemtype',
@@ -415,6 +460,46 @@ function plugin_metademands_timeline_actions($data) {
       echo "<li class='metavalidation' onclick='" .
            "javascript:viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(\"Solution\");'>"
            . "<i class='fas fa-thumbs-up'></i>" . __('Metademand validation', 'metademands') . "</li>";
+
+      if ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TICKET_CREATION) {
+         echo "<li class='interticketfollow' onclick='" .
+              "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"" . PluginMetademandsInterticketfollowup::getType() . "\");'>"
+              . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
+      }
+   } else if ($ticket_task->find(['tickets_id' => $data['item']->fields['id']]) || $ticket_task->find(['parent_tickets_id' => $data['item']->fields['id']])) {
+      echo "<script type='text/javascript' >\n
+//      $(document).ready(function() {
+//                $('.ajax_box').show();
+//      });
+      function viewAddMetaValidation" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
+
+      $params = ['action'     => 'viewsubitem',
+                 'type'       => 'itemtype',
+                 'tickets_id' => $data['item']->fields['id'],
+                 'id'         => -1];
+      $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
+                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php",
+                                       $params, "", false);
+      echo str_replace("\"itemtype\"", "itemtype", $out);
+      echo "};
+      
+      function viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(itemtype) {\n";
+
+      $params = ['action'     => 'viewsubitem',
+                 'type'       => 'itemtype',
+                 'tickets_id' => $data['item']->fields['id'],
+                 'id'         => -1];
+      $out    = Ajax::updateItemJsCode("viewitem" . $data['item']->fields['id'] . "$rand",
+                                       $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/timeline.php",
+                                       $params, "", false);
+      echo str_replace("\"itemtype\"", "itemtype", $out);
+      echo "};
+      ";
+
+      echo "</script>\n";
+      echo "<li class='interticketfollow' onclick='" .
+           "javascript:viewAddInterticketfollow" . $data['item']->fields['id'] . "$rand(\"" . PluginMetademandsInterticketfollowup::getType() . "\");'>"
+           . "<i class='fas fa-comments'></i>" . __('Inter Ticket Followup', 'metademands') . "</li>";
    }
 }
 
@@ -519,16 +604,16 @@ function plugin_metademands_addWhere($link, $nott, $type, $ID, $val, $searchtype
    switch ($table . "." . $field) {
       case "glpi_plugin_metademands_tickets_metademands.status":
          return $link . " `glpi_plugin_metademands_tickets_metademands`.`status` = '$val'";
-       case "glpi_plugin_metademands_metademandvalidations.validate":
+      case "glpi_plugin_metademands_metademandvalidations.validate":
          $AND = "";
-         if($val == PluginMetademandsMetademandValidation::TO_VALIDATE
-              || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK ) {
-            $AND = "AND glpi_tickets.status IN ( ".implode(",", Ticket::getNotSolvedStatusArray()).")";
+         if ($val == PluginMetademandsMetademandValidation::TO_VALIDATE
+             || $val == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK) {
+            $AND = "AND glpi_tickets.status IN ( " . implode(",", Ticket::getNotSolvedStatusArray()) . ")";
          }
-        return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
+         return $link . " `glpi_plugin_metademands_metademandvalidations`.`validate` >= -1
                         AND `glpi_plugin_metademands_metademandvalidations`.`validate` = '$val' $AND";
-        break;
-         
+         break;
+
       case "glpi_plugin_metademands_tickets_tasks.id":
          switch ($searchtype) {
             case 'equals' :
@@ -679,7 +764,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
             $out   .= PluginMetademandsMetademandValidation::getStatusName($data['raw']["ITEM_" . $num]);
             $out   .= "</div>";
          } else {
-            $out   = "";
+            $out = "";
          }
          return $out;
          break;
@@ -740,24 +825,98 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
          break;
       case 9504 :
          $result = "";
-                  if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
-                     if (isset($data["Ticket_9504"]["count"])) {
-                        $count = $data["Ticket_9504"]["count"];
-                        $i     = 0;
-                        for ($i; $i < $count; $i++) {
-                           if ($i != 0) {
-                              $result .= "\n";
-                           }
-                           $result .= getUserName($data["Ticket_9504"][$i]["name"]);
-
-
-                        }
-                     }
+         if (isset($data["Ticket_9504"]) && !is_null($data["Ticket_9504"])) {
+            if (isset($data["Ticket_9504"]["count"])) {
+               $count = $data["Ticket_9504"]["count"];
+               $i     = 0;
+               for ($i; $i < $count; $i++) {
+                  if ($i != 0) {
+                     $result .= "\n";
                   }
+                  $result .= getUserName($data["Ticket_9504"][$i]["name"]);
+
+
+               }
+            }
+         }
          return $result;
          break;
 
    }
 
    return "";
+}
+
+function install_notifications_metademands() {
+
+   global $DB;
+
+   $migration = new Migration(1.0);
+
+   // Notification
+   // Request
+   $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('New inter ticket Followup','PluginMetademandsInterticketfollowup', NOW());";
+   $result = $DB->query($query_id) or die($DB->error());
+   $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='PluginMetademandsInterticketfollowup' AND `name` = 'New inter ticket Followup'";
+   $result = $DB->query($query_id) or die($DB->error());
+   $templates_id = $DB->result($result, 0, 'id');
+
+   $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
+VALUES('" . $templates_id . "',
+'',
+'##ticket.action##Ticket : ##ticket.title## (##ticket.id##)
+##IFticket.storestatus=6## ##lang.ticket.closedate## ##ticket.closedate## 
+##ENDIFticket.storestatus## ##lang.ticket.creationdate## : ##ticket.creationdate####IFticket.authors##
+##lang.ticket.authors## : ##ticket.authors## ##ENDIFticket.authors## 
+##IFticket.assigntogroups####lang.ticket.assigntogroups## : ##ticket.assigntogroups## ##ENDIFticket.assigntogroups## 
+##IFticket.assigntousers####lang.ticket.assigntousers## : ##ticket.assigntousers## ##ENDIFticket.assigntousers##
+
+<!-- Suivis 
+##ticket.action## -->
+##FOREACH LAST 1 followups_intern##
+##lang.followup_intern.author## : ##followup_intern.author## - ##followup_intern.date####followup_intern.description##
+##ENDFOREACHfollowups_intern##
+
+##lang.ticket.numberoffollowups## : ##ticket.numberoffollowups##
+
+##lang.ticket.description##
+##ticket.description##
+
+##lang.ticket.category## :
+##ticket.category##
+##lang.ticket.urgency## :
+##ticket.urgency##
+##lang.ticket.location## :
+##ticket.location####FOREACHitems##
+##lang.ticket.item.name## :##ENDFOREACHitems####FOREACHitems##
+##ticket.item.name####ENDFOREACHitems####FOREACHdocuments##
+Documents :##ENDFOREACHdocuments####FOREACHdocuments##
+##document.filename####ENDFOREACHdocuments##
+
+Ticket ###ticket.id##
+
+
+','');";
+   $DB->query($query);
+
+   $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`)
+              VALUES ('New inter ticket Followup', 0, 'PluginMetademandsInterticketfollowup', 'add_interticketfollowup', 1);";
+   $DB->query($query);
+
+   //retrieve notification id
+   $query_id = "SELECT `id` FROM `glpi_notifications`
+               WHERE `name` = 'New inter ticket Followup' AND `itemtype` = 'PluginMetademandsInterticketfollowup' AND `event` = 'add_interticketfollowup'";
+   $result = $DB->query($query_id) or die ($DB->error());
+   $notification = $DB->result($result, 0, 'id');
+
+   $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
+   $DB->query($query);
+
+
+   $migration->executeMigration();
+
+   return true;
+
+
 }

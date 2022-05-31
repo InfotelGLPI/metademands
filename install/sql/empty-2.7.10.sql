@@ -441,3 +441,21 @@ CREATE TABLE `glpi_plugin_metademands_forms_values`
     `value2`                       TEXT NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `glpi_plugin_metademands_interticketfollowups`
+(
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `tickets_id` int(11) NOT NULL DEFAULT '0',
+    `targets_id` int(11) NOT NULL DEFAULT '0',
+    `date` timestamp NULL DEFAULT NULL,
+    `users_id` int(11) NOT NULL DEFAULT '0',
+    `users_id_editor` int(11) NOT NULL DEFAULT '0',
+    `content` longtext COLLATE utf8_unicode_ci,
+    `is_private` tinyint(1) NOT NULL DEFAULT '0',
+    `requesttypes_id` int(11) NOT NULL DEFAULT '0', -- todo keep it ?
+    `date_mod` timestamp NULL DEFAULT NULL,
+    `date_creation` timestamp NULL DEFAULT NULL,
+    `timeline_position` tinyint(1) NOT NULL DEFAULT '0',
+
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;

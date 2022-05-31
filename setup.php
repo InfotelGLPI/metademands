@@ -47,6 +47,7 @@ function plugin_init_metademands() {
 
    // add minidashboard
    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = ['PluginMetademandsMetademand', 'getMetademandDashboards'];
+   $PLUGIN_HOOKS['timeline_items']['metademands'] =  ['PluginMetademandsInterticketfollowup', 'getlistItems'];
 
    $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
    $plugin = new Plugin();
@@ -63,6 +64,9 @@ function plugin_init_metademands() {
       Plugin::registerClass('PluginMetademandsForm', ['addtabon' => ['Ticket', 'Change', 'User','PluginResourcesResource']]);
       Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
+
+      Plugin::registerClass('PluginMetademandsInterticketfollowup',
+                            ['notificationtemplates_types' => true]);
 
       $PLUGIN_HOOKS['item_show']['metademands']  = ['PluginResourcesResource' =>
                                                        ['PluginMetademandsMetademand_Resource', 'redirectFormForResource']];
