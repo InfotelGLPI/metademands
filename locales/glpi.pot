@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-31 07:38+0000\n"
+"POT-Creation-Date: 2022-05-31 07:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:458
+#: hook.php:489
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:471
+#: hook.php:502
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:487
+#: hook.php:518
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:498
+#: hook.php:529
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:510
+#: hook.php:541
 msgid "Technician child ticket"
 msgstr ""
 
@@ -612,11 +612,11 @@ msgid_plural "Inter ticket followups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/interticketfollowup.class.php:126
+#: inc/interticketfollowup.class.php:134
 msgid "All tickets"
 msgstr ""
 
-#: inc/interticketfollowup.class.php:339
+#: inc/interticketfollowup.class.php:346
 msgid "Target followup"
 msgstr ""
 
@@ -951,11 +951,11 @@ msgstr ""
 msgid "Ticket group technician of target tickets"
 msgstr ""
 
-#: inc/notificationtargetinterticketfollowup.class.php:944
+#: inc/notificationtargetinterticketfollowup.class.php:947
 msgid "Target ticket(s)"
 msgstr ""
 
-#: inc/notificationtargetinterticketfollowup.class.php:947
+#: inc/notificationtargetinterticketfollowup.class.php:950
 msgctxt "quantity"
 msgid "Number of inter ticket followups"
 msgstr ""
