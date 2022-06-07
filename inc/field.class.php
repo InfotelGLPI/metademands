@@ -269,7 +269,7 @@ class PluginMetademandsField extends CommonDBChild {
                       'value'             => $label2,
                       'enable_richtext'   => true,
                       'enable_fileupload' => false,
-                      'enable_images'     => false,
+                      'enable_images'     => true,
                       'cols'              => 50,
                       'rows'              => 3]);
       //      Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
