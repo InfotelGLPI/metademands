@@ -40,7 +40,7 @@ switch ($_POST['create_subticket']) {
    case '0':
       $ticket = new Ticket();
       $ticket->getFromDB($_POST['tickets_id']);
-      echo "<td colspan='2'>" . __('Attribute ticket/tasks to ', 'metademands') . " &nbsp;";
+      echo "<td colspan='2'>" . __('Attribute ticket to ', 'metademands') . " &nbsp;";
       $group = 0;
       foreach ($ticket->getGroups(CommonITILActor::ASSIGN) as $d) {
          $group = $d['groups_id'];

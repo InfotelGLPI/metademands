@@ -59,7 +59,7 @@ if (isset($_POST["add"])) {
       }
 
       if ($tickettask->isMandatoryField($_POST) && $tasks_id = $task->add($_POST)) {
-         if ($_POST['taskType'] == PluginMetademandsTask::TICKET_TYPE) {
+         if ($_POST['taskType'] == PluginMetademandsTask::TICKET_TYPE || $_POST['taskType'] == PluginMetademandsTask::TASK_TYPE) {
             $_POST['plugin_metademands_tasks_id'] = $tasks_id;
             $_POST['type']                        = Ticket::DEMAND_TYPE;
             $tickettask->add($_POST);

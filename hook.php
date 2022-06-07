@@ -37,7 +37,7 @@ function plugin_metademands_install() {
    include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
    if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.1.0.sql");
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.2.0.sql");
       install_notifications_metademands();
    }
 
@@ -272,6 +272,11 @@ function plugin_metademands_install() {
              PRIMARY KEY (`id`)
          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;";
       $DB->query($query);
+   }
+
+   //version 3.2.0
+   if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "force_create_tasks")) {
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.0.sql");
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";

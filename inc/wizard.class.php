@@ -618,7 +618,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
-         //         $data['Problem']             = __('Problem');
+                  $data['Problem']             = __('Problem');
          $data['Change'] = __('Change');
 
          //         foreach ($data as $type => $typename) {
@@ -697,7 +697,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          $data                        = [];
          $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
          $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
-         //         $data['Problem']             = __('Problem');
+                  $data['Problem']             = __('Problem');
          $data['Change'] = __('Change');
 
          echo "<div style='margin-bottom: 10px'>";

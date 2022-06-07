@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.1.0');
+define('PLUGIN_METADEMANDS_VERSION', '3.2.0');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
    define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
@@ -62,7 +62,7 @@ function plugin_init_metademands() {
       }
 
       Plugin::registerClass('PluginMetademandsMetademand', ['addtabon' => 'Ticket']);
-      Plugin::registerClass('PluginMetademandsForm', ['addtabon' => ['Ticket', 'Change', 'User']]);
+      Plugin::registerClass('PluginMetademandsForm', ['addtabon' => ['Ticket', 'Problem', 'Change', 'User']]);
       Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
       Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
       Plugin::registerClass('PluginMetademandsInterticketfollowup',

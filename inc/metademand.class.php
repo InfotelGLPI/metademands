@@ -212,10 +212,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
          $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
       }
       $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
-      if ($this->getField('is_order') == 0
-          && $this->getField('object_to_create') == 'Ticket') {
-         $this->addStandardTab('PluginMetademandsTask', $ong, $options);
-      }
+      $this->addStandardTab('PluginMetademandsTask', $ong, $options);
       $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
       if (Session::getCurrentInterface() == 'central') {
          $this->addStandardTab('Log', $ong, $options);
@@ -337,7 +334,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       if (isset($input['object_to_create'])
           && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
-         $input['type'] = 0;
+         $input['type']               = 0;
+         $input['force_create_tasks'] = 1;
       }
 
       return $input;
@@ -418,7 +416,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       if (isset($input['object_to_create'])
           && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
-         $input['type'] = 0;
+         $input['type']               = 0;
+         $input['force_create_tasks'] = 1;
       }
 
       return $input;
@@ -714,10 +713,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
    private static function getObjectTypes() {
 
       return [
-         null     => Dropdown::EMPTY_VALUE,
-         'Ticket' => __('Ticket'),
-         'Change' => __('Change'),
-         //         'Problem' => __('Problem'),
+         null      => Dropdown::EMPTY_VALUE,
+         'Ticket'  => __('Ticket'),
+         'Change'  => __('Change'),
+         'Problem' => __('Problem'),
       ];
    }
 
@@ -968,6 +967,19 @@ JAVASCRIPT
       echo "</td>";
       echo "</tr>";
 
+      if ($ID > 0) {
+         if ($this->fields['object_to_create'] == 'Ticket') {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>" . __('Create tasks (not child tickets)', 'metademands') . "</td>";
+            echo "<td>";
+            Dropdown::showYesNo("force_create_tasks", $this->fields['force_create_tasks']);
+            echo "</td>";
+            echo "<td colspan='2'></td>";
+            echo "</tr>";
+         } else {
+            echo Html::hidden('force_create_tasks', ['value' => 1]);
+         }
+      }
       $options['addbuttons'] = ['export' => __('Export', 'metademands')];
 
       $this->showFormButtons($options);
@@ -1356,11 +1368,21 @@ JAVASCRIPT
          }
          // Task only for demands
          if (isset($metademands->fields['type'])) {
-            $tasks      = new PluginMetademandsTask();
-            $tasks_data = $tasks->getTasks($metademands_id,
-                                           ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]);
+            if (isset($metademands->fields['force_create_tasks'])
+                && $metademands->fields['force_create_tasks'] > 0) {
+               $tasks      = new PluginMetademandsTask();
+               $tasks_data = $tasks->getTasks($metademands_id,
+                                              ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TASK_TYPE]]);
 
-            $forms[$step][$metademands_id]['tasks'] = $tasks_data;
+               $forms[$step][$metademands_id]['tasks'] = $tasks_data;
+            } else {
+               $tasks      = new PluginMetademandsTask();
+               $tasks_data = $tasks->getTasks($metademands_id,
+                                              ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]);
+
+               $forms[$step][$metademands_id]['tasks'] = $tasks_data;
+            }
+
          }
 
          // Check if task are metademands, if some found : recursive call
@@ -1534,31 +1556,31 @@ JAVASCRIPT
                   if (count($line['form'])
                       && isset($values['fields'])) {
                      $forms_id = 0;
-                     if(isset($_SESSION['plugin_metademands']['form_to_compare'])){
+                     if (isset($_SESSION['plugin_metademands']['form_to_compare'])) {
                         $forms_id = $_SESSION['plugin_metademands']['form_to_compare'];
-                     } else if(isset($values['plugin_metademands_forms_id'])){
+                     } else if (isset($values['plugin_metademands_forms_id'])) {
                         $forms_id = $values['plugin_metademands_forms_id'];
                      }
                      if ($config['show_form_changes'] && $forms_id > 0) {
                         foreach ($values['fields'] as $idField => $valueField) {
-                           $diffRemove ="";
+                           $diffRemove    = "";
                            $oldFormValues = new PluginMetademandsForm_Value();
                            if ($oldFormValues->getFromDBByCrit(['plugin_metademands_forms_id'  => $forms_id,
                                                                 'plugin_metademands_fields_id' => $idField])) {
                               $jsonDecode = json_decode($oldFormValues->getField('value'), true);
                               if (is_array($jsonDecode)) {
-                                 if(empty($valueField)){
+                                 if (empty($valueField)) {
                                     $valueField = [];
                                  }
                                  $diffAdd    = array_diff($valueField, $jsonDecode);
                                  $diffRemove = array_diff($jsonDecode, $valueField);
                               } else if (is_array($oldFormValues->getField('value'))) {
-                                 if(empty($valueField)){
+                                 if (empty($valueField)) {
                                     $valueField = [];
                                  }
                                  $diffRemove = array_diff($oldFormValues->getField('value'), $valueField);
                                  $diffAdd    = array_diff($valueField, $oldFormValues->getField('value'));
-                              } else if($oldFormValues->getField('value') != $valueField){
+                              } else if ($oldFormValues->getField('value') != $valueField) {
                                  $values['fields'][$idField . '#orange'] = $valueField;
                               }
                               if ($oldFormValues->getField('value') == $valueField ||
@@ -1566,12 +1588,12 @@ JAVASCRIPT
                                  unset($values['fields'][$idField]);
                               } else {
                                  if (isset($diffRemove) && !empty($diffRemove)) {
-                                    if(!empty($diffAdd)){
+                                    if (!empty($diffAdd)) {
                                        $values['fields'][$idField . '#green'] = $diffAdd;
                                     }
                                     $values['fields'][$idField . '#red'] = $diffRemove;
-                                 } else if(!isset($values['fields'][$idField . '#orange'])){
-                                    $values['fields'][$idField. '#green'] = $valueField;
+                                 } else if (!isset($values['fields'][$idField . '#orange'])) {
+                                    $values['fields'][$idField . '#green'] = $valueField;
                                  }
                               }
                            }
@@ -1827,7 +1849,7 @@ JAVASCRIPT
                         }
                      }
                   }
-                  if ($input['name'] === 0 || $input['name'] ==="0" || empty($input['name']) ) {
+                  if ($input['name'] === 0 || $input['name'] === "0" || empty($input['name'])) {
                      $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                   }
                   $input = Toolbox::addslashes_deep($input);
@@ -2012,6 +2034,28 @@ JAVASCRIPT
                                              'tickets_id_2' => $ancestor_tickets_id,
                                              'link'         => Ticket_Ticket::SON_OF]);
                         $ancestor_tickets_id = $parent_tickets_id;
+                     }
+                  }
+                  //create tasks (for problem / change)
+                  if ($object_class == 'Problem' || $object_class == 'Change') {
+                     $meta_tasks = $line['tasks'];
+                     if (is_array($meta_tasks)) {
+                        foreach ($meta_tasks as $meta_task) {
+                           if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $parent_tickets_id)) {
+                              $input = [];
+                              if ($object_class == 'Problem') {
+                                 $task                 = new ProblemTask();
+                                 $input['problems_id'] = $parent_tickets_id;
+                              } else {
+                                 $task                = new ChangeTask();
+                                 $input['changes_id'] = $parent_tickets_id;
+                              }
+                              $input['content']        = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                              $input['groups_id_tech'] = $meta_task["groups_id_assign"];
+                              $input['users_id_tech']  = $meta_task["users_id_assign"];
+                              $task->add($input);
+                           }
+                        }
                      }
                   }
                   // Create sons tickets
@@ -2345,11 +2389,30 @@ JAVASCRIPT
                               }
                            }
 
-                           if (!$this->createSonsTickets($parent_tickets_id,
-                                                         $this->mergeFields($parent_fields,
-                                                                            $parent_ticketfields),
-                                                         $parent_tickets_id, $line['tasks'], $tasklevel, $inputField, $inputFieldMain)) {
-                              $KO[] = 1;
+                           if ($metademand->fields['force_create_tasks'] == 0) {
+                              if (!$this->createSonsTickets($parent_tickets_id,
+                                                            $this->mergeFields($parent_fields,
+                                                                               $parent_ticketfields),
+                                                            $parent_tickets_id, $line['tasks'], $tasklevel, $inputField, $inputFieldMain)) {
+                                 $KO[] = 1;
+                              }
+                           } else {
+                              $meta_tasks = $line['tasks'];
+                              if (is_array($meta_tasks)) {
+                                 foreach ($meta_tasks as $meta_task) {
+                                    if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $parent_tickets_id)) {
+                                       $ticket_task             = new TicketTask();
+                                       $input                   = [];
+                                       $input['content']        = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                                       $input['tickets_id']     = $parent_tickets_id;
+                                       $input['groups_id_tech'] = $meta_task["groups_id_assign"];
+                                       $input['users_id_tech']  = $meta_task["users_id_assign"];
+                                       if (!$ticket_task->add($input)) {
+                                          $KO[] = 1;
+                                       }
+                                    }
+                                 }
+                              }
                            }
                         } else {
                            $metaValid                                    = new PluginMetademandsMetademandValidation();
@@ -2363,9 +2426,9 @@ JAVASCRIPT
                               //replace #id# in title with the value
                               do {
 
-                                 if(isset($resource_id)){
+                                 if (isset($resource_id)) {
                                     $resource = new PluginResourcesResource();
-                                    if($resource->getFromDB($resource_id)) {
+                                    if ($resource->getFromDB($resource_id)) {
                                        $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField('name') . " " . $resource->getField('firstname');
                                     }
                                     $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
@@ -2776,7 +2839,7 @@ JAVASCRIPT
       if (count($KO)) {
          $message = __('Demand add failed', 'metademands');
       } else {
-         if(isset($_SESSION['plugin_metademands'])){
+         if (isset($_SESSION['plugin_metademands'])) {
             unset($_SESSION['plugin_metademands']);
          }
          if ($object_class == 'Ticket') {
@@ -2843,7 +2906,7 @@ JAVASCRIPT
       $result            = [];
       $result['content'] = "";
       $parent_fields_id  = 0;
-      $colors =[];
+      $colors            = [];
 
 
       foreach ($values_form as $k => $values) {
@@ -2920,27 +2983,27 @@ JAVASCRIPT
             $nb++;
             $formatAsTable = $options['formatastable'] ?? true;
 
-            if(isset($colors) && !empty($colors)){
+            if (isset($colors) && !empty($colors)) {
                $i = 0;
-               foreach ($colors as $key => $val){
-                  $newKey = substr($key,0,strpos($key,'#'));
-                  if($field['id'] == $newKey){
-                     if($i>0){
+               foreach ($colors as $key => $val) {
+                  $newKey = substr($key, 0, strpos($key, '#'));
+                  if ($field['id'] == $newKey) {
+                     if ($i > 0) {
                         $resultTemp[$field['rank']]['content'] .= "<tr>";
                      }
                      $i++;
                      $field['value'] = $val;
-                     $color = substr($key,strpos($key,'#')+1);
-                     self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id,false, $formatAsTable,$langTech,$color);
+                     $color          = substr($key, strpos($key, '#') + 1);
+                     self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech, $color);
                      unset($colors[$key]);
                      if (!isset($options['formatastable'])
                          || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-               $resultTemp[$field['rank']]['content'] .= "</tr>";
-            }
+                        $resultTemp[$field['rank']]['content'] .= "</tr>";
+                     }
                   }
                }
-            } else{
-               self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id,false, $formatAsTable,$langTech);
+            } else {
+               self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
 
                if (!isset($options['formatastable'])
                    || (isset($options['formatastable']) && $options['formatastable'] == true)) {
@@ -2972,11 +3035,11 @@ JAVASCRIPT
     * @param $parent_fields_id
     * @param $return_value
     */
-   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color='') {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color = '') {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
-      if($color != ""){
+      if ($color != "") {
          $style_title .= " style='color:$color'";
       }
       //      $style_title = "style='background-color: #cccccc;'";
@@ -3834,7 +3897,7 @@ JAVASCRIPT
                                  $field_object = new PluginMetademandsField();
                                  if ($field_object->getFromDB($explodeTitle2[0])) {
                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                       $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                       $users_id       = $values['fields'][$explodeTitle2[0]];
                                        $value['value'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $value['value']);
                                     }
                                  }
@@ -4117,17 +4180,17 @@ JAVASCRIPT
 
 
             // Add son ticket
-            $son_ticket_data['_disablenotif']       = true;
-            $son_ticket_data['name']                = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
-            $son_ticket_data['name']                = trim($son_ticket_data['name']);
-            $son_ticket_data['type']                = $parent_fields['type'];
-            $son_ticket_data['entities_id']         = $parent_fields['entities_id'];
-            $son_ticket_data['users_id_recipient']  = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
+            $son_ticket_data['_disablenotif']      = true;
+            $son_ticket_data['name']               = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
+            $son_ticket_data['name']               = trim($son_ticket_data['name']);
+            $son_ticket_data['type']               = $parent_fields['type'];
+            $son_ticket_data['entities_id']        = $parent_fields['entities_id'];
+            $son_ticket_data['users_id_recipient'] = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
             //Must use used_by_child parameter - disabled
-//            $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
-            $son_ticket_data['requesttypes_id']     = $parent_fields['requesttypes_id'];
-            $son_ticket_data['_auto_import']        = 1;
-            $son_ticket_data['status']              = Ticket::INCOMING;
+            //            $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
+            $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
+            $son_ticket_data['_auto_import']    = 1;
+            $son_ticket_data['status']          = Ticket::INCOMING;
             if (isset($parent_fields['urgency'])) {
                $son_ticket_data['urgency'] = $parent_fields['urgency'];
             }
@@ -4656,7 +4719,7 @@ JAVASCRIPT
             foreach ($sons as $son) {
                if (PluginMetademandsTicket_Field::checkTicketCreation($son['tasks_id'], $ticket->fields['id'])) {
                   echo "<tr class='tab_bg_1'>";
-                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE || $son['type'] == PluginMetademandsTask::TASK_TYPE) {
                      $color_class = '';
                   } else {
                      $color_class = "class='metademand_metademandtasks'";
@@ -4679,7 +4742,7 @@ JAVASCRIPT
 
                   //assign
                   $techdata = "";
-                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                  if ($son['type'] == PluginMetademandsTask::TICKET_TYPE || $son['type'] == PluginMetademandsTask::TASK_TYPE) {
                      if (isset($son['users_id_assign'])
                          && $son['users_id_assign'] > 0) {
                         $techdata .= getUserName($son['users_id_assign']);
@@ -4840,9 +4903,7 @@ JAVASCRIPT
                   if (in_array($ticket->fields['status'], $status)) {
                      echo "<i class='fas fa-check-circle fa-2x' style='color:forestgreen'></i> ";
                   }
-                  if ($is_late && !in_array($ticket->fields['status'], $status)) {
-                     echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:darkred'></i> ";
-                  }
+
                   if (!in_array($ticket->fields['status'], $status)) {
                      echo "<i class='fas fa-cog fa-2x' style='color:orange'></i> ";
                   }
@@ -4851,6 +4912,9 @@ JAVASCRIPT
 
                   //due date
                   echo "<td class='$color_class'>";
+                  if ($is_late && !in_array($ticket->fields['status'], $status)) {
+                     echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:darkred'></i> ";
+                  }
                   echo Html::convDateTime($ticket->fields['time_to_resolve']);
                   echo "</td>";
 

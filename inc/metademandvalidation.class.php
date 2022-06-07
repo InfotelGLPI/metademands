@@ -240,7 +240,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
                   $input                   = [];
                   $input['content']        = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
                   $input['tickets_id']     = $ticket_id;
-                  $input['groups_id_tech'] = $params["group_to_assign"];
+                  $input['groups_id_tech'] = $meta_task["groups_id_assign"];
+                  $input['users_id_tech'] = $meta_task["users_id_assign"];
                   $ticket_task->add($input);
                }
             }
@@ -322,14 +323,25 @@ class PluginMetademandsMetademandValidation extends CommonDBTM {
       echo "</th>";
       echo "</tr>";
       echo "<tr class='tab_bg_1 center'>";
+
       if ($this->fields["users_id"] == 0
           && $this->fields["validate"] == self::TO_VALIDATE) {
-         echo "<td>" . __('Create sub-tickets', 'metademands') . " &nbsp;";
-         echo "<input type='radio' name='create_subticket' id='create_subticket' value='1' checked>";
-         echo "</td>";
-         echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
-         echo "<input type='radio' name='create_subticket' id='create_subticket2' value='0'>";
-         echo "</td>";
+
+         $metademands = new PluginMetademandsMetademand();
+         if ($metademands->getFromDB($this->fields["plugin_metademands_metademands_id"])
+             && $metademands->fields['force_create_tasks'] == 0) {
+            echo "<td>" . __('Create sub-tickets', 'metademands') . " &nbsp;";
+            echo "<input type='radio' name='create_subticket' id='create_subticket' value='1' checked>";
+            echo "</td>";
+            echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
+            echo "<input type='radio' name='create_subticket' id='create_subticket2' value='0'>";
+            echo "</td>";
+         } else {
+            echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
+            echo "<input type='radio' name='create_subticket' id='create_subticket2' value='0'>";
+            echo "</td>";
+         }
+
          echo "</tr>";
          echo "<tr class='tab_bg_1 center' id='to_update_group'>";
 

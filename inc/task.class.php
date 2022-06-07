@@ -40,6 +40,7 @@ class PluginMetademandsTask extends CommonDBTM {
 
    const TICKET_TYPE     = 0;
    const METADEMAND_TYPE = 1;
+   const TASK_TYPE       = 2;
 
    /**
     * functions mandatory
@@ -148,7 +149,7 @@ class PluginMetademandsTask extends CommonDBTM {
          $solved = PluginMetademandsTicket::isTicketSolved($ticket_metademand_data);
 
          if ($metademands->fields['maintenance_mode'] == 1) {
-            $solved  = true;
+            $solved = true;
          }
          if ($solved) {
             echo "<div class='center first-bloc'>";
@@ -161,7 +162,7 @@ class PluginMetademandsTask extends CommonDBTM {
             echo "<tr class='tab_bg_1'>";
             echo "<td class='center'>" . __('Task type', 'metademands') . "&nbsp;:&nbsp;";
 
-            $task_types = self::getTaskTypes();
+            $task_types = self::getTaskTypes($metademands->fields['id']);
 
             // Only one metademand can be selected
             $metademand_tasks = $this->find(['plugin_metademands_metademands_id' => $metademands->fields['id'],
@@ -182,8 +183,15 @@ class PluginMetademandsTask extends CommonDBTM {
             echo "<tr class='tab_bg_1'>";
             echo "<td class='center'>";
             echo "<span id='show_add_task_form'>";
+            $type = "-1";
             if (Session::haveRight('ticket', CREATE)) {
-               PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved);
+               $type = self::TICKET_TYPE;
+            }
+            if ($metademands->fields['force_create_tasks'] == 1) {
+               $type = self::TASK_TYPE;
+            }
+            if ($type > -1) {
+               PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved, $type);
             } else {
                echo "<span style='color:red'>" . __("You don't have the ticket creation right", 'metademands') . "</span>";
             }
@@ -196,7 +204,7 @@ class PluginMetademandsTask extends CommonDBTM {
             echo "<td class='tab_bg_2 center' colspan='6'>";
             echo Html::hidden('plugin_metademands_metademands_id', ['value' => $metademands->fields['id']]);
             echo Html::hidden('entities_id', ['value' => $metademands->fields['entities_id']]);
-            echo Html::submit(_sx('button', 'Add') , ['name' => 'add', 'class' => 'btn btn-primary']);
+            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
             echo "</td>";
             echo "</tr>";
 
@@ -207,7 +215,7 @@ class PluginMetademandsTask extends CommonDBTM {
          } else {
             echo "<h3><div class='alert alert-warning' role='alert'>";
             echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
-            echo  __('You cannot add new tasks if linked tickets are not solved', 'metademands');
+            echo __('You cannot add new tasks if linked tickets are not solved', 'metademands');
             echo "</div>";
             echo "</h3>";
          }
@@ -316,10 +324,10 @@ class PluginMetademandsTask extends CommonDBTM {
       echo "<td>";
 
       echo "<a href='#' class='submit btn btn-primary' data-bs-toggle='modal' data-bs-target='#tags' title='" . __('Show list of available tags') . "' >";
-      echo  __('Show list of available tags');
+      echo __('Show list of available tags');
       echo "</a>";
       echo Ajax::createIframeModalWindow('tags',
-                                         PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" .$metademands_id,
+                                         PLUGIN_METADEMANDS_WEBDIR . "/front/tags.php?metademands_id=" . $metademands_id,
                                          ['title'   => __('Show list of available tags'),
                                           'display' => false]);
       echo "</td>";
@@ -362,7 +370,7 @@ class PluginMetademandsTask extends CommonDBTM {
          foreach ($tasks as $value) {
             echo "<tr class='tab_bg_1'>";
 
-            if ($value['type'] == self::TICKET_TYPE) {
+            if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
                $color_class = '';
             } else {
                $color_class = "class='metademand_metademandtasks'";
@@ -378,7 +386,7 @@ class PluginMetademandsTask extends CommonDBTM {
 
             // ID
             $color_class = '';
-            if ($value['type'] == self::TICKET_TYPE) {
+            if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
                echo "<td>";
                $width = 0;
                if ($value['level'] > 1) {
@@ -391,13 +399,13 @@ class PluginMetademandsTask extends CommonDBTM {
                echo "</a>";
                echo Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'],
                                                   Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
-                                                  ['title'   => PluginMetademandsTicketTask::getTypeName(),
-                                                   'display' => false,
+                                                  ['title'         => PluginMetademandsTicketTask::getTypeName(),
+                                                   'display'       => false,
                                                    'reloadonclose' => true]);
 
-//               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
-//                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
-//               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_id'] . "</a>";
+               //               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
+               //                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
+               //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_id'] . "</a>";
                echo "</td>";
 
             } else {
@@ -407,22 +415,22 @@ class PluginMetademandsTask extends CommonDBTM {
             }
 
             // Name
-            if ($value['type'] == self::TICKET_TYPE) {
+            if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
                echo "<td>";
                $width = 0;
-               $name = "#metademandTicketTask" . $value['tickettasks_id'];
+               $name  = "#metademandTicketTask" . $value['tickettasks_id'];
                echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . PluginMetademandsTicketTask::getTypeName() . "' >";
-               echo  $value['tickettasks_name'];
+               echo $value['tickettasks_name'];
                echo "</a>";
                echo Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'],
                                                   Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
-                                                  ['title'   => PluginMetademandsTicketTask::getTypeName(),
-                                                   'display' => false,
+                                                  ['title'         => PluginMetademandsTicketTask::getTypeName(),
+                                                   'display'       => false,
                                                    'reloadonclose' => true]);
 
-//               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
-//                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
-//               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
+               //               Ajax::createIframeModalWindow('metademandTicketTask' . $value['tickettasks_id'], Toolbox::getItemTypeFormURL('PluginMetademandsTicketTask') . "?id=" . $value['tickettasks_id'],
+               //                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
+               //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
                echo "</td>";
 
             } else {
@@ -440,13 +448,16 @@ class PluginMetademandsTask extends CommonDBTM {
                 && $value['itilcategories_id'] > 0) {
                $cat = Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
             }
+            if ($value['type'] == self::TASK_TYPE) {
+               $cat = "---";
+            }
             echo "<td $color_class>";
             echo $cat;
             echo "</td>";
 
             //assign
             $techdata = "";
-            if ($value['type'] == self::TICKET_TYPE) {
+            if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
                if (isset($value['users_id_assign'])
                    && $value['users_id_assign'] > 0) {
                   $techdata .= getUserName($value['users_id_assign']);
@@ -472,6 +483,10 @@ class PluginMetademandsTask extends CommonDBTM {
                   echo "<div class='center'>" . __('Root', 'metademands') . "</div>";
                   echo "</td>";
                }
+            } else if ($value['type'] == self::TASK_TYPE) {
+               echo "<td " . $color_class . ">
+                        <div class='center'>---</div>
+                     </td>";
             } else {
                echo "<td " . $color_class . ">
                         <div class='center'>" . __('Root', 'metademands') . "</div>
@@ -492,14 +507,25 @@ class PluginMetademandsTask extends CommonDBTM {
             } else {
                $blocktext = __('All');
             }
+            if ($value['type'] == self::TASK_TYPE) {
+               $blocktext = "---";
+            }
             echo "<td $color_class>";
             echo $blocktext;
             echo "</td>";
             echo "<td $color_class>";
-            echo Dropdown::getYesNo($value['useBlock']);
+            if ($value['type'] == self::TASK_TYPE) {
+               echo "---";
+            } else {
+               echo Dropdown::getYesNo($value['useBlock']);
+            }
             echo "</td>";
             echo "<td $color_class>";
-            echo Dropdown::getYesNo($value['formatastable']);
+            if ($value['type'] == self::TASK_TYPE) {
+               echo "---";
+            } else {
+               echo Dropdown::getYesNo($value['formatastable']);
+            }
             echo "</td>";
             echo "</tr>";
 
@@ -596,13 +622,28 @@ class PluginMetademandsTask extends CommonDBTM {
     *
     * @return array of types
     **/
-   static function getTaskTypes() {
+   static function getTaskTypes($metademands_id = 0) {
+
+      $metademands = new PluginMetademandsMetademand();
 
       if (Session::haveRight('ticket', CREATE)) {
-         $options[self::TICKET_TYPE] = __('Ticket');
+         if ($metademands_id == 0) {
+            $options[self::TICKET_TYPE] = __('Ticket');
+         } else if ($metademands->getFromDB($metademands_id)
+                    && isset($metademands->fields['force_create_tasks'])
+                    && $metademands->fields['force_create_tasks'] == 0) {
+            $options[self::TICKET_TYPE] = __('Ticket');
+         }
       }
-      $options[self::METADEMAND_TYPE] = PluginMetademandsMetademand::getTypeName(1);
-
+      if ($metademands_id > 0 &&
+          $metademands->getFromDB($metademands_id)
+          && isset($metademands->fields['force_create_tasks'])
+          && $metademands->fields['force_create_tasks'] == 1) {
+         $options[self::TASK_TYPE] = __('Task');
+      }
+      if ($metademands->fields['object_to_create'] == 'Ticket' || $metademands_id == 0) {
+         $options[self::METADEMAND_TYPE] = PluginMetademandsMetademand::getTypeName(1);
+      }
       return $options;
    }
 
@@ -620,6 +661,8 @@ class PluginMetademandsTask extends CommonDBTM {
       switch ($value) {
          case self::TICKET_TYPE     :
             return __('Ticket');
+         case self::TASK_TYPE     :
+            return __('Task');
          case self::METADEMAND_TYPE :
             return PluginMetademandsMetademand::getTypeName(1);
       }
@@ -847,7 +890,7 @@ class PluginMetademandsTask extends CommonDBTM {
                                        'width'    => '100%',
                                        'multiple' => true,
                                     ]);
-            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction',
+            echo Html::submit(_x('button', 'Post'), ['name'  => 'massiveaction',
                                                      'class' => 'btn btn-primary']);
             return true;
             break;
@@ -868,7 +911,7 @@ class PluginMetademandsTask extends CommonDBTM {
     *
     */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
-                                                       array $ids) {
+                                                       array         $ids) {
 
       $task = new PluginMetademandsTask();
       $dbu  = new DbUtils();

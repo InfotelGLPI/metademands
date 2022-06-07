@@ -61,7 +61,7 @@ if (isset($_POST["update"])) {
          $_POST['plugin_metademands_tasks_id'] = 0;
          $_POST['level'] = 1;
       }
-      $_POST['type']  = PluginMetademandsTask::TICKET_TYPE;
+      $_POST['type']  = $_POST['taskType'];
       $_POST['id'] = $tasks_id;
       $_POST['plugin_metademands_tasks_id'] = $parent_task;
 

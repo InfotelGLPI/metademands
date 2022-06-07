@@ -315,6 +315,7 @@ class PluginMetademandsForm extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if (($item->getType() == 'Ticket' && $_SESSION['glpiactiveprofile']['interface'] == 'helpdesk')
+          || $item->getType() == 'Problem'
           || $item->getType() == 'Change') {
          if ($this->canView()
              && !$withtemplate
@@ -362,6 +363,7 @@ class PluginMetademandsForm extends CommonDBTM {
 
       switch ($item->getType()) {
          case 'Ticket':
+         case 'Problem':
          case 'Change':
             $form->showFormsForItilObject($item);
             break;

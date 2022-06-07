@@ -533,7 +533,9 @@ class PluginMetademandsField extends CommonDBChild {
 
          if ($objectclass == 'Ticket') {
             $tt = new TicketTemplate();
-         } else if ($objectclass == 'Change') {
+         } else if ($objectclass == 'Problem') {
+            $tt = new ProblemTemplate();
+         }else if ($objectclass == 'Change') {
             $tt = new ChangeTemplate();
          }
          $allowed_fields = $tt->getAllowedFields(true, true);
