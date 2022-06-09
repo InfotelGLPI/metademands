@@ -223,33 +223,37 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
          $document_item_obj = new Document_Item();
          //add documents to timeline
          $document_obj   = new Document();
-         $document_items = $document_item_obj->find([
-                                                       $self->getInterAssociatedDocumentsCriteria($ticket, $list_tickets),
-                                                       'timeline_position' => ['>', CommonITILObject::NO_TIMELINE]
-                                                    ]);
-         foreach ($document_items as $document_item) {
-            $document_obj->getFromDB($document_item['documents_id']);
+          $doc_crit = $self->getInterAssociatedDocumentsCriteria($ticket, $list_tickets, Session::isCron());
+          if ($doc_crit) {
 
-            $date = $document_item['date'] ?? $document_item['date_creation'];
+              $document_items = $document_item_obj->find([
+                  $doc_crit,
+                  'timeline_position' => ['>', CommonITILObject::NO_TIMELINE]
+              ]);
+              foreach ($document_items as $document_item) {
+                  $document_obj->getFromDB($document_item['documents_id']);
 
-            $item_doc         = $document_obj->fields;
-            $item_doc['date'] = $date;
-            // #1476 - set date_mod and owner to attachment ones
-            $item_doc['date_mod']          = $document_item['date_mod'];
-            $item_doc['users_id']          = $document_item['users_id'];
-            $item_doc['documents_item_id'] = $document_item['id'];
+                  $date = $document_item['date'] ?? $document_item['date_creation'];
 
-            $item_doc['timeline_position'] = $document_item['timeline_position'];
-            $docpath                       = GLPI_DOC_DIR . "/" . $document_obj->fields['filepath'];
-            $is_image                      = Document::isImage($docpath);
-            $sub_document                  = ['type' => 'Document_Item', 'item' => $item_doc];
-            if ($is_image) {
-               $sub_document['_is_image'] = true;
-               $sub_document['_size']     = getimagesize($docpath);
-            }
-            $item['timeline'][$document_item['itemtype'] . "_" . $document_item['items_id']]['documents'][]
-               = $sub_document;
-         }
+                  $item_doc = $document_obj->fields;
+                  $item_doc['date'] = $date;
+                  // #1476 - set date_mod and owner to attachment ones
+                  $item_doc['date_mod'] = $document_item['date_mod'];
+                  $item_doc['users_id'] = $document_item['users_id'];
+                  $item_doc['documents_item_id'] = $document_item['id'];
+
+                  $item_doc['timeline_position'] = $document_item['timeline_position'];
+                  $docpath = GLPI_DOC_DIR . "/" . $document_obj->fields['filepath'];
+                  $is_image = Document::isImage($docpath);
+                  $sub_document = ['type' => 'Document_Item', 'item' => $item_doc];
+                  if ($is_image) {
+                      $sub_document['_is_image'] = true;
+                      $sub_document['_size'] = getimagesize($docpath);
+                  }
+                  $item['timeline'][$document_item['itemtype'] . "_" . $document_item['items_id']]['documents'][]
+                      = $sub_document;
+              }
+          }
 
       }
 
@@ -462,6 +466,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
    public function getInterAssociatedDocumentsCriteria($item, $list_tickets, $bypass_rights = false): array {
 
       $items_id = $item->getID();
+       $or_crits = [];
       // documents associated to followups
       if ($bypass_rights || self::canView()) {
          //         $fup_crits = [
@@ -493,7 +498,9 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
             ),
          ];
       }
-
+       if(empty($or_crits)) {
+           return false;
+       }
       return ['OR' => $or_crits];
    }
 
