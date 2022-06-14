@@ -499,7 +499,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
          ];
       }
        if(empty($or_crits)) {
-           return false;
+           return [];
        }
       return ['OR' => $or_crits];
    }

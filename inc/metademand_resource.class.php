@@ -162,7 +162,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
    private function listItems($fields, $canedit) {
       if (!empty($fields)) {
          $rand = mt_rand();
-         echo "<div class='center'>";
+         echo "<div class='left'>";
          if ($canedit) {
             Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
             $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
@@ -190,7 +190,7 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
             echo "<td>" . Dropdown::getDropdownName('glpi_entities', $field['entities_id']) . "</td>";
             echo "</tr>";
          }
-
+         echo "</table>";
          if ($canedit) {
             $massiveactionparams['ontop'] = false;
             Html::showMassiveActions($massiveactionparams);
