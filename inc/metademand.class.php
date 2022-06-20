@@ -1452,6 +1452,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         $forms_id = $values['plugin_metademands_forms_id'];
                      }
                      if ($config['show_form_changes'] && $forms_id > 0) {
+                        $unseted = [];
                         foreach ($values['fields'] as $idField => $valueField) {
                            $diffRemove ="";
                            $oldFormValues = new PluginMetademandsForm_Value();
@@ -1470,11 +1471,16 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  }
                                  $diffRemove = array_diff($oldFormValues->getField('value'), $valueField);
                                  $diffAdd    = array_diff($valueField, $oldFormValues->getField('value'));
-                              } else if($oldFormValues->getField('value') != $valueField){
-                                 $values['fields'][$idField . '#orange'] = $valueField;
+                              } else if($oldFormValues->getField('value') != $valueField && !empty($oldFormValues->getField('value'))){
+                                 if($valueField == 0){
+                                    $values['fields'][$idField . '#red'] = $oldFormValues->getField('value');
+                                 } else{
+                                    $values['fields'][$idField . '#orange'] = $valueField;
+                                 }
                               }
                               if ($oldFormValues->getField('value') == $valueField ||
                                   (isset($diffRemove) && empty($diffRemove) && empty($diffAdd))) {
+                                 $unseted[$idField] = 1;
                                  unset($values['fields'][$idField]);
                               } else {
                                  if (isset($diffRemove) && !empty($diffRemove)) {
@@ -1482,8 +1488,29 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                        $values['fields'][$idField . '#green'] = $diffAdd;
                                     }
                                     $values['fields'][$idField . '#red'] = $diffRemove;
-                                 } else if(!isset($values['fields'][$idField . '#orange'])){
+                                 } else if(isset($diffAdd) && !empty($diffAdd)){
+                                    $values['fields'][$idField . '#green'] = $diffAdd;
+                                 }  else if(!isset($values['fields'][$idField . '#orange'])){
                                     $values['fields'][$idField. '#green'] = $valueField;
+                                 }
+                              }
+                           }
+                        }
+
+                        $allOldFields = $oldFormValues->find(['plugin_metademands_forms_id'  => $forms_id]);
+                        if(count($allOldFields)) {
+                           foreach ($allOldFields as $oldField){
+                              if(!key_exists($oldField['plugin_metademands_fields_id'],$values['fields']) &&
+                                 !key_exists($oldField['plugin_metademands_fields_id'],$unseted) &&
+                                 !empty($oldField['value']) &&
+                                 $oldField['value'] != "[]"){
+                                 $jsonDecode = json_decode($oldField['value'], true);
+                                 if (is_array($jsonDecode)) {
+                                    $values['fields'][$oldField['plugin_metademands_fields_id']] = $oldField['value'];
+                                    $values['fields'][$oldField['plugin_metademands_fields_id'] . '#red'] = $jsonDecode;
+                                 } else {
+                                    $values['fields'][$oldField['plugin_metademands_fields_id']] = $oldField['value'];
+                                    $values['fields'][$oldField['plugin_metademands_fields_id'] . '#red'] = $oldField['value'];
                                  }
                               }
                            }
@@ -2604,7 +2631,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                                  if(isset($resource_id)){
                                     $resource = new PluginResourcesResource();
                                     if($resource->getFromDB($resource_id)) {
-                                       $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField('name') . " " . $resource->getField('firstname');
+                                    //   $line['tasks'][$key]['tickettasks_name'] .= " - " . $resource->getField('name') . " " . $resource->getField('firstname');
                                     }
                                     $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
                                  }
@@ -3480,13 +3507,13 @@ class PluginMetademandsMetademand extends CommonDBTM {
                foreach ($colors as $key => $val){
                   $newKey = substr($key,0,strpos($key,'#'));
                   if($field['id'] == $newKey){
-                     if($i>0){
-                        $resultTemp[$field['rank']]['content'] .= "<tr>";
-                     }
                      $i++;
                      $field['value'] = $val;
                      $color = substr($key,strpos($key,'#')+1);
-                     self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id,false, $hideTable,$langTech,$color);
+                     if($i>0){
+                        $resultTemp[$field['rank']]['content'] .= "<tr style='color:$color'>";
+                     }
+                     self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id,false, $hideTable,$langTech);
                      unset($colors[$key]);
                      if(!isset($options['hideTable']) || (isset($options['hideTable']) && $options['hideTable'] == false )) {
                         $resultTemp[$field['rank']]['content'] .= "</tr>";
@@ -3524,13 +3551,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
     * @param $parent_fields_id
     * @param $return_value
     */
-   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false, $lang='', $color='') {
+   static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $hideTable = false, $lang='') {
       global $PLUGIN_HOOKS;
 
       $style_title = "class='title'";
-      if($color != ""){
-         $style_title .= " style='color:$color'";
-      }
       //      $style_title = "style='background-color: #cccccc;'";
 
       if (empty($label = PluginMetademandsField::displayField($field['id'], 'name',$lang))) {
@@ -4608,6 +4632,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
                if ($values_form[$f['plugin_metademands_fields_id']] === null) {
                   $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
+               }
+               if(!is_null($f['color'])){
+                  $colors = json_decode($f['color'],true);
+                  foreach ($colors as $color => $values_color){
+                     $values_form[$f['plugin_metademands_fields_id']."#".$color] = $values_color;
+                  }
                }
             }
             $metademands_data = $this->constructMetademands($this->getID());

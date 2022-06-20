@@ -132,6 +132,7 @@ CREATE TABLE `glpi_plugin_metademands_tickets_fields` (
     `value` text COLLATE utf8_unicode_ci default NULL,
     `tickets_id` int(11) NOT NULL default '0',
     `plugin_metademands_fields_id` int(11) NOT NULL default '0',
+    `color` VARCHAR(255) NULL;
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
     KEY `tickets_id` (`tickets_id`)

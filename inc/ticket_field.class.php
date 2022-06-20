@@ -75,15 +75,27 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
 
       if (count($parent_fields)) {
          foreach ($parent_fields as $fields_id => $field) {
+            $color = NULL;
             $field['value'] = '';
+            if(isset($values[$fields_id."#red"])){
+               $color["red"] = $values[$fields_id."#red"];
+            }
+            if(isset($values[$fields_id."#green"])){
+               $color["green"] = $values[$fields_id."#green"];
+            }
+            if(isset($values[$fields_id."#orange"])){
+               $color["orange"] = $values[$fields_id."#orange"];
+            }
             if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
                $field['value'] = $values[$fields_id];
             } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
                $field['value'] = json_encode($values[$fields_id]);
             }
+
             $this->add(['value'                        => Toolbox::addslashes_deep($field['value']),
                         'tickets_id'                   => $tickets_id,
-                        'plugin_metademands_fields_id' => $fields_id]);
+                        'plugin_metademands_fields_id' => $fields_id,
+                        'color'                        => json_encode($color)]);
          }
       }
    }

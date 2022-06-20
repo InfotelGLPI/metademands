@@ -1588,7 +1588,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
+                                                $(this).prop('checked',false).trigger('change');
                                                 break;
                                         }
                                         regex = /multiselectfield.*_to/g;
@@ -1696,7 +1696,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
+                                                $(this).prop('checked',false).trigger('change');
                                                 break;
                                         }
                                         regex = /multiselectfield.*_to/g;
@@ -1868,8 +1868,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                 jQuery(this).val('0');
                                                 break;
                                             case 'checkbox':
-                                            case 'radio':
-                                                this.checked = false;
+                                            case 'radio':            
+                                                $(this).prop('checked',false).trigger('change');
                                                 break;
                                         }
                                         regex = /multiselectfield.*_to/g;
@@ -2025,7 +2025,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
+                                                $(this).prop('checked',false).trigger('change');
                                                 break;
                                         }
                                         regex = /multiselectfield.*_to/g;
@@ -2327,8 +2327,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                    break;
                                                case 'checkbox':
                                                case 'radio':
-                                                   this.checked = false;
+                                                   $(this).prop('checked',false).trigger('change');
                                                    break;
+                                           }                                           
+                                           regex = /multiselectfield.*_to/g;
+                                           totest = this.id;
+                                           found = totest.match(regex);
+                                           if(found !== null) {
+                                             regex = /multiselectfield[0-9]*/;
+                                              found = totest.match(regex);
+                                              $('#'+found[0]+'_leftAll').click();
                                            }
                                        });
                                     }else{
@@ -2420,8 +2428,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                    break;
                                                case 'checkbox':
                                                case 'radio':
-                                                   this.checked = false;
+                                                   $(this).prop('checked',false).trigger('change');
                                                    break;
+                                           }
+                                           regex = /multiselectfield.*_to/g;
+                                           totest = this.id;
+                                           found = totest.match(regex);
+                                           if(found !== null) {
+                                             regex = /multiselectfield[0-9]*/;
+                                              found = totest.match(regex);
+                                              $('#'+found[0]+'_leftAll').click();
                                            }
                                        });
                                     }else{
@@ -2486,9 +2502,17 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                    jQuery(this).val('0');
                                                    break;
                                                case 'checkbox':
-                                               case 'radio':
-                                                   this.checked = false;
+                                               case 'radio':    
+                                                   $(this).prop('checked',false).trigger('change');
                                                    break;
+                                           }
+                                           regex = /multiselectfield.*_to/g;
+                                           totest = this.id;
+                                           found = totest.match(regex);
+                                           if(found !== null) {
+                                             regex = /multiselectfield[0-9]*/;
+                                              found = totest.match(regex);
+                                              $('#'+found[0]+'_leftAll').click();
                                            }
                                        });
                                     }else{
@@ -2662,8 +2686,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                    break;
                                                case 'checkbox':
                                                case 'radio':
-                                                   this.checked = false;
+                                                   $(this).prop('checked',false).trigger('change');
                                                    break;
+                                           }                                           
+                                           regex = /multiselectfield.*_to/g;
+                                           totest = this.id;
+                                           found = totest.match(regex);
+                                           if(found !== null) {
+                                             regex = /multiselectfield[0-9]*/;
+                                              found = totest.match(regex);
+                                              $('#'+found[0]+'_leftAll').click();
                                            }
                                        });
                                     }else{
@@ -2761,8 +2793,16 @@ class PluginMetademandsWizard extends CommonDBTM {
                                                          break;
                                                      case 'checkbox':
                                                      case 'radio':
-                                                         this.checked = false;
+                                                         $(this).prop('checked',false).trigger('change');
                                                          break;
+                                                 }                                                 
+                                                 regex = /multiselectfield.*_to/g;
+                                                 totest = this.id;
+                                                 found = totest.match(regex);
+                                                 if(found !== null) {
+                                                   regex = /multiselectfield[0-9]*/;
+                                                    found = totest.match(regex);
+                                                    $('#'+found[0]+'_leftAll').click();
                                                  }
                                              });
                                     }else{
@@ -2907,8 +2947,8 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
 
             if ($metademands->fields['is_order'] == 0 && !$preview && (!$seeform
-                  || (isset($options['resources_id'])
-                     && $options['resources_id'] > 0)
+                  || (isset($_GET['resources_id'])
+                     && $_GET['resources_id'] > 0)
                   || ($current_ticket > 0
                      && ((!$meta_validated
                         && $metademands->fields['can_update'] == true) ||

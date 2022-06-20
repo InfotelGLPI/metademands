@@ -5275,7 +5275,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
+                                                $(this).prop('checked',false).trigger('change');
                                                 break;
                                         }
                                         regex = /multiselectfield.*_to/g;
@@ -5312,7 +5312,7 @@ class PluginMetademandsField extends CommonDBChild {
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
+                                                $(this).prop('checked',false).trigger('change');
                                                 break;
                                         }
                                         regex = /multiselectfield.*_to/g;
