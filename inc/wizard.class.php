@@ -3100,7 +3100,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            data: $('form').serializeArray(),
                            success: function (response) {
                               $('#ajax_loader').hide();
-                              console.log(response)
+                              //console.log(response)
                               if (response == 1) {
                                  window.location.href = '" . $CFG_GLPI["root_doc"] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?".$paramUrl."metademands_id=' + meta_id + '&step=2';
                               } else {
@@ -3247,7 +3247,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                         for (i = 0; i < z.length; i++) {
                            fieldmandatory = z[i].required;
                            // If a field is empty...
-                           if (z[i].value == 0 && fieldmandatory == true) {
+                           isnumber = z[i].getAttribute('isnumber');
+                           if (z[i].value == 0 && isnumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
                               var fieldname = z[i].name;
                               var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
@@ -3616,6 +3617,7 @@ class PluginMetademandsWizard extends CommonDBTM {
              && empty($fields['value'])
              && $value['type'] != 'radio'
              && $value['type'] != 'checkbox'
+             && $value['type'] != 'number'
              && $value['type'] != 'informations'
              && $value['type'] != 'upload') {
             $msg[]     = $value['name'];
@@ -3644,6 +3646,15 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          //radio
          if ($value['type'] == 'radio'
+             && $value['is_mandatory']) {
+            if ($fields['value'] == NULL) {
+               $msg[]     = $value['name'];
+               $checkKo[] = 1;
+            }
+         }
+         
+         //number
+         if ($value['type'] == 'number'
              && $value['is_mandatory']) {
             if ($fields['value'] == NULL) {
                $msg[]     = $value['name'];

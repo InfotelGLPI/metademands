@@ -29,6 +29,8 @@
  
 include('../../../inc/includes.php');
 
+Session::checkLoginUser();
+
 Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 
 $meta = new PluginMetademandsMetademand();

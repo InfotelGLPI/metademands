@@ -2622,7 +2622,7 @@ class PluginMetademandsField extends CommonDBChild {
                     'display' => false,
             ];
             if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
-               $opt['specific_tags'] = ['required' => 'required'];
+               $opt['specific_tags'] = ['required' => 'required', 'isnumber' => 'isnumber'];
             }
             $field                 = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt );
 
