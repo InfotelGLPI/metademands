@@ -81,7 +81,15 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
             } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
                $field['value'] = json_encode($values[$fields_id]);
             }
+            $field['value2'] = '';
+            if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
+               $field['value2'] = $values[$fields_id . "-2"];
+            } else if (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
+               $field['value2'] = json_encode($values[$fields_id . "-2"]);
+            }
+
             $this->add(['value'                        => Toolbox::addslashes_deep($field['value']),
+                        'value2'                       => Toolbox::addslashes_deep($field['value2']),
                         'tickets_id'                   => $tickets_id,
                         'plugin_metademands_fields_id' => $fields_id]);
          }

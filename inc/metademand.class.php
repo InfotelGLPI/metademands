@@ -3684,7 +3684,6 @@ JAVASCRIPT
                   if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
-
                }
                break;
             case 'date_interval':
@@ -3712,8 +3711,6 @@ JAVASCRIPT
                   if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
-
-
                }
                break;
             case 'datetime_interval':
@@ -3741,8 +3738,6 @@ JAVASCRIPT
                   if ($formatAsTable == true) {
                      $result[$field['rank']]['content'] .= "</td>";
                   }
-
-
                }
                break;
             case 'number':
@@ -4128,6 +4123,12 @@ JAVASCRIPT
                $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
                if ($values_form[$f['plugin_metademands_fields_id']] === null) {
                   $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
+               }
+               if (!empty($f['value2'])) {
+                  $values_form[$f['plugin_metademands_fields_id'].'-2'] = json_decode($f['value2']);
+                  if ($values_form[$f['plugin_metademands_fields_id'].'-2'] === null) {
+                     $values_form[$f['plugin_metademands_fields_id'].'-2'] = $f['value2'];
+                  }
                }
             }
             $metademands_data = $this->constructMetademands($this->getID());

@@ -1826,7 +1826,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                       console.log(value);
+//                                       console.log(value);
                                        $('[id-field =\"field'+key+'\"]').hide();
                                        $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
                                      
@@ -3148,7 +3148,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
                         if (y[i].type == 'radio' && fieldmandatory == true) {
                            if (y[i].checked) lengthr++;
-                           console.log(lengthr)
                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
                            if (res != 'none' && lengthr == 0) {
                               $('[name=\"' + fieldname + '\"]').addClass('invalid');
@@ -3207,7 +3206,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                         for (i = 0; i < z.length; i++) {
                            fieldmandatory = z[i].required;
                            // If a field is empty...
-                           if (z[i].value == 0 && fieldmandatory == true) {
+                           isnumber = z[i].getAttribute('isnumber');
+//                           console.log(isnumber);
+                           if (z[i].value == 0 && isnumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
                               var fieldname = z[i].name;
                               var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
@@ -3579,6 +3580,7 @@ class PluginMetademandsWizard extends CommonDBTM {
              && empty($fields['value'])
              && $value['type'] != 'radio'
              && $value['type'] != 'checkbox'
+             && $value['type'] != 'number'
              && $value['type'] != 'informations'
              && $value['type'] != 'upload') {
             $msg[]     = $value['name'];
@@ -3607,6 +3609,15 @@ class PluginMetademandsWizard extends CommonDBTM {
          }
          //radio
          if ($value['type'] == 'radio'
+             && $value['is_mandatory']) {
+            if ($fields['value'] == NULL) {
+               $msg[]     = $value['name'];
+               $checkKo[] = 1;
+            }
+         }
+
+         //number
+         if ($value['type'] == 'number'
              && $value['is_mandatory']) {
             if ($fields['value'] == NULL) {
                $msg[]     = $value['name'];
