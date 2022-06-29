@@ -267,7 +267,14 @@ if (isset($_POST['next'])) {
          }
       }
 
-      $itilcategories = isset($_SESSION['servicecatalog']['sc_itilcategories_id']) ? $_SESSION['servicecatalog']['sc_itilcategories_id'] : 0;
+      $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+      if (is_array($cats) && count($cats) == 1) {
+         foreach ($cats as $cat) {
+            $itilcategories = $cat;
+         }
+      } else {
+         $itilcategories = $_SESSION['servicecatalog']['sc_itilcategories_id'] ?? 0;
+      }
       $metademands->getFromDB($_POST['form_metademands_id']);
       $type = $metademands->fields['type'];
 
