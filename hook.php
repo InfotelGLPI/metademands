@@ -460,25 +460,25 @@ function plugin_metademands_getDatabaseRelations() {
 //}
 
 
-function plugin_metademands_registerMethods() {
-   global $WEBSERVICES_METHOD;
-
-   $WEBSERVICES_METHOD['metademands.addMetademands']
-      = ['PluginMetademandsMetademand', 'methodAddMetademands'];
-   $WEBSERVICES_METHOD['metademands.listMetademands']
-      = ['PluginMetademandsMetademand', 'methodListMetademands'];
-   $WEBSERVICES_METHOD['metademands.listMetademandsfields']
-      = ['PluginMetademandsField', 'methodListMetademandsfields'];
-   $WEBSERVICES_METHOD['metademands.listTasktypes']
-      = ['PluginMetademandsTask', 'methodListTasktypes'];
-   $WEBSERVICES_METHOD['metademands.showMetademands']
-      = ['PluginMetademandsMetademand', 'methodShowMetademands'];
-   $WEBSERVICES_METHOD['metademands.showTicketForm']
-      = ['PluginMetademandsTicket', 'methodShowTicketForm'];
-   $WEBSERVICES_METHOD['metademands.isMandatoryFields']
-      = ['PluginMetademandsTicket', 'methodIsMandatoryFields'];
-
-}
+//function plugin_metademands_registerMethods() {
+//   global $WEBSERVICES_METHOD;
+//
+//   $WEBSERVICES_METHOD['metademands.addMetademands']
+//      = ['PluginMetademandsMetademand', 'methodAddMetademands'];
+//   $WEBSERVICES_METHOD['metademands.listMetademands']
+//      = ['PluginMetademandsMetademand', 'methodListMetademands'];
+//   $WEBSERVICES_METHOD['metademands.listMetademandsfields']
+//      = ['PluginMetademandsField', 'methodListMetademandsfields'];
+//   $WEBSERVICES_METHOD['metademands.listTasktypes']
+//      = ['PluginMetademandsTask', 'methodListTasktypes'];
+//   $WEBSERVICES_METHOD['metademands.showMetademands']
+//      = ['PluginMetademandsMetademand', 'methodShowMetademands'];
+//   $WEBSERVICES_METHOD['metademands.showTicketForm']
+//      = ['PluginMetademandsTicket', 'methodShowTicketForm'];
+//   $WEBSERVICES_METHOD['metademands.isMandatoryFields']
+//      = ['PluginMetademandsTicket', 'methodIsMandatoryFields'];
+//
+//}
 
 
 // Define search option for types of the plugins

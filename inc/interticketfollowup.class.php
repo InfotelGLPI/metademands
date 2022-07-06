@@ -32,7 +32,7 @@
  */
 class PluginMetademandsInterticketfollowup extends CommonITILObject {
 
-   static $rightname = 'plugin_metademands';
+   static $rightname = 'plugin_metademands_followup';
 
 
    /**

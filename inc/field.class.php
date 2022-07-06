@@ -4375,26 +4375,26 @@ class PluginMetademandsField extends CommonDBChild {
     *
     * @return array
     */
-   static function methodListMetademandsfields($params, $protocol) {
-
-      if (isset($params['help'])) {
-         return ['help'           => 'bool,optional',
-                 'metademands_id' => 'bool,mandatory'];
-      }
-
-      if (!Session::getLoginUserID()) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-      }
-
-      if (!isset($params['metademands_id'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
-      }
-
-      $field  = new self();
-      $result = $field->find(['plugin_metademands_metademands_id' => $params['metademands_id']]);
-
-      return $result;
-   }
+//   static function methodListMetademandsfields($params, $protocol) {
+//
+//      if (isset($params['help'])) {
+//         return ['help'           => 'bool,optional',
+//                 'metademands_id' => 'bool,mandatory'];
+//      }
+//
+//      if (!Session::getLoginUserID()) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
+//      }
+//
+//      if (!isset($params['metademands_id'])) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
+//      }
+//
+//      $field  = new self();
+//      $result = $field->find(['plugin_metademands_metademands_id' => $params['metademands_id']]);
+//
+//      return $result;
+//   }
 
    /**
     * @param $metademands_id

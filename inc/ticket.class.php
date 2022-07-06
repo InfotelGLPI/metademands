@@ -480,74 +480,74 @@ class PluginMetademandsTicket extends CommonDBTM
     }
 
 
-   /**
-    * @param $params
-    * @param $protocol
-    *
-    * @return array|bool
-    */
-    static function methodIsMandatoryFields($params, $protocol)
-    {
+//   /**
+//    * @param $params
+//    * @param $protocol
+//    *
+//    * @return array|bool
+//    */
+//    static function methodIsMandatoryFields($params, $protocol)
+//    {
+//
+//        if (isset($params['help'])) {
+//            return ['help'   => 'bool,optional',
+//                 'values' => 'array,mandatory'];
+//        }
+//
+//        if (!Session::getLoginUserID()) {
+//            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
+//        }
+//
+//        if (!isset($params['values'])) {
+//            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER, '', 'values');
+//        }
+//
+//        if (!is_array($params['values'])) {
+//            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'values not array');
+//        }
+//
+//        $tickettask = new PluginMetademandsTicketTask();
+//        $result     = $tickettask->isMandatoryField($params['values'], false, true);
+//
+//        return $result;
+//    }
 
-        if (isset($params['help'])) {
-            return ['help'   => 'bool,optional',
-                 'values' => 'array,mandatory'];
-        }
 
-        if (!Session::getLoginUserID()) {
-            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-        }
-
-        if (!isset($params['values'])) {
-            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER, '', 'values');
-        }
-
-        if (!is_array($params['values'])) {
-            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'values not array');
-        }
-
-        $tickettask = new PluginMetademandsTicketTask();
-        $result     = $tickettask->isMandatoryField($params['values'], false, true);
-
-        return $result;
-    }
-
-
-   /**
-    * @param $params
-    * @param $protocol
-    *
-    * @return array
-    */
-    static function methodShowTicketForm($params, $protocol)
-    {
-
-        if (isset($params['help'])) {
-            return ['help'            => 'bool,optional',
-                 'ticket_template' => 'int,optional',
-                 'values'          => 'array,optional'];
-        }
-
-        if (!Session::getLoginUserID()) {
-            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-        }
-
-        if (!is_numeric($params['ticket_template'])) {
-            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'ticket_template');
-        }
-
-        if (!is_array($params['values'])) {
-            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'values');
-        }
-
-        ob_start();
-        self::showFormHelpdesk($params['ticket_template'], $params['values']);
-        $result = ob_get_clean();
-
-        $response = [$result];
-
-        return $response;
-    }
+//   /**
+//    * @param $params
+//    * @param $protocol
+//    *
+//    * @return array
+//    */
+//    static function methodShowTicketForm($params, $protocol)
+//    {
+//
+//        if (isset($params['help'])) {
+//            return ['help'            => 'bool,optional',
+//                 'ticket_template' => 'int,optional',
+//                 'values'          => 'array,optional'];
+//        }
+//
+//        if (!Session::getLoginUserID()) {
+//            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
+//        }
+//
+//        if (!is_numeric($params['ticket_template'])) {
+//            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'ticket_template');
+//        }
+//
+//        if (!is_array($params['values'])) {
+//            return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'values');
+//        }
+//
+//        ob_start();
+//        self::showFormHelpdesk($params['ticket_template'], $params['values']);
+//        $result = ob_get_clean();
+//
+//        $response = [$result];
+//
+//        return $response;
+//    }
 
    /**
     * Print the helpdesk form

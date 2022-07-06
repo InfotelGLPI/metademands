@@ -87,9 +87,10 @@ class PluginMetademandsProfile extends Profile {
          $ID   = $item->getID();
          $prof = new self();
 
-         $rights = ['plugin_metademands'           => ALLSTANDARDRIGHT,
-                    'plugin_metademands_requester'     => 1,
-                    'plugin_metademands_updatemeta'     => 1];
+         $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
+                    'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
+                    'plugin_metademands_requester'  => 1,
+                    'plugin_metademands_updatemeta' => 1];
 
          self::addDefaultProfileInfos($ID, $rights);
          $prof->showForm($ID);
@@ -122,7 +123,7 @@ class PluginMetademandsProfile extends Profile {
 
       $profile->displayRightsChoiceMatrix($rights, ['canedit'       => $canedit,
                                                     'default_class' => 'tab_bg_2',
-                                                    'title'         => __('General')]);
+                                                    'title'         => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands')]);
 
       echo "<table class='tab_cadre_fixehov'>";
       $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_requester']);
@@ -171,14 +172,19 @@ class PluginMetademandsProfile extends Profile {
          ],
       ];
 
+      $rights[] = ['itemtype' => 'PluginMetademandsInterticketfollowup',
+                   'label'    => _n('Inter ticket followup', 'Inter ticket followups', 2, 'metademands'),
+                   'field'    => 'plugin_metademands_followup'
+      ];
+
       if ($all) {
          $rights[] = ['itemtype' => 'PluginMetademandsWizard',
                       'label'    => __('Right to update the requester of a meta-demand', 'metademands'),
                       'field'    => 'plugin_metademands_requester'
          ];
-         $rights[] = ['itemtype'  => 'PluginMetademandsWizard',
-                      'label'     => __('Right to update a meta-demand form from the ticket', 'metademands'),
-                      'field'     => 'plugin_metademands_updatemeta'
+         $rights[] = ['itemtype' => 'PluginMetademandsWizard',
+                      'label'    => __('Right to update a meta-demand form from the ticket', 'metademands'),
+                      'field'    => 'plugin_metademands_updatemeta'
          ];
       }
 
@@ -309,9 +315,10 @@ class PluginMetademandsProfile extends Profile {
     */
    static function createFirstAccess($profiles_id) {
 
-      $rights = ['plugin_metademands'           => ALLSTANDARDRIGHT,
-                 'plugin_metademands_requester'     => 1,
-                 'plugin_metademands_updatemeta'     => 1];
+      $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
+                 'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
+                 'plugin_metademands_requester'  => 1,
+                 'plugin_metademands_updatemeta' => 1];
 
       self::addDefaultProfileInfos($profiles_id,
                                    $rights, true);

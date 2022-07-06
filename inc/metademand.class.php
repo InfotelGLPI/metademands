@@ -1155,117 +1155,117 @@ JAVASCRIPT
     * @global type $DB
     *
     */
-   static function methodAddMetademands($params, $protocol) {
+//   static function methodAddMetademands($params, $protocol) {
+//
+//      if (isset($params['help'])) {
+//         return ['help'           => 'bool,optional',
+//                 'metademands_id' => 'int,mandatory',
+//                 'values'         => 'array,optional'];
+//      }
+//
+//      if (!Session::getLoginUserID()) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
+//      }
+//
+//      if (!isset($params['metademands_id'])) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
+//      }
+//
+//      if (isset($params['metademands_id']) && !is_numeric($params['metademands_id'])) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'metademands_id');
+//      }
+//
+//      $metademands = new self();
+//
+//      if (!$metademands->can(-1, UPDATE) && !PluginMetademandsGroup::isUserHaveRight($params['metademands_id'])) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTALLOWED);
+//      }
+//
+//      $meta_data = [];
+//
+//      if (isset($params['values']['fields']) && count($params['values']['fields'])) {
+//         foreach ($params['values']['fields'] as $data) {
+//            $meta_data['fields'][$data['id']] = $data['values'];
+//         }
+//      }
+//      return $metademands->addObjects($params['metademands_id'], $meta_data);
+//   }
 
-      if (isset($params['help'])) {
-         return ['help'           => 'bool,optional',
-                 'metademands_id' => 'int,mandatory',
-                 'values'         => 'array,optional'];
-      }
+//   /**
+//    * methodGetIntervention : Get intervention from WEBSERVICE plugin
+//    *
+//    * @param type  $params
+//    * @param type  $protocol
+//    *
+//    * @return type
+//    * @throws \GlpitestSQLError
+//    * @global type $DB
+//    *
+//    */
+//   static function methodShowMetademands($params, $protocol) {
+//
+//      if (isset($params['help'])) {
+//         return ['help'           => 'bool,optional',
+//                 'metademands_id' => 'int'];
+//      }
+//
+//      if (!Session::getLoginUserID()) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
+//      }
+//
+//      if (!isset($params['metademands_id'])) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
+//      }
+//
+//      $metademands = new self();
+//
+//      if (!$metademands->canCreate() && !PluginMetademandsGroup::isUserHaveRight($params['metademands_id'])) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTALLOWED);
+//      }
+//
+//      $result = $metademands->constructMetademands($params['metademands_id']);
+//
+//      $response = [];
+//      foreach ($result as $step => $values) {
+//         foreach ($values as $metademands_id => $form) {
+//            $response[] = ['metademands_id'   => $metademands_id,
+//                           'metademands_name' => Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id),
+//                           'form'             => $form['form'],
+//                           'tasks'            => $form['tasks']];
+//         }
+//      }
+//
+//      return $response;
+//   }
 
-      if (!Session::getLoginUserID()) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-      }
-
-      if (!isset($params['metademands_id'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
-      }
-
-      if (isset($params['metademands_id']) && !is_numeric($params['metademands_id'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_BADPARAMETER, '', 'metademands_id');
-      }
-
-      $metademands = new self();
-
-      if (!$metademands->can(-1, UPDATE) && !PluginMetademandsGroup::isUserHaveRight($params['metademands_id'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTALLOWED);
-      }
-
-      $meta_data = [];
-
-      if (isset($params['values']['fields']) && count($params['values']['fields'])) {
-         foreach ($params['values']['fields'] as $data) {
-            $meta_data['fields'][$data['id']] = $data['values'];
-         }
-      }
-      return $metademands->addObjects($params['metademands_id'], $meta_data);
-   }
-
-   /**
-    * methodGetIntervention : Get intervention from WEBSERVICE plugin
-    *
-    * @param type  $params
-    * @param type  $protocol
-    *
-    * @return type
-    * @throws \GlpitestSQLError
-    * @global type $DB
-    *
-    */
-   static function methodShowMetademands($params, $protocol) {
-
-      if (isset($params['help'])) {
-         return ['help'           => 'bool,optional',
-                 'metademands_id' => 'int'];
-      }
-
-      if (!Session::getLoginUserID()) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-      }
-
-      if (!isset($params['metademands_id'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
-      }
-
-      $metademands = new self();
-
-      if (!$metademands->canCreate() && !PluginMetademandsGroup::isUserHaveRight($params['metademands_id'])) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTALLOWED);
-      }
-
-      $result = $metademands->constructMetademands($params['metademands_id']);
-
-      $response = [];
-      foreach ($result as $step => $values) {
-         foreach ($values as $metademands_id => $form) {
-            $response[] = ['metademands_id'   => $metademands_id,
-                           'metademands_name' => Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id),
-                           'form'             => $form['form'],
-                           'tasks'            => $form['tasks']];
-         }
-      }
-
-      return $response;
-   }
-
-   /**
-    * @param $params
-    * @param $protocol
-    *
-    * @return array
-    * @throws \GlpitestSQLError
-    */
-   static function methodListMetademands($params, $protocol) {
-
-      if (isset($params['help'])) {
-         return ['help' => 'bool,optional'];
-      }
-
-      if (!Session::getLoginUserID()) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-      }
-
-      $metademands = new self();
-      $result      = $metademands->listMetademands();
-
-      $response = [];
-
-      foreach ($result as $key => $val) {
-         $response[] = ['id' => $key, 'value' => $val];
-      }
-
-      return $response;
-   }
+//   /**
+//    * @param $params
+//    * @param $protocol
+//    *
+//    * @return array
+//    * @throws \GlpitestSQLError
+//    */
+//   static function methodListMetademands($params, $protocol) {
+//
+//      if (isset($params['help'])) {
+//         return ['help' => 'bool,optional'];
+//      }
+//
+//      if (!Session::getLoginUserID()) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
+//      }
+//
+//      $metademands = new self();
+//      $result      = $metademands->listMetademands();
+//
+//      $response = [];
+//
+//      foreach ($result as $key => $val) {
+//         $response[] = ['id' => $key, 'value' => $val];
+//      }
+//
+//      return $response;
+//   }
 
 
    /**

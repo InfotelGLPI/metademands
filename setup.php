@@ -133,7 +133,7 @@ function plugin_init_metademands() {
    }
 
    // Import webservice
-   $PLUGIN_HOOKS['webservices']['metademands']                   = 'plugin_metademands_registerMethods';
+//   $PLUGIN_HOOKS['webservices']['metademands']                   = 'plugin_metademands_registerMethods';
    $PLUGIN_HOOKS['timeline_actions']['metademands']              = ['PluginMetademandsMetademandValidation',
                                                                     'showActionsForm'];
 

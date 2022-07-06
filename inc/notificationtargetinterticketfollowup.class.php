@@ -608,7 +608,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
             ) {
                $tmp['##followup.author##'] = __("Helpdesk");
             } else {
-               $tmp['##followup.author##'] = Html::clean(getUserName($followup['users_id']));
+               $tmp['##followup.author##'] = getUserName($followup['users_id']);
             }
 
             $tmp['##followup.requesttype##'] = Dropdown::getDropdownName('glpi_requesttypes',
@@ -688,7 +688,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                ) {
                   $tmp['##followup_intern.author##'] = __("Helpdesk");
                } else {
-                  $tmp['##followup_intern.author##'] = Html::clean(getUserName($followup_intern['users_id']));
+                  $tmp['##followup_intern.author##'] = getUserName($followup_intern['users_id']);
                }
 
                $tmp['##followup_intern.requesttype##'] = Dropdown::getDropdownName('glpi_requesttypes',
@@ -844,7 +844,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
             if ($taskobj->maybePrivate()) {
                $tmp['##task.isprivate##'] = Dropdown::getYesNo($task['is_private']);
             }
-            $tmp['##task.author##'] = Html::clean(getUserName($task['users_id']));
+            $tmp['##task.author##'] = getUserName($task['users_id']);
 
             $tmp_taskcatinfo                 = Dropdown::getDropdownName('glpi_taskcategories',
                                                                          $task['taskcategories_id'], true, true, false);
