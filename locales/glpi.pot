@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-29 09:54+0000\n"
+"POT-Creation-Date: 2022-07-06 10:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,7 +39,7 @@ msgid "Technician child ticket"
 msgstr ""
 
 #: setup.php:157 inc/menu.class.php:40 inc/metademand.class.php:85
-#: inc/profile.class.php:169
+#: inc/profile.class.php:126 inc/profile.class.php:170
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -607,6 +607,7 @@ msgid "Groups allowed to enter a demand"
 msgstr ""
 
 #: inc/interticketfollowup.class.php:48 inc/interticketfollowup.class.php:76
+#: inc/profile.class.php:176
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] ""
@@ -967,11 +968,11 @@ msgid_plural "Rights management"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/profile.class.php:130 inc/profile.class.php:176
+#: inc/profile.class.php:131 inc/profile.class.php:182
 msgid "Right to update the requester of a meta-demand"
 msgstr ""
 
-#: inc/profile.class.php:137 inc/profile.class.php:180
+#: inc/profile.class.php:138 inc/profile.class.php:186
 msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
