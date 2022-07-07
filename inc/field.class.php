@@ -741,17 +741,21 @@ class PluginMetademandsField extends CommonDBChild {
                array_push($arrayAvailableContainer, $container['id']);
             }
          }
-
-         $conditions  = [
-            "name"      => "plugin_fields_fields_id",
-            "condition" => ['plugin_fields_containers_id' => $arrayAvailableContainer]
-         ];
+         
          $pluginfield = new PluginMetademandsPluginfields();
+         $opt = [];
          if ($pluginfield->getFromDBByCrit(['plugin_metademands_fields_id' => $ID])) {
-            $conditions["value"] = $pluginfield->fields["plugin_fields_fields_id"];
+            $opt["value"] = $pluginfield->fields["plugin_fields_fields_id"];
+         }
+         $condition  = ['plugin_fields_containers_id' => $arrayAvailableContainer];
+         $field = new PluginFieldsField();
+         $fields_values = $field->find($condition);
+         $datas = [];
+         foreach ($fields_values as $fields_value) {
+            $datas[$fields_value['id']] = $fields_value['label'];
          }
 
-         PluginFieldsField::dropdown($conditions);
+         Dropdown::showFromArray('plugin_fields_fields_id', $datas, $opt);
 
          echo "</td>";
          echo "<td colspan='2'>";
