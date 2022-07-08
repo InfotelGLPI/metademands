@@ -3093,7 +3093,7 @@ JAVASCRIPT
             case 'dropdown_meta':
                if (!empty($field['custom_values'])
                    && $field['item'] == 'other') {
-                  $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                  $custom_values = array_merge([0 => Dropdown::EMPTY_VALUE], PluginMetademandsField::_unserialize($field['custom_values']));
                   foreach ($custom_values as $k => $val) {
                      if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                         $custom_values[$k] = $ret;

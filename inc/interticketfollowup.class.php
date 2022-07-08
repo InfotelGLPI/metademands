@@ -67,7 +67,8 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
            || $ticket_task->find(['parent_tickets_id' => $item->fields['id']]))
           && $_SESSION['glpiactiveprofile']['interface'] == 'central'
           && ($item->fields['status'] != Ticket::SOLVED
-              && $item->fields['status'] != Ticket::CLOSED)) {
+              && $item->fields['status'] != Ticket::CLOSED)
+          && Session::haveRight("plugin_metademands_followup", READ)) {
 
          $itemtypes['interticketfollowup'] = [
             'type'  => 'PluginMetademandsInterticketfollowup',

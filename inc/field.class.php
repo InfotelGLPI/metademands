@@ -743,7 +743,7 @@ class PluginMetademandsField extends CommonDBChild {
          }
          
          $pluginfield = new PluginMetademandsPluginfields();
-         $opt = [];
+         $opt = ['display_emptychoice' => true];
          if ($pluginfield->getFromDBByCrit(['plugin_metademands_fields_id' => $ID])) {
             $opt["value"] = $pluginfield->fields["plugin_fields_fields_id"];
          }
