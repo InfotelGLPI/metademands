@@ -50,17 +50,16 @@ if (empty($_GET['tickets_id'])) {
 
 if (empty($_GET['resources_id'])) {
    $_GET['resources_id'] = 0;
-   if(isset($_SESSION['plugin_metademands']['fields']['resources_id']) && !empty($_SESSION['plugin_metademands']['fields']['resources_id'])){
+   if (isset($_SESSION['plugin_metademands']['fields']['resources_id']) && !empty($_SESSION['plugin_metademands']['fields']['resources_id'])) {
       $_GET['resources_id'] = $_SESSION['plugin_metademands']['fields']['resources_id'];
-   }
-   else if(isset($_SESSION['plugin_metademands']['fields'])){
-      foreach ($_SESSION['plugin_metademands']['fields'] as $fieldKey => $field){
-         if(!is_array($field)){
+   } else if (isset($_SESSION['plugin_metademands']['fields'])) {
+      foreach ($_SESSION['plugin_metademands']['fields'] as $fieldKey => $field) {
+         if (!is_array($field)) {
             $metademandsField = new PluginMetademandsField();
             $metademandsField->getFromDB($fieldKey);
-            if($metademandsField->getField('item') == 'PluginResourcesResource'){
-               $_GET['resources_id'] = $field;
-               $_SESSION['plugin_metademands']['fields']['resources_id'] =$field;
+            if ($metademandsField->getField('item') == 'PluginResourcesResource') {
+               $_GET['resources_id']                                     = $field;
+               $_SESSION['plugin_metademands']['fields']['resources_id'] = $field;
             }
          }
       }
@@ -268,7 +267,14 @@ if (isset($_POST['next'])) {
          }
       }
 
-      $itilcategories = isset($_SESSION['servicecatalog']['sc_itilcategories_id']) ? $_SESSION['servicecatalog']['sc_itilcategories_id'] : 0;
+      $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+      if (is_array($cats) && count($cats) == 1) {
+         foreach ($cats as $cat) {
+            $itilcategories = $cat;
+         }
+      } else {
+         $itilcategories = $_SESSION['servicecatalog']['sc_itilcategories_id'] ?? 0;
+      }
       $metademands->getFromDB($_POST['form_metademands_id']);
       $type = $metademands->fields['type'];
 

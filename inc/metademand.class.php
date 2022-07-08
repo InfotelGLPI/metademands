@@ -4648,6 +4648,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $values_form[$f['plugin_metademands_fields_id']."#".$color] = $values_color;
                   }
                }
+               if (!empty($f['value2'])) {
+                  $values_form[$f['plugin_metademands_fields_id'].'-2'] = json_decode($f['value2']);
+                  if ($values_form[$f['plugin_metademands_fields_id'].'-2'] === null) {
+                     $values_form[$f['plugin_metademands_fields_id'].'-2'] = $f['value2'];
+                  }
+               }
             }
             $metademands_data = $this->constructMetademands($this->getID());
             if (count($metademands_data)) {
