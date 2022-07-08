@@ -475,7 +475,15 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       echo "</tr>";
-
+//       if ($this->fields['type'] == "dropdown_multiple"
+//          ) {
+//           echo "<tr class='tab_bg_1'>";
+//           echo "<td>".__("Allow right All transfert",'metademands')."</td>";
+//           echo "<td>".Dropdown::showYesNo('allow_right_all',$this->fields['allow_right_all'],-1,['display' => false])."</td>";
+//           echo "<td></td>";
+//           echo "<td></td>";
+//           echo "</tr>";
+//       }
       echo "<tr class='tab_bg_1'>";
       if ($this->fields['type'] == "dropdown_object"
           && $this->fields["item"] == "Group") {
@@ -567,6 +575,7 @@ class PluginMetademandsField extends CommonDBChild {
             $granted_fields = [
                71,
                65,
+                8
             ];
          }
 
@@ -1667,9 +1676,12 @@ class PluginMetademandsField extends CommonDBChild {
 
                $field .= "</select></div>";
 
-               $field .= " <div class=\"centralCol\">
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
+               $field .= " <div class=\"centralCol\">";
+               if(!isset($data['allow_right_all']) || (isset($data['allow_right_all']) && $data['allow_right_all'] == 1)) {
+                   $field .= "<button type=\"button\" id=\"multiselect$namefield" . $data["id"] .
+                       "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>";
+               }
+              $field .= "<button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
                                </div>";
@@ -1802,11 +1814,15 @@ class PluginMetademandsField extends CommonDBChild {
                         }
                      }
 
+
+
                      $field .= "</select></div>";
 
-                     $field .= " <div class=\"centralCol\">
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
+                     $field .= " <div class=\"centralCol\">";
+                      if(!isset($data['allow_right_all']) || (isset($data['allow_right_all']) && $data['allow_right_all'] == 1)) {
+                     $field .= "              <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn btn-block buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>";
+                     }
+                     $field .= "              <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
                                    <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn btn-block buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
                                </div>";

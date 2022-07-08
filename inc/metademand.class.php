@@ -1614,6 +1614,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                            if ($fields_values['used_by_ticket'] == 65) {
                               $name = "_groups_id_observer";
                            }
+                            if ($fields_values['used_by_ticket'] == 5) {
+                                $name = "_users_id_assign";
+                            }
+                            if ($fields_values['used_by_ticket'] == 8) {
+                                $name = "_groups_id_assign";
+                            }
 
                            $parent_fields[$name]       = $v[$id];
                            $parent_ticketfields[$name] = $v[$id];
@@ -1694,6 +1700,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
                      $input = $this->mergeFields($parent_fields, $parent_ticketfields);
                   } else {
                      $input = $parent_fields;
+                  }
+                  if(!isset($input['_users_id_assign']) && isset($_SESSION['plugin_collectmetademands']['default_group'])) {
+                      $input['_groups_id_assign'] = $_SESSION['plugin_collectmetademands']['default_group'];
                   }
 
                   if ($metademand->fields['is_order'] == 0) {
@@ -4678,6 +4687,12 @@ class PluginMetademandsMetademand extends CommonDBTM {
                               }
                               if ($fields_values['used_by_ticket'] == 65) {
                                  $name = "_groups_id_observer";
+                              }
+                              if ($fields_values['used_by_ticket'] == 5) {
+                                 $name = "_users_id_assign";
+                              }
+                              if ($fields_values['used_by_ticket'] == 8) {
+                                 $name = "_groups_id_assign";
                               }
                               $son_ticket_data[$name] = $values_form[$id];
                            }

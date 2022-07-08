@@ -3420,6 +3420,8 @@ class PluginMetademandsWizard extends CommonDBTM {
 
       if (!empty($options['resources_id'])) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
+      } else if(isset($options['collect_metademands']) && $options['collect_metademands'] == true) {
+        return true;
       } else {
 
          $plugin = new Plugin();
