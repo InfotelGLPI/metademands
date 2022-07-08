@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-07 15:07+0000\n"
+"POT-Creation-Date: 2022-07-08 13:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -606,18 +606,18 @@ msgstr ""
 msgid "Groups allowed to enter a demand"
 msgstr ""
 
-#: inc/interticketfollowup.class.php:48 inc/interticketfollowup.class.php:76
+#: inc/interticketfollowup.class.php:48 inc/interticketfollowup.class.php:77
 #: inc/profile.class.php:176
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/interticketfollowup.class.php:136
+#: inc/interticketfollowup.class.php:137
 msgid "All tickets"
 msgstr ""
 
-#: inc/interticketfollowup.class.php:352
+#: inc/interticketfollowup.class.php:353
 msgid "Target followup"
 msgstr ""
 
