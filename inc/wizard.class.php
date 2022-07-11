@@ -3316,7 +3316,7 @@ class PluginMetademandsWizard extends CommonDBTM {
 
                $datas['fields'] = $values['fields'];
 
-               $result = $metademands->addObjects($metademands_id, $values, $options);
+               $result = $metademands->addObjects($metademands_id, $datas, $options);
                Session::addMessageAfterRedirect($result['message']);
             }
             $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,

@@ -229,7 +229,7 @@ class PluginMetademandsBasketline extends CommonDBTM {
          if ($values['type'] != "dropdown_object"
              && $values['type'] != "dropdown"
              && $values['type'] != "dropdown_meta"
-             && strpos($values['item'], 'plugin_') === false) {
+             && ($values['item'] != null && strpos($values['item'], 'plugin_') === false)) {
             $name = $values['type'];
          }
 
