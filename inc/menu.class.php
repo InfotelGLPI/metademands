@@ -64,6 +64,10 @@ class PluginMetademandsMenu extends CommonDBTM {
          $image                 = "<i class='ti ti-upload' title='" . __('Import metademands', 'metademands') . "'></i>&nbsp;" . __('Import metademands', 'metademands');
          $menu['links'][$image] = PluginMetademandsMetademand::getFormURL(false) . "?import_form=1";
       }
+       if (PluginMetademandsMetademand::canCreate()) {
+         $image                 = "<i class='ti ti-upload' title='" . __('Continue metademand', 'metademands') . "'></i>&nbsp;" . __('Continue metademand', 'metademands');
+         $menu['links'][$image] = PluginMetademandsStepform::getSearchURL(false);
+      }
 
       $menu['icon'] = self::getIcon();
 

@@ -279,6 +279,10 @@ function plugin_metademands_install() {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.0.sql");
    }
 
+   if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "step_by_step_mode")) {
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.1.sql");
+   }
+
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
    if (!is_dir($rep_files_metademands)) {
       mkdir($rep_files_metademands);

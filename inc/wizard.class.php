@@ -132,6 +132,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                      'meta_validated'    => 1,
                      'resources_id'      => 0,
                      'resources_step'    => '',
+                     'bloc_id'           => 0,
                      'itilcategories_id' => 0];
 
       // if given parameters, override defaults
@@ -150,6 +151,9 @@ class PluginMetademandsWizard extends CommonDBTM {
       }
       if (isset($_SESSION['plugin_metademands']['fields']['resources_step'])) {
          $parameters['resources_step'] = $_SESSION['plugin_metademands']['fields']['resources_step'];
+      }
+      if (isset($_SESSION['plugin_metademands']['fields']['bloc_id'])) {
+         $parameters['bloc_id'] = $_SESSION['plugin_metademands']['fields']['bloc_id'];
       }
       Html::requireJs("metademands");
       //      echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
@@ -192,6 +196,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          echo Html::hidden('tickets_id', ['value' => $parameters['tickets_id']]);
          echo Html::hidden('resources_id', ['value' => $parameters['resources_id']]);
          echo Html::hidden('resources_step', ['value' => $parameters['resources_step']]);
+         echo Html::hidden('bloc_id', ['value' => $parameters['bloc_id']]);
 
          $icon = '';
          if ($parameters['step'] == PluginMetademandsMetademand::STEP_LIST) {
@@ -825,7 +830,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
                }
             }
-            $use_as_step = 0;
+            $use_as_step = 1;
             if ($preview || $seeform) {
                $use_as_step = 0;
             }
@@ -1013,7 +1018,7 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param int   $itilcategories_id
     */
    static function constructForm($metademands_id, $metademands_data, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1) {
-
+      global $CFG_GLPI;
       $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
 
@@ -1029,7 +1034,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       $allranks = array_unique($ranks);
 
       $allfields   = [];
-      $use_as_step = 0;
+      $use_as_step = 1;
       if ($preview || $seeform) {
          $use_as_step = 0;
       }
@@ -1070,14 +1075,14 @@ class PluginMetademandsWizard extends CommonDBTM {
          foreach ($allfields as $blocks => $line) {
 
             if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
-               if (!in_array($blocks, $all_hidden_blocks)) {
+//               if (!in_array($blocks, $all_hidden_blocks)) {
                   //                  continue;
 
                   echo "<div class='tab-step'>";
                   $cpt++;
-               } else {
-                  //                  echo "<div class='tab-sc-child-" . $blocks . "'>";
-               }
+//               } else {
+//                  //                  echo "<div class='tab-sc-child-" . $blocks . "'>";
+//               }
             }
 
             $style            = 'padding: 0.5rem 0.5rem;';
@@ -1548,7 +1553,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                            }
                         }
-                        $script .= "});";
+                        $script .= "fixButtonIndicator();});";
                         //Initialize id default value
                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
@@ -1826,7 +1831,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
-                                       console.log(value);
+                                   
                                        $('[id-field =\"field'+key+'\"]').hide();
                                        $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
                                      
@@ -2087,7 +2092,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                  });";
                         }
-                        $script .= "});";
+                        $script .= "fixButtonIndicator();});";
                         //Initialize id default value
                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
@@ -2254,7 +2259,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                            }
                         }
-                        $script .= "});";
+                        $script .= "fixButtonIndicator();});";
                         //Initialize id default value
                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
@@ -2355,7 +2360,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                           $script .= "});";
+                           $script .= "fixButtonIndicator();});";
 
                         }
 
@@ -2443,7 +2448,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                              $script .= "} else {";
+                              $script .= "fixButtonIndicator();} else {";
                               foreach ($hidden_block as $key => $fields) {
                                  $script .= "
                                           if($(this).val() == $check_value[$key]){
@@ -2462,7 +2467,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                             ";
                                  }
                                  $script .= " 
-                                             });
+                                            fixButtonIndicator(); });
                                           }";
 
                                  $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
@@ -2507,7 +2512,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                             
                                     }
                                    
-                                 });";
+                                fixButtonIndicator(); });";
                               $script .= "}";
                            }
                         }
@@ -2601,7 +2606,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                            }
                         }
-                        $script .= "});";
+                        $script .= "fixButtonIndicator();});";
                         //Initialize id default value
                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
@@ -2679,7 +2684,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                  });";
                         }
 
-                        $script .= "});";
+                        $script .= "fixButtonIndicator();});";
                         //Initialize id default value
                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
@@ -2793,7 +2798,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                            }
                         }
-                        $script .= "});";
+                        $script .= "fixButtonIndicator();});";
                         //Initialize id default value
                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
@@ -2855,7 +2860,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
 
                               $script .= "});
-                           });";
+                           fixButtonIndicator();});";
 
                            }
                            echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
@@ -2884,7 +2889,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
 
                               $script .= "});
-                           });";
+                           fixButtonIndicator();});";
 
                            }
 
@@ -2899,9 +2904,9 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
 
             if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
-               if (!in_array($blocks, $all_hidden_blocks)) {
+//               if (!in_array($blocks, $all_hidden_blocks)) {
                   echo "</div>";
-               }
+//               }
             }
          }
          if ($use_as_step == 0) {
@@ -2973,30 +2978,51 @@ class PluginMetademandsWizard extends CommonDBTM {
             //            Toolbox::logInfo($hidden_blocks);
             $json_hidden_blocks = json_encode($hidden_blocks);
             $alert              = __('Thanks to fill mandatory fields', 'metademands');
+            $group_user = new Group_User();
+            $groups_users = $group_user->find(['users_id' => Session::getLoginUserID()]);
+            $groups = [];
+            foreach ($groups_users as $gu) {
+                $groups[] = $gu['groups_id'];
+            }
+            $list_blocs = [];
+            $step = new PluginMetademandsStep();
+            $steps = $step->find(['plugin_metademands_metademands_id' => $ID,'groups_id' => $groups]);
+            foreach ($steps as $s) {
+                $list_blocs[] = $s['bloc_id'];
+            }
+            if(isset($_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'] )) {
+                echo Html::hidden('plugin_metademands_stepforms_id',['value' => $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'] ]);
+            }
+            $bloc_id = $_SESSION['plugin_metademands']['bloc_id'] ?? 0;
             echo "<script>
                   var use_as_step = '$use_as_step';
                   var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
                   var hiddenblocs = {$json_hidden_blocks};
                   var msg = '$alert';
+                  var firstnumTab = 0;
                   var currentTab = 0; // Current tab is set to be the first tab (0)
+                  findFirstTab($bloc_id);
+                  
+                  
                   showTab(currentTab, nexttitle, submittitle); // Display the current tab
                   
-                  function showTab(n) {
+                  function showTab(n,create = false) {
                      // This function will display the specified tab of the form...
                      if (use_as_step == 1) {
                         var x = document.getElementsByClassName('tab-step');
                      } else {
                         var x = document.getElementsByClassName('tab-nostep');
                      }
+                   
                      x[n].style.display = 'block';
                      //... and fix the Previous/Next buttons:
-                     if (n == 0) {
+                     if (n == firstnumTab) {
                         document.getElementById('prevBtn').style.display = 'none';
                      } else {
                         document.getElementById('prevBtn').style.display = 'inline';
                      }
-                     if (n == (x.length - 1)) {
+                     if (n == (x.length - 1) || create == true) {
                         document.getElementById('nextBtn').innerHTML = submittitle;
                      } else {
                         document.getElementById('nextBtn').innerHTML = nexttitle;
@@ -3019,7 +3045,29 @@ class PluginMetademandsWizard extends CommonDBTM {
                   //                        }
                   //                     }
                   }
-                  
+                  function findFirstTab(bloc_id) {
+                      if (use_as_step == 1) {
+                        var x = document.getElementsByClassName('tab-step');
+                     } else {
+                        var x = document.getElementsByClassName('tab-nostep');
+                     }
+                    
+                      if(bloc_id > 0) {
+                          bloc = x[currentTab].firstChild.getAttribute('bloc-id');
+                        id_bloc = parseInt(bloc.replace('bloc',''));
+                        while (bloc_id != id_bloc) {
+                            currentTab = currentTab+1;
+                          
+                            
+                             bloc = x[currentTab].firstChild.getAttribute('bloc-id');
+                             id_bloc = parseInt(bloc.replace('bloc',''));                             
+                             
+                             
+                        }
+                        firstnumTab = currentTab;
+                      }
+                        
+                  }
                   function nextPrev(n) {
                      // This function will figure out which tab to display
                      if (use_as_step == 1) {
@@ -3037,8 +3085,46 @@ class PluginMetademandsWizard extends CommonDBTM {
                   
                      // Increase or decrease the current tab by 1:
                      currentTab = currentTab + n;
+                    
+                     create = false;
+                     createNow = false;
+                     if (use_as_step == 1) {
+                       
+                         var finded = false;
+                        
+                         while (finded == false) {  
+                             
+                           
+                 
+                            if(true) {
+                               
+                                if(x[currentTab] == undefined || x[currentTab].firstChild == undefined) {
+                                     createNow = true;
+                                     finded = true;
+                                } else {
+                                    if(x[currentTab].firstChild.style.display != 'none' ) {
+                                     finded = true;
+                                     nextTab = currentTab + n;
+                                     while (nextTab >= firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                                         nextTab = nextTab + n;
+                                     }
+                                     if(nextTab >= x.length) {
+                                         create = true;
+                                     }
+                                    
+                                 } else {
+                                     currentTab = currentTab + n;
+                                 }
+                                }
+                                
+                            } else {
+                                 finded = true;
+                            }
+                             
+                         }
+                     }
                      // if you have reached the end of the form...
-                     if (currentTab >= x.length) {
+                     if (currentTab >= x.length || createNow) {
                   
                         document.getElementById('nextBtn').style.display = 'none';
                         // ... the form gets submitted:
@@ -3089,8 +3175,51 @@ class PluginMetademandsWizard extends CommonDBTM {
                   
                         return false;
                      }
+                     var listBloc = [".implode(",", $list_blocs)."];
+                       bloc = x[currentTab].firstChild.getAttribute('bloc-id');
+                     id_bloc = parseInt(bloc.replace('bloc',''));
+                      
+                        
+                     if(!listBloc.includes(id_bloc)) {
+                    
+                        var meta_id = {$ID};
+                        if (typeof tinyMCE !== 'undefined') {
+                           tinyMCE.triggerSave();
+                        }
+                        jQuery('.resume_builder_input').trigger('change');
+                        $('select[id$=\"_to\"] option').each(function () {
+                           $(this).prop('selected', true);
+                        });
+                        arrayDatas = $('form').serializeArray();
+                        arrayDatas.push({name: 'bloc_id', value: id_bloc});
+                        arrayDatas.push({name: 'action', value: 'nextUser'});
+                        $.ajax(
+                            {
+                                type: 'POST',
+                                url: '".$CFG_GLPI['root_doc'].PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/nextUser.php"."',
+                                data: arrayDatas,
+                                dataType: 'JSON',
+                                success: function(ret) {
+                                
+                                    if(ret == 0) {
+                                        location.href = '".$CFG_GLPI['root_doc'].PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php"."';
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                       console.log(xhr);
+                                       console.log(status);
+                                       console.log(error);
+                                    }
+                            }
+                        );
+                     } else {
+                      
+                      showTab(currentTab,create);
+                     }
                      // Otherwise, display the correct tab:
-                     showTab(currentTab);
+                    
                   }
                   
                   function validateForm() {
@@ -3244,6 +3373,52 @@ class PluginMetademandsWizard extends CommonDBTM {
                      }
                      //... and adds the 'active' class on the current step:
                      x[n].className += ' active';
+                  }
+                  
+                  function fixButtonIndicator() {
+                     // This function removes the 'active' class of all steps...
+                     if (use_as_step == 1) {
+                        var x = document.getElementsByClassName('tab-step');
+                     } else {
+                        var x = document.getElementsByClassName('tab-nostep');
+                     }
+                   
+                     create = false;
+                     if (use_as_step == 1) {
+                         
+                         nextTab = currentTab + 1;
+                         while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                 
+                             nextTab = nextTab + 1;
+                         }
+                   
+                          var listBloc = [".implode(",", $list_blocs)."];
+                        
+                          if(x[nextTab] != undefined) {
+                               bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+                               id_bloc = parseInt(bloc.replace('bloc',''));
+                             
+                                    if(!listBloc.includes(id_bloc)) {
+                                        create = true; 
+                                    }
+                          }
+                          
+                     
+                        
+                     
+                         if(nextTab >= x.length) {
+                             create = true;
+                         }
+                         
+                         if(create) {
+                         
+                            document.getElementById('nextBtn').innerHTML = submittitle;
+                         } else {
+                            document.getElementById('nextBtn').innerHTML = nexttitle;
+                         }
+                            
+                         
+                     }
                   }
                </script>";
          }

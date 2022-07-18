@@ -48,3 +48,8 @@ div[class^="btnsc"]:active {
 .fa-menu-md {
    margin-top: 20px;
 }
+
+/* Hide all steps by default: */
+.tab-sc {
+display: none;
+}

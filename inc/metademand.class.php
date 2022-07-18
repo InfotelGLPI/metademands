@@ -207,6 +207,8 @@ class PluginMetademandsMetademand extends CommonDBTM {
       $this->addDefaultFormTab($ong);
       $this->addStandardTab('PluginMetademandsField', $ong, $options);
       $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
+
+       $this->addStandardTab('PluginMetademandsStep', $ong, $options);
       //TODO Change / problem ?
       if ($this->getField('object_to_create') == 'Ticket') {
          $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
@@ -762,7 +764,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td colspan='2'></td>";
+       echo "<td>" . __('step-by-step mode','metademands') . "</td>";
+       echo "<td>";
+       Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
+       echo "</td>";
 
       echo "<td>" . __('Maintenance mode') . "</td>";
       echo "<td>";
@@ -770,6 +775,19 @@ class PluginMetademandsMetademand extends CommonDBTM {
       echo "</td>";
 
       echo "</tr>";
+
+       if($this->fields['step_by_step_mode'] == true) {
+           echo "<tr class='tab_bg_1'>";
+           echo "<td>" . __('Share block','metademands') . "</td>";
+           echo "<td>";
+           Dropdown::showYesNo("share_block ", $this->fields['share_block']);
+           echo "</td>";
+           echo "<td>" . "</td>";
+           echo "<td>";
+
+           echo "</td>";
+           echo "</tr>";
+       }
 
       echo "<tr class='tab_bg_1'>";
       echo "<td>";
@@ -1869,6 +1887,14 @@ JAVASCRIPT
                   } else {
 
                      $parent_tickets_id = $object->add($input);
+                     if(isset($values['plugin_metademands_stepforms_id'])) {
+                         $step_form = new PluginMetademandsStepform();
+                         $step_form->deleteByCriteria(['id' => $values['plugin_metademands_stepforms_id']]);
+                         $step_form_values = new PluginMetademandsStepform_Value();
+                         $step_form_values->deleteByCriteria(['plugin_metademands_stepforms_id' => $values['plugin_metademands_stepforms_id']]);
+                     }
+
+
                   }
                   //delete drafts
                   if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
