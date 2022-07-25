@@ -619,7 +619,7 @@ class PluginMetademandsStepform extends CommonDBTM {
                         echo Html::convDateTime($name['date']);
                         echo "</span></em>";
                         echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo __('Step ','metademands');
+                        echo __('Step','metademands');
                         echo $name['bloc_id'];
                         echo "</span></em>";
 //                    }

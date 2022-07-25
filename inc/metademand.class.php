@@ -764,7 +764,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-       echo "<td>" . __('step-by-step mode','metademands') . "</td>";
+       echo "<td>" . __('Step-by-step mode','metademands') . "</td>";
        echo "<td>";
        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
        echo "</td>";
@@ -780,11 +780,9 @@ class PluginMetademandsMetademand extends CommonDBTM {
            echo "<tr class='tab_bg_1'>";
            echo "<td>" . __('Share block','metademands') . "</td>";
            echo "<td>";
-           Dropdown::showYesNo("share_block ", $this->fields['share_block']);
+           Dropdown::showYesNo("share_block", $this->fields['share_block']);
            echo "</td>";
-           echo "<td>" . "</td>";
-           echo "<td>";
-
+           echo "<td colspan='2'>";
            echo "</td>";
            echo "</tr>";
        }

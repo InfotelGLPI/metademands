@@ -54,7 +54,7 @@ class PluginMetademandsStep extends CommonDBChild {
     * @return string
     **/
    static function getTypeName($nb = 0) {
-      return _n('Associate bloc', 'Associate blocs', $nb);
+      return _n('Associate block', 'Associate blocks', $nb);
    }
 
     static function canView() {
@@ -268,7 +268,7 @@ class PluginMetademandsStep extends CommonDBChild {
 
       $this->showFormHeader($options);
       echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Bloc','metademands') . "</td>";
+      echo "<td>" . __('Block','metademands') . "</td>";
       echo "<td>";
       echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
 //      echo Html::hidden('itemtype', ['value' => get_class($item)]);

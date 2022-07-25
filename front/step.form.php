@@ -42,7 +42,6 @@ if (isset($_POST["add"])) {
 
    $meta->check(-1, CREATE, $_POST);
    $newID = $meta->add($_POST);
-
    Html::back();
 
 } else if (isset($_POST["delete"])) {
