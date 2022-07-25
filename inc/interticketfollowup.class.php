@@ -61,7 +61,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject {
 
       $metaValidation = new PluginMetademandsMetademandValidation();
       $ticket_task    = new PluginMetademandsTicket_Task();
-      if ((($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
+      if ($item->fields['id'] > 0 && (($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
             && $metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TICKET_CREATION)
            || $ticket_task->find(['tickets_id' => $item->fields['id']])
            || $ticket_task->find(['parent_tickets_id' => $item->fields['id']]))

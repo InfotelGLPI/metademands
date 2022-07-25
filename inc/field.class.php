@@ -747,7 +747,11 @@ class PluginMetademandsField extends CommonDBChild {
          if ($pluginfield->getFromDBByCrit(['plugin_metademands_fields_id' => $ID])) {
             $opt["value"] = $pluginfield->fields["plugin_fields_fields_id"];
          }
-         $condition  = ['plugin_fields_containers_id' => $arrayAvailableContainer];
+         $condition  = [];
+         if (count($arrayAvailableContainer) > 0) {
+             $condition  = ['plugin_fields_containers_id' => $arrayAvailableContainer];
+         }
+
          $field = new PluginFieldsField();
          $fields_values = $field->find($condition);
          $datas = [];
