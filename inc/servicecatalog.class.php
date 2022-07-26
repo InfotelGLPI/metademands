@@ -183,8 +183,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
       global $CFG_GLPI;
 
 //      $metademands = PluginMetademandsWizard::selectMetademands();
-//      $plugin      = new Plugin();
-//      if ($plugin->isActivated("servicecatalog")
+//      if (Plugin::isPluginActive("servicecatalog")
 //          && ($plugin->getInfo('servicecatalog')["version"] >= "1.6.0")) {
 //
 //         echo "<script>$(document).ready(function() {

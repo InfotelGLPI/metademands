@@ -1051,12 +1051,10 @@ class PluginMetademandsField extends CommonDBChild {
 
       $type_fields = self::$field_types;
 
-      $plugin = new Plugin();
-
       if (isset($PLUGIN_HOOKS['metademands'])) {
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
             $new_fields = self::addPluginTextFieldItems($plug);
-            if ($plugin->isActivated($plug) && is_array($new_fields)) {
+            if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
                $type_fields = array_merge($type_fields, $new_fields);
             }
          }
@@ -1146,10 +1144,9 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Informations', 'metademands');
          default:
             if (isset($PLUGIN_HOOKS['metademands'])) {
-               $plugin = new Plugin();
                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                   $new_fields = self::getPluginFieldItemsName($plug);
-                  if ($plugin->isActivated($plug)
+                  if (Plugin::isPluginActive($plug)
                       && is_array($new_fields)) {
                      if (isset($new_fields[$value])) {
                         return $new_fields[$value];
@@ -1384,8 +1381,6 @@ class PluginMetademandsField extends CommonDBChild {
          $p[$key] = $val;
       }
 
-      $plugin = new Plugin();
-
       $type_fields          = self::$dropdown_meta_items;
       $type_fields_multiple = self::$dropdown_multiple_items;
       switch ($typefield) {
@@ -1400,7 +1395,7 @@ class PluginMetademandsField extends CommonDBChild {
             if (isset($PLUGIN_HOOKS['metademands'])) {
                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                   $new_fields = self::addPluginDropdownMultipleFieldItems($plug);
-                  if ($plugin->isActivated($plug) && is_array($new_fields)) {
+                  if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
                      $options = array_merge_recursive($options, $new_fields);
                   }
                }
@@ -1422,7 +1417,7 @@ class PluginMetademandsField extends CommonDBChild {
             if (isset($PLUGIN_HOOKS['metademands'])) {
                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                   $new_fields = self::addPluginDropdownFieldItems($plug);
-                  if ($plugin->isActivated($plug) && is_array($new_fields)) {
+                  if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
                      $options = array_merge_recursive($options, $new_fields);
                   }
                }
@@ -1461,10 +1456,9 @@ class PluginMetademandsField extends CommonDBChild {
             return __('Priority');
          default:
             if (isset($PLUGIN_HOOKS['metademands'])) {
-               $plugin = new Plugin();
                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                   $new_fields = self::getPluginFieldItemsName($plug);
-                  if ($plugin->isActivated($plug)
+                  if (Plugin::isPluginActive($plug)
                       && is_array($new_fields)) {
                      if (isset($new_fields[$value])) {
                         return $new_fields[$value];
@@ -1589,12 +1583,11 @@ class PluginMetademandsField extends CommonDBChild {
 
          echo "&nbsp;";
 
-         $plugin = new Plugin();
          //use plugin fields types
          if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                $new_fields = self::getPluginFieldItemsType($plug);
-               if ($plugin->isActivated($plug) && is_array($new_fields)) {
+               if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
                   if (in_array($data['type'], array_keys($new_fields))) {
                      $data['type'] = $new_fields[$data['type']];
                   }
@@ -2976,8 +2969,7 @@ class PluginMetademandsField extends CommonDBChild {
       $allowed_options_items = self::$allowed_options_items;
       $new_fields            = [];
 
-      $plugin = new Plugin();
-      //      if ($plugin->isActivated('ldapfields')) {
+      //      if (Plugin::isPluginActive('ldapfields')) {
       //         $ldapfields_containers = new PluginLdapfieldsContainer();
       //         $ldapfields            = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
       //         if (count($ldapfields) > 0) {
@@ -2989,7 +2981,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       if (isset($PLUGIN_HOOKS['metademands'])) {
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-            if ($plugin->isActivated($plug)) {
+            if (Plugin::isPluginActive($plug)) {
                $new_fields = self::addPluginFieldItems($plug);
                if (is_array($new_fields) && count($new_fields) > 0) {
                   $allowed_options_types = array_merge($allowed_options_types, $new_fields);
@@ -3311,7 +3303,6 @@ class PluginMetademandsField extends CommonDBChild {
 
       //Hook to get values saves from plugin
       if (isset($PLUGIN_HOOKS['metademands'])) {
-         $plugin = new Plugin();
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
             $p                                      = [];
             $p["plugin_metademands_fields_id"]      = $this->getID();
@@ -3319,7 +3310,7 @@ class PluginMetademandsField extends CommonDBChild {
             $p["nbOpt"]                             = $optid;
 
             $new_params = self::getPluginParamsOptions($plug, $p);
-            if ($plugin->isActivated($plug)
+            if (Plugin::isPluginActive($plug)
                 && is_array($new_params)) {
                $params = array_merge($params, $new_params);
             }
@@ -3645,7 +3636,7 @@ class PluginMetademandsField extends CommonDBChild {
 
       //Hook to print new options from plugins
       if (isset($PLUGIN_HOOKS['metademands'])) {
-         $plugin = new Plugin();
+
          foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
             $p                                      = $params;
             $p["plugin_metademands_fields_id"]      = $this->getID();
@@ -3654,7 +3645,7 @@ class PluginMetademandsField extends CommonDBChild {
 
 
             $new_res = self::getPluginShowOptions($plug, $p);
-            if ($plugin->isActivated($plug)
+            if (Plugin::isPluginActive($plug)
                 && !empty($new_res)) {
                $res .= $new_res;
             }

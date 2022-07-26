@@ -3062,12 +3062,11 @@ JAVASCRIPT
          //            $result['content'] .= "<tr>";
          //         }
 
-         $plugin = new Plugin();
          //use plugin fields types
          if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                $new_fields = PluginMetademandsField::getPluginFieldItemsType($plug);
-               if ($plugin->isActivated($plug) && is_array($new_fields)) {
+               if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
                   if (in_array($field['type'], array_keys($new_fields))) {
                      $field['type'] = $new_fields[$field['type']];
                   }
@@ -6433,7 +6432,6 @@ JAVASCRIPT
                $tickets_next[] = $tickets;
             }
          }
-         $plugin = new Plugin();
          if (count($tickets_existant)) {
 
             $ticket = new Ticket();
@@ -6449,7 +6447,7 @@ JAVASCRIPT
                $class_state = "";
 
 
-               if ($plugin->isActivated("servicecatalog")) {
+               if (Plugin::isPluginActive("servicecatalog")) {
 
                   $fa          = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], 'icon');
                   $color       = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], "background_color");

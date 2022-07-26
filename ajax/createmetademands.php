@@ -48,9 +48,9 @@ if (isset($_POST['update_fields'])) {
 
       $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
       $metademands->getFromDB($_POST['form_metademands_id']);
-      $plugin = new Plugin();
+
       $meta   = [];
-      if ($plugin->isActivated('orderprojects')
+      if (Plugin::isPluginActive('orderprojects')
           && $metademands->fields['is_order'] == 1) {
          $orderprojects = new PluginOrderprojectsMetademand();
          $meta          = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);

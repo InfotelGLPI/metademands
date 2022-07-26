@@ -392,8 +392,7 @@ function plugin_metademands_uninstall() {
  */
 function plugin_metademands_getDatabaseRelations() {
 
-   $plugin = new Plugin();
-   if ($plugin->isActivated("metademands")) {
+   if (Plugin::isPluginActive("metademands")) {
       return ["glpi_entities" => ["glpi_plugin_metademands_metademands"           => "entities_id",
                                   "glpi_plugin_metademands_fields"                => "entities_id",
                                   "glpi_plugin_metademands_metademands_resources" => "entities_id",

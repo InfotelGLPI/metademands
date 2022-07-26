@@ -317,8 +317,8 @@ class PluginMetademandsWizard extends CommonDBTM {
 
             echo "</div>";
             echo "</div>";
-            $plugin = new Plugin();
-            if ($plugin->isActivated('servicecatalog')) {
+
+            if (Plugin::isPluginActive('servicecatalog')) {
                $configsc = new PluginServicecatalogConfig();
                if ($configsc->seeCategoryDetails()) {
                   $itilcategories_id = 0;
@@ -3383,8 +3383,7 @@ class PluginMetademandsWizard extends CommonDBTM {
          Html::redirect(PLUGIN_RESOURCES_WEBDIR . "/front/wizard.form.php");
       } else {
 
-         $plugin = new Plugin();
-         if ($plugin->isActivated('servicecatalog')
+         if (Plugin::isPluginActive('servicecatalog')
              && Session::haveRight("plugin_servicecatalog", READ)
              && $itilcategories_id > 0) {
             $type = $metademands->fields['type'];

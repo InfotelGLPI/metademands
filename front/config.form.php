@@ -30,9 +30,7 @@
 include ('../../../inc/includes.php');
 Session::checkLoginUser();
 
-$plugin = new Plugin();
-
-if ($plugin->isActivated("metademands")) {
+if (Plugin::isPluginActive("metademands")) {
 
    Session::checkRight("config", UPDATE);
 
