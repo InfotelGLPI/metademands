@@ -137,7 +137,8 @@ class PluginMetademandsTicket extends CommonDBTM
                 $validation     = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket_parent_id]);
                 $validation_ok  = false;
                 if ($validation) {
-                    if (in_array($validationmeta->fields['validate'], [PluginMetademandsMetademandValidation::TO_VALIDATE, PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK])) {
+                    if (in_array($validationmeta->fields['validate'],
+                                 [PluginMetademandsMetademandValidation::TO_VALIDATE, PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK])) {
                         $validation_ok = true;
                     }
                 }

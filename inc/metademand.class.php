@@ -136,7 +136,14 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   $ticket_metademand_data = reset($ticket_metademand_data);
                   $tickets_found          = PluginMetademandsTicket::getSonTickets($item->fields['id'],
                                                                                    $ticket_metademand_data['plugin_metademands_metademands_id']);
-                  $total                  = count($tickets_found);
+                   $total = 0;
+                  foreach ($tickets_found as $ticket_found) {
+                    if (isset($ticket_found['parent_tickets_id'])
+                        && $ticket_found['tickets_id'] == 0) {
+                        continue;
+                    }
+                      $total++;
+                  }
                   $name                   = _n('Child ticket', 'Child tickets', 2, 'metademands');
                } else {
                   $ticket_task      = new PluginMetademandsTicket_Task();
@@ -4206,7 +4213,8 @@ JAVASCRIPT
 
             if (!empty($son_ticket_data['content'])) {
                if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                  $content = "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
+                  $content = "<table class='tab_cadre_fixe' style='width: 100%;'>";
+                   $content .= "<tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
                              "</th></tr><tr><td colspan='2'>";
                }
 
@@ -4220,8 +4228,9 @@ JAVASCRIPT
             if ($config->getField('childs_parent_content') == 1) {
                if (!empty($parent_fields_content['content'])) {
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>" . _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
-                              "</th></tr><tr><td colspan='2'>" . $parent_fields_content['content'];
+                  $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
+                   $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
+                              "</th></tr><tr><td colspan='2'>" .  Glpi\RichText\RichText::getSafeHtml($parent_fields_content['content']);
                   //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                   $content .= "</td></tr></table><br>";
                   //}
@@ -4257,6 +4266,19 @@ JAVASCRIPT
             } else {
                $KO[] = 1;
             }
+         } else {
+             if (isset($_SESSION['metademands_hide'])
+                 && in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
+                 continue;
+             }
+             // task - ticket relation for next tickets
+             if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $parent_tickets_id)) {
+                 continue;
+             }
+             $ticket_task->add(['tickets_id'                  => 0,
+                                'parent_tickets_id'           => $parent_tickets_id,
+                                'level'                       => $son_ticket_data['level'],
+                                'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
          }
       }
 
@@ -4656,7 +4678,8 @@ JAVASCRIPT
             }
          } else {
             if (count($ticket_metademand->fields) > 0) {
-               $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::CLOSED]);
+               $ticket_metademand->update(['id' => $ticket_metademand->getID(),
+                                           'status' => PluginMetademandsTicket_Metademand::CLOSED]);
             }
          }
       }
@@ -4942,6 +4965,10 @@ JAVASCRIPT
                echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
 
                foreach ($tickets_next as $values) {
+
+                   if (isset($values['parent_tickets_id']) && $values['parent_tickets_id'] > 0) {
+                       continue;
+                   }
 
                   $ticket->getEmpty();
 
@@ -5264,7 +5291,7 @@ JAVASCRIPT
                   $sla_state = self::SLA_PLANNED;
                }
             } else {
-               $sla_state = self::SLA_FINISHED;
+               $sla_state = self::SLA_NOTCREATED;
             }
          }
       } else {
@@ -6115,6 +6142,8 @@ JAVASCRIPT
          $fields[$k]['entities_id']                       = $_SESSION['glpiactive_entity'];
          $fields[$k]                                      = Toolbox::addslashes_deep($fields[$k]);
          $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
+          $fields[$k]["date_creation"]                    = $_SESSION['glpi_currenttime'];
+          $fields[$k]["date_mod"]                         = $_SESSION['glpi_currenttime'];
          $metaField                                       = new PluginMetademandsField();
          $newIDField                                      = $metaField->add($fields[$k]);
          $mapTableField[$oldIDField]                      = $newIDField;

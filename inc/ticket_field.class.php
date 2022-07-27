@@ -126,7 +126,9 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
             $check_values                = PluginMetademandsField::_unserialize($data['check_value']);
             if (is_array($tasks_id)) {
                foreach ($tasks_id as $task) {
-                  if (is_array($plugin_metademands_tasks_id) && is_array($check_values) && in_array($task, $plugin_metademands_tasks_id)) {
+                  if (is_array($plugin_metademands_tasks_id)
+                      && is_array($check_values)
+                      && in_array($task, $plugin_metademands_tasks_id)) {
                      foreach ($plugin_metademands_tasks_id as $key => $task_id) {
                         if ($task == $task_id) {
                            $test    = self::isCheckValueOKFieldsLinks(PluginMetademandsField::_unserialize($data['field_value']) ?? $data['field_value'], $check_values[$key], $data['type']);
@@ -136,7 +138,9 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                   }
                }
             } else {
-               if (is_array($plugin_metademands_tasks_id) && is_array($check_values) && !empty($check_values) && in_array($tasks_id, $plugin_metademands_tasks_id)) {
+               if (is_array($plugin_metademands_tasks_id)
+                   && is_array($check_values) && !empty($check_values)
+                   && in_array($tasks_id, $plugin_metademands_tasks_id)) {
                   foreach ($plugin_metademands_tasks_id as $key => $task_id) {
                      if ($tasks_id == $task_id) {
                         $test    = self::isCheckValueOKFieldsLinks(PluginMetademandsField::_unserialize($data['field_value']) ?? $data['field_value'], $check_values[$key], $data['type']);
@@ -329,7 +333,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
                if ($check_value == 0 && is_array($value) && count($value) == 0) {
                   return false;
                }
-               if (is_array($value) && !in_array($check_value, $value)) {
+               if (is_array($value) && $check_value > 0 && !in_array($check_value, $value)) {
                   return false;
                }
                break;
