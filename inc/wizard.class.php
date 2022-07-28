@@ -321,13 +321,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                   $type              = $meta->fields['type'];
                   $helpdesk_category = new PluginServicecatalogCategory();
                   if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
-                     && ($helpdesk_category->fields['comment'] != null
-                        || $helpdesk_category->fields['service_detail'] != null
-                        || $helpdesk_category->fields['service_users'] != null
-                        || $helpdesk_category->fields['service_ttr'] != null
-                        || $helpdesk_category->fields['service_use'] != null
-                        || $helpdesk_category->fields['service_supervision'] != null
-                        || $helpdesk_category->fields['service_rules'] != null)) {
+                      && ($helpdesk_category->fields['comment'] != null
+                          || $helpdesk_category->fields['service_detail'] != null
+                          || $helpdesk_category->fields['service_users'] != null
+                          || $helpdesk_category->fields['service_ttr'] != null
+                          || $helpdesk_category->fields['service_use'] != null
+                          || $helpdesk_category->fields['service_supervision'] != null
+                          || $helpdesk_category->fields['service_rules'] != null)) {
                      //                     echo "<div class=\"form-row\">";
                      //                     echo "<div class=\"bt-feature col-md-12 \">";
                      //                     echo ($helpdesk_category->fields['comment'] != null) ?
@@ -814,9 +814,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                                    && $options['resources_id'] > 0)
                                ||($current_ticket > 0
                                   && ((!$meta_validated
-                                  && $metademands->fields['can_update'] == true) ||
-                                    ($meta_validated
-                                     && $metademands->fields['can_clone'] == true))
+                                       && $metademands->fields['can_update'] == true) ||
+                                      ($meta_validated
+                                       && $metademands->fields['can_clone'] == true))
                                   && Session::haveRight('plugin_metademands_updatemeta',READ)))
 
             ) {
@@ -955,10 +955,10 @@ class PluginMetademandsWizard extends CommonDBTM {
                   echo "</button>";
                }
                if ($use_as_step == 0) {
-                 echo "<button class='btn btn-primary btn-sm metademand_previous_button' name='previous' title='" . __('Previous') . "'>";
-                 echo "<i class='fas fa-chevron-left' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-                 echo __('Previous');
-                 echo "</button>";
+                  echo "<button class='btn btn-primary btn-sm metademand_previous_button' name='previous' title='" . __('Previous') . "'>";
+                  echo "<i class='fas fa-chevron-left' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+                  echo __('Previous');
+                  echo "</button>";
                }
                echo "</div>";
                echo "</div>";
@@ -992,9 +992,9 @@ class PluginMetademandsWizard extends CommonDBTM {
     * @param int   $itilcategories_id
     */
    static function constructForm($metademands_id, $metademands_data, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0 ,$meta_validated = 1) {
-        global $CFG_GLPI;
+      global $CFG_GLPI;
 
-       $metademands = new PluginMetademandsMetademand();
+      $metademands = new PluginMetademandsMetademand();
       $metademands->getFromDB($metademands_id);
 
       $paramUrl = "";
@@ -1093,36 +1093,36 @@ class PluginMetademandsWizard extends CommonDBTM {
             }
 
 
-         if ($line[$keys[0]]['type'] == 'title-block') {
-            if ($preview) {
-               echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
-            } else {
-               echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
-            }
-            echo "<h4 class=\"bt-title-divider\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
-
-            if (empty($label = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'name'))) {
-               $label = $line[$keys[0]]['name'];
-            }
-
-            echo $label;
-            $config_link = "";
-            if ($preview) {
-               $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $line[$keys[0]]['id'] . "'>";
-               $config_link .= "<i class='fas fa-wrench'></i></a>";
-            }
-            echo $config_link;
-            if (isset($line[$keys[0]]['label2']) && !empty($line[$keys[0]]['label2'])) {
-               echo "&nbsp;";
-               if (empty($label2 = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'label2'))) {
-                  $label2 = $line[$keys[0]]['label2'];
+            if ($line[$keys[0]]['type'] == 'title-block') {
+               if ($preview) {
+                  echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
+               } else {
+                  echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
                }
-               Html::showToolTip(Html::clean($label2),
-                                 ['awesome-class' => 'fa-info-circle']);
-            }
-            echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right: 20px;position: absolute;color:" . $line[$keys[0]]['color'] . ";'></i>";
-            $rand = mt_rand();
-            echo Html::scriptBlock("
+               echo "<h4 class=\"bt-title-divider\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
+
+               if (empty($label = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'name'))) {
+                  $label = $line[$keys[0]]['name'];
+               }
+
+               echo $label;
+               $config_link = "";
+               if ($preview) {
+                  $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $line[$keys[0]]['id'] . "'>";
+                  $config_link .= "<i class='fas fa-wrench'></i></a>";
+               }
+               echo $config_link;
+               if (isset($line[$keys[0]]['label2']) && !empty($line[$keys[0]]['label2'])) {
+                  echo "&nbsp;";
+                  if (empty($label2 = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'label2'))) {
+                     $label2 = $line[$keys[0]]['label2'];
+                  }
+                  Html::showToolTip(Html::clean($label2),
+                                    ['awesome-class' => 'fa-info-circle']);
+               }
+               echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right: 20px;position: absolute;color:" . $line[$keys[0]]['color'] . ";'></i>";
+               $rand = mt_rand();
+               echo Html::scriptBlock("
                      var myelement$rand = '#up" . $rank . "';
                      var bloc$rand = 'bloc" . $rank . "';
                      $(myelement$rand).click(function() {     
@@ -1134,51 +1134,116 @@ class PluginMetademandsWizard extends CommonDBTM {
                              $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
                          }
                      });");
-            echo "</span></h4>";
-            if (!empty($line[$keys[0]]['comment'])) {
-               if (empty($comment = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'comment'))) {
-                  $comment = $line[$keys[0]]['comment'];
+               echo "</span></h4>";
+               if (!empty($line[$keys[0]]['comment'])) {
+                  if (empty($comment = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'comment'))) {
+                     $comment = $line[$keys[0]]['comment'];
+                  }
+                  $comment = htmlspecialchars_decode(stripslashes($comment));
+                  echo "<label><i>" . $comment . "</i></label>";
                }
-               $comment = htmlspecialchars_decode(stripslashes($comment));
-               echo "<label><i>" . $comment . "</i></label>";
+
+               echo "</div>";
             }
+            echo "<div bloc-hideid='bloc" . $rank . "'>";
 
-            echo "</div>";
-         }
-         echo "<div bloc-hideid='bloc" . $rank . "'>";
-
-         if ($preview) {
-            echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
-         } else {
-            echo "<div class=\"form-row\" style='$style'>";
-         }
-         foreach ($line as $key => $data) {
-
-            $config_link = "";
             if ($preview) {
-               $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
-               $config_link .= "<i class='fas fa-wrench'></i></a>";
+               echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
+            } else {
+               echo "<div class=\"form-row\" style='$style'>";
             }
-            // Manage ranks
-            if (isset($keyIndexes[$key])
-                && isset($keys[$keyIndexes[$key] - 1])
-                && $data['rank'] != $line[$keys[$keyIndexes[$key] - 1]]['rank']) {
-               //End bloc-hideid
-               echo "</div>";
+            foreach ($line as $key => $data) {
 
-               echo "</div>";
-               echo "</div>";
-               echo "<div bloc-id='bloc" . $data["rank"] . "'>";
+               $config_link = "";
+               if ($preview) {
+                  $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
+                  $config_link .= "<i class='fas fa-wrench'></i></a>";
+               }
+               // Manage ranks
+               if (isset($keyIndexes[$key])
+                   && isset($keys[$keyIndexes[$key] - 1])
+                   && $data['rank'] != $line[$keys[$keyIndexes[$key] - 1]]['rank']) {
+                  //End bloc-hideid
+                  echo "</div>";
 
-               // Title block field
-               if ($data['type'] == 'title-block') {
-                  if ($preview) {
-                     $rank  = $data["rank"];
-                     $color = PluginMetademandsField::setColor($rank);
-                     $style = 'padding-top:5px; 
+                  echo "</div>";
+                  echo "</div>";
+                  echo "<div bloc-id='bloc" . $data["rank"] . "'>";
+
+                  // Title block field
+                  if ($data['type'] == 'title-block') {
+                     if ($preview) {
+                        $rank  = $data["rank"];
+                        $color = PluginMetademandsField::setColor($rank);
+                        $style = 'padding-top:5px; 
                       border-top :3px solid #' . $color . ';
                       border-left :3px solid #' . $color . ';
                       border-right :3px solid #' . $color;
+                        echo '<style type="text/css">
+                       .preview-md-';
+                        echo $rank;
+                        echo ':before {
+                         content: attr(data-title);
+                         background: #';
+                        echo $color . ";";
+                        echo 'position: absolute;
+                               padding: 0 20px;
+                               color: #fff;
+                               right: 0;
+                               top: 0;
+                           }
+                          </style>';
+                        echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
+                     } else {
+                        echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
+                     }
+                     echo "<h4 class=\"bt-title-divider\"><span style='color:" . $data['color'] . ";'>";
+
+                     if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
+                        $label = $data['name'];
+                     }
+
+                     echo $label;
+                     echo $config_link;
+                     if (isset($data['label2']) && !empty($data['label2'])) {
+                        echo "&nbsp;";
+                        if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                           $label2 = $data['label2'];
+                        }
+                        Html::showToolTip(Html::clean($label2),
+                                          ['awesome-class' => 'fa-info-circle']);
+                     }
+                     echo "<i id='up" . $data["rank"] . "' class='fa-1x fas fa-chevron-up pointer' style='right: 20px;position: absolute;color:" . $data['color'] . ";'></i>";
+                     $rand = mt_rand();
+                     echo Html::scriptBlock("
+                     var myelement$rand = '#up" . $data["rank"] . "';
+                     var bloc$rand = 'bloc" . $data["rank"] . "';
+                     $(myelement$rand).click(function() {     
+                         if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
+                             $('[bloc-hideid =' + bloc$rand + ']').hide();
+                             $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
+                         } else {
+                             $('[bloc-hideid =' + bloc$rand + ']').show();
+                             $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
+                         }
+                     });");
+                     echo "</span></h4>";
+                     if (!empty($data['comment'])) {
+                        if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
+                           $comment = $data['comment'];
+                        }
+                        $comment = htmlspecialchars_decode(stripslashes($comment));
+                        echo "<label><i>" . $comment . "</i></label>";
+                     }
+
+                     echo "</div>";
+                     // Other fields
+                  }
+
+                  echo "<div bloc-hideid='bloc" . $data["rank"] . "'>";
+                  if ($preview) {
+                     $rank  = $data['rank'];
+                     $color = PluginMetademandsField::setColor($data['rank']);
                      echo '<style type="text/css">
                        .preview-md-';
                      echo $rank;
@@ -1193,10 +1258,33 @@ class PluginMetademandsWizard extends CommonDBTM {
                                top: 0;
                            }
                           </style>';
+                     $style = 'padding-top:5px; 
+                            border-top :3px solid #' . $color . ';
+                            border-left :3px solid #' . $color . ';
+                            border-right :3px solid #' . $color;
                      echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
                   } else {
-                     echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
+                     echo "<div class=\"form-row\" style='$style'>";
                   }
+
+                  $count = 0;
+               }
+
+               // If values are saved in session we retrieve it
+               if (isset($_SESSION['plugin_metademands']['fields'])) {
+
+                  foreach ($_SESSION['plugin_metademands']['fields'] as $id => $value) {
+                     if (strval($data['id']) === strval($id)) {
+                        $data['value'] = $value;
+                     } else if ($data['id'] . '-2' === $id) {
+                        $data['value-2'] = $value;
+                     }
+                  }
+               }
+
+               // Title field
+               if ($data['type'] == 'title') {
+                  echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
                   echo "<h4 class=\"bt-title-divider\"><span style='color:" . $data['color'] . ";'>";
 
                   if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
@@ -1213,20 +1301,6 @@ class PluginMetademandsWizard extends CommonDBTM {
                      Html::showToolTip(Html::clean($label2),
                                        ['awesome-class' => 'fa-info-circle']);
                   }
-                  echo "<i id='up" . $data["rank"] . "' class='fa-1x fas fa-chevron-up pointer' style='right: 20px;position: absolute;color:" . $data['color'] . ";'></i>";
-                  $rand = mt_rand();
-                  echo Html::scriptBlock("
-                     var myelement$rand = '#up" . $data["rank"] . "';
-                     var bloc$rand = 'bloc" . $data["rank"] . "';
-                     $(myelement$rand).click(function() {     
-                         if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
-                             $('[bloc-hideid =' + bloc$rand + ']').hide();
-                             $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
-                         } else {
-                             $('[bloc-hideid =' + bloc$rand + ']').show();
-                             $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
-                         }
-                     });");
                   echo "</span></h4>";
                   if (!empty($data['comment'])) {
                      if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
@@ -1237,235 +1311,161 @@ class PluginMetademandsWizard extends CommonDBTM {
                   }
 
                   echo "</div>";
+                  $count = $count + $columns;
+
                   // Other fields
-               }
-
-               echo "<div bloc-hideid='bloc" . $data["rank"] . "'>";
-               if ($preview) {
-                  $rank  = $data['rank'];
-                  $color = PluginMetademandsField::setColor($data['rank']);
-                  echo '<style type="text/css">
-                       .preview-md-';
-                  echo $rank;
-                  echo ':before {
-                         content: attr(data-title);
-                         background: #';
-                  echo $color . ";";
-                  echo 'position: absolute;
-                               padding: 0 20px;
-                               color: #fff;
-                               right: 0;
-                               top: 0;
-                           }
-                          </style>';
-                  $style = 'padding-top:5px; 
-                            border-top :3px solid #' . $color . ';
-                            border-left :3px solid #' . $color . ';
-                            border-right :3px solid #' . $color;
-                  echo "<div class=\"form-row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
-               } else {
-                  echo "<div class=\"form-row\" style='$style'>";
-               }
-
-               $count = 0;
-            }
-
-            // If values are saved in session we retrieve it
-            if (isset($_SESSION['plugin_metademands']['fields'])) {
-
-               foreach ($_SESSION['plugin_metademands']['fields'] as $id => $value) {
-                  if (strval($data['id']) === strval($id)) {
-                     $data['value'] = $value;
-                  } else if ($data['id'] . '-2' === $id) {
-                     $data['value-2'] = $value;
+               } else if ($data['type'] != 'title-block') {
+                  $style = "";
+                  $class = "";
+                  if ($data['type'] == 'informations') {
+                     $color = $data['color'];
+                     $style = "style='background-color: $color;'";
+                     $class = "metademands_wizard_informations";
                   }
-               }
-            }
-
-            // Title field
-            if ($data['type'] == 'title') {
-               echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\" style='width: 100%'>";
-               echo "<h4 class=\"bt-title-divider\"><span style='color:" . $data['color'] . ";'>";
-
-               if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
-                  $label = $data['name'];
-               }
-
-               echo $label;
-               echo $config_link;
-               if (isset($data['label2']) && !empty($data['label2'])) {
-                  echo "&nbsp;";
-                  if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                     $label2 = $data['label2'];
+                  if ($data['row_display'] == 1) {
+                     echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-11 $class\">";
+                     $count++;
+                  } else {
+                     echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-5 $class\">";
                   }
-                  Html::showToolTip(Html::clean($label2),
-                                    ['awesome-class' => 'fa-info-circle']);
-               }
-               echo "</span></h4>";
-               if (!empty($data['comment'])) {
-                  if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
-                     $comment = $data['comment'];
+                  //see fields
+                  PluginMetademandsField::getFieldType($metademands_data, $data, $preview, $config_link, $itilcategories_id);
+
+                  // Label 2 (date interval)
+                  if (!empty($data['label2'])
+                      && $data['type'] != 'link') {
+                     $required = "";
+                     if ($data['is_mandatory']) {
+                        $required = "required";
+                     }
+
+                     if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
+                        echo "</div><div class=\"form-group col-md-5\">";
+                     } else {
+                        echo "<div class=\"form-group metademands_wizard_label2\">";
+                     }
+                     if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                        $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
+
+                     }
+                     if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
+                        echo "<label class='col-form-label col-form-label-sm'>" . $label2 . "</label>";
+                     } else {
+                        echo "<label  $required for='field[" . $data['id'] . "-2]' class='col-form-label col-form-label-sm'>" . $label2 . "</label>";
+                     }
+                     $value2 = '';
+                     if (isset($data['value-2'])) {
+                        $value2 = $data['value-2'];
+                     }
+
+                     switch ($data['type']) {
+                        case 'date_interval':
+                           Html::showDateField("field[" . $data['id'] . "-2]", ['value' => $value2]);
+                           $count++; // If date interval : pass to next line
+                           break;
+                        case 'datetime_interval':
+                           Html::showDateTimeField("field[" . $data['id'] . "-2]", ['value' => $value2]);
+                           $count++; // If date interval : pass to next line
+                           break;
+                     }
+                     if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
+                        echo "</div>";
+                     }
                   }
-                  $comment = htmlspecialchars_decode(stripslashes($comment));
-                  echo "<label><i>" . $comment . "</i></label>";
+                  echo "</div>";
                }
 
-               echo "</div>";
-               $count = $count + $columns;
-
-               // Other fields
-            } else if ($data['type'] != 'title-block') {
-               $style = "";
-               $class = "";
-               if ($data['type'] == 'informations') {
-                  $color = $data['color'];
-                  $style = "style='background-color: $color;'";
-                  $class = "metademands_wizard_informations";
+               if ($data['type'] == 'title-block') {
+                  $count--;
                }
-               if ($data['row_display'] == 1) {
-                  echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-11 $class\">";
+               // If next field is date interval : pass to next line
+               if (isset($keyIndexes[$key])
+                   && isset($keys[$keyIndexes[$key] + 1])
+                   && ($line[$keys[$keyIndexes[$key] + 1]]['type'] == 'datetime_interval' || $line[$keys[$keyIndexes[$key] + 1]]['type'] == 'date_interval')) {
                   $count++;
-               } else {
-                  echo "<div id-field='field" . $data["id"] . "' $style class=\"form-group col-md-5 $class\">";
+
                }
-               //see fields
-               PluginMetademandsField::getFieldType($metademands_data, $data, $preview, $config_link, $itilcategories_id);
 
-               // Label 2 (date interval)
-               if (!empty($data['label2'])
-                   && $data['type'] != 'link') {
-                  $required = "";
-                  if ($data['is_mandatory']) {
-                     $required = "required";
-                  }
-
-                  if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                     echo "</div><div class=\"form-group col-md-5\">";
-                  } else {
-                     echo "<div class=\"form-group metademands_wizard_label2\">";
-                  }
-                  if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                     $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
-
-                  }
-                  if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                     echo "<label class='col-form-label col-form-label-sm'>" . $label2 . "</label>";
-                  } else {
-                     echo "<label  $required for='field[" . $data['id'] . "-2]' class='col-form-label col-form-label-sm'>" . $label2 . "</label>";
-                  }
-                  $value2 = '';
-                  if (isset($data['value-2'])) {
-                     $value2 = $data['value-2'];
-                  }
-
-                  switch ($data['type']) {
-                     case 'date_interval':
-                        Html::showDateField("field[" . $data['id'] . "-2]", ['value' => $value2]);
-                        $count++; // If date interval : pass to next line
-                        break;
-                     case 'datetime_interval':
-                        Html::showDateTimeField("field[" . $data['id'] . "-2]", ['value' => $value2]);
-                        $count++; // If date interval : pass to next line
-                        break;
-                  }
-                  if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                     echo "</div>";
-                  }
-               }
-               echo "</div>";
-            }
-
-            if ($data['type'] == 'title-block') {
-               $count--;
-            }
-            // If next field is date interval : pass to next line
-            if (isset($keyIndexes[$key])
-                && isset($keys[$keyIndexes[$key] + 1])
-                && ($line[$keys[$keyIndexes[$key] + 1]]['type'] == 'datetime_interval' || $line[$keys[$keyIndexes[$key] + 1]]['type'] == 'date_interval')) {
                $count++;
 
-            }
-
-            $count++;
-
-            // Next row
-            if ($count >= $columns) {
-               if ($preview) {
-                  $color            = PluginMetademandsField::setColor($data['rank']);
-                  $style_left_right = 'border-left :3px solid #' . $color . ';
+               // Next row
+               if ($count >= $columns) {
+                  if ($preview) {
+                     $color            = PluginMetademandsField::setColor($data['rank']);
+                     $style_left_right = 'border-left :3px solid #' . $color . ';
                                        border-right :3px solid #' . $color;
+                  }
+
+                  echo "</div>";
+                  echo "<div class=\"form-row\" style='$style_left_right'>";
+                  $count = 0;
                }
-
-               echo "</div>";
-               echo "<div class=\"form-row\" style='$style_left_right'>";
-               $count = 0;
             }
-         }
-         echo "</div>";
-         echo "</div>";
-         echo "</div>";
-         if ($preview) {
-            $color = PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']);
-            echo "<div class=\"form-row\" style='border-bottom: 3px solid #" . $color . ";' >";
             echo "</div>";
-         }
+            echo "</div>";
+            echo "</div>";
+            if ($preview) {
+               $color = PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']);
+               echo "<div class=\"form-row\" style='border-bottom: 3px solid #" . $color . ";' >";
+               echo "</div>";
+            }
 
-         // Fields linked
-         foreach ($line as $data) {
-            if (!empty($data['fields_link'])
-                && is_array(PluginMetademandsField::_unserialize($data['fields_link']))) {
+            // Fields linked
+            foreach ($line as $data) {
+               if (!empty($data['fields_link'])
+                   && is_array(PluginMetademandsField::_unserialize($data['fields_link']))) {
 
-               $script = "";
-               if ($data['fields_link']) {
-                  $fields_link  = PluginMetademandsField::_unserialize($data['fields_link']);
-                  $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                  $fields_link2 = $fields_link;
-                  if (count($fields_link) > 0) {
+                  $script = "";
+                  if ($data['fields_link']) {
+                     $fields_link  = PluginMetademandsField::_unserialize($data['fields_link']);
+                     $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                     $fields_link2 = $fields_link;
+                     if (count($fields_link) > 0) {
 
-                     foreach ($fields_link as $key => $fields) {
-                        $rand = mt_rand();
-                        if (isset($check_value[$key])) {
-                           $script .= "var metademandWizard$rand = $(document).metademandWizard();";
-                           $script .= "metademandWizard$rand.metademand_setMandatoryField(
+                        foreach ($fields_link as $key => $fields) {
+                           $rand = mt_rand();
+                           if (isset($check_value[$key])) {
+                              $script .= "var metademandWizard$rand = $(document).metademandWizard();";
+                              $script .= "metademandWizard$rand.metademand_setMandatoryField(
                          'metademands_wizard_red" . $fields_link[$key] . "', 
                          'field[" . $data['id'] . "]',[";
-                           if ($check_value[$key] > 0
-                               || (($data['type'] == 'checkbox' || $data['type'] == 'radio')
-                                   && $check_value[$key] == 0)) {
-                              $script .= $check_value[$key];
-                           }
+                              if ($check_value[$key] > 0
+                                  || (($data['type'] == 'checkbox' || $data['type'] == 'radio')
+                                      && $check_value[$key] == 0)) {
+                                 $script .= $check_value[$key];
+                              }
 
-                           foreach ($fields_link2 as $key2 => $fields2) {
-                              if ($key != $key2) {
-                                 if ($fields_link[$key] == $fields_link[$key2]) {
-                                    $script .= "," . $check_value[$key2];
+                              foreach ($fields_link2 as $key2 => $fields2) {
+                                 if ($key != $key2) {
+                                    if ($fields_link[$key] == $fields_link[$key2]) {
+                                       $script .= "," . $check_value[$key2];
+                                    }
                                  }
                               }
-                           }
 
-                           $script .= "], '" . $data['item'] . "');";
+                              $script .= "], '" . $data['item'] . "');";
+                           }
                         }
                      }
                   }
+                  echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                }
-               echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
             }
-         }
 
-         foreach ($line as $data) {
-            if (!empty($data['hidden_link'])) {
-               switch ($data['type']) {
-                  case 'yesno':
-                     $script2 = "";
-                     $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            foreach ($line as $data) {
+               if (!empty($data['hidden_link'])) {
+                  switch ($data['type']) {
+                     case 'yesno':
+                        $script2 = "";
+                        $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                        if (is_array($check_value) && count($check_value) > 0) {
-                           foreach ($hidden_link as $key => $fields) {
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                           $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value = PluginMetademandsField::_unserialize($data['check_value']);
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              foreach ($hidden_link as $key => $fields) {
                               $val = Toolbox::addslashes_deep($check_value[$key]);
-                              $script .= "
+                                 $script .= "
                           if($(this).val() == $val){
                             $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
                             
@@ -1474,98 +1474,98 @@ class PluginMetademandsWizard extends CommonDBTM {
                            " .  PluginMetademandsField::getJStorersetFieldsByField($hidden_link[$key])."
                           }
                            ";
-                              if ($check_value[$key] == $data["custom_values"]) {
-                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] != $check_value[$key]) {
-                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                 }
-                              } else {
-                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                 if ($check_value[$key] == $data["custom_values"]) {
                                     $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                        && $_SESSION['plugin_metademands']['fields'][$data["id"]] != $check_value[$key]) {
+                                       $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                    }
+                                 } else {
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                        && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                       $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                    }
                                  }
                               }
                            }
                         }
-                     }
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                              if ($idv > 0) {
-                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                                 if ($idv > 0) {
+                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                 }
                               }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
 
-                     break;
-                  case 'dropdown_multiple':
-                     if ($data["display_type"] == PluginMetademandsField::CLASSIC_DISPLAY) {
-                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        break;
+                     case 'dropdown_multiple':
+                        if ($data["display_type"] == PluginMetademandsField::CLASSIC_DISPLAY) {
+                           $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-                        $script2 = "";
-                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                           $hidden_link  = PluginMetademandsField::_unserialize($data['hidden_link']);
-                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                           $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
-                           $script       .= "var tohide = {};";
-                           foreach ($hidden_link as $key => $fields) {
-                              $script .= "
+                           $script2 = "";
+                           if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                              $hidden_link  = PluginMetademandsField::_unserialize($data['hidden_link']);
+                              $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                              $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+                              $script       .= "var tohide = {};";
+                              foreach ($hidden_link as $key => $fields) {
+                                 $script .= "
                            if($fields in tohide){
                               
                            }else{
                               tohide[$fields] = true;
                            }
                            ";
-                           }
-                           $script .= "
+                              }
+                              $script .= "
                           $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
                           ";
-                           foreach ($check_value as $key => $fields) {
-                              if ($fields != 0) {
-                                 if ($data["item"] == "other") {
+                              foreach ($check_value as $key => $fields) {
+                                 if ($fields != 0) {
+                                    if ($data["item"] == "other") {
                                     $val = Toolbox::addslashes_deep($custom_value[$fields]);
-                                    $script .= "
+                                       $script .= "
                                        if($(value).attr('title') == '$val'){
                                           tohide[" . $hidden_link[$key] . "] = false;
                                        }
                                     ";
-                                 } else {
-                                    $script .= "
+                                    } else {
+                                       $script .= "
                                        if($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($fields) . "'){
                                           tohide[" . $hidden_link[$key] . "] = false;
                                        }
                                     ";
-                                 }
+                                    }
 
-                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
-                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                 }
-                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                       if ($fieldSession == $check_value[$key]) {
-                                          $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                        && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                       $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                    }
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                       foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                          if ($fieldSession == $check_value[$key]) {
+                                             $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                          }
                                        }
                                     }
                                  }
                               }
-                           }
 
-                           $script .= "});";
-                           $script .= "$.each( tohide, function( key, value ) {
+                              $script .= "});";
+                              $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1607,73 +1607,73 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                           $script .= "});";
+                              $script .= "});";
 
-                        }
+                           }
 
-                        //Initialize id default value
-                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                           $check_value    = array_flip($check_value);
-                           foreach ($default_values as $k => $v) {
-                              if ($v == 1) {
-                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                                 if ($idv > 0) {
-                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                           //Initialize id default value
+                           if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                              $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                              $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                              $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
+                              $check_value    = array_flip($check_value);
+                              foreach ($default_values as $k => $v) {
+                                 if ($v == 1) {
+                                    $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                                    $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                                    if ($idv > 0) {
+                                       $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                    }
                                  }
                               }
                            }
-                        }
-                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     } else {
-                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
+                           echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        } else {
+                           $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
 
-                        $script2 = "";
-                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                           $hidden_link  = PluginMetademandsField::_unserialize($data['hidden_link']);
-                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                           $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
-                           $script       .= "var tohide = {};";
-                           foreach ($hidden_link as $key => $fields) {
-                              $script .= "
+                           $script2 = "";
+                           if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                              $hidden_link  = PluginMetademandsField::_unserialize($data['hidden_link']);
+                              $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                              $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+                              $script       .= "var tohide = {};";
+                              foreach ($hidden_link as $key => $fields) {
+                                 $script .= "
                            if($fields in tohide){
                               
                            }else{
                               tohide[$fields] = true;
                            }
                            ";
-                           }
-                           $script .= "
+                              }
+                              $script .= "
                           $.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {
                           ";
-                           foreach ($check_value as $key => $fields) {
-                              if ($fields != 0) {
-                                 $script  .= " 
+                              foreach ($check_value as $key => $fields) {
+                                 if ($fields != 0) {
+                                    $script  .= " 
                            if($(value).attr('value') == '$fields'){
                            
                               tohide[" . $hidden_link[$key] . "] = false;
                            }
                         ";
-                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
-                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                 }
-                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                       if ($fieldSession == $check_value[$key]) {
-                                          $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                        && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                       $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                    }
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                       foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                          if ($fieldSession == $check_value[$key]) {
+                                             $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                          }
                                        }
                                     }
                                  }
                               }
-                           }
 
-                           $script .= "});";
-                           $script .= "$.each( tohide, function( key, value ) {
+                              $script .= "});";
+                              $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1715,43 +1715,43 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                           $script .= "});";
-                        }
+                              $script .= "});";
+                           }
 
-                        //Initialize id default value
-                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                           $check_value    = array_flip($check_value);
-                           foreach ($default_values as $k => $v) {
-                              if ($v == 1) {
-                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                                 if ($idv > 0) {
-                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                           //Initialize id default value
+                           if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                              $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                              $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                              $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
+                              $check_value    = array_flip($check_value);
+                              foreach ($default_values as $k => $v) {
+                                 if ($v == 1) {
+                                    $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                                    $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                                    if ($idv > 0) {
+                                       $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                    }
                                  }
                               }
                            }
+                           echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                         }
-                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     }
 
-                     break;
-                  case 'checkbox':
-                     $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        break;
+                     case 'checkbox':
+                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script2     = "";
-                        $script      .= "var tohide = {};";
-                        if (is_array($check_value) && count($check_value) > 0) {
-                           //                     $('[name^=\"field[".$data["id"]."]\"]').each()
-                           $script .= " if (this.checked){ ";
-                           foreach ($hidden_link as $key => $fields) {
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                           $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value = PluginMetademandsField::_unserialize($data['check_value']);
+                           $script2     = "";
+                           $script      .= "var tohide = {};";
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              //                     $('[name^=\"field[".$data["id"]."]\"]').each()
+                              $script .= " if (this.checked){ ";
+                              foreach ($hidden_link as $key => $fields) {
 
-                              $script .= " if($(this).val() == $check_value[$key] || $check_value[$key] == -1){
+                                 $script .= " if($(this).val() == $check_value[$key] || $check_value[$key] == -1){
                            if($fields in tohide){
                            
                            }else{
@@ -1761,19 +1761,19 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
                          ";
 
-                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                 foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                    if ($fieldSession == $check_value[$key]) {
-                                       $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                       if ($fieldSession == $check_value[$key]) {
+                                          $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                       }
                                     }
                                  }
                               }
-                           }
 
 
-                           $script .= "$.each( tohide, function( key, value ) {
+                              $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1815,9 +1815,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                           $script .= "} else {";
-                           foreach ($hidden_link as $key => $fields) {
-                              $script .= "if($(this).val() == $check_value[$key]){
+                              $script .= "} else {";
+                              foreach ($hidden_link as $key => $fields) {
+                                 $script .= "if($(this).val() == $check_value[$key]){
                            if($fields in tohide){
                            
                            }else{
@@ -1825,28 +1825,28 @@ class PluginMetademandsWizard extends CommonDBTM {
                            }
                            $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
                              ";
-                              foreach ($hidden_link as $key2 => $fields2) {
-                                 $script .= "if($(value).val() == $check_value[$key2] || $check_value[$key2] == -1){
+                                 foreach ($hidden_link as $key2 => $fields2) {
+                                    $script .= "if($(value).val() == $check_value[$key2] || $check_value[$key2] == -1){
                               tohide[$fields2] = false;
                            }
                           ";
-                              }
-                              $script .= " 
+                                 }
+                                 $script .= " 
                            });
                         }";
 
-                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                 foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                    if ($fieldSession == $check_value[$key]) {
-                                       $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                       if ($fieldSession == $check_value[$key]) {
+                                          $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                       }
                                     }
                                  }
                               }
-                           }
 
-                           $script .= "$.each( tohide, function( key, value ) {
+                              $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1888,40 +1888,40 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                           $script .= "}";
+                              $script .= "}";
+                           }
                         }
-                     }
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                              if ($idv > 0) {
-                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                                 if ($idv > 0) {
+                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                 }
                               }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
 
-                  case 'text':
-                  case 'textarea':
-                     $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     $script2 = "";
+                     case 'text':
+                     case 'textarea':
+                        $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        $script2 = "";
 
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                        foreach ($hidden_link as $key => $fields) {
-                           if (isset($check_value[$key]) && $check_value[$key] == 1) {
-                              $script  .= "
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                           $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value = PluginMetademandsField::_unserialize($data['check_value']);
+                           foreach ($hidden_link as $key => $fields) {
+                              if (isset($check_value[$key]) && $check_value[$key] == 1) {
+                                 $script  .= "
                            if($(this).val().trim().length < 1){
                               $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
                               " .  PluginMetademandsField::getJStorersetFieldsByField($hidden_link[$key])."
@@ -1930,13 +1930,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                            }
                         
                          ";
-                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
-                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                              }
-                           } else {
-                              $script .= "
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 }
+                              } else {
+                                 $script .= "
                            if($(this).val().trim().length < 1){
                                  $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
                               }else{
@@ -1945,48 +1945,48 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
                          ";
 
-                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
-                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 }
                               }
-                           }
 
-                        }
-                     }
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                              if ($idv > 0) {
-                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                              }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                                 if ($idv > 0) {
+                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                 }
+                              }
+                           }
+                        }
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
 
 
-                  case 'radio':
-                     $script2 = "";
+                     case 'radio':
+                        $script2 = "";
 
-                     $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
+                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script      .= "var tohide = {};";
-                        foreach ($hidden_link as $key => $fields) {
-                           $script  .= "
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                           $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value = PluginMetademandsField::_unserialize($data['check_value']);
+                           $script      .= "var tohide = {};";
+                           foreach ($hidden_link as $key => $fields) {
+                              $script  .= "
                         if($fields in tohide){
                         
                         }else{
@@ -1996,13 +1996,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                            tohide[$fields] = false;
                         }
                          ";
-                           $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                           if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                               && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || $check_value[$key] == -1)) {
-                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                  && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || $check_value[$key] == -1)) {
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                              }
                            }
-                        }
-                        $script .= "$.each( tohide, function( key, value ) {
+                           $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -2044,47 +2044,47 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                     }
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                              $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                              if ($idv > 0) {
-                                 $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                        }
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
+                                 $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
+                                 if ($idv > 0) {
+                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                 }
                               }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
 
-                  case 'group':
-                  case 'dropdown':
-                  case 'dropdown_object':
-                  case 'dropdown_meta':
-                     if ($data['item'] == "ITILCategory_Metademands") {
-                        $name = "field_plugin_servicecatalog_itilcategories_id";
-                     } else {
-                        $name = "field[" . $data["id"] . "]";
-                     }
-                     $script = "$('[name=\"$name\"]').change(function() {";
-                     //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
+                     case 'group':
+                     case 'dropdown':
+                     case 'dropdown_object':
+                     case 'dropdown_meta':
+                        if ($data['item'] == "ITILCategory_Metademands") {
+                           $name = "field_plugin_servicecatalog_itilcategories_id";
+                        } else {
+                           $name = "field[" . $data["id"] . "]";
+                        }
+                        $script = "$('[name=\"$name\"]').change(function() {";
+                        //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script2     = "";
-                        $script      .= "var tohide = {};";
-                        if (is_array($check_value) && count($check_value) > 0) {
-                           foreach ($hidden_link as $key => $fields) {
-                              $script .= "
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
+                           $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           $check_value = PluginMetademandsField::_unserialize($data['check_value']);
+                           $script2     = "";
+                           $script      .= "var tohide = {};";
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              foreach ($hidden_link as $key => $fields) {
+                                 $script .= "
                         if($fields in tohide){
                         
                         }else{
@@ -2094,19 +2094,19 @@ class PluginMetademandsWizard extends CommonDBTM {
                            tohide[$fields] = false;
                         }";
 
-                              $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || ($_SESSION['plugin_metademands']['fields'][$data["id"]] != 0 && $check_value[$key] == 0))) {
-                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                              } else {
-                                 if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
-                                    if (Session::getLoginUserID() == $check_value[$key]) {
-                                       $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || ($_SESSION['plugin_metademands']['fields'][$data["id"]] != 0 && $check_value[$key] == 0))) {
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                 } else {
+                                    if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
+                                       if (Session::getLoginUserID() == $check_value[$key]) {
+                                          $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
+                                       }
                                     }
                                  }
                               }
-                           }
-                           $script .= "$.each( tohide, function( key, value ) {
+                              $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[id-field =\"field'+key+'\"]').hide();
                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -2148,164 +2148,164 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
+                           }
                         }
-                     }
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                        if (is_array($check_value) && count($check_value) > 0) {
-                           $check_value = array_flip($check_value);
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              $check_value = array_flip($check_value);
 
-                           foreach ($default_values as $k => $v) {
-                              if ($v == 1) {
-                                 foreach ($check_value as $key => $val) {
-                                    if ($k == $key || $key == 0) {
-                                       $idv = $hidden_link[$val];
-                                       if ($idv > 0) {
-                                          $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                              foreach ($default_values as $k => $v) {
+                                 if ($v == 1) {
+                                    foreach ($check_value as $key => $val) {
+                                       if ($k == $key || $key == 0) {
+                                          $idv = $hidden_link[$val];
+                                          if ($idv > 0) {
+                                             $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
+                                          }
                                        }
                                     }
-                                 }
 
+                                 }
                               }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
+
+                  }
 
                }
-
-            }
-            if (!empty($data['hidden_block'])) {
-               switch ($data['type']) {
-                  case 'yesno':
-                     $script2 = "";
-                     $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                        $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                        if (is_array($check_value) && count($check_value) > 0) {
-                           foreach ($hidden_block as $key => $fields) {
-                              $script .= "
+               if (!empty($data['hidden_block'])) {
+                  switch ($data['type']) {
+                     case 'yesno':
+                        $script2 = "";
+                        $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                           $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              foreach ($hidden_block as $key => $fields) {
+                                 $script .= "
                           if($(this).val() == $check_value[$key]){
                             $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                             
                           }else{
                            $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                              $script .= "}
+                                 $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                                 $script .= "}
                            ";
-                              if ($check_value[$key] == $data["custom_values"]) {
-                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] != $check_value[$key]) {
-                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                 }
-                              } else {
-                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                 if ($check_value[$key] == $data["custom_values"]) {
                                     $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                        && $_SESSION['plugin_metademands']['fields'][$data["id"]] != $check_value[$key]) {
+                                       $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                                    }
+                                 } else {
+                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                        && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                       $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                    }
                                  }
                               }
+
                            }
-
                         }
-                     }
 
-                     if (isset($data['childs_blocks'])) {
-                        $childs_blocks = json_decode($data['childs_blocks'], true);
-                        $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
-                        if (is_array($check_value) && count($check_value) > 0) {
-                           foreach ($childs_blocks as $customvalue => $childs) {
-                              $script .= "
+                        if (isset($data['childs_blocks'])) {
+                           $childs_blocks = json_decode($data['childs_blocks'], true);
+                           $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              foreach ($childs_blocks as $customvalue => $childs) {
+                                 $script .= "
                           if($(this).val() != $check_value[$customvalue]){";
-                              foreach ($childs as $v) {
-                                 $script .= PluginMetademandsField::getJStorersetFields($v);
-                              }
+                                 foreach ($childs as $v) {
+                                    $script .= PluginMetademandsField::getJStorersetFields($v);
+                                 }
 
-                              $script .= "}
+                                 $script .= "}
                            ";
 
 
-                           }
-                        }
-                     }
-
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              if (isset($check_value[$k])) {
-                                 $idc     = $check_value[$k];
-                                 $idv     = $hidden_block[$idc];
-                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
                               }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 if (isset($check_value[$k])) {
+                                    $idc     = $check_value[$k];
+                                    $idv     = $hidden_block[$idc];
+                                    $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                 }
+                              }
+                           }
+                        }
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
 
 
-                     //                  case 'PluginResourcesResource':
-                     //                  case 'PluginMetademandsITILApplication':
-                     //                  case 'PluginMetademandsITILEnvironment':
+                        //                  case 'PluginResourcesResource':
+                        //                  case 'PluginMetademandsITILApplication':
+                        //                  case 'PluginMetademandsITILEnvironment':
 
-                     break;
-                  case 'dropdown_multiple':
-                     $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     $script2 = "";
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                        $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                        $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
-                        $script       .= "var tohide = {};";
-                        foreach ($hidden_block as $key => $fields) {
-                           $script .= "
+                        break;
+                     case 'dropdown_multiple':
+                        $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        $script2 = "";
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                           $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                           $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+                           $script       .= "var tohide = {};";
+                           foreach ($hidden_block as $key => $fields) {
+                              $script .= "
                            if($fields in tohide){
                               
                            }else{
                               tohide[$fields] = true;
                            }
                            ";
-                        }
-                        $script .= "
+                           }
+                           $script .= "
                           $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
                           ";
-                        foreach ($check_value as $key => $fields) {
-                           if ($fields != 0) {
+                           foreach ($check_value as $key => $fields) {
+                              if ($fields != 0) {
                               $val = Toolbox::addslashes_deep($custom_value[$fields]);
-                              $script  .= "
+                                 $script  .= "
                            if($(value).attr('title') == '$val'){
                               tohide[" . $hidden_block[$key] . "] = false;
                            }
                         ";
-                              $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
-                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                              }
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                 foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                    if ($fieldSession == $check_value[$key]) {
-                                       $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                 }
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                       if ($fieldSession == $check_value[$key]) {
+                                          $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                       }
                                     }
                                  }
                               }
                            }
-                        }
 
-                        $script .= "});";
-                        $script .= "$.each( tohide, function( key, value ) {
+                           $script .= "});";
+                           $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                       $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2345,42 +2345,42 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                        $script .= "});";
+                           $script .= "});";
 
-                     }
+                        }
 
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              if (isset($check_value[$k])) {
-                                 $idc     = $check_value[$k];
-                                 $idv     = $hidden_block[$idc];
-                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 if (isset($check_value[$k])) {
+                                    $idc     = $check_value[$k];
+                                    $idv     = $hidden_block[$idc];
+                                    $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                 }
                               }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
-                  case 'checkbox':
-                     $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
+                     case 'checkbox':
+                        $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                        $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script2      = "";
-                        $script       .= "var tohide = {};";
-                        if (is_array($check_value) && count($check_value) > 0) {
-                           //                     $('[name^=\"field[".$data["id"]."]\"]').each()
-                           $script .= " if (this.checked){ ";
-                           foreach ($hidden_block as $key => $fields) {
-                              $script .= "
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                           $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                           $script2      = "";
+                           $script       .= "var tohide = {};";
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              //                     $('[name^=\"field[".$data["id"]."]\"]').each()
+                              $script .= " if (this.checked){ ";
+                              foreach ($hidden_block as $key => $fields) {
+                                 $script .= "
                         
                         
                         
@@ -2394,19 +2394,19 @@ class PluginMetademandsWizard extends CommonDBTM {
                         }
                          ";
 
-                              $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                 foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                    if ($fieldSession == $check_value[$key] || $check_value[$key] == -1) {
-                                       $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                       if ($fieldSession == $check_value[$key] || $check_value[$key] == -1) {
+                                          $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                       }
                                     }
                                  }
                               }
-                           }
 
 
-                           $script .= "$.each( tohide, function( key, value ) {
+                              $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                    $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2446,9 +2446,9 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                           $script .= "} else {";
-                           foreach ($hidden_block as $key => $fields) {
-                              $script .= "
+                              $script .= "} else {";
+                              foreach ($hidden_block as $key => $fields) {
+                                 $script .= "
                         
                         
                         
@@ -2460,28 +2460,28 @@ class PluginMetademandsWizard extends CommonDBTM {
                            }
                            $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
                              ";
-                              foreach ($hidden_block as $key2 => $fields2) {
-                                 $script .= "if($(value).val() == $check_value[$key2] || $check_value[$key2] == -1 ){
+                                 foreach ($hidden_block as $key2 => $fields2) {
+                                    $script .= "if($(value).val() == $check_value[$key2] || $check_value[$key2] == -1 ){
                               tohide[$fields2] = false;
                            }
                           ";
-                              }
-                              $script .= " 
+                                 }
+                                 $script .= " 
                            });
                         }";
 
-                              $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                 foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                    if ($fieldSession == $check_value[$key] || $check_value[$key] == -1) {
-                                       $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                       if ($fieldSession == $check_value[$key] || $check_value[$key] == -1) {
+                                          $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                       }
                                     }
                                  }
                               }
-                           }
 
-                           $script .= "$.each( tohide, function( key, value ) {
+                              $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                       $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2521,134 +2521,134 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                           $script .= "}";
+                              $script .= "}";
+                           }
                         }
-                     }
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              if (isset($check_value[$k])) {
-                                 $idc     = $check_value[$k];
-                                 $idv     = $hidden_block[$idc];
-                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 if (isset($check_value[$k])) {
+                                    $idc     = $check_value[$k];
+                                    $idv     = $hidden_block[$idc];
+                                    $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                 }
                               }
                            }
                         }
-                     }
-                     $script .= "});";
+                        $script .= "});";
 
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
 
-                  case 'text':
-                  case 'textarea':
-                     $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     $script2 = "";
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                        $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                        foreach ($hidden_block as $key => $fields) {
-                           if (isset($check_value[$key]) && $check_value[$key] == 1) {
-                              $script  .= "
+                     case 'text':
+                     case 'textarea':
+                        $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        $script2 = "";
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                           $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                           foreach ($hidden_block as $key => $fields) {
+                              if (isset($check_value[$key]) && $check_value[$key] == 1) {
+                                 $script  .= "
                            if($(this).val().trim().length < 1){
                               $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              $script  .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                              $script  .= " 
+                                 $script  .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                                 $script  .= " 
                            }else{
                               $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                            }
                         
                          ";
-                              $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
-                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                              }
-                           } else {
-                              $script .= "
+                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
+                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                 }
+                              } else {
+                                 $script .= "
                            if($(this).val().trim().length < 1){
                                  $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
                               }else{
                                  $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                              $script .= " }
+                                 $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
+                                 $script .= " }
                          ";
 
-                              $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
-                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                              }
-                           }
-
-                        }
-
-                        if (isset($data['childs_blocks'])) {
-                           $childs_blocks = json_decode($data['childs_blocks'], true);
-                           $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
-                           if (is_array($check_value) && count($check_value) > 0) {
-                              foreach ($childs_blocks as $customvalue => $childs) {
-                                 if (isset($check_value[$customvalue]) && $check_value[$customvalue] == 1) {
-                                    $script .= "
-                               if($(this).val().trim().length < 1){";
-                                    foreach ($childs as $v) {
-                                       $script .= PluginMetademandsField::getJStorersetFields($v);
-                                    }
-
-                                    $script .= "}
-                           ";
-                                 } else {
-                                    $script .= "
-                               if($(this).val().trim().length >= 1){";
-                                    foreach ($childs as $v) {
-                                       $script .= PluginMetademandsField::getJStorersetFields($v);
-                                    }
-
-                                    $script .= "}
-                           ";
+                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
+                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
                                  }
+                              }
 
+                           }
+
+                           if (isset($data['childs_blocks'])) {
+                              $childs_blocks = json_decode($data['childs_blocks'], true);
+                              $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
+                              if (is_array($check_value) && count($check_value) > 0) {
+                                 foreach ($childs_blocks as $customvalue => $childs) {
+                                    if (isset($check_value[$customvalue]) && $check_value[$customvalue] == 1) {
+                                       $script .= "
+                               if($(this).val().trim().length < 1){";
+                                       foreach ($childs as $v) {
+                                          $script .= PluginMetademandsField::getJStorersetFields($v);
+                                       }
+
+                                       $script .= "}
+                           ";
+                                    } else {
+                                       $script .= "
+                               if($(this).val().trim().length >= 1){";
+                                       foreach ($childs as $v) {
+                                          $script .= PluginMetademandsField::getJStorersetFields($v);
+                                       }
+
+                                       $script .= "}
+                           ";
+                                    }
+
+                                 }
                               }
                            }
                         }
-                     }
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              if (isset($check_value[$k])) {
-                                 $idc     = $check_value[$k];
-                                 $idv     = $hidden_block[$idc];
-                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 if (isset($check_value[$k])) {
+                                    $idc     = $check_value[$k];
+                                    $idv     = $hidden_block[$idc];
+                                    $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                 }
                               }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
 
 
-                  case 'radio':
-                     $script2 = "";
-                     $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                     //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
+                     case 'radio':
+                        $script2 = "";
+                        $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+                        //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                        $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script       .= "var tohide = {};";
-                        foreach ($hidden_block as $key => $fields) {
-                           $script  .= "
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                           $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                           $script       .= "var tohide = {};";
+                           foreach ($hidden_block as $key => $fields) {
+                              $script  .= "
                         if($fields in tohide){
                         
                         }else{
@@ -2658,13 +2658,13 @@ class PluginMetademandsWizard extends CommonDBTM {
                            tohide[$fields] = false;
                         }
                          ";
-                           $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                           if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                               && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || $check_value[$key] == -1)) {
-                              $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                              $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                  && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || $check_value[$key] == -1)) {
+                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                              }
                            }
-                        }
-                        $script .= "$.each( tohide, function( key, value ) {
+                           $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                       $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2704,49 +2704,49 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                     }
+                        }
 
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              if (isset($check_value[$k])) {
-                                 $idc     = $check_value[$k];
-                                 $idv     = $hidden_block[$idc];
-                                 $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 if (isset($check_value[$k])) {
+                                    $idc     = $check_value[$k];
+                                    $idv     = $hidden_block[$idc];
+                                    $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                 }
                               }
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
 
-                  case 'group':
-                  case 'dropdown':
-                  case 'dropdown_object':
-                  case 'dropdown_meta':
-                     if ($data['item'] == "ITILCategory_Metademands") {
-                        $name = "field_plugin_servicecatalog_itilcategories_id";
-                     } else {
-                        $name = "field[" . $data["id"] . "]";
-                     }
+                     case 'group':
+                     case 'dropdown':
+                     case 'dropdown_object':
+                     case 'dropdown_meta':
+                        if ($data['item'] == "ITILCategory_Metademands") {
+                           $name = "field_plugin_servicecatalog_itilcategories_id";
+                        } else {
+                           $name = "field[" . $data["id"] . "]";
+                        }
 
-                     $script = "$('[name=\"$name\"]').change(function() { ";
-                     //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
+                        $script = "$('[name=\"$name\"]').change(function() { ";
+                        //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
-                     if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                        $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
-                        $script2      = "";
-                        $script       .= "var tohide = {};";
-                        if (is_array($check_value) && count($check_value) > 0) {
-                           foreach ($hidden_block as $key => $fields) {
-                              $script .= "
+                        if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                           $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
+                           $script2      = "";
+                           $script       .= "var tohide = {};";
+                           if (is_array($check_value) && count($check_value) > 0) {
+                              foreach ($hidden_block as $key => $fields) {
+                                 $script .= "
                         if($fields in tohide){
                         
                         }else{
@@ -2759,19 +2759,19 @@ class PluginMetademandsWizard extends CommonDBTM {
                         
                          ";
 
-                              $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                              if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                  && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || ($_SESSION['plugin_metademands']['fields'][$data["id"]] != 0 && $check_value[$key] == 0))) {
-                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                              } else {
-                                 if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
-                                    if (Session::getLoginUserID() == $check_value[$key]) {
-                                       $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
+                                 if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                     && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || ($_SESSION['plugin_metademands']['fields'][$data["id"]] != 0 && $check_value[$key] == 0))) {
+                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                 } else {
+                                    if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
+                                       if (Session::getLoginUserID() == $check_value[$key]) {
+                                          $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                       }
                                     }
                                  }
                               }
-                           }
-                           $script .= "$.each( tohide, function( key, value ) {
+                              $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                        $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2811,57 +2811,57 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                    
                                  });";
-                           if (isset($data['childs_blocks'])) {
-                              $childs_blocks = json_decode($data['childs_blocks'], true);
-                              $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
-                              if (is_array($check_value) && count($check_value) > 0) {
-                                 foreach ($childs_blocks as $customvalue => $childs) {
-                                    $script .= "
+                              if (isset($data['childs_blocks'])) {
+                                 $childs_blocks = json_decode($data['childs_blocks'], true);
+                                 $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
+                                 if (is_array($check_value) && count($check_value) > 0) {
+                                    foreach ($childs_blocks as $customvalue => $childs) {
+                                       $script .= "
                          if((($(this).val() != $check_value[$customvalue] && $check_value[$customvalue] != 0 )  ||  ($(this).val() == 0 &&  $check_value[$customvalue] == 0 ) )){";
-                                    foreach ($childs as $v) {
-                                       $script .= PluginMetademandsField::getJStorersetFields($v);
-                                    }
+                                       foreach ($childs as $v) {
+                                          $script .= PluginMetademandsField::getJStorersetFields($v);
+                                       }
 
-                                    $script .= "}
+                                       $script .= "}
                            ";
 
 
-                                 }
-                              }
-                           }
-                        }
-                     }
-                     $script .= "});";
-                     //Initialize id default value
-                     if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                        $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                        $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                        $check_value    = array_flip($check_value);
-                        foreach ($default_values as $k => $v) {
-                           if ($v == 1) {
-                              foreach ($check_value as $key => $val) {
-                                 if ($k == $key || $key == 0) {
-                                    $idv = $hidden_link[$val];
-                                    if ($idv > 0) {
-                                       $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
                                     }
                                  }
                               }
-
                            }
                         }
-                     }
-                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                     break;
-                  default:
-                     break;
-               }
+                        $script .= "});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 foreach ($check_value as $key => $val) {
+                                    if ($k == $key || $key == 0) {
+                                       $idv = $hidden_link[$val];
+                                       if ($idv > 0) {
+                                          $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                       }
+                                    }
+                                 }
 
-            }
-            if (!empty($data['checkbox_id']) && !empty($data['checkbox_value'])) {
-               switch ($data['type']) {
-                  case 'dropdown_multiple':
+                              }
+                           }
+                        }
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
+                     default:
+                        break;
+                  }
+
+               }
+               if (!empty($data['checkbox_id']) && !empty($data['checkbox_value'])) {
+                  switch ($data['type']) {
+                     case 'dropdown_multiple':
                      if ($data["display_type"] == PluginMetademandsField::CLASSIC_DISPLAY) {
                         $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
                         if (is_array(PluginMetademandsField::_unserialize($data['checkbox_id'])) &&
@@ -2873,32 +2873,32 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $script .= "
                           $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
                           ";
-                           foreach ($check_value as $key => $fields) {
-                              if ($fields != 0 &&
-                                  (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0)) {
-                                 if ($data["item"] == "other") {
+                              foreach ($check_value as $key => $fields) {
+                                 if ($fields != 0 &&
+                                     (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0)) {
+                                    if ($data["item"] == "other") {
                                     $title = Toolbox::addslashes_deep($custom_value[$fields]);
-                                    $script .= "
+                                       $script .= "
                                        if($(value).attr('title') == '$title'){
                                           document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
                                        }
                                     ";
-                                 } else {
-                                    $script .= "
+                                    } else {
+                                       $script .= "
                                        if($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($fields) . "'){
                                           document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
                                        }
                                     ";
+                                    }
                                  }
                               }
-                           }
 
-                           $script .= "});
+                              $script .= "});
                            });";
 
-                        }
-                        echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-                     } else {
+                           }
+                           echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+                        } else {
                         $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
 
                         if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
@@ -2919,24 +2919,24 @@ class PluginMetademandsWizard extends CommonDBTM {
                               document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
                            }
                         ";
+                                 }
                               }
-                           }
 
-                           $script .= "});
+                              $script .= "});
                            });";
 
+                           }
+
+                           echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                         }
 
-                        echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-                     }
+                        break;
+                  }
 
-                     break;
                }
-
             }
-         }
 
-      if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
+            if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
                if (!in_array($blocks, $all_hidden_blocks)) {
                   echo "</div>";
                }
@@ -2946,17 +2946,17 @@ class PluginMetademandsWizard extends CommonDBTM {
             echo "</div>";
          }
 
-            if ($metademands->fields['is_order'] == 0 && !$preview && (!$seeform
-                  || (isset($_GET['resources_id'])
-                     && $_GET['resources_id'] > 0)
-                  || ($current_ticket > 0
-                     && ((!$meta_validated
-                        && $metademands->fields['can_update'] == true) ||
-                     ($meta_validated
-                        && $metademands->fields['can_clone'] == true))
-                     && Session::haveRight('plugin_metademands_updatemeta', READ)))
+         if ($metademands->fields['is_order'] == 0 && !$preview && (!$seeform
+                                                                    || (isset($_GET['resources_id'])
+                                                                        && $_GET['resources_id'] > 0)
+                                                                    || ($current_ticket > 0
+                                                                        && ((!$meta_validated
+                                                                             && $metademands->fields['can_update'] == true) ||
+                                                                            ($meta_validated
+                                                                             && $metademands->fields['can_clone'] == true))
+                                                                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
 
-            ) {
+         ) {
 //            $use_as_step == 1
 //            &&
             //            if (!$ticket_template) {
@@ -3422,7 +3422,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       if (!empty($options['resources_id'])) {
          Html::redirect($CFG_GLPI["root_doc"] . "/plugins/resources/front/wizard.form.php");
       } else if(isset($options['collect_metademands']) && $options['collect_metademands'] == true) {
-        return true;
+         return true;
       } else {
 
          $plugin = new Plugin();
@@ -3922,13 +3922,15 @@ class PluginMetademandsWizard extends CommonDBTM {
       $toBeMandatory          = [];
       if (is_array($unserialisedCheck) && !empty($unserialisedCheck)) {
          foreach ($unserialisedCheck as $key => $check) {
-            if (isset($fields[$id]) && is_array($fields[$id])) {
-               if (in_array($check, $fields[$id])) {
-                  $toBeMandatory[] = $unserialisedFieldsLink[$key];
-               }
-            } else {
-               if (isset($fields[$id]) && $check == $fields[$id] && $fields[$id] != null) {
-                  $toBeMandatory[] = $unserialisedFieldsLink[$key];
+            if (isset($unserialisedFieldsLink[$key])) {
+               if (isset($fields[$id]) && is_array($fields[$id])) {
+                  if (in_array($check, $fields[$id])) {
+                     $toBeMandatory[] = $unserialisedFieldsLink[$key];
+                  }
+               } else {
+                  if (isset($fields[$id]) && $check == $fields[$id] && $fields[$id] != null) {
+                     $toBeMandatory[] = $unserialisedFieldsLink[$key];
+                  }
                }
             }
          }

@@ -227,8 +227,7 @@ if (isset($_POST['update_fields'])) {
 if ($KO === false) {
    echo 0;
 } else {
-   echo $KO;
+   echo 1;
 }
 
-
-
+Html::ajaxFooter();
