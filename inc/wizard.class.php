@@ -3115,6 +3115,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                         fieldmandatory = y[i].required;
                         if (fieldname != '_uploader_filename[]'
                            && fieldname != '_uploader_content[]'
+                           && fieldtype != 'file'
                            //                                    && fieldtype != 'hidden'
                            && fieldmandatory == true) {
                   
