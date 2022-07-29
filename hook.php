@@ -281,7 +281,7 @@ function plugin_metademands_install() {
    //version 3.2.1
    if ($DB->tableExists("glpi_plugin_metademands_tickets_fields")
        && !$DB->fieldExists("glpi_plugin_metademands_tickets_fields", "value2")) {
-      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.3.1.sql");
+      $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.1.sql");
    }
 
    $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";

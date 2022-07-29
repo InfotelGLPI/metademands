@@ -1571,8 +1571,15 @@ class PluginMetademandsField extends CommonDBChild {
              && $data['type'] != "title-block"
              && $data['type'] != "text"
              && !empty($comment)) {
-            echo "&nbsp;";
-            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
+             $display = true;
+             if ($data['use_richtext'] == 0) {
+                 $display = false;
+             }
+             if ($display) {
+                 echo "&nbsp;";
+                 echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
+             }
+
          }
          echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
          if ($data['is_mandatory'] == 1

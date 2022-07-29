@@ -3374,10 +3374,6 @@ class PluginMetademandsWizard extends CommonDBTM {
          $result = $metademands->addObjects($metademands_id, $values, $options);
          Session::addMessageAfterRedirect($result['message']);
       }
-
-      $itilcategories_id = isset($_SESSION['servicecatalog']['sc_itilcategories_id']) ?
-         $_SESSION['servicecatalog']['sc_itilcategories_id'] : 0;
-
       unset($_SESSION['plugin_metademands']);
 
       if (!empty($options['resources_id'])) {
@@ -3385,8 +3381,7 @@ class PluginMetademandsWizard extends CommonDBTM {
       } else {
 
          if (Plugin::isPluginActive('servicecatalog')
-             && Session::haveRight("plugin_servicecatalog", READ)
-             && $itilcategories_id > 0) {
+             && Session::haveRight("plugin_servicecatalog", READ)) {
             $type = $metademands->fields['type'];
             Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
          } else {
