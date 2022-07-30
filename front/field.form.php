@@ -64,7 +64,8 @@ if (isset($_POST["checkbox_value"]) && is_array($_POST["checkbox_value"])) {
    $_POST["checkbox_value"] = PluginMetademandsField::_serialize($_POST["checkbox_value"]);
 }
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
-    && isset($_POST['item']) && $_POST['item'] == 'Group') {
+    && isset($_POST['item']) && ($_POST['item'] == 'Group'
+       || $_POST['item'] == 'User')) {
    if (isset($_POST['is_assign']) && $_POST['is_assign'] > 0) {
       $custom_values['is_assign'] = $_POST['is_assign'];
    }
@@ -74,7 +75,9 @@ if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
    if (isset($_POST['is_requester']) && $_POST['is_requester'] > 0) {
       $custom_values['is_requester'] = $_POST['is_requester'];
    }
-   $_POST['custom_values'] = $custom_values;
+    if (isset($_POST['user_group']) && $_POST['user_group'] > 0) {
+        $custom_values['user_group'] = $_POST['user_group'];
+    }
 }
 
 if (isset($_POST['item']) && isset($_POST['type'])
@@ -92,9 +95,9 @@ if (isset($_POST['type']) && $_POST['type'] == 'number') {
    if (isset($_POST['step'])) {
       $custom_values['step']   = $_POST['step'];
    }
-   if (isset($custom_values)) {
-      $_POST['custom_values'] = $custom_values;
-   }
+}
+if (isset($custom_values)) {
+    $_POST['custom_values'] = $custom_values;
 }
 
 if (isset($_POST["add"])) {
@@ -140,7 +143,8 @@ if (isset($_POST["add"])) {
            || $_POST["type"] == 'checkbox'
            || $_POST["type"] == 'radio'
            || $_POST["type"] == 'dropdown_multiple'
-           || (isset($_POST['item']) && $_POST['item'] == 'Group')
+           || (isset($_POST['item']) && ($_POST['item'] == 'Group'
+                                         || $_POST['item'] == 'User'))
            || $_POST['type'] == 'number')) {
       $comment_values = "";
       $custom_values  = [];

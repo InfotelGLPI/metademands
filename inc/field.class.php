@@ -498,7 +498,7 @@ class PluginMetademandsField extends CommonDBChild {
          $is_assign     = isset($custom_values['is_assign']) ? $custom_values['is_assign'] : 0;
          $is_watcher    = isset($custom_values['is_watcher']) ? $custom_values['is_watcher'] : 0;
          $is_requester  = isset($custom_values['is_requester']) ? $custom_values['is_requester'] : 0;
-
+          $user_group  = isset($custom_values['user_group']) ? $custom_values['user_group'] : 0;
          echo "<td></td>";
 
          echo "<td>";
@@ -516,7 +516,24 @@ class PluginMetademandsField extends CommonDBChild {
          echo "&nbsp;";
          // Requester group
          Dropdown::showYesNo('is_assign', $is_assign);
+          echo "<br>";
+          echo __('My groups');
+          echo "&nbsp;";
+          // user_group
+          Dropdown::showYesNo('user_group', $user_group);
          echo "</td>";
+      } else if ($this->fields['type'] == "dropdown_object"
+                 && $this->fields["item"] == "User") {
+          $custom_values = self::_unserialize($this->fields['custom_values']);
+          $user_group  = isset($custom_values['user_group']) ? $custom_values['user_group'] : 0;
+          echo "<td></td>";
+
+          echo "<td>";
+          echo __('Only users of my groups', 'metademands');
+          echo "&nbsp;";
+          // user_group
+          Dropdown::showYesNo('user_group', $user_group);
+          echo "</td>";
       } else {
          echo "<td colspan='2'></td>";
       }
@@ -2085,9 +2102,28 @@ class PluginMetademandsField extends CommonDBChild {
                   if (empty($value)) {
                      $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                   }
+
+                   $right = "helpdesk";
+                   if (!empty($data['custom_values'])) {
+
+                       $options = PluginMetademandsField::_unserialize($data['custom_values']);
+                       if ($options['user_group'] == 1) {
+                           $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
+                           $group_user_data = Group_User::getUserGroups(Session::getLoginUserID(), $condition);
+
+                           $requester_groups = [];
+                           foreach ($group_user_data as $groups) {
+                               $requester_groups[] = $groups['id'];
+                           }
+                           if (count($requester_groups) > 0) {
+                               $right = "groups";
+                           }
+                       }
+                   }
+
                   $opt = ['name'     => $namefield . "[" . $data['id'] . "]",
                           'entity'   => $_SESSION['glpiactiveentities'],
-                          'right'    => 'all',
+                          'right'    => $right,
                           'rand'     => $userrand,
                           'value'    => $value,
                           'display'  => false,
@@ -2111,13 +2147,6 @@ class PluginMetademandsField extends CommonDBChild {
                case 'Group':
                   $field = "";
                   $cond  = [];
-                  if (!empty($data['custom_values'])) {
-                     $options = PluginMetademandsField::_unserialize($data['custom_values']);
-                     foreach ($options as $type_group => $values) {
-                        $cond[$type_group] = $values;
-                     }
-                  }
-
                   $_POST['field'] = $namefield . "[" . $data['id'] . "]";
 
                   if ($data['link_to_user'] > 0) {
@@ -2139,10 +2168,27 @@ class PluginMetademandsField extends CommonDBChild {
                      $name = $namefield . "[" . $data['id'] . "]";
 
                      if (!empty($data['custom_values'])) {
+
+                         $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
+                                                   && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+
+                         $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
+                         $group_user_data = Group_User::getUserGroups($_POST['value'], $condition);
+
+                         $requester_groups = [];
+                         foreach ($group_user_data as $groups) {
+                             $requester_groups[] = $groups['id'];
+                         }
                         $options = PluginMetademandsField::_unserialize($data['custom_values']);
+
                         foreach ($options as $type_group => $values) {
-                           $cond[$type_group] = $values;
+                            if ($type_group != 'user_group') {
+                                $cond[$type_group] = $values;
+                            } else {
+                                $cond["glpi_groups.id"] = $requester_groups;
+                            }
                         }
+                        unset($cond['user_group']);
                      }
                      $val_group = (isset($_SESSION['plugin_metademands']['fields'][$data['id']])
                                    && !is_array($_SESSION['plugin_metademands']['fields'][$data['id']])) ? $_SESSION['plugin_metademands']['fields'][$data['id']] : 0;
