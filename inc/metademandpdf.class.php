@@ -361,7 +361,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
          $widths  = [];
 
          foreach ($form as $key => $elt) {
-            if ($elt['is_basket'] == false) {
+            if ($with_basket && $elt['is_basket'] == false) {
                continue;
             }
             if (isset($fields[$key])
@@ -418,7 +418,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                      $label = Toolbox::stripslashes_deep($elt['name']);
                   }
                   $label = str_replace("’", "'", $label);
-                  $label = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label));
+                   $label = Toolbox::stripslashes_deep($label);
+                   if ($label != null) {
+                       $label = Toolbox::decodeFromUtf8($label);
+                   }
                }
 
                switch ($elt['type']) {
@@ -436,14 +439,20 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                   case 'text':
                   case 'number':
                      $value = $fields[$elt['id']];
-                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                   $value = Toolbox::stripslashes_deep($value);
+                   if ($value != null) {
+                       $value = Toolbox::decodeFromUtf8($value);
+                   }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
                   case 'textarea':
                      $value = $fields[$elt['id']];
-                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                      $value = Toolbox::stripslashes_deep($value);
+                      if ($value != null) {
+                          $value = Toolbox::decodeFromUtf8($value);
+                      }
                      $value = (Toolbox::addslashes_deep($value));
                      $value = Html::cleanPostForTextArea($value);
 
@@ -475,7 +484,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                               $value[]    .= $valid_name;
                            }
                            $value = implode(', ', $value);
-                           $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                            $value = Toolbox::stripslashes_deep($value);
+                            if ($value != null) {
+                                $value = Toolbox::decodeFromUtf8($value);
+                            }
                            // Draw line
                            $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                         }
@@ -492,7 +504,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                            }
                         }
                         $value = implode(', ', $value);
-                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                         $value = Toolbox::stripslashes_deep($value);
+                         if ($value != null) {
+                             $value = Toolbox::decodeFromUtf8($value);
+                         }
                         // Draw line
                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      }
@@ -576,7 +591,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                            $value = ($value == '&nbsp;') ? ' ' : $value;
                            break;
                      }
-                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                   $value = Toolbox::stripslashes_deep($value);
+                   if ($value != null) {
+                       $value = Toolbox::decodeFromUtf8($value);
+                   }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
@@ -586,7 +604,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                      if ($fields[$elt['id']] == 2) {
                         $value = __('Yes');
                      }
-                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                      $value = Toolbox::stripslashes_deep($value);
+                      if ($value != null) {
+                          $value = Toolbox::decodeFromUtf8($value);
+                      }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
@@ -615,7 +636,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                            }
                         }
                         $value = implode(', ', $parseValue);
-                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                         $value = Toolbox::stripslashes_deep($value);
+                         if ($value != null) {
+                             $value = Toolbox::decodeFromUtf8($value);
+                         }
                         // Draw line
                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      } else if ($elt['item'] == 'User') {
@@ -657,7 +681,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                            }
                         }
                         $value = implode("", $parseValue);
-                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                         $value = Toolbox::stripslashes_deep($value);
+                         if ($value != null) {
+                             $value = Toolbox::decodeFromUtf8($value);
+                         }
                         // Draw line
                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
 
@@ -683,7 +710,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                            }
                         }
                         $value = implode(', ', $custom_checkbox);
-                        $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                         $value = Toolbox::stripslashes_deep($value);
+                         if ($value != null) {
+                             $value = Toolbox::decodeFromUtf8($value);
+                         }
                         // Draw line
                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      }
@@ -705,7 +735,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                                  $value = $custom_values[$k];
                               }
                            }
-                           $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                            $value = Toolbox::stripslashes_deep($value);
+                            if ($value != null) {
+                                $value = Toolbox::decodeFromUtf8($value);
+                            }
                         }
                         // Draw line
                         $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -714,14 +747,20 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
 
                   case 'date':
                      $value = Html::convDate($fields[$elt['id']]);
-                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                     $value = Toolbox::stripslashes_deep($value);
+                     if ($value != null) {
+                         $value = Toolbox::decodeFromUtf8($value);
+                     }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
 
                   case 'datetime':
                      $value = Html::convDateTime($fields[$elt['id']]);
-                     $value = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
+                      $value = Toolbox::stripslashes_deep($value);
+                      if ($value != null) {
+                          $value = Toolbox::decodeFromUtf8($value);
+                      }
                      // Draw line
                      $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                      break;
@@ -729,15 +768,24 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                   case 'date_interval':
                      $value  = Html::convDate($fields[$elt['id']]);
                      $value2 = Html::convDate($fields[$elt['id'] . "-2"]);
-                     $value  = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                     $value2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value2));
+                      $value = Toolbox::stripslashes_deep($value);
+                      if ($value != null) {
+                          $value = Toolbox::decodeFromUtf8($value);
+                      }
+                      $value2 = Toolbox::stripslashes_deep($value2);
+                      if ($value2 != null) {
+                          $value2 = Toolbox::decodeFromUtf8($value2);
+                      }
                      if (!empty($elt['label2'])) {
                         //                        $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
                         if (empty($label2 = PluginMetademandsField::displayField($elt['id'], 'label2'))) {
                            $label2 = Toolbox::stripslashes_deep($elt['label2']);
                         }
                         $label2 = str_replace("’", "'", $label2);
-                        $label2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label2));
+                         $label2 = Toolbox::stripslashes_deep($label2);
+                         if ($label2 != null) {
+                             $label2 = Toolbox::decodeFromUtf8($label2);
+                         }
                         $label2 = (Toolbox::addslashes_deep($label2));
                         $label2 = Html::cleanPostForTextArea($label2);
                      }
@@ -749,15 +797,24 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                   case 'datetime_interval':
                      $value  = Html::convDateTime($fields[$elt['id']]);
                      $value2 = Html::convDateTime($fields[$elt['id'] . "-2"]);
-                     $value  = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value));
-                     $value2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($value2));
+                      $value = Toolbox::stripslashes_deep($value);
+                      if ($value != null) {
+                          $value = Toolbox::decodeFromUtf8($value);
+                      }
+                      $value2 = Toolbox::stripslashes_deep($value2);
+                      if ($value2 != null) {
+                          $value2 = Toolbox::decodeFromUtf8($value2);
+                      }
                      if (!empty($elt['label2'])) {
                         //                        $label2 = Html::resume_name(Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($elt['label2'])), 30);
                         if (empty($label2 = PluginMetademandsField::displayField($elt['id'], 'label2'))) {
                            $label2 = Toolbox::stripslashes_deep($elt['label2']);
                         }
                         $label2 = str_replace("’", "'", $label2);
-                        $label2 = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($label2));
+                         $label2 = Toolbox::stripslashes_deep($label2);
+                         if ($label2 != null) {
+                             $label2 = Toolbox::decodeFromUtf8($label2);
+                         }
                         $label2 = (Toolbox::addslashes_deep($label2));
                         $label2 = Html::cleanPostForTextArea($label2);
                      }
