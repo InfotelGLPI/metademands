@@ -1623,6 +1623,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               }
 
                               $script .= "});";
+                              //dropdown_multiple
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                       $('[id-field =\"field'+key+'\"]').hide();
@@ -1824,6 +1825,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                     }
                                  }
                               }
+                              //checkbox
                               $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
 //                                       console.log(value);
@@ -2046,6 +2048,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                                  $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
                               }
                            }
+                           //radio
                            $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                       $('[id-field =\"field'+key+'\"]').hide();

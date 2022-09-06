@@ -221,13 +221,9 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       if (count($metademand_fields->fields) < 1 && count($categories) > 1) {
-         echo "<tr style='margin-bottom: 5px;' class='tab_bg_1'>";
-         echo "<td align='center' colspan='4'>";
-         echo "<span style='color:darkred;font-size: 14px'>";
-         echo "<i class='fas fa-exclamation-triangle'></i> " . __('Please add a type category field', 'metademands');
-         echo "</span>";
-         echo "</td>";
-         echo "</tr>";
+          echo "<div class='alert alert-important alert-warning d-flex'>";
+          echo "<i class='fas fa-exclamation-triangle fa-3x'></i>&nbsp;" . __('Please add a type category field', 'metademands');
+          echo "</div>";
       }
 
       echo "<tr class='tab_bg_1'>";
@@ -2214,6 +2210,10 @@ class PluginMetademandsField extends CommonDBChild {
                      $nameitil = 'basket';
                   }
                   $values = json_decode($metademand->fields['itilcategories_id']);
+                  //from Service Catalog
+                  if ($itilcategories_id > 0) {
+                      $value = $itilcategories_id;
+                  }
                   //                  if (!empty($values) && count($values) == 1) {
                   //                     foreach ($values as $key => $val)
                   //                        $itilcategories_id = $val;
