@@ -3387,8 +3387,10 @@ class PluginMetademandsWizard extends CommonDBTM {
              && Session::haveRight("plugin_servicecatalog", READ)) {
             $type = $metademands->fields['type'];
             Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
-         } else {
+         } else if (Session::haveRight("plugin_metademands", READ)) {
             Html::redirect($self->getFormURL() . "?step=" . $step = PluginMetademandsMetademand::STEP_LIST);
+         } else {
+             Html::back();
          }
       }
    }
