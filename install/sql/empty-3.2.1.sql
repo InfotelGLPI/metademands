@@ -446,7 +446,7 @@ CREATE TABLE `glpi_plugin_metademands_interticketfollowups`
     `date` timestamp NULL DEFAULT NULL,
     `users_id` int unsigned NOT NULL DEFAULT '0',
     `users_id_editor` int unsigned NOT NULL DEFAULT '0',
-    `content` longtext COLLATE utf8_unicode_ci,
+    `content` longtext COLLATE utf8mb4_unicode_ci default NULL,
     `is_private` tinyint NOT NULL DEFAULT '0',
     `requesttypes_id` int unsigned NOT NULL DEFAULT '0', -- todo keep it ?
     `date_mod` timestamp NULL DEFAULT NULL,
