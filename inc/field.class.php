@@ -618,6 +618,13 @@ class PluginMetademandsField extends CommonDBChild {
             ];
          }
 
+          if ($this->fields['type'] == "dropdown_meta"
+              && ($this->fields["item"] == "ITILCategory_Metademands")) {
+              $granted_fields = [
+                  'itilcategories_id'
+              ];
+          }
+
          if ($this->fields['type'] == "date"
              || $this->fields["type"] == "datetime") {
             $granted_fields = [
@@ -2099,7 +2106,7 @@ class PluginMetademandsField extends CommonDBChild {
                      $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                   }
 
-                   $right = "helpdesk";
+                   $right = "all";
                    if (!empty($data['custom_values'])) {
 
                        $options = PluginMetademandsField::_unserialize($data['custom_values']);
