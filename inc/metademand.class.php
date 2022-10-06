@@ -1306,7 +1306,7 @@ JAVASCRIPT
          $condition = "1 AND `" . $this->getTable() . "`.`object_to_create` = '$type' AND is_active = 1 AND is_deleted = 0 ";
       }
 
-      $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), null, null, true);
+      $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable());
 
       if (!empty($params['condition'])) {
          $condition .= $params['condition'];

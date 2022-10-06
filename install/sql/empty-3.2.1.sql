@@ -19,7 +19,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     `can_update`           tinyint NOT NULL DEFAULT '0',
     `can_clone`            tinyint NOT NULL DEFAULT '0',
     `comment`              text COLLATE utf8mb4_unicode_ci         default NULL,
-    `object_to_create`     varchar(255) collate utf8mb4_unicode_ci default NULL,
+    `object_to_create`     varchar(255) COLLATE utf8mb4_unicode_ci default NULL,
     `type`                 int unsigned NOT NULL default '0',                         -- metademand type : Incident, demand
     `itilcategories_id`    varchar(255) NOT NULL                   default '[]', -- references itilcategories glpi
     `icon`                 varchar(255)                            default NULL,

@@ -1554,7 +1554,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
@@ -1673,7 +1673,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                               $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                               $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                              $check_value    = array_flip($check_value);
+                              $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                               foreach ($default_values as $k => $v) {
                                  if ($v == 1) {
                                     $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
@@ -1778,7 +1778,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                               $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                               $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                               $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                              $check_value    = array_flip($check_value);
+                              $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                               foreach ($default_values as $k => $v) {
                                  if ($v == 1) {
                                     $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
@@ -1947,7 +1947,8 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                           $check_value    = array_flip($check_value);
+                           
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
@@ -2007,7 +2008,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
@@ -2096,7 +2097,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_link    = PluginMetademandsField::_unserialize($data['hidden_link']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
@@ -2263,7 +2264,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  if (isset($check_value[$k])) {
@@ -2367,7 +2368,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  if (isset($check_value[$k])) {
@@ -2519,7 +2520,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  if (isset($check_value[$k])) {
@@ -2610,7 +2611,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  if (isset($check_value[$k])) {
@@ -2688,7 +2689,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  if (isset($check_value[$k])) {
@@ -2802,7 +2803,7 @@ class PluginMetademandsWizard extends CommonDBTM {
                            $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                            $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                            $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                           $check_value    = array_flip($check_value);
+                           $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
                            foreach ($default_values as $k => $v) {
                               if ($v == 1) {
                                  foreach ($check_value as $key => $val) {
