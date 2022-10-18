@@ -2921,9 +2921,17 @@ JAVASCRIPT
     private function mergeFields($parent_fields, $parent_ticketfields)
     {
         foreach ($parent_ticketfields as $key => $val) {
-            $parent_fields[$key] = match ($key) {
-                default => $val,
-            };
+            switch ($key) {
+                //            case 'name' :
+                //               $parent_fields[$key] .= ' ' . $val;
+                //               break;c
+                //            case 'content' :
+                //               $parent_fields[$key] .= '\r\n' . $val;
+                //               break;
+                default :
+                    $parent_fields[$key] = $val;
+                    break;
+            }
         }
 
         return $parent_fields;
