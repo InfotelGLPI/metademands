@@ -721,12 +721,17 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     private static function getObjectTypeName($value)
     {
-        return match ($value) {
-            'Ticket' => __('Ticket'),
-            'Change' => __('Change'),
-            'Problem' => __('Problem'),
-            default => Dropdown::EMPTY_VALUE,
-        };
+        switch ($value) {
+            case 'Ticket' :
+                return __('Ticket');
+            case 'Change' :
+                return __('Change');
+            case 'Problem' :
+                return __('Problem');
+            default :
+                // Return $value if not define
+                return Dropdown::EMPTY_VALUE;
+        }
     }
 
     /**
@@ -1060,11 +1065,17 @@ JAVASCRIPT
                 break;
             case 'itilcategories_id':
                 echo Html::hidden('type', ['value' => $this->fields['type']]);
-                $criteria = match ($this->fields['type']) {
-                    Ticket::INCIDENT_TYPE => ['is_incident' => 1],
-                    Ticket::DEMAND_TYPE => ['is_request' => 1],
-                    default => [],
-                };
+                switch ($this->fields['type']) {
+                    case Ticket::INCIDENT_TYPE :
+                        $criteria = ['is_incident' => 1];
+                        break;
+                    case Ticket::DEMAND_TYPE :
+                        $criteria = ['is_request' => 1];
+                        break;
+                    default :
+                        $criteria = [];
+                        break;
+                }
                 $criteria += getEntitiesRestrictCriteria(
                     \ITILCategory::getTable(),
                     'entities_id',
