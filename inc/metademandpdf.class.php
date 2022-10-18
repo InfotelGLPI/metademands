@@ -316,6 +316,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
             //            if ($width != $this->label_width) {
             //               $width_values = $w - $width;
             //            }
+             //fix php8 fpdf
+             if (is_null($values)) {
+                 $values = "";
+             }
             $this->MultiCell($width_values, $h, $values, $border, $align, true);
          }
       }
