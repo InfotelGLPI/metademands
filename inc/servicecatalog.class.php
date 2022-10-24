@@ -28,159 +28,165 @@
  */
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 
 /**
  * Class PluginMetademandsServicecatalog
  */
-class PluginMetademandsServicecatalog extends CommonGLPI {
+class PluginMetademandsServicecatalog extends CommonGLPI
+{
+    public static $rightname = 'plugin_metademands';
 
-   static $rightname = 'plugin_metademands';
+    public $dohistory = false;
 
-   var $dohistory = false;
+    /**
+     * @return bool
+     * @throws \GlpitestSQLError
+     */
+    public static function canUse()
+    {
+        $config = new PluginMetademandsConfig();
+        $config->getFromDB(1);
+        if ($config->getField('display_buttonlist_servicecatalog') == 0) {
+            return false;
+        }
+        $metademands = PluginMetademandsWizard::selectMetademands();
+        return (Session::haveRight(self::$rightname, READ) && (count($metademands) > 0));
+    }
 
-   /**
-    * @return bool
-    * @throws \GlpitestSQLError
-    */
-   static function canUse() {
+    /**
+     * @return string
+     */
+    public static function getMenuTitle()
+    {
+        $config = new PluginMetademandsConfig();
+        $config->getFromDB(1);
+        if (!empty($config->getField('title_servicecatalog'))) {
+            return $config->getField('title_servicecatalog');
+        }
+        return __('Create a', 'servicecatalog')  ." ". __('advanced request', 'metademands');
+    }
 
-      $config = new PluginMetademandsConfig();
-      $config->getFromDB(1);
-      if ($config->getField('display_buttonlist_servicecatalog') == 0) {
-         return false;
-      }
-      $metademands = PluginMetademandsWizard::selectMetademands();
-      return (Session::haveRight(self::$rightname, READ) && (count($metademands) > 0));
-   }
+    /**
+     * @return string
+     */
+    public static function getMenuLink()
+    {
+        global $CFG_GLPI;
 
-   /**
-    * @return string
-    */
-   static function getMenuTitle() {
+        return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
+    }
 
-      $config = new PluginMetademandsConfig();
-      $config->getFromDB(1);
-      if (!empty($config->getField('title_servicecatalog'))) {
-         return $config->getField('title_servicecatalog');
-      }
-      return __('Create a', 'servicecatalog')  ." ". __('advanced request', 'metademands');
-   }
+    /**
+     * @return string
+     */
+    public static function getNavBarLink()
+    {
+        global $CFG_GLPI;
 
-   /**
-    * @return string
-    */
-   static function getMenuLink() {
-      global $CFG_GLPI;
+        return PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
+    }
 
-      return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
-   }
-
-   /**
-    * @return string
-    */
-   static function getNavBarLink() {
-      global $CFG_GLPI;
-
-      return PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_INIT;
-   }
-
-   /**
-    * @return string
-    */
-   static function getMenuLogo() {
-
-      $config = new PluginMetademandsConfig();
-      $config->getFromDB(1);
-      if (!empty($config->getField('fa_servicecatalog'))) {
-         return "fas ".$config->getField('fa_servicecatalog');
-      }
-      return PluginMetademandsMetademand::getIcon();
-   }
+    /**
+     * @return string
+     */
+    public static function getMenuLogo()
+    {
+        $config = new PluginMetademandsConfig();
+        $config->getFromDB(1);
+        if (!empty($config->getField('fa_servicecatalog'))) {
+            return "fas ".$config->getField('fa_servicecatalog');
+        }
+        return PluginMetademandsMetademand::getIcon();
+    }
 
 
-   /**
-    * @return string
-    * @throws \GlpitestSQLError
-    */
-   static function getMenuComment() {
+    /**
+     * @return string
+     * @throws \GlpitestSQLError
+     */
+    public static function getMenuComment()
+    {
+        $config = new PluginMetademandsConfig();
+        $config->getFromDB(1);
+        if (!empty($config->getField('comment_servicecatalog'))) {
+            return $config->getField('comment_servicecatalog');
+        }
 
-      $config = new PluginMetademandsConfig();
-      $config->getFromDB(1);
-      if (!empty($config->getField('comment_servicecatalog'))) {
-         return $config->getField('comment_servicecatalog');
-      }
+        $list        = "";
+        $metademands = PluginMetademandsWizard::selectMetademands(" LIMIT 3");
 
-      $list        = "";
-      $metademands = PluginMetademandsWizard::selectMetademands(" LIMIT 3");
+        foreach ($metademands as $id => $name) {
+            $list .= $name . '<br>';
+        }
+        $list .= "(...)";
+        return $list;
+    }
 
-      foreach ($metademands as $id => $name) {
-         $list .= $name . '<br>';
-      }
-      $list .= "(...)";
-      return $list;
-   }
-
-   /**
-    * @return string
-    */
-   static function getLinkList() {
+    /**
+     * @return string
+     */
+    public static function getLinkList()
+    {
 //      return __('Select the advanced request', 'metademands');
-   }
+    }
 
-   /**
-    * @param $type
-    * @param $category_id
-    *
-    * @return string or bool
-    */
-   static function getLinkURL($type, $category_id) {
-      global $CFG_GLPI;
+    /**
+     * @param $type
+     * @param $category_id
+     *
+     * @return string or bool
+     */
+    public static function getLinkURL($type, $category_id)
+    {
 
-      $dbu   = new DbUtils();
-      $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands',
-                                         ["`is_active`"         => 1,
-                                          "`is_deleted`"         => 0,
-                                          "`type`"              => $type]);
-      $cats       = [];
+        $dbu   = new DbUtils();
+        $metas = $dbu->getAllDataFromTable(
+            'glpi_plugin_metademands_metademands',
+            ["`is_active`"         => 1,
+             "`is_deleted`"         => 0,
+             "`type`"              => $type]
+        );
+        $cats       = [];
 
-      foreach ($metas as $meta) {
-         $categories = [];
-         if (isset($meta['itilcategories_id'])) {
-            if (is_array(json_decode($meta['itilcategories_id'], true))) {
-               $categories = $meta['itilcategories_id'];
-            } else {
-               $array      = [$meta['itilcategories_id']];
-               $categories = json_encode($array);
+        foreach ($metas as $meta) {
+            $categories = [];
+            if (isset($meta['itilcategories_id'])) {
+                if (is_array(json_decode($meta['itilcategories_id'], true))) {
+                    $categories = $meta['itilcategories_id'];
+                } else {
+                    $array      = [$meta['itilcategories_id']];
+                    $categories = json_encode($array);
+                }
             }
-         }
-         $cats[$meta['id']] = json_decode($categories);
-      }
+            $cats[$meta['id']] = json_decode($categories);
+        }
 
-      $meta_concerned = 0;
-      foreach ($cats as $meta => $meta_cats) {
-         if (in_array($category_id, $meta_cats)) {
-            $meta_concerned = $meta;
-         }
-      }
+        $meta_concerned = 0;
+        foreach ($cats as $meta => $meta_cats) {
+            if (in_array($category_id, $meta_cats)) {
+                $meta_concerned = $meta;
+            }
+        }
 
-      if (!empty($meta_concerned)) {
+        if (!empty($meta_concerned)) {
 //         $meta = reset($metas);
-         //Redirect if not linked to a resource contract type
-         if (!$dbu->countElementsInTable("glpi_plugin_metademands_metademands_resources",
-                                         ["plugin_metademands_metademands_id" => $meta_concerned])) {
+            //Redirect if not linked to a resource contract type
+            if (!$dbu->countElementsInTable(
+                "glpi_plugin_metademands_metademands_resources",
+                ["plugin_metademands_metademands_id" => $meta_concerned]
+            )) {
+                return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=" . $category_id . "&metademands_id=" . $meta_concerned . "&tickets_id=0&step=".PluginMetademandsMetademand::STEP_SHOW;
+            }
+        }
+        return false;
+    }
 
-             return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=" . $category_id . "&metademands_id=" . $meta_concerned . "&tickets_id=0&step=".PluginMetademandsMetademand::STEP_SHOW;
-
-         }
-      }
-      return false;
-   }
-
-   static function getList() {
-      global $CFG_GLPI;
+    public static function getList()
+    {
+        global $CFG_GLPI;
 
 //      $metademands = PluginMetademandsWizard::selectMetademands();
 //      if (Plugin::isPluginActive("servicecatalog")
@@ -265,5 +271,5 @@ class PluginMetademandsServicecatalog extends CommonGLPI {
 //         echo '</div>';
 //         echo '</div>';
 //      }
-   }
+    }
 }

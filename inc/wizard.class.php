@@ -351,7 +351,7 @@ class PluginMetademandsWizard extends CommonDBTM
                            //                     echo ($helpdesk_category->fields['comment'] != null) ?
                            //                        "
                            //                    <span class='titlespeech'>" . __('Description') . "</span><br>" .
-                           //                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['comment']) . "" : "";
+                           //                        Glpi\tRichText\RichText::getSafeHtml($helpdesk_category->fields['comment']) . "" : "";
                            //                     echo ($helpdesk_category->fields['service_detail'] != null) ?
                            //                        "
                            //                    <span class='titlespeech'>" . __('How can i use it', 'servicecatalog') . "</span><br><br>" .

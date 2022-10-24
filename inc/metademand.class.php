@@ -62,11 +62,10 @@ class PluginMetademandsMetademand extends CommonDBTM
     const FAIL = 3; // Failed
 
 
-    public $dohistory = true;
+    public  $dohistory = true;
     private $config;
 
-    public function __construct()
-    {
+    public function __construct() {
         $config              = PluginMetademandsConfig::getInstance();
         $this->config        = $config;
         self::$PARENT_PREFIX = $config['parent_ticket_tag'] . ' ';
@@ -81,37 +80,32 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return string
      */
-    public static function getTypeName($nb = 0)
-    {
+    public static function getTypeName($nb = 0) {
         return _n('Meta-Demand', 'Meta-Demands', $nb, 'metademands');
     }
 
-    public static function getIcon()
-    {
+    public static function getIcon() {
         return "ti ti-share";
     }
 
     /**
      * @return bool|int
      */
-    public static function canView()
-    {
+    public static function canView() {
         return Session::haveRight(self::$rightname, READ);
     }
 
     /**
      * @return bool
      */
-    public static function canCreate()
-    {
+    public static function canCreate() {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
     /**
      * @return bool|mixed
      */
-    public function getConfig()
-    {
+    public function getConfig() {
         return $this->config;
     }
 
@@ -123,8 +117,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return array|string
      */
-    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
-    {
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
         $dbu = new DbUtils();
         if ($dbu->countElementsInTable("glpi_plugin_metademands_tickets_metademands", ["tickets_id" => $item->fields['id']])
             || $dbu->countElementsInTable("glpi_plugin_metademands_tickets_tasks", ["tickets_id" => $item->fields['id']])) {
@@ -194,8 +187,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      * @return bool|true
      * @throws \GlpitestSQLError
      */
-    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
-    {
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
         $metademands = new self();
 
         switch ($item->getType()) {
@@ -221,8 +213,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return array
      */
-    public function defineTabs($options = [])
-    {
+    public function defineTabs($options = []) {
         $ong = [];
 
         $this->addDefaultFormTab($ong);
@@ -251,8 +242,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return bool|string
      */
-    public static function redirectForm($object, $type = 'show')
-    {
+    public static function redirectForm($object, $type = 'show') {
         global $CFG_GLPI;
 
         $conf   = new PluginMetademandsConfig();
@@ -308,8 +298,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         return false;
     }
 
-    public function post_getEmpty()
-    {
+    public function post_getEmpty() {
         $this->fields["background_color"] = '#ffffff';
     }
 
@@ -318,8 +307,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return array|bool
      */
-    public function prepareInputForAdd($input)
-    {
+    public function prepareInputForAdd($input) {
         global $DB;
         $cat_already_store = false;
         if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
@@ -374,8 +362,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return array|bool
      */
-    public function prepareInputForUpdate($input)
-    {
+    public function prepareInputForUpdate($input) {
         global $DB;
         $cat_already_store = false;
         if (isset($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
@@ -451,8 +438,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         return $input;
     }
 
-    public function post_addItem()
-    {
+    public function post_addItem() {
         parent::post_addItem();
 
         if (!isset($this->input['id']) || empty($this->input['id'])) {
@@ -464,8 +450,7 @@ class PluginMetademandsMetademand extends CommonDBTM
     /**
      * @param int $history
      */
-    public function post_updateItem($history = 1)
-    {
+    public function post_updateItem($history = 1) {
         parent::post_updateItem($history);
 
         if (isset($this->updates['is_order']) && $this->input['is_order'] == 1) {
@@ -485,8 +470,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return string
      */
-    public function getURL($metademands_id)
-    {
+    public function getURL($metademands_id) {
         global $CFG_GLPI;
         if (!empty($metademands_id)) {
             return urldecode($CFG_GLPI["url_base"] . "/index.php?redirect=PluginMetademandsWizard_" . $metademands_id);
@@ -496,8 +480,7 @@ class PluginMetademandsMetademand extends CommonDBTM
     /**
      * @return array
      */
-    public function rawSearchOptions()
-    {
+    public function rawSearchOptions() {
         $tab = [];
 
         $tab[] = [
@@ -661,8 +644,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return string
      */
-    public static function getSpecificValueToDisplay($field, $values, array $options = [])
-    {
+    public static function getSpecificValueToDisplay($field, $values, array $options = []) {
         if (!is_array($values)) {
             $values = [$field => $values];
         }
@@ -693,8 +675,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         return parent::getSpecificValueToDisplay($field, $values, $options);
     }
 
-    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
-    {
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []) {
         if (!is_array($values)) {
             $values = [$field => $values];
         }
@@ -719,8 +700,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      *
      * @return string
      */
-    private static function getObjectTypeName($value)
-    {
+    private static function getObjectTypeName($value) {
         switch ($value) {
             case 'Ticket' :
                 return __('Ticket');
@@ -737,8 +717,7 @@ class PluginMetademandsMetademand extends CommonDBTM
     /**
      * @return array
      */
-    private static function getObjectTypes()
-    {
+    private static function getObjectTypes() {
         return [
             null      => Dropdown::EMPTY_VALUE,
             'Ticket'  => __('Ticket'),
@@ -747,8 +726,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         ];
     }
 
-    public function showForm($ID, $options = [])
-    {
+    public function showForm($ID, $options = []) {
         global $CFG_GLPI;
 
         $options['formoptions'] = "data-track-changes=false";
@@ -1033,8 +1011,7 @@ JAVASCRIPT
     /**
      * @param $metademands_id
      */
-    public function showDuplication($metademands_id)
-    {
+    public function showDuplication($metademands_id) {
         echo "<h3><div class='alert alert-warning' role='alert'>";
         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
         echo __('Tasks level cannot be changed as unresolved related tickets exist', 'metademands');
@@ -1055,8 +1032,7 @@ JAVASCRIPT
      * @param       $ID
      * @param array $field
      */
-    public function displaySpecificTypeField($ID, $field = [], array $options = [])
-    {
+    public function displaySpecificTypeField($ID, $field = [], array $options = []) {
         $this->getFromDB($ID);
 
         switch ($field['name']) {
@@ -1150,8 +1126,7 @@ JAVASCRIPT
      *
      * @return void
      */
-    public static function addLog($input, $logtype)
-    {
+    public static function addLog($input, $logtype) {
         $new_value = $_SESSION["glpiname"] . " ";
         if ($logtype == self::LOG_ADD) {
             $new_value .= __('field add on demand', 'metademands') . " : ";
@@ -1183,8 +1158,7 @@ JAVASCRIPT
      *
      * @return void
      */
-    public static function addHistory($ID, $type, $old_value = '', $new_value = '')
-    {
+    public static function addHistory($ID, $type, $old_value = '', $new_value = '') {
         $changes[0] = 0;
         $changes[1] = $old_value;
         $changes[2] = $new_value;
@@ -1322,8 +1296,7 @@ JAVASCRIPT
      * @return array
      * @throws \GlpitestSQLError
      */
-    public function listMetademands($forceview = false, $options = [])
-    {
+    public function listMetademands($forceview = false, $options = []) {
         global $DB;
 
         $dbu                 = new DbUtils();
@@ -1396,8 +1369,7 @@ JAVASCRIPT
      * @return array
      * @throws \GlpitestSQLError
      */
-    public function constructMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW)
-    {
+    public function constructMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW) {
         global $DB;
 
         $metademands = new self();
@@ -1469,8 +1441,7 @@ JAVASCRIPT
      *
      * @throws \GlpitestSQLError
      */
-    public function convertMetademandToTicket($ticket, $metademands_id)
-    {
+    public function convertMetademandToTicket($ticket, $metademands_id) {
         $tickets_id        = $ticket->input["id"];
         $oldlanguage       = $_SESSION['glpilanguage'];
         $ticket_task       = new PluginMetademandsTicket_Task();
@@ -1528,8 +1499,7 @@ JAVASCRIPT
      * @return array
      * @throws \GlpitestSQLError
      */
-    public function addObjects($metademands_id, $values, $options = [])
-    {
+    public function addObjects($metademands_id, $values, $options = []) {
         global $PLUGIN_HOOKS;
 
         $tasklevel = 1;
@@ -1911,7 +1881,8 @@ JAVASCRIPT
                         if ($input['name'] === 0 || $input['name'] === "0" || empty($input['name'])) {
                             $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                         }
-                        $input = Toolbox::addslashes_deep($input);
+                        $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
+                        $input         = Toolbox::addslashes_deep($input);
                         //ADD TICKET
                         if (isset($options['current_ticket_id'])
                             && $options['current_ticket_id'] > 0
@@ -2021,7 +1992,7 @@ JAVASCRIPT
                             $docitem = $docPdf->addDocument($name, $object_class, $object->getID(), $_SESSION['glpiactive_entity']);
                         }
 
-                    // Ticket already exists
+                        // Ticket already exists
                     } else {
                         if ($object_class == 'Ticket') {
                             $parent_tickets_id = $parent_fields['id'];
@@ -2918,8 +2889,7 @@ JAVASCRIPT
      *
      * @return mixed
      */
-    private function mergeFields($parent_fields, $parent_ticketfields)
-    {
+    private function mergeFields($parent_fields, $parent_ticketfields) {
         foreach ($parent_ticketfields as $key => $val) {
             switch ($key) {
                 //            case 'name' :
@@ -2945,8 +2915,7 @@ JAVASCRIPT
      *
      * @return array
      */
-    private function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
-    {
+    private function formatFields(array $parent_fields, $metademands_id, $values_form, $options = []) {
         $config_data       = PluginMetademandsConfig::getInstance();
         $langTech          = $config_data['languageTech'];
         $result            = [];
@@ -3082,8 +3051,7 @@ JAVASCRIPT
      * @param $parent_fields_id
      * @param $return_value
      */
-    public static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color = '')
-    {
+    public static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color = '') {
         global $PLUGIN_HOOKS;
 
         $style_title = "class='title'";
@@ -3878,8 +3846,7 @@ JAVASCRIPT
      *
      * @return array
      */
-    public function formatTicketFields($metademands_id, $itilcategory, $values, $users_id_requester)
-    {
+    public function formatTicketFields($metademands_id, $itilcategory, $values, $users_id_requester) {
         $inputs              = [];
         $ticket_field        = new PluginMetademandsTicketField();
         $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
@@ -4111,8 +4078,7 @@ JAVASCRIPT
      * @return bool
      * @throws \GlpitestSQLError
      */
-    public function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1, $inputField = [], $inputFieldMain = [])
-    {
+    public function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1, $inputField = [], $inputFieldMain = []) {
         $ticket_ticket = new Ticket_Ticket();
         $ticket_task   = new PluginMetademandsTicket_Task();
         $task          = new PluginMetademandsTask();
@@ -4217,14 +4183,17 @@ JAVASCRIPT
                 $son_ticket_data['_disablenotif']      = true;
                 $son_ticket_data['name']               = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
                 $son_ticket_data['name']               = trim($son_ticket_data['name']);
+                $son_ticket_data['name']               = Glpi\RichText\RichText::getTextFromHtml($son_ticket_data['name']);
                 $son_ticket_data['type']               = $parent_fields['type'];
                 $son_ticket_data['entities_id']        = $parent_fields['entities_id'];
                 $son_ticket_data['users_id_recipient'] = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
-                //Must use used_by_child parameter - disabled
-                //            $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
-                $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
-                $son_ticket_data['_auto_import']    = 1;
-                $son_ticket_data['status']          = Ticket::INCOMING;
+                //Must use used_by_child parameter if can
+                if (!$son_ticket_data['_users_id_requester']) {
+                    $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
+                }
+                $son_ticket_data['requesttypes_id']     = $parent_fields['requesttypes_id'];
+                $son_ticket_data['_auto_import']        = 1;
+                $son_ticket_data['status']              = Ticket::INCOMING;
                 if (isset($parent_fields['urgency'])) {
                     $son_ticket_data['urgency'] = $parent_fields['urgency'];
                 }
@@ -4321,8 +4290,7 @@ JAVASCRIPT
      *
      * @throws \GlpitestSQLError
      */
-    public function addSonTickets($tickets_data, $ticket_metademand)
-    {
+    public function addSonTickets($tickets_data, $ticket_metademand) {
         global $DB;
 
         $ticket_task    = new PluginMetademandsTicket_Task();
@@ -4715,8 +4683,7 @@ JAVASCRIPT
      * @return bool
      * @throws \GlpitestSQLError
      */
-    public function showPluginForTicket($ticket)
-    {
+    public function showPluginForTicket($ticket) {
         if (!$this->canView()) {
             return false;
         }
@@ -5085,8 +5052,7 @@ JAVASCRIPT
      * @return bool
      * @throws \GlpitestSQLError
      */
-    public function executeDuplicate($options = [])
-    {
+    public function executeDuplicate($options = []) {
         global $CFG_GLPI;
 
         if (isset($options['metademands_id'])) {
@@ -5270,8 +5236,7 @@ JAVASCRIPT
      *
      * @return int
      */
-    public function checkSlaState($values)
-    {
+    public function checkSlaState($values) {
         $ticket = new Ticket();
         $status = [Ticket::SOLVED, Ticket::CLOSED];
 
@@ -5329,8 +5294,7 @@ JAVASCRIPT
      * @return array array of massive actions
      * *@since version 0.84
      */
-    public function getSpecificMassiveActions($checkitem = null)
-    {
+    public function getSpecificMassiveActions($checkitem = null) {
         $isadmin = static::canUpdate();
         $actions = parent::getSpecificMassiveActions($checkitem);
         if ($isadmin) {
@@ -5349,8 +5313,7 @@ JAVASCRIPT
      * @see CommonDBTM::showMassiveActionsSubForm()
      *
      */
-    public static function showMassiveActionsSubForm(MassiveAction $ma)
-    {
+    public static function showMassiveActionsSubForm(MassiveAction $ma) {
         switch ($ma->getAction()) {
             case 'duplicate':
                 echo "&nbsp;" .
@@ -5400,8 +5363,7 @@ JAVASCRIPT
     /**
      * @return array
      */
-    public function getForbiddenStandardMassiveAction()
-    {
+    public function getForbiddenStandardMassiveAction() {
         $forbidden = parent::getForbiddenStandardMassiveAction();
 
         $forbidden[] = 'merge';
@@ -5410,8 +5372,7 @@ JAVASCRIPT
     }
 
 
-    public function displayHeader()
-    {
+    public function displayHeader() {
         Html::header(__('Configure demands', 'metademands'), '', "helpdesk", "pluginmetademandsmetademand", "metademand");
     }
 
@@ -5420,8 +5381,7 @@ JAVASCRIPT
      *
      * @param $plug
      */
-    public static function getPluginAfterCreateTicket($plug, $params)
-    {
+    public static function getPluginAfterCreateTicket($plug, $params) {
         global $PLUGIN_HOOKS;
 
         $dbu = new DbUtils();
@@ -5453,8 +5413,7 @@ JAVASCRIPT
      * @return type
      * @global type  $DB
      */
-    public static function displayField($id, $field, $lang = '')
-    {
+    public static function displayField($id, $field, $lang = '') {
         global $DB;
 
         $res = "";
@@ -5498,8 +5457,7 @@ JAVASCRIPT
         return $res;
     }
 
-    public function checkTaskAllowed($metademands_id, $values, $tasks)
-    {
+    public function checkTaskAllowed($metademands_id, $values, $tasks) {
         $in     = [];
         $out    = [];
         $field  = new PluginMetademandsField();
@@ -5539,8 +5497,7 @@ JAVASCRIPT
         return $tasks;
     }
 
-    public static function getMetademandDashboards()
-    {
+    public static function getMetademandDashboards() {
         $cards["count_running_metademands"] = [
             'widgettype' => ['bigNumber'],
             'itemtype'   => "\\PluginMetademandsMetademand",
@@ -5593,8 +5550,7 @@ JAVASCRIPT
         return $cards;
     }
 
-    public static function getRunningMetademands(array $params = []): array
-    {
+    public static function getRunningMetademands(array $params = []): array {
         $DB  = DBConnection::getReadConnection();
         $dbu = new DbUtils();
 
@@ -5645,8 +5601,7 @@ JAVASCRIPT
         ];
     }
 
-    public static function getRunningMetademandsAndMygroups(array $params = []): array
-    {
+    public static function getRunningMetademandsAndMygroups(array $params = []): array {
         $DB  = DBConnection::getReadConnection();
         $dbu = new DbUtils();
 
@@ -5664,7 +5619,7 @@ JAVASCRIPT
                              ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` AND `glpi_groups_tickets_metademands`.`type` = '" . CommonITILActor::ASSIGN . "') 
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
                             `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
-                                    " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode("','",$_SESSION['glpigroups']) . "'))  " .
+                                    " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode("','", $_SESSION['glpigroups']) . "'))  " .
             $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
         $total_running_parents_meta = $DB->query($get_running_parents_tickets_meta);
@@ -5713,8 +5668,7 @@ JAVASCRIPT
     }
 
 
-    public static function getMetademandsToBeClosed(array $params = []): array
-    {
+    public static function getMetademandsToBeClosed(array $params = []): array {
         $DB  = DBConnection::getReadConnection();
         $dbu = new DbUtils();
 
@@ -5770,8 +5724,7 @@ JAVASCRIPT
         ];
     }
 
-    public static function getMetademandsToBeValidated(array $params = []): array
-    {
+    public static function getMetademandsToBeValidated(array $params = []): array {
         $DB  = DBConnection::getReadConnection();
         $dbu = new DbUtils();
 
@@ -5845,8 +5798,7 @@ JAVASCRIPT
      *
      * @return void
      **/
-    public function cleanDBonPurge()
-    {
+    public function cleanDBonPurge() {
         $temp = new PluginMetademandsMetademandTask();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
 
@@ -5878,8 +5830,7 @@ JAVASCRIPT
     /**
      * @param $id
      **/
-    public static function showAvailableTags($id)
-    {
+    public static function showAvailableTags($id) {
         $self = new self();
         $tags = $self->getTags($id);
 
@@ -5902,8 +5853,7 @@ JAVASCRIPT
      *
      * @param $id
      **/
-    public function getTags($id)
-    {
+    public function getTags($id) {
         $fields = $this->find(['id' => $id]);
         $res    = [];
         foreach ($fields as $field) {
@@ -5913,8 +5863,7 @@ JAVASCRIPT
         return $res;
     }
 
-    public function exportAsXML()
-    {
+    public function exportAsXML() {
         $fields          = $this->fields;
         $metatranslation = new PluginMetademandsMetademandTranslation();
         $translations    = $metatranslation->find(['items_id' => $this->getID(),
@@ -5969,8 +5918,7 @@ JAVASCRIPT
         return "_plugins" . $name;
     }
 
-    public function toXml(SimpleXMLElement &$parent, array &$data)
-    {
+    public function toXml(SimpleXMLElement &$parent, array &$data) {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $child = $parent->addChild($key);
@@ -5989,8 +5937,7 @@ JAVASCRIPT
         }
     }
 
-    public function importXml()
-    {
+    public function importXml() {
         if (isset($_FILES['meta_file'])) {
             if (!count($_FILES['meta_file'])
                 || empty($_FILES['meta_file']['name'])
@@ -6315,8 +6262,7 @@ JAVASCRIPT
         return $newIDMeta;
     }
 
-    public function showImportForm()
-    {
+    public function showImportForm() {
         echo "<div align='center'>";
         echo "<form name='import_file_form' id='import_file_form' method='post'
             action='" . self::getFormURL() . "' enctype='multipart/form-data'>";
@@ -6340,8 +6286,7 @@ JAVASCRIPT
         echo "</div>";
     }
 
-    public function getBetween($string, $start = "", $end = "")
-    {
+    public function getBetween($string, $start = "", $end = "") {
         if (str_contains($string, $start)) { // required if $start not exist in $string
             $startCharCount = strpos($string, $start) + strlen($start);
             $firstSubStr    = substr($string, $startCharCount, strlen($string));
@@ -6364,8 +6309,7 @@ JAVASCRIPT
      *
      * @return array|string|string[]
      */
-    public static function getContentForUser($field, $users_id, $title, $line, $bypass = false)
-    {
+    public static function getContentForUser($field, $users_id, $title, $line, $bypass = false) {
         if ($bypass === true && is_numeric($title)) {
             return str_replace("#" . $title . "#", "", $line);
         }
@@ -6407,8 +6351,7 @@ JAVASCRIPT
      *
      * @return string
      */
-    public static function getStateItem($state)
-    {
+    public static function getStateItem($state) {
         switch ($state) {
             case self::TODO:
                 return "<span><i class=\"fas fa-3x fa-hourglass-half\"></i></span>";
@@ -6422,8 +6365,7 @@ JAVASCRIPT
         }
     }
 
-    public function showProgressionForm($item)
-    {
+    public function showProgressionForm($item) {
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/timeline_user.css");
 
         echo "<table class='tab_cadre_fixe' id='mainformtable'>";

@@ -2718,6 +2718,7 @@ class PluginMetademandsField extends CommonDBChild
    //                                        'editor_id'         => $namefield . "[" . $data['id'] . "]",
                                         'enable_richtext'   => true,
                                         'enable_fileupload' => false,
+                                        //TODO add param
                                         'enable_images'     => true,
                                         'display'           => false,
                                         'required'          => ($data['is_mandatory'] ? "required" : ""),
