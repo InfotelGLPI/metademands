@@ -1047,6 +1047,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
         $allfields   = [];
 
+        $use_as_step = 0;
         if ($metademands->fields['step_by_step_mode'] == 1) {
             $use_as_step = 1;
         }

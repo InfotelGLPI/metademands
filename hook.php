@@ -370,6 +370,45 @@ function plugin_metademands_uninstall() {
             $notif_template->delete($data_template);
         }
     }
+    //for step forms
+
+    $options = ['itemtype' => 'PluginMetademandsStepform',
+                'event'    => 'new_step_form',
+                'FIELDS'   => 'id'];
+
+    $notif = new Notification();
+    foreach ($DB->request('glpi_notifications', $options) as $data) {
+        $notif->delete($data);
+    }
+
+    $options = ['itemtype' => 'PluginMetademandsStepform',
+                'event'    => 'reminder_step_form',
+                'FIELDS'   => 'id'];
+
+    $notif = new Notification();
+    foreach ($DB->request('glpi_notifications', $options) as $data) {
+        $notif->delete($data);
+    }
+
+    //templates
+    $template       = new NotificationTemplate();
+    $translation    = new NotificationTemplateTranslation();
+    $notif_template = new Notification_NotificationTemplate();
+    $options        = ['itemtype' => 'PluginMetademandsStepform',
+                       'FIELDS'   => 'id'];
+
+    foreach ($DB->request('glpi_notificationtemplates', $options) as $data) {
+        $options_template = ['notificationtemplates_id' => $data['id'],
+                             'FIELDS'                   => 'id'];
+        foreach ($DB->request('glpi_notificationtemplatetranslations', $options_template) as $data_template) {
+            $translation->delete($data_template);
+        }
+        $template->delete($data);
+
+        foreach ($DB->request('glpi_notifications_notificationtemplates', $options_template) as $data_template) {
+            $notif_template->delete($data_template);
+        }
+    }
 
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
@@ -835,7 +874,8 @@ function install_notifications_metademands() {
     // Notification
     // Request
     $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('New inter ticket Followup','PluginMetademandsInterticketfollowup', NOW());";
-    $result = $DB->query($query_id) or die($DB->error());
+    $DB->query($query_id) or die($DB->error());
+
     $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='PluginMetademandsInterticketfollowup' AND `name` = 'New inter ticket Followup'";
     $result = $DB->query($query_id) or die($DB->error());
     $templates_id = $DB->result($result, 0, 'id');
@@ -884,6 +924,10 @@ Ticket ###ticket.id##
     $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
     $DB->query($query);
+
+
+    //for step forms
+    //TODO
 
     $migration->executeMigration();
     return true;
