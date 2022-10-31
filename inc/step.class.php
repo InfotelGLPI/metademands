@@ -1,5 +1,4 @@
 <?php
-
 /*
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
@@ -27,7 +26,7 @@
  */
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 
@@ -35,288 +34,288 @@ if (!defined('GLPI_ROOT')) {
  * PluginMetademandsStep Class
  *
  **/
-class PluginMetademandsStep extends CommonDBChild {
+class PluginMetademandsStep extends CommonDBChild
+{
+    public static $itemtype  = 'PluginMetademandsMetademand';
+    public static $items_id  = 'plugin_metademands_metademands_id';
+    //   public        $dohistory = true;
 
-   static public $itemtype  = 'PluginMetademandsMetademand';
-   static public $items_id  = 'plugin_metademands_metademands_id';
-//   public        $dohistory = true;
-
-//   static $rightname = 'plugin_metademands';
-   static $rightname = 'ticket';
+    //   static $rightname = 'plugin_metademands';
+    public static $rightname = 'ticket';
 
 
-   /**
-    * Return the localized name of the current Type
-    * Should be overloaded in each new class
-    *
-    * @param integer $nb Number of items
-    *
-    * @return string
-    **/
-   static function getTypeName($nb = 0) {
-      return _n('Associate block', 'Associate blocks', $nb);
-   }
+    /**
+     * Return the localized name of the current Type
+     * Should be overloaded in each new class
+     *
+     * @param integer $nb Number of items
+     *
+     * @return string
+     **/
+    public static function getTypeName($nb = 0)
+    {
+        return _n('Step-by-Step block', 'Step-by-Step blocks', $nb, 'metademands');
+    }
 
-    static function canView() {
+    public static function canView()
+    {
         return Session::haveRight(self::$rightname, READ);
     }
 
-    /**
-     * @return bool
-     */
-    static function canCreate() {
+     /**
+      * @return bool
+      */
+    public static function canCreate()
+    {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
+
+
     public function canCreateItem()
     {
         return true;
     }
-    static function canUpdate() {
+
+
+    public static function canUpdate()
+    {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
 
-   static function getIcon() {
-      return PluginMetademandsMetademand::getIcon();
-   }
-   /**
-    * Get the standard massive actions which are forbidden
-    *
-    * @return array an array of massive actions
-    **@since version 0.84
-    *
-    * This should be overloaded in Class
-    *
-    */
-   function getForbiddenStandardMassiveAction() {
-
-      $forbidden   = parent::getForbiddenStandardMassiveAction();
-      $forbidden[] = 'update';
-      return $forbidden;
-   }
-
-
-   /**
-    * @param \CommonGLPI $item
-    * @param int         $withtemplate
-    *
-    * @return array|string
-    * @see CommonGLPI::getTabNameForItem()
-    */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
-       switch ($item->getType()) {
-           case PluginMetademandsMetademand::getType() :
-               if($item->fields['step_by_step_mode'] == 1) {
-                   return self::createTabEntry(self::getTypeName());
-               } else {
-                   return false;
-               }
-
-               break;
-       }
+    public static function getIcon()
+    {
+        return PluginMetademandsMetademand::getIcon();
+    }
+    /**
+     * Get the standard massive actions which are forbidden
+     *
+     * @return array an array of massive actions
+     **@since version 0.84
+     *
+     * This should be overloaded in Class
+     *
+     */
+    public function getForbiddenStandardMassiveAction()
+    {
+        $forbidden   = parent::getForbiddenStandardMassiveAction();
+        $forbidden[] = 'update';
+        return $forbidden;
+    }
 
 
-   }
+    /**
+     * @param \CommonGLPI $item
+     * @param int         $withtemplate
+     *
+     * @return array|string
+     * @see CommonGLPI::getTabNameForItem()
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
+        switch ($item->getType()) {
+            case PluginMetademandsMetademand::getType():
+                if ($item->fields['step_by_step_mode'] == 1) {
+                    return self::createTabEntry(self::getTypeName());
+                } else {
+                    return false;
+                }
 
-   /**
-    * @param $item            CommonGLPI object
-    * @param $tabnum (default 1)
-    * @param $withtemplate (default 0)
-    **
-    *
-    * @return bool
-    */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
-      switch ($item->getType()) {
-          case PluginMetademandsMetademand::getType() :
-            self::showStepByBloc($item);
-         break;
-      }
-      return true;
-   }
+                break;
+        }
+    }
+
+    /**
+     * @param $item            CommonGLPI object
+     * @param $tabnum (default 1)
+     * @param $withtemplate (default 0)
+     **
+     *
+     * @return bool
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
+        switch ($item->getType()) {
+            case PluginMetademandsMetademand::getType():
+                self::showStepByBlock($item);
+                break;
+        }
+        return true;
+    }
 
 
-   /**
-    * Display all translated field for a dropdown
-    *
-    * @param $item a Dropdown item
-    *
-    * @return true;
-    **/
-   static function showStepByBloc($item) {
-      global $DB, $CFG_GLPI;
+    /**
+     * Display all translated field for a dropdown
+     *
+     * @param $item a Dropdown item
+     *
+     * @return true;
+     **/
+    public static function showStepByBlock($item)
+    {
+        global $DB, $CFG_GLPI;
 
-      $rand    = mt_rand();
-      $canedit = $item->can($item->getID(), UPDATE);
+        $rand    = mt_rand();
+        $canedit = $item->can($item->getID(), UPDATE);
 
-      if ($canedit) {
-         echo "<div id='viewstepbybloc" . $item->getType() . $item->getID() . "$rand'></div>\n";
+        if ($canedit) {
+            echo "<div id='viewstepbybloc" . $item->getType() . $item->getID() . "$rand'></div>\n";
 
-         echo "<script type='text/javascript' >\n";
-         echo "function addstepbybloc" . $item->getType() . $item->getID() . "$rand() {\n";
-         $params = ['type'                      => __CLASS__,
-                    'parenttype'                => get_class($item),
-                    $item->getForeignKeyField() => $item->getID(),
-                    'id'                        => -1];
-         Ajax::updateItemJsCode("viewstepbybloc" . $item->getType() . $item->getID() . "$rand",
-                                $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                                $params);
-         echo "};";
-         echo "</script>\n";
-         echo "<div class='center'>" .
-              "<a class='submit btn btn-primary' href='javascript:addstepbybloc" .
-              $item->getType() . $item->getID() . "$rand();'>" . __('Add a new association','metademands') .
-              "</a></div><br>";
-      }
-      $iterator = $DB->request([
-                                  'FROM'  => getTableForItemType(__CLASS__),
-                                  'WHERE' => [
+            echo "<script type='text/javascript' >\n";
+            echo "function addstepbybloc" . $item->getType() . $item->getID() . "$rand() {\n";
+            $params = ['type'                      => __CLASS__,
+                       'parenttype'                => get_class($item),
+                       $item->getForeignKeyField() => $item->getID(),
+                       'id'                        => -1];
+            Ajax::updateItemJsCode(
+                "viewstepbybloc" . $item->getType() . $item->getID() . "$rand",
+                $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+                $params
+            );
+            echo "};";
+            echo "</script>\n";
+            echo "<div class='center'>" .
+                 "<a class='submit btn btn-primary' href='javascript:addstepbybloc" .
+                 $item->getType() . $item->getID() . "$rand();'>" . __('Add a new association', 'metademands') .
+                 "</a></div><br>";
+        }
+        $iterator = $DB->request([
+                                    'FROM'  => getTableForItemType(__CLASS__),
+                                    'WHERE' => [
 
-                                     'plugin_metademands_metademands_id' => $item->getID(),
+                                       'plugin_metademands_metademands_id' => $item->getID(),
 
-                                  ]
+                                    ]
 
-                               ]);
-      if (count($iterator)) {
-         if ($canedit) {
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
-            Html::showMassiveActions($massiveactionparams);
-         }
-         echo "<div class='left'>";
-         echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
-         echo "<th colspan='4'>" . __("List of associations",'metademands') . "</th></tr><tr>";
-         if ($canedit) {
-            echo "<th width='10'>";
-            Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-            echo "</th>";
-         }
-         echo "<th>" . __("Bloc",'metademands') . "</th>";
-         echo "<th>" . __("Field") . "</th>";
-         echo "<th>" . __("Value") . "</th></tr>";
-         foreach ($iterator as $data) {
-            $onhover = '';
+                                 ]);
+        if (count($iterator)) {
             if ($canedit) {
-               $onhover = "style='cursor:pointer'
+                Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
+                $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
+                Html::showMassiveActions($massiveactionparams);
+            }
+            echo "<div class='left'>";
+            echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
+            echo "<th colspan='3'>" . __("List of associations", 'metademands') . "</th></tr><tr>";
+            if ($canedit) {
+                echo "<th width='10'>";
+                Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
+                echo "</th>";
+            }
+            echo "<th>" . __("Block", 'metademands') . "</th>";
+            echo "<th>" . __("Group") . "</th>";
+
+            foreach ($iterator as $data) {
+                $onhover = '';
+                if ($canedit) {
+                    $onhover = "style='cursor:pointer'
                            onClick=\"viewEditstepbybloc" . $item->getType() . $data['id'] . "$rand();\"";
+                }
+                echo "<tr class='tab_bg_1'>";
+                if ($canedit) {
+                    echo "<td class='center'>";
+                    Html::showMassiveActionCheckBox(__CLASS__, $data["id"]);
+                    echo "</td>";
+                }
+
+                echo "<td $onhover>";
+                if ($canedit) {
+                    echo "\n<script type='text/javascript' >\n";
+                    echo "function viewEditstepbybloc" . $item->getType() . $data['id'] . "$rand() {\n";
+                    $params = ['type'                      => __CLASS__,
+                               'parenttype'                => get_class($item),
+                               $item->getForeignKeyField() => $item->getID(),
+                               'id'                        => $data["id"]];
+                    Ajax::updateItemJsCode(
+                        "viewstepbybloc" . $item->getType() . $item->getID() . "$rand",
+                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+                        $params
+                    );
+                    echo "};";
+                    echo "</script>\n";
+                }
+                echo($data['block_id']);
+                echo "</td><td $onhover>";
+                echo Dropdown::getDropdownName(Group::getTable(), $data['groups_id']);
+                echo "</td>";
+                echo "</tr>";
             }
-            echo "<tr class='tab_bg_1'>";
+            echo "</table>";
             if ($canedit) {
-               echo "<td class='center'>";
-               Html::showMassiveActionCheckBox(__CLASS__, $data["id"]);
-               echo "</td>";
+                $massiveactionparams['ontop'] = false;
+                Html::showMassiveActions($massiveactionparams);
+                Html::closeForm();
             }
-
-            echo "<td $onhover>";
-            if ($canedit) {
-               echo "\n<script type='text/javascript' >\n";
-               echo "function viewEditstepbybloc" . $item->getType() . $data['id'] . "$rand() {\n";
-               $params = ['type'                      => __CLASS__,
-                          'parenttype'                => get_class($item),
-                          $item->getForeignKeyField() => $item->getID(),
-                          'id'                        => $data["id"]];
-               Ajax::updateItemJsCode("viewstepbybloc" . $item->getType() . $item->getID() . "$rand",
-                                      $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                                      $params);
-               echo "};";
-               echo "</script>\n";
-            }
-            echo ($data['bloc_id']);
-            echo "</td><td $onhover>";
-           echo Dropdown::getDropdownName(Group::getTable(),$data['groups_id']);
-            echo "</td>";
-            echo "<td $onhover>" . $data['reminder_delay'] . "</td>";
-            echo "</tr>";
-         }
-         echo "</table>";
-         if ($canedit) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-         }
-      } else {
-         echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
-         echo "<th class='b'>" . __("No association found") . "</th></tr></table>";
-      }
-      return true;
-   }
+        } else {
+            echo "<table class='tab_cadre_fixe'><tr class='tab_bg_2'>";
+            echo "<th class='b'>" . __("No association found", 'metademands') . "</th></tr></table>";
+        }
+        return true;
+    }
 
 
-   /**
-    * Display translation form
-    *
-    * @param int $ID field (default -1)
-    * @param     $options   array
-    *
-    * @return bool
-    */
-   function showForm($ID = -1, $options = []) {
-      global $CFG_GLPI;
+    /**
+     * Display translation form
+     *
+     * @param int $ID field (default -1)
+     * @param     $options   array
+     *
+     * @return bool
+     */
+    public function showForm($ID = -1, $options = [])
+    {
 
-      if (isset($options['parent']) && !empty($options['parent'])) {
-         $item = $options['parent'];
-      }
-      if ($ID > 0) {
-         $this->check($ID, UPDATE);
-      } else {
-         $options['itemtype'] = get_class($item);
-         $options['items_id'] = $item->getID();
+        if (isset($options['parent']) && !empty($options['parent'])) {
+            $item = $options['parent'];
+        }
+        if ($ID > 0) {
+            $this->check($ID, UPDATE);
+        } else {
+            $options['itemtype'] = get_class($item);
+            $options['items_id'] = $item->getID();
 
-         // Create item
-         $this->check(-1, CREATE, $options);
-      }
+            // Create item
+            $this->check(-1, CREATE, $options);
+        }
 
-      $this->showFormHeader($options);
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Block','metademands') . "</td>";
-      echo "<td>";
-      echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
+        $this->showFormHeader($options);
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Block', 'metademands') . "</td>";
+        echo "<td>";
+        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
 //      echo Html::hidden('itemtype', ['value' => get_class($item)]);
-       $field  = new PluginMetademandsField();
-       $fields = $field->find(["plugin_metademands_metademands_id" => $item->getID()]);
-       $blocks = [];
-       $self = new self();
-       foreach ($fields as $f) {
-           if (!isset($blocks[$f['rank']]) &&
-               (!$self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),'bloc_id' => intval($f['rank'])])
-                   || $self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),'bloc_id' => intval($f['rank']), 'id' => $ID]) )) {
-               $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
-           }
-       }
-       ksort($blocks);
+        $field  = new PluginMetademandsField();
+        $fields = $field->find(["plugin_metademands_metademands_id" => $item->getID()]);
+        $blocks = [];
+        $self = new self();
+        foreach ($fields as $f) {
+            if (!isset($blocks[$f['rank']]) &&
+                (!$self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
+                                          'block_id' => intval($f['rank'])])
+                    || $self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
+                                               'block_id' => intval($f['rank']), 'id' => $ID]))) {
+                $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+            }
+        }
+        ksort($blocks);
 
-       Dropdown::showFromArray('bloc_id', $blocks,
-           ['value'   => $this->fields['bloc_id'],
-               'width'    => '100%',
+        Dropdown::showFromArray(
+            'block_id',
+            $blocks,
+            ['value'   => $this->fields['block_id'],
+                'width'    => '100%',
+                'entity'   => $_SESSION['glpiactiveentities']]
+        );
 
-               'entity'   => $_SESSION['glpiactiveentities']]);
-//       Dropdown::showNumber('bloc_id',['value' => $this->fields['bloc_id']]);
-      echo "</td><td colspan='2'>&nbsp;</td></tr>";
+        echo "</td></tr>";
 
-      echo "<tr class='tab_bg_1'><td>" . Group::getTypeName() . "</td>";
-      echo "<td>";
-
-         Group::dropdown(['name' => 'groups_id', 'value' => $this->fields['groups_id']]);
-
-      echo "</td>";
-//      echo "<td>" . __('Reminder delay (in day)','metademands') . "</td>";
-//      echo "<td>";
-//       Dropdown::showNumber('reminder_delay',['value' => $this->fields['reminder_delay'], 'min' => 0, 'max' => 100]);
-//      echo "</td>";
-//
-     echo "<td>" . "</td>";
-      echo "<td>";
-
-      echo "</td>";
-      echo "</tr>";
-      $this->showFormButtons($options);
-      return true;
-   }
-
-
-
-
-
-
-
+        echo "<tr class='tab_bg_1'><td>" . Group::getTypeName() . "</td>";
+        echo "<td>";
+        Group::dropdown(['name' => 'groups_id',
+                         'value' => $this->fields['groups_id']]);
+        echo "</td>";
+        echo "</tr>";
+        $this->showFormButtons($options);
+        return true;
+    }
 }

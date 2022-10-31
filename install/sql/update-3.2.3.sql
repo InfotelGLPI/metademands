@@ -8,7 +8,7 @@ CREATE TABLE `glpi_plugin_metademands_stepforms`
     `groups_id_dest`                    int unsigned NOT NULL DEFAULT '0',
     `date`                              timestamp NULL DEFAULT NULL,
     `reminder_date`                     timestamp NULL DEFAULT NULL,
-    `bloc_id`                           int unsigned NOT NULL DEFAULT '0',
+    `block_id`                           int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
@@ -26,7 +26,7 @@ CREATE TABLE `glpi_plugin_metademands_steps`
 (
     `id`                                int unsigned NOT NULL AUTO_INCREMENT,
     `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
-    `bloc_id`                           int unsigned NOT NULL DEFAULT '0',
+    `block_id`                           int unsigned NOT NULL DEFAULT '0',
     `groups_id`                         int unsigned NOT NULL DEFAULT '0',
     `reminder_delay`                    text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     PRIMARY KEY (`id`)

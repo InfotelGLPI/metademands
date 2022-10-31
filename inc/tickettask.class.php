@@ -435,7 +435,7 @@ class PluginMetademandsTicketTask extends CommonDBTM {
                       'enable_images'     => false]);
       echo "</div>";
 
-      if ($tasktype == PluginMetademandsTask::TICKET_TYPE) {
+      if ($tasktype == PluginMetademandsTask::TICKET_TYPE && isset($tt->fields['id'])) {
          echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
       }
       echo Html::hidden('showForMetademands', ['value' => 1]);
@@ -516,7 +516,9 @@ class PluginMetademandsTicketTask extends CommonDBTM {
       PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved, $tasks->fields['type'], $input);
 
       echo Html::hidden('plugin_metademands_tasks_id', ['value' => $this->fields['plugin_metademands_tasks_id']]);
-      echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
+       if (isset($tt->fields['id'])) {
+           echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
+       }
       echo Html::hidden('type', ['value' => $metademands->fields['type']]);
       echo Html::hidden('entities_id', ['value' => $metademands->fields['entities_id']]);
 

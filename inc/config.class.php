@@ -97,14 +97,16 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo __('Parent ticket tag', 'metademands');
       echo "</td>";
       echo "<td>";
-      echo Html::input('parent_ticket_tag', ['value' => stripslashes($config["parent_ticket_tag"]), 'size' => 40]);
+      $parent_ticket_tag =  isset($config["parent_ticket_tag"]) ? stripslashes($config["parent_ticket_tag"]) : "";
+      echo Html::input('parent_ticket_tag', ['value' => $parent_ticket_tag, 'size' => 40]);
       echo "</td>";
 
       echo "<td>";
       echo __('Son ticket tag', 'metademands');
       echo "</td>";
       echo "<td>";
-      echo Html::input('son_ticket_tag', ['value' => stripslashes($config["son_ticket_tag"]), 'size' => 40]);
+      $son_ticket_tag =  isset($config["son_ticket_tag"]) ? stripslashes($config["son_ticket_tag"]) : "";
+      echo Html::input('son_ticket_tag', ['value' => $son_ticket_tag, 'size' => 40]);
       echo "</td>";
       echo "</tr>";
 

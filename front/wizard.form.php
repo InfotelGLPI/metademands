@@ -50,23 +50,22 @@ if (empty($_GET['tickets_id'])) {
 
 if (empty($_GET['resources_id'])) {
    $_GET['resources_id'] = 0;
-   if(isset($_SESSION['plugin_metademands']['fields']['resources_id']) && !empty($_SESSION['plugin_metademands']['fields']['resources_id'])){
+   if (isset($_SESSION['plugin_metademands']['fields']['resources_id']) && !empty($_SESSION['plugin_metademands']['fields']['resources_id'])) {
       $_GET['resources_id'] = $_SESSION['plugin_metademands']['fields']['resources_id'];
-   }
-   else if(isset($_SESSION['plugin_metademands']['fields'])){
-      foreach ($_SESSION['plugin_metademands']['fields'] as $fieldKey => $field){
-         if(!is_array($field)){
+   } else if (isset($_SESSION['plugin_metademands']['fields'])) {
+      foreach ($_SESSION['plugin_metademands']['fields'] as $fieldKey => $field) {
+         if (!is_array($field)) {
             $metademandsField = new PluginMetademandsField();
             $metademandsField->getFromDB($fieldKey);
-            if($metademandsField->getField('item') == 'PluginResourcesResource'){
-               $_GET['resources_id'] = $field;
-               $_SESSION['plugin_metademands']['fields']['resources_id'] =$field;
+            if ($metademandsField->getField('item') == 'PluginResourcesResource') {
+               $_GET['resources_id']                                     = $field;
+               $_SESSION['plugin_metademands']['fields']['resources_id'] = $field;
             }
          }
       }
 
    }
-} else{
+} else {
    $_SESSION['plugin_metademands']['fields']['resources_id'] = $_GET['resources_id'];
 }
 
@@ -94,9 +93,8 @@ if (isset($_POST['next'])) {
 
          $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
          $metademands->getFromDB($_POST['form_metademands_id']);
-         $plugin = new Plugin();
          $meta   = [];
-         if ($plugin->isActivated('orderprojects')
+         if (Plugin::isPluginActive('orderprojects')
              && $metademands->fields['is_order'] == 1) {
             $orderprojects = new PluginOrderprojectsMetademand();
             $meta          = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
@@ -260,15 +258,22 @@ if (isset($_POST['next'])) {
       if (Session::getCurrentInterface() == 'central') {
          Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu");
       } else {
-         $plugin = new Plugin();
-         if ($plugin->isActivated('servicecatalog')) {
+         if (Plugin::isPluginActive('servicecatalog')) {
             PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a demand', 'metademands'));
          } else {
             Html::helpHeader(__('Create a demand', 'metademands'));
          }
       }
 
-      $itilcategories = $_SESSION['servicecatalog']['sc_itilcategories_id'] ?? 0;
+      $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+      if (is_array($cats) && count($cats) == 1) {
+         foreach ($cats as $cat) {
+            $itilcategories = $cat;
+         }
+      } else {
+         $itilcategories = $_SESSION['servicecatalog']['sc_itilcategories_id'] ?? 0;
+      }
+
       $metademands->getFromDB($_POST['form_metademands_id']);
       $type = $metademands->fields['type'];
 
@@ -312,8 +317,7 @@ if (isset($_POST['next'])) {
                $_POST['step'] = $_POST['step'] - 1;
                break;
          }
-         $plugin = new Plugin();
-         if ($plugin->isActivated('servicecatalog')
+         if (Plugin::isPluginActive('servicecatalog')
              && $_POST['step'] == PluginMetademandsMetademand::STEP_LIST
              && Session::haveRight("plugin_servicecatalog", READ)) {
             if ($itilcategories == 0) {
@@ -346,7 +350,7 @@ if (isset($_POST['next'])) {
       }
 
       if (Session::getCurrentInterface() != 'central'
-          && $plugin->isActivated('servicecatalog')) {
+          && Plugin::isPluginActive('servicecatalog')) {
 
          PluginServicecatalogMain::showNavBarFooter('metademands');
       }
@@ -640,8 +644,7 @@ if (isset($_POST['next'])) {
          Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu", "wizard");
 
       } else {
-         $plugin = new Plugin();
-         if ($plugin->isActivated('servicecatalog')) {
+         if (Plugin::isPluginActive('servicecatalog')) {
             PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a demand', 'metademands'));
          } else {
             Html::helpHeader(__('Create a demand', 'metademands'));
@@ -685,7 +688,7 @@ if (isset($_POST['next'])) {
       $wizard->showWizard($options);
 
       if (Session::getCurrentInterface() != 'central'
-          && $plugin->isActivated('servicecatalog')) {
+          && Plugin::isPluginActive('servicecatalog')) {
 
          PluginServicecatalogMain::showNavBarFooter('metademands');
       }

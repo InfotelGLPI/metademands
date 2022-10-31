@@ -29,9 +29,9 @@
 
 $AJAX_INCLUDE = 1;
 if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
-   include('../../../inc/includes.php');
-   header("Content-Type: text/html; charset=UTF-8");
-   Html::header_nocache();
+    include('../../../inc/includes.php');
+    header("Content-Type: text/html; charset=UTF-8");
+    Html::header_nocache();
 }
 
 Session::checkLoginUser();
@@ -40,62 +40,75 @@ $fieldGroup = new PluginMetademandsField();
 $cond       = [];
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
-   if (!isset($_POST['field'])) {
-      if ($fieldGroup->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'],
-                                        'type'         => "dropdown_object",
-                                        'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-                                        'item'         => Group::getType()])) {
-         $id = $fieldGroup->fields['id'];
-         $_POST["field"] = "field[$id]";
-      }
-   } else {
-      if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
-         $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
-      }
+    if (!isset($_POST['field'])) {
+        if ($fieldGroup->getFromDBByCrit(['link_to_user'                      => $_POST['id_fielduser'],
+                                          'type'                              => "dropdown_object",
+                                          'plugin_metademands_metademands_id' => $_POST['metademands_id'],
+                                          'item'                              => Group::getType()])) {
+            $id             = $fieldGroup->fields['id'];
+            $_POST["field"] = "field[$id]";
+        }
+    } else {
+        if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
+            $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
+        }
 
-      $fieldGroup->getFromDB($_POST['fields_id']);
-   }
+        $fieldGroup->getFromDB($_POST['fields_id']);
+    }
 
-   if (!empty($fieldGroup->fields['custom_values'])) {
-      $options = PluginMetademandsField::_unserialize($fieldGroup->fields['custom_values']);
-      foreach ($options as $type_group => $values) {
-         $cond[$type_group] = $values;
-      }
-   }
+    if (!empty($fieldGroup->fields['custom_values'])) {
+
+        $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
+        $group_user_data = Group_User::getUserGroups($_POST["value"], $condition);
+
+        $requester_groups = [];
+        foreach ($group_user_data as $groups) {
+            $requester_groups[] = $groups['id'];
+        }
+
+        $options = PluginMetademandsField::_unserialize($fieldGroup->fields['custom_values']);
+        foreach ($options as $type_group => $values) {
+            if ($type_group != 'user_group') {
+                $cond[$type_group] = $values;
+            } else {
+                $cond["glpi_groups.id"] = $requester_groups;
+            }
+        }
+    }
 }
-
+unset($cond['user_group']);
 //chercher les champs de la meta avec param : updatefromthisfield
 $groups_id = 0;
 if (isset($_POST['value']) && $_POST["value"] > 0
     && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 
-   $user = new User();
-   if ($user->getFromDB($_POST["value"])) {
-      $groups_id = PluginMetademandsField::getUserGroup($_SESSION['glpiactiveentities'],
-                                                        $_POST["value"],
-                                                        $cond,
-                                                        true);
-   }
+    $user = new User();
+    if ($user->getFromDB($_POST["value"])) {
+        $groups_id = PluginMetademandsField::getUserGroup($_SESSION['glpiactiveentities'],
+                                                          $_POST["value"],
+                                                          $cond,
+                                                          true);
+    }
 }
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])) {
-   $groups_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
+    $groups_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
 }
 
 if (isset($_POST['groups_id'])) {
-   $groups_id = $_POST['groups_id'];
+    $groups_id = $_POST['groups_id'];
 }
 
 $rand = mt_rand();
-$opt = ['name'      => $_POST["field"],
-        'entity'    => $_SESSION['glpiactiveentities'],
-        'value'     => $groups_id,
-        'condition' => $cond,
-        'rand' => $rand
+$opt  = ['name'      => $_POST["field"],
+         'entity'    => $_SESSION['glpiactiveentities'],
+         'value'     => $groups_id,
+         'condition' => $cond,
+         'rand'      => $rand
 ];
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
-   $opt['specific_tags'] = ['required' => 'required'];
+    $opt['specific_tags'] = ['required' => 'required'];
 }
 Group::dropdown($opt);
 

@@ -732,36 +732,36 @@ class PluginMetademandsTask extends CommonDBTM {
       return $input;
    }
 
-   /**
-    * @param $params
-    * @param $protocol
-    *
-    * @return array
-    */
-   static function methodListTasktypes($params, $protocol) {
-
-      if (isset ($params['help'])) {
-         return ['help' => 'bool,optional'];
-      }
-
-      if (!Session::getLoginUserID()) {
-         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-      }
-
-      $tasks  = new self();
-      $result = $tasks->getTaskTypes();
-
-      if (!Session::haveRight("ticket", CREATE)) {
-         unset($result[0]);// unset ticket option
-      }
-
-      $response = [];
-      foreach ($result as $key => $taskType) {
-         $response[] = ['id' => $key + 1, 'value' => $taskType];
-      }
-
-      return $response;
-   }
+//   /**
+//    * @param $params
+//    * @param $protocol
+//    *
+//    * @return array
+//    */
+//   static function methodListTasktypes($params, $protocol) {
+//
+//      if (isset ($params['help'])) {
+//         return ['help' => 'bool,optional'];
+//      }
+//
+//      if (!Session::getLoginUserID()) {
+//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
+//      }
+//
+//      $tasks  = new self();
+//      $result = $tasks->getTaskTypes();
+//
+//      if (!Session::haveRight("ticket", CREATE)) {
+//         unset($result[0]);// unset ticket option
+//      }
+//
+//      $response = [];
+//      foreach ($result as $key => $taskType) {
+//         $response[] = ['id' => $key + 1, 'value' => $taskType];
+//      }
+//
+//      return $response;
+//   }
 
    /**
     * @param $metademands_id

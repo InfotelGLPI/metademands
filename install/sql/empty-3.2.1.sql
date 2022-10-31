@@ -19,7 +19,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     `can_update`           tinyint NOT NULL DEFAULT '0',
     `can_clone`            tinyint NOT NULL DEFAULT '0',
     `comment`              text COLLATE utf8mb4_unicode_ci         default NULL,
-    `object_to_create`     varchar(255) collate utf8mb4_unicode_ci default NULL,
+    `object_to_create`     varchar(255) COLLATE utf8mb4_unicode_ci default NULL,
     `type`                 int unsigned NOT NULL default '0',                         -- metademand type : Incident, demand
     `itilcategories_id`    varchar(255) NOT NULL                   default '[]', -- references itilcategories glpi
     `icon`                 varchar(255)                            default NULL,
@@ -33,8 +33,6 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     `hide_no_field`        tinyint default '0',
     `title_color`          varchar(255)                            default '#000000',
     `background_color`     varchar(255)                            default '#FFFFFF',
-    `step_by_step_mode`    tinyint NOT NULL DEFAULT '0',
-    `share_block` tinyint NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY                    `itilcategories_id` (`itilcategories_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
@@ -137,6 +135,7 @@ CREATE TABLE `glpi_plugin_metademands_tickets_fields`
 (
     `id`                           int unsigned NOT NULL AUTO_INCREMENT,
     `value`                        text COLLATE utf8mb4_unicode_ci default NULL,
+	`value2`                       text COLLATE utf8mb4_unicode_ci default NULL,
     `tickets_id`                   int unsigned NOT NULL default '0',
     `plugin_metademands_fields_id` int unsigned NOT NULL default '0',
     PRIMARY KEY (`id`),
@@ -447,46 +446,11 @@ CREATE TABLE `glpi_plugin_metademands_interticketfollowups`
     `date` timestamp NULL DEFAULT NULL,
     `users_id` int unsigned NOT NULL DEFAULT '0',
     `users_id_editor` int unsigned NOT NULL DEFAULT '0',
-    `content` longtext COLLATE utf8_unicode_ci,
+    `content` longtext COLLATE utf8mb4_unicode_ci default NULL,
     `is_private` tinyint NOT NULL DEFAULT '0',
     `requesttypes_id` int unsigned NOT NULL DEFAULT '0', -- todo keep it ?
     `date_mod` timestamp NULL DEFAULT NULL,
     `date_creation` timestamp NULL DEFAULT NULL,
     `timeline_position` tinyint NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
-CREATE TABLE `glpi_plugin_metademands_stepforms`
-(
-    `id`                                int unsigned NOT NULL AUTO_INCREMENT,
-    `name`                              VARCHAR(255) NOT NULL                   DEFAULT '0',
-    `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
-    `items_id`                          int unsigned NOT NULL DEFAULT '0',
-
-    `users_id`                          int unsigned NOT NULL DEFAULT '0',
-    `groups_id_dest`                     int unsigned NOT NULL DEFAULT '0',
-    `date`                              timestamp    NULL DEFAULT NULL,
-    `reminder_date`                     timestamp    NULL DEFAULT NULL,
-    `block_id`                           int unsigned NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
-CREATE TABLE `glpi_plugin_metademands_stepforms_values`
-(
-    `id`                           int unsigned NOT NULL AUTO_INCREMENT,
-    `plugin_metademands_stepforms_id`  int unsigned NOT NULL DEFAULT '0',
-    `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
-    `value`                        text COLLATE utf8mb4_unicode_ci         DEFAULT NULL,
-    `value2`                       text COLLATE utf8mb4_unicode_ci         DEFAULT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
-CREATE TABLE `glpi_plugin_metademands_steps`
-(
-    `id`                           int unsigned NOT NULL AUTO_INCREMENT,
-    `plugin_metademands_metademands_id`  int unsigned NOT NULL DEFAULT '0',
-    `block_id`  int unsigned NOT NULL DEFAULT '0',
-    `groups_id` int unsigned NOT NULL DEFAULT '0',
-    `reminder_delay`                        Ttext COLLATE utf8mb4_unicode_ci         DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;

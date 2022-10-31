@@ -138,7 +138,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
          //            PluginMetademandsForm_Value::loadFormValues($form_id);
          //            $_POST['form_name'] = $forms->getField('name');
          //         } else {
-         if (!isset($_POST['bloc_id']) || (isset($_POST['bloc_id']) && empty($_POST['bloc_id']))) {
+         if (!isset($_POST['block_id']) || (isset($_POST['block_id']) && empty($_POST['block_id']))) {
             Session::addMessageAfterRedirect(__('Error during sending to the next group', 'metademands'), false, ERROR);
             break;
          }
@@ -159,7 +159,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
              $inputs['reminder_date']                     = date('Y-m-d', strtotime( "+ $nbday days"));
 
          }
-         $inputs['bloc_id']                           = $_POST['bloc_id'];
+         $inputs['block_id']                           = $_POST['block_id'];
 
 
 

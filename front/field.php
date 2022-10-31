@@ -26,19 +26,8 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
- 
-include('../../../inc/includes.php');
 
+include('../../../inc/includes.php');
 Session::checkLoginUser();
 
-Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
-
-$meta = new PluginMetademandsMetademand();
-
-if ($meta->canView() || Session::haveRight("config", UPDATE)) {
-   Search::show('PluginMetademandsMetademand');
-} else {
-   Html::displayRightError();
-}
-
-Html::footer();
+Html::back();

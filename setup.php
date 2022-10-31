@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.2.3');
+define('PLUGIN_METADEMANDS_VERSION', '3.2.8');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
    define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
@@ -51,7 +51,6 @@ function plugin_init_metademands() {
    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = ['PluginMetademandsMetademand', 'getMetademandDashboards'];
 
    $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
-   $plugin                                            = new Plugin();
 
    if (Session::getLoginUserID()) {
 
@@ -108,7 +107,7 @@ function plugin_init_metademands() {
       }
 
       if (Session::haveRight("plugin_metademands", READ)
-          && !$plugin->isActivated('servicecatalog')) {
+          && !Plugin::isPluginActive('servicecatalog')) {
          $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = PLUGIN_METADEMANDS_DIR_NOFULL . '/front/wizard.form.php';
          $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['metademands'] = PluginMetademandsMetademand::getIcon();
       }
@@ -127,13 +126,13 @@ function plugin_init_metademands() {
       $PLUGIN_HOOKS['item_get_datas']['metademands'] = ['NotificationTargetTicket' =>
                                                            ['PluginMetademandsTicket', 'addNotificationDatas']];
 
-      if ($plugin->isActivated('servicecatalog')) {
+      if (Plugin::isPluginActive('servicecatalog')) {
          $PLUGIN_HOOKS['servicecatalog']['metademands'] = ['PluginMetademandsServicecatalog'];
       }
    }
 
    // Import webservice
-   $PLUGIN_HOOKS['webservices']['metademands']                   = 'plugin_metademands_registerMethods';
+//   $PLUGIN_HOOKS['webservices']['metademands']                   = 'plugin_metademands_registerMethods';
    $PLUGIN_HOOKS['timeline_actions']['metademands']              = ['PluginMetademandsMetademandValidation',
                                                                     'showActionsForm'];
 
