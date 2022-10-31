@@ -143,6 +143,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      'meta_validated'    => 1,
                      'resources_id'      => 0,
                      'resources_step'    => '',
+                     'block_id'          => 0,
                      'itilcategories_id' => 0];
 
        // if given parameters, override defaults
@@ -202,6 +203,7 @@ class PluginMetademandsWizard extends CommonDBTM
             echo Html::hidden('tickets_id', ['value' => $parameters['tickets_id']]);
             echo Html::hidden('resources_id', ['value' => $parameters['resources_id']]);
             echo Html::hidden('resources_step', ['value' => $parameters['resources_step']]);
+         echo Html::hidden('block_id', ['value' => $parameters['block_id']]);
 
             $icon = '';
             if ($parameters['step'] == PluginMetademandsMetademand::STEP_LIST) {
@@ -1028,7 +1030,7 @@ class PluginMetademandsWizard extends CommonDBTM
     */
     static function constructForm($metademands_id, $metademands_data, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1)
     {
-
+      global $CFG_GLPI;
         $metademands = new PluginMetademandsMetademand();
         $metademands->getFromDB($metademands_id);
 
@@ -1044,7 +1046,10 @@ class PluginMetademandsWizard extends CommonDBTM
         $allranks = array_unique($ranks);
 
         $allfields   = [];
-        $use_as_step = 0;
+
+        if ($metademands->fields['step_by_step_mode'] == 1) {
+            $use_as_step = 1;
+        }
         if ($preview || $seeform) {
             $use_as_step = 0;
         }
@@ -2323,7 +2328,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                  ";
                                             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
                                             if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                            && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
+                                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
                                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
                                             }
                                             if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
@@ -2369,15 +2374,16 @@ class PluginMetademandsWizard extends CommonDBTM
                                     }
                                    
                                  });";
-                                    $script .= "});";
+                                    $script .= "fixButtonIndicator();});";
+
                                 }
 
-                             //Initialize id default value
+                                //Initialize id default value
                                 if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                                     $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                                     $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                                     $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
+                                    $check_value    = array_flip($check_value);
                                     foreach ($default_values as $k => $v) {
                                         if ($v == 1) {
                                             if (isset($check_value[$k])) {
@@ -2456,9 +2462,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                     }
                                    
                                  });";
-                                        $script .= "} else {";
-                                        foreach ($hidden_block as $key => $fields) {
-                                            $script .= "
+                              $script .= "fixButtonIndicator();} else {";
+                              foreach ($hidden_block as $key => $fields) {
+                                 $script .= "
                                           if($(this).val() == $check_value[$key]){
                                              if($fields in tohide){
                                              
@@ -2475,7 +2481,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                             ";
                                             }
                                             $script .= " 
-                                             });
+                                            fixButtonIndicator(); });
                                           }";
 
                                             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
@@ -2520,7 +2526,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             
                                     }
                                    
-                                 });";
+                                fixButtonIndicator(); });";
                                         $script .= "}";
                                     }
                                 }
@@ -2565,7 +2571,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                         ";
                                             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
                                             if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                            && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
+                                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
                                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
                                             }
                                         } else {
@@ -2580,7 +2586,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                            ";
                                             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
                                             if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                            && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
+                                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
                                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
                                             }
                                         }
@@ -2594,7 +2600,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                                     $script .= "
                                               if($(this).val().trim().length < 1){";
                                                     foreach ($childs as $v) {
-                                                         $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                        $script .= PluginMetademandsField::getJStorersetFields($v);
                                                     }
 
                                                     $script .= "}
@@ -2603,29 +2609,30 @@ class PluginMetademandsWizard extends CommonDBTM
                                                     $script .= "
                                               if($(this).val().trim().length >= 1){";
                                                     foreach ($childs as $v) {
-                                                         $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                        $script .= PluginMetademandsField::getJStorersetFields($v);
                                                     }
 
                                                     $script .= "}
                                           ";
                                                 }
+
                                             }
                                         }
                                     }
                                 }
-                                $script .= "});";
-                           //Initialize id default value
+                                $script .= "fixButtonIndicator();});";
+                                //Initialize id default value
                                 if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                                     $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                                     $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                                     $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
+                                    $check_value    = array_flip($check_value);
                                     foreach ($default_values as $k => $v) {
                                         if ($v == 1) {
                                             if (isset($check_value[$k])) {
-                                                  $idc     = $check_value[$k];
-                                                  $idv     = $hidden_block[$idc];
-                                                  $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                                $idc     = $check_value[$k];
+                                                $idv     = $hidden_block[$idc];
+                                                $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
                                             }
                                         }
                                     }
@@ -2634,11 +2641,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 break;
 
 
-                            case 'radio':
-                                $script2 = "";
-                                $script  = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                                //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
-
+                     case 'radio':
                                 if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
                                     $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
                                     $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
@@ -2691,25 +2694,25 @@ class PluginMetademandsWizard extends CommonDBTM
                                  });";
                                 }
 
-                                $script .= "});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            if (isset($check_value[$k])) {
-                                                  $idc     = $check_value[$k];
-                                                  $idv     = $hidden_block[$idc];
-                                                  $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
+                        $script .= "fixButtonIndicator();});";
+                        //Initialize id default value
+                        if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                           $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                           $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
+                           $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
+                           $check_value    = array_flip($check_value);
+                           foreach ($default_values as $k => $v) {
+                              if ($v == 1) {
+                                 if (isset($check_value[$k])) {
+                                    $idc     = $check_value[$k];
+                                    $idv     = $hidden_block[$idc];
+                                    $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                 }
+                              }
+                           }
+                        }
+                        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+                        break;
 
                             case 'group':
                             case 'dropdown':
@@ -2722,7 +2725,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 }
 
                                 $script = "$('[name=\"$name\"]').change(function() { ";
-                         //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
+                                //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
                                 if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
                                     $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
@@ -2744,12 +2747,12 @@ class PluginMetademandsWizard extends CommonDBTM
 
                                             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
                                             if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                            && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || ($_SESSION['plugin_metademands']['fields'][$data["id"]] != 0 && $check_value[$key] == 0))) {
+                                                && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || ($_SESSION['plugin_metademands']['fields'][$data["id"]] != 0 && $check_value[$key] == 0))) {
                                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
                                             } else {
                                                 if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
                                                     if (Session::getLoginUserID() == $check_value[$key]) {
-                                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
+                                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
                                                     }
                                                 }
                                             }
@@ -2791,7 +2794,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                             $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
                                             if (is_array($check_value) && count($check_value) > 0) {
                                                 foreach ($childs_blocks as $customvalue => $childs) {
-                                                        $script .= "
+                                                    $script .= "
                                                  if((($(this).val() != $check_value[$customvalue] && $check_value[$customvalue] != 0 )  
                                                  ||  ($(this).val() == 0 &&  $check_value[$customvalue] == 0 ) )){";
                                                     foreach ($childs as $v) {
@@ -2805,23 +2808,24 @@ class PluginMetademandsWizard extends CommonDBTM
                                         }
                                     }
                                 }
-                                $script .= "});";
-                         //Initialize id default value
+                                $script .= "fixButtonIndicator();});";
+                                //Initialize id default value
                                 if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                                     $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                                     $check_value    = PluginMetademandsField::_unserialize($data['check_value']);
                                     $hidden_block   = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value    = (is_array($check_value))?array_flip($check_value):$check_value;
+                                    $check_value    = array_flip($check_value);
                                     foreach ($default_values as $k => $v) {
                                         if ($v == 1) {
                                             foreach ($check_value as $key => $val) {
                                                 if ($k == $key || $key == 0) {
                                                     $idv = $hidden_block[$val];
                                                     if ($idv > 0) {
-                                                            $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
+                                                        $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
                                                     }
                                                 }
                                             }
+
                                         }
                                     }
                                 }
@@ -2866,7 +2870,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                         }
 
                                         $script .= "});
-                           });";
+                           fixButtonIndicator();});";
                                     }
                                     echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                                 } else {
@@ -2894,7 +2898,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                         }
 
                                         $script .= "});
-                           });";
+                           fixButtonIndicator();});";
                                     }
 
                                     echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
@@ -2925,9 +2929,7 @@ class PluginMetademandsWizard extends CommonDBTM
                           && $metademands->fields['can_update'] == true) ||
                          ($meta_validated
                           && $metademands->fields['can_clone'] == true))
-                     && Session::haveRight('plugin_metademands_updatemeta', READ)))
-
-            ) {
+                     && Session::haveRight('plugin_metademands_updatemeta', READ)))) {
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
                //               if ($tt->isField('id') && ($tt->fields['id'] > 0)) {
@@ -2975,35 +2977,59 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                 echo "</div>";
 
-                $ID   = $metademands->fields['id'];
-                $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-             //            Toolbox::logInfo($hidden_blocks);
-                $json_hidden_blocks = json_encode($hidden_blocks);
-                $alert              = __('Thanks to fill mandatory fields', 'metademands');
-                echo "<script>
+            $ID   = $metademands->fields['id'];
+            $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+            //            Toolbox::logInfo($hidden_blocks);
+            $json_hidden_blocks = json_encode($hidden_blocks);
+            $alert              = __('Thanks to fill mandatory fields', 'metademands');
+            $group_user = new Group_User();
+            $groups_users = $group_user->find(['users_id' => Session::getLoginUserID()]);
+            $groups = [];
+            foreach ($groups_users as $gu) {
+                $groups[] = $gu['groups_id'];
+            }
+
+            $list_blocks = [];
+            $step = new PluginMetademandsStep();
+            $steps = $step->find(['plugin_metademands_metademands_id' => $ID,
+                                  'groups_id' => $groups]);
+            foreach ($steps as $s) {
+                $list_blocks[] = $s['block_id'];
+            }
+
+            if (isset($_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'] )) {
+                echo Html::hidden('plugin_metademands_stepforms_id',['value' => $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id']]);
+            }
+            $block_id = $_SESSION['plugin_metademands']['block_id'] ?? 0;
+            echo "<script>
                   var use_as_step = '$use_as_step';
                   var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
                   var hiddenblocs = {$json_hidden_blocks};
                   var msg = '$alert';
+                  var firstnumTab = 0;
                   var currentTab = 0; // Current tab is set to be the first tab (0)
+                  findFirstTab($block_id);
+                  
+                  
                   showTab(currentTab, nexttitle, submittitle); // Display the current tab
                   
-                  function showTab(n) {
+                  function showTab(n,create = false) {
                      // This function will display the specified tab of the form...
                      if (use_as_step == 1) {
                         var x = document.getElementsByClassName('tab-step');
                      } else {
                         var x = document.getElementsByClassName('tab-nostep');
                      }
+                   
                      x[n].style.display = 'block';
                      //... and fix the Previous/Next buttons:
-                     if (n == 0) {
+                     if (n == firstnumTab) {
                         document.getElementById('prevBtn').style.display = 'none';
                      } else {
                         document.getElementById('prevBtn').style.display = 'inline';
                      }
-                     if (n == (x.length - 1)) {
+                     if (n == (x.length - 1) || create == true) {
                         document.getElementById('nextBtn').innerHTML = submittitle;
                      } else {
                         document.getElementById('nextBtn').innerHTML = nexttitle;
@@ -3026,7 +3052,29 @@ class PluginMetademandsWizard extends CommonDBTM
                   //                        }
                   //                     }
                   }
-                  
+                  function findFirstTab(block_id) {
+                      if (use_as_step == 1) {
+                        var x = document.getElementsByClassName('tab-step');
+                     } else {
+                        var x = document.getElementsByClassName('tab-nostep');
+                     }
+                    
+                      if(block_id > 0) {
+                          bloc = x[currentTab].firstChild.getAttribute('bloc-id');
+                        id_bloc = parseInt(bloc.replace('bloc',''));
+                        while (block_id != id_bloc) {
+                            currentTab = currentTab+1;
+                          
+                            
+                             bloc = x[currentTab].firstChild.getAttribute('bloc-id');
+                             id_bloc = parseInt(bloc.replace('bloc',''));                             
+                             
+                             
+                        }
+                        firstnumTab = currentTab;
+                      }
+                        
+                  }
                   function nextPrev(n) {
                      // This function will figure out which tab to display
                      if (use_as_step == 1) {
@@ -3044,8 +3092,46 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                      // Increase or decrease the current tab by 1:
                      currentTab = currentTab + n;
+                    
+                     create = false;
+                     createNow = false;
+                     if (use_as_step == 1) {
+                       
+                         var finded = false;
+                        
+                         while (finded == false) {  
+                             
+                           
+                 
+                            if(true) {
+                               
+                                if(x[currentTab] == undefined || x[currentTab].firstChild == undefined) {
+                                     createNow = true;
+                                     finded = true;
+                                } else {
+                                    if(x[currentTab].firstChild.style.display != 'none' ) {
+                                     finded = true;
+                                     nextTab = currentTab + n;
+                                     while (nextTab >= firstnumTab && nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                                         nextTab = nextTab + n;
+                                     }
+                                     if(nextTab >= x.length) {
+                                         create = true;
+                                     }
+                                    
+                                 } else {
+                                     currentTab = currentTab + n;
+                                 }
+                                }
+                                
+                            } else {
+                                 finded = true;
+                            }
+                             
+                         }
+                     }
                      // if you have reached the end of the form...
-                     if (currentTab >= x.length) {
+                     if (currentTab >= x.length || createNow) {
                   
                         document.getElementById('nextBtn').style.display = 'none';
                         // ... the form gets submitted:
@@ -3096,8 +3182,51 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                         return false;
                      }
+                     var listBlock = [".implode(",", $list_blocks)."];
+                       bloc = x[currentTab].firstChild.getAttribute('bloc-id');
+                     id_bloc = parseInt(bloc.replace('bloc',''));
+                      
+                        
+                     if(!listBlock.includes(id_bloc)) {
+                    
+                        var meta_id = {$ID};
+                        if (typeof tinyMCE !== 'undefined') {
+                           tinyMCE.triggerSave();
+                        }
+                        jQuery('.resume_builder_input').trigger('change');
+                        $('select[id$=\"_to\"] option').each(function () {
+                           $(this).prop('selected', true);
+                        });
+                        arrayDatas = $('form').serializeArray();
+                        arrayDatas.push({name: 'block_id', value: id_bloc});
+                        arrayDatas.push({name: 'action', value: 'nextUser'});
+                        $.ajax(
+                            {
+                                type: 'POST',
+                                url: '".$CFG_GLPI['root_doc'].PLUGIN_METADEMANDS_DIR_NOFULL."/ajax/nextUser.php"."',
+                                data: arrayDatas,
+                                dataType: 'JSON',
+                                success: function(ret) {
+                                
+                                    if(ret == 0) {
+                                        location.href = '".$CFG_GLPI['root_doc'].PLUGIN_METADEMANDS_DIR_NOFULL."/front/wizard.form.php"."';
+                                    } else {
+                                        window.location.reload();
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                       console.log(xhr);
+                                       console.log(status);
+                                       console.log(error);
+                                    }
+                            }
+                        );
+                     } else {
+                      
+                      showTab(currentTab,create);
+                     }
                      // Otherwise, display the correct tab:
-                     showTab(currentTab);
+                    
                   }
                   
                   function validateForm() {
@@ -3253,6 +3382,48 @@ class PluginMetademandsWizard extends CommonDBTM
                      }
                      //... and adds the 'active' class on the current step:
                      x[n].className += ' active';
+                  }
+                  
+                  function fixButtonIndicator() {
+                     // This function removes the 'active' class of all steps...
+                     if (use_as_step == 1) {
+                        var x = document.getElementsByClassName('tab-step');
+                     } else {
+                        var x = document.getElementsByClassName('tab-nostep');
+                     }
+                   
+                     create = false;
+                     if (use_as_step == 1) {
+                         
+                         nextTab = currentTab + 1;
+                         while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                 
+                             nextTab = nextTab + 1;
+                         }
+                   
+                          var listBlock = [".implode(",", $list_blocks)."];
+                        
+                          if(x[nextTab] != undefined) {
+                               bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+                               id_bloc = parseInt(bloc.replace('bloc',''));
+                             
+                                    if(!listBlock.includes(id_bloc)) {
+                                        create = true; 
+                                    }
+                          }
+
+                         if(nextTab >= x.length) {
+                             create = true;
+                         }
+                         
+                         if(create) {
+                            document.getElementById('nextBtn').innerHTML = submittitle;
+                         } else {
+                            document.getElementById('nextBtn').innerHTML = nexttitle;
+                         }
+                            
+                         
+                     }
                   }
                </script>";
             }

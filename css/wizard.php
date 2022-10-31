@@ -14,7 +14,7 @@ color: unset;
 
 div[class^="btnsc"] {
    margin: 0 10px 10px 0;
-   height: 210px !important;
+   height: 220px !important;
    cursor: pointer;
    transition: all .4s ease;
    user-drag: element;
@@ -33,7 +33,7 @@ div[class^="btnsc"] {
 
 @media (max-width: 768px) {
 div[class^="btnsc"] {
-width: 200px;
+width: 220px;
 }
 }
 
@@ -47,4 +47,9 @@ div[class^="btnsc"]:active {
 
 .fa-menu-md {
    margin-top: 20px;
+}
+
+/* Hide all steps by default: */
+.tab-sc {
+display: none;
 }

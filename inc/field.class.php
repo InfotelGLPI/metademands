@@ -5458,7 +5458,8 @@ class PluginMetademandsField extends CommonDBChild
                                            found = totest.match(regex);
                                            $('#'+found[0]+'_leftAll').click();
                                         }
-                                    });";
+                                    });
+                                    fixButtonIndicator();";
     }
 
     public static function getJStorersetFieldsByField($id)

@@ -216,25 +216,27 @@ class PluginMetademandsMetademand extends CommonDBTM
     public function defineTabs($options = []) {
         $ong = [];
 
-        $this->addDefaultFormTab($ong);
-        $this->addStandardTab('PluginMetademandsField', $ong, $options);
-        $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
-        //TODO Change / problem ?
-        if ($this->getField('object_to_create') == 'Ticket') {
-            $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
-        }
-        $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
-        $this->addStandardTab('PluginMetademandsTask', $ong, $options);
-        $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
-        if (Session::getCurrentInterface() == 'central') {
-            $this->addStandardTab('Log', $ong, $options);
-        }
-        //TODO Change / problem ?
-        if ($this->getField('object_to_create') == 'Ticket') {
-            $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
-        }
-        return $ong;
-    }
+      $this->addDefaultFormTab($ong);
+      $this->addStandardTab('PluginMetademandsField', $ong, $options);
+      $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
+
+       $this->addStandardTab('PluginMetademandsStep', $ong, $options);
+      //TODO Change / problem ?
+      if ($this->getField('object_to_create') == 'Ticket') {
+         $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
+      }
+      $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
+      $this->addStandardTab('PluginMetademandsTask', $ong, $options);
+      $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
+      if (Session::getCurrentInterface() == 'central') {
+         $this->addStandardTab('Log', $ong, $options);
+      }
+      //TODO Change / problem ?
+      if ($this->getField('object_to_create') == 'Ticket') {
+         $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
+      }
+      return $ong;
+   }
 
     /**
      * @param        $object
@@ -768,7 +770,10 @@ class PluginMetademandsMetademand extends CommonDBTM
 
         echo "<tr class='tab_bg_1'>";
 
-        echo "<td colspan='2'></td>";
+        echo "<td>" . __('Step-by-step mode', 'metademands') . "</td>";
+        echo "<td>";
+        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
+        echo "</td>";
 
         echo "<td>" . __('Maintenance mode') . "</td>";
         echo "<td>";
@@ -1000,6 +1005,7 @@ JAVASCRIPT
                 echo Html::hidden('force_create_tasks', ['value' => 1]);
             }
         }
+
         $options['addbuttons'] = ['export' => __('Export', 'metademands')];
 
         $this->showFormButtons($options);

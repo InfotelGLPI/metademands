@@ -159,6 +159,11 @@ a.metademand_middle_button {
     left: 50%;
 }
 
+/* Hide all steps by default: */
+.tab-sc {
+    display: none;
+}
+
 @media (max-width: 768px) {
     a.metademand_middle_button {
         display: none;
