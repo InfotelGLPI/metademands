@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-31 08:36+0000\n"
+"POT-Creation-Date: 2022-10-31 11:41+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2022\n"
 "Language-Team: French (France) (https://www.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -22,27 +22,27 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: hook.php:509
+#: hook.php:548
 msgid "Metademand approver"
 msgstr "Valideur de la métademande"
 
-#: hook.php:522
+#: hook.php:561
 msgid "Metademand status"
 msgstr "Statut de la métademande"
 
-#: hook.php:538
+#: hook.php:577
 msgid "Group child ticket"
 msgstr "Groupe des tickets enfants"
 
-#: hook.php:549
+#: hook.php:588
 msgid "Link to metademands"
 msgstr "Lié à une métademande"
 
-#: hook.php:561
+#: hook.php:600
 msgid "Technician child ticket"
 msgstr "Techniciens des tickets enfants"
 
-#: setup.php:156 inc/menu.class.php:40 inc/metademand.class.php:84
+#: setup.php:161 inc/menu.class.php:40 inc/metademand.class.php:84
 #: inc/profile.class.php:126 inc/profile.class.php:170
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -77,18 +77,19 @@ msgid "No draft available for this form"
 msgstr "Pas de brouillons disponibles pour ce formulaire"
 
 #: ajax/deleteform.php:59 inc/form.class.php:159 inc/form.class.php:431
-#: inc/form.class.php:517 inc/stepform.class.php:157
-#: inc/stepform.class.php:428 inc/stepform.class.php:514
+#: inc/form.class.php:517 inc/stepform.class.php:169
+#: inc/stepform.class.php:440 inc/stepform.class.php:524
 msgctxt "button"
 msgid "Load form"
 msgstr "Charger le formulaire"
 
-#: ajax/deleteform.php:65 inc/form.class.php:166 inc/stepform.class.php:164
+#: ajax/deleteform.php:65 inc/form.class.php:166 inc/stepform.class.php:176
 msgctxt "button"
 msgid "Delete form"
 msgstr "Supprimer le formulaire"
 
-#: ajax/deleteform.php:71 inc/form.class.php:176 inc/stepform.class.php:174
+#: ajax/deleteform.php:71 inc/form.class.php:176 inc/stepform.class.php:186
+#: inc/stepform.class.php:533 inc/stepform.class.php:663
 msgid "No existing forms founded"
 msgstr "Pas de formulaires existants trouvé"
 
@@ -96,9 +97,9 @@ msgstr "Pas de formulaires existants trouvé"
 msgid "Attribute ticket to "
 msgstr "Attribuer le ticket à"
 
-#: ajax/nextUser.php:142
-msgid "Error during sending to the next group"
-msgstr "Erreur lors de l'affectation au groupe suivant"
+#: ajax/nextUser.php:139
+msgid "Error assigning to next group"
+msgstr "Erreur lors de l'attribution au groupe suivant"
 
 #: ajax/updatelistmeta.php:85 inc/wizard.class.php:697
 #, php-format
@@ -221,7 +222,8 @@ msgid "Save draft"
 msgstr "Sauver le brouillon"
 
 #: inc/draft.class.php:108 inc/draft.class.php:134 inc/form.class.php:99
-#: inc/form.class.php:126 inc/stepform.class.php:97 inc/stepform.class.php:124
+#: inc/form.class.php:126 inc/stepform.class.php:109
+#: inc/stepform.class.php:136
 msgctxt "button"
 msgid "Clean form"
 msgstr "Vider le formulaire"
@@ -590,48 +592,48 @@ msgstr "Prénom du demandeur"
 msgid "Requester email"
 msgstr "Email du demandeur"
 
-#: inc/form.class.php:73 inc/stepform.class.php:71
+#: inc/form.class.php:73 inc/stepform.class.php:83
 msgid "Current form"
 msgstr "Formulaire courant"
 
-#: inc/form.class.php:84 inc/form.class.php:115 inc/stepform.class.php:82
-#: inc/stepform.class.php:113
+#: inc/form.class.php:84 inc/form.class.php:115 inc/stepform.class.php:94
+#: inc/stepform.class.php:125
 msgid "Form name"
 msgstr "Nom du formulaire"
 
-#: inc/form.class.php:87 inc/stepform.class.php:85
+#: inc/form.class.php:87 inc/stepform.class.php:97
 msgctxt "button"
 msgid "Save model"
 msgstr "Sauver le modèle"
 
-#: inc/form.class.php:89 inc/form.class.php:118 inc/stepform.class.php:87
-#: inc/stepform.class.php:116
+#: inc/form.class.php:89 inc/form.class.php:118 inc/stepform.class.php:99
+#: inc/stepform.class.php:128
 msgctxt "button"
 msgid "Save as model"
 msgstr "Sauver comme modèle"
 
-#: inc/form.class.php:107 inc/stepform.class.php:105
+#: inc/form.class.php:107 inc/stepform.class.php:117
 msgid "New model"
 msgstr "Nouveau modèle"
 
-#: inc/form.class.php:327 inc/form.class.php:394 inc/stepform.class.php:322
-#: inc/stepform.class.php:392
+#: inc/form.class.php:327 inc/form.class.php:394 inc/stepform.class.php:334
+#: inc/stepform.class.php:404
 msgid "Initial form"
 msgid_plural "Initial forms"
 msgstr[0] "Formulaire initial"
 msgstr[1] "Formulaires initiaux"
 msgstr[2] "Formulaires initiaux"
 
-#: inc/form.class.php:339 inc/form.class.php:486 inc/stepform.class.php:335
-#: inc/stepform.class.php:483
+#: inc/form.class.php:339 inc/form.class.php:486 inc/stepform.class.php:347
+#: inc/stepform.class.php:495
 msgid "Associated form"
 msgid_plural "Associated forms"
 msgstr[0] "Formulaire associé"
 msgstr[1] "Formulaires associés"
 msgstr[2] "Formulaires associés"
 
-#: inc/form.class.php:404 inc/form.class.php:495 inc/stepform.class.php:402
-#: inc/stepform.class.php:492
+#: inc/form.class.php:404 inc/form.class.php:495 inc/stepform.class.php:414
+#: inc/stepform.class.php:504
 msgid "See form"
 msgstr "Voir le formulaire"
 
@@ -647,7 +649,7 @@ msgstr "Ajouter un groupe"
 msgid "Groups allowed to enter a demand"
 msgstr "Groupes autorisés à saisir une demande"
 
-#: inc/interticketfollowup.class.php:48 inc/interticketfollowup.class.php:77
+#: inc/interticketfollowup.class.php:48 inc/interticketfollowup.class.php:76
 #: inc/profile.class.php:176
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
@@ -655,11 +657,11 @@ msgstr[0] "Suivi inter ticket"
 msgstr[1] "Suivi inter tickets"
 msgstr[2] "Suivi inter tickets"
 
-#: inc/interticketfollowup.class.php:137
+#: inc/interticketfollowup.class.php:139
 msgid "All tickets"
 msgstr "Tous les tickets"
 
-#: inc/interticketfollowup.class.php:353
+#: inc/interticketfollowup.class.php:354
 msgid "Target followup"
 msgstr "Cible du suivi"
 
@@ -1001,45 +1003,52 @@ msgstr "Validé sans tickets enfants"
 msgid "Not subject to validation"
 msgstr "Non soumis à validation"
 
-#: inc/notificationtargetinterticketfollowup.class.php:98
-#: inc/notificationtargetstepform.class.php:97
+#: inc/notificationtargetinterticketfollowup.class.php:100
 msgid "New inter ticket followup"
 msgstr "Nouveau suivi inter tickets"
 
-#: inc/notificationtargetinterticketfollowup.class.php:111
+#: inc/notificationtargetinterticketfollowup.class.php:114
 msgid "Ticket technician of target tickets"
 msgstr "Technicien des tickets cibles"
 
-#: inc/notificationtargetinterticketfollowup.class.php:112
+#: inc/notificationtargetinterticketfollowup.class.php:115
 msgid "Ticket group technician of target tickets"
 msgstr "Groupe de techniciens des tickets cibles"
 
-#: inc/notificationtargetinterticketfollowup.class.php:947
+#: inc/notificationtargetinterticketfollowup.class.php:1005
 msgid "Target ticket(s)"
 msgstr "Ticket(s) cible(s)"
 
-#: inc/notificationtargetinterticketfollowup.class.php:950
+#: inc/notificationtargetinterticketfollowup.class.php:1008
 msgctxt "quantity"
 msgid "Number of inter ticket followups"
 msgstr "Nombre de suivis inter tickets"
 
-#: inc/notificationtargetstepform.class.php:110
+#: inc/notificationtargetstepform.class.php:50
+msgid "A new form has been completed"
+msgstr "Un nouveau formulaire a été complété"
+
+#: inc/notificationtargetstepform.class.php:51
+msgid "Reminder for a waiting form"
+msgstr "Rappel pour un formulaire en attente"
+
+#: inc/notificationtargetstepform.class.php:62
 msgid "Next group in charge of demand"
 msgstr "Prochain groupe en charge de la demande"
 
-#: inc/notificationtargetstepform.class.php:185
-msgid "User editor"
-msgstr "Editeur"
+#: inc/notificationtargetstepform.class.php:135
+msgid "Publisher"
+msgstr "Éditeur"
 
-#: inc/notificationtargetstepform.class.php:186
+#: inc/notificationtargetstepform.class.php:136
 msgid "Group in charge of the next step"
 msgstr "Groupe en charge de l'étape suivante"
 
-#: inc/notificationtargetstepform.class.php:187
+#: inc/notificationtargetstepform.class.php:137
 msgid "Date of the last step"
 msgstr "Date de la dernière étape"
 
-#: inc/notificationtargetstepform.class.php:188
+#: inc/notificationtargetstepform.class.php:138
 msgid "Date of the next reminder"
 msgstr "Date du prochain rappel"
 
@@ -1085,18 +1094,25 @@ msgstr "Liste des associations"
 msgid "No association found"
 msgstr "Pas d'associations trouvées"
 
-#: inc/stepform.class.php:581
+#: inc/stepform.class.php:47
+msgid "Step a metademands form"
+msgid_plural "Steps a metademands form"
+msgstr[0] "Étape d'un formulaire de métademandes"
+msgstr[1] "Étapes d'un formulaire de métademandes"
+msgstr[2] "Étapes d'un formulaire de métademandes"
+
+#: inc/stepform.class.php:601
 msgid "Your form to complete"
 msgid_plural "Your forms to complete"
 msgstr[0] "Votre formulaire à compléter"
 msgstr[1] "Vos formulaires à compléter"
 msgstr[2] "Vos formulaires à compléter"
 
-#: inc/stepform.class.php:610
-msgid "Edit by "
+#: inc/stepform.class.php:630
+msgid "Edit by"
 msgstr "Publié par"
 
-#: inc/stepform.class.php:619
+#: inc/stepform.class.php:640
 msgid "Step"
 msgstr "Etape"
 
@@ -1248,39 +1264,39 @@ msgctxt "button"
 msgid "Validate your basket"
 msgstr "Valider votre panier"
 
-#: inc/wizard.class.php:2947
+#: inc/wizard.class.php:2948
 msgid "Previous"
 msgstr "Précédent"
 
-#: inc/wizard.class.php:2950 inc/wizard.class.php:2974
+#: inc/wizard.class.php:2951 inc/wizard.class.php:2975
 msgid "Next"
 msgstr "Suivant"
 
-#: inc/wizard.class.php:2975
+#: inc/wizard.class.php:2976
 msgctxt "button"
 msgid "Save & Post"
 msgstr "Sauver et envoyer"
 
-#: inc/wizard.class.php:2984
+#: inc/wizard.class.php:2985
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
-#: inc/wizard.class.php:3834
+#: inc/wizard.class.php:3835
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
 
-#: inc/wizard.class.php:3843
+#: inc/wizard.class.php:3844
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr "La date %1$s ne peut être supérieure à la date %2$s"
 
-#: inc/wizard.class.php:3889
+#: inc/wizard.class.php:3890
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s"
 
-#: inc/wizard.class.php:3893
+#: inc/wizard.class.php:3894
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
