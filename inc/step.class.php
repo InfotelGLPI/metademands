@@ -233,6 +233,26 @@ class PluginMetademandsStep extends CommonDBChild
                                         'block_id ASC'
                                     ],
                                  ]);
+
+        $field  = new PluginMetademandsField();
+        $fields = $field->find(["plugin_metademands_metademands_id" => $item->getID()]);
+        $blocks = [];
+        $self = new self();
+        foreach ($fields as $f) {
+            if (!isset($blocks[$f['rank']]) &&
+                (!$self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
+                                          'block_id' => intval($f['rank'])]))) {
+                $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+            }
+        }
+        ksort($blocks);
+        if (count($blocks) > 0) {
+            echo "<div class='alert alert-important alert-warning d-flex'>";
+            echo "<i class='fas fa-exclamation-triangle fa-3x'></i>&nbsp;";
+            echo __('Be careful if all blocks are not assigned, they will be displayed to the last assigned group', 'metademands');
+            echo "</div>";
+        }
+
         if (count($iterator)) {
             if ($canedit) {
                 Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
@@ -383,7 +403,6 @@ class PluginMetademandsStep extends CommonDBChild
                         'rows'            => 3]);
         echo "</td>";
         echo "</tr>";
-
         $this->showFormButtons($options);
         return true;
     }
