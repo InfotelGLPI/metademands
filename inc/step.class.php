@@ -40,8 +40,7 @@ class PluginMetademandsStep extends CommonDBChild
     public static $items_id  = 'plugin_metademands_metademands_id';
     //   public        $dohistory = true;
 
-    //   static $rightname = 'plugin_metademands';
-    public static $rightname = 'ticket';
+    static $rightname = 'plugin_metademands';
 
 
     /**
@@ -116,7 +115,7 @@ class PluginMetademandsStep extends CommonDBChild
         switch ($item->getType()) {
             case PluginMetademandsMetademand::getType():
                 if ($item->fields['step_by_step_mode'] == 1) {
-                    return self::createTabEntry(self::getTypeName());
+                    return self::createTabEntry(self::getTypeName(2));
                 } else {
                     return false;
                 }
@@ -143,6 +142,52 @@ class PluginMetademandsStep extends CommonDBChild
         return true;
     }
 
+
+    /**
+     * @param $plugin_metademands_metademands_id
+     * @param $block_id
+     *
+     * @return false|mixed
+     */
+    public static function getGroupForNextBlock($plugin_metademands_metademands_id, $block_id)
+    {
+        $self      = new self();
+        $condition = ['block_id'                          => $block_id,
+                      'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id];
+
+        $steps = $self->find($condition);
+        if (count($steps) > 0) {
+            foreach ($steps as $step) {
+                if (isset($step['groups_id'])) {
+                    return $step['groups_id'];
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param $plugin_metademands_metademands_id
+     * @param $block_id
+     *
+     * @return false|mixed
+     */
+    public static function getMsgForNextBlock($plugin_metademands_metademands_id, $block_id)
+    {
+        $self      = new self();
+        $condition = ['block_id'                          => $block_id,
+                      'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id];
+
+        $steps = $self->find($condition);
+        if (count($steps) > 0) {
+            foreach ($steps as $step) {
+                if (isset($step['message'])) {
+                    return $step['message'];
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Display all translated field for a dropdown
@@ -204,7 +249,7 @@ class PluginMetademandsStep extends CommonDBChild
             }
             echo "<th>" . __("Block", 'metademands') . "</th>";
             echo "<th>" . __("Group") . "</th>";
-
+            echo "<th>" . __("Message", 'metademands') . "</th>";
             foreach ($iterator as $data) {
                 $onhover = '';
                 if ($canedit) {
@@ -237,6 +282,8 @@ class PluginMetademandsStep extends CommonDBChild
                 echo($data['block_id']);
                 echo "</td><td $onhover>";
                 echo Dropdown::getDropdownName(Group::getTable(), $data['groups_id']);
+                echo "</td><td $onhover>";
+                echo Glpi\RichText\RichText::getTextFromHtml($data['message']);
                 echo "</td>";
                 echo "</tr>";
             }
@@ -315,6 +362,16 @@ class PluginMetademandsStep extends CommonDBChild
                          'value' => $this->fields['groups_id']]);
         echo "</td>";
         echo "</tr>";
+        echo "<tr class='tab_bg_1'><td>" . __('Message to next group on form', 'metademands') . "</td>";
+        echo "<td>";
+        Html::textarea(['name'            => 'message',
+                        'value'           => $this->fields['message'],
+                        'enable_richtext' => false,
+                        'cols'            => 80,
+                        'rows'            => 3]);
+        echo "</td>";
+        echo "</tr>";
+
         $this->showFormButtons($options);
         return true;
     }

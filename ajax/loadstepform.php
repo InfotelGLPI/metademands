@@ -39,7 +39,7 @@ $KO = false;
 
 $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
-$form      = new PluginMetademandsStepform();
+$form        = new PluginMetademandsStepform();
 
 if ($form->getFromDB($_POST['plugin_metademands_stepforms_id'])) {
     unset($_SESSION['plugin_metademands']);
@@ -58,12 +58,12 @@ if ($form->getFromDB($_POST['plugin_metademands_stepforms_id'])) {
     }
 
     //Category id if have category field
-    $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+    $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
     $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
-       (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
+        (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
     $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
-    $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id']                  = $_POST['plugin_metademands_stepforms_id'];
-    $_SESSION['plugin_metademands']['block_id']                  = $form->fields['block_id'];
+    $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id']               = $_POST['plugin_metademands_stepforms_id'];
+    $_SESSION['plugin_metademands']['block_id']                                      = $form->fields['block_id'];
 } else {
     $KO = true;
 }

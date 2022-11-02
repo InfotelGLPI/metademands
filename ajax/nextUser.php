@@ -143,7 +143,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
             $inputs                                      = [];
             $inputs['name']                              = Toolbox::addslashes_deep($_POST['form_name']);
             $inputs['users_id']                          = Session::getLoginUserID();
-            $inputs['groups_id_dest']                    = 68;
+            $inputs['groups_id_dest']                    = PluginMetademandsStep::getGroupForNextBlock($_POST['metademands_id'], $_POST['block_id']);
             $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
             $inputs['date']                              = date('Y-m-d H:i:s');
             $nbday                                       = 7;

@@ -607,9 +607,9 @@ class PluginMetademandsStepform extends CommonDBTM
                 $meta = new PluginMetademandsMetademand();
                 if ($meta->getFromDB($name['plugin_metademands_metademands_id'])) {
                     $metaID = $name['plugin_metademands_metademands_id'];
-                    //               echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $meta->getID() . "&step=2'>";
-                    echo '<div class="btnsc-normal" onclick="loadForm' . $rand . '(\'' . $id . '\',\'' . $metaID . '\')" >';
+                    echo '<div class="btnsc-normal"  >';
                     $fasize = "fa-4x";
+                    echo '<a class="bt-buttons" href="#" onclick="loadForm' . $rand . '(\'' . $id . '\',\'' . $metaID . '\')">';
                     echo "<div class='center'>";
                     $icon = "fa-share-alt";
                     if (!empty($meta->fields['icon'])) {
@@ -624,7 +624,7 @@ class PluginMetademandsStepform extends CommonDBTM
                     } else {
                         echo $n;
                     }
-
+                    echo "</a>";
                     //                    if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment')) && !empty($meta->fields['comment'])) {
                     echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
                     echo __('Edit by', 'metademands');
@@ -640,6 +640,15 @@ class PluginMetademandsStepform extends CommonDBTM
                     echo __('Step', 'metademands');
                     echo $name['block_id'];
                     echo "</span></em>";
+                    if (Session::haveRight("plugin_metademands", DELETE)) {
+                        $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                        echo "<br><span style='color:darkred'>";
+                        Html::showSimpleForm($target, 'delete_form_from_list',
+                                             _sx('button', 'Delete form', 'metademands'),
+                                             ['plugin_metademands_stepforms_id' => $id],
+                                             'fa-trash-alt fa-1x');
+                        echo "</span>";
+                    }
                     //                    }
 
                     //               if ($config['use_draft']) {

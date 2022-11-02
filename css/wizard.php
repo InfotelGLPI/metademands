@@ -14,7 +14,7 @@ color: unset;
 
 div[class^="btnsc"] {
    margin: 0 10px 10px 0;
-   height: 220px !important;
+   height: 240px !important;
    cursor: pointer;
    transition: all .4s ease;
    user-drag: element;
@@ -33,7 +33,7 @@ div[class^="btnsc"] {
 
 @media (max-width: 768px) {
 div[class^="btnsc"] {
-width: 220px;
+width: 240px;
 }
 }
 
