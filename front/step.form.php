@@ -30,50 +30,49 @@
 include('../../../inc/includes.php');
 
 if (!isset($_GET["id"])) {
-   $_GET["id"] = "";
+    $_GET["id"] = "";
 }
 if (!isset($_GET["withtemplate"])) {
-   $_GET["withtemplate"] = "";
+    $_GET["withtemplate"] = "";
 }
 
-$meta      = new PluginMetademandsStep();
+$meta = new PluginMetademandsStep();
 
 if (isset($_POST["add"])) {
-
-   $meta->check(-1, CREATE, $_POST);
-   $newID = $meta->add($_POST);
-   Html::back();
-
-} else if (isset($_POST["delete"])) {
-
-   $meta->check($_POST['id'], DELETE);
-   $meta->delete($_POST);
-   $meta->redirectToList();
-
-} else if (isset($_POST["restore"])) {
-
-   $meta->check($_POST['id'], PURGE);
-   $meta->restore($_POST);
-   $meta->redirectToList();
-
-} else if (isset($_POST["purge"])) {
-
-   $meta->check($_POST['id'], PURGE);
-   $meta->delete($_POST, 1);
-   $meta->redirectToList();
-
-} else if (isset($_POST["update"])) {
-
-   $meta->check($_POST['id'], UPDATE);
-   $meta->update($_POST);
-   Html::back();
+    $meta->check(-1, CREATE, $_POST);
+    $blocks = $_POST["block_id"];
+    if (count($blocks) > 0) {
+        foreach ($blocks as $block) {
+            $input['block_id']                          = $block;
+            $input['groups_id']                         = $_POST["groups_id"];
+            $input['message']                           = $_POST["message"];
+            $input['plugin_metademands_metademands_id'] = $_POST["plugin_metademands_metademands_id"];
+            $newID                                      = $meta->add($input);
+        }
+    }
+    Html::back();
+} elseif (isset($_POST["delete"])) {
+    $meta->check($_POST['id'], DELETE);
+    $meta->delete($_POST);
+    $meta->redirectToList();
+} elseif (isset($_POST["restore"])) {
+    $meta->check($_POST['id'], PURGE);
+    $meta->restore($_POST);
+    $meta->redirectToList();
+} elseif (isset($_POST["purge"])) {
+    $meta->check($_POST['id'], PURGE);
+    $meta->delete($_POST, 1);
+    $meta->redirectToList();
+} elseif (isset($_POST["update"])) {
+    $meta->check($_POST['id'], UPDATE);
+    $meta->update($_POST);
+    Html::back();
 } else {
+    $meta->checkGlobal(READ);
 
-   $meta->checkGlobal(READ);
+    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 
-   Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    $meta->display($_GET);
 
-   $meta->display($_GET);
-
-   Html::footer();
+    Html::footer();
 }

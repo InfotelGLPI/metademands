@@ -227,11 +227,11 @@ class PluginMetademandsStep extends CommonDBChild
         $iterator = $DB->request([
                                     'FROM'  => getTableForItemType(__CLASS__),
                                     'WHERE' => [
-
                                        'plugin_metademands_metademands_id' => $item->getID(),
-
-                                    ]
-
+                                    ],
+                                    'ORDER' => [
+                                        'block_id ASC'
+                                    ],
                                  ]);
         if (count($iterator)) {
             if ($canedit) {
@@ -346,14 +346,26 @@ class PluginMetademandsStep extends CommonDBChild
         }
         ksort($blocks);
 
-        Dropdown::showFromArray(
-            'block_id',
-            $blocks,
-            ['value'   => $this->fields['block_id'],
-                'width'    => '100%',
-                'entity'   => $_SESSION['glpiactiveentities']]
-        );
+        if ($this->fields['block_id']) {
+            Dropdown::showFromArray(
+                'block_id',
+                $blocks,
+                ['value'  => $this->fields['block_id'],
+                 'width'  => '100%',
+                 'entity' => $_SESSION['glpiactiveentities']]
+            );
+        } else {
+            $values = [$this->fields['block_id']];
 
+            Dropdown::showFromArray(
+                'block_id',
+                $blocks,
+                ['values'   => $values,
+                 'width'    => '100%',
+                 'multiple' => true,
+                 'entity'   => $_SESSION['glpiactiveentities']]
+            );
+        }
         echo "</td></tr>";
 
         echo "<tr class='tab_bg_1'><td>" . Group::getTypeName() . "</td>";
