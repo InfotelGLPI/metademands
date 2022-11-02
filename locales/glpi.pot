@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-02 11:08+0000\n"
+"POT-Creation-Date: 2022-11-02 12:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -262,7 +262,7 @@ msgid "Takes the whole row"
 msgstr ""
 
 #: inc/field.class.php:311 inc/field.class.php:932 inc/field.class.php:4670
-#: inc/step.class.php:250 inc/step.class.php:330
+#: inc/step.class.php:270 inc/step.class.php:350
 msgid "Block"
 msgstr ""
 
@@ -518,8 +518,8 @@ msgid ""
 "set"
 msgstr ""
 
-#: inc/field.class.php:3845 inc/step.class.php:344 inc/task.class.php:504
-#: inc/task.class.php:883 inc/tickettask.class.php:154
+#: inc/field.class.php:3845 inc/step.class.php:245 inc/step.class.php:364
+#: inc/task.class.php:504 inc/task.class.php:883 inc/tickettask.class.php:154
 #, php-format
 msgid "Block %s"
 msgstr ""
@@ -1047,19 +1047,25 @@ msgstr[1] ""
 msgid "Add a new association"
 msgstr ""
 
-#: inc/step.class.php:244
+#: inc/step.class.php:252
+msgid ""
+"Be careful if all blocks are not assigned, they will be displayed to the "
+"last assigned group"
+msgstr ""
+
+#: inc/step.class.php:264
 msgid "List of associations"
 msgstr ""
 
-#: inc/step.class.php:252
+#: inc/step.class.php:272
 msgid "Message"
 msgstr ""
 
-#: inc/step.class.php:298
+#: inc/step.class.php:318
 msgid "No association found"
 msgstr ""
 
-#: inc/step.class.php:377
+#: inc/step.class.php:397
 msgid "Message to next group on form"
 msgstr ""
 
