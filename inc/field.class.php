@@ -2754,7 +2754,7 @@ class PluginMetademandsField extends CommonDBChild
                 $data['custom_values'] = self::_unserialize($data['custom_values']);
                 $opt                   = ['value'         => $value,
                                       'min'           => ((isset($data['custom_values']['min']) && $data['custom_values']['min'] != "") ? $data['custom_values']['min'] : 0),
-                                      'max'           => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 360),
+                                      'max'           => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 999999),
                                       'step'          => ((isset($data['custom_values']['step']) && $data['custom_values']['step'] != "") ? $data['custom_values']['step'] : 1),
                                       'display'       => false,
                 ];

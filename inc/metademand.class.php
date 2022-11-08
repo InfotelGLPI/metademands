@@ -1699,11 +1699,9 @@ JAVASCRIPT
                         $parent_fields['_users_id_requester'] = Session::getLoginUserID();
                     }
 
-                    $email                                      = UserEmail::getDefaultForUser($parent_fields['_users_id_requester']);
                     $default_use_notif                          = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
-                    $parent_fields['_users_id_requester_notif'] = ['use_notification'
-                                                                                       => (($email == "") ? 0 : $default_use_notif),
-                                                                   'alternative_email' => ['']];
+                    $parent_fields['_users_id_requester_notif'] = ['use_notification' => $default_use_notif,
+                                                                   'alternative_email' => ''];
 
 
                     // Get predefined ticket fields
@@ -5915,7 +5913,7 @@ JAVASCRIPT
 
         $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand></metademand>");
 
-        $this->to_xml($xml, $fields);
+        $this->toXml($xml, $fields);
 
         $name = "/metademands/" . $this->getField('name') . ".xml";
 
