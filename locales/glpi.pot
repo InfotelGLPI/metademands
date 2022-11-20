@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-08 16:07+0000\n"
+"POT-Creation-Date: 2022-11-20 17:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,13 +79,13 @@ msgid "Load form"
 msgstr ""
 
 #: ajax/deleteform.php:65 inc/form.class.php:166 inc/stepform.class.php:176
-#: inc/stepform.class.php:647
+#: inc/stepform.class.php:695
 msgctxt "button"
 msgid "Delete form"
 msgstr ""
 
 #: ajax/deleteform.php:71 inc/form.class.php:176 inc/stepform.class.php:186
-#: inc/stepform.class.php:533 inc/stepform.class.php:672
+#: inc/stepform.class.php:533 inc/stepform.class.php:707
 msgid "No existing forms founded"
 msgstr ""
 
@@ -106,6 +106,10 @@ msgstr[1] ""
 
 #: front/config.form.php:58
 msgid "Please activate the plugin"
+msgstr ""
+
+#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:68
+msgid "Continue metademand"
 msgstr ""
 
 #: front/wizard.form.php:259 front/wizard.form.php:262
@@ -642,10 +646,6 @@ msgstr ""
 msgid "Import metademands"
 msgstr ""
 
-#: inc/menu.class.php:68
-msgid "Continue metademand"
-msgstr ""
-
 #: inc/metademand.class.php:145
 msgid "Child ticket"
 msgid_plural "Child tickets"
@@ -1075,17 +1075,40 @@ msgid_plural "Steps a metademands form"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/stepform.class.php:601
+#: inc/stepform.class.php:611
+#, php-format
+msgid "You have %s"
+msgstr ""
+
+#: inc/stepform.class.php:612
+msgid "form"
+msgid_plural "forms"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/stepform.class.php:613
+msgid "to complete"
+msgstr ""
+
+#: inc/stepform.class.php:621
+msgid "Do you want to see him ?"
+msgstr ""
+
+#: inc/stepform.class.php:623
+msgid "Do you want to see them ?"
+msgstr ""
+
+#: inc/stepform.class.php:647
 msgid "Your form to complete"
 msgid_plural "Your forms to complete"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/stepform.class.php:630
+#: inc/stepform.class.php:676
 msgid "Edit by"
 msgstr ""
 
-#: inc/stepform.class.php:640
+#: inc/stepform.class.php:686
 msgid "Step"
 msgstr ""
 
