@@ -547,6 +547,14 @@ class PluginMetademandsStepform extends CommonDBTM
         NotificationEvent::raiseEvent("new_step_form", $this, $options);
     }
 
+
+    /**
+     * Actions done after the UPDATE of the item in the database
+     *
+     * @param boolean $history store changes history ? (default 1)
+     *
+     * @return void
+     **/
     public function post_updateItem($history = 1)
     {
         $meta = new PluginMetademandsMetademand();
@@ -561,19 +569,24 @@ class PluginMetademandsStepform extends CommonDBTM
     }
 
 
-    public function showWaitingForm()
+    /**
+     * @return array
+     */
+    public static function getWaitingForms()
     {
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
-        $rand         = mt_rand();
         $group_user   = new Group_User();
         $groups_users = $group_user->find(['users_id' => Session::getLoginUserID()]);
         $groups       = [];
         foreach ($groups_users as $gu) {
             $groups[] = $gu['groups_id'];
         }
-        $list_blocks = [];
+        $stepforms  = [];
+        $condition = [];
+        if (count($groups)> 0) {
+            $condition = ['groups_id' => $groups];
+        }
         $step       = new PluginMetademandsStep();
-        $steps      = $step->find(['groups_id' => $groups]);
+        $steps      = $step->find($condition);
         $stepform   = new PluginMetademandsStepform();
         $stepforms  = [];
         foreach ($steps as $s) {
@@ -582,12 +595,45 @@ class PluginMetademandsStepform extends CommonDBTM
                 foreach ($forms as $id => $form) {
                     $stepforms[$id] = $form;
                 }
-
-                //               $metas_id[$s['plugin_metademands_metademands_id']] = $s['plugin_metademands_metademands_id'];
             }
         }
-        //       $stepforms = $stepform->find(['plugin_metademands_metademands_id' => $metas_id ]);
-        //'plugin_metademands_metademands_id' => $ID
+        return $stepforms;
+    }
+
+    public static function showWaitingWarning() {
+
+        $stepforms = self::getWaitingForms();
+        if (count($stepforms) > 0) {
+            echo "<div class='center alert alert-warning alert-dismissible fade show' role='alert'>";
+            echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close'>&times;</a>";
+            echo "<i class='fas fa-exclamation-triangle fa-2x'></i>";
+            echo "<br>";
+            $warnings = sprintf(__('You have %s', 'metademands'), count($stepforms));
+            $warnings .= " " . _n('form', 'forms', count($stepforms), 'metademands');
+            $warnings .= " " . __('to complete', 'metademands');
+
+            echo $warnings;
+            echo "<br>";
+
+            $url = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php";
+            echo "<a href=\"" . $url . "\">";
+            if (count($stepforms) == 1) {
+                echo __('Do you want to see him ?', 'servicecatalog');
+            } else {
+                echo __('Do you want to see them ?', 'servicecatalog');
+            }
+            echo "</a>";
+            echo "</div>";
+        }
+    }
+
+    public function showWaitingForm()
+    {
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
+        $rand         = mt_rand();
+
+        $stepforms = self::getWaitingForms();
+
         if (!empty($stepforms)) {
             echo "<div class=\"row\">";
             echo "<div class=\"col-md-12\">";
@@ -643,29 +689,18 @@ class PluginMetademandsStepform extends CommonDBTM
                     if (Session::haveRight("plugin_metademands", DELETE)) {
                         $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                         echo "<br><span style='color:darkred'>";
-                        Html::showSimpleForm($target, 'delete_form_from_list',
-                                             _sx('button', 'Delete form', 'metademands'),
-                                             ['plugin_metademands_stepforms_id' => $id],
-                                             'fa-trash-alt fa-1x');
+                        Html::showSimpleForm(
+                            $target,
+                            'delete_form_from_list',
+                            _sx('button', 'Delete form', 'metademands'),
+                            ['plugin_metademands_stepforms_id' => $id],
+                            'fa-trash-alt fa-1x'
+                        );
                         echo "</span>";
                     }
-                    //                    }
-
-                    //               if ($config['use_draft']) {
-                    //                   $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
-                    //                   if ($count_drafts > 0) {
-                    //                       echo "<br><em><span class='mydraft-comment'>";
-                    //                       echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                    //                           $count_drafts);
-                    //                       echo "</span>";
-                    //                   }
-                    //               }
-
                     echo "</p></div>";
-                    //               echo "</a>";
                 }
             }
-
             echo "</div>";
         } else {
             echo "<br><div class='alert alert-important alert-info center'>";

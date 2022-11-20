@@ -29,7 +29,17 @@
  
 include('../../../inc/includes.php');
 
-Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+
+
+if (Session::getCurrentInterface() == 'central') {
+    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+} else {
+    if (Plugin::isPluginActive('servicecatalog')) {
+        PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Continue metademand', 'metademands'));
+    } else {
+        Html::helpHeader(__('Continue metademand', 'metademands'));
+    }
+}
 
 $meta = new PluginMetademandsMetademand();
 $stepform = new PluginMetademandsStepform();
@@ -40,4 +50,14 @@ if ($meta->canView() || Session::haveRight("config", UPDATE)) {
    Html::displayRightError();
 }
 
-Html::footer();
+if (Session::getCurrentInterface() != 'central'
+    && Plugin::isPluginActive('servicecatalog')) {
+
+    PluginServicecatalogMain::showNavBarFooter('metademands');
+}
+
+if (Session::getCurrentInterface() == 'central') {
+    Html::footer();
+} else {
+    Html::helpFooter();
+}
