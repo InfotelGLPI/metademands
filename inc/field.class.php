@@ -2138,7 +2138,7 @@ class PluginMetademandsField extends CommonDBChild
                         $right = "all";
                         if (!empty($data['custom_values'])) {
                             $options = PluginMetademandsField::_unserialize($data['custom_values']);
-                            if ($options['user_group'] == 1) {
+                            if (isset($options['user_group']) && $options['user_group'] == 1) {
                                 $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
                                 $group_user_data = Group_User::getUserGroups(Session::getLoginUserID(), $condition);
 
