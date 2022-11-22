@@ -2811,15 +2811,15 @@ JAVASCRIPT
                                     $tasks = $line['tasks'];
                                     foreach ($tasks as $key => $val) {
                                         if (PluginMetademandsTicket_Field::checkTicketCreation($val['tasks_id'], $parent_tickets_id)) {
-                                            $tasks[$key]['tickettasks_name'] = $val['tickettasks_name'] ?? urlencode(addslashes($val['tickettasks_name']));
+                                            $tasks[$key]['tickettasks_name'] = $val['tickettasks_name'] ?? addslashes($val['tickettasks_name']);
                                             if (isset($input['items_id']['PluginResourcesResource'])) {
                                                 if ($resource->getFromDB($resource_id)) {
                                                     $tasks[$key]['tickettasks_name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
                                                     $tasks[$key]['items_id']         = ['PluginResourcesResource' => [$resource_id]];
                                                 }
                                             }
-                                            $tasks[$key]['tasks_completename'] = $val['tasks_completename'] ?? urlencode(addslashes($val['tasks_completename']));
-                                            $tasks[$key]['content']            = $val['content'] ?? urlencode(addslashes($val['content']));
+                                            $tasks[$key]['tasks_completename'] = $val['tasks_completename'] ?? addslashes($val['tasks_completename']);
+                                            $tasks[$key]['content']            = $val['content'] ?? addslashes($val['content']);
                                             $tasks[$key]['block_use']          = json_decode($val["block_use"], true);
                                         } else {
                                             unset($tasks[$key]);
