@@ -2938,11 +2938,11 @@ class PluginMetademandsWizard extends CommonDBTM
                 //                        echo "</div>";
                 //                    }
                 //                }
-                echo "<button type='button' id='nextBtn' class='btn btn-primary ticket-button' onclick='nextPrev(1)'>";
+                echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button' onclick='nextPrev(1)'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
-                echo "<div id='nextMsg' class='alert alert-info center'>";
-                echo "</div>";
+//                echo "<div id='nextMsg' class='alert alert-info center'>";
+//                echo "</div>";
                 echo "</span>";
                 echo "</div>";
                 echo "</div>";
