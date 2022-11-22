@@ -1351,9 +1351,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                         if ($data['type'] == 'informations') {
                             $color = $data['color'];
-                            $style = "style='background-color: $color!important;'";
+                            $style = "";
                             //                  $class = "metademands_wizard_informations";
-                            $class = "alert d-flex alert-dismissible fade show";  //alert-important alert-warning alert-dismissible
+                            $class = "alert d-flex alert-warning alert-dismissible fade show";  //alert-important alert-warning alert-dismissible
                         } else {
                             $class = "form-group ";
                         }
@@ -1389,8 +1389,8 @@ class PluginMetademandsWizard extends CommonDBTM
                             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
                                 echo "</div><div class=\"form-group col-md-5 md-bottom\">";
                             } else {
-                                $class = "alert alert-warning";
-                                echo "<div class=\"form-group metademands_wizard_label2 $class\">";
+                                $class = "";
+                                echo "<div class=\"form-group\">";
                             }
                             if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                                 $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
