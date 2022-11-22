@@ -792,9 +792,11 @@ class PluginMetademandsMetademand extends CommonDBTM
 
         echo "<tr class='tab_bg_1'>";
 
-        echo "<td>" . __('Step-by-step mode', 'metademands') . "</td>";
         echo "<td>";
-        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
+//        echo __('Step-by-step mode', 'metademands');
+        echo "</td>";
+        echo "<td>";
+//        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
         echo "</td>";
 
         echo "<td>" . __('Maintenance mode') . "</td>";
