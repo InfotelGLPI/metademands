@@ -36,18 +36,17 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsTicket extends CommonDBTM
 {
+    public static $rightname = 'plugin_metademands';
 
-    static $rightname = 'plugin_metademands';
-
-   /**
-    * functions mandatory
-    * getTypeName(), canCreate(), canView()
-    *
-    * @param int $nb
-    *
-    * @return string
-    */
-    static function getTypeName($nb = 0)
+    /**
+     * functions mandatory
+     * getTypeName(), canCreate(), canView()
+     *
+     * @param int $nb
+     *
+     * @return string
+     */
+    public static function getTypeName($nb = 0)
     {
         return __('Linked ticket', 'metademands');
     }
@@ -55,7 +54,7 @@ class PluginMetademandsTicket extends CommonDBTM
    /**
     * @return bool|int
     */
-    static function canView()
+    public static function canView()
     {
         return Session::haveRight(self::$rightname, READ);
     }
@@ -63,7 +62,7 @@ class PluginMetademandsTicket extends CommonDBTM
    /**
     * @return bool
     */
-    static function canCreate()
+    public static function canCreate()
     {
         return Session::haveRight(self::$rightname, CREATE);
     }
@@ -71,9 +70,9 @@ class PluginMetademandsTicket extends CommonDBTM
    /**
     * @param \Ticket $ticket
     */
-    static function emptyTicket(Ticket $ticket)
+    public static function emptyTicket(Ticket $ticket)
     {
-       // Metademand redirection on ticket creation
+        // Metademand redirection on ticket creation
 
         if (isset($_REQUEST['id'])
           && $_REQUEST['id'] == 0
@@ -97,9 +96,8 @@ class PluginMetademandsTicket extends CommonDBTM
     * @return \Ticket
     * @throws \GlpitestSQLError
     */
-    static function post_update_ticket(Ticket $ticket)
+    public static function post_update_ticket(Ticket $ticket)
     {
-
         $metademand        = new PluginMetademandsMetademand();
         $ticket_metademand = new PluginMetademandsTicket_Metademand();
 
@@ -121,12 +119,11 @@ class PluginMetademandsTicket extends CommonDBTM
     *
     * @return void
     */
-   static function manageMetademandStatusOnUpdateTicket($ticket_metademand, $ticket)
+    public static function manageMetademandStatusOnUpdateTicket($ticket_metademand, $ticket)
     {
-
         $parent_ticket = false;
 
-       //parent or child
+        //parent or child
         if (count($ticket_metademand->fields) > 0) {
             $parent_ticket = true;
         } else {
@@ -137,38 +134,40 @@ class PluginMetademandsTicket extends CommonDBTM
                 $validation     = $validationmeta->getFromDBByCrit(['tickets_id' => $ticket_parent_id]);
                 $validation_ok  = false;
                 if ($validation) {
-                    if (in_array($validationmeta->fields['validate'],
-                                 [PluginMetademandsMetademandValidation::TO_VALIDATE, PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK])) {
+                    if (in_array(
+                        $validationmeta->fields['validate'],
+                        [PluginMetademandsMetademandValidation::TO_VALIDATE, PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK]
+                    )) {
                         $validation_ok = true;
                     }
                 }
 
                 if (!$meta_to_not_close && !$validation_ok) {
                     $ticket_metademand->update(['id' => $ticket_metademand->getID(),
-                                           'status' => PluginMetademandsTicket_Metademand::TO_CLOSED]);
+                                          'status' => PluginMetademandsTicket_Metademand::TO_CLOSED]);
                 } elseif ($meta_to_not_close || $validation_ok) {
                     $ticket_metademand->update(['id' => $ticket_metademand->getID(),
-                                           'status' => PluginMetademandsTicket_Metademand::RUNNING]);
+                                          'status' => PluginMetademandsTicket_Metademand::RUNNING]);
                 }
             }
         }
 
-       //reopen or refused solution for parent with no sons
+        //reopen or refused solution for parent with no sons
         if ($parent_ticket) {
             if ($ticket->getField('status') != Ticket::SOLVED
-             && $ticket->getField('status') != Ticket::CLOSED
-             && $ticket_metademand->getField('status') == PluginMetademandsTicket_Metademand::CLOSED) {
+            && $ticket->getField('status') != Ticket::CLOSED
+            && $ticket_metademand->getField('status') == PluginMetademandsTicket_Metademand::CLOSED) {
                 $ticket_metademand->update(['id' => $ticket_metademand->getID(), 'status' => PluginMetademandsTicket_Metademand::RUNNING]);
             }
         }
     }
 
    /**
-    * @param $ticket_id
-    *
-    * @return mixed
-    */
-    static function getTicketIDOfMetademand($ticket_id)
+   * @param $ticket_id
+   *
+   * @return mixed
+   */
+    public static function getTicketIDOfMetademand($ticket_id)
     {
         $ticket_task = new PluginMetademandsTicket_Task();
         if ($ticket_task->getFromDBByCrit(['tickets_id' => $ticket_id])) {
@@ -185,7 +184,7 @@ class PluginMetademandsTicket extends CommonDBTM
     *
     * @return bool
     */
-    static function childTicketsOpen($tickets_id)
+    public static function childTicketsOpen($tickets_id)
     {
         $ticket_task  = new PluginMetademandsTicket_Task();
         $ticket_tasks = $ticket_task->find(['parent_tickets_id' => $tickets_id]);
@@ -196,7 +195,7 @@ class PluginMetademandsTicket extends CommonDBTM
             $ticket = new Ticket();
             foreach ($ticket_tasks as $tt) {
                 $ticket->getFromDB($tt['tickets_id']);
-                if (in_array($ticket->fields['status'], Ticket::getNotSolvedStatusArray())) {
+                if (isset($ticket->fields['status']) && in_array($ticket->fields['status'], Ticket::getNotSolvedStatusArray())) {
                     return true;
                 } else {
                     $status = ($status || self::childTicketsOpen($tt['tickets_id']));
@@ -215,11 +214,10 @@ class PluginMetademandsTicket extends CommonDBTM
     * @return \Ticket
     * @throws \GlpitestSQLError
     */
-    static function pre_update_ticket(Ticket $ticket)
+    public static function pre_update_ticket(Ticket $ticket)
     {
-
         if (isset($ticket->input['status'])) {
-           // Actions done on ticket close
+            // Actions done on ticket close
             if ($ticket->input['status'] == Ticket::SOLVED
              || $ticket->input['status'] == Ticket::CLOSED) {
                 self::checkSonTicketsStatus($ticket);
@@ -236,9 +234,9 @@ class PluginMetademandsTicket extends CommonDBTM
                     ["`tickets_id`" => $ticket->input["id"]]
                 );
                 if (!empty($data) && $ticket->input['itilcategories_id'] != $ticket->fields['itilcategories_id']) {
-                     $data       = reset($data);
-                     $metademand = new PluginMetademandsMetademand();
-                     $metademand->convertMetademandToTicket($ticket, $data['plugin_metademands_metademands_id']);
+                    $data       = reset($data);
+                    $metademand = new PluginMetademandsMetademand();
+                    $metademand->convertMetademandToTicket($ticket, $data['plugin_metademands_metademands_id']);
                 }
             }
         }
@@ -254,13 +252,12 @@ class PluginMetademandsTicket extends CommonDBTM
     * @return bool
     * @throws \GlpitestSQLError
     */
-    static function checkSonTicketsStatus(Ticket $ticket, $with_message = true)
+    public static function checkSonTicketsStatus(Ticket $ticket, $with_message = true)
     {
-
         $ticket_metademand      = new PluginMetademandsTicket_Metademand();
         $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
 
-       // If ticket is Parent : Check if all sons ticket are closed
+        // If ticket is Parent : Check if all sons ticket are closed
         if (count($ticket_metademand_data)) {
             $ticket_metademand_data = reset($ticket_metademand_data);
             $tickets_found          = self::getSonTickets(
@@ -270,7 +267,7 @@ class PluginMetademandsTicket extends CommonDBTM
                 true
             );
 
-           // If son tickets check status
+            // If son tickets check status
             if (count($tickets_found)) {
                 foreach ($tickets_found as $values) {
                     $job = new Ticket();
@@ -304,12 +301,13 @@ class PluginMetademandsTicket extends CommonDBTM
     * @return array
     * @throws \GlpitestSQLError
     */
-    static function getSonTickets($tickets_id, $metademands_id, $ticket_task_data = [], $recursive = false)
+    public static function getSonTickets($tickets_id, $metademands_id, $ticket_task_data = [], $recursive = false)
     {
         global $DB;
 
-       // Search metademand son ticket : if found recursive call
-        $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id,
+        if (isset($tickets_id) && $tickets_id > 0) {
+            // Search metademand son ticket : if found recursive call
+            $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id,
                        `glpi_plugin_metademands_tickets_metademands`.`tickets_id`,
                        `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id`
                FROM `glpi_plugin_metademands_tickets_metademands`
@@ -317,62 +315,62 @@ class PluginMetademandsTicket extends CommonDBTM
                  ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id`)
                WHERE `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id` = " . $tickets_id . " 
                AND `glpi_plugin_metademands_tickets_metademands`.`tickets_id` != " . $tickets_id;
-        $result = $DB->query($query);
+            $result = $DB->query($query);
 
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
-                $data['type']  = PluginMetademandsTask::METADEMAND_TYPE;
-                $data['level'] = 1;
-                $used          = false;
-                if (count($ticket_task_data)) {
-                    foreach ($ticket_task_data as $values) {
-                        if ($values['tickets_id'] == $data['tickets_id']) {
-                            $used = true;
+            if ($DB->numrows($result)) {
+                while ($data = $DB->fetchAssoc($result)) {
+                    $data['type']  = PluginMetademandsTask::METADEMAND_TYPE;
+                    $data['level'] = 1;
+                    $used          = false;
+                    if (count($ticket_task_data)) {
+                        foreach ($ticket_task_data as $values) {
+                            if ($values['tickets_id'] == $data['tickets_id']) {
+                                $used = true;
+                            }
                         }
                     }
-                }
-                if (!$used) {
-                    $ticket_task_data[] = $data;
-                }
-                if ($recursive) {
-                    $ticket_task_data = self::getSonTickets(
-                        $data['tickets_id'],
-                        $data['metademands_id'],
-                        $ticket_task_data,
-                        $recursive
-                    );
+                    if (!$used) {
+                        $ticket_task_data[] = $data;
+                    }
+                    if ($recursive) {
+                        $ticket_task_data = self::getSonTickets(
+                            $data['tickets_id'],
+                            $data['metademands_id'],
+                            $ticket_task_data,
+                            $recursive
+                        );
+                    }
                 }
             }
-        }
 
-       // Get direct son ticket
-        $query  = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
+            // Get direct son ticket
+            $query  = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
                        `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`,
                        `glpi_plugin_metademands_tickets_tasks`.`level`,
                        `glpi_plugin_metademands_tickets_tasks`.`plugin_metademands_tasks_id` as tasks_id
                   FROM glpi_plugin_metademands_tickets_tasks
                   WHERE `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` = " . $tickets_id . "";
-        $result = $DB->query($query);
+            $result = $DB->query($query);
 
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
-                $data['type']       = PluginMetademandsTask::TICKET_TYPE;
-                $ticket_task_data[] = $data;
-                $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive);
-            }
-        }
-
-       // Fill array with uncreated son tickets
-        if (!empty($metademands_id)) {
-            $task_data           = [];
-            $task                = new PluginMetademandsTask();
-            $parent_tickets_id[] = $tickets_id;
-            foreach ($ticket_task_data as $values) {
-                $parent_tickets_id[] = $values['tickets_id'];
+            if ($DB->numrows($result)) {
+                while ($data = $DB->fetchAssoc($result)) {
+                    $data['type']       = PluginMetademandsTask::TICKET_TYPE;
+                    $ticket_task_data[] = $data;
+                    $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive);
+                }
             }
 
-           // Search tasks linked to a created ticket
-            $query = "SELECT `glpi_plugin_metademands_tasks`.`name` as tasks_name,
+            // Fill array with uncreated son tickets
+            if (!empty($metademands_id)) {
+                $task_data           = [];
+                $task                = new PluginMetademandsTask();
+                $parent_tickets_id[] = $tickets_id;
+                foreach ($ticket_task_data as $values) {
+                    $parent_tickets_id[] = $values['tickets_id'];
+                }
+
+                // Search tasks linked to a created ticket
+                $query = "SELECT `glpi_plugin_metademands_tasks`.`name` as tasks_name,
                           `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
                           `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`,
                           `glpi_plugin_metademands_tasks`.`level`,
@@ -387,50 +385,51 @@ class PluginMetademandsTicket extends CommonDBTM
                      AND `glpi_plugin_metademands_tickets_tasks`.`tickets_id` IN ('" . implode("','", $parent_tickets_id) . "')
                      ORDER BY `glpi_plugin_metademands_tasks`.`completename`";
 
-            $result = $DB->query($query);
-            $count  = 0;
+                $result = $DB->query($query);
+                $count  = 0;
 
-            if ($DB->numrows($result)) {
-                while ($data = $DB->fetchAssoc($result)) {
-                    $data['type']                 = PluginMetademandsTask::TICKET_TYPE;
-                    $task_data[$data['tasks_id']] = $data;
-                   // If child task exists : son ticket creation
-                    $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
-                    if ($child_tasks_data !== false) {
-                        $tasks = [];
-                        foreach ($child_tasks_data as $child_tasks_id) {
-                            $tasks[] = $task->getTasks(
-                                $data['plugin_metademands_metademands_id'],
-                                ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]
-                            );
-                        }
+                if ($DB->numrows($result)) {
+                    while ($data = $DB->fetchAssoc($result)) {
+                        $data['type']                 = PluginMetademandsTask::TICKET_TYPE;
+                        $task_data[$data['tasks_id']] = $data;
+                        // If child task exists : son ticket creation
+                        $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
+                        if ($child_tasks_data !== false) {
+                            $tasks = [];
+                            foreach ($child_tasks_data as $child_tasks_id) {
+                                $tasks[] = $task->getTasks(
+                                    $data['plugin_metademands_metademands_id'],
+                                    ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]
+                                );
+                            }
 
 
-                        foreach ($tasks as $k => $v) {
-                            foreach ($v as $taskchild) {
-                                if (PluginMetademandsTicket_Field::checkTicketCreation($taskchild['tasks_id'], $tickets_id)) {
-                                    $task_data[$taskchild['tasks_id']] = ['tasks_name' => $taskchild['tickettasks_name'],
-                                                                 'level'      => $taskchild['level'],
-                                                                 'tickets_id' => 0,
-                                                                 'tasks_id'   => $taskchild['tasks_id'],
-                                                                 'type'       => PluginMetademandsTask::TICKET_TYPE];
-                                    $count++;
+                            foreach ($tasks as $k => $v) {
+                                foreach ($v as $taskchild) {
+                                    if (PluginMetademandsTicket_Field::checkTicketCreation($taskchild['tasks_id'], $tickets_id)) {
+                                        $task_data[$taskchild['tasks_id']] = ['tasks_name' => $taskchild['tickettasks_name'],
+                                                                              'level'      => $taskchild['level'],
+                                                                              'tickets_id' => 0,
+                                                                              'tasks_id'   => $taskchild['tasks_id'],
+                                                                              'type'       => PluginMetademandsTask::TICKET_TYPE];
+                                        $count++;
+                                    }
                                 }
                             }
                         }
+                        $count++;
                     }
-                    $count++;
                 }
-            }
 
-           // Fill metademand tasks
-            foreach ($ticket_task_data as $values) {
-                if ($values['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
-                    array_unshift($task_data, $values);
+                // Fill metademand tasks
+                foreach ($ticket_task_data as $values) {
+                    if ($values['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
+                        array_unshift($task_data, $values);
+                    }
                 }
-            }
 
-            $ticket_task_data = $task_data;
+                $ticket_task_data = $task_data;
+            }
         }
         return $ticket_task_data;
     }
@@ -443,11 +442,11 @@ class PluginMetademandsTicket extends CommonDBTM
     * @return array
     * @throws \GlpitestSQLError
     */
-    static function getAncestorTickets($tickets_id, $only_metademand = false, $ticket_task_data = [])
+    public static function getAncestorTickets($tickets_id, $only_metademand = false, $ticket_task_data = [])
     {
         global $DB;
 
-       // Get direct son ticket
+        // Get direct son ticket
         $query  = "SELECT `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
                        `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`
                   FROM glpi_plugin_metademands_tickets_tasks
@@ -463,7 +462,7 @@ class PluginMetademandsTicket extends CommonDBTM
             }
         }
 
-       // Search metademand parent ticket
+        // Search metademand parent ticket
         $query  = "SELECT `glpi_plugin_metademands_tickets_metademands`.`tickets_id`
                FROM `glpi_plugin_metademands_tickets_metademands`
                WHERE `glpi_plugin_metademands_tickets_metademands`.`tickets_id` = " . $tickets_id;
@@ -560,7 +559,7 @@ class PluginMetademandsTicket extends CommonDBTM
     *
     * @return bool (print the helpdesk)
     */
-    static function showFormHelpdesk($ticket_template = false, $values = [])
+    public static function showFormHelpdesk($ticket_template = false, $values = [])
     {
         global $CFG_GLPI;
 
@@ -595,7 +594,7 @@ class PluginMetademandsTicket extends CommonDBTM
         echo Html::hidden('entities_id', ['value' => $entities_id]);
 
         echo "<div class='center'><table class='tab_cadre_fixe'>";
-       // URGENCY
+        // URGENCY
         if ($CFG_GLPI['urgency_mask'] != (1 << 3)) {
             echo "<tr class='tab_bg_1'>";
             echo "<td>" . __('Urgency');
@@ -605,7 +604,7 @@ class PluginMetademandsTicket extends CommonDBTM
             echo "</td></tr>";
         }
 
-       // TITLE
+        // TITLE
         echo "<tr class='tab_bg_1'>";
         echo "<td>" . __('Title');
         echo $tt->getMandatoryMark('name');
@@ -614,7 +613,7 @@ class PluginMetademandsTicket extends CommonDBTM
         echo Html::input('name', ['value' => $fields['name'], 'size' => 80]);
         echo "</td></tr>";
 
-       // CONTENT
+        // CONTENT
         echo "<tr class='tab_bg_1'>";
         echo "<td>" . __('Description');
         echo $tt->getMandatoryMark('content');
@@ -636,7 +635,7 @@ class PluginMetademandsTicket extends CommonDBTM
     * @return bool
     * @throws \GlpitestSQLError
     */
-    static function isTicketSolved($ticket_metademand_data)
+    public static function isTicketSolved($ticket_metademand_data)
     {
         $tickets = [];
         $solved  = true;
@@ -670,9 +669,8 @@ class PluginMetademandsTicket extends CommonDBTM
     *
     * @return true
     */
-    static function uploadTicketDocument($params)
+    public static function uploadTicketDocument($params)
     {
-
         $document_name = addslashes($params['name']);
 
         $filename = tempnam(GLPI_DOC_DIR . '/_tmp', 'PWS');
@@ -690,9 +688,8 @@ class PluginMetademandsTicket extends CommonDBTM
     *
     * @return array or an Error
     */
-    static function uploadDocument($params, $filename, $document_name)
+    public static function uploadDocument($params, $filename, $document_name)
     {
-
         $files   = [];
         $content = null;
 
@@ -723,7 +720,7 @@ class PluginMetademandsTicket extends CommonDBTM
     *
     * @return array
     */
-    static function getUsedActors($tickets_id, $itilActorType, $type = 'users_id')
+    public static function getUsedActors($tickets_id, $itilActorType, $type = 'users_id')
     {
         $resultFound = [];
 

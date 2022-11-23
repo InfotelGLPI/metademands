@@ -3177,7 +3177,7 @@ class PluginMetademandsField extends CommonDBChild
                         echo "<input type='checkbox' name='check_value' value='[1]' $checked>";
                         echo "</td></tr>";
                         echo "<tr><td>";
-                        echo __('Default date now', 'metademands');
+                        echo __('Define the default date', 'metademands');
                        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
                         echo '</td>';
                         echo "<td>";
