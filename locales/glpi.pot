@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-22 16:31+0000\n"
+"POT-Creation-Date: 2022-11-23 11:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -434,7 +434,7 @@ msgid "Day greater or equal to now"
 msgstr ""
 
 #: inc/field.class.php:3180
-msgid "Default date now"
+msgid "Define the default date"
 msgstr ""
 
 #: inc/field.class.php:3189
@@ -1153,11 +1153,11 @@ msgctxt "button"
 msgid "Update block to use"
 msgstr ""
 
-#: inc/ticket.class.php:52
+#: inc/ticket.class.php:51
 msgid "Linked ticket"
 msgstr ""
 
-#: inc/ticket.class.php:284
+#: inc/ticket.class.php:281
 msgid ""
 "The demand cannot be resolved or closed until all child tickets are not "
 "resolved"
