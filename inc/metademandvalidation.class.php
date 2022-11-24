@@ -192,15 +192,31 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                         if ($fields_container->fields['type'] == 'tab') {
                             if (isset($values_form[$plfield['plugin_metademands_fields_id']])) {
                                 if ($fields_field->fields['type'] == 'dropdown') {
-                                    $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
+                                    if(!isset($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])
+                                        || empty($inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"])) {
+                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values_form[$plfield['plugin_metademands_fields_id']];
+                                    }
+
                                 } elseif ($fields_field->fields['type'] == 'yesno') {
                                     $val = $values_form[$plfield['plugin_metademands_fields_id']];
                                     if (is_int($val)) {
                                         $val = $val -1;
+                                    } else {
+                                        if(!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])
+                                            || empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
+                                            $val = 0;
+                                        } else {
+                                            $val = $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']];
+                                        }
+
                                     }
                                     $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $val;
                                 } else {
-                                    $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
+                                    if(!isset($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']]) ||
+                                    empty($inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']])) {
+                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values_form[$plfield['plugin_metademands_fields_id']];
+                                    }
+
                                 }
                             }
                         }
