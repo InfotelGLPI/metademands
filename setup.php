@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.2.8');
+define('PLUGIN_METADEMANDS_VERSION', '3.2.9');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
