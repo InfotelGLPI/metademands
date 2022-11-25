@@ -53,7 +53,8 @@ if (isset($_POST["type"])) {
    } else if (isset($_POST["action"])
               && $_POST["action"] == "icon") {
       $return      = "";
-      $metademands = PluginMetademandsWizard::selectMetademands("", $_POST["type"]);
+
+      $metademands = PluginMetademandsWizard::selectMetademands(false, "", $_POST["type"]);
       if (count($metademands) > 0) {
          foreach ($metademands as $id => $name) {
 

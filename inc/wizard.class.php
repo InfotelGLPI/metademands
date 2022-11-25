@@ -557,13 +557,19 @@ class PluginMetademandsWizard extends CommonDBTM
      * @return array
      * @throws \GlpitestSQLError
      */
-    public static function selectMetademands($limit = "", $type = Ticket::DEMAND_TYPE) {
+    public static function selectMetademands($all = false, $limit = "", $type = Ticket::DEMAND_TYPE) {
         global $DB;
 
         if ($type == Ticket::INCIDENT_TYPE || $type == Ticket::DEMAND_TYPE) {
-            $crit = "type = '$type'";
+            $crit = "`type` = '$type'";
+            if ($all == true) {
+                $crit = "`type` IS NOT NULL ";
+            }
         } else {
-            $crit = "object_to_create = '$type'";
+            $crit = "`object_to_create` = '$type'";
+            if ($all == true) {
+                $crit = "`object_to_create` IS NOT NULL ";
+            }
         }
 
 
@@ -607,7 +613,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
 
-        $metademands = self::selectMetademands();
+        $metademands = self::selectMetademands(true);
         $config      = PluginMetademandsConfig::getInstance();
 
         $meta = new PluginMetademandsMetademand();
