@@ -37,6 +37,7 @@ if (empty($_GET["id"])) {
 $tickettask = new PluginMetademandsTicketTask();
 $task       = new PluginMetademandsTask();
 
+
 if (isset($_POST["update"])) {
 
    // Check update rights for clients
@@ -48,24 +49,24 @@ if (isset($_POST["update"])) {
       $parent_task = $_POST['parent_tasks_id'] ?? 0;
 
       if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
-         $_POST['block_use'] = [];
+          $input['block_use'] = json_encode([]);
       } else {
-         $_POST['block_use'] = json_encode($_POST['block_use']);
+          $input['block_use'] = json_encode($_POST['block_use']);
       }
 
       if ($parent_task > 0) {
          $parenttask = new PluginMetademandsTask();
          $parenttask->getFromDB($parent_task);
-         $_POST['level'] = $parenttask->fields['level'] + 1;
+          $input['level'] = $parenttask->fields['level'] + 1;
       } else {
-         $_POST['plugin_metademands_tasks_id'] = 0;
-         $_POST['level'] = 1;
+          $input['plugin_metademands_tasks_id'] = 0;
+          $input['level'] = 1;
       }
-      $_POST['type']  = $_POST['taskType'];
-      $_POST['id'] = $tasks_id;
-      $_POST['plugin_metademands_tasks_id'] = $parent_task;
+      $input['type']  = $_POST['type'];
+      $input['id'] = $tasks_id;
+       $input['plugin_metademands_tasks_id'] = $parent_task;
 
-      $task->update($_POST);
+      $task->update($input);
    }
    //   PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
    Html::back();

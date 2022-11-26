@@ -2988,7 +2988,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 $ID   = $metademands->fields['id'];
                 $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-                //            Toolbox::logInfo($hidden_blocks);
+
                 $json_hidden_blocks = json_encode($hidden_blocks);
                 $alert              = __('Thanks to fill mandatory fields', 'metademands');
                 $group_user         = new Group_User();
@@ -3010,11 +3010,9 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo Html::hidden('plugin_metademands_stepforms_id', ['value' => $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id']]);
                 }
 
-//Toolbox::logInfo($_SESSION);
                 //Html::scriptBlock('var step = sessionStorage.currentStep; return step;');
                 $block_id = $_SESSION['plugin_metademands']['block_id'] ?? 0;
 
-                //Toolbox::logInfo($block_id);
                 if ($metademands->fields['step_by_step_mode'] == 1
                 ) {
                     $submitmsg = $submitstepmsg =  __('Your form will be redirected to another group of people who will complete the following information.', 'metademands');
