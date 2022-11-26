@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-26 11:11+0000\n"
+"POT-Creation-Date: 2022-11-26 11:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1272,12 +1272,6 @@ msgstr ""
 
 #: inc/wizard.class.php:2993
 msgid "Thanks to fill mandatory fields"
-msgstr ""
-
-#: inc/wizard.class.php:3018
-msgid ""
-"Your form will be redirected to another group of people who will complete "
-"the following information."
 msgstr ""
 
 #: inc/wizard.class.php:3845
