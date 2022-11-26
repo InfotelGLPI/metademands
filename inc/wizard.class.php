@@ -1039,9 +1039,9 @@ class PluginMetademandsWizard extends CommonDBTM
         $allfields = [];
 
         $use_as_step = 0;
-        if ($metademands->fields['step_by_step_mode'] == 1) {
-            $use_as_step = 1;
-        }
+//        if ($metademands->fields['step_by_step_mode'] == 1) {
+//            $use_as_step = 1;
+//        }
         if ($preview || $seeform) {
             $use_as_step = 0;
         }
@@ -3013,16 +3013,16 @@ class PluginMetademandsWizard extends CommonDBTM
                 //Html::scriptBlock('var step = sessionStorage.currentStep; return step;');
                 $block_id = $_SESSION['plugin_metademands']['block_id'] ?? 0;
 
-                if ($metademands->fields['step_by_step_mode'] == 1
-                ) {
-                    $submitmsg = $submitstepmsg =  __('Your form will be redirected to another group of people who will complete the following information.', 'metademands');
-
-                    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), $block_id);
-                    if ($msg) {
-                        $submitmsg = $msg;
-                        $submitstepmsg = $msg;
-                    }
-                }
+//                if ($metademands->fields['step_by_step_mode'] == 1
+//                ) {
+//                    $submitmsg = $submitstepmsg =  __('Your form will be redirected to another group of people who will complete the following information.', 'metademands');
+//
+//                    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), $block_id);
+//                    if ($msg) {
+//                        $submitmsg = $msg;
+//                        $submitstepmsg = $msg;
+//                    }
+//                }
                 echo "<script>
                   
                   var nexttitle = '$nexttitle';
@@ -3043,7 +3043,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                   function showTab(n,create = false, submittitle, submitmsg) {
                      // This function will display the specified tab of the form...
-                     document.getElementById('nextMsg').style.display = 'none';
+//                     document.getElementById('nextMsg').style.display = 'none';
                      if (use_as_step == 1) {
                         var x = document.getElementsByClassName('tab-step');
                      } else {
@@ -3059,8 +3059,8 @@ class PluginMetademandsWizard extends CommonDBTM
                      }
                      if (n == (x.length - 1) || create == true) {
                         document.getElementById('nextBtn').innerHTML = submittitle;
-                        document.getElementById('nextMsg').style.display = 'block';
-                        document.getElementById('nextMsg').innerHTML = submitmsg;
+//                        document.getElementById('nextMsg').style.display = 'block';
+//                        document.getElementById('nextMsg').innerHTML = submitmsg;
                      } else {
                         document.getElementById('nextBtn').innerHTML = nexttitle;
                      }
@@ -3432,8 +3432,8 @@ class PluginMetademandsWizard extends CommonDBTM
                          
                          if(create) {
                             document.getElementById('nextBtn').innerHTML = submitsteptitle;
-                            document.getElementById('nextMsg').style.display = 'block';
-                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
+//                            document.getElementById('nextMsg').style.display = 'block';
+//                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
                          } else {
                             document.getElementById('nextBtn').innerHTML = nextsteptitle;
                             sessionStorage.setItem('currentStep', id_bloc);
