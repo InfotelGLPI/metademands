@@ -613,11 +613,11 @@ class PluginMetademandsWizard extends CommonDBTM
 
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
 
-        $metademands = self::selectMetademands(true);
         $config      = PluginMetademandsConfig::getInstance();
 
         $meta = new PluginMetademandsMetademand();
         if ($config['display_type'] == 1) {
+
             $data                        = [];
             $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
             $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
@@ -650,55 +650,65 @@ class PluginMetademandsWizard extends CommonDBTM
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/updatelistmeta.php",
                 $params
             );
-            echo "<div id='listmeta' >";
-            foreach ($metademands as $id => $name) {
-                $meta = new PluginMetademandsMetademand();
-                if ($meta->getFromDB($id)) {
-                    echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-                    echo '<div class="btnsc-normal" >';
-                    $fasize = "fa-4x";
-                    echo "<div class='center'>";
-                    $icon = "fa-share-alt";
-                    if (!empty($meta->fields['icon'])) {
-                        $icon = $meta->fields['icon'];
-                    }
-                    echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
-                    echo "</div>";
+            $type = $_SESSION['plugin_metademands']['type'] = Ticket::DEMAND_TYPE;
+            $metademands = self::selectMetademands(false, "", $type);
+            if (count($metademands) > 0) {
+                echo "<div id='listmeta'>";
 
-                    echo "<br><p>";
-                    if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
-                        echo $meta->getName();
-                    } else {
-                        echo $n;
-                    }
+                echo "<div id='searchmetas'>";
+                echo "</div>";
+                echo PluginMetademandsMetademand::fuzzySearch('getHtml', $type);
 
-                    if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment')) && !empty($meta->fields['comment'])) {
-                        echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo $meta->fields['comment'];
-                        echo "</span></em>";
-                    } elseif (!empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
-                        echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo $comm;
-                        echo "</span></em>";
-                    }
-
-                    if ($config['use_draft']) {
-                        $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
-                        if ($count_drafts > 0) {
-                            echo "<br><em><span class='mydraft-comment'>";
-                            echo sprintf(
-                                _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                                $count_drafts
-                            );
-                            echo "</span>";
+                foreach ($metademands as $id => $name) {
+                    $meta = new PluginMetademandsMetademand();
+                    if ($meta->getFromDB($id)) {
+                        echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+                        echo '<div class="btnsc-normal" >';
+                        $fasize = "fa-4x";
+                        echo "<div class='center'>";
+                        $icon = "fa-share-alt";
+                        if (!empty($meta->fields['icon'])) {
+                            $icon = $meta->fields['icon'];
                         }
-                    }
+                        echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
+                        echo "</div>";
 
-                    echo "</p></div></a>";
+                        echo "<br><p>";
+                        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+                            echo $meta->getName();
+                        } else {
+                            echo $n;
+                        }
+
+                        if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment')) && !empty($meta->fields['comment'])) {
+                            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                            echo $meta->fields['comment'];
+                            echo "</span></em>";
+                        } elseif (!empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
+                            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                            echo $comm;
+                            echo "</span></em>";
+                        }
+
+                        if ($config['use_draft']) {
+                            $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
+                            if ($count_drafts > 0) {
+                                echo "<br><em><span class='mydraft-comment'>";
+                                echo sprintf(
+                                    _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                                    $count_drafts
+                                );
+                                echo "</span>";
+                            }
+                        }
+
+                        echo "</p></div></a>";
+                    }
                 }
+                echo "</div>";
             }
-            echo "</div>";
         } else {
+
             $data                        = [];
             $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
             $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);

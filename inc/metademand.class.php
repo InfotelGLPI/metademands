@@ -230,7 +230,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
 
         $this->addStandardTab('PluginMetademandsStep', $ong, $options);
-      //TODO Change / problem ?
+        //TODO Change / problem ?
         if ($this->getField('object_to_create') == 'Ticket') {
             $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
         }
@@ -240,7 +240,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         if (Session::getCurrentInterface() == 'central') {
             $this->addStandardTab('Log', $ong, $options);
         }
-      //TODO Change / problem ?
+        //TODO Change / problem ?
         if ($this->getField('object_to_create') == 'Ticket') {
             $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
         }
@@ -793,10 +793,10 @@ class PluginMetademandsMetademand extends CommonDBTM
         echo "<tr class='tab_bg_1'>";
 
         echo "<td>";
-//        echo __('Step-by-step mode', 'metademands');
+        //        echo __('Step-by-step mode', 'metademands');
         echo "</td>";
         echo "<td>";
-//        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
+        //        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
         echo "</td>";
 
         echo "<td>" . __('Maintenance mode') . "</td>";
@@ -1732,7 +1732,7 @@ JAVASCRIPT
                     }
 
                     $default_use_notif                          = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
-                    $parent_fields['_users_id_requester_notif'] = ['use_notification' => $default_use_notif,
+                    $parent_fields['_users_id_requester_notif'] = ['use_notification'  => $default_use_notif,
                                                                    'alternative_email' => ''];
 
 
@@ -4232,9 +4232,9 @@ JAVASCRIPT
                 if (!$son_ticket_data['_users_id_requester']) {
                     $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
                 }
-                $son_ticket_data['requesttypes_id']     = $parent_fields['requesttypes_id'];
-                $son_ticket_data['_auto_import']        = 1;
-                $son_ticket_data['status']              = Ticket::INCOMING;
+                $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
+                $son_ticket_data['_auto_import']    = 1;
+                $son_ticket_data['status']          = Ticket::INCOMING;
                 if (isset($parent_fields['urgency'])) {
                     $son_ticket_data['urgency'] = $parent_fields['urgency'];
                 }
@@ -4736,7 +4736,7 @@ JAVASCRIPT
             && ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE
                 || $metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK)
             && Session::haveRight('plugin_metademands', READ)
-             && Session::getCurrentInterface() == 'central') {
+            && Session::getCurrentInterface() == 'central') {
             $tovalidate = 1;
 
             echo "<div class='alert center'>";
@@ -6550,5 +6550,115 @@ JAVASCRIPT
         echo "</td>";
         echo "</tr>";
         echo "</table>";
+    }
+
+    /**
+     * Manage events from js/fuzzysearch.js
+     *
+     * @param string $action action to switch (should be actually 'getHtml' or 'getList')
+     *
+     * @return string
+     * @since 9.2
+     *
+     */
+    public static function fuzzySearch($action = '', $type = Ticket::DEMAND_TYPE)
+    {
+        $title = __("Find a form", "metademands");
+
+        switch ($action) {
+            case 'getHtml':
+                $placeholder = $title;
+                $html        = <<<HTML
+               <div class="" tabindex="-1" id="fuzzysearch">
+                  <div class="">
+                     <div class="modal-content">
+                        <div class="modal-body" style="padding: 10px;">
+                           <input type="text" class="mt-home-trigger-fuzzy form-control" placeholder="{$placeholder}">
+                           <input type="hidden" name="type" id="type" value="$type"/>
+                           <ul class="results list-group mt-2" style="background: #FFF;"></ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+HTML;
+                return $html;
+                break;
+
+            default:
+                $metas       = [];
+                $metademands = PluginMetademandsWizard::selectMetademands(false, "", $type);
+
+                foreach ($metademands as $id => $values) {
+                    $meta = new PluginMetademandsMetademand();
+                    if ($meta->getFromDB($id)) {
+                        $icon = "fa-share-alt";
+                        if (!empty($meta->fields['icon'])) {
+                            $icon = $meta->fields['icon'];
+                        }
+                        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+                            $name = $meta->getName();
+                        } else {
+                            $name = $n;
+                        }
+
+                        $metas[] = [
+                            'title' => $name,
+                            'icon'  => $icon,
+                            'url'   => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2",
+                        ];
+                    }
+                }
+
+                // return the entries to ajax call
+                return json_encode($metas);
+                break;
+        }
+    }
+
+    /**
+     * Get the HTML list of the meta available
+     *
+     * @param array $used
+     *
+     * @return string|boolean
+     */
+    public static function loadMetademandsListForFuzzy()
+    {
+        //        $widgetslist = PluginMydashboardWidget::getWidgetList();
+        //        $gslist      = [];
+        //        foreach ($widgetslist as $gs => $widgetclasses) {
+        //            $gslist[$widgetclasses['id']] = $gs;
+        //        }
+        //
+        $list = [];
+        //        $graphs = self::getAllWidgetsList($widgetlist);
+        //
+        //        ksort($graphs);
+        //
+        //        foreach ($graphs as $globaltype => $widgetsplugin) {
+        //            $graphbytype = [];
+        //            foreach ($widgetsplugin as $widgets) {
+        //                foreach ($widgets as $widgetsname => $widgetdetail) {
+        //                    $typegraph                             = $widgetdetail['type'] ?? 0;
+        //                    $graphbytype[$typegraph][$widgetsname] = $widgetdetail;
+        //                }
+        //            }
+        //
+        //            foreach ($graphbytype as $typegraph => $widgetdetail) {
+        //                foreach ($widgetdetail as $widgetId => $widgetTitle) {
+        //                    if (isset($gslist[$widgetId])) {
+        //                        $gsid   = $gslist[$widgetId];
+        //                        $list[] = [
+        //                            'title'    => $widgetTitle['title'],
+        //                            'icon'     => PluginMydashboardWidget::getIconByType($widgetTitle['type']),
+        //                            'widgetid' => $gsid,
+        //                        ];
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        return $list;
     }
 }
