@@ -654,10 +654,17 @@ class PluginMetademandsWizard extends CommonDBTM
             $metademands = self::selectMetademands(false, "", $type);
             if (count($metademands) > 0) {
                 echo "<div id='listmeta'>";
-
-                echo "<div id='searchmetas'>";
+                $title = __("Find a form", "metademands");
+                echo "<div tabindex='-1' id='mt-fuzzysearch'>";
+                echo "<div class='modal-content'>";
+                echo "<div class='modal-body' style='padding: 10px;'>";
+                echo "<input type='text' class='mt-home-trigger-fuzzy form-control' placeholder='".$title."'>";
+                echo "<input type='hidden' name='type' id='type' value='".$type."'/>";
+                echo "<ul class='results list-group mt-2' style='background: #FFF;'></ul>";
                 echo "</div>";
-                echo PluginMetademandsMetademand::fuzzySearch('getHtml', $type);
+                echo "</div>";
+                echo "</div>";
+
 
                 foreach ($metademands as $id => $name) {
                     $meta = new PluginMetademandsMetademand();

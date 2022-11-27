@@ -31,79 +31,69 @@ $(function() {
    var fuzzy_started = false;
     var trigger_homesearch_fuzzy = function() {
         // remove old fuzzy modal
-        removeFuzzy();
+        //removeFuzzy();
         currentType = $('#type').val();
 
-        // retrieve html of fuzzy input
-        $.get(root_mt_doc+'/ajax/fuzzysearch.php', {
-            'action': 'getHtml',
+        // retrieve current menu data
+        $.getJSON(root_mt_doc+'/ajax/fuzzysearch.php', {
+            'action': 'getList',
             'type': currentType,
-        }, function(html) {
-            // add modal to body and show it
-            $('#searchmetas').append(html);
-            //$('#fuzzysearch').modal('show');
+        }, function(data) {
+            list = data;
 
-            // retrieve current menu data
-            $.getJSON(root_mt_doc+'/ajax/fuzzysearch.php', {
-                'action': 'getList',
-                'type': currentType,
-            }, function(data) {
-                list = data;
-
-                // start fuzzy after some time
-                setTimeout(function() {
-                    if ($("#mt-fuzzysearch .results li").length == 0) {
-                        startFuzzy();
-                    }
-                }, 100);
-            });
-
-            // focus input element
-            $("#mt-fuzzysearch input").trigger("focus");
-
-            // don't bind key events twice
-            if (fuzzy_started) {
-                return;
-            }
-            fuzzy_started = true;
-
-            // general key matches
-            $(document).on('keyup', function(key) {
-                switch (key.key) {
-                    case "Escape":
-                        removeFuzzy();
-                        break;
-
-                    case "ArrowUp":
-                        selectPrev();
-                        break;
-
-                    case "ArrowDown":
-                        selectNext();
-                        break;
-
-                    case "Enter":
-                        // find url, if one selected, go for it, else try to find first element
-                        var url = $("#mt-fuzzysearch .results .active a").attr('href');
-                        if (url == undefined) {
-                            url = $("#mt-fuzzysearch .results li:first a").attr('href');
-                        }
-                        if (url != undefined) {
-                            document.location = url;
-                        }
-                        break;
-                }
-            });
-
-            // when a key is pressed in fuzzy input, launch match
-            $(document).on('keyup', "#mt-fuzzysearch input", function(key) {
-                if (key.key != "Escape"
-                    && key.key != "ArrowUp"
-                    && key.key != "ArrowDown"
-                    && key.key != "Enter") {
+            // start fuzzy after some time
+            setTimeout(function() {
+                if ($("#mt-fuzzysearch .results li").length == 0) {
                     startFuzzy();
                 }
-            });
+            }, 100);
+        });
+
+        // focus input element
+        $("#mt-fuzzysearch input").trigger("focus");
+
+        // don't bind key events twice
+        if (fuzzy_started) {
+            return;
+        }
+        fuzzy_started = true;
+
+        // general key matches
+        $(document).on('keyup', function(key) {
+            switch (key.key) {
+                case "Escape":
+                    removeFuzzy();
+                    break;
+
+                case "ArrowUp":
+                    selectPrev();
+                    break;
+
+                case "ArrowDown":
+                    selectNext();
+                    break;
+
+                case "Enter":
+                    // find url, if one selected, go for it, else try to find first element
+                    var url = $("#mt-fuzzysearch .results .active a").attr('href');
+                    if (url == undefined) {
+                        url = $("#mt-fuzzysearch .results li:first a").attr('href');
+                    }
+                    if (url != undefined) {
+                        document.location = url;
+                    }
+                    break;
+            }
+        });
+
+        // when a key is pressed in fuzzy input, launch match
+        $(document).on('keyup', "#mt-fuzzysearch input", function(key) {
+            if (key.key != "Escape"
+                && key.key != "ArrowUp"
+                && key.key != "ArrowDown"
+                && key.key != "Enter") {
+                startFuzzy();
+            }
         });
     };
 
