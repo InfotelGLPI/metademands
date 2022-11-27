@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.2.10');
+define('PLUGIN_METADEMANDS_VERSION', '3.2.11');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
@@ -57,6 +57,8 @@ function plugin_init_metademands()
 
         $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuze.js';
         $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuzzysearch.js.php';
+        $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/fuze.js"];
+        $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/fuzzysearch.js.php"];
 
         if (isset($_SESSION['glpiactiveprofile']['interface'])
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {

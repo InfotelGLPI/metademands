@@ -6569,7 +6569,7 @@ JAVASCRIPT
             case 'getHtml':
                 $placeholder = $title;
                 $html        = <<<HTML
-               <div class="" tabindex="-1" id="fuzzysearch">
+               <div class="" tabindex="-1" id="mt-fuzzysearch">
                   <div class="">
                      <div class="modal-content">
                         <div class="modal-body" style="padding: 10px;">
@@ -6614,51 +6614,5 @@ HTML;
                 return json_encode($metas);
                 break;
         }
-    }
-
-    /**
-     * Get the HTML list of the meta available
-     *
-     * @param array $used
-     *
-     * @return string|boolean
-     */
-    public static function loadMetademandsListForFuzzy()
-    {
-        //        $widgetslist = PluginMydashboardWidget::getWidgetList();
-        //        $gslist      = [];
-        //        foreach ($widgetslist as $gs => $widgetclasses) {
-        //            $gslist[$widgetclasses['id']] = $gs;
-        //        }
-        //
-        $list = [];
-        //        $graphs = self::getAllWidgetsList($widgetlist);
-        //
-        //        ksort($graphs);
-        //
-        //        foreach ($graphs as $globaltype => $widgetsplugin) {
-        //            $graphbytype = [];
-        //            foreach ($widgetsplugin as $widgets) {
-        //                foreach ($widgets as $widgetsname => $widgetdetail) {
-        //                    $typegraph                             = $widgetdetail['type'] ?? 0;
-        //                    $graphbytype[$typegraph][$widgetsname] = $widgetdetail;
-        //                }
-        //            }
-        //
-        //            foreach ($graphbytype as $typegraph => $widgetdetail) {
-        //                foreach ($widgetdetail as $widgetId => $widgetTitle) {
-        //                    if (isset($gslist[$widgetId])) {
-        //                        $gsid   = $gslist[$widgetId];
-        //                        $list[] = [
-        //                            'title'    => $widgetTitle['title'],
-        //                            'icon'     => PluginMydashboardWidget::getIconByType($widgetTitle['type']),
-        //                            'widgetid' => $gsid,
-        //                        ];
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        return $list;
     }
 }
