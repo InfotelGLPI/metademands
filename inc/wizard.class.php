@@ -232,9 +232,21 @@ class PluginMetademandsWizard extends CommonDBTM
                 } else {
                     echo $n;
                 }
+                if (isset($parameters['itilcategories_id'])
+                    && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+                    $cats              = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                    if (count($cats) > 1) {
+                        $itilCategory = new ITILCategory();
+                        if ($itilCategory->getFromDB($parameters['itilcategories_id'])) {
+                            echo " - ".$itilCategory->fields['completename'];
+                        }
+                    }
+                }
                 echo "</span>";
                 //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
-                if (Session::haveRight('plugin_metademands', UPDATE) && !$parameters['seeform']) {
+                if (Session::getCurrentInterface() == 'central'
+                    && Session::haveRight('plugin_metademands', UPDATE)
+                    && !$parameters['seeform']) {
                     echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
                         <i class='fas fa-wrench'></i></a>";
                 }
@@ -1152,7 +1164,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     echo $label;
                     $config_link = "";
-                    if ($preview) {
+                    if (Session::getCurrentInterface() == 'central' && $preview) {
                         $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $line[$keys[0]]['id'] . "'>";
                         $config_link .= "<i class='fas fa-wrench'></i></a>";
                     }
@@ -1201,7 +1213,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
                 foreach ($line as $key => $data) {
                     $config_link = "";
-                    if ($preview) {
+                    if (Session::getCurrentInterface() == 'central' && $preview) {
                         $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
                         $config_link .= "<i class='fas fa-wrench'></i></a>";
                     }
