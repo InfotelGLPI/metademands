@@ -2030,7 +2030,7 @@ JAVASCRIPT
                             $docitem = $docPdf->addDocument($name, $object_class, $object->getID(), $_SESSION['glpiactive_entity']);
                         }
 
-                        // Ticket already exists
+                    // Ticket already exists
                     } else {
                         if ($object_class == 'Ticket') {
                             $parent_tickets_id = $parent_fields['id'];
@@ -4265,7 +4265,8 @@ JAVASCRIPT
                     }
                 }
 
-                if ($config->getField('childs_parent_content') == 1) {
+                if ($config->getField('childs_parent_content') == 1
+                    && $task->fields['formatastable'] == true) {
                     if (!empty($parent_fields_content['content'])) {
                         //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                         $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";

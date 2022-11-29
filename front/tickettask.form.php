@@ -61,6 +61,15 @@ if (isset($_POST["update"])) {
             $input['level'] = 1;
         }
 //        $input['type']  = $_POST['type'];
+
+        $input['name'] = $_POST['name'];
+        $input['content'] = $_POST['content'];
+        $input['itilcategories_id'] = $_POST['itilcategories_id'];
+        $input['users_id_assign'] = $_POST['users_id_assign'];
+        $input['groups_id_assign'] = $_POST['groups_id_assign'];
+        $input['formatastable'] = $_POST['formatastable'];
+        $input['useBlock'] = $_POST['useBlock'];
+
         $input['id'] = $tasks_id;
         $input['plugin_metademands_tasks_id'] = $parent_task;
 
