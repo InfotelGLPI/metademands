@@ -793,9 +793,11 @@ class PluginMetademandsMetademand extends CommonDBTM
         echo "<tr class='tab_bg_1'>";
 
         echo "<td>";
+        //TODO v3.3
         //        echo __('Step-by-step mode', 'metademands');
         echo "</td>";
         echo "<td>";
+        //TODO v3.3
         //        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
         echo "</td>";
 
@@ -5176,9 +5178,16 @@ JAVASCRIPT
                                     $tasks->fields['plugin_metademands_metademands_id'] = $new_metademands_id;
                                     $tasks->fields['sons_cache']                        = '';
                                     $tasks->fields['ancestors_cache']                   = '';
-                                    $tasks->fields['name']                              = addslashes($tasks->fields['name']);
-                                    $tasks->fields['completename']                      = addslashes($tasks->fields['completename']);
-                                    $tasks->fields['comment']                           = addslashes($tasks->fields['comment']);
+                                    if (isset($tasks->fields['name'])) {
+                                        $tasks->fields['name'] = addslashes($tasks->fields['name']);
+                                    }
+                                    if (isset($tasks->fields['completename'])) {
+                                        $tasks->fields['completename'] = addslashes($tasks->fields['completename']);
+                                    }
+                                    if (isset($tasks->fields['comment'])) {
+                                        $tasks->fields['comment'] = addslashes($tasks->fields['comment']);
+                                    }
+
                                     unset($tasks->fields['id']);
 
                                     $new_tasks_id                          = $tasks->add($tasks->fields);

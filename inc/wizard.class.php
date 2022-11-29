@@ -1068,6 +1068,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $allfields = [];
 
         $use_as_step = 0;
+        //TODO v3.3
 //        if ($metademands->fields['step_by_step_mode'] == 1) {
 //            $use_as_step = 1;
 //        }
@@ -2963,7 +2964,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
-
+                //TODO v3.3
                 //                if ($metademands->fields['step_by_step_mode'] == 1
                 //                ) {
                 //                    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), 1);
@@ -2975,7 +2976,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 //                }
                 echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button' onclick='nextPrev(1)'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
-
+                //TODO v3.3
 //                echo "<div id='nextMsg' class='alert alert-info center'>";
 //                echo "</div>";
                 echo "</span>";
@@ -3028,12 +3029,13 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
 
                 $list_blocks = [];
-                $step        = new PluginMetademandsStep();
-                $steps       = $step->find(['plugin_metademands_metademands_id' => $ID,
-                                            'groups_id'                         => $groups]);
-                foreach ($steps as $s) {
-                    $list_blocks[] = $s['block_id'];
-                }
+                //TODO v3.3
+//                $step        = new PluginMetademandsStep();
+//                $steps       = $step->find(['plugin_metademands_metademands_id' => $ID,
+//                                            'groups_id'                         => $groups]);
+//                foreach ($steps as $s) {
+//                    $list_blocks[] = $s['block_id'];
+//                }
 
                 if (isset($_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'])) {
                     echo Html::hidden('plugin_metademands_stepforms_id', ['value' => $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id']]);
@@ -3042,6 +3044,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 //Html::scriptBlock('var step = sessionStorage.currentStep; return step;');
                 $block_id = $_SESSION['plugin_metademands']['block_id'] ?? 0;
 
+                //TODO v3.3
 //                if ($metademands->fields['step_by_step_mode'] == 1
 //                ) {
 //                    $submitmsg = $submitstepmsg =  __('Your form will be redirected to another group of people who will complete the following information.', 'metademands');
@@ -3461,6 +3464,7 @@ class PluginMetademandsWizard extends CommonDBTM
                          
                          if(create) {
                             document.getElementById('nextBtn').innerHTML = submitsteptitle;
+                            //TODO v3.3
 //                            document.getElementById('nextMsg').style.display = 'block';
 //                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
                          } else {
