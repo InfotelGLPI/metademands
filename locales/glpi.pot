@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-29 12:24+0000\n"
+"POT-Creation-Date: 2022-12-06 17:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -93,16 +93,22 @@ msgstr ""
 msgid "Attribute ticket to "
 msgstr ""
 
+#: ajax/getNextMessage.php:49
+msgid ""
+"Your form will be redirected to another group of people who will complete "
+"the following information."
+msgstr ""
+
 #: ajax/nextUser.php:139
 msgid "Error assigning to next group"
 msgstr ""
 
 #: ajax/updatelistmeta.php:60 inc/metademand.class.php:6576
-#: inc/wizard.class.php:669
+#: inc/wizard.class.php:670
 msgid "Find a form"
 msgstr ""
 
-#: ajax/updatelistmeta.php:97 inc/wizard.class.php:717
+#: ajax/updatelistmeta.php:97 inc/wizard.class.php:718
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
@@ -1066,7 +1072,7 @@ msgstr ""
 msgid "No association found"
 msgstr ""
 
-#: inc/step.class.php:397
+#: inc/step.class.php:418
 msgid "Message to next group on form"
 msgstr ""
 
@@ -1246,55 +1252,55 @@ msgstr ""
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: inc/wizard.class.php:849 inc/wizard.class.php:907
+#: inc/wizard.class.php:850 inc/wizard.class.php:908
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:915
+#: inc/wizard.class.php:916
 msgctxt "button"
 msgid "Validate your basket"
 msgstr ""
 
-#: inc/wizard.class.php:2966
+#: inc/wizard.class.php:2985
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:2978 inc/wizard.class.php:3006
-#: inc/wizard.class.php:3010
+#: inc/wizard.class.php:2997 inc/wizard.class.php:3025
+#: inc/wizard.class.php:3029
 msgid "Next"
 msgstr ""
 
-#: inc/wizard.class.php:3007
+#: inc/wizard.class.php:3026
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/wizard.class.php:3011
+#: inc/wizard.class.php:3030
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:3023
+#: inc/wizard.class.php:3042
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:3878
+#: inc/wizard.class.php:3985
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3887
+#: inc/wizard.class.php:3994
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3933
+#: inc/wizard.class.php:4040
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3937
+#: inc/wizard.class.php:4044
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
