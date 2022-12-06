@@ -232,9 +232,21 @@ class PluginMetademandsWizard extends CommonDBTM
                 } else {
                     echo $n;
                 }
+                if (isset($parameters['itilcategories_id'])
+                    && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
+                    $cats              = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                    if (count($cats) > 1) {
+                        $itilCategory = new ITILCategory();
+                        if ($itilCategory->getFromDB($parameters['itilcategories_id'])) {
+                            echo " - ".$itilCategory->fields['completename'];
+                        }
+                    }
+                }
                 echo "</span>";
                 //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
-                if (Session::haveRight('plugin_metademands', UPDATE) && !$parameters['seeform']) {
+                if (Session::getCurrentInterface() == 'central'
+                    && Session::haveRight('plugin_metademands', UPDATE)
+                    && !$parameters['seeform']) {
                     echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
                         <i class='fas fa-wrench'></i></a>";
                 }
@@ -557,13 +569,19 @@ class PluginMetademandsWizard extends CommonDBTM
      * @return array
      * @throws \GlpitestSQLError
      */
-    public static function selectMetademands($limit = "", $type = Ticket::DEMAND_TYPE) {
+    public static function selectMetademands($all = false, $limit = "", $type = Ticket::DEMAND_TYPE) {
         global $DB;
 
         if ($type == Ticket::INCIDENT_TYPE || $type == Ticket::DEMAND_TYPE) {
-            $crit = "type = '$type'";
+            $crit = "`type` = '$type'";
+            if ($all == true) {
+                $crit = "`type` IS NOT NULL ";
+            }
         } else {
-            $crit = "object_to_create = '$type'";
+            $crit = "`object_to_create` = '$type'";
+            if ($all == true) {
+                $crit = "`object_to_create` IS NOT NULL ";
+            }
         }
 
 
@@ -608,11 +626,11 @@ class PluginMetademandsWizard extends CommonDBTM
 
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
 
-        $metademands = self::selectMetademands();
         $config      = PluginMetademandsConfig::getInstance();
 
         $meta = new PluginMetademandsMetademand();
         if ($config['display_type'] == 1) {
+
             $data                        = [];
             $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
             $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
@@ -645,55 +663,72 @@ class PluginMetademandsWizard extends CommonDBTM
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/updatelistmeta.php",
                 $params
             );
-            echo "<div id='listmeta' >";
-            foreach ($metademands as $id => $name) {
-                $meta = new PluginMetademandsMetademand();
-                if ($meta->getFromDB($id)) {
-                    echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
-                    echo '<div class="btnsc-normal" >';
-                    $fasize = "fa-4x";
-                    echo "<div class='center'>";
-                    $icon = "fa-share-alt";
-                    if (!empty($meta->fields['icon'])) {
-                        $icon = $meta->fields['icon'];
-                    }
-                    echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
-                    echo "</div>";
+            $type = $_SESSION['plugin_metademands']['type'] = Ticket::DEMAND_TYPE;
+            $metademands = self::selectMetademands(false, "", $type);
+            if (count($metademands) > 0) {
+                echo "<div id='listmeta'>";
+                $title = __("Find a form", "metademands");
+                echo "<div tabindex='-1' id='mt-fuzzysearch'>";
+                echo "<div class='modal-content'>";
+                echo "<div class='modal-body' style='padding: 10px;'>";
+                echo "<input type='text' class='mt-home-trigger-fuzzy form-control' placeholder='".$title."'>";
+                echo "<input type='hidden' name='type' id='type' value='".$type."'/>";
+                echo "<ul class='results list-group mt-2' style='background: #FFF;'></ul>";
+                echo "</div>";
+                echo "</div>";
+                echo "</div>";
 
-                    echo "<br><p>";
-                    if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
-                        echo $meta->getName();
-                    } else {
-                        echo $n;
-                    }
 
-                    if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment')) && !empty($meta->fields['comment'])) {
-                        echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo $meta->fields['comment'];
-                        echo "</span></em>";
-                    } elseif (!empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
-                        echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-                        echo $comm;
-                        echo "</span></em>";
-                    }
-
-                    if ($config['use_draft']) {
-                        $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
-                        if ($count_drafts > 0) {
-                            echo "<br><em><span class='mydraft-comment'>";
-                            echo sprintf(
-                                _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                                $count_drafts
-                            );
-                            echo "</span>";
+                foreach ($metademands as $id => $name) {
+                    $meta = new PluginMetademandsMetademand();
+                    if ($meta->getFromDB($id)) {
+                        echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+                        echo '<div class="btnsc-normal" >';
+                        $fasize = "fa-4x";
+                        echo "<div class='center'>";
+                        $icon = "fa-share-alt";
+                        if (!empty($meta->fields['icon'])) {
+                            $icon = $meta->fields['icon'];
                         }
-                    }
+                        echo "<i class='bt-interface fa-menu-md fas $icon $fasize' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>";//$style
+                        echo "</div>";
 
-                    echo "</p></div></a>";
+                        echo "<br><p>";
+                        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+                            echo $meta->getName();
+                        } else {
+                            echo $n;
+                        }
+
+                        if (empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment')) && !empty($meta->fields['comment'])) {
+                            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                            echo $meta->fields['comment'];
+                            echo "</span></em>";
+                        } elseif (!empty($comm = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
+                            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+                            echo $comm;
+                            echo "</span></em>";
+                        }
+
+                        if ($config['use_draft']) {
+                            $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $id);
+                            if ($count_drafts > 0) {
+                                echo "<br><em><span class='mydraft-comment'>";
+                                echo sprintf(
+                                    _n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
+                                    $count_drafts
+                                );
+                                echo "</span>";
+                            }
+                        }
+
+                        echo "</p></div></a>";
+                    }
                 }
+                echo "</div>";
             }
-            echo "</div>";
         } else {
+
             $data                        = [];
             $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
             $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
@@ -1044,9 +1079,10 @@ class PluginMetademandsWizard extends CommonDBTM
         $allfields = [];
 
         $use_as_step = 0;
-        if ($metademands->fields['step_by_step_mode'] == 1) {
-            $use_as_step = 1;
-        }
+        //TODO v3.3
+//        if ($metademands->fields['step_by_step_mode'] == 1) {
+//            $use_as_step = 1;
+//        }
         if ($preview || $seeform) {
             $use_as_step = 0;
         }
@@ -1148,7 +1184,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     echo $label;
                     $config_link = "";
-                    if ($preview) {
+                    if (Session::getCurrentInterface() == 'central' && $preview) {
                         $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $line[$keys[0]]['id'] . "'>";
                         $config_link .= "<i class='fas fa-wrench'></i></a>";
                     }
@@ -1197,7 +1233,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
                 foreach ($line as $key => $data) {
                     $config_link = "";
-                    if ($preview) {
+                    if (Session::getCurrentInterface() == 'central' && $preview) {
                         $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
                         $config_link .= "<i class='fas fa-wrench'></i></a>";
                     }
@@ -2947,7 +2983,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
-
+                //TODO v3.3
                 //                if ($metademands->fields['step_by_step_mode'] == 1
                 //                ) {
                 //                    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), 1);
@@ -2959,7 +2995,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 //                }
                 echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button' onclick='nextPrev(1)'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
-
+                //TODO v3.3
                 echo "<div id='nextMsg' class='alert alert-info center'>";
                 echo "</div>";
                 echo "</span>";
@@ -3001,7 +3037,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 $ID   = $metademands->fields['id'];
                 $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-                //            Toolbox::logInfo($hidden_blocks);
+
                 $json_hidden_blocks = json_encode($hidden_blocks);
                 $alert              = __('Thanks to fill mandatory fields', 'metademands');
                 $group_user         = new Group_User();
@@ -3075,21 +3111,20 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo Html::hidden('plugin_metademands_stepforms_id', ['value' => $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id']]);
                 }
 
-//Toolbox::logInfo($_SESSION);
                 //Html::scriptBlock('var step = sessionStorage.currentStep; return step;');
                 $block_id = $_SESSION['plugin_metademands']['block_id'] ?? 0;
 
-                //Toolbox::logInfo($block_id);
-                if ($metademands->fields['step_by_step_mode'] == 1
-                ) {
-                    $submitmsg = $submitstepmsg =  __('Your form will be redirected to another group of people who will complete the following information.', 'metademands');
-
-                    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), $block_id);
-                    if ($msg) {
-                        $submitmsg = $msg;
-                        $submitstepmsg = $msg;
-                    }
-                }
+                //TODO v3.3
+//                if ($metademands->fields['step_by_step_mode'] == 1
+//                ) {
+//                    $submitmsg = $submitstepmsg =  __('Your form will be redirected to another group of people who will complete the following information.', 'metademands');
+//
+//                    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), $block_id);
+//                    if ($msg) {
+//                        $submitmsg = $msg;
+//                        $submitstepmsg = $msg;
+//                    }
+//                }
                 echo "<script>
                   
                   var nexttitle = '$nexttitle';
@@ -3126,8 +3161,8 @@ class PluginMetademandsWizard extends CommonDBTM
                      }
                      if (n == (x.length - 1) || create == true) {
                         document.getElementById('nextBtn').innerHTML = submittitle;
-                        document.getElementById('nextMsg').style.display = 'block';
-                        document.getElementById('nextMsg').innerHTML = submitmsg;
+//                        document.getElementById('nextMsg').style.display = 'block';
+//                        document.getElementById('nextMsg').innerHTML = submitmsg;
                      } else {
                         document.getElementById('nextBtn').innerHTML = nexttitle;
                      }

@@ -52,7 +52,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI
         if ($config->getField('display_buttonlist_servicecatalog') == 0) {
             return false;
         }
-        $metademands = PluginMetademandsWizard::selectMetademands();
+        $metademands = PluginMetademandsWizard::selectMetademands(true);
         return (Session::haveRight(self::$rightname, READ) && (count($metademands) > 0));
     }
 
@@ -116,7 +116,7 @@ class PluginMetademandsServicecatalog extends CommonGLPI
         }
 
         $list        = "";
-        $metademands = PluginMetademandsWizard::selectMetademands(" LIMIT 3");
+        $metademands = PluginMetademandsWizard::selectMetademands(true," LIMIT 3");
 
         foreach ($metademands as $id => $name) {
             $list .= $name . '<br>';
@@ -186,90 +186,5 @@ class PluginMetademandsServicecatalog extends CommonGLPI
 
     public static function getList()
     {
-        global $CFG_GLPI;
-
-//      $metademands = PluginMetademandsWizard::selectMetademands();
-//      if (Plugin::isPluginActive("servicecatalog")
-//          && ($plugin->getInfo('servicecatalog')["version"] >= "1.6.0")) {
-//
-//         echo "<script>$(document).ready(function() {
-//                 $('#click').click(function() {
-//                      window.location.href = '" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php';
-//                 });
-//            });</script>";
-//
-//         foreach ($metademands as $id => $name) {
-//
-//            $meta = new PluginMetademandsMetademand();
-//            if ($meta->getFromDB($id)) {
-//               echo '<div class="menusc-normal visitedchildbg menusc-link-normal sc-widget" >';
-//               echo "<a class='bt-buttons' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW."'>";
-//               $fasize = "fa-6x";
-//               echo "<div class='center'>";
-//               $icon = "fa-share-alt";
-//               if (!empty($meta->fields['icon'])) {
-//                  $icon = $meta->fields['icon'];
-//               }
-//               echo "<i class='bt-interface fa-menu-sc fas $icon $fasize'></i>";//$style
-//               echo "</div>";
-//
-//               echo "</a><br>";
-//               echo "<a class='bt-buttons center' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW."'>";
-//               echo "<p style=\"margin-top:0px\">";
-//               if (empty($name = PluginMetademandsMetademand::displayField($id,'name'))) {
-//                  $name = $meta->getName();
-//               }
-//               echo $name;
-//               echo "<br>";
-//
-//               echo "<em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-//               if (!empty($meta->fields['comment'])) {
-//                  if (empty($comment = PluginMetademandsMetademand::displayField($id,'comment'))) {
-//                     $comment = $meta->fields['comment'];
-//                  }
-//                  echo $comment;
-//               }
-//               echo "</span></em>";
-//
-//               echo "</p></a></div>";
-//            }
-//         }
-//      } else {
-//         echo '<li>';
-//         echo "<a class='bt-back' title='" . __('Back') . "' href='" . $CFG_GLPI['root_doc'] . "/plugins/servicecatalog/front/main.form.php'></a>";
-//         echo '</li>';
-//
-//         foreach ($metademands as $id => $name) {
-//
-//            $meta = new PluginMetademandsMetademand();
-//            if ($meta->getFromDB($id)) {
-//               echo '<li>';
-//               echo "<a class='bt-list-advancedrequest' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW."'>";
-//               echo "</a>";
-//               echo "<a class='bt-buttons' style='display: block;width: 100%; height: 100%;' href='" . $CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW."'>";
-//               echo "<p>";
-//               if (empty($name = PluginMetademandsMetademand::displayField($id,'name'))) {
-//                  $name = $meta->getName();
-//               }
-//               echo Html::resume_text($name, 30);
-//               echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-//               if (empty($comment = PluginMetademandsMetademand::displayField($id,'comment'))) {
-//                  $comment = $meta->fields['comment'];
-//               }
-//               echo $comment;
-//               echo "</span></em>";
-//               echo "</p></a></li>";
-//            }
-//         }
-//      }
-//
-//
-//      if (count($metademands) == 0) {
-//         echo '<div class="bt-feature bt-col-sm-5 bt-col-md-2">';
-//         echo '<h5 class="bt-title">';
-//         echo '<span class="de-em">' . __('No advanced request found', 'metademands') . '</span></h5></a>';
-//         echo '</div>';
-//         echo '</div>';
-//      }
     }
 }

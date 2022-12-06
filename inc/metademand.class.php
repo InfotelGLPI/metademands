@@ -230,7 +230,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
 
         $this->addStandardTab('PluginMetademandsStep', $ong, $options);
-      //TODO Change / problem ?
+        //TODO Change / problem ?
         if ($this->getField('object_to_create') == 'Ticket') {
             $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
         }
@@ -240,7 +240,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         if (Session::getCurrentInterface() == 'central') {
             $this->addStandardTab('Log', $ong, $options);
         }
-      //TODO Change / problem ?
+        //TODO Change / problem ?
         if ($this->getField('object_to_create') == 'Ticket') {
             $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
         }
@@ -793,10 +793,12 @@ class PluginMetademandsMetademand extends CommonDBTM
         echo "<tr class='tab_bg_1'>";
 
         echo "<td>";
-//        echo __('Step-by-step mode', 'metademands');
+        //TODO v3.3
+        //        echo __('Step-by-step mode', 'metademands');
         echo "</td>";
         echo "<td>";
-//        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
+        //TODO v3.3
+        //        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
         echo "</td>";
 
         echo "<td>" . __('Maintenance mode') . "</td>";
@@ -1732,7 +1734,7 @@ JAVASCRIPT
                     }
 
                     $default_use_notif                          = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
-                    $parent_fields['_users_id_requester_notif'] = ['use_notification' => $default_use_notif,
+                    $parent_fields['_users_id_requester_notif'] = ['use_notification'  => $default_use_notif,
                                                                    'alternative_email' => ''];
 
 
@@ -2028,7 +2030,7 @@ JAVASCRIPT
                             $docitem = $docPdf->addDocument($name, $object_class, $object->getID(), $_SESSION['glpiactive_entity']);
                         }
 
-                        // Ticket already exists
+                    // Ticket already exists
                     } else {
                         if ($object_class == 'Ticket') {
                             $parent_tickets_id = $parent_fields['id'];
@@ -4232,9 +4234,9 @@ JAVASCRIPT
                 if (!$son_ticket_data['_users_id_requester']) {
                     $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
                 }
-                $son_ticket_data['requesttypes_id']     = $parent_fields['requesttypes_id'];
-                $son_ticket_data['_auto_import']        = 1;
-                $son_ticket_data['status']              = Ticket::INCOMING;
+                $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
+                $son_ticket_data['_auto_import']    = 1;
+                $son_ticket_data['status']          = Ticket::INCOMING;
                 if (isset($parent_fields['urgency'])) {
                     $son_ticket_data['urgency'] = $parent_fields['urgency'];
                 }
@@ -4263,7 +4265,8 @@ JAVASCRIPT
                     }
                 }
 
-                if ($config->getField('childs_parent_content') == 1) {
+                if ($config->getField('childs_parent_content') == 1
+                    && $task->fields['formatastable'] == true) {
                     if (!empty($parent_fields_content['content'])) {
                         //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                         $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
@@ -4736,7 +4739,7 @@ JAVASCRIPT
             && ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE
                 || $metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK)
             && Session::haveRight('plugin_metademands', READ)
-             && Session::getCurrentInterface() == 'central') {
+            && Session::getCurrentInterface() == 'central') {
             $tovalidate = 1;
 
             echo "<div class='alert center'>";
@@ -5176,9 +5179,16 @@ JAVASCRIPT
                                     $tasks->fields['plugin_metademands_metademands_id'] = $new_metademands_id;
                                     $tasks->fields['sons_cache']                        = '';
                                     $tasks->fields['ancestors_cache']                   = '';
-                                    $tasks->fields['name']                              = addslashes($tasks->fields['name']);
-                                    $tasks->fields['completename']                      = addslashes($tasks->fields['completename']);
-                                    $tasks->fields['comment']                           = addslashes($tasks->fields['comment']);
+                                    if (isset($tasks->fields['name'])) {
+                                        $tasks->fields['name'] = addslashes($tasks->fields['name']);
+                                    }
+                                    if (isset($tasks->fields['completename'])) {
+                                        $tasks->fields['completename'] = addslashes($tasks->fields['completename']);
+                                    }
+                                    if (isset($tasks->fields['comment'])) {
+                                        $tasks->fields['comment'] = addslashes($tasks->fields['comment']);
+                                    }
+
                                     unset($tasks->fields['id']);
 
                                     $new_tasks_id                          = $tasks->add($tasks->fields);
@@ -6550,5 +6560,69 @@ JAVASCRIPT
         echo "</td>";
         echo "</tr>";
         echo "</table>";
+    }
+
+    /**
+     * Manage events from js/fuzzysearch.js
+     *
+     * @param string $action action to switch (should be actually 'getHtml' or 'getList')
+     *
+     * @return string
+     * @since 9.2
+     *
+     */
+    public static function fuzzySearch($action = '', $type = Ticket::DEMAND_TYPE)
+    {
+        $title = __("Find a form", "metademands");
+
+        switch ($action) {
+            case 'getHtml':
+                $placeholder = $title;
+                $html        = <<<HTML
+               <div class="" tabindex="-1" id="mt-fuzzysearch">
+                  <div class="">
+                     <div class="modal-content">
+                        <div class="modal-body" style="padding: 10px;">
+                           <input type="text" class="mt-home-trigger-fuzzy form-control" placeholder="{$placeholder}">
+                           <input type="hidden" name="type" id="type" value="$type"/>
+                           <ul class="results list-group mt-2" style="background: #FFF;"></ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+HTML;
+                return $html;
+                break;
+
+            default:
+                $metas       = [];
+                $metademands = PluginMetademandsWizard::selectMetademands(false, "", $type);
+
+                foreach ($metademands as $id => $values) {
+                    $meta = new PluginMetademandsMetademand();
+                    if ($meta->getFromDB($id)) {
+                        $icon = "fa-share-alt";
+                        if (!empty($meta->fields['icon'])) {
+                            $icon = $meta->fields['icon'];
+                        }
+                        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+                            $name = $meta->getName();
+                        } else {
+                            $name = $n;
+                        }
+
+                        $metas[] = [
+                            'title' => $name,
+                            'icon'  => $icon,
+                            'url'   => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2",
+                        ];
+                    }
+                }
+
+                // return the entries to ajax call
+                return json_encode($metas);
+                break;
+        }
     }
 }

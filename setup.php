@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.2.8');
+define('PLUGIN_METADEMANDS_VERSION', '3.2.13');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
@@ -54,6 +54,12 @@ function plugin_init_metademands()
     $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
 
     if (Session::getLoginUserID()) {
+
+        $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuze.js';
+        $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuzzysearch.js.php';
+        $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/fuze.js"];
+        $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/fuzzysearch.js.php"];
+
         if (isset($_SESSION['glpiactiveprofile']['interface'])
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $PLUGIN_HOOKS['add_javascript']['metademands'][] = "lib/redips/redips-drag-min.js";
