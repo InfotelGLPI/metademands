@@ -482,3 +482,18 @@ textarea.invalid,
     border-color: #E8DCCA;
     border-left: 1em transparent solid;
 }
+.tab_cadre_fixe .styleLargeTitle, .tab_cadre_navigation_center .styleLargeTitle {
+    font-size: 18px;
+}
+
+.tab_cadre_navigation_center {
+    margin: 10px auto 5px auto;
+    padding: 4px;
+    border: 1px solid #aaaaaa;
+    background-color: #ffffff;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    font-size: 12px;
+    font-weight: bold;
+}

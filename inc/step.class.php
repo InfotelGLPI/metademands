@@ -390,8 +390,29 @@ class PluginMetademandsStep extends CommonDBChild
 
         echo "<tr class='tab_bg_1'><td>" . Group::getTypeName() . "</td>";
         echo "<td>";
-        Group::dropdown(['name' => 'groups_id',
-                         'value' => $this->fields['groups_id']]);
+        $meta_group = new PluginMetademandsGroup();
+        $meta_groups = $meta_group->find(['plugin_metademands_metademands_id' => $item->getID()]);
+        $groups = [];
+        foreach ($meta_groups as $group) {
+            $gr = new Group();
+            $gr->getFromDB($group['groups_id']);
+            $groups[$group['groups_id']] = $gr->getFriendlyName();
+        }
+        if(!empty($groups)) {
+            Dropdown::showFromArray(
+                'groups_id',
+                $groups,
+                ['value'   => $this->fields['groups_id'],
+                    'width'    => '100%',
+                    'entity'   => $_SESSION['glpiactiveentities']]
+            );
+        } else {
+            Group::dropdown(['name' => 'groups_id',
+                'value' => $this->fields['groups_id']]);
+        }
+
+
+
         echo "</td>";
         echo "</tr>";
         echo "<tr class='tab_bg_1'><td>" . __('Message to next group on form', 'metademands') . "</td>";
@@ -404,6 +425,40 @@ class PluginMetademandsStep extends CommonDBChild
         echo "</td>";
         echo "</tr>";
         $this->showFormButtons($options);
+        return true;
+    }
+
+    /**
+     * @param $metademands_id
+     *
+     * @return bool
+     */
+    static function isUserHaveRight($metademands_id) {
+        $dbu = new DbUtils();
+        // Get metademand groups
+        $metademands_groups_data = $dbu->getAllDataFromTable('glpi_plugin_metademands_steps',
+            ['`plugin_metademands_metademands_id`' => $metademands_id,'block_id' => 1]);
+
+        $metademand = new PluginMetademandsMetademand();
+        $metademand->getFromDB($metademands_id);
+        if (!empty($metademands_groups_data) && $metademand->fields['step_by_step_mode'] == 1) {
+            $metademands_groups_id = [];
+            foreach ($metademands_groups_data as $groups) {
+                $metademands_groups_id[] = $groups['groups_id'];
+            }
+
+            // Is the user allowed with his groups ?
+            $group_user_data = Group_User::getUserGroups(Session::getLoginUserID());
+            foreach ($group_user_data as $groups) {
+                if (in_array($groups['id'], $metademands_groups_id)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // No restrictions if no group was added in metademand
         return true;
     }
 }

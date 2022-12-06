@@ -739,4 +739,15 @@ class PluginMetademandsStepform extends CommonDBTM
                        };
                      </script>";
     }
+
+
+    static function deleteAfterCreate($stepformID) {
+        $step      = new PluginMetademandsStepform();
+        $step->deleteByCriteria(['id' => $stepformID]);
+
+        $step_values      = new PluginMetademandsStepform_Value();
+        $step_values->deleteByCriteria(['plugin_metademands_stepforms_id' => $stepformID]);
+
+        return true;
+    }
 }

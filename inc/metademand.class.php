@@ -2952,7 +2952,7 @@ JAVASCRIPT
      *
      * @return array
      */
-    private function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
+     function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
     {
         $config_data       = PluginMetademandsConfig::getInstance();
         $langTech          = $config_data['languageTech'];

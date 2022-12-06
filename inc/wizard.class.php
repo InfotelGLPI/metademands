@@ -588,7 +588,8 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {
                 $canuse = PluginMetademandsGroup::isUserHaveRight($data['id']);
-                if ($canuse) {
+                $canuse_step = PluginMetademandsStep::isUserHaveRight($data['id']);
+                if ($canuse && $canuse_step) {
                     if (empty($name = PluginMetademandsMetademand::displayField($data['id'], 'name'))) {
                         $name = $data['name'];
                     }
@@ -1025,8 +1026,18 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         $ranks = [];
+        $block_current_id_stepform = $_SESSION['plugin_metademands']['block_id'] ?? 99999999;
+        $lineForStepByStep = [];
+        $data_form = [];
+        $values_saved = $_SESSION['plugin_metademands']['fields'] ?? [];
         foreach ($line as $fields) {
             $ranks[] = $fields["rank"];
+            if($metademands->fields['step_by_step_mode'] == 1 && $fields['rank']< $block_current_id_stepform) {
+                $lineForStepByStep[$fields['id']] = $fields;
+                if(isset($values_saved[$fields['id']])) {
+                    $data_form[$fields['id']] = $values_saved[$fields['id']];
+                }
+            }
         }
         $allranks = array_unique($ranks);
 
@@ -1071,6 +1082,14 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div class='tab-nostep'>";
                 $cpt = 1;
             }
+            echo Html::scriptBlock('$(document).keypress(function(e){
+                            if (e.which == 13){
+                                console.log( $("#submitjob"));
+                                $("#submitjob").click();
+                                $("#nextBtn").click();
+                            }
+                });');
+            $block_current_id_stepform = $_SESSION['plugin_metademands']['block_id'] ?? 99999999;
 
             foreach ($allfields as $blocks => $line) {
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
@@ -2360,7 +2379,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                     }
                                    
                                  });";
-                                    $script .= "fixButtonIndicator();});";
+                                    $script .= "fixButtonIndicator();console.log('5')});";
                                 }
 
                                 //Initialize id default value
@@ -2466,7 +2485,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                             ";
                                             }
                                             $script .= " 
-                                            fixButtonIndicator(); });
+                                            fixButtonIndicator();console.log('4'); });
                                           }";
 
                                             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
@@ -2511,7 +2530,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             
                                     }
                                    
-                                fixButtonIndicator(); });";
+                                fixButtonIndicator();console.log('3'); });";
                                         $script .= "}";
                                     }
                                 }
@@ -2675,10 +2694,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                     } else {
                                     $('[bloc-id =\"bloc'+key+'\"]').show();
                                     }
-                                 });";
+                                ";
                                 }
 
-                                $script .= "fixButtonIndicator();});";
+                                $script .= "fixButtonIndicator();console.log('2');});";
                                 //Initialize id default value
                                 if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                                     $default_values = PluginMetademandsField::_unserialize($data['default_values']);
@@ -2941,8 +2960,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button' onclick='nextPrev(1)'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
-//                echo "<div id='nextMsg' class='alert alert-info center'>";
-//                echo "</div>";
+                echo "<div id='nextMsg' class='alert alert-info center'>";
+                echo "</div>";
                 echo "</span>";
                 echo "</div>";
                 echo "</div>";
@@ -2993,12 +3012,64 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
 
                 $list_blocks = [];
+                $list_blocks2 = [];
                 $step        = new PluginMetademandsStep();
                 $steps       = $step->find(['plugin_metademands_metademands_id' => $ID,
                                             'groups_id'                         => $groups]);
+
+                $steps2       = $step->find(['plugin_metademands_metademands_id' => $ID]);
+
                 foreach ($steps as $s) {
                     $list_blocks[] = $s['block_id'];
                 }
+                foreach ($steps2 as $s) {
+                    $list_blocks2[] = $s['block_id'];
+                }
+                $field  = new PluginMetademandsField();
+                $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
+                $blocks = [];
+                $self = new self();
+                foreach ($fields as $f) {
+                    $blocks[] =  $f["rank"];
+                }
+                foreach ($blocks as $block) {
+                    if(!in_array($block,$list_blocks2)) {
+                        $list_blocks[] = $block;
+                    }
+                }
+
+                if(!empty($data_form)) {
+                    $parent_fields            = $metademands->formatFields($lineForStepByStep, $metademands_id, [$metademands_id => $data_form], []);
+
+                    echo "<div id='alert-message' class='tab_cadre_navigation_center' style='display:none;'>" . $parent_fields['content'] . "</div>";
+                    echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/lib/jquery-ui/jquery-ui.min.css");
+                    echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL."/lib/jquery-ui/jquery-ui.min.js");
+                    echo html::scriptBlock("var mTitle =  '" . __('Previous data edited') . " ';
+                $( '#alert-message' ).dialog({
+                    autoOpen: true,
+                    height: 'auto',
+                    width: 'auto',
+                    modal: true,
+                    open: function (){
+                         $(this)
+                            .parent()
+                            .children('.ui-dialog-titlebar')
+                            .html(mTitle);
+                      },
+                    buttons: {
+                     'ok': function() {
+                        $( this ).dialog( 'close' );
+                     }
+                  },
+                
+                });
+                
+                $( '#alert-message' ).dialog( 'open' );");
+                }
+
+
+
+
 
                 if (isset($_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'])) {
                     echo Html::hidden('plugin_metademands_stepforms_id', ['value' => $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id']]);
@@ -3039,7 +3110,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                   function showTab(n,create = false, submittitle, submitmsg) {
                      // This function will display the specified tab of the form...
-                     document.getElementById('nextMsg').style.display = 'none';
+                     //document.getElementById('nextMsg').style.display = 'none';
                      if (use_as_step == 1) {
                         var x = document.getElementsByClassName('tab-step');
                      } else {
@@ -3395,6 +3466,39 @@ class PluginMetademandsWizard extends CommonDBTM
                      }
                      //... and adds the 'active' class on the current step:
                      x[n].className += ' active';
+                     
+                     if (use_as_step == 1) {
+                        var tabx = document.getElementsByClassName('tab-step');
+                     } else {
+                        var tabx = document.getElementsByClassName('tab-nostep');
+                     }
+                     console.log(tabx);
+                     bloc = tabx[n].firstChild.getAttribute('bloc-id');
+                     id_bloc = parseInt(bloc.replace('bloc',''));
+                     console.log(id_bloc);
+                     $(document).ready(function () {
+                       $.ajax({
+                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/getNextMessage.php',
+                                type: 'POST',
+                                data:
+                                  {
+                                    '_glpi_csrf_token':'" . Session::getNewCSRFToken() . "',
+                                    plugin_metademands_metademands_id: $metademands_id,
+                                    block_id: id_bloc
+                                  },
+                                success: function(response){
+                                  document.getElementById('nextBtn').innerHTML = nextsteptitle;
+                                  document.getElementById('nextMsg').style.display = 'block';
+                                  document.getElementById('nextMsg').innerHTML = response;
+                                  sessionStorage.setItem('currentStep', id_bloc);
+                                 },
+                                error: function(xhr, status, error) {
+                                   console.log(xhr);
+                                   console.log(status);
+                                   console.log(error);
+                                 } 
+                             });
+                     });
                   }
                   
                   function fixButtonIndicator() {
@@ -3428,11 +3532,11 @@ class PluginMetademandsWizard extends CommonDBTM
                          
                          if(create) {
                             document.getElementById('nextBtn').innerHTML = submitsteptitle;
-                            document.getElementById('nextMsg').style.display = 'block';
-                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
+//                            document.getElementById('nextMsg').style.display = 'block';
+//                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
                          } else {
-                            document.getElementById('nextBtn').innerHTML = nextsteptitle;
-                            sessionStorage.setItem('currentStep', id_bloc);
+                                                    
+                            
                          }
                             
                          
@@ -3509,6 +3613,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     $datas['fields'] = $values['fields'];
 
                     $result = $metademands->addObjects($metademands_id, $datas, $options);
+//                    PluginMetademandsStepform::deleteAfterCreate($stepformID);
                     Session::addMessageAfterRedirect($result['message']);
                 }
                 $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
@@ -3562,6 +3667,10 @@ class PluginMetademandsWizard extends CommonDBTM
         } else {
             //not in basket
             $result = $metademands->addObjects($metademands_id, $values, $options);
+            if(isset($values['plugin_metademands_stepforms_id'])) {
+                PluginMetademandsStepform::deleteAfterCreate($values['plugin_metademands_stepforms_id']);
+            }
+
             Session::addMessageAfterRedirect($result['message']);
         }
         unset($_SESSION['plugin_metademands']);
