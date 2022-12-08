@@ -3081,8 +3081,9 @@ class PluginMetademandsWizard extends CommonDBTM
                     $setting_dialog = json_encode($modal_html);
                     echo Html::scriptBlock("$(function() {
                                                         glpi_html_dialog({
-                                                             title: __('Previous data edited'),
+                                                             title: __('Previous data edited', 'metademands'),
                                                              body: $setting_dialog,
+                                                             dialogclass: 'modal-lg',
                                                         });
                                                     });");
 
