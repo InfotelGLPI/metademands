@@ -324,6 +324,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'use_date_now'            => $this->fields['use_date_now'],
                      'additional_number_day'   => $this->fields['additional_number_day'],
                      'display_type'            => $this->fields['display_type'],
+                     'use_rightstypology'            => $this->fields['use_rightstypology'],
                      'informations_to_display' => $this->fields['informations_to_display'],
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'             => $this->fields['hidden_link'],
@@ -386,6 +387,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'use_date_now'            => $this->fields['use_date_now'],
                      'additional_number_day'   => $this->fields['additional_number_day'],
                      'display_type'            => $this->fields['display_type'],
+                     'use_rightstypology'            => $this->fields['use_rightstypology'],
                      'informations_to_display' => $this->fields['informations_to_display'],
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'             => $this->fields['hidden_link'],
@@ -419,6 +421,7 @@ class PluginMetademandsField extends CommonDBChild {
                      'use_date_now'            => $this->fields['use_date_now'],
                      'additional_number_day'   => $this->fields['additional_number_day'],
                      'display_type'            => $this->fields['display_type'],
+                     'use_rightstypology'            => $this->fields['use_rightstypology'],
                      'informations_to_display' => $this->fields['informations_to_display'],
                      //                     'fields_display' => $this->fields['fields_display'],
                      'hidden_link'             => $this->fields['hidden_link'],
@@ -475,15 +478,15 @@ class PluginMetademandsField extends CommonDBChild {
       }
 
       echo "</tr>";
-//       if ($this->fields['type'] == "dropdown_multiple"
-//          ) {
-//           echo "<tr class='tab_bg_1'>";
-//           echo "<td>".__("Allow right All transfert",'metademands')."</td>";
-//           echo "<td>".Dropdown::showYesNo('allow_right_all',$this->fields['allow_right_all'],-1,['display' => false])."</td>";
-//           echo "<td></td>";
-//           echo "<td></td>";
-//           echo "</tr>";
-//       }
+       if ($this->fields['type'] == "dropdown_multiple"
+          ) {
+           echo "<tr class='tab_bg_1'>";
+           echo "<td>".__("Allow right All transfert",'metademands')."</td>";
+           echo "<td>".Dropdown::showYesNo('allow_right_all',$this->fields['allow_right_all'],-1,['display' => false])."</td>";
+           echo "<td></td>";
+           echo "<td></td>";
+           echo "</tr>";
+       }
       echo "<tr class='tab_bg_1'>";
       if ($this->fields['type'] == "dropdown_object"
           && $this->fields["item"] == "Group") {
@@ -773,6 +776,7 @@ class PluginMetademandsField extends CommonDBChild {
                          'use_date_now'            => $this->fields['use_date_now'],
                          'additional_number_day'   => $this->fields['additional_number_day'],
                          'display_type'            => $this->fields['display_type'],
+                         'use_rightstypology'            => $this->fields['use_rightstypology'],
                          'informations_to_display' => $this->fields['informations_to_display'],
                          'hidden_link'             => $this->fields['hidden_link'],
                          'hidden_block'            => $this->fields['hidden_block'],
@@ -1800,6 +1804,33 @@ class PluginMetademandsField extends CommonDBChild {
                      $value = json_decode($value);
                   }
                   $value = is_array($value) ? $value : $default_values;
+                  if($data["use_rightstypology"] == 1 && isset($_GET['resources_id'])) {
+                      $mappingBusinessfileResources = PluginResourcesLinkAd::getBusinessFileFromMapping($_GET['resources_id']);
+                      $list_businessfile = [];
+                      foreach ($mappingBusinessfileResources as $businessfile) {
+                          $list_businessfile[] = $businessfile["plugin_rightstypology_businessfiles_id"];
+                      }
+
+                      $businessFile = new PluginRightstypologyBusinessfile_Item();
+                      if(!empty($list_businessfile)) {
+                          $itemsSaved  = $businessFile->find(['itemtype' => PluginRightstypologyAppliance_User::getType(), 'plugin_rightstypology_businessfiles_id' => $list_businessfile]);
+
+                      } else {
+                          $itemsSaved = [];
+                      }
+                      $valuesSaved = [];
+
+                      foreach ($itemsSaved as $itemSaved) {
+
+                              $appli = new PluginRightstypologyAppliance_Right();
+                              $appli->getFromDB($itemSaved['items_id']);
+                              $valuesSaved[]= $appli->fields['appliances_id'];
+
+
+
+                      }
+                      $value = array_merge($value,$valuesSaved);
+                  }
                   if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                      $name  = $namefield . "[" . $data['id'] . "][]";
                      $css   = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
@@ -2658,7 +2689,12 @@ class PluginMetademandsField extends CommonDBChild {
                                                                                               'display' => false]);
             break;
          case 'upload':
-            $arrayFiles = json_decode($value, true);
+             if(!is_array($value)) {
+                 $arrayFiles = json_decode($value, true);
+             } else {
+                 $arrayFiles = $value;
+             }
+
             $field      = "";
             $nb         = 0;
             if ($arrayFiles != "") {
@@ -3094,6 +3130,18 @@ class PluginMetademandsField extends CommonDBChild {
 
                   echo Dropdown::showFromArray("display_type", $disp, ['value' => $params['display_type'], 'display' => false]);
                   echo "</td></tr>";
+                  if($params['item'] == 'Appliance' && Plugin::isPluginActive('resources')
+                      && Plugin::isPluginActive('rightstypology')) {
+                      echo "<tr><td>";
+                      echo __('Use rightstypology to fill the list', 'metademands');
+                      //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+                      echo '</td>';
+                      echo "<td>";
+
+                      echo Dropdown::showYesNo("use_rightstypology",$params['use_rightstypology'], -1, [ 'display' => false]);
+                      echo "</td></tr>";
+                  }
+
 
                   if ($params["item"] == 'User') {
                      echo "<tr>";

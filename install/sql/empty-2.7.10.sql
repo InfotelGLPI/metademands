@@ -104,6 +104,8 @@ CREATE TABLE `glpi_plugin_metademands_fields` (
     `date_creation` datetime DEFAULT NULL,
     `date_mod` datetime DEFAULT NULL,
     `display_type` int(11) DEFAULT 0,
+    `use_rightstypology` int(11) DEFAULT 0,
+    `allow_right_all` int(11) DEFAULT 0,
     `used_by_ticket` INT(11) NOT NULL DEFAULT '0',
     `used_by_child` tinyint(1) default 0,
     `link_to_user` INT(11) default 0,

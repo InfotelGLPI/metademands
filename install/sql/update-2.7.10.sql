@@ -1,4 +1,6 @@
 ALTER TABLE `glpi_plugin_metademands_fields` ADD `childs_blocks` VARCHAR (255) NOT NULL DEFAULT '[]';
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `use_rightstypology` int (11) NOT NULL DEFAULT '0';
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `allow_right_all` int (11) NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_configs` ADD `use_draft` tinyint(1) default 1;
 
 DROP TABLE IF EXISTS `glpi_plugin_metademands_forms`;

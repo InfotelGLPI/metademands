@@ -1411,9 +1411,10 @@ class PluginMetademandsMetademand extends CommonDBTM {
                $metademand = new self();
                $metademand->getFromDB($form_metademands_id);
 
-               // Create parent ticket
-               // Get form fields
-               $parent_fields['content'] = '';
+
+                    $parent_fields['content'] = '';
+
+
 
                foreach ($values['fields'] as $id => $datav) {
                   $metademands_fields = new PluginMetademandsField();
@@ -1557,6 +1558,7 @@ class PluginMetademandsMetademand extends CommonDBTM {
                   // Existing tickets id field
                   $parent_fields['id'] = $values['fields']['tickets_id'];
                }
+
                $parent_fields['entities_id'] = $_SESSION['glpiactive_entity'];
 
                $parent_fields['status'] = CommonITILObject::INCOMING;
@@ -1772,7 +1774,18 @@ class PluginMetademandsMetademand extends CommonDBTM {
                         }
                      }
                   }
-
+                    // Create parent ticket
+                   // Get form fields
+                   if(isset($_SESSION['plugin_collectmetademands']['textOrigin'])) {
+                       $input['content'] = $_SESSION['plugin_collectmetademands']['textOrigin']."<br>".$input['content'];
+                       unset($_SESSION['plugin_collectmetademands']['textOrigin']);
+                   }
+                   if(isset($options['text_ticket_collectmetademand'])) {
+                       $input['content'] = $options['text_ticket_collectmetademand']."<br>".$input['content'];
+                   }
+                   if(isset($options['collectmetademand_entity'])) {
+                        $input['entities_id'] = $options['collectmetademand_entity'];
+                    }
                   $input = Toolbox::addslashes_deep($input);
                   //ADD TICKET
                   if(isset($options['current_ticket_id'])
