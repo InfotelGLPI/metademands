@@ -3556,6 +3556,7 @@ JAVASCRIPT
                 case 'textarea':
                 case 'text':
                     $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
+                    $field['value'] = Glpi\RichText\RichText::getTextFromHtml($field['value']);
                     //               $field['value']    = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($field['value']));
                     if ($return_value == true) {
                         return $field['value'];
