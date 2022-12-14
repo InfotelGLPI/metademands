@@ -794,11 +794,11 @@ class PluginMetademandsMetademand extends CommonDBTM
 
         echo "<td>";
         //TODO v3.3
-        //        echo __('Step-by-step mode', 'metademands');
+        echo __('Step-by-step mode', 'metademands');
         echo "</td>";
         echo "<td>";
         //TODO v3.3
-        //        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
+        Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
         echo "</td>";
 
         echo "<td>" . __('Maintenance mode') . "</td>";
@@ -2954,143 +2954,143 @@ JAVASCRIPT
      *
      * @return array
      */
-     function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
-    {
-        $config_data       = PluginMetademandsConfig::getInstance();
-        $langTech          = $config_data['languageTech'];
-        $result            = [];
-        $result['content'] = "";
-        $parent_fields_id  = 0;
-        $colors            = [];
+     public function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
+     {
+         $config_data       = PluginMetademandsConfig::getInstance();
+         $langTech          = $config_data['languageTech'];
+         $result            = [];
+         $result['content'] = "";
+         $parent_fields_id  = 0;
+         $colors            = [];
 
 
-        foreach ($values_form as $k => $values) {
-            if (is_array($values) && $config_data['show_form_changes']) {
-                foreach ($values as $key => $val) {
-                    if (strpos($key, '#') > 0) {
-                        $newKey       = substr($key, 0, strpos($key, '#'));
-                        $colors[$key] = $val;//substr($key,strpos($key,'#')+1);
-                        unset($values_form[$k][$newKey]);
-                    }
-                }
-            }
-            if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name', $langTech))) {
-                $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
-            }
-            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
-                $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
-            }
+         foreach ($values_form as $k => $values) {
+             if (is_array($values) && $config_data['show_form_changes']) {
+                 foreach ($values as $key => $val) {
+                     if (strpos($key, '#') > 0) {
+                         $newKey       = substr($key, 0, strpos($key, '#'));
+                         $colors[$key] = $val;//substr($key,strpos($key,'#')+1);
+                         unset($values_form[$k][$newKey]);
+                     }
+                 }
+             }
+             if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name', $langTech))) {
+                 $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
+             }
+             if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                 $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
+                 $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
+             }
 
-            if (!empty($options['resources_id'])) {
-                $resourceMeta      = new PluginMetademandsMetademand_Resource();
-                $result['content'] .= $resourceMeta::getTableResource($options);
-            }
+             if (!empty($options['resources_id'])) {
+                 $resourceMeta      = new PluginMetademandsMetademand_Resource();
+                 $result['content'] .= $resourceMeta::getTableResource($options);
+             }
             //      $result['content'] .= "</table>";
-            $resultTemp = [];
-            $nb         = 0;
-            foreach ($parent_fields as $fields_id => $field) {
-                if (!isset($resultTemp[$field['rank']])) {
-                    $resultTemp[$field['rank']]['content'] = "";
-                    $resultTemp[$field['rank']]['display'] = false;
-                }
-                $field['value'] = '';
-                if (isset($values[$fields_id])) {
-                    $field['value'] = $values[$fields_id];
-                }
-                $field['value2'] = '';
-                if (($field['type'] == 'date_interval'
-                     || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
-                    $field['value2'] = $values[$fields_id . '-2'];
-                }
+             $resultTemp = [];
+             $nb         = 0;
+             foreach ($parent_fields as $fields_id => $field) {
+                 if (!isset($resultTemp[$field['rank']])) {
+                     $resultTemp[$field['rank']]['content'] = "";
+                     $resultTemp[$field['rank']]['display'] = false;
+                 }
+                 $field['value'] = '';
+                 if (isset($values[$fields_id])) {
+                     $field['value'] = $values[$fields_id];
+                 }
+                 $field['value2'] = '';
+                 if (($field['type'] == 'date_interval'
+                      || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
+                     $field['value2'] = $values[$fields_id . '-2'];
+                 }
 
-                $self = new self();
-                $self->getFromDB($metademands_id);
-                if ($self->getField('hide_no_field') == 1) {
-                    if ($field['type'] == 'radio' && $field['value'] === "") {
-                        continue;
-                    }
-                    if ($field['type'] == 'number' && $field['value'] == "0") {
-                        continue;
-                    }
-                    if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
-                        continue;
-                    }
-                    if ($field['type'] == 'yesno' && $field['value'] != "2") {
-                        continue;
-                    }
-                    if ($field['type'] == 'dropdown_meta' && $field['value'] == "0") {
-                        continue;
-                    }
-                }
+                 $self = new self();
+                 $self->getFromDB($metademands_id);
+                 if ($self->getField('hide_no_field') == 1) {
+                     if ($field['type'] == 'radio' && $field['value'] === "") {
+                         continue;
+                     }
+                     if ($field['type'] == 'number' && $field['value'] == "0") {
+                         continue;
+                     }
+                     if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
+                         continue;
+                     }
+                     if ($field['type'] == 'yesno' && $field['value'] != "2") {
+                         continue;
+                     }
+                     if ($field['type'] == 'dropdown_meta' && $field['value'] == "0") {
+                         continue;
+                     }
+                 }
 
-                if ($field['type'] == "dropdown_meta"
-                    && $field['item'] == "PluginResourcesResource") {
-                    $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
-                }
+                 if ($field['type'] == "dropdown_meta"
+                     && $field['item'] == "PluginResourcesResource") {
+                     $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
+                 }
 
-                if (!isset($options['formatastable'])
-                    || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                    if ($nb % 2 == 0) {
-                        $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
-                    } else {
-                        $resultTemp[$field['rank']]['content'] .= "<tr class='odd'>";
-                    }
-                }
-                $nb++;
-                $formatAsTable = $options['formatastable'] ?? true;
+                 if (!isset($options['formatastable'])
+                     || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                     if ($nb % 2 == 0) {
+                         $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
+                     } else {
+                         $resultTemp[$field['rank']]['content'] .= "<tr class='odd'>";
+                     }
+                 }
+                 $nb++;
+                 $formatAsTable = $options['formatastable'] ?? true;
 
-                if (isset($colors) && !empty($colors)) {
-                    $i = 0;
-                    foreach ($colors as $key => $val) {
-                        $newKey = substr($key, 0, strpos($key, '#'));
-                        if ($field['id'] == $newKey) {
-                            if ($i > 0) {
-                                $resultTemp[$field['rank']]['content'] .= "<tr>";
-                            }
-                            $i++;
-                            $field['value'] = $val;
-                            $color          = substr($key, strpos($key, '#') + 1);
-                            self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech, $color);
-                            unset($colors[$key]);
-                            if (!isset($options['formatastable'])
-                                || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                                $resultTemp[$field['rank']]['content'] .= "</tr>";
-                            }
-                        }
-                    }
-                } else {
-                    self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
+                 if (isset($colors) && !empty($colors)) {
+                     $i = 0;
+                     foreach ($colors as $key => $val) {
+                         $newKey = substr($key, 0, strpos($key, '#'));
+                         if ($field['id'] == $newKey) {
+                             if ($i > 0) {
+                                 $resultTemp[$field['rank']]['content'] .= "<tr>";
+                             }
+                             $i++;
+                             $field['value'] = $val;
+                             $color          = substr($key, strpos($key, '#') + 1);
+                             self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech, $color);
+                             unset($colors[$key]);
+                             if (!isset($options['formatastable'])
+                                 || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                                 $resultTemp[$field['rank']]['content'] .= "</tr>";
+                             }
+                         }
+                     }
+                 } else {
+                     self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
 
-                    if (!isset($options['formatastable'])
-                        || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                        $resultTemp[$field['rank']]['content'] .= "</tr>";
-                    }
-                }
-            }
-            foreach ($resultTemp as $blockId => $tab) {
-                if ($tab['display'] == true) {
-                    $result['content'] .= $tab['content'];
-                }
-            }
-            if (!isset($options['formatastable'])
-                || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                $result['content'] .= "</table>";
-            }
-        }
-        return $result;
-    }
+                     if (!isset($options['formatastable'])
+                         || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                         $resultTemp[$field['rank']]['content'] .= "</tr>";
+                     }
+                 }
+             }
+             foreach ($resultTemp as $blockId => $tab) {
+                 if ($tab['display'] == true) {
+                     $result['content'] .= $tab['content'];
+                 }
+             }
+             if (!isset($options['formatastable'])
+                 || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                 $result['content'] .= "</table>";
+             }
+         }
+         return $result;
+     }
 
     /**
-     * Format fields to display on ticket content
-     *
-     * @param $parent_fields
-     * @param $fields_id
-     * @param $field
-     * @param $result
-     * @param $parent_fields_id
-     * @param $return_value
-     */
+      * Format fields to display on ticket content
+      *
+      * @param $parent_fields
+      * @param $fields_id
+      * @param $field
+      * @param $result
+      * @param $parent_fields_id
+      * @param $return_value
+      */
     public static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color = '')
     {
         global $PLUGIN_HOOKS;

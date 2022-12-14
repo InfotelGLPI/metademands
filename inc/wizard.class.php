@@ -1080,9 +1080,9 @@ class PluginMetademandsWizard extends CommonDBTM
 
         $use_as_step = 0;
         //TODO v3.3
-//        if ($metademands->fields['step_by_step_mode'] == 1) {
-//            $use_as_step = 1;
-//        }
+        if ($metademands->fields['step_by_step_mode'] == 1) {
+            $use_as_step = 1;
+        }
         if ($preview || $seeform) {
             $use_as_step = 0;
         }
@@ -3077,34 +3077,18 @@ class PluginMetademandsWizard extends CommonDBTM
                 if(!empty($data_form)) {
                     $parent_fields            = $metademands->formatFields($lineForStepByStep, $metademands_id, [$metademands_id => $data_form], []);
 
-                    echo "<div id='alert-message' class='tab_cadre_navigation_center' style='display:none;'>" . $parent_fields['content'] . "</div>";
-                    echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL."/lib/jquery-ui/jquery-ui.min.css");
-                    echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL."/lib/jquery-ui/jquery-ui.min.js");
-                    echo html::scriptBlock("var mTitle =  '" . __('Previous data edited') . " ';
-                $( '#alert-message' ).dialog({
-                    autoOpen: true,
-                    height: 'auto',
-                    width: 'auto',
-                    modal: true,
-                    open: function (){
-                         $(this)
-                            .parent()
-                            .children('.ui-dialog-titlebar')
-                            .html(mTitle);
-                      },
-                    buttons: {
-                     'ok': function() {
-                        $( this ).dialog( 'close' );
-                     }
-                  },
-                
-                });
-                
-                $( '#alert-message' ).dialog( 'open' );");
+                    $modal_html = Glpi\RichText\RichText::getSafeHtml($parent_fields['content']);
+                    $title = __('Previous data edited', 'metademands');
+                    $setting_dialog = json_encode($modal_html);
+                    echo Html::scriptBlock("$(function() {
+                                                        glpi_html_dialog({
+                                                             title: '$title',
+                                                             body: {$setting_dialog},
+                                                             dialogclass: 'modal-lg',
+                                                        });
+                                                    });");
+
                 }
-
-
-
 
 
                 if (isset($_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'])) {
@@ -3522,10 +3506,14 @@ class PluginMetademandsWizard extends CommonDBTM
                                     block_id: id_bloc
                                   },
                                 success: function(response){
-                                  document.getElementById('nextBtn').innerHTML = nextsteptitle;
-                                  document.getElementById('nextMsg').style.display = 'block';
-                                  document.getElementById('nextMsg').innerHTML = response;
-                                  sessionStorage.setItem('currentStep', id_bloc);
+                                  if (response.length == 0) {
+                                      document.getElementById('nextMsg').style.display = 'none';
+                                  } else {
+                                      document.getElementById('nextBtn').innerHTML = nextsteptitle;
+                                      document.getElementById('nextMsg').style.display = 'block';
+                                      document.getElementById('nextMsg').innerHTML = response;
+                                      sessionStorage.setItem('currentStep', id_bloc);
+                                  }
                                  },
                                 error: function(xhr, status, error) {
                                    console.log(xhr);
