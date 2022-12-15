@@ -934,3 +934,82 @@ Ticket ###ticket.id##
 
 
 }
+
+function plugin_metademands_hook_dashboard_cards($cards)
+{
+    if ($cards === null) {
+        $cards = [];
+    }
+
+
+    $cards["count_running_metademands"] = [
+        'widgettype' => ['bigNumber'],
+        'itemtype'   => PluginMetademandsMetademand::getType(),
+        'group'      => __('Assistance'),
+        'label'      => __("Running metademands", "metademands"),
+        'provider'   => "PluginMetademandsMetademand::getRunningMetademands",
+        'cache'      => false,
+        'args'       => [
+                'params' => [
+                ]
+            ],
+        'filters'    => [
+            'dates', 'dates_mod', 'itilcategory',
+            'group_tech', 'user_tech', 'requesttype', 'location'
+        ]
+    ];
+
+
+    $cards["count_metademands_to_be_closed"] = [
+        'widgettype' => ['bigNumber'],
+        'itemtype'   => PluginMetademandsMetademand::getType(),
+        'group'      => __('Assistance'),
+        'label'      => __("Metademands to be closed", "metademands"),
+        'provider'   => "PluginMetademandsMetademand::getMetademandsToBeClosed",
+        'cache'      => false,
+        'args'       => [
+            'params' => [
+            ]
+        ],
+        'filters'    => [
+            'dates', 'dates_mod', 'itilcategory',
+            'group_tech', 'user_tech', 'requesttype', 'location'
+        ]
+    ];
+
+    $cards["count_metademands_need_validation"] = [
+        'widgettype' => ['bigNumber'],
+        'itemtype'   => PluginMetademandsMetademand::getType(),
+        'group'      => __('Assistance'),
+        'label'      => __("Metademands to be validated", "metademands"),
+        'provider'   => "PluginMetademandsMetademand::getMetademandsToBeValidated",
+        'cache'      => false,
+        'args'       => [
+            'params' => [
+            ]
+        ],
+        'filters'    => [
+            'dates', 'dates_mod', 'itilcategory',
+            'group_tech', 'user_tech', 'requesttype', 'location'
+        ]
+    ];
+
+    $cards["count_running_metademands_my_group_children"] = [
+        'widgettype' => ['bigNumber'],
+        'itemtype'   => PluginMetademandsMetademand::getType(),
+        'group'      => __('Assistance'),
+        'label'      => __("Running metademands with tickets of my groups", "metademands"),
+        'provider'   => "PluginMetademandsMetademand::getRunningMetademandsAndMygroups",
+        'cache'      => false,
+        'args'       => [
+            'params' => [
+            ]
+        ],
+        'filters'    => [
+            'dates', 'dates_mod', 'itilcategory',
+            'group_tech', 'user_tech', 'requesttype', 'location'
+        ]
+    ];
+
+    return $cards;
+}

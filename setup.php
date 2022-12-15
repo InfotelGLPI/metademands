@@ -49,7 +49,7 @@ function plugin_init_metademands()
     $PLUGIN_HOOKS['add_css']['metademands']        = ['css/metademands.css'];
 
     // add minidashboard
-    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = ['PluginMetademandsMetademand', 'getMetademandDashboards'];
+    $PLUGIN_HOOKS['dashboard_cards']['metademands'] = 'plugin_metademands_hook_dashboard_cards';
 
     $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
 
