@@ -2822,7 +2822,9 @@ JAVASCRIPT
                                                     $tasks[$key]['items_id']         = ['PluginResourcesResource' => [$resource_id]];
                                                 }
                                             }
-                                            $tasks[$key]['tasks_completename'] = addslashes(urlencode($val['tasks_completename']));
+                                            if ($val['tasks_completename'] != null) {
+                                                $tasks[$key]['tasks_completename'] = addslashes(urlencode($val['tasks_completename']));
+                                            }
                                             $tasks[$key]['content']            = addslashes(urlencode($val['content']));
                                             $tasks[$key]['block_use']          = json_decode($val["block_use"], true);
                                         } else {
@@ -3106,7 +3108,9 @@ JAVASCRIPT
         }
         if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2', $lang))) {
             $label2 = Toolbox::stripslashes_deep($field['label2']);
-            $label2 = Glpi\RichText\RichText::getTextFromHtml($field['label2']);
+            if ($field['label2'] != NULL) {
+                $label2 = Glpi\RichText\RichText::getTextFromHtml($field['label2']);
+            }
         }
 
         if ((!empty($field['value']) || $field['value'] == "0")
@@ -5952,8 +5956,11 @@ JAVASCRIPT
                 }
 
                 //            if($key == 'name' || $key == 'completename' || $key == 'comments' || $key == 'label2')
-                $value = htmlspecialchars($value, ENT_NOQUOTES);
-                $parent->addChild($key, $value);
+                if ($value != NULL) {
+                    $value = htmlspecialchars($value, ENT_NOQUOTES);
+                    $parent->addChild($key, $value);
+                }
+
             }
         }
     }
