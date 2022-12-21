@@ -30,60 +30,65 @@
 /**
  * Class PluginMetademandsMenu
  */
-class PluginMetademandsMenu extends CommonDBTM {
-   static $rightname = 'plugin_metademands';
+class PluginMetademandsMenu extends CommonDBTM
+{
+    public static $rightname = 'plugin_metademands';
 
-   /**
-    * @return translated
-    */
-   static function getMenuName() {
-      return _n('Meta-Demand', 'Meta-Demands', 2, 'metademands');
-   }
+    /**
+     * @return translated
+     */
+    public static function getMenuName()
+    {
+        return _n('Meta-Demand', 'Meta-Demands', 2, 'metademands');
+    }
 
-   /**
-    * @return array
-    */
-   static function getMenuContent() {
+    /**
+     * @return array
+     */
+    public static function getMenuContent()
+    {
+        $menu                    = [];
+        $menu['title']           = self::getMenuName();
+        $menu['page']            = PluginMetademandsMetademand::getSearchURL(false);
+        $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
+        if (PluginMetademandsMetademand::canCreate()) {
+            $menu['links']['add'] = PluginMetademandsMetademand::getFormURL(false);
+        }
+        if (Session::haveRight("config", UPDATE)) {
+            //Entry icon in breadcrumb
+            $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
+        }
 
-      $menu                    = [];
-      $menu['title']           = self::getMenuName();
-      $menu['page']            = PluginMetademandsMetademand::getSearchURL(false);
-      $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
-      if (PluginMetademandsMetademand::canCreate()) {
-         $menu['links']['add'] = PluginMetademandsMetademand::getFormURL(false);
-      }
-      if (Session::haveRight("config", UPDATE)) {
-         //Entry icon in breadcrumb
-         $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
-      }
+        $image                 = "<i class='ti ti-share' title='" . __('Create a demand', 'metademands') . "'></i>&nbsp;".__('Create a demand', 'metademands');
+        $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
 
-      $image                 = "<i class='ti ti-share' title='" . __('Create a demand', 'metademands') . "'></i>&nbsp;".__('Create a demand', 'metademands');
-      $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
+        if (PluginMetademandsMetademand::canCreate()) {
+            $image                 = "<i class='ti ti-upload' title='" . __('Import metademands', 'metademands') . "'></i>&nbsp;" . __('Import metademands', 'metademands');
+            $menu['links'][$image] = PluginMetademandsMetademand::getFormURL(false) . "?import_form=1";
+        }
+        //TODO v3.3
+        if (PluginMetademandsMetademand::canCreate()) {
+            $image                 = "<i class='ti ti-edit' title='" . __('Continue metademand', 'metademands') . "'></i>&nbsp;" . __('Continue metademand', 'metademands');
+            $menu['links'][$image] = PluginMetademandsStepform::getSearchURL(false);
+        }
 
-      if (PluginMetademandsMetademand::canCreate()) {
-         $image                 = "<i class='ti ti-upload' title='" . __('Import metademands', 'metademands') . "'></i>&nbsp;" . __('Import metademands', 'metademands');
-         $menu['links'][$image] = PluginMetademandsMetademand::getFormURL(false) . "?import_form=1";
-      }
-//       if (PluginMetademandsMetademand::canCreate()) {
-//         $image                 = "<i class='ti ti-edit' title='" . __('Continue metademand', 'metademands') . "'></i>&nbsp;" . __('Continue metademand', 'metademands');
-//         $menu['links'][$image] = PluginMetademandsStepform::getSearchURL(false);
-//      }
+        $menu['icon'] = self::getIcon();
 
-      $menu['icon'] = self::getIcon();
+        return $menu;
+    }
 
-      return $menu;
-   }
+    public static function getIcon()
+    {
+        return "ti ti-share";
+    }
 
-   static function getIcon() {
-      return "ti ti-share";
-   }
-
-   static function removeRightsFromSession() {
-      if (isset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMenu'])) {
-         unset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMenu']);
-      }
-      if (isset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmenu'])) {
-         unset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmenu']);
-      }
-   }
+    public static function removeRightsFromSession()
+    {
+        if (isset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMenu'])) {
+            unset($_SESSION['glpimenu']['helpdesk']['types']['PluginMetademandsMenu']);
+        }
+        if (isset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmenu'])) {
+            unset($_SESSION['glpimenu']['helpdesk']['content']['pluginmetademandsmenu']);
+        }
+    }
 }
