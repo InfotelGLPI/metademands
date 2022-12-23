@@ -1404,6 +1404,13 @@ class PluginMetademandsWizard extends CommonDBTM
                         if ($data['row_display'] == 1 && $data['type'] == "link") {
                             $class = "center";
                         }
+                        //Add possibility to hide field
+                        if ($data['type'] == 'dropdown_meta'
+                            && $data['item'] == "ITILCategory_Metademands"
+                        && Session::getCurrentInterface() != 'central') {
+                            $class .= " itilmeta";
+                            echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
+                        }
                         if ($data['type'] == 'informations') {
                             $color = $data['color'];
                             $style = "";

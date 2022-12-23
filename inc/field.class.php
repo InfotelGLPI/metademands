@@ -2265,7 +2265,8 @@ class PluginMetademandsField extends CommonDBChild
                           'right'     => 'all',
                           'value'     => $value,
                           'condition' => ["id" => $values],
-                          'display'   => false];
+                          'display'   => false,
+                            'class'   => 'form-select itilmeta'];
                         if ($data['is_mandatory'] == 1) {
                             $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                         }
