@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-16 15:09+0000\n"
+"POT-Creation-Date: 2022-12-21 09:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,7 +54,7 @@ msgstr ""
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: setup.php:167 inc/menu.class.php:40 inc/metademand.class.php:86
+#: setup.php:167 inc/menu.class.php:42 inc/metademand.class.php:86
 #: inc/profile.class.php:129 inc/profile.class.php:172
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -135,13 +135,13 @@ msgstr[1] ""
 msgid "Please activate the plugin"
 msgstr ""
 
-#: front/stepform.php:38 front/stepform.php:40
+#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:71
 msgid "Continue metademand"
 msgstr ""
 
 #: front/wizard.form.php:259 front/wizard.form.php:262
 #: front/wizard.form.php:264 front/wizard.form.php:644
-#: front/wizard.form.php:648 front/wizard.form.php:650 inc/menu.class.php:60
+#: front/wizard.form.php:648 front/wizard.form.php:650 inc/menu.class.php:62
 msgid "Create a demand"
 msgstr ""
 
@@ -669,7 +669,7 @@ msgstr ""
 msgid "Target followup"
 msgstr ""
 
-#: inc/menu.class.php:64
+#: inc/menu.class.php:66
 msgid "Import metademands"
 msgstr ""
 
