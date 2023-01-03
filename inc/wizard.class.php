@@ -163,12 +163,14 @@ class PluginMetademandsWizard extends CommonDBTM
         $background_color = "";
         $meta             = new PluginMetademandsMetademand();
         $maintenance_mode = 0;
+        $use_as_step = 0;
         if ($meta->getFromDB($parameters['metademands_id'])) {
             if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
                 $background_color = $meta->fields['background_color'];
             }
             $maintenance_mode                                   = $meta->fields['maintenance_mode'];
             $_SESSION['servicecatalog']['sc_itilcategories_id'] = $meta->fields['itilcategories_id'];
+            $use_as_step = $meta->fields['step_by_step_mode'];
         }
 
         if ($maintenance_mode == 1 && !$parameters['preview']) {
@@ -213,7 +215,22 @@ class PluginMetademandsWizard extends CommonDBTM
                 // Wizard title
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12 md-title\">";
-                echo "<h4><div class='alert alert-dark'><span>";
+                echo "<div class='alert alert-dark' style='text-align: center;'>";
+                echo "<div class='left' style='display: inline;float: left;'>";
+
+                if ($parameters['preview'] || $parameters['seeform']) {
+                    $use_as_step = 0;
+                }
+                if (
+//                    Session::getCurrentInterface() != 'central'
+//                    &&
+                    $use_as_step == 0) {
+                    $title = "<i class='fas fa-chevron-left fa-2x' title=\"".__('Previous')."\" data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+//                    $title .= __('Previous');
+                    echo Html::submit($title, ['name' => 'previous', 'class' => 'btn btn-link']);
+                }
+                echo "</div>";
+                echo "<div class='center' style='display: inline;text-align: center;font-size: 16px;'>";
                 $meta = new PluginMetademandsMetademand();
                 if ($meta->getFromDB($parameters['metademands_id'])) {
                     if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
@@ -250,7 +267,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
                         <i class='fas fa-wrench'></i></a>";
                 }
-                echo "</span>";
+                echo "</div>";
                 $config = PluginMetademandsConfig::getInstance();
                 //            if (!$parameters['preview']
                 //                && !$parameters['seeform']
@@ -269,7 +286,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 //               echo "</span>";
                 //            }
                 if (!$parameters['preview'] && !$parameters['seeform']) {
-                    echo "<span class='mydraft'>";
+                    echo "<div class='mydraft right' style='display: inline;float: right;'>";
                     echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx('button', 'Your forms', 'metademands') . "' 
                 data-hasqtip='0' aria-hidden='true' onclick='$(\"#divnavforms\").toggle();' ></i>";
                     echo "</span>";
@@ -1014,11 +1031,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         $title = "<i class='fas fa-chevron-right' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                         $title .= __('Next');
                         echo Html::submit($title, ['name' => 'next', 'class' => 'btn btn-primary metademand_next_button']);
-                    }
-                    if ($use_as_step == 0) {
-                        $title = "<i class='fas fa-chevron-left' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-                        $title .= __('Previous');
-                        echo Html::submit($title, ['name' => 'previous', 'class' => 'btn btn-primary metademand_previous_button']);
                     }
                     echo "</div>";
                     echo "</div>";

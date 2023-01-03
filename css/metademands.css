@@ -152,6 +152,7 @@
 
 .metademand_previous_button {
     float: left;
+    margin: 10px;
 }
 
 a.metademand_middle_button {
