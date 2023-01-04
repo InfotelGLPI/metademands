@@ -383,7 +383,7 @@ class PluginMetademandsTicket extends CommonDBTM
                      WHERE `glpi_plugin_metademands_tasks`.`type` = " . PluginMetademandsTask::TICKET_TYPE . "
                      AND `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id . "
                      AND `glpi_plugin_metademands_tickets_tasks`.`tickets_id` IN ('" . implode("','", $parent_tickets_id) . "')
-                     ORDER BY `glpi_plugin_metademands_tasks`.`completename`";
+                     ORDER BY tasks_id";
 
                 $result = $DB->query($query);
                 $count  = 0;

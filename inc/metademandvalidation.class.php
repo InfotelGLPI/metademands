@@ -315,7 +315,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             || $metaValidation->fields["validate"] == self::TO_VALIDATE_WITHOUTTASK) {
                 $style = "btn-orange";
             }
-            echo "<li class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
+            echo "<li class='btn primary answer-action mb-2 $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
                  . "<i class='fas fa-thumbs-up'></i>&nbsp;" . __('Metademand validation', 'metademands') . "</li>";
 
             echo Ajax::createIframeModalWindow(
