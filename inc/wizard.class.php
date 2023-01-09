@@ -2700,6 +2700,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
 
                             case 'radio':
+                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
                                 if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
                                     $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
                                     $check_value  = PluginMetademandsField::_unserialize($data['check_value']);
@@ -2721,6 +2722,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                         }
                                     }
                                     $script .= "$.each( tohide, function( key, value ) {
+
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                      $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2751,7 +2753,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                     }
                                 ";
                                 }
-
+                                $script .= "});";
                                 $script .= "fixButtonIndicator();console.log('2');});";
                                 //Initialize id default value
                                 if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
@@ -3587,6 +3589,12 @@ class PluginMetademandsWizard extends CommonDBTM
                      }
                   }
                </script>";
+            } else {
+                echo "<script>
+                
+                function fixButtonIndicator() {
+                }
+                </script>";
             }
         } else {
             echo "<div class='center'><b>" . __('No item to display') . "</b></div>";
