@@ -3166,13 +3166,14 @@ class PluginMetademandsWizard extends CommonDBTM
                      } else {
                         document.getElementById('prevBtn').style.display = 'inline';
                      }
+
+                     document.getElementById('nextBtn').innerHTML = nexttitle;
                      if (n == (x.length - 1) || create == true) {
                         document.getElementById('nextBtn').innerHTML = submittitle;
 //                        document.getElementById('nextMsg').style.display = 'block';
 //                        document.getElementById('nextMsg').innerHTML = submitmsg;
-                     } else {
-                        document.getElementById('nextBtn').innerHTML = nexttitle;
                      }
+                     
                      //... and run a function that will display the correct step indicator:
                      if (use_as_step == 1) {
                         fixStepIndicator(n);
@@ -3350,7 +3351,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             }
                         );
                      } else {
-                        showTab(currentTab,create);
+                        showTab(currentTab,create, submittitle, submitmsg);
                      }
                      // Otherwise, display the correct tab:
                   }
@@ -3514,10 +3515,10 @@ class PluginMetademandsWizard extends CommonDBTM
                      } else {
                         var tabx = document.getElementsByClassName('tab-nostep');
                      }
-                     console.log(tabx);
+//                     console.log(tabx);
                      bloc = tabx[n].firstChild.getAttribute('bloc-id');
                      id_bloc = parseInt(bloc.replace('bloc',''));
-                     console.log(id_bloc);
+//                     console.log(id_bloc);
                      $(document).ready(function () {
                        $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/getNextMessage.php',
