@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-09 09:21+0000\n"
+"POT-Creation-Date: 2023-01-23 11:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -109,7 +109,7 @@ msgstr ""
 msgid "Attribute ticket to "
 msgstr ""
 
-#: ajax/getNextMessage.php:49
+#: ajax/getNextMessage.php:44
 msgid ""
 "Your form will be redirected to another group of people who will complete "
 "the following information."
@@ -1293,22 +1293,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:4002
+#: inc/wizard.class.php:4003
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:4011
+#: inc/wizard.class.php:4012
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:4057
+#: inc/wizard.class.php:4058
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:4061
+#: inc/wizard.class.php:4062
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
