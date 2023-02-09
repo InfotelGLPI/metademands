@@ -34,10 +34,4 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-if (!isset($_SESSION['plugin_metademands']['type'])) {
-    $type = Ticket::DEMAND_TYPE;
-} else {
-    $type = $_SESSION['plugin_metademands']['type'];
-}
-
-echo PluginMetademandsMetademand::fuzzySearch($_REQUEST['action'], $type);
+echo PluginMetademandsMetademand::fuzzySearch($_REQUEST['action'], $_REQUEST['type']);

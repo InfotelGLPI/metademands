@@ -32,8 +32,8 @@ $(function() {
     var trigger_homesearch_fuzzy = function() {
         // remove old fuzzy modal
         //removeFuzzy();
-        currentType = $('#type').val();
-
+        currentType = $('#meta_type').val();
+console.log(currentType);
         // retrieve current menu data
         $.getJSON(root_mt_doc+'/ajax/fuzzysearch.php', {
             'action': 'getList',

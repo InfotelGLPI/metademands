@@ -55,6 +55,7 @@ class PluginMetademandsMetademand extends CommonDBTM
     const STEP_INIT   = 0;
     const STEP_LIST   = 1;
     const STEP_SHOW   = 2;
+
     const STEP_CREATE = "create_metademands";
 
     const TODO = 1; // todo
@@ -4754,7 +4755,7 @@ JAVASCRIPT
             $style = "btn-orange";
             echo "<br>";
             echo "<br>";
-            echo "<a class='btn primary answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
+            echo "<a class='btn primary mb-2 answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
                  . "<i class='fas fa-thumbs-up'></i>&nbsp;" . __('Metademand validation', 'metademands') . "</a>";
 
             echo Ajax::createIframeModalWindow(
@@ -6539,7 +6540,7 @@ JAVASCRIPT
                      <div class="modal-content">
                         <div class="modal-body" style="padding: 10px;">
                            <input type="text" class="mt-home-trigger-fuzzy form-control" placeholder="{$placeholder}">
-                           <input type="hidden" name="type" id="type" value="$type"/>
+                           <input type="hidden" name="meta_type" id="meta_type" value="$type"/>
                            <ul class="results list-group mt-2" style="background: #FFF;"></ul>
                         </div>
                      </div>

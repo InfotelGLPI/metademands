@@ -134,6 +134,7 @@ class PluginMetademandsWizard extends CommonDBTM
                        'meta_validated'    => 1,
                        'resources_id'      => 0,
                        'resources_step'    => '',
+                        'meta_type'    => '',
                        'block_id'          => 0,
                        'itilcategories_id' => 0];
 
@@ -199,7 +200,8 @@ class PluginMetademandsWizard extends CommonDBTM
             echo Html::hidden('block_id', ['value' => $parameters['block_id']]);
 
             $icon = '';
-            if ($parameters['step'] == PluginMetademandsMetademand::STEP_LIST) {
+
+            if ($parameters['step'] == PluginMetademandsMetademand::STEP_INIT) {
                 // Wizard title
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12\">";
@@ -209,9 +211,21 @@ class PluginMetademandsWizard extends CommonDBTM
                     $icon = $meta->fields['icon'];
                 }
                 echo "<i class='fa-2x fas $icon'></i>&nbsp;";
-                echo __('Demand choice', 'metademands');
+                echo __('What you want to do ?', 'metademands');
                 echo "</div></h4></div></div>";
-            } elseif ($parameters['step'] >= PluginMetademandsMetademand::STEP_LIST) {
+            } elseif ($parameters['step'] == PluginMetademandsMetademand::STEP_LIST) {
+                // Wizard title
+                echo "<div class=\"row\">";
+                echo "<div class=\"col-md-12\">";
+                echo "<h4><div class='alert alert-dark' role='alert'>";
+                $icon = "fa-share-alt";
+                if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
+                    $icon = $meta->fields['icon'];
+                }
+                echo "<i class='fa-2x fas $icon'></i>&nbsp;";
+                echo __('Form choice', 'metademands');
+                echo "</div></h4></div></div>";
+            } elseif ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
                 // Wizard title
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12 md-title\">";
@@ -238,10 +252,11 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
 
-                $title_color = "";
+                $title_color = "#000";
                 if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
                     $title_color = $meta->fields['title_color'];
                 }
+
                 echo "<span style='color: " . $title_color . ";'> ";
                 echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
                 if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
@@ -252,7 +267,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 if (isset($parameters['itilcategories_id'])
                     && isset($_SESSION['servicecatalog']['sc_itilcategories_id'])) {
                     $cats              = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
-                    if (count($cats) > 1) {
+                    if (is_array($cats) && count($cats) > 1) {
                         $itilCategory = new ITILCategory();
                         if ($itilCategory->getFromDB($parameters['itilcategories_id'])) {
                             echo " - ".$itilCategory->fields['completename'];
@@ -260,6 +275,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
                 echo "</span>";
+
                 //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
                 if (Session::getCurrentInterface() == 'central'
                     && Session::haveRight('plugin_metademands', UPDATE)
@@ -292,13 +308,6 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</span>";
                 }
                 echo "</h4>";
-                if ($meta->getFromDB($parameters['metademands_id'])
-                    && !empty($meta->fields['comment'])) {
-                    if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
-                        $comment = $meta->fields['comment'];
-                    }
-                    echo "<label><i>" . nl2br($comment) . "</i></label>";
-                }
 
                 echo "</div></div>";
                 if (!$parameters['seeform']) {
@@ -347,7 +356,13 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "</div>";
                 echo "</div>";
-
+                if ($meta->getFromDB($parameters['metademands_id'])
+                    && !empty($meta->fields['comment'])) {
+                    if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
+                        $comment = $meta->fields['comment'];
+                    }
+                    echo "<div class='center'><i>" . nl2br($comment) . "</i></div>";
+                }
                 if (Plugin::isPluginActive('servicecatalog')) {
                     $configsc = new PluginServicecatalogConfig();
                     if ($configsc->seeCategoryDetails()) {
@@ -459,6 +474,7 @@ class PluginMetademandsWizard extends CommonDBTM
             }
             $options['resources_id']      = $parameters['resources_id'];
             $options['itilcategories_id'] = $parameters['itilcategories_id'];
+
             self::showWizardSteps($parameters['step'], $parameters['metademands_id'], $parameters['preview'], $options, $parameters['seeform'], $parameters['current_ticket_id'], $parameters['meta_validated']);
             Html::closeForm();
             echo "</div>";
@@ -495,8 +511,13 @@ class PluginMetademandsWizard extends CommonDBTM
                 self::createMetademands($metademands_id, $values, $options);
                 break;
 
+            case PluginMetademandsMetademand::STEP_INIT:
+                self::listMetademandTypes();
+                break;
+
             case PluginMetademandsMetademand::STEP_LIST:
-                self::listMetademands();
+                $_SESSION['plugin_metademands']['type'] = $options['meta_type'];
+                self::listMetademands($options['meta_type']);
                 unset($_SESSION['plugin_metademands']);
                 unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
                 break;
@@ -638,7 +659,56 @@ class PluginMetademandsWizard extends CommonDBTM
     /**
      * @throws \GlpitestSQLError
      */
-    public static function listMetademands() {
+    public static function listMetademandTypes() {
+        global $CFG_GLPI;
+
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
+
+        $config      = PluginMetademandsConfig::getInstance();
+
+        $meta = new PluginMetademandsMetademand();
+
+        $data                        = [];
+
+        $metademands_incidents = self::selectMetademands(false, "", Ticket::INCIDENT_TYPE);
+        if (count($metademands_incidents) > 0) {
+            $data[Ticket::INCIDENT_TYPE] = __('Report an incident', 'metademands');
+        }
+
+        $metademands_requests = self::selectMetademands(false, "", Ticket::DEMAND_TYPE);
+        if (count($metademands_requests) > 0) {
+            $data[Ticket::DEMAND_TYPE]   = __('Make a request', 'metademands');
+        }
+
+        $metademands_problems = self::selectMetademands(false, "", "Problem");
+        if (count($metademands_problems) > 0) {
+            $data['Problem'] = __('Report a problem', 'metademands');
+        }
+        $metademands_changes = self::selectMetademands(false, "", "Change");
+        if (count($metademands_changes) > 0) {
+            $data['Change'] = __('Make a change request', 'metademands');
+        }
+        foreach ($data as $type => $typename) {
+
+            echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?step=".PluginMetademandsMetademand::STEP_LIST."&meta_type=$type'>";
+            echo '<div class="btnsc-normal" >';
+            $fasize = "fa-6x";
+            echo "<div class='center'>";
+            $icon = "fa-share-alt";
+            echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
+            echo "</div>";
+            echo "<br><p>";
+            echo $typename;
+            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
+            echo "</span></em>";
+            echo "</p></div></a>";
+        }
+    }
+
+    /**
+     * @throws \GlpitestSQLError
+     */
+    public static function listMetademands($type) {
         global $CFG_GLPI;
 
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
@@ -648,39 +718,6 @@ class PluginMetademandsWizard extends CommonDBTM
         $meta = new PluginMetademandsMetademand();
         if ($config['display_type'] == 1) {
 
-            $data                        = [];
-            $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
-            $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
-            $data['Problem']             = __('Problem');
-            $data['Change']              = __('Change');
-
-            //         foreach ($data as $type => $typename) {
-            //
-            //            echo "<a class='bt-buttons' href=''>";
-            //            echo '<div class="btnsc-normal" >';
-            //            $fasize = "fa-6x";
-            //            echo "<div class='center'>";
-            //            $icon = "fa-share-alt";
-            //            echo "<i class='bt-interface fa-menu-md fas $icon $fasize'></i>";//$style
-            //            echo "</div>";
-            //            echo "<br><p>";;
-            //            echo $typename;
-            //            echo "<br><em><span style=\"font-weight: normal;font-size: 11px;padding-left:5px\">";
-            //            echo "</span></em>";
-            //            echo "</p></div></a>";
-            //         }
-            echo "<div style='margin-bottom: 10px'>";
-            $rand = Dropdown::showFromArray("type", $data, ["display_emptychoice" => true]);
-            echo "</div>";
-
-            $params = ['type' => '__VALUE__', "action" => "icon"];
-            Ajax::updateItemOnSelectEvent(
-                "dropdown_type$rand",
-                "listmeta",
-                PLUGIN_METADEMANDS_WEBDIR . "/ajax/updatelistmeta.php",
-                $params
-            );
-            $type = $_SESSION['plugin_metademands']['type'] = Ticket::DEMAND_TYPE;
             $metademands = self::selectMetademands(false, "", $type);
             if (count($metademands) > 0) {
                 echo "<div id='listmeta'>";
@@ -689,12 +726,11 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div class='modal-content'>";
                 echo "<div class='modal-body' style='padding: 10px;'>";
                 echo "<input type='text' class='mt-home-trigger-fuzzy form-control' placeholder='".$title."'>";
-                echo "<input type='hidden' name='type' id='type' value='".$type."'/>";
+                echo "<input type='hidden' name='meta_type' id='meta_type' value='".$type."'/>";
                 echo "<ul class='results list-group mt-2' style='background: #FFF;'></ul>";
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
-
 
                 foreach ($metademands as $id => $name) {
                     $meta = new PluginMetademandsMetademand();
@@ -746,28 +782,12 @@ class PluginMetademandsWizard extends CommonDBTM
             }
         } else {
 
-            $data                        = [];
-            $data[Ticket::DEMAND_TYPE]   = Ticket::getTicketTypeName(Ticket::DEMAND_TYPE);
-            $data[Ticket::INCIDENT_TYPE] = Ticket::getTicketTypeName(Ticket::INCIDENT_TYPE);
-            $data['Problem']             = __('Problem');
-            $data['Change']              = __('Change');
 
-            echo "<div style='margin-bottom: 10px'>";
-            $rand = Dropdown::showFromArray("type", $data, ["display_emptychoice" => true]);
-            echo "</div>";
-            $params = ['type' => '__VALUE__', "action" => "dropdown"];
-            Ajax::updateItemOnSelectEvent(
-                "dropdown_type$rand",
-                "listmeta",
-                PLUGIN_METADEMANDS_WEBDIR . "/ajax/updatelistmeta.php",
-                $params
-            );
             echo "<div id='listmeta' class=\"bt-row\">";
             echo "<div class=\"bt-feature bt-col-sm-12 bt-col-md-12 \">";
             // METADEMAND list
-            echo Ticket::getTicketTypeName(Ticket::DEMAND_TYPE) . "&nbsp;";
             $options['display_emptychoice'] = true;
-            $options['type']                = Ticket::DEMAND_TYPE;
+            $options['type']                = $type;
             $data                           = $meta->listMetademands(false, $options);
             Dropdown::showFromArray('metademands_id', $data, ['width' => 250]);
             echo "</div>";
@@ -3736,7 +3756,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $type = $metademands->fields['type'];
                 Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
             } elseif (Session::haveRight("plugin_metademands", READ)) {
-                Html::redirect($self->getFormURL() . "?step=" . $step = PluginMetademandsMetademand::STEP_LIST);
+                Html::redirect($self->getFormURL() . "?step=" . $step = PluginMetademandsMetademand::STEP_INIT);
             } else {
                 Html::back();
             }
