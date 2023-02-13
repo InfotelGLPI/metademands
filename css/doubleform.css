@@ -18,6 +18,10 @@
    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
 }
 
+.form-select:focus-visible {
+   color: unset!important;
+}
+
 .zone {
    margin: 5px;
    margin-bottom: 25px;

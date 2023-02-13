@@ -1359,19 +1359,19 @@ class PluginMetademandsWizard extends CommonDBTM
                             $rank  = $data['rank'];
                             $color = PluginMetademandsField::setColor($data['rank']);
                             echo '<style type="text/css">
-                       .preview-md-';
-                            echo $rank;
-                            echo ':before {
-                         content: attr(data-title);
-                         background: #';
-                            echo $color . ";";
-                            echo 'position: absolute;
-                               padding: 0 20px;
-                               color: #fff;
-                               right: 0;
-                               top: 0;
-                           }
-                          </style>';
+                           .preview-md-';
+                                echo $rank;
+                                echo ':before {
+                             content: attr(data-title);
+                             background: #';
+                                echo $color . ";";
+                                echo 'position: absolute;
+                                   padding: 0 20px;
+                                   color: #fff;
+                                   right: 0;
+                                   top: 0;
+                               }
+                              </style>';
                             $style = 'padding-top:5px;
                             padding-bottom:10px;
                             border-top :3px solid #' . $color . ';
@@ -1518,9 +1518,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         echo "</div>";
                     }
 
-                    if ($data['type'] == 'title-block') {
-                        $count--;
-                    }
+//                    if ($data['type'] == 'title-block') {
+//                        $count--;
+//                    }
                     // If next field is date interval : pass to next line
                     if (isset($keyIndexes[$key])
                         && isset($keys[$keyIndexes[$key] + 1])
@@ -1531,7 +1531,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     $count++;
 
                     // Next row
-                    if ($count >= $columns) {
+                    if ($count > $columns) {
                         if ($preview) {
                             $color            = PluginMetademandsField::setColor($data['rank']);
                             $style_left_right = 'padding-bottom:10px;
@@ -3089,31 +3089,33 @@ class PluginMetademandsWizard extends CommonDBTM
                 foreach ($groups_users as $gu) {
                     $groups[] = $gu['groups_id'];
                 }
-
                 $list_blocks = [];
                 $list_blocks2 = [];
-                $step        = new PluginMetademandsStep();
-                $steps       = $step->find(['plugin_metademands_metademands_id' => $ID,
-                                            'groups_id'                         => $groups]);
+                if ($use_as_step == 1) {
 
-                $steps2       = $step->find(['plugin_metademands_metademands_id' => $ID]);
+                    $step = new PluginMetademandsStep();
+                    $steps = $step->find(['plugin_metademands_metademands_id' => $ID,
+                        'groups_id' => $groups]);
 
-                foreach ($steps as $s) {
-                    $list_blocks[] = $s['block_id'];
-                }
-                foreach ($steps2 as $s) {
-                    $list_blocks2[] = $s['block_id'];
-                }
-                $field  = new PluginMetademandsField();
-                $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
-                $blocks = [];
-                $self = new self();
-                foreach ($fields as $f) {
-                    $blocks[] =  $f["rank"];
-                }
-                foreach ($blocks as $block) {
-                    if(!in_array($block,$list_blocks2)) {
-                        $list_blocks[] = $block;
+                    $steps2 = $step->find(['plugin_metademands_metademands_id' => $ID]);
+
+                    foreach ($steps as $s) {
+                        $list_blocks[] = $s['block_id'];
+                    }
+                    foreach ($steps2 as $s) {
+                        $list_blocks2[] = $s['block_id'];
+                    }
+                    $field = new PluginMetademandsField();
+                    $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
+                    $blocks = [];
+                    $self = new self();
+                    foreach ($fields as $f) {
+                        $blocks[] = $f["rank"];
+                    }
+                    foreach ($blocks as $block) {
+                        if (!in_array($block, $list_blocks2)) {
+                            $list_blocks[] = $block;
+                        }
                     }
                 }
 
