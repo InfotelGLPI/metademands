@@ -1548,6 +1548,10 @@ JAVASCRIPT
         $metademands_data = $this->constructMetademands($metademands_id);
         $this->getFromDB($metademands_id);
 
+        if (!$this->fields['object_to_create']
+            || !getItemForItemtype($this->fields['object_to_create'])) {
+            return false;
+        }
         $object_class = $this->fields['object_to_create'];
         $object       = new $object_class();
 

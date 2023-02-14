@@ -363,7 +363,8 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                     echo "<div class='center'><i>" . nl2br($comment) . "</i></div>";
                 }
-                if (Plugin::isPluginActive('servicecatalog')) {
+                if ($meta->getFromDB($parameters['metademands_id'])
+                    && Plugin::isPluginActive('servicecatalog')) {
                     $configsc = new PluginServicecatalogConfig();
                     if ($configsc->seeCategoryDetails()) {
                         $itilcategories_id = 0;
@@ -504,35 +505,34 @@ class PluginMetademandsWizard extends CommonDBTM
           });"
             );
         }
+        if ($step == 0) {
+            self::listMetademandTypes();
+        } else {
+            switch ($step) {
+                case PluginMetademandsMetademand::STEP_CREATE:
+                    $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
+                    self::createMetademands($metademands_id, $values, $options);
+                    break;
 
-        switch ($step) {
-            case PluginMetademandsMetademand::STEP_CREATE:
-                $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
-                self::createMetademands($metademands_id, $values, $options);
-                break;
+                case PluginMetademandsMetademand::STEP_LIST:
 
-            case PluginMetademandsMetademand::STEP_INIT:
-                self::listMetademandTypes();
-                break;
+                    if (isset($options['meta_type'])) {
+                        $_SESSION['plugin_metademands']['type'] = $options['meta_type'];
+                        self::listMetademands($options['meta_type']);
+                    } else {
+                        echo __('No existing forms founded', 'metademands');
+                    }
 
-            case PluginMetademandsMetademand::STEP_LIST:
-                $_SESSION['plugin_metademands']['type'] = $options['meta_type'];
-                self::listMetademands($options['meta_type']);
-                unset($_SESSION['plugin_metademands']);
-                unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
-                break;
+                    unset($_SESSION['plugin_metademands']);
+                    unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
+                    break;
 
-            //         case PluginMetademandsMetademand::STEP_INIT:
-            //            self::chooseType($step);
-            //            unset($_SESSION['plugin_metademands']);
-            //            unset($_SESSION['servicecatalog']['sc_itilcategories_id']);
-            //            break;
-
-            default:
-                self::showMetademands($metademands_id, $step, $current_ticket, $meta_validated, $preview, $options, $seeform);
-                break;
+                default:
+                    self::showMetademands($metademands_id, $step, $current_ticket, $meta_validated, $preview, $options, $seeform);
+                    break;
+            }
+            echo Html::hidden('step', ['value' => $step]);
         }
-        echo Html::hidden('step', ['value' => $step]);
     }
 
     /**
@@ -3637,17 +3637,63 @@ class PluginMetademandsWizard extends CommonDBTM
 
         $self        = new self();
         $metademands = new PluginMetademandsMetademand();
-        $metademands->getFromDB($metademands_id);
+        if ($metademands->getFromDB($metademands_id)) {
+            if ($metademands->fields['is_order'] == 1
+                && isset($values['basket'])) {
+                $basketclass = new PluginMetademandsBasketline();
+                if ($metademands->fields['create_one_ticket'] == 0) {
+                    //create one ticket for each basket
+                    foreach ($values['basket'] as $k => $basket) {
+                        $datas = [];
+                        $datas['basket'] = $basket;
 
-        if ($metademands->fields['is_order'] == 1
-            && isset($values['basket'])) {
-            $basketclass = new PluginMetademandsBasketline();
-            if ($metademands->fields['create_one_ticket'] == 0) {
-                //create one ticket for each basket
-                foreach ($values['basket'] as $k => $basket) {
-                    $datas           = [];
-                    $datas['basket'] = $basket;
+                        if (isset($values['fields']['_filename'])) {
+                            unset($values['fields']['_filename']);
+                        }
+                        if (isset($values['fields']['_prefix_filename'])) {
+                            unset($values['fields']['_prefix_filename']);
+                        }
+                        if (isset($values['fields']['_tag_filename'])) {
+                            unset($values['fields']['_tag_filename']);
+                        }
+                        $filename = [];
+                        $prefixname = [];
+                        $tagname = [];
+                        foreach ($basket as $key => $val) {
+                            $line = $k + 1;
 
+                            $check = $basketclass->getFromDBByCrit(["plugin_metademands_metademands_id" => $metademands_id,
+                                'plugin_metademands_fields_id' => $key,
+                                'line' => $line,
+                                'users_id' => Session::getLoginUserID(),
+                                'name' => "upload"
+                            ]);
+                            if ($check) {
+                                if (!empty($val)) {
+                                    $files = json_decode($val, 1);
+                                    foreach ($files as $file) {
+                                        $filename[] = $file['_filename'];
+                                        $prefixname[] = $file['_prefix_filename'];
+                                        $tagname[] = $file['_tag_filename'];
+                                    }
+                                }
+                            }
+                        }
+
+                        $values['fields']['_filename'] = $filename;
+                        $values['fields']['_prefix_filename'] = $prefixname;
+                        $values['fields']['_tag_filename'] = $tagname;
+
+                        $datas['fields'] = $values['fields'];
+
+                        $result = $metademands->addObjects($metademands_id, $datas, $options);
+//                    PluginMetademandsStepform::deleteAfterCreate($stepformID);
+                        Session::addMessageAfterRedirect($result['message']);
+                    }
+                    $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
+                        'users_id' => Session::getLoginUserID()]);
+                } else {
+                    //create one ticket for all basket
                     if (isset($values['fields']['_filename'])) {
                         unset($values['fields']['_filename']);
                     }
@@ -3657,96 +3703,50 @@ class PluginMetademandsWizard extends CommonDBTM
                     if (isset($values['fields']['_tag_filename'])) {
                         unset($values['fields']['_tag_filename']);
                     }
-                    $filename   = [];
+                    $filename = [];
                     $prefixname = [];
-                    $tagname    = [];
-                    foreach ($basket as $key => $val) {
-                        $line = $k + 1;
-
-                        $check = $basketclass->getFromDBByCrit(["plugin_metademands_metademands_id" => $metademands_id,
-                                                                'plugin_metademands_fields_id'      => $key,
-                                                                'line'                              => $line,
-                                                                'users_id'                          => Session::getLoginUserID(),
-                                                                'name'                              => "upload"
-                                                               ]);
-                        if ($check) {
-                            if (!empty($val)) {
-                                $files = json_decode($val, 1);
-                                foreach ($files as $file) {
-                                    $filename[]   = $file['_filename'];
-                                    $prefixname[] = $file['_prefix_filename'];
-                                    $tagname[]    = $file['_tag_filename'];
+                    $tagname = [];
+                    foreach ($values['basket'] as $k => $basket) {
+                        foreach ($basket as $key => $val) {
+                            $line = $k + 1;
+                            $check = $basketclass->getFromDBByCrit([
+                                "plugin_metademands_metademands_id" => $metademands_id,
+                                'plugin_metademands_fields_id' => $key,
+                                'line' => $line,
+                                'users_id' => Session::getLoginUserID(),
+                                'name' => "upload"
+                            ]);
+                            if ($check) {
+                                if (!empty($val)) {
+                                    $files = json_decode($val, 1);
+                                    foreach ($files as $file) {
+                                        $filename[] = $file['_filename'];
+                                        $prefixname[] = $file['_prefix_filename'];
+                                        $tagname[] = $file['_tag_filename'];
+                                    }
                                 }
                             }
                         }
                     }
-
-                    $values['fields']['_filename']        = $filename;
+                    $values['fields']['_filename'] = $filename;
                     $values['fields']['_prefix_filename'] = $prefixname;
-                    $values['fields']['_tag_filename']    = $tagname;
+                    $values['fields']['_tag_filename'] = $tagname;
 
-                    $datas['fields'] = $values['fields'];
+                    $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
+                        'users_id' => Session::getLoginUserID()]);
 
-                    $result = $metademands->addObjects($metademands_id, $datas, $options);
-//                    PluginMetademandsStepform::deleteAfterCreate($stepformID);
+                    $result = $metademands->addObjects($metademands_id, $values, $options);
                     Session::addMessageAfterRedirect($result['message']);
                 }
-                $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
-                                                'users_id'                          => Session::getLoginUserID()]);
             } else {
-                //create one ticket for all basket
-                if (isset($values['fields']['_filename'])) {
-                    unset($values['fields']['_filename']);
-                }
-                if (isset($values['fields']['_prefix_filename'])) {
-                    unset($values['fields']['_prefix_filename']);
-                }
-                if (isset($values['fields']['_tag_filename'])) {
-                    unset($values['fields']['_tag_filename']);
-                }
-                $filename   = [];
-                $prefixname = [];
-                $tagname    = [];
-                foreach ($values['basket'] as $k => $basket) {
-                    foreach ($basket as $key => $val) {
-                        $line  = $k + 1;
-                        $check = $basketclass->getFromDBByCrit([
-                                                                   "plugin_metademands_metademands_id" => $metademands_id,
-                                                                   'plugin_metademands_fields_id'      => $key,
-                                                                   'line'                              => $line,
-                                                                   'users_id'                          => Session::getLoginUserID(),
-                                                                   'name'                              => "upload"
-                                                               ]);
-                        if ($check) {
-                            if (!empty($val)) {
-                                $files = json_decode($val, 1);
-                                foreach ($files as $file) {
-                                    $filename[]   = $file['_filename'];
-                                    $prefixname[] = $file['_prefix_filename'];
-                                    $tagname[]    = $file['_tag_filename'];
-                                }
-                            }
-                        }
-                    }
-                }
-                $values['fields']['_filename']        = $filename;
-                $values['fields']['_prefix_filename'] = $prefixname;
-                $values['fields']['_tag_filename']    = $tagname;
-
-                $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
-                                                'users_id'                          => Session::getLoginUserID()]);
-
+                //not in basket
                 $result = $metademands->addObjects($metademands_id, $values, $options);
+                if (isset($values['plugin_metademands_stepforms_id'])) {
+                    PluginMetademandsStepform::deleteAfterCreate($values['plugin_metademands_stepforms_id']);
+                }
+
                 Session::addMessageAfterRedirect($result['message']);
             }
-        } else {
-            //not in basket
-            $result = $metademands->addObjects($metademands_id, $values, $options);
-            if(isset($values['plugin_metademands_stepforms_id'])) {
-                PluginMetademandsStepform::deleteAfterCreate($values['plugin_metademands_stepforms_id']);
-            }
-
-            Session::addMessageAfterRedirect($result['message']);
         }
         unset($_SESSION['plugin_metademands']);
 
