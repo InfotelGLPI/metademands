@@ -505,15 +505,13 @@ class PluginMetademandsWizard extends CommonDBTM
           });"
             );
         }
-        if ($step == 0) {
+        if ($step === PluginMetademandsMetademand::STEP_CREATE) {
+            $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
+            self::createMetademands($metademands_id, $values, $options);
+        } elseif ($step == 0) {
             self::listMetademandTypes();
         } else {
             switch ($step) {
-                case PluginMetademandsMetademand::STEP_CREATE:
-                    $values = isset($_SESSION['plugin_metademands']) ? $_SESSION['plugin_metademands'] : [];
-                    self::createMetademands($metademands_id, $values, $options);
-                    break;
-
                 case PluginMetademandsMetademand::STEP_LIST:
 
                     if (isset($options['meta_type'])) {
