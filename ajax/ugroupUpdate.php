@@ -57,7 +57,6 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     }
 
     if (!empty($fieldGroup->fields['custom_values'])) {
-
         $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
         $group_user_data = Group_User::getUserGroups($_POST["value"], $condition);
 
@@ -81,13 +80,14 @@ unset($cond['user_group']);
 $groups_id = 0;
 if (isset($_POST['value']) && $_POST["value"] > 0
     && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
-
     $user = new User();
     if ($user->getFromDB($_POST["value"])) {
-        $groups_id = PluginMetademandsField::getUserGroup($_SESSION['glpiactiveentities'],
-                                                          $_POST["value"],
-                                                          $cond,
-                                                          true);
+        $groups_id = PluginMetademandsField::getUserGroup(
+            $_SESSION['glpiactiveentities'],
+            $_POST["value"],
+            $cond,
+            true
+        );
     }
 }
 
@@ -96,7 +96,8 @@ if (isset($_POST['fields_id'])
     $groups_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
 }
 
-if (isset($_POST['groups_id'])) {
+
+if (isset($_POST['groups_id']) && $_POST['groups_id'] > 0) {
     $groups_id = $_POST['groups_id'];
 }
 

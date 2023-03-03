@@ -3968,9 +3968,10 @@ class PluginMetademandsWizard extends CommonDBTM
                 if (is_array($fields_links)) {
                     foreach ($fields_links as $k => $fields_link) {
                         if ($fields_link > 0) {
-                            $field->getFromDB($fields_link);
-                            $msg[]     = $field->fields['name'] . ' ' . $field->fields['label2'];
-                            $checkKo[] = 1;
+                            if ($field->getFromDB($fields_link)) {
+                                $msg[]     = $field->fields['name'] . ' ' . $field->fields['label2'];
+                                $checkKo[] = 1;
+                            }
                         }
                     }
                 }

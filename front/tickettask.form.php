@@ -69,8 +69,10 @@ if (isset($_POST["update"])) {
 
         $input['id'] = $tasks_id;
         $input['plugin_metademands_tasks_id'] = $parent_task;
+        if (!empty($input)) {
+            $task->update($input);
+        }
 
-        $task->update($input);
     }
     //   PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
     Html::back();

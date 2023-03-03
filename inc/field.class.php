@@ -2461,7 +2461,7 @@ class PluginMetademandsField extends CommonDBChild
                 $field = Html::input($name, $opt);
                 break;
             case 'informations':
-                if ($on_basket == false) {
+                if ($on_basket == false && !empty($comment)) {
                     $field = "<label class='col-form-label'>" . htmlspecialchars_decode(stripslashes($comment)) . "</label>";
                 }
                 break;
@@ -2726,8 +2726,12 @@ class PluginMetademandsField extends CommonDBChild
                                         'cols'              => 80,
                                         'rows'              => 3]);
                 } else {
+
+                    if (!empty($comment)) {
+                        $comment = Glpi\RichText\RichText::getTextFromHtml($comment);
+                    }
                     $field = "<textarea $required class='form-control' rows='3' cols='80' 
-               placeholder=\"" . Glpi\RichText\RichText::getTextFromHtml($comment) . "\" 
+               placeholder=\"" . $comment . "\" 
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
                 }
                 break;

@@ -308,6 +308,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             && $_SESSION['glpiactiveprofile']['interface'] == 'central'
             && ($item->fields['status'] != Ticket::SOLVED
                 && $item->fields['status'] != Ticket::CLOSED)
+            && $item->fields['is_deleted'] != 1
         && Session::haveRight('plugin_metademands', READ)
             && Session::getCurrentInterface() == 'central') {
             $style = "btn-green";
