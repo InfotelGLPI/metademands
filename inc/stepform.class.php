@@ -629,7 +629,7 @@ class PluginMetademandsStepform extends CommonDBTM
 
     public function showWaitingForm()
     {
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
         $rand         = mt_rand();
 
         $stepforms = self::getWaitingForms();
