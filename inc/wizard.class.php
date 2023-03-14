@@ -660,7 +660,7 @@ class PluginMetademandsWizard extends CommonDBTM
     public static function listMetademandTypes() {
         global $CFG_GLPI;
 
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
 
         $config      = PluginMetademandsConfig::getInstance();
 
@@ -709,7 +709,7 @@ class PluginMetademandsWizard extends CommonDBTM
     public static function listMetademands($type) {
         global $CFG_GLPI;
 
-        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.php");
+        echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
 
         $config      = PluginMetademandsConfig::getInstance();
 
