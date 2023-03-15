@@ -182,10 +182,47 @@ class PluginMetademandsWizard extends CommonDBTM
             echo __('Please come back later', 'metademands') . "</div></h3>";
         } else {
             if (!$parameters['preview']) {
-                echo "<div class='bt-container-fluid metademands_wizard_rank' style='background-color: " . $background_color . ";'> ";
+                echo "<div class='bt-container-fluid metademands_wizard_rank'> ";
+            }
+            if ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
+                // Wizard title
+                if ($meta->getFromDB($parameters['metademands_id'])
+                    && Plugin::isPluginActive('servicecatalog')
+                    && Session::getCurrentInterface() != 'central'
+                    && $parameters['itilcategories_id'] > 0) {
+
+                    $treename = PluginServicecatalogCategory::getTreeCategoryFriendlyName($meta->fields['type'], $parameters['itilcategories_id'], 6);
+                    $name = $treename['name'];
+                    $treescript = json_decode($treename['script']);
+
+                    echo "<script>$(document).ready(function() {
+                          $('#title_cat').show();
+                             $('#categories_title').show();
+                             document.getElementById('title_cat').innerHTML = \"$name\";
+                             let newScript = document.createElement('script');
+                             newScript.type = 'text/javascript';
+                             let scriptContent = document.createTextNode( $treescript );
+                             newScript.appendChild( scriptContent ); //add the text node to the newly created div.
+                             document.body.appendChild( newScript ); //add the text node to the newly created div.
+                        });</script>";
+
+                    echo "<span id='categories_title' style='display: none'>";
+                    $style = "";
+                    $config = new PluginServicecatalogConfig();
+                    if ($config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED
+                        || $config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED_COLOR) {
+                        $style = 'style="border: 1px solid transparent;border-radius: 1px;margin: 0px;"';
+                    }
+                    echo "<div class='alert alert-light' role='alert' $style>";
+                    echo "<span id='title_cat'>";
+                    echo "</span>";
+                    echo "</div>";
+                    echo "</span>";
+                    echo "</h5>";
+                }
             }
 
-            echo "<div id='meta-form' class='bt-block'> ";
+            echo "<div id='meta-form' class='bt-block' style='background-color: " . $background_color . ";'> ";
 
             echo "<form novalidate name='wizard_form' id ='wizard_form'
                         method='post'
@@ -1442,7 +1479,8 @@ class PluginMetademandsWizard extends CommonDBTM
                             && $data['item'] == "ITILCategory_Metademands"
                         && Session::getCurrentInterface() != 'central') {
                             $class .= " itilmeta";
-                            echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
+                            //xaca to delete ??
+                            //echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
                         }
                         if ($data['type'] == 'informations') {
                             $color = $data['color'];
@@ -2875,15 +2913,17 @@ class PluginMetademandsWizard extends CommonDBTM
                                             $check_value   = PluginMetademandsField::_unserialize($data['check_value']);
                                             if (is_array($check_value) && count($check_value) > 0) {
                                                 foreach ($childs_blocks as $customvalue => $childs) {
-                                                    $script .= "
+                                                    if (isset($check_value[$customvalue])) {
+                                                        $script .= "
                                                  if((($(this).val() != $check_value[$customvalue] && $check_value[$customvalue] != 0 )  
                                                  ||  ($(this).val() == 0 &&  $check_value[$customvalue] == 0 ) )){";
-                                                    foreach ($childs as $v) {
-                                                        $script .= PluginMetademandsField::getJStorersetFields($v);
-                                                    }
+                                                        foreach ($childs as $v) {
+                                                            $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                        }
 
-                                                    $script .= "}
+                                                        $script .= "}
                                                    ";
+                                                    }
                                                 }
                                             }
                                         }
@@ -3092,7 +3132,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
                 $list_blocks = [];
                 $list_blocks2 = [];
-                if ($use_as_step == 1) {
+                if ($use_as_step == 1 && !empty($groups)) {
 
                     $step = new PluginMetademandsStep();
                     $steps = $step->find(['plugin_metademands_metademands_id' => $ID,
