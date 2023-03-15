@@ -1150,9 +1150,12 @@ class PluginMetademandsWizard extends CommonDBTM
             }
             echo Html::scriptBlock('$(document).keypress(function(e){
                             if (e.which == 13){
-                                console.log( $("#submitjob"));
-                                $("#submitjob").click();
-                                $("#nextBtn").click();
+                                var target = $(e.target);
+                                if(!target.is("textarea")) {
+                                     $("#submitjob").click();
+                                     $("#nextBtn").click();
+                                }
+                                
                             }
                 });');
             $block_current_id_stepform = $_SESSION['plugin_metademands']['block_id'] ?? 99999999;
