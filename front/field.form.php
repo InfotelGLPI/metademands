@@ -208,6 +208,14 @@ if (isset($_POST["add"])) {
 
    //    Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
+
+
+   if ($_POST['type'] == 'yesno') {
+       unset($_POST['default_values']);
+   }
+
+    Toolbox::logInfo($_POST);
+   
    if ($field->update($_POST)) {
       $field->recalculateOrder($_POST);
       PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
