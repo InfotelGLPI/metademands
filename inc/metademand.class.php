@@ -329,7 +329,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             //retrieve all multiple cats from all metademands
             $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
                                            'FROM'   => $this->getTable(),
-                                           'WHERE'  => ['is_deleted' => 0]]);
+                                           'WHERE'  => ['is_deleted' => 0, 'type' => $input['type']]]);
 
             $cats = $input['itilcategories_id'];
             foreach ($iterator_cats as $data) {
@@ -385,10 +385,10 @@ class PluginMetademandsMetademand extends CommonDBTM
             //retrieve all multiple cats from all metademands
             $iterator_cats               = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
                                                          'FROM'   => $this->getTable(),
-                                                         'WHERE'  => ['is_deleted' => 0]]);
+                                                         'WHERE'  => ['is_deleted' => 0, 'type' => $input['type']]]);
             $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
                                                          'FROM'   => $this->getTable(),
-                                                         'WHERE'  => ['id' => $input['id'], 'is_deleted' => 0]]);
+                                                         'WHERE'  => ['id' => $input['id'], 'is_deleted' => 0, 'type' => $input['type']]]);
 
             $number_cats_meta = count($iterator_meta_existing_cats);
             if ($number_cats_meta) {
