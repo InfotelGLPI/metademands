@@ -5452,8 +5452,11 @@ class PluginMetademandsField extends CommonDBChild
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
-                                                break;
+                                                if(this.checked == true) {
+                                                        this.click();
+                                                        this.checked = false;
+                                                        break;
+                                                    }
                                         }
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
@@ -5489,8 +5492,12 @@ class PluginMetademandsField extends CommonDBChild
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
+                                            if(this.checked == true) {
+                                                this.click();
                                                 this.checked = false;
                                                 break;
+                                            }
+                                                
                                         }
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;

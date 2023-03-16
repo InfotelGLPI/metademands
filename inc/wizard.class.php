@@ -1784,8 +1784,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
-                                                break;
+                                                 if(this.checked == true) {
+                                                        this.click();
+                                                        this.checked = false;
+                                                        break;
+                                                    }
                                         }
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
@@ -1889,8 +1892,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
-                                                break;
+                                                 if(this.checked == true) {
+                                                        this.click();
+                                                        this.checked = false;
+                                                        break;
+                                                    }
                                         }
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
@@ -1985,8 +1991,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
-                                                break;
+                                                 if(this.checked == true) {
+                                                        this.click();
+                                                        this.checked = false;
+                                                        break;
+                                                    }
                                         }
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
@@ -2056,8 +2065,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
-                                                break;
+                                                 if(this.checked == true) {
+                                                        this.click();
+                                                        this.checked = false;
+                                                        break;
+                                                    }
                                         }
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
@@ -2208,8 +2220,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
-                                                break;
+                                                 if(this.checked == true) {
+                                                        this.click();
+                                                        this.checked = false;
+                                                        break;
+                                                    }
                                         }
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
@@ -2310,8 +2325,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
-                                                this.checked = false;
-                                                break;
+                                                 if(this.checked == true) {
+                                                        this.click();
+                                                        this.checked = false;
+                                                        break;
+                                                    }
                                         }
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
@@ -2635,8 +2653,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                                    break;
                                                case 'checkbox':
                                                case 'radio':
-                                                   this.checked = false;
-                                                   break;
+                                                    if(this.checked == true) {
+                                                        this.click();
+                                                        this.checked = false;
+                                                        break;
+                                                    }
                                            }
                                        });
                                     } else {
