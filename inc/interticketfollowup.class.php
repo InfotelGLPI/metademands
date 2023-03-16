@@ -121,6 +121,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
      */
     public static function getTargets($items_id)
     {
+        $targets                = [];
         $first_tickets_id = self::getFirstTicket($items_id);
 
         if ($first_tickets_id) {
@@ -134,7 +135,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
                     $first_tickets_id,
                     $ticket_metademand_data['plugin_metademands_metademands_id']
                 );
-                $targets                = [];
+
                 $ticket                 = new Ticket();
                 $targets[0]             = __('All tickets', 'metademands');
                 if ($first_tickets_id != $items_id) {
@@ -148,8 +149,8 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
                     }
                 }
             }
-            return $targets;
         }
+        return $targets;
     }
 
 

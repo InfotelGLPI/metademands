@@ -4043,7 +4043,7 @@ class PluginMetademandsField extends CommonDBChild
                             echo "</tr>";
                         }
                         if (isset($params['id'])) {
-                            echo Html::hidden('fields_id', ['value' => $params["id"]]);
+                            echo Html::hidden('fields_id', ['value' => $params["id"], 'id' => 'fields_id']);
                         }
                         echo '</table>';
                         echo '</div>';
