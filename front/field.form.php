@@ -214,8 +214,6 @@ if (isset($_POST["add"])) {
        unset($_POST['default_values']);
    }
 
-    Toolbox::logInfo($_POST);
-   
    if ($field->update($_POST)) {
       $field->recalculateOrder($_POST);
       PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
