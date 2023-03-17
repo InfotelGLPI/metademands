@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-16 14:22+0000\n"
+"POT-Creation-Date: 2023-03-17 14:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,39 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:548
+#: hook.php:555
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:561
+#: hook.php:568
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:577
+#: hook.php:584
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:588
+#: hook.php:595
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:600
+#: hook.php:607
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:949 inc/metademand.class.php:5580
+#: hook.php:956 inc/metademand.class.php:5580
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:967 inc/metademand.class.php:5700
+#: hook.php:974 inc/metademand.class.php:5700
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:984 inc/metademand.class.php:5757
+#: hook.php:991 inc/metademand.class.php:5757
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1001 inc/metademand.class.php:5632
+#: hook.php:1008 inc/metademand.class.php:5632
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -120,7 +120,7 @@ msgstr ""
 msgid "Error assigning to next group"
 msgstr ""
 
-#: front/config.form.php:58
+#: front/config.form.php:58 front/config.php:43
 msgid "Please activate the plugin"
 msgstr ""
 
@@ -165,63 +165,83 @@ msgstr ""
 msgid "The line has been deleted"
 msgstr ""
 
-#: inc/config.class.php:77
+#: inc/checkschema.class.php:50
+msgid "Schema check"
+msgstr ""
+
+#: inc/checkschema.class.php:141
+msgid "Failed to check the sanity of the tables!"
+msgstr ""
+
+#: inc/checkschema.class.php:159
+msgid "The plugin schema is good"
+msgstr ""
+
+#: inc/config.class.php:59
+msgid "Plugin setup"
+msgstr ""
+
+#: inc/config.class.php:104
+msgid "Setup"
+msgstr ""
+
+#: inc/config.class.php:142
 msgid "Configuration of the meta-demand plugin"
 msgstr ""
 
-#: inc/config.class.php:81
+#: inc/config.class.php:146
 msgid "Enable the update / add of simple ticket to metademand"
 msgstr ""
 
-#: inc/config.class.php:88
+#: inc/config.class.php:153
 msgid "Enable display metademands via icons"
 msgstr ""
 
-#: inc/config.class.php:97
+#: inc/config.class.php:162
 msgid "Parent ticket tag"
 msgstr ""
 
-#: inc/config.class.php:105
+#: inc/config.class.php:170
 msgid "Son ticket tag"
 msgstr ""
 
-#: inc/config.class.php:116
+#: inc/config.class.php:181
 msgid "Childs tickets get parent content"
 msgstr ""
 
-#: inc/config.class.php:123
+#: inc/config.class.php:188
 msgid "Create PDF"
 msgstr ""
 
-#: inc/config.class.php:133
+#: inc/config.class.php:198
 msgid "Use drafts"
 msgstr ""
 
-#: inc/config.class.php:140
+#: inc/config.class.php:205
 msgid "Show only differences between last form and new form in ticket content"
 msgstr ""
 
-#: inc/config.class.php:151
+#: inc/config.class.php:216
 msgid "Language Tech"
 msgstr ""
 
-#: inc/config.class.php:158
+#: inc/config.class.php:223
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr ""
 
-#: inc/config.class.php:168
+#: inc/config.class.php:233
 msgid "Configuration of the Service Catalog plugin"
 msgstr ""
 
-#: inc/config.class.php:171
+#: inc/config.class.php:236
 msgid "Title for Service Catalog widget"
 msgstr ""
 
-#: inc/config.class.php:182
+#: inc/config.class.php:247
 msgid "Comment for Service Catalog widget"
 msgstr ""
 
-#: inc/config.class.php:194
+#: inc/config.class.php:259
 msgid "Icon for Service Catalog widget"
 msgstr ""
 
