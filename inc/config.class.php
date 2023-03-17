@@ -40,17 +40,28 @@ class PluginMetademandsConfig extends CommonDBTM {
 
    private static $instance;
 
-   /**
-    * Have I the global right to "view" the Object
-    *
-    * Default is true and check entity if the objet is entity assign
-    *
-    * May be overloaded if needed
-    *
-    * @return bool|int
-    */
+    public function __construct()
+    {
+        global $DB;
+
+        if ($DB->tableExists($this->getTable())) {
+            $this->getFromDB(1);
+        }
+    }
+
+    /**
+     * @param int $nb
+     *
+     * @return string
+     */
+    public static function getTypeName($nb = 0)
+    {
+        return __('Plugin setup', 'metademands');
+    }
+
+
    static function canView() {
-      return Session::haveRight(self::$rightname, READ);
+      return Session::haveRight(self::$rightname, UPDATE);
    }
 
    /**
@@ -59,6 +70,60 @@ class PluginMetademandsConfig extends CommonDBTM {
    static function canCreate() {
       return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
    }
+
+
+    /**
+     * @param CommonGLPI $item
+     * @param int $tabnum
+     * @param int $withtemplate
+     *
+     * @return bool
+     */
+    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
+        if ($item->getType() == __CLASS__) {
+            switch ($tabnum) {
+                case 1:
+                    $item->showConfigForm();
+                    break;
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * @param CommonGLPI $item
+     * @param int $withtemplate
+     *
+     * @return string
+     */
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
+        if (!$withtemplate) {
+            $ong[1] = __('Setup', 'metademands');
+            return $ong;
+        }
+        return '';
+    }
+
+
+    /**
+     * @param array $options
+     *
+     * @return array
+     * @see CommonGLPI::defineTabs()
+     */
+    public function defineTabs($options = [])
+    {
+        $ong = [];
+        //      $this->addDefaultFormTab($ong);
+        $this->addStandardTab(__CLASS__, $ong, $options);
+//        if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
+            $this->addStandardTab('PluginMetademandsCheckSchema', $ong, $options);
+//        }
+        return $ong;
+    }
 
    /**
     * @return bool

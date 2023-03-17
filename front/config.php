@@ -27,34 +27,19 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
-Session::checkLoginUser();
+include('../../../inc/includes.php');
+
+global $CFG_GLPI;
 
 if (Plugin::isPluginActive("metademands")) {
-
-   Session::checkRight("config", UPDATE);
-
-   $config = new PluginMetademandsConfig();
-
-   if (isset($_POST["update_config"])) {
-      $config_data = PluginMetademandsConfig::getInstance();
-      if (empty($config_data)) {
-         $config->add($_POST);
-      } else {
-         $_POST['id'] = 1;
-         $config->update($_POST);
-      }
-      Html::back();
-
-   } else {
-      Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
-      $config->display($_GET);
-      Html::footer();
-   }
-
+    if (Session::haveRight("plugin_metademands", UPDATE)) {
+        Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/config.form.php");
+    } else {
+        Html::displayRightError();
+    }
 } else {
-   Html::header(__('Setup'), '', "helpdesk", "pluginmetademandsmenu", "config");
-   echo "<div class='alert alert-important alert-warning d-flex'>";
-   echo "<b>".__('Please activate the plugin', 'metademands')."</b></div>";
-   Html::footer();
+    Html::header(__('Setup'), '', "config", "plugins");
+    echo "<div class='alert alert-important alert-warning d-flex'>";
+    echo "<b>" . __('Please activate the plugin', 'metademands') . "</b></div>";
+    Html::footer();
 }
