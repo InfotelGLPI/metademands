@@ -267,20 +267,20 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12 md-title\">";
                 echo "<div class='alert alert-dark' style='text-align: center;'>";
-                echo "<div class='left' style='display: inline;float: left;'>";
-
-                if ($parameters['preview'] || $parameters['seeform']) {
-                    $use_as_step = 0;
-                }
-                if (
-//                    Session::getCurrentInterface() != 'central'
-//                    &&
-                    $use_as_step == 0) {
-                    $title = "<i class='fas fa-chevron-left fa-2x' title=\"".__('Previous')."\" data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-//                    $title .= __('Previous');
-                    echo Html::submit($title, ['name' => 'previous', 'class' => 'btn btn-link']);
-                }
-                echo "</div>";
+//                echo "<div class='left' style='display: inline;float: left;'>";
+//
+//                if ($parameters['preview'] || $parameters['seeform']) {
+//                    $use_as_step = 0;
+//                }
+//                if (
+////                    Session::getCurrentInterface() != 'central'
+////                    &&
+//                    $use_as_step == 0) {
+//                    $title = "<i class='fas fa-chevron-left fa-2x' title=\"".__('Previous')."\" data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
+////                    $title .= __('Previous');
+//                    echo Html::submit($title, ['name' => 'previous', 'class' => 'btn btn-link']);
+//                }
+//                echo "</div>";
                 echo "<div class='center' style='display: inline;text-align: center;font-size: 16px;'>";
                 $meta = new PluginMetademandsMetademand();
                 if ($meta->getFromDB($parameters['metademands_id'])) {

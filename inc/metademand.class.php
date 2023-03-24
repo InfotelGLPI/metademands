@@ -389,7 +389,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
                                                          'FROM'   => $this->getTable(),
                                                          'WHERE'  => ['id' => $input['id'], 'is_deleted' => 0, 'type' => $input['type']]]);
-
+            $cats = [];
             $number_cats_meta = count($iterator_meta_existing_cats);
             if ($number_cats_meta) {
                 foreach ($iterator_meta_existing_cats as $data) {

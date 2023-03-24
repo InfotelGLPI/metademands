@@ -113,7 +113,7 @@ class PluginMetademandsCheckSchema extends CommonDBTM {
      */
     public function checkSchema(
         string $version,
-        bool   $strict = true,
+        bool   $strict = false,
         bool   $ignore_innodb_migration = true,
         bool   $ignore_timestamps_migration = true,
         bool   $ignore_utf8mb4_migration = true,

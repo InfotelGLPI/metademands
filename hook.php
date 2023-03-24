@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.2.18.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.2.19.sql");
         install_notifications_metademands();
     }
 
@@ -297,7 +297,8 @@ function plugin_metademands_install() {
         $query = "ALTER TABLE `glpi_plugin_metademands_tickets_fields` ADD `value2` text COLLATE utf8mb4_unicode_ci default NULL;";
         $DB->query($query);
     }
-
+    //version 3.2.19
+    $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.19.sql");
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {
