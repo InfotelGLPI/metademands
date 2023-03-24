@@ -3817,8 +3817,14 @@ class PluginMetademandsWizard extends CommonDBTM
         } else {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
-                $type = $metademands->fields['type'];
-                Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
+                if (PluginServicecatalogConfig::getConfig()->getMultiEntityRedirection()) {
+                   Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
+                } else {
+                   $type = $metademands->fields['type'];
+                   Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
+                }
+             
+                
             } elseif (Session::haveRight("plugin_metademands", READ)) {
                 Html::redirect($self->getFormURL() . "?step=" . $step = PluginMetademandsMetademand::STEP_INIT);
             } else {
