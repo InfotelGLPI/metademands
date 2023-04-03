@@ -2986,7 +2986,7 @@ JAVASCRIPT
              }
              if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
                  $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
-                 $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
+//                 $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
              }
 
              if (!empty($options['resources_id'])) {
