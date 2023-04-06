@@ -4233,7 +4233,7 @@ JAVASCRIPT
 
 
                 // Add son ticket
-                $son_ticket_data['_disablenotif']      = true;
+//                $son_ticket_data['_disablenotif']      = true;
                 $son_ticket_data['name']               = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
                 $son_ticket_data['name']               = trim($son_ticket_data['name']);
                 $son_ticket_data['name']               = Glpi\RichText\RichText::getTextFromHtml($son_ticket_data['name']);

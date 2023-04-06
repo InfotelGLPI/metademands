@@ -361,75 +361,75 @@ class PluginMetademandsTicket extends CommonDBTM
             }
 
             // Fill array with uncreated son tickets
-            if (!empty($metademands_id)) {
-                $task_data           = [];
-                $task                = new PluginMetademandsTask();
-                $parent_tickets_id[] = $tickets_id;
-                foreach ($ticket_task_data as $values) {
-                    $parent_tickets_id[] = $values['tickets_id'];
-                }
-
-                // Search tasks linked to a created ticket
-                $query = "SELECT `glpi_plugin_metademands_tasks`.`name` as tasks_name,
-                          `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
-                          `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`,
-                          `glpi_plugin_metademands_tasks`.`level`,
-       `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id`,
-       `glpi_plugin_metademands_tickets_tasks`.`level` AS parent_level,
-                          `glpi_plugin_metademands_tasks`.`id` AS tasks_id
-                     FROM glpi_plugin_metademands_tasks
-                     LEFT JOIN `glpi_plugin_metademands_tickets_tasks`
-                        ON (`glpi_plugin_metademands_tickets_tasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
-                     WHERE `glpi_plugin_metademands_tasks`.`type` = " . PluginMetademandsTask::TICKET_TYPE . "
-                     AND `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id . "
-                     AND `glpi_plugin_metademands_tickets_tasks`.`tickets_id` IN ('" . implode("','", $parent_tickets_id) . "')
-                     ORDER BY tasks_id";
-
-                $result = $DB->query($query);
-                $count  = 0;
-
-                if ($DB->numrows($result)) {
-                    while ($data = $DB->fetchAssoc($result)) {
-                        $data['type']                 = PluginMetademandsTask::TICKET_TYPE;
-                        $task_data[$data['tasks_id']] = $data;
-                        // If child task exists : son ticket creation
-                        $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
-                        if ($child_tasks_data !== false) {
-                            $tasks = [];
-                            foreach ($child_tasks_data as $child_tasks_id) {
-                                $tasks[] = $task->getTasks(
-                                    $data['plugin_metademands_metademands_id'],
-                                    ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]
-                                );
-                            }
-
-
-                            foreach ($tasks as $k => $v) {
-                                foreach ($v as $taskchild) {
-                                    if (PluginMetademandsTicket_Field::checkTicketCreation($taskchild['tasks_id'], $tickets_id)) {
-                                        $task_data[$taskchild['tasks_id']] = ['tasks_name' => $taskchild['tickettasks_name'],
-                                                                              'level'      => $taskchild['level'],
-                                                                              'tickets_id' => 0,
-                                                                              'tasks_id'   => $taskchild['tasks_id'],
-                                                                              'type'       => PluginMetademandsTask::TICKET_TYPE];
-                                        $count++;
-                                    }
-                                }
-                            }
-                        }
-                        $count++;
-                    }
-                }
-
-                // Fill metademand tasks
-                foreach ($ticket_task_data as $values) {
-                    if ($values['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
-                        array_unshift($task_data, $values);
-                    }
-                }
-
-                $ticket_task_data = $task_data;
-            }
+//            if (!empty($metademands_id)) {
+//                $task_data           = [];
+//                $task                = new PluginMetademandsTask();
+//                $parent_tickets_id[] = $tickets_id;
+//                foreach ($ticket_task_data as $values) {
+//                    $parent_tickets_id[] = $values['tickets_id'];
+//                }
+//
+//                // Search tasks linked to a created ticket
+//                $query = "SELECT `glpi_plugin_metademands_tasks`.`name` as tasks_name,
+//                          `glpi_plugin_metademands_tickets_tasks`.`tickets_id`,
+//                          `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`,
+//                          `glpi_plugin_metademands_tasks`.`level`,
+//       `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id`,
+//       `glpi_plugin_metademands_tickets_tasks`.`level` AS parent_level,
+//                          `glpi_plugin_metademands_tasks`.`id` AS tasks_id
+//                     FROM glpi_plugin_metademands_tasks
+//                     LEFT JOIN `glpi_plugin_metademands_tickets_tasks`
+//                        ON (`glpi_plugin_metademands_tickets_tasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
+//                     WHERE `glpi_plugin_metademands_tasks`.`type` = " . PluginMetademandsTask::TICKET_TYPE . "
+//                     AND `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id . "
+//                     AND `glpi_plugin_metademands_tickets_tasks`.`tickets_id` IN ('" . implode("','", $parent_tickets_id) . "')
+//                     ORDER BY tasks_id";
+//
+//                $result = $DB->query($query);
+//                $count  = 0;
+//
+//                if ($DB->numrows($result)) {
+//                    while ($data = $DB->fetchAssoc($result)) {
+//                        $data['type']                 = PluginMetademandsTask::TICKET_TYPE;
+//                        $task_data[$data['tasks_id']] = $data;
+//                        // If child task exists : son ticket creation
+//                        $child_tasks_data = $task->getChildrenForLevel($data['tasks_id'], $data['parent_level'] + 1);
+//                        if ($child_tasks_data !== false) {
+//                            $tasks = [];
+//                            foreach ($child_tasks_data as $child_tasks_id) {
+//                                $tasks[] = $task->getTasks(
+//                                    $data['plugin_metademands_metademands_id'],
+//                                    ['condition' => ['glpi_plugin_metademands_tasks.id' => $child_tasks_id]]
+//                                );
+//                            }
+//
+//
+//                            foreach ($tasks as $k => $v) {
+//                                foreach ($v as $taskchild) {
+//                                    if (PluginMetademandsTicket_Field::checkTicketCreation($taskchild['tasks_id'], $tickets_id)) {
+//                                        $task_data[$taskchild['tasks_id']] = ['tasks_name' => $taskchild['tickettasks_name'],
+//                                                                              'level'      => $taskchild['level'],
+//                                                                              'tickets_id' => 0,
+//                                                                              'tasks_id'   => $taskchild['tasks_id'],
+//                                                                              'type'       => PluginMetademandsTask::TICKET_TYPE];
+//                                        $count++;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        $count++;
+//                    }
+//                }
+//
+//                // Fill metademand tasks
+//                foreach ($ticket_task_data as $values) {
+//                    if ($values['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
+//                        array_unshift($task_data, $values);
+//                    }
+//                }
+//
+//                $ticket_task_data = $task_data;
+//            }
         }
         return $ticket_task_data;
     }
