@@ -498,3 +498,9 @@ textarea.invalid,
     font-size: 12px;
     font-weight: bold;
 }
+
+.metademand-label {
+    font-size: 1em!important;
+    line-height: 32px!important;
+    /*font-weight: bold!important;*/
+}

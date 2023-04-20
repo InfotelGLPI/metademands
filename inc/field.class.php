@@ -1605,7 +1605,7 @@ class PluginMetademandsField extends CommonDBChild
             }
         }
         if ($data['hide_title'] == 0) {
-            echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label'>";
+            echo "<label for='field[" . $data['id'] . "]' $required class='col-form-label metademand-label'>";
             echo $label . " $upload";
             if ($preview) {
                 echo $config_link;

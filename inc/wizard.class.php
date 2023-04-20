@@ -229,8 +229,11 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</h5>";
                 }
             }
-
-            echo "<div id='meta-form' class='bt-block' style='background-color: " . $background_color . ";'> ";
+            $style = "";
+            if ($parameters['step'] == PluginMetademandsMetademand::STEP_SHOW) {
+                $style = "style='max-width: 1150px;margin: 10px auto 50px !important;display: block;position: relative;line-height: 1.4em;'";
+            }
+            echo "<div id='meta-form' class='bt-block' $style> ";
 
             echo "<form novalidate name='wizard_form' id ='wizard_form'
                         method='post'
@@ -250,7 +253,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 // Wizard title
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12\">";
-                echo "<h4><div class='alert alert-dark' role='alert'>";
+                echo "<h4><div class='alert alert-light' role='alert'>";
                 $icon = "fa-share-alt";
                 if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                     $icon = $meta->fields['icon'];
@@ -262,7 +265,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 // Wizard title
                 echo "<div class=\"row\">";
                 echo "<div class=\"col-md-12\">";
-                echo "<h4><div class='alert alert-dark' role='alert'>";
+                echo "<h4><div class='alert alert-light' role='alert'>";
                 $icon = "fa-share-alt";
                 if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                     $icon = $meta->fields['icon'];
@@ -272,9 +275,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div></h4></div></div>";
             } elseif ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
                 // Wizard title
-                echo "<div class=\"row\">";
+                echo "<div class=\"row asset\">";
                 echo "<div class=\"col-md-12 md-title\">";
-                echo "<div class='alert alert-dark' style='text-align: center;'>";
+                echo "<div class='card-header d-flex justify-content-between align-items-center'>";// alert alert-light
 //                echo "<div class='left' style='display: inline;float: left;'>";
 //
 //                if ($parameters['preview'] || $parameters['seeform']) {
@@ -289,7 +292,7 @@ class PluginMetademandsWizard extends CommonDBTM
 //                    echo Html::submit($title, ['name' => 'previous', 'class' => 'btn btn-link']);
 //                }
 //                echo "</div>";
-                echo "<div class='center' style='display: inline;text-align: center;font-size: 16px;'>";
+//                echo "<div class='center' style='display: inline;text-align: center;font-size: 16px;'>";
                 $meta = new PluginMetademandsMetademand();
                 if ($meta->getFromDB($parameters['metademands_id'])) {
                     if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
@@ -302,7 +305,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     $title_color = $meta->fields['title_color'];
                 }
 
-                echo "<span style='color: " . $title_color . ";'> ";
+                echo "<h2 class='card-title' style='color: " . $title_color . ";'> ";
                 echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
                 if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
                     echo $meta->getName();
@@ -319,7 +322,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                     }
                 }
-                echo "</span>";
+
 
                 //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
                 if (Session::getCurrentInterface() == 'central'
@@ -328,7 +331,8 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "?id=" . $parameters['metademands_id'] . "'>
                         <i class='fas fa-wrench'></i></a>";
                 }
-                echo "</div>";
+                echo "</h2>";
+//                echo "</div>";
                 $config = PluginMetademandsConfig::getInstance();
                 //            if (!$parameters['preview']
                 //                && !$parameters['seeform']
@@ -406,7 +410,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
                         $comment = $meta->fields['comment'];
                     }
-                    echo "<div class='center'><i>" . nl2br($comment) . "</i></div>";
+                    echo "<div class='center' style='background: #EEE;padding: 10px;'><i>" . nl2br($comment) . "</i></div>";
                 }
                 if ($meta->getFromDB($parameters['metademands_id'])
                     && Plugin::isPluginActive('servicecatalog')) {
@@ -1222,14 +1226,21 @@ class PluginMetademandsWizard extends CommonDBTM
                         //                  echo "<div class='tab-sc-child-" . $blocks . "'>";
                     }
                 }
-
                 $style = 'padding: 0.5rem 0.5rem;';
                 $style_left_right = 'padding: 0.5rem 0.5rem;';
                 $keys = array_keys($line);
                 $keyIndexes = array_flip($keys);
 
                 $rank = $line[$keys[0]]['rank'];
-                echo "<div bloc-id='bloc" . $rank . "' class='tab-sc-child-" . $rank . "'>";
+
+                $style = "";
+                if (isset($metademands->fields['background_color'])
+                    && !empty($metademands->fields['background_color'])) {
+                    $background_color = $metademands->fields['background_color'];
+                    $style = "style='background-color: " . $background_color . ";'";
+                }
+
+                echo "<div bloc-id='bloc" . $rank . "' $style class='card tab-sc-child-" . $rank . "'>";
                 // Color
                 if ($preview) {
                     $color = PluginMetademandsField::setColor($rank);
@@ -1258,9 +1269,9 @@ class PluginMetademandsWizard extends CommonDBTM
                     if ($preview) {
                         echo "<div class=\"row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
                     } else {
-                        echo "<div>";
+                        echo "<div class='card-header'>";
                     }
-                    echo "<br><h4 class=\"alert alert-dark\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
+                    echo "<h2 class=\"card-title\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
 
                     if (empty($label = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'name'))) {
                         $label = $line[$keys[0]]['name'];
@@ -1297,7 +1308,7 @@ class PluginMetademandsWizard extends CommonDBTM
                              $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
                          }
                      });");
-                    echo "</span></h4>";
+                    echo "</span></h2>";
                     if (!empty($line[$keys[0]]['comment'])) {
                         if (empty($comment = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'comment'))) {
                             $comment = $line[$keys[0]]['comment'];
@@ -1308,7 +1319,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     echo "</div>";
                 }
-                echo "<div bloc-hideid='bloc" . $rank . "'>";
+                echo "<div class='card-body' bloc-hideid='bloc" . $rank . "'>";
 
                 if ($preview) {
                     echo "<div class=\"row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
@@ -1360,7 +1371,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             } else {
                                 echo "<div>";
                             }
-                            echo "<br><h4 class=\"alert alert-dark\"><span style='color:" . $data['color'] . ";'>";
+                            echo "<br><h4 class=\"alert alert-light\"><span style='color:" . $data['color'] . ";'>";
 
                             if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
                                 $label = $data['name'];
@@ -1431,7 +1442,11 @@ class PluginMetademandsWizard extends CommonDBTM
                             border-right :3px solid #' . $color;
                             echo "<div class=\"row preview-md preview-md-$rank\" data-title='" . $rank . "' style='$style'>";
                         } else {
-                            echo "<div class=\"row\" style='padding: 0.5rem 0.5rem;'>";
+                            $background_color = "";
+                            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
+                                $background_color = $meta->fields['background_color'];
+                            }
+                            echo "<div class=\"row\" style='background-color: " . $background_color . ";padding: 0.5rem 0.5rem;'>";
                         }
 
                         $count = 0;
@@ -1450,8 +1465,8 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     // Title field
                     if ($data['type'] == 'title') {
-                        echo "<div >";
-                        echo "<br><h4 class=\"alert alert-dark\"><span style='color:" . $data['color'] . ";'>";
+                        echo "<div class='card-header'>";
+                        echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";'>";
 
                         if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
                             $label = $data['name'];
@@ -1469,7 +1484,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 ['awesome-class' => 'fa-info-circle']
                             );
                         }
-                        echo "</span></h4>";
+                        echo "</span></h2>";
                         if (!empty($data['comment'])) {
                             if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
                                 $comment = $data['comment'];
@@ -1537,15 +1552,20 @@ class PluginMetademandsWizard extends CommonDBTM
                                 echo "</div><div class=\"form-group col-md-5 md-bottom\">";
                             } else {
                                 $class = "";
-                                echo "<div class=\"form-group\">";
+                                echo "<div class=\"form-group\" style='padding: 10px 15px;'>";
                             }
                             if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                                 $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
                             }
+                            $style = "";
+                            if ($data['type'] != 'informations') {
+                                $style = "style='background: #EEE;padding: 10px'";
+                            }
+
                             if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                                echo "<label class='col-form-label'>" . $label2 . "</label>";
+                                echo "<br><label class='col-form-label' $style>" . Glpi\RichText\RichText::getSafeHtml($label2) . "</label>";
                             } else {
-                                echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label'>" . RichText::getTextFromHtml($label2) . $required_icon . "</label>";
+                                echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) . $required_icon . "</label>";
                             }
                             $value2 = '';
                             if (isset($data['value-2'])) {
@@ -1593,7 +1613,12 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
 
                         echo "</div>";
-                        echo "<div class=\"row\" style='$style_left_right'>";
+
+                        $background_color = "";
+                        if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
+                            $background_color = $meta->fields['background_color'];
+                        }
+                        echo "<div class=\"row\" style='background-color: " . $background_color . ";$style_left_right'>";
                         $count = 0;
                     }
                 }
