@@ -115,23 +115,10 @@
 }
 
 .metademands_wizard_rank {
-    /*margin: 0 auto;*/
-    /*padding: 5px;*/
-    /*!*border: 1px solid #ccc;*!*/
-
-    /*text-align: left;*/
-    /*font-size: 12px;*/
-    /*z-index:1;
-    width:900px;*/
-    /*background-color: #ffffff;*/
-
-    /*-moz-border-radius: 5px;*/
-    /*-webkit-border-radius: 5px;*/
-    /*border-radius: 5px;*/
-
-    /*-moz-box-shadow: 0px 2px 5px #666;
-    -webkit-box-shadow: 0px 2px 5px #666;
-    box-shadow: 0px 2px 5px #666;*/
+    max-width: 1150px;
+    margin: 10px auto 50px !important;
+    display: block;
+    position: relative;line-height: 1.4em;
 }
 
 .metademands_wizard_title {
