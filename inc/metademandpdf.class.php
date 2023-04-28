@@ -34,6 +34,7 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetaDemandsMetaDemandPdf
  */
+#[AllowDynamicProperties]
 class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
 
    /* Constantes pour paramétrer certaines données. */

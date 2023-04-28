@@ -36,12 +36,10 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsStep extends CommonDBChild
 {
-    public static $itemtype  = 'PluginMetademandsMetademand';
-    public static $items_id  = 'plugin_metademands_metademands_id';
-    //   public        $dohistory = true;
+    public static $rightname = 'plugin_metademands';
 
-    static $rightname = 'plugin_metademands';
-
+    public static $itemtype = 'PluginMetademandsMetademand';
+    public static $items_id = 'plugin_metademands_metademands_id';
 
     /**
      * Return the localized name of the current Type

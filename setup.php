@@ -27,12 +27,13 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.2.19');
+define('PLUGIN_METADEMANDS_VERSION', '3.3.0');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
     define("PLUGIN_METADEMANDS_DIR_NOFULL", Plugin::getPhpDir("metademands", false));
     define("PLUGIN_METADEMANDS_WEBDIR", Plugin::getWebDir("metademands"));
+    define("PLUGIN_METADEMANDS_WEBDIR_NOFULL", Plugin::getWebDir("metademands", false));
 }
 
 include_once PLUGIN_METADEMANDS_DIR . "/vendor/autoload.php";

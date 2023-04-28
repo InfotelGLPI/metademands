@@ -115,7 +115,7 @@ if (isset($_POST["add"])) {
 
    Html::header(PluginMetademandsMetademand::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
 
-   $meta->display($_GET);
+   $meta->display(['id' => $_GET["id"], 'withtemplate' => $_GET["withtemplate"]]);
 
    Html::footer();
 }

@@ -43,7 +43,7 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public function __construct()
     {
-        $this->table = "glpi_plugin_metademands_metademands";
+//        $this->table = "glpi_plugin_metademands_metademands";
     }
 
     /**
@@ -105,20 +105,18 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if (!$withtemplate) {
-            if ($item->getType() == 'PluginMetademandsMetademand') {
-                if ($_SESSION['glpishow_count_on_tabs']) {
-                    $dbu = new DbUtils();
-                    return self::createTabEntry(
-                        self::getTypeName(),
-                        $dbu->countElementsInTable(
-                            $this->getTable(),
-                            ["plugin_metademands_metademands_id" => $item->getID()]
-                        )
-                    );
-                }
-                return self::getTypeName();
+        if ($item->getType() == 'PluginMetademandsMetademand') {
+            if ($_SESSION['glpishow_count_on_tabs']) {
+                $dbu = new DbUtils();
+                return self::createTabEntry(
+                    self::getTypeName(),
+                    $dbu->countElementsInTable(
+                        $this->getTable(),
+                        ["id" => $item->getID()]
+                    )
+                );
             }
+            return self::getTypeName();
         }
         return '';
     }
@@ -178,12 +176,12 @@ class PluginMetademandsWizard extends CommonDBTM
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr><th class='tab_bg_1'>" . PluginMetademandsWizard::getTypeName() . "</th></tr>";
         $meta = new PluginMetademandsMetademand();
-        if ($meta->getFromDB($item->fields['id'])) {
-            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                $background_color = $meta->fields['background_color'];
-            }
-        }
-        echo "<tr><td style='background-color: " . $background_color . ";'>";
+//        if ($meta->getFromDB($item->fields['id'])) {
+//            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
+//                $background_color = $meta->fields['background_color'];
+//            }
+//        }
+        echo "<tr><td>";
         $options = ['step'           => PluginMetademandsMetademand::STEP_SHOW,
             'metademands_id' => $item->getID(),
             'preview'        => true];
@@ -371,8 +369,17 @@ class PluginMetademandsWizard extends CommonDBTM
             } elseif ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
                 // Wizard title
                 echo "<div class=\"row\">";
+
                 echo "<div class=\"col-md-12 md-title\">";
-                echo "<div class='card-header d-flex justify-content-between align-items-center'>";// alert alert-light
+                echo "<div style='background-color: #FFF'>";
+                $title_color = "#000";
+                if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
+                    $title_color = $meta->fields['title_color'];
+                }
+
+                $color = self::hex2rgba($title_color, "0.03");
+                $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
+                echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
 //                echo "<div class='left' style='display: inline;float: left;'>";
 //
 //                if ($parameters['preview'] || $parameters['seeform']) {
@@ -393,11 +400,6 @@ class PluginMetademandsWizard extends CommonDBTM
                     if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
                         $icon = $meta->fields['icon'];
                     }
-                }
-
-                $title_color = "#000";
-                if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-                    $title_color = $meta->fields['title_color'];
                 }
 
                 echo "<h2 class='card-title' style='color: " . $title_color . ";'> ";
@@ -455,7 +457,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "</div></div>";
                 if (!$parameters['seeform']) {
-                    echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;color: #000!important;'>";
+                    echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;color: #000!important;position:absolute;right:0'>";
                     echo "<ul class='nav nav-tabs' id= 'myTab' role = 'tablist'>";
                     echo "<li class='nav-item' role='presentation'>";
                     echo "<button class='nav-link active' id='divformmodels-tab' data-bs-toggle='tab' 
@@ -498,6 +500,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
 
+                echo "</div>";
                 echo "</div>";
                 echo "</div>";
                 if ($meta->getFromDB($parameters['metademands_id'])
@@ -560,7 +563,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             //                        Glpi\RichText\RichText::getSafeHtml($helpdesk_category->fields['service_rules']) . "" : "";
                             //
                             //                     echo "</div>";
-                            echo "<div class='alert alert-light' style='margin-bottom: 1px;'>";
+                            echo "<div class='alert alert-light' style='margin-bottom: 10px;'>";
                             echo "<button form='' class='btn btn-info btn-submit' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __('More informations', 'servicecatalog') . "\"> ";
                             echo __('More informations of this category ? click here', 'servicecatalog');
                             echo "</button>";
@@ -779,6 +782,9 @@ class PluginMetademandsWizard extends CommonDBTM
         $meta = new PluginMetademandsMetademand();
         if ($meta->maybeDeleted()) {
             $query .= " AND `is_deleted` = '0' ";
+        }
+        if ($meta->maybeTemplate()) {
+            $query .= " AND `is_template` = '0' ";
         }
 
         $query .= "AND `is_active` = 1 ORDER BY `name` $limit";
@@ -1364,10 +1370,14 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div bloc-id='bloc" . $rank . "' style='$style' class='card tab-sc-child-" . $rank . "'>";
 
                 if ($line[$keys[0]]['type'] == 'title-block') {
+
+                    $color = self::hex2rgba($line[$keys[0]]['color'], "0.03");
+                    $style_background = "style='background-color: $color!important;border-color: ".$line[$keys[0]]['color']."!important;border-radius: 0;'";
+
                     if ($preview) {
-                        echo "<div class=\"card-header preview-md preview-md-$rank\" data-title='" . $rank . "' >";
+                        echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";
                     } else {
-                        echo "<div class='card-header'>";
+                        echo "<div class='card-header' $style_background>";
                     }
                     echo "<h2 class=\"card-title\"><span style='color:" . $line[$keys[0]]['color'] . ";'>";
 
@@ -1566,7 +1576,9 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     // Title field
                     if ($data['type'] == 'title') {
-                        echo "<div class='card-header'>";
+                        $color = self::hex2rgba($data['color'], "0.03");
+                        $style_background = "style='background-color: $color!important;border-color:".$data['color']."!important;border-radius: 0;'";
+                        echo "<div class='card-header' $style_background>";
                         echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";'>";
 
                         if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
@@ -4488,5 +4500,47 @@ class PluginMetademandsWizard extends CommonDBTM
             }
         }
         return $toBeMandatory;
+    }
+
+    //* Function to convert Hex colors to RGBA
+    public static function hex2rgba( $color, $opacity = false ) {
+
+        $defaultColor = 'rgb(0,0,0)';
+
+        // Return default color if no color provided
+        if ( empty( $color ) ) {
+            return $defaultColor;
+        }
+
+        // Ignore "#" if provided
+        if ( $color[0] == '#' ) {
+            $color = substr( $color, 1 );
+        }
+
+        // Check if color has 6 or 3 characters, get values
+        if ( strlen($color) == 6 ) {
+            $hex = array( $color[0] . $color[1], $color[2] . $color[3], $color[4] . $color[5] );
+        } elseif ( strlen( $color ) == 3 ) {
+            $hex = array( $color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2] );
+        } else {
+            return $defaultColor;
+        }
+
+        // Convert hex values to rgb values
+        $rgb =  array_map( 'hexdec', $hex );
+
+        // Check if opacity is set(rgba or rgb)
+        if ( $opacity ) {
+            if( abs( $opacity ) > 1 ) {
+                $opacity = 1.0;
+            }
+            $output = 'rgba(' . implode( ",", $rgb ) . ',' . $opacity . ')';
+        } else {
+            $output = 'rgb(' . implode( ",", $rgb ) . ')';
+        }
+
+        // Return rgb(a) color string
+        return $output;
+
     }
 }

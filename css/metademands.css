@@ -302,7 +302,8 @@ button.clear-basket {
 }
 
 .input-draft {
-    position: relative;
+    position: absolute;
+    right: 0;
     display: table;
     border-collapse: separate;
     float: right;
@@ -490,4 +491,8 @@ textarea.invalid,
     font-size: 1em!important;
     line-height: 32px!important;
     /*font-weight: bold!important;*/
+}
+
+.md-color:before {
+    opacity: 0.1;
 }

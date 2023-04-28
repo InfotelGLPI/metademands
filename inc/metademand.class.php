@@ -229,7 +229,6 @@ class PluginMetademandsMetademand extends CommonDBTM
         $this->addDefaultFormTab($ong);
         $this->addStandardTab('PluginMetademandsField', $ong, $options);
         $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
-
         $this->addStandardTab('PluginMetademandsStep', $ong, $options);
         //TODO Change / problem ?
         if ($this->getField('object_to_create') == 'Ticket') {
@@ -242,8 +241,10 @@ class PluginMetademandsMetademand extends CommonDBTM
             $this->addStandardTab('Log', $ong, $options);
         }
         //TODO Change / problem ?
-        if ($this->getField('object_to_create') == 'Ticket') {
-            $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
+        if (!isset($options['withtemplate']) || empty($options['withtemplate'])) {
+            if ($this->getField('object_to_create') == 'Ticket') {
+                $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
+            }
         }
         return $ong;
     }
@@ -268,6 +269,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $metademand = new self();
                     $metas      = $metademand->find(['is_active'  => 1,
                                                      'is_deleted' => 0,
+                                                     'is_template' => 0,
                                                      //                                                'type'       => $ticket->input["type"]
                                                     ]);
                     $cats       = [];
@@ -329,7 +331,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             //retrieve all multiple cats from all metademands
             $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
                                            'FROM'   => $this->getTable(),
-                                           'WHERE'  => ['is_deleted' => 0, 'type' => $input['type']]]);
+                                           'WHERE'  => ['is_deleted' => 0,'is_template' => 0, 'type' => $input['type']]]);
 
             $cats = $input['itilcategories_id'];
             foreach ($iterator_cats as $data) {
@@ -368,6 +370,16 @@ class PluginMetademandsMetademand extends CommonDBTM
             $input['force_create_tasks'] = 1;
         }
 
+        $template = new Self();
+        if (isset($this->input['id_template'])) {
+            if ($template->getFromDBByCrit(['id' => $this->input['id_template'],
+                'is_template' => 1])) {
+                $input["metademands_oldID"] = $this->input['id_template'];
+                unset($input['id']);
+                unset($input['withtemplate']);
+            }
+        }
+
         return $input;
     }
 
@@ -385,10 +397,10 @@ class PluginMetademandsMetademand extends CommonDBTM
             //retrieve all multiple cats from all metademands
             $iterator_cats               = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
                                                          'FROM'   => $this->getTable(),
-                                                         'WHERE'  => ['is_deleted' => 0, 'type' => $input['type']]]);
+                                                         'WHERE'  => ['is_deleted' => 0,'is_template' => 0, 'type' => $input['type']]]);
             $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
                                                          'FROM'   => $this->getTable(),
-                                                         'WHERE'  => ['id' => $input['id'], 'is_deleted' => 0, 'type' => $input['type']]]);
+                                                         'WHERE'  => ['id' => $input['id'], 'is_deleted' => 0,'is_template' => 0, 'type' => $input['type']]]);
             $cats = [];
             $number_cats_meta = count($iterator_meta_existing_cats);
             if ($number_cats_meta) {
@@ -461,7 +473,69 @@ class PluginMetademandsMetademand extends CommonDBTM
         if (!isset($this->input['id']) || empty($this->input['id'])) {
             $this->input['id'] = $this->fields['id'];
         }
-        PluginMetademandsTicketField::updateMandatoryTicketFields($this->input);
+        if (!isset($this->input["metademands_oldID"])) {
+            PluginMetademandsTicketField::updateMandatoryTicketFields($this->input);
+        }
+
+        if (isset($this->input["metademands_oldID"])) {
+
+            // ADD fields
+            $fields = PluginMetademandsField::getItemsAssociatedTo("PluginMetademandsMetademand", $this->input["metademands_oldID"]);
+            if (!empty($fields)) {
+                foreach ($fields as $field) {
+                    $override_input['plugin_metademands_metademands_id'] = $this->getID();
+                    $override_input['name'] = $field->fields["name"];
+                    $override_input['link_to_user'] = 0;
+                    $override_input['plugin_metademands_fields_id'] = 0;
+                    $override_input['plugin_metademands_tasks_id'] = 0;
+                    $field->clone($override_input);
+                }
+            }
+
+            // ADD tasks
+            $tasks = PluginMetademandsTask::getItemsAssociatedTo("PluginMetademandsMetademand", $this->input["metademands_oldID"]);
+            if (!empty($tasks)) {
+                foreach ($tasks as $task) {
+                    $override_input['plugin_metademands_metademands_id'] = $this->getID();
+                    $override_input['name'] = $task->fields["name"];
+                    $override_input['plugin_metademands_tasks_id'] = 0;
+                    $idtask = $task->clone($override_input);
+
+                    $fields_task = PluginMetademandsTicketTask::getItemsAssociatedTo("PluginMetademandsTask", $task->fields["id"]);
+                    if (!empty($fields_task)) {
+                        $override_input['plugin_metademands_tasks_id'] = $idtask;
+                        $fields_task[0]->clone($override_input);
+                    }
+                }
+            }
+            if ($this->input['object_to_create'] == 'Ticket') {
+                // ADD ticket fields
+                $ticketfields = PluginMetademandsTicketField::getItemsAssociatedTo("PluginMetademandsMetademand", $this->input["metademands_oldID"]);
+                if (!empty($ticketfields)) {
+                    foreach ($ticketfields as $ticketfield) {
+                        $override_input['plugin_metademands_metademands_id'] = $this->getID();
+                        $ticketfield->clone($override_input);
+                    }
+                }
+            }
+
+            // ADD groups
+            $groups = PluginMetademandsGroup::getItemsAssociatedTo("PluginMetademandsMetademand", $this->input["metademands_oldID"]);
+            if (!empty($groups)) {
+                foreach ($groups as $group) {
+                    $override_input['plugin_metademands_metademands_id'] = $this->getID();
+                    $group->clone($override_input);
+                }
+            }
+            // ADD steps
+            $steps = PluginMetademandsStep::getItemsAssociatedTo("PluginMetademandsMetademand", $this->input["metademands_oldID"]);
+            if (!empty($steps)) {
+                foreach ($steps as $step) {
+                    $override_input['plugin_metademands_metademands_id'] = $this->getID();
+                    $step->clone($override_input);
+                }
+            }
+        }
     }
 
     /**
@@ -752,14 +826,32 @@ class PluginMetademandsMetademand extends CommonDBTM
 
     public function showForm($ID, $options = [])
     {
-        global $CFG_GLPI;
 
         $options['formoptions'] = "data-track-changes=false";
         $this->initForm($ID, $options);
         $this->showFormHeader($options);
 
-        echo "<tr class='tab_bg_1'>";
+        $is_template = isset($options['withtemplate']) && (int) $options['withtemplate'] === 1;
+        $from_template = isset($options['withtemplate']) && (int) $options['withtemplate'] === 2;
 
+        if ($is_template & !$this->isNewItem()) {
+            // Show template name after creation (creation is already handled by
+            // showFormHeader which add the template name in a special header
+            // only displayed on creation)
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>" . __('Template name') . "</td>";
+            echo "<td>";
+            echo Html::input('template_name', [
+                'value' => $this->fields['template_name']
+            ]);
+            echo "</td>";
+            echo "<td colspan='2'>&nbsp;</td>";
+            echo "</tr>";
+        }
+
+        echo "<tr class='tab_bg_1'>";
+        echo Html::hidden('withtemplate', ['value' => $options['withtemplate']]);
+        echo Html::hidden('id_template', ['value' => $ID]);
         if ($this->fields['maintenance_mode'] == 1) {
             echo "<h3>";
             echo "<div class='alert alert-warning center'>";
@@ -893,11 +985,42 @@ class PluginMetademandsMetademand extends CommonDBTM
             );
 
             $dbu    = new DbUtils();
+
+            $crit["is_deleted"] = 0;
+            $crit["is_template"] = 0;
+            $crit += ['NOT' => [
+                'id' => $ID
+            ]];
+            $cats = $dbu->getAllDataFromTable(self::getTable(), $crit);
+
+            $used = [];
+            foreach ($cats as $item) {
+                $tempcats   = json_decode($item['itilcategories_id'], true);
+                if (is_array($tempcats)) {
+                    foreach ($tempcats as $tempcat) {
+                        $used []= $tempcat;
+                    }
+                }
+            }
+
+            $ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
+            foreach ($ticketcats as $item) {
+                if ($item['itilcategories_id'] > 0) {
+                    $used []= $item['itilcategories_id'];
+                }
+            }
+            $used = array_unique($used);
+
+            $criteria += ['NOT' => [
+                'id' => $used
+            ]];
+
             $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
             $temp   = [];
             foreach ($result as $item) {
                 $temp[$item['id']] = $item['completename'];
             }
+
             $categories = [];
             if (isset($this->fields['itilcategories_id'])) {
                 if (is_array($this->fields['itilcategories_id'])) {
@@ -910,6 +1033,8 @@ class PluginMetademandsMetademand extends CommonDBTM
                 }
             }
             $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
+
+
             echo "<span id='show_category_by_type'>";
             Dropdown::showFromArray(
                 'itilcategories_id',
@@ -1093,6 +1218,36 @@ JAVASCRIPT
                     $_SESSION['glpiactiveentities'],
                     true
                 );
+
+                $dbu    = new DbUtils();
+
+                $crit["is_deleted"] = 0;
+                $crit["is_template"] = 0;
+                $crit += ['NOT' => [
+                    'id' => $ID
+                ]];
+                $cats = $dbu->getAllDataFromTable(self::getTable(), $crit);
+
+                $used = [];
+                foreach ($cats as $item) {
+                    $tempcats   = json_decode($item['itilcategories_id'], true);
+                    if (is_array($tempcats)) {
+                        foreach ($tempcats as $tempcat) {
+                            $used []= $tempcat;
+                        }
+                    }
+                }
+
+                $ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
+                foreach ($ticketcats as $item) {
+                    if ($item['itilcategories_id'] > 0) {
+                        $used []= $item['itilcategories_id'];
+                    }
+                }
+                $used = array_unique($used);
+                $criteria += ['NOT' => [
+                    'id' => $used
+                ]];
 
                 $dbu    = new DbUtils();
                 $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
@@ -1355,11 +1510,13 @@ JAVASCRIPT
         if ($type == Ticket::INCIDENT_TYPE || $type == Ticket::DEMAND_TYPE) {
             $condition = "1 AND `" . $this->getTable() . "`.`type` = '$type' 
                         AND is_active = 1 
-                        AND is_deleted = 0 ";
+                        AND is_deleted = 0 
+                        AND 'is_template' = 0 ";
         } else {
             $condition = "1 AND `" . $this->getTable() . "`.`object_to_create` = '$type' 
                         AND is_active = 1 
-                        AND is_deleted = 0 ";
+                        AND is_deleted = 0 
+                        AND 'is_template' = 0 ";
         }
 
         $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable());
@@ -5999,7 +6156,7 @@ JAVASCRIPT
                 if (Toolbox::getMime($_FILES['meta_file']['tmp_name'], 'text') && $extension == "xml") {
                     // Unlink old picture (clean on changing format)
                     $filename     = "tmpfileMeta";
-                    $picture_path = GLPI_PLUGIN_DOC_DIR . "/metademands/${filename}.$extension";
+                    $picture_path = GLPI_PLUGIN_DOC_DIR . "/metademands/{$filename}.$extension";
                     Document::renameForce($_FILES['meta_file']['tmp_name'], $picture_path);
                     $file = $picture_path;
                 } else {
@@ -6584,5 +6741,85 @@ HTML;
                 return json_encode($metas);
                 break;
         }
+    }
+
+    /**
+     * @param     $target
+     * @param int $add
+     */
+    function listOfTemplates($target, $add = 0) {
+        $dbu = new DbUtils();
+
+        $restrict = ["is_template" => 1] +
+            $dbu->getEntitiesRestrictCriteria($this->getTable(), '', '', $this->maybeRecursive()) +
+            ["ORDER" => "name"];
+
+        $templates = $dbu->getAllDataFromTable($this->getTable(), $restrict);
+
+        if (Session::isMultiEntitiesMode()) {
+            $colsup = 1;
+        } else {
+            $colsup = 0;
+        }
+
+        echo "<div align='center'><table class='tab_cadre'>";
+        if ($add) {
+            echo "<tr><th colspan='" . (2 + $colsup) . "'>" . __('Choose a template') . " - " . self::getTypeName(2) . "</th>";
+        } else {
+            echo "<tr><th colspan='" . (2 + $colsup) . "'>" . __('Templates') . " - " . self::getTypeName(2) . "</th>";
+        }
+
+        echo "</tr>";
+        if ($add) {
+
+            echo "<tr>";
+            echo "<td colspan='" . (2 + $colsup) . "' class='center tab_bg_1'>";
+            echo "<a href=\"$target?id=-1&amp;withtemplate=2\">&nbsp;&nbsp;&nbsp;" . __('Blank Template') . "&nbsp;&nbsp;&nbsp;</a></td>";
+            echo "</tr>";
+        }
+
+        foreach ($templates as $template) {
+
+            $templname = $template["template_name"];
+            if ($_SESSION["glpiis_ids_visible"] || empty($template["template_name"])) {
+                $templname .= "(" . $template["id"] . ")";
+            }
+
+            echo "<tr>";
+            echo "<td class='center tab_bg_1'>";
+            if (!$add) {
+                echo "<a href=\"$target?id=" . $template["id"] . "&amp;withtemplate=1\">&nbsp;&nbsp;&nbsp;$templname&nbsp;&nbsp;&nbsp;</a></td>";
+
+                if (Session::isMultiEntitiesMode()) {
+                    echo "<td class='center tab_bg_2'>";
+                    echo Dropdown::getDropdownName("glpi_entities", $template['entities_id']);
+                    echo "</td>";
+                }
+                echo "<td class='center tab_bg_2'>";
+                Html::showSimpleForm($target,
+                    'purge',
+                    _x('button', 'Delete permanently'),
+                    ['id' => $template["id"], 'withtemplate' => 1]);
+                echo "</td>";
+
+            } else {
+                echo "<a href=\"$target?id=" . $template["id"] . "&amp;withtemplate=2\">&nbsp;&nbsp;&nbsp;$templname&nbsp;&nbsp;&nbsp;</a></td>";
+
+                if (Session::isMultiEntitiesMode()) {
+                    echo "<td class='center tab_bg_2'>";
+                    echo Dropdown::getDropdownName("glpi_entities", $template['entities_id']);
+                    echo "</td>";
+                }
+            }
+            echo "</tr>";
+        }
+        if (!$add) {
+            echo "<tr>";
+            echo "<td colspan='" . (2 + $colsup) . "' class='tab_bg_2 center'>";
+            echo "<b><a href=\"$target?withtemplate=1\">" . __('Add a template...') . "</a></b>";
+            echo "</td>";
+            echo "</tr>";
+        }
+        echo "</table></div>";
     }
 }

@@ -88,17 +88,15 @@ class PluginMetademandsTicketField extends CommonDBChild {
     */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
-      if (!$withtemplate) {
-         if ($item->getType() == 'PluginMetademandsMetademand') {
-            if ($_SESSION['glpishow_count_on_tabs']) {
+       if ($item->getType() == 'PluginMetademandsMetademand') {
+           if ($_SESSION['glpishow_count_on_tabs']) {
                $dbu = new DbUtils();
                return self::createTabEntry(self::getTypeName(2),
-                                           $dbu->countElementsInTable($this->getTable(),
-                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
-            }
-            return self::getTypeName(2);
-         }
-      }
+                   $dbu->countElementsInTable($this->getTable(),
+                       ["plugin_metademands_metademands_id" => $item->getID()]));
+           }
+           return self::getTypeName(2);
+       }
       return '';
    }
 

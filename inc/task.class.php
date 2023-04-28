@@ -34,9 +34,12 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsTask
  */
-class PluginMetademandsTask extends CommonDBTM
-{
+class PluginMetademandsTask extends CommonDBChild {
+
     public static $rightname = 'plugin_metademands';
+
+    public static $itemtype = 'PluginMetademandsMetademand';
+    public static $items_id = 'plugin_metademands_metademands_id';
 
     const TICKET_TYPE     = 0;
     const METADEMAND_TYPE = 1;
@@ -90,19 +93,17 @@ class PluginMetademandsTask extends CommonDBTM
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
         $dbu = new DbUtils();
-        if (!$withtemplate) {
-            if ($item->getType() == 'PluginMetademandsMetademand') {
-                if ($_SESSION['glpishow_count_on_tabs']) {
-                    return self::createTabEntry(
-                        self::getTypeName(),
-                        $dbu->countElementsInTable(
-                            $this->getTable(),
-                            ["plugin_metademands_metademands_id" => $item->getID()]
-                        )
-                    );
-                }
-                return self::getTypeName();
+        if ($item->getType() == 'PluginMetademandsMetademand') {
+            if ($_SESSION['glpishow_count_on_tabs']) {
+                return self::createTabEntry(
+                    self::getTypeName(),
+                    $dbu->countElementsInTable(
+                        $this->getTable(),
+                        ["plugin_metademands_metademands_id" => $item->getID()]
+                    )
+                );
             }
+            return self::getTypeName();
         }
         return '';
     }

@@ -35,9 +35,12 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsTicketTask
  */
-class PluginMetademandsTicketTask extends CommonDBTM
-{
+class PluginMetademandsTicketTask extends CommonDBChild {
+
     public static $rightname = 'plugin_metademands';
+
+    public static $itemtype = 'PluginMetademandsTask';
+    public static $items_id = 'plugin_metademands_tasks_id';
 
     /**
      * functions mandatory

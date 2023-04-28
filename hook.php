@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.2.19.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.0.sql");
         install_notifications_metademands();
     }
 
@@ -299,6 +299,11 @@ function plugin_metademands_install() {
     }
     //version 3.2.19
     $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.19.sql");
+
+    //version 3.3.0
+    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "is_template")) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.0.sql");
+    }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {
@@ -722,7 +727,9 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
           LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` 
           AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
           LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
-          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id` AND `glpi_tickets_metademands`.`is_deleted` = 0)
+          LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id` 
+          AND `glpi_tickets_metademands`.`is_deleted` = 0
+          AND `glpi_tickets_metademands`.`is_template` = 0)
           LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id` 
           AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
           LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
@@ -827,7 +834,9 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                          LEFT JOIN `glpi_plugin_metademands_tickets_tasks`  ON (`glpi_tickets`.`id` = `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` )
                          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` ) 
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
-                            `glpi_tickets`.`is_deleted` = 0 AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
+                            `glpi_tickets`.`is_deleted` = 0 
+                             AND `glpi_tickets_metademands`.`is_template` = 0 
+                             AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
                                     " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode("','",
                                                                                                                                              $_SESSION['glpigroups']) . "')) AND  `glpi_tickets`.`id` =  " . $data['id'] . " " .
                     $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');

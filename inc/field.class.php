@@ -103,7 +103,55 @@ class PluginMetademandsField extends CommonDBChild
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
     }
 
-   /**
+
+    /**
+     * Get request criteria to search for an item
+     *
+     * @since 9.4
+     *
+     * @param string  $itemtype Item type
+     * @param integer $items_id Item ID
+     *
+     * @return array|null
+     **/
+    public static function getSQLCriteriaToSearchForItem($itemtype, $items_id)
+    {
+        $table = static::getTable();
+
+        $criteria = [
+            'SELECT' => [
+                static::getIndexName(),
+                'plugin_metademands_metademands_id AS items_id'
+            ],
+            'FROM'   => $table,
+            'WHERE'  => [
+                $table . '.' . 'plugin_metademands_metademands_id' => $items_id
+            ]
+        ];
+
+        // Check item 1 type
+        $request = false;
+        if (preg_match('/^itemtype/', static::$itemtype)) {
+            $criteria['SELECT'][] = static::$itemtype . ' AS itemtype';
+            $criteria['WHERE'][$table . '.' . static::$itemtype] = $itemtype;
+            $request = true;
+        } else {
+            $criteria['SELECT'][] = new \QueryExpression("'" . static::$itemtype . "' AS itemtype");
+            if (
+                ($itemtype ==  static::$itemtype)
+                || is_subclass_of($itemtype, static::$itemtype)
+            ) {
+                $request = true;
+            }
+        }
+        if ($request === true) {
+            return $criteria;
+        }
+        return null;
+    }
+
+
+    /**
     *
     * @param CommonGLPI $item
     * @param int        $withtemplate
@@ -112,20 +160,18 @@ class PluginMetademandsField extends CommonDBChild
     */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if (!$withtemplate) {
-            if ($item->getType() == 'PluginMetademandsMetademand') {
-                if ($_SESSION['glpishow_count_on_tabs']) {
-                    $dbu = new DbUtils();
-                    return self::createTabEntry(
-                        self::getTypeName(),
-                        $dbu->countElementsInTable(
-                            $this->getTable(),
-                            ["plugin_metademands_metademands_id" => $item->getID()]
-                        )
-                    );
-                }
-                return self::getTypeName();
+        if ($item->getType() == 'PluginMetademandsMetademand') {
+            if ($_SESSION['glpishow_count_on_tabs']) {
+                $dbu = new DbUtils();
+                return self::createTabEntry(
+                    self::getTypeName(),
+                    $dbu->countElementsInTable(
+                        $this->getTable(),
+                        ["plugin_metademands_metademands_id" => $item->getID()]
+                    )
+                );
             }
+            return self::getTypeName();
         }
         return '';
     }
@@ -1634,7 +1680,9 @@ class PluginMetademandsField extends CommonDBChild
             }
 
             // Input
-            echo "<br>";
+            if ($data['type'] != 'link') {
+                echo "<br>";
+            }
         } else {
             if ($preview) {
                 echo $config_link;
@@ -2437,7 +2485,7 @@ class PluginMetademandsField extends CommonDBChild
                 $name = $namefield . "[" . $data['id'] . "]";
                 $opt  = ['value'       => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
                      'placeholder' => (!$comment == null) ? Glpi\RichText\RichText::getTextFromHtml($comment) : "",
-                     'size'        => 40];
+                     'size'        => 35];
                 if ($data['is_mandatory'] == 1) {
                     $opt['required'] = "required";
                 }
@@ -2463,7 +2511,7 @@ class PluginMetademandsField extends CommonDBChild
                                 $btnLabel = $label2;
                             }
 
-                            $field = "<input type='submit' class='submit btn btn-primary' value ='" . Toolbox::stripTags($btnLabel) . "' 
+                            $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags($btnLabel) . "' 
                      target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
 
                             break;

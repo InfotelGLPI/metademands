@@ -34,12 +34,12 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsGroup
  */
-class PluginMetademandsGroup extends CommonDBTM {
+class PluginMetademandsGroup extends CommonDBChild {
 
-   public $itemtype = 'PluginMetademandsMetademand';
-   public $items_id = 'plugin_metademands_metademands_id';
+    public static $rightname = 'plugin_metademands';
 
-   static $rightname = 'plugin_metademands';
+    public static $itemtype = 'PluginMetademandsMetademand';
+    public static $items_id = 'plugin_metademands_metademands_id';
 
    /**
     * functions mandatory
@@ -77,16 +77,14 @@ class PluginMetademandsGroup extends CommonDBTM {
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       $dbu = new DbUtils();
-      if (!$withtemplate) {
-         if ($item->getType() == 'PluginMetademandsMetademand') {
-            if ($_SESSION['glpishow_count_on_tabs']) {
+       if ($item->getType() == 'PluginMetademandsMetademand') {
+           if ($_SESSION['glpishow_count_on_tabs']) {
                return self::createTabEntry(self::getTypeName(),
-                                           $dbu->countElementsInTable($this->getTable(),
-                                                                      ["plugin_metademands_metademands_id" => $item->getID()]));
-            }
-            return self::getTypeName();
-         }
-      }
+                   $dbu->countElementsInTable($this->getTable(),
+                       ["plugin_metademands_metademands_id" => $item->getID()]));
+           }
+           return self::getTypeName();
+       }
       return '';
    }
 
@@ -107,6 +105,52 @@ class PluginMetademandsGroup extends CommonDBTM {
       }
       return true;
    }
+
+    /**
+     * Get request criteria to search for an item
+     *
+     * @since 9.4
+     *
+     * @param string  $itemtype Item type
+     * @param integer $items_id Item ID
+     *
+     * @return array|null
+     **/
+    public static function getSQLCriteriaToSearchForItem($itemtype, $items_id)
+    {
+        $table = static::getTable();
+
+        $criteria = [
+            'SELECT' => [
+                static::getIndexName(),
+                'plugin_metademands_metademands_id AS items_id'
+            ],
+            'FROM'   => $table,
+            'WHERE'  => [
+                $table . '.' . 'plugin_metademands_metademands_id' => $items_id
+            ]
+        ];
+
+        // Check item 1 type
+        $request = false;
+        if (preg_match('/^itemtype/', static::$itemtype)) {
+            $criteria['SELECT'][] = static::$itemtype . ' AS itemtype';
+            $criteria['WHERE'][$table . '.' . static::$itemtype] = $itemtype;
+            $request = true;
+        } else {
+            $criteria['SELECT'][] = new \QueryExpression("'" . static::$itemtype . "' AS itemtype");
+            if (
+                ($itemtype ==  static::$itemtype)
+                || is_subclass_of($itemtype, static::$itemtype)
+            ) {
+                $request = true;
+            }
+        }
+        if ($request === true) {
+            return $criteria;
+        }
+        return null;
+    }
 
    /**
     * @param $item
