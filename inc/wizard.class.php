@@ -457,7 +457,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "</div></div>";
                 if (!$parameters['seeform']) {
-                    echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;color: #000!important;position:absolute;right:0'>";
+                    echo "<div id='divnavforms' class=\"input-draft card bg-light mb-3\" style='display:none;color: #000!important;position:absolute;right:0;z-index: 1000;'>";
                     echo "<ul class='nav nav-tabs' id= 'myTab' role = 'tablist'>";
                     echo "<li class='nav-item' role='presentation'>";
                     echo "<button class='nav-link active' id='divformmodels-tab' data-bs-toggle='tab' 
