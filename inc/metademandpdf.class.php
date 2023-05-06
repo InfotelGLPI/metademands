@@ -733,7 +733,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf {
                               $custom_values[$k] = $ret;
                            }
                         }
-                        if ($fields[$elt['id']] != NULL) {
+                        if (isset($fields[$elt['id']]) && $fields[$elt['id']] != NULL) {
                            $values = PluginMetademandsField::_unserialize($fields[$elt['id']]);
                            foreach ($custom_values as $k => $v) {
                               if ($values == $k) {

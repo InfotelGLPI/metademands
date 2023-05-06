@@ -1684,11 +1684,15 @@ class PluginMetademandsField extends CommonDBChild
                 echo "<br>";
             }
         } else {
+            echo "<div style='margin-top: 10px;'>";
             if ($preview) {
                 echo $config_link;
             }
         }
         echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0);
+        if ($data['hide_title'] == 1) {
+            echo "</div>";
+        }
     }
 
 
@@ -3137,8 +3141,16 @@ class PluginMetademandsField extends CommonDBChild
                     echo "<div id='show_type_fields'>";
                     echo "<table width='100%' class='metademands_show_values'>";
                     echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "&nbsp;";
-                    echo "<i class='fas fa-plus-circle pointer' id='addNewOpt'></i>";
-                    echo "</th></tr>";
+                    echo "<i class='fas fa-plus-circle pointer' id='addNewOpt' title='".__('Add a new option', 'metademands')."'></i>";
+                    echo "<div class='right'>";
+                    echo self::showSimpleForm(
+                        $this->getFormURL(),
+                        'clear_all_options',
+                        __('Delete all options', 'metademands'),
+                        ['id' => $params['id'], 'metademands_id' => $params['metademands_id']],
+                        'fa-trash pointer'
+                    );
+                    echo "</div></th></tr>";
 
                    //               echo "<tr>";
                     $nb  = 0;
@@ -3883,7 +3895,12 @@ class PluginMetademandsField extends CommonDBChild
         }
         ksort($blocks);
 
-        $name = "childs_blocks[" . $opt . "]";
+        if (!empty($selected_values)) {
+            $name = "childs_blocks[" . $opt . "]";
+        } else {
+            $name = "childs_blocks[" . $opt-1 . "]";
+        }
+
         return Dropdown::showFromArray(
             $name,
             $blocks,
@@ -4448,7 +4465,9 @@ class PluginMetademandsField extends CommonDBChild
         if ($input != null || $input == []) {
             if (is_array($input)) {
                 foreach ($input as &$value) {
-                    $value = urlencode(Html::cleanPostForTextArea($value));
+                    if ($value != null) {
+                        $value = urlencode(Html::cleanPostForTextArea($value));
+                    }
                 }
 
                 return json_encode($input);
@@ -5464,7 +5483,7 @@ class PluginMetademandsField extends CommonDBChild
     public static function getJStorersetFields($id)
     {
         return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
-     
+     console.log('bloc'+$id);
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':
@@ -5498,7 +5517,8 @@ class PluginMetademandsField extends CommonDBChild
                                            $('#'+found[0]+'_leftAll').click();
                                         }
                                     });
-                                    fixButtonIndicator();";
+                                    fixButtonIndicator();
+                                    ";
     }
 
     public static function getJStorersetFieldsByField($id)

@@ -728,8 +728,7 @@ function plugin_metademands_addLeftJoin($type, $ref_table, $new_table, $linkfiel
           AND `glpi_groups_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
           LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` )
           LEFT JOIN `glpi_tickets` AS glpi_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_tickets_metademands`.`id` 
-          AND `glpi_tickets_metademands`.`is_deleted` = 0
-          AND `glpi_tickets_metademands`.`is_template` = 0)
+          AND `glpi_tickets_metademands`.`is_deleted` = 0)
           LEFT JOIN `glpi_tickets_users` AS glpi_users_tickets_metademands ON (`$new_table`.`tickets_id` = `glpi_users_tickets_metademands`.`tickets_id` 
           AND `glpi_users_tickets_metademands`.`type` = " . CommonITILActor::ASSIGN . " ) 
           LEFT JOIN `glpi_users` AS glpi_users_metademands ON (`glpi_users_tickets_metademands`.`users_id` = `glpi_users_metademands`.`id` )";
@@ -835,7 +834,6 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                          LEFT JOIN `glpi_groups_tickets` AS glpi_groups_tickets_metademands ON (`glpi_plugin_metademands_tickets_tasks`.`tickets_id` = `glpi_groups_tickets_metademands`.`tickets_id` ) 
                          LEFT JOIN `glpi_groups` AS glpi_groups_metademands ON (`glpi_groups_tickets_metademands`.`groups_id` = `glpi_groups_metademands`.`id` ) WHERE
                             `glpi_tickets`.`is_deleted` = 0 
-                             AND `glpi_tickets_metademands`.`is_template` = 0 
                              AND `glpi_plugin_metademands_tickets_metademands`.`status` =  
                                     " . PluginMetademandsTicket_Metademand::RUNNING . " AND (`glpi_groups_metademands`.`id` IN ('" . implode("','",
                                                                                                                                              $_SESSION['glpigroups']) . "')) AND  `glpi_tickets`.`id` =  " . $data['id'] . " " .

@@ -1010,11 +1010,11 @@ class PluginMetademandsMetademand extends CommonDBTM
                 }
             }
             $used = array_unique($used);
-
-            $criteria += ['NOT' => [
-                'id' => $used
-            ]];
-
+            if (count($used) > 0) {
+                $criteria += ['NOT' => [
+                    'id' => $used
+                ]];
+            }
             $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
             $temp   = [];
             foreach ($result as $item) {
@@ -1244,11 +1244,12 @@ JAVASCRIPT
                         $used []= $item['itilcategories_id'];
                     }
                 }
-                $used = array_unique($used);
-                $criteria += ['NOT' => [
-                    'id' => $used
-                ]];
-
+                if (count($used) > 0) {
+                    $used = array_unique($used);
+                    $criteria += ['NOT' => [
+                        'id' => $used
+                    ]];
+                }
                 $dbu    = new DbUtils();
                 $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
                 $temp   = [];

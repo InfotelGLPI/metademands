@@ -278,10 +278,12 @@ DROP TABLE IF EXISTS `glpi_plugin_metademands_metademandtasks`;
 CREATE TABLE `glpi_plugin_metademands_metademandtasks`
 (
     `id`                                int unsigned NOT NULL AUTO_INCREMENT,
+    `entities_id`                       int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_tasks_id`       int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+    KEY `entities_id` (`entities_id`),
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -297,10 +299,12 @@ DROP TABLE IF EXISTS `glpi_plugin_metademands_groups`;
 CREATE TABLE `glpi_plugin_metademands_groups`
 (
     `id`                                int unsigned NOT NULL AUTO_INCREMENT,
+    `entities_id`                       int unsigned NOT NULL DEFAULT '0',
     `groups_id`                         int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY (`plugin_metademands_metademands_id`),
+    KEY `entities_id` (`entities_id`),
     KEY (`groups_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
