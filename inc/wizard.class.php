@@ -1285,7 +1285,6 @@ class PluginMetademandsWizard extends CommonDBTM
             foreach ($line as $fields) {
                 if ($rank == $fields["rank"]) {
                     $allfields[$rank][] = $fields;
-
                     if ($use_as_step == 1) {
                         $allhidden = PluginMetademandsField::_unserialize($fields['hidden_block']);
                         if (is_array($allhidden) && count($allhidden) > 0) {
@@ -1842,9 +1841,12 @@ class PluginMetademandsWizard extends CommonDBTM
                                             if($(this).val() != $check_value[$customvalue]){";
                                             foreach ($childs as $v) {
                                                 $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
                                             }
-
-                                            $script .= "};";
+                                            $script .= " }else{
+                                             $('div[bloc-id=\"bloc$v\"]').show();
+                                            }";
+//                                            $script .= "};";
                                         }
                                     }
                                 }
@@ -3349,6 +3351,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     if (count($steps) == 0) {
                         $submitsteptitle = $submittitle;
                     }
+                    $list_blocks = array_unique($list_blocks);
                 }
 
                 if (!empty($data_form)) {
@@ -3432,6 +3435,9 @@ class PluginMetademandsWizard extends CommonDBTM
                      if (use_as_step == 1) {
                         fixStepIndicator(n);
                      }
+                      //sessionStorage.setItem('blocks', JSON.stringify(loaded_blocks));
+                       //var storedBlocks = JSON.parse(sessionStorage.getItem('loaded_blocks'));
+                       //console.log(storedBlocks);
                      //hide hidden blocks
                   //                     if (n == 0) {
                   //                        var output = Object.entries(hiddenblocs).map(([key, value]) => ({key,value}));
@@ -3455,15 +3461,17 @@ class PluginMetademandsWizard extends CommonDBTM
                     
                       if(block_id > 0) {
                           bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-                        id_bloc = parseInt(bloc.replace('bloc',''));
-                        while (block_id != id_bloc) {
-                            currentTab = currentTab+1;
+                          id_bloc = parseInt(bloc.replace('bloc',''));
+                          while (block_id != id_bloc) {
+                             currentTab = currentTab+1;
                              bloc = x[currentTab].firstChild.getAttribute('bloc-id');
-                             id_bloc = parseInt(bloc.replace('bloc',''));                             
-                        }
-                        firstnumTab = currentTab;
+                             id_bloc = parseInt(bloc.replace('bloc',''));
+                          }
+                          firstnumTab = currentTab;
                       }
                   }
+                  
+                  
                   function nextPrev(n) {
                      // This function will figure out which tab to display
                      if (use_as_step == 1) {
@@ -3837,11 +3845,9 @@ class PluginMetademandsWizard extends CommonDBTM
 //                            document.getElementById('nextMsg').style.display = 'block';
 //                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
                          } else {
-                                                    
-                            
+                            document.getElementById('nextBtn').innerHTML = nextsteptitle;
                          }
-                            
-                         
+
                      }
                   }
                </script>";
