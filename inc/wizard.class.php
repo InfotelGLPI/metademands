@@ -1847,6 +1847,13 @@ class PluginMetademandsWizard extends CommonDBTM
                                              $('div[bloc-id=\"bloc$v\"]').show();
                                             }";
 //                                            $script .= "};";
+
+                                            foreach ($childs as $v) {
+                                                if ($v > 0) {
+                                                    $hiddenblocks[] = $v;
+                                                    $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -2913,8 +2920,14 @@ class PluginMetademandsWizard extends CommonDBTM
                                                         $script .= PluginMetademandsField::getJStorersetFields($v);
                                                     }
 
-                                                    $script .= "}
-                                          ";
+                                                    $script .= "}";
+                                                }
+
+                                                foreach ($childs as $v) {
+                                                    if ($v > 0) {
+                                                        $hiddenblocks[] = $v;
+                                                        $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                    }
                                                 }
                                             }
                                         }
@@ -3105,8 +3118,14 @@ class PluginMetademandsWizard extends CommonDBTM
                                                             $script .= PluginMetademandsField::getJStorersetFields($v);
                                                         }
 
-                                                        $script .= "}
-                                                   ";
+                                                        $script .= "}";
+
+                                                        foreach ($childs as $v) {
+                                                            if ($v > 0) {
+                                                                $hiddenblocks[] = $v;
+                                                                $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -3368,6 +3387,15 @@ class PluginMetademandsWizard extends CommonDBTM
                                                         });
                                                     });");
 
+                    if (isset($_SESSION['plugin_metademands']['hidden_blocks'])) {
+                        if (is_array($_SESSION['plugin_metademands']['hidden_blocks'])) {
+                            $hidden_blocks = $_SESSION['plugin_metademands']['hidden_blocks'];
+                            foreach ($hidden_blocks as $hidden_block) {
+                                $script .= "$('div[bloc-id=\"bloc$hidden_block\"]').hide();";
+                            }
+                            echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+                        }
+                    }
                 }
 
 
@@ -4184,6 +4212,23 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function checkMandatoryFields($fieldname, $value = [], $fields = [], $post = [])
     {
+
+        //Don't check hidden fields of hidden blocks
+        $hidden_blocks = $_SESSION['plugin_metademands']['hidden_blocks'] ?? [];
+        $dbu = new DbUtils();
+        foreach ($hidden_blocks as $hidden_block) {
+            $crit["rank"] = $hidden_block;
+            $crit["plugin_metademands_metademands_id"] = $post["metademands_id"];
+            $meta_fields = $dbu->getAllDataFromTable("glpi_plugin_metademands_fields", $crit);
+            $hiddenfields = [];
+            foreach ($meta_fields as $meta_field) {
+                $hiddenfields[] = $meta_field['id'];
+            }
+            if (is_array($hiddenfields) && in_array($fields['id'], $hiddenfields)) {
+                return true;
+            }
+        }
+
         //TODO To Translate ?
         $checkKo = [];
         $checkKoDateInterval = [];

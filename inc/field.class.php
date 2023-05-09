@@ -2585,34 +2585,7 @@ class PluginMetademandsField extends CommonDBChild
 
                             foreach ($childs_blocks[$key] as $customvalue => $childs) {
                                 $script .= self::getJStorersetFields($childs);
-                               //                        if ($customvalue != $key) {
-                               //                           foreach ($childs as $k => $v) {
-                               //                        $script .= "$('div[bloc-id=\"bloc$childs\"]').find(':input').each(function() {
-                               //                                     switch(this.type) {
-                               //                                            case 'password':
-                               //                                            case 'text':
-                               //                                            case 'textarea':
-                               //                                            case 'file':
-                               //                                            case 'date':
-                               //                                            case 'number':
-                               //                                            case 'tel':
-                               //                                            case 'email':
-                               //                                                jQuery(this).val('');
-                               //                                                break;
-                               //                                            case 'select-one':
-                               //                                            case 'select-multiple':
-                               //                                                jQuery(this).val('0').trigger('change');
-                               //                                                jQuery(this).val('0');
-                               //                                                break;
-                               //                                            case 'checkbox':
-                               //                                            case 'radio':
-                               //                                                this.checked = false;
-                               //                                                break;
-                               //                                        }
-                               //                                    });";
                                 $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";
-                               //                           }
-                               //                        }
                             }
                             $script .= "}";
                             $script .= "})";
@@ -2709,26 +2682,6 @@ class PluginMetademandsField extends CommonDBChild
                                 if ($customvalue != $key) {
                                     foreach ($childs as $k => $v) {
                                         $script .= self::getJStorersetFields($v);
-                                   //                              $script .= "$('div[bloc-id=\"bloc$v\"]').find(':input').each(function() {
-                                   //                                     switch(this.type) {
-                                   //                                            case 'password':
-                                   //                                            case 'text':
-                                   //                                            case 'textarea':
-                                   //                                            case 'file':
-                                   //                                            case 'select-one':
-                                   //                                            case 'select-multiple':
-                                   //                                            case 'date':
-                                   //                                            case 'number':
-                                   //                                            case 'tel':
-                                   //                                            case 'email':
-                                   //                                                jQuery(this).val('');
-                                   //                                                break;
-                                   //                                            case 'checkbox':
-                                   //                                            case 'radio':
-                                   //                                                this.checked = false;
-                                   //                                                break;
-                                   //                                        }
-                                   //                                    });";
                                         $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
                                     }
                                 }
@@ -5482,8 +5435,8 @@ class PluginMetademandsField extends CommonDBChild
 
     public static function getJStorersetFields($id)
     {
+
         return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
-     console.log('bloc'+$id);
                                      switch(this.type) {
                                             case 'password':
                                             case 'text':
@@ -5494,6 +5447,7 @@ class PluginMetademandsField extends CommonDBChild
                                             case 'tel':
                                             case 'email':
                                                 jQuery(this).val('');
+                                                
                                                 break;
                                             case 'select-one':
                                             case 'select-multiple':
@@ -5508,6 +5462,7 @@ class PluginMetademandsField extends CommonDBChild
                                                         break;
                                                     }
                                         }
+                                        jQuery(this).removeAttr('required');
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
                                         found = totest.match(regex);
@@ -5523,6 +5478,7 @@ class PluginMetademandsField extends CommonDBChild
 
     public static function getJStorersetFieldsByField($id)
     {
+
         return "$('div[id-field =\"field$id\"]').find(':input').each(function() {
      
                                      switch(this.type) {
@@ -5547,9 +5503,9 @@ class PluginMetademandsField extends CommonDBChild
                                                 this.click();
                                                 this.checked = false;
                                                 break;
-                                            }
-                                                
+                                            }   
                                         }
+                                        jQuery(this).removeAttr('required');
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
                                         found = totest.match(regex);
