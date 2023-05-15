@@ -1,33 +1,30 @@
 <?php
-/**
- * ---------------------------------------------------------------------
- * GLPI - Gestionnaire Libre de Parc Informatique
- * Copyright (C) 2015-2020 Teclib' and contributors.
- *
- * http://glpi-project.org
- *
- * based on GLPI - Gestionnaire Libre de Parc Informatique
- * Copyright (C) 2003-2014 by the INDEPNET Development Team.
- *
- * ---------------------------------------------------------------------
- *
- * LICENSE
- *
- * This file is part of GLPI.
- *
- * GLPI is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * GLPI is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with GLPI. If not, see <http://www.gnu.org/licenses/>.
- * ---------------------------------------------------------------------
+/*
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
+ -------------------------------------------------------------------------
+ Metademands plugin for GLPI
+ Copyright (C) 2018-2022 by the Metademands Development Team.
+
+ https://github.com/InfotelGLPI/metademands
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Metademands.
+
+ Metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
  */
 
 if (strpos($_SERVER['PHP_SELF'], "dropdownITILCategories.php")) {
@@ -38,38 +35,60 @@ if (strpos($_SERVER['PHP_SELF'], "dropdownITILCategories.php")) {
    die("Sorry. You can't access this file directly");
 }
 
-$opt = ['entity' => $_POST["entity_restrict"]];
+//$opt = ['entity' => $_POST["entity_restrict"]];
 $condition  =[];
 
-$currentcateg = new ITILCategory();
-$currentcateg->getFromDB($_POST['value']);
-
 if ($_POST["type"]) {
-   switch ($_POST['type']) {
-      case Ticket::INCIDENT_TYPE :
-         $criteria['is_incident'] = 1;
-         if ($currentcateg->getField('is_incident') == 1) {
-            $opt['value'] = $_POST['value'];
-         }
-         break;
+    switch ($_POST['type']) {
+        case Ticket::INCIDENT_TYPE :
+            $criteria['is_incident'] = 1;
+            break;
 
-      case Ticket::DEMAND_TYPE:
-         $criteria['is_request'] = 1;
-         if ($currentcateg->getField('is_request') == 1) {
-            $opt['value'] = $_POST['value'];
-         }
-         break;
-   }
+        case Ticket::DEMAND_TYPE:
+            $criteria['is_request'] = 1;
+            break;
+    }
 }
 
+//if ($this->fields['object_to_create'] == 'Problem') {
+//    $criteria = ['is_problem' => 1];
+//} elseif ($this->fields['object_to_create'] == 'Change') {
+//    $criteria = ['is_change' => 1];
+//}
+
+
 $criteria += getEntitiesRestrictCriteria(
-   \ITILCategory::getTable(),
-   'entities_id',
-   $_POST["entity_restrict"],
-   true
+    \ITILCategory::getTable(),
+    'entities_id',
+    $_SESSION['glpiactiveentities'],
+    true
 );
 
 $dbu    = new DbUtils();
+
+$crit["is_deleted"] = 0;
+$crit["is_template"] = 0;
+$cats = $dbu->getAllDataFromTable(PluginMetademandsMetademand::getTable(), $crit);
+
+$used = [];
+foreach ($cats as $item) {
+    $tempcats   = json_decode($item['itilcategories_id'], true);
+    foreach ($tempcats as $tempcat) {
+        $used []= $tempcat;
+    }
+}
+
+$ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
+foreach ($ticketcats as $item) {
+    if ($item['itilcategories_id'] > 0) {
+        $used []= $item['itilcategories_id'];
+    }
+}
+$used = array_unique($used);
+$criteria += ['NOT' => [
+    'id' => $used
+]];
+
 $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
 $temp   = [];
 foreach ($result as $item) {

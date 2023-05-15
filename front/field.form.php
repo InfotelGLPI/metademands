@@ -192,7 +192,11 @@ if (isset($_POST["add"])) {
    }
    if (isset($_POST["childs_blocks"])) {
       $_POST["childs_blocks"] = json_encode($_POST['childs_blocks']);
+   } else {
+       //Must be here becaused it's not an array
+       $_POST["childs_blocks"] = json_encode("");
    }
+
    if (isset($_POST["users_id_validate"])) {
       $_POST["users_id_validate"] = PluginMetademandsField::_serialize($_POST["users_id_validate"]);
    }
@@ -274,6 +278,22 @@ if (isset($_POST["add"])) {
    $field->check(-1, UPDATE, $_POST);
    $field->update($input);
    Html::redirect($field->getFormURL() . "?id=" . $input["id"]);
+
+} else if (isset($_POST["clear_all_options"])) {
+
+    $input["id"] = $_POST["id"];
+    $empty = [];
+    $input["check_value"] = PluginMetademandsField::_serialize($empty);
+    $input["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($empty);
+    $input["fields_link"] = PluginMetademandsField::_serialize($empty);
+    $input["hidden_link"] = PluginMetademandsField::_serialize($empty);
+    $input["hidden_block"] = PluginMetademandsField::_serialize($empty);
+    $input["childs_blocks"] = json_encode("");
+
+
+//    $field->check(-1, UPDATE, $input);
+    $field->update($input);
+    Html::redirect($field->getFormURL() . "?id=" . $input["id"]);
 
 } else if (isset($_POST["delete_custom_value"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])) {

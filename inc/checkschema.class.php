@@ -103,7 +103,7 @@ class PluginMetademandsCheckSchema extends CommonDBTM {
         preg_match('/^(\d+\.\d+\.\d+)/', $version, $matches);
         $version = $matches[1];
 
-        return Plugin::getPhpDir('metademands') . "/install/sql/empty-${version}.sql";
+        return Plugin::getPhpDir('metademands') . "/install/sql/empty-{$version}.sql";
     }
 
     /**

@@ -52,7 +52,7 @@ class PluginMetademandsMenu extends CommonDBTM
         $menu['page']            = PluginMetademandsMetademand::getSearchURL(false);
         $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
         if (PluginMetademandsMetademand::canCreate()) {
-            $menu['links']['add'] = PluginMetademandsMetademand::getFormURL(false);
+            $menu['links']['add'] = PLUGIN_METADEMANDS_WEBDIR_NOFULL.'/front/setup.templates.php?add=1';
         }
         if (Session::haveRight("config", UPDATE)) {
             //Entry icon in breadcrumb
@@ -63,6 +63,7 @@ class PluginMetademandsMenu extends CommonDBTM
         $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
 
         if (PluginMetademandsMetademand::canCreate()) {
+            $menu['links']['template'] = PLUGIN_METADEMANDS_WEBDIR_NOFULL.'/front/setup.templates.php?add=0';
             $image                 = "<i class='ti ti-upload' title='" . __('Import metademands', 'metademands') . "'></i>&nbsp;" . __('Import metademands', 'metademands');
             $menu['links'][$image] = PluginMetademandsMetademand::getFormURL(false) . "?import_form=1";
         }

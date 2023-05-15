@@ -159,7 +159,7 @@ if (isset($_POST['update_fields'])) {
                         }
                         if ($value['type'] == 'checkbox') {
                             if (!isset($_POST['field'][$id])) {
-                                $_POST['field'][$id] = 0;
+                                $_POST['field'][$id] = "";
                             }
                         }
                         if ($value['type'] == 'informations'

@@ -34,11 +34,15 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsMetademandTask
  */
-class PluginMetademandsMetademandTask extends CommonDBTM {
+class PluginMetademandsMetademandTask extends CommonDBChild {
 
-   static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands';
 
-   /**
+    public static $itemtype = 'PluginMetademandsMetademand';
+    public static $items_id = 'plugin_metademands_metademands_id';
+
+
+    /**
     * functions mandatory
     * getTypeName(), canCreate(), canView()
     *
