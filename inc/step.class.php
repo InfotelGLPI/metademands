@@ -36,8 +36,8 @@ if (!defined('GLPI_ROOT')) {
  **/
 class PluginMetademandsStep extends CommonDBChild
 {
-    public static $itemtype  = 'PluginMetademandsMetademand';
-    public static $items_id  = 'plugin_metademands_metademands_id';
+    public static $itemtype = 'PluginMetademandsMetademand';
+    public static $items_id = 'plugin_metademands_metademands_id';
     //   public        $dohistory = true;
 
     static $rightname = 'plugin_metademands';
@@ -61,9 +61,9 @@ class PluginMetademandsStep extends CommonDBChild
         return Session::haveRight(self::$rightname, READ);
     }
 
-     /**
-      * @return bool
-      */
+    /**
+     * @return bool
+     */
     public static function canCreate()
     {
         return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
@@ -86,6 +86,7 @@ class PluginMetademandsStep extends CommonDBChild
     {
         return PluginMetademandsMetademand::getIcon();
     }
+
     /**
      * Get the standard massive actions which are forbidden
      *
@@ -97,7 +98,7 @@ class PluginMetademandsStep extends CommonDBChild
      */
     public function getForbiddenStandardMassiveAction()
     {
-        $forbidden   = parent::getForbiddenStandardMassiveAction();
+        $forbidden = parent::getForbiddenStandardMassiveAction();
         $forbidden[] = 'update';
         return $forbidden;
     }
@@ -105,7 +106,7 @@ class PluginMetademandsStep extends CommonDBChild
 
     /**
      * @param \CommonGLPI $item
-     * @param int         $withtemplate
+     * @param int $withtemplate
      *
      * @return array|string
      * @see CommonGLPI::getTabNameForItem()
@@ -151,9 +152,9 @@ class PluginMetademandsStep extends CommonDBChild
      */
     public static function getGroupForNextBlock($plugin_metademands_metademands_id, $block_id)
     {
-        $self      = new self();
-        $condition = ['block_id'                          => $block_id,
-                      'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id];
+        $self = new self();
+        $condition = ['block_id' => $block_id,
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id];
 
         $steps = $self->find($condition);
         if (count($steps) > 0) {
@@ -174,9 +175,9 @@ class PluginMetademandsStep extends CommonDBChild
      */
     public static function getMsgForNextBlock($plugin_metademands_metademands_id, $block_id)
     {
-        $self      = new self();
-        $condition = ['block_id'                          => $block_id,
-                      'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id];
+        $self = new self();
+        $condition = ['block_id' => $block_id,
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id];
 
         $steps = $self->find($condition);
         if (count($steps) > 0) {
@@ -200,7 +201,7 @@ class PluginMetademandsStep extends CommonDBChild
     {
         global $DB, $CFG_GLPI;
 
-        $rand    = mt_rand();
+        $rand = mt_rand();
         $canedit = $item->can($item->getID(), UPDATE);
 
         if ($canedit) {
@@ -208,10 +209,10 @@ class PluginMetademandsStep extends CommonDBChild
 
             echo "<script type='text/javascript' >\n";
             echo "function addstepbybloc" . $item->getType() . $item->getID() . "$rand() {\n";
-            $params = ['type'                      => __CLASS__,
-                       'parenttype'                => get_class($item),
-                       $item->getForeignKeyField() => $item->getID(),
-                       'id'                        => -1];
+            $params = ['type' => __CLASS__,
+                'parenttype' => get_class($item),
+                $item->getForeignKeyField() => $item->getID(),
+                'id' => -1];
             Ajax::updateItemJsCode(
                 "viewstepbybloc" . $item->getType() . $item->getID() . "$rand",
                 $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
@@ -220,29 +221,35 @@ class PluginMetademandsStep extends CommonDBChild
             echo "};";
             echo "</script>\n";
             echo "<div class='center'>" .
-                 "<a class='submit btn btn-primary' href='javascript:addstepbybloc" .
-                 $item->getType() . $item->getID() . "$rand();'>" . __('Add a new association', 'metademands') .
-                 "</a></div><br>";
+                "<a class='submit btn btn-primary' href='javascript:addstepbybloc" .
+                $item->getType() . $item->getID() . "$rand();'>" . __('Add a new association', 'metademands') .
+                "</a></div><br>";
         }
         $iterator = $DB->request([
-                                    'FROM'  => getTableForItemType(__CLASS__),
-                                    'WHERE' => [
-                                       'plugin_metademands_metademands_id' => $item->getID(),
-                                    ],
-                                    'ORDER' => [
-                                        'block_id ASC'
-                                    ],
-                                 ]);
+            'FROM' => getTableForItemType(__CLASS__),
+            'WHERE' => [
+                'plugin_metademands_metademands_id' => $item->getID(),
+            ],
+            'ORDER' => [
+                'block_id ASC'
+            ],
+        ]);
 
-        $field  = new PluginMetademandsField();
+        $field = new PluginMetademandsField();
         $fields = $field->find(["plugin_metademands_metademands_id" => $item->getID()]);
         $blocks = [];
         $self = new self();
+
         foreach ($fields as $f) {
-            if (!isset($blocks[$f['rank']]) &&
-                (!$self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
-                                          'block_id' => intval($f['rank'])]))) {
-                $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+            $steps = $self->find(['plugin_metademands_metademands_id' => $item->getID(),
+                'block_id' => intval($f['rank'])]);
+            foreach ($steps as $step){
+                if (!isset($blocks[$f['rank']]) &&
+                    (!$self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
+                        'block_id' => intval($f['rank']),
+                        'id' => $step['id']]))) {
+                    $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+                }
             }
         }
         ksort($blocks);
@@ -287,10 +294,10 @@ class PluginMetademandsStep extends CommonDBChild
                 if ($canedit) {
                     echo "\n<script type='text/javascript' >\n";
                     echo "function viewEditstepbybloc" . $item->getType() . $data['id'] . "$rand() {\n";
-                    $params = ['type'                      => __CLASS__,
-                               'parenttype'                => get_class($item),
-                               $item->getForeignKeyField() => $item->getID(),
-                               'id'                        => $data["id"]];
+                    $params = ['type' => __CLASS__,
+                        'parenttype' => get_class($item),
+                        $item->getForeignKeyField() => $item->getID(),
+                        'id' => $data["id"]];
                     Ajax::updateItemJsCode(
                         "viewstepbybloc" . $item->getType() . $item->getID() . "$rand",
                         $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
@@ -331,6 +338,7 @@ class PluginMetademandsStep extends CommonDBChild
      */
     public function showForm($ID = -1, $options = [])
     {
+        $config = PluginMetademandsConfig::getInstance();
 
         if (isset($options['parent']) && !empty($options['parent'])) {
             $item = $options['parent'];
@@ -351,17 +359,35 @@ class PluginMetademandsStep extends CommonDBChild
         echo "<td>";
         echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->getID()]);
 //      echo Html::hidden('itemtype', ['value' => get_class($item)]);
-        $field  = new PluginMetademandsField();
+        $field = new PluginMetademandsField();
         $fields = $field->find(["plugin_metademands_metademands_id" => $item->getID()]);
         $blocks = [];
+
         $self = new self();
         foreach ($fields as $f) {
-            if (!isset($blocks[$f['rank']]) &&
-                (!$self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
-                                          'block_id' => intval($f['rank'])])
-                    || $self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
-                                               'block_id' => intval($f['rank']), 'id' => $ID]))) {
-                $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+            if ($config['multiple_link_groups_blocks']) {
+                if (!isset($blocks[$f['rank']])) {
+                    $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+                }
+            } else {
+                //Remove block_id <=> groups_id multiple links
+                $blocks_link = new PluginMetademandsStep();
+                $block_links = $blocks_link->find([
+                    'plugin_metademands_metademands_id' => $options['items_id'],
+                    'block_id' => $f['rank']
+                ]);
+                if (count($block_links) > 1) {
+                    foreach ($block_links as $bl) {
+                        $blocks_link->delete(['id' => $bl['id']]);
+                    }
+                }
+                if (!isset($blocks[$f['rank']]) &&
+                    (!$self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
+                            'block_id' => intval($f['rank'])])
+                        || $self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
+                            'block_id' => intval($f['rank']), 'id' => $ID]))) {
+                    $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
+                }
             }
         }
         ksort($blocks);
@@ -370,9 +396,9 @@ class PluginMetademandsStep extends CommonDBChild
             Dropdown::showFromArray(
                 'block_id',
                 $blocks,
-                ['value'  => $this->fields['block_id'],
-                 'width'  => '100%',
-                 'entity' => $_SESSION['glpiactiveentities']]
+                ['value' => $this->fields['block_id'],
+                    'width' => '100%',
+                    'entity' => $_SESSION['glpiactiveentities']]
             );
         } else {
             $values = [$this->fields['block_id']];
@@ -380,10 +406,10 @@ class PluginMetademandsStep extends CommonDBChild
             Dropdown::showFromArray(
                 'block_id',
                 $blocks,
-                ['values'   => $values,
-                 'width'    => '100%',
-                 'multiple' => true,
-                 'entity'   => $_SESSION['glpiactiveentities']]
+                ['values' => $values,
+                    'width' => '100%',
+                    'multiple' => true,
+                    'entity' => $_SESSION['glpiactiveentities']]
             );
         }
         echo "</td></tr>";
@@ -398,13 +424,13 @@ class PluginMetademandsStep extends CommonDBChild
             $gr->getFromDB($group['groups_id']);
             $groups[$group['groups_id']] = $gr->getFriendlyName();
         }
-        if(!empty($groups)) {
+        if (!empty($groups)) {
             Dropdown::showFromArray(
                 'groups_id',
                 $groups,
-                ['value'   => $this->fields['groups_id'],
-                    'width'    => '100%',
-                    'entity'   => $_SESSION['glpiactiveentities']]
+                ['value' => $this->fields['groups_id'],
+                    'width' => '100%',
+                    'entity' => $_SESSION['glpiactiveentities']]
             );
         } else {
             Group::dropdown(['name' => 'groups_id',
@@ -412,16 +438,15 @@ class PluginMetademandsStep extends CommonDBChild
         }
 
 
-
         echo "</td>";
         echo "</tr>";
         echo "<tr class='tab_bg_1'><td>" . __('Message to next group on form', 'metademands') . "</td>";
         echo "<td>";
-        Html::textarea(['name'            => 'message',
-                        'value'           => $this->fields['message'],
-                        'enable_richtext' => false,
-                        'cols'            => 80,
-                        'rows'            => 3]);
+        Html::textarea(['name' => 'message',
+            'value' => $this->fields['message'],
+            'enable_richtext' => false,
+            'cols' => 80,
+            'rows' => 3]);
         echo "</td>";
         echo "</tr>";
         $this->showFormButtons($options);
@@ -433,11 +458,12 @@ class PluginMetademandsStep extends CommonDBChild
      *
      * @return bool
      */
-    static function isUserHaveRight($metademands_id) {
+    static function isUserHaveRight($metademands_id)
+    {
         $dbu = new DbUtils();
         // Get metademand groups
         $metademands_groups_data = $dbu->getAllDataFromTable('glpi_plugin_metademands_steps',
-            ['`plugin_metademands_metademands_id`' => $metademands_id,'block_id' => 1]);
+            ['`plugin_metademands_metademands_id`' => $metademands_id, 'block_id' => 1]);
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($metademands_id);
@@ -461,4 +487,21 @@ class PluginMetademandsStep extends CommonDBChild
         // No restrictions if no group was added in metademand
         return true;
     }
+
+    function prepareInputForAdd($input)
+    {
+        $steps = new PluginMetademandsStep();
+        $condition = [
+            'block_id' => $input['block_id'],
+            'groups_id' => $input['groups_id'],
+            'plugin_metademands_metademands_id' => $input['plugin_metademands_metademands_id']
+        ];
+        $result = $steps->getFromDBByCrit($condition);
+        if ($result) {
+            Session::addMessageAfterRedirect(__('This group is already assigned to this block', 'metademands'),false, ERROR );
+            $input = [];
+        }
+        return $input;
+    }
+
 }

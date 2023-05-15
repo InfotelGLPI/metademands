@@ -3361,12 +3361,13 @@ class PluginMetademandsWizard extends CommonDBTM
 //                        $submitstepmsg = $msg;
 //                    }
 //                }
+                $config = new PluginMetademandsConfig();
+                $multipleGroups = $config->fields['multiple_link_groups_blocks'];
                 echo "<script>
                   
                   var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
                   var submitmsg = '$submitmsg';
-                  
                   var use_as_step = '$use_as_step';
                   var nextsteptitle = '$nextsteptitle';
                   var submitsteptitle = '$submitsteptitle';
@@ -3376,6 +3377,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   var msg = '$alert';
                   var firstnumTab = 0;
                   var currentTab = 0; // Current tab is set to be the first tab (0)
+                  var multipleGroups = '$multipleGroups';
                   findFirstTab($block_id);
                   showTab(currentTab, nexttitle, submittitle, submitmsg); // Display the current tab
                   
@@ -3438,6 +3440,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                         firstnumTab = currentTab;
                       }
+                  }
+                  
+                  function selectGroups(block_id) {
+                    
+                    
                   }
                   function nextPrev(n) {
                      // This function will figure out which tab to display

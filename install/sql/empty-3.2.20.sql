@@ -345,6 +345,9 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `languageTech`                      varchar(100)          DEFAULT NULL,
     `use_draft`                         tinyint               DEFAULT 0,
     `show_form_changes`                 tinyint      NOT NULL DEFAULT '0',
+    `link_user_block`                   tinyint               DEFAULT 0,
+    `multiple_link_groups_blocks`       tinyint               DEFAULT 0,
+
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
@@ -372,7 +375,7 @@ CREATE TABLE `glpi_plugin_metademands_basketlines`
     `value2`                            text COLLATE utf8mb4_unicode_ci,
     PRIMARY KEY (`id`),
     UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`, `plugin_metademands_fields_id`, `line`, `name`,
-                          `users_id`),
+        `users_id`),
     KEY `users_id` (`users_id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
@@ -531,6 +534,7 @@ CREATE TABLE `glpi_plugin_metademands_stepforms`
     `items_id`                          int unsigned NOT NULL DEFAULT '0',
     `users_id`                          int unsigned NOT NULL DEFAULT '0',
     `groups_id_dest`                    int unsigned NOT NULL DEFAULT '0',
+    `users_id_dest`                     int unsigned NOT NULL DEFAULT '0',
     `date`                              timestamp    NULL     DEFAULT NULL,
     `reminder_date`                     timestamp    NULL     DEFAULT NULL,
     `block_id`                          int unsigned NOT NULL DEFAULT '0',
