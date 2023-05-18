@@ -687,6 +687,8 @@ class PluginMetademandsField extends CommonDBChild
 
             if (($this->fields['type'] == "dropdown_meta"
               && $this->fields["item"] == "mydevices")
+                || ($this->fields['type'] == "dropdown_multiple"
+                    && $this->fields["item"] == "Appliance")
              || ($this->fields['type'] == "dropdown_object"
                  && Ticket::isPossibleToAssignType($this->fields["item"]))) {
                 $granted_fields = [
@@ -3096,14 +3098,17 @@ class PluginMetademandsField extends CommonDBChild
                     echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "&nbsp;";
                     echo "<i class='fas fa-plus-circle pointer' id='addNewOpt' title='".__('Add a new option', 'metademands')."'></i>";
                     echo "<div class='right'>";
-                    echo self::showSimpleForm(
-                        $this->getFormURL(),
-                        'clear_all_options',
-                        __('Delete all options', 'metademands'),
-                        ['id' => $params['id'], 'metademands_id' => $params['metademands_id']],
-                        'fa-trash pointer'
-                    );
-                    echo "</div></th></tr>";
+                    if (isset($params['id'])) {
+                        echo self::showSimpleForm(
+                            $this->getFormURL(),
+                            'clear_all_options',
+                            __('Delete all options', 'metademands'),
+                            ['id' => $params['id'], 'metademands_id' => $params['metademands_id']],
+                            'fa-trash pointer'
+                        );
+                        echo "</div>";
+                    }
+                    echo "</th></tr>";
 
                    //               echo "<tr>";
                     $nb  = 0;
@@ -3271,6 +3276,7 @@ class PluginMetademandsField extends CommonDBChild
                     if (empty($opts)) {
                         $opts = [];
                     }
+
                     if (is_array($opts)) {
                         echo Html::hidden('nbOptions', ['id' => 'nbOptions', 'value' => count($opts)]);
                     }
@@ -3302,7 +3308,8 @@ class PluginMetademandsField extends CommonDBChild
 
       let root_metademands_doc = '" . PLUGIN_METADEMANDS_WEBDIR . "';
       
-                $('#addNewOpt').click(function(){
+                $('#addNewOpt').click(function() {
+                    
                     let nb = document.getElementById('nbOptions').valueOf().value;
                     nb++;
                     parent.parent.window.location.replace(root_metademands_doc + '/front/" . $url . "&nbOpt='+nb);
@@ -3848,6 +3855,9 @@ class PluginMetademandsField extends CommonDBChild
         }
         ksort($blocks);
 
+        if (empty($opt)) {
+            $opt = 0;
+        }
         if (!empty($selected_values)) {
             $name = "childs_blocks[" . $opt . "]";
         } else {
