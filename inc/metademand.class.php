@@ -1950,6 +1950,13 @@ JAVASCRIPT
                                             && Ticket::isPossibleToAssignType($fields_values["item"])) {
                                             $parent_fields["items_id"] = [$fields_values["item"] => [$v[$id]]];
                                         }
+                                        if ($fields_values['type'] == "dropdown_multiple"
+//                                            && Ticket::isPossibleToAssignType("Appliance")
+                                            && $fields_values["item"] == "Appliance") {
+                                            foreach ($v[$id] as $k => $items_id) {
+                                                $parent_fields["items_id"] = ['Appliance' => [$items_id]];
+                                            }
+                                        }
                                     }
                                 }
                             }
