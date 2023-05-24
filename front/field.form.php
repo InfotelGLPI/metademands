@@ -190,11 +190,11 @@ if (isset($_POST["add"])) {
    if (isset($_POST["hidden_block"])) {
       $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
+
    if (isset($_POST["childs_blocks"])) {
-      $_POST["childs_blocks"] = json_encode($_POST['childs_blocks']);
+       $_POST["childs_blocks"] = json_encode($_POST["childs_blocks"]);
    } else {
-       //Must be here becaused it's not an array
-       $_POST["childs_blocks"] = json_encode("");
+       $_POST["childs_blocks"] = json_encode([]);
    }
 
    if (isset($_POST["users_id_validate"])) {

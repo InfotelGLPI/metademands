@@ -3376,10 +3376,14 @@ class PluginMetademandsField extends CommonDBChild
             $params['hidden_block'] = $params['hidden_block'][$optid];
         }
 
-        $params['childs_blocks'] = json_decode($params['childs_blocks'], true);
+        if ($params['childs_blocks'] != null) {
+            $params['childs_blocks'] = json_decode($params['childs_blocks'], true);
 
-        if (isset($params['childs_blocks'][$optid])) {
-            $params['childs_blocks'] = $params['childs_blocks'][$optid];
+            if (isset($params['childs_blocks'][$optid])) {
+                $params['childs_blocks'] = $params['childs_blocks'][$optid];
+            } else {
+                $params['childs_blocks'] = [];
+            }
         } else {
             $params['childs_blocks'] = [];
         }
@@ -3863,16 +3867,13 @@ class PluginMetademandsField extends CommonDBChild
         if (empty($opt)) {
             $opt = 0;
         }
-        if (!empty($selected_values)) {
-            $name = "childs_blocks[" . $opt . "]";
-        } else {
-            $name = "childs_blocks[" . $opt-1 . "]";
-        }
 
+        $name = "childs_blocks[" . $opt . "]";
         return Dropdown::showFromArray(
             $name,
             $blocks,
-            ['values'   => $selected_values,
+            [
+                'values'   => $selected_values,
             'display'  => $display,
             'width'    => '100%',
             'multiple' => true,
