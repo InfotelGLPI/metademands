@@ -2778,6 +2778,7 @@ class PluginMetademandsField extends CommonDBChild
                 $arrayFiles = json_decode($value, true);
                 $field      = "";
                 $nb         = 0;
+                $container = 'fileupload_info_ticket'.$namefield . $data['id'];
                 if ($arrayFiles != "") {
                     foreach ($arrayFiles as $k => $file) {
                         $field .= str_replace($file['_prefix_filename'], "", $file['_filename']);
@@ -2800,13 +2801,15 @@ class PluginMetademandsField extends CommonDBChild
                     }
                     if ($data["max_upload"] > $nb) {
                         if ($data["max_upload"] > 1) {
-                            $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                            $field .= Html::file([
+                                'filecontainer' => $container,
                                            'editor_id'     => '',
                                            'showtitle'     => false,
                                            'multiple'      => true,
                                            'display'       => false]);
                         } else {
-                            $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                            $field .= Html::file([
+                                'filecontainer' => $container,
                                            'editor_id'     => '',
                                            'showtitle'     => false,
                                            'display'       => false
@@ -2815,13 +2818,15 @@ class PluginMetademandsField extends CommonDBChild
                     }
                 } else {
                     if ($data["max_upload"] > 1) {
-                        $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                        $field .= Html::file([
+                            'filecontainer' => $container,
                                         'editor_id'     => '',
                                         'showtitle'     => false,
                                         'multiple'      => true,
                                         'display'       => false]);
                     } else {
-                        $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                        $field .= Html::file([
+                            'filecontainer' => $container,
                                         'editor_id'     => '',
                                         'showtitle'     => false,
                                         'display'       => false
