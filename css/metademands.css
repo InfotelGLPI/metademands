@@ -437,7 +437,7 @@ textarea.invalid,
     height: 15px;
     width: 15px;
     margin: 0 2px;
-    background-color: #3f7cb7;
+    background-color: var(--tblr-gray-500);
     border: none;
     border-radius: 50%;
     display: inline-block;

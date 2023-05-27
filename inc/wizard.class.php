@@ -3355,13 +3355,12 @@ class PluginMetademandsWizard extends CommonDBTM
                             $list_blocks[] = $s['block_id'];
                         }
                     }
-
-                    $steps2 = $step->find(['plugin_metademands_metademands_id' => $ID]);
-
-                    foreach ($steps2 as $s) {
-                        $list_blocks2[] = $s['block_id'];
+                    $step2 = new PluginMetademandsStep();
+                    if ($steps2 = $step2->find(['plugin_metademands_metademands_id' => $ID])) {
+                        foreach ($steps2 as $s) {
+                            $list_blocks2[] = $s['block_id'];
+                        }
                     }
-
                     $field = new PluginMetademandsField();
                     $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
                     $blocks = [];
@@ -3369,13 +3368,15 @@ class PluginMetademandsWizard extends CommonDBTM
                     foreach ($fields as $f) {
                         $blocks[] = $f["rank"];
                     }
-                    foreach ($blocks as $block) {
-                        if (!in_array($block, $list_blocks2)) {
-                            $list_blocks[] = $block;
+//                    if (count($list_blocks2) > 0) {
+                        foreach ($blocks as $block) {
+                            if (!in_array($block, $list_blocks2)) {
+                                $list_blocks[] = $block;
+                            }
                         }
-                    }
+//                    }
 
-                    if (count($steps) == 0) {
+                    if (!isset($steps) || (is_array($steps) && count($steps) == 0)) {
                         $submitsteptitle = $submittitle;
                     }
                     $list_blocks = array_unique($list_blocks);
