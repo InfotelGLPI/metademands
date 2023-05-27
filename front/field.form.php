@@ -168,7 +168,8 @@ if (isset($_POST["add"])) {
       $_POST["custom_values"]  = PluginMetademandsField::_serialize($_POST['custom_values']);
       $_POST["comment_values"] = '';
    } else if ($_POST["type"] != 'yesno') {
-      $_POST["custom_values"]  = '';
+       //used for default_values don't uncomment
+//      $_POST["custom_values"]  = '';
       $_POST["comment_values"] = '';
    }
    if (isset($_POST["value"]) && is_array($_POST["value"])) {
@@ -244,6 +245,7 @@ if (isset($_POST["add"])) {
 
 } else if (isset($_POST["clear_option"])) {
    // Check update rights for fields
+
    if (isset($_POST["option"])) {
       $ids = $_POST['option'];
       foreach ($ids as $k => $v) {
