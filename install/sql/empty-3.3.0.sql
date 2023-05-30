@@ -522,7 +522,7 @@ CREATE TABLE `glpi_plugin_metademands_interticketfollowups`
     `date`              timestamp    NULL     DEFAULT NULL,
     `users_id`          int unsigned NOT NULL DEFAULT '0',
     `users_id_editor`   int unsigned NOT NULL DEFAULT '0',
-    `content`           longtext COLLATE utf8_unicode_ci,
+    `content`           longtext COLLATE utf8mb4_unicode_ci,
     `is_private`        tinyint      NOT NULL DEFAULT '0',
     `requesttypes_id`   int unsigned NOT NULL DEFAULT '0',
     `date_mod`          timestamp    NULL     DEFAULT NULL,
@@ -542,6 +542,7 @@ CREATE TABLE `glpi_plugin_metademands_stepforms`
     `items_id`                          int unsigned NOT NULL DEFAULT '0',
     `users_id`                          int unsigned NOT NULL DEFAULT '0',
     `groups_id_dest`                    int unsigned NOT NULL DEFAULT '0',
+    `users_id_dest`                     int unsigned NOT NULL DEFAULT '0',
     `date`                              timestamp    NULL     DEFAULT NULL,
     `reminder_date`                     timestamp    NULL     DEFAULT NULL,
     `block_id`                          int unsigned NOT NULL DEFAULT '0',
@@ -572,6 +573,18 @@ CREATE TABLE `glpi_plugin_metademands_steps`
     `groups_id`                         int unsigned NOT NULL           DEFAULT '0',
     `reminder_delay`                    text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `message`                           text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = DYNAMIC;
+
+CREATE TABLE `glpi_plugin_metademands_configsteps`
+(
+    `id`                                int unsigned NOT NULL AUTO_INCREMENT,
+    `plugin_metademands_metademands_id` int unsigned NOT NULL           DEFAULT '0',
+    `link_user_block`                   tinyint      NOT NULL           DEFAULT '0',
+    `multiple_link_groups_blocks`       tinyint      NOT NULL           DEFAULT '0',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
