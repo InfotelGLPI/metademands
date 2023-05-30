@@ -477,6 +477,10 @@ class PluginMetademandsMetademand extends CommonDBTM
             PluginMetademandsTicketField::updateMandatoryTicketFields($this->input);
         }
 
+        $confStep = new PluginMetademandsConfigstep();
+
+        $confStep->add(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
         if (isset($this->input["metademands_oldID"])) {
 
             // ADD fields

@@ -55,7 +55,9 @@ if ($_POST["type"]) {
 //} elseif ($this->fields['object_to_create'] == 'Change') {
 //    $criteria = ['is_change' => 1];
 //}
-
+if(!isset($criteria)) {
+    $criteria = [];
+}
 
 $criteria += getEntitiesRestrictCriteria(
     \ITILCategory::getTable(),
@@ -72,10 +74,15 @@ $cats = $dbu->getAllDataFromTable(PluginMetademandsMetademand::getTable(), $crit
 
 $used = [];
 foreach ($cats as $item) {
-    $tempcats   = json_decode($item['itilcategories_id'], true);
-    foreach ($tempcats as $tempcat) {
-        $used []= $tempcat;
+    $tempcats = json_decode($item['itilcategories_id'], true);
+    if (is_null($tempcats)) {
+        $tempcats = [];
+    } else {
+        foreach ($tempcats as $tempcat) {
+            $used [] = $tempcat;
+        }
     }
+
 }
 
 $ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
@@ -85,11 +92,16 @@ foreach ($ticketcats as $item) {
     }
 }
 $used = array_unique($used);
+
 $criteria += ['NOT' => [
     'id' => $used
 ]];
+if (count($used) == 0) {
+    $result = $dbu->getAllDataFromTable(ITILCategory::getTable());
+} else {
+    $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
+}
 
-$result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
 $temp   = [];
 foreach ($result as $item) {
    $temp[$item['id']] = $item['completename'];

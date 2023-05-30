@@ -227,21 +227,6 @@ class PluginMetademandsConfig extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>";
-      echo __('Link multiple groups to a block', 'metademands');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showYesNo('multiple_link_groups_blocks', $config['multiple_link_groups_blocks']);
-      echo "</td>";
-      echo "<td>";
-      echo __('Allow sending the form to a user', 'metademands');
-      echo "</td>";
-      echo "<td>";
-      Dropdown::showYesNo('link_user_block', $config['link_user_block']);
-      echo "</td>";
-      echo "</tr>";
-
 
       if ($config['display_buttonlist_servicecatalog'] == 1) {
 
