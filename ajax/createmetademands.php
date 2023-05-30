@@ -42,6 +42,7 @@ $wizard      = new PluginMetademandsWizard();
 $fields      = new PluginMetademandsField();
 
 if (isset($_POST['update_fields'])) {
+
     if ($metademands->canCreate()
         || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
         $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
@@ -104,15 +105,50 @@ if (isset($_POST['update_fields'])) {
                     }
 
 
+                    foreach ($data as $idf => $form_data_fields) {
+
+                        $fieldopt = new PluginMetademandsFieldOption();
+                        if($opts = $fieldopt->find(["plugin_metademands_fields_id" => $idf])) {
+
+                            foreach ($opts as $opt) {
+                                $check_value = $opt["check_value"];
+                                if ($fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $idf, "check_value" => $check_value])) {
+                                    $data[$idf]["options"][$check_value]['plugin_metademands_tasks_id'] = $fieldopt->fields['plugin_metademands_tasks_id'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['fields_link'] = $fieldopt->fields['fields_link'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['hidden_link'] = $fieldopt->fields['hidden_link'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['hidden_block'] = $fieldopt->fields['hidden_block'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['users_id_validate'] = $fieldopt->fields['users_id_validate'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['childs_blocks'] = $fieldopt->fields['childs_blocks'];
+                                    $data[$idf]["options"][$check_value]['checkbox_value'] = $fieldopt->fields['checkbox_value'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['checkbox_id'] = $fieldopt->fields['checkbox_id'] ?? 0;
+                                    $data[$idf]["options"][$check_value]['parent_field_id'] = $fieldopt->fields['parent_field_id'] ?? 0;
+                                }
+                            }
+                        }
+                    }
+
                     //Clean $post & $data & $_POST
                     $dataOld = $data;
                     // Double appel for prevent order fields
-                    PluginMetademandsWizard::unsetHidden($data, $post);
-                    PluginMetademandsWizard::unsetHidden($dataOld, $post);
+                    PluginMetademandsFieldOption::unsetHidden($data, $post);
+                    PluginMetademandsFieldOption::unsetHidden($dataOld, $post);
                     $_POST['field'] = $post;
 
+//                    Toolbox::logInfo($data);
+
+                    //check fields_link to be mandatory
+                    $fields_links = [];
                     foreach ($data as $id => $value) {
-                        $toBeMandatory = PluginMetademandsWizard::getMandatoryFields($id, $value, $_POST['field']);
+                        if (isset($value['options'])) {
+                            $unserialisedCheck = $value['options'];
+                            foreach ($unserialisedCheck as $key => $check) {
+                                $fields_links[] = $check['fields_link'];
+                            }
+                        }
+                    }
+
+                    foreach ($data as $id => $value) {
+                        $toBeMandatory = PluginMetademandsFieldOption::getMandatoryFields($id, $value, $fields_links, $_POST['field']);
                         if (is_array($toBeMandatory) && !empty($toBeMandatory)) {
                             foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
                                 if (isset($data[$valueMandatory]['type'])) {
@@ -122,35 +158,37 @@ if (isset($_POST['update_fields'])) {
                         }
                     }
 
+
                     foreach ($data as $id => $value) {
                         if (!isset($post[$id])) {
                             $post[$id] = [];
                         }
+                        //TODO Debug it
                         //Permit to launch child metademand on check value
-                        $checkchild = PluginMetademandsField::_unserialize($value['check_value']);
-                        if (is_array($checkchild)) {
-                            // Check if no form values block the creation of meta
-                            $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-
-                            if (!is_null($metademandtasks_tasks_id)) {
-                                $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-                                if (!isset($post)) {
-                                    $post[$id] = 0;
-                                }
-                                foreach ($checkchild as $keyId => $check_value) {
-                                    $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
-                                    $wizard->checkValueOk($check_value, $plugin_metademands_tasks_id[$keyId], $metademandtasks_tasks_id, $id, $value, $post);
-                                }
-                            }
-
-                            foreach ($checkchild as $keyId => $check_value) {
-                                $value['check_value'] = $check_value;
-                                if (isset(PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId])) {
-                                    $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId];
-                                }
-                                $value['fields_link'] = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
-                            }
-                        }
+//                        $checkchild = PluginMetademandsField::_unserialize($value['check_value']);
+//                        if (is_array($checkchild)) {
+////                             Check if no form values block the creation of meta
+//                            $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
+//
+//                            if (!is_null($metademandtasks_tasks_id)) {
+//                                $_SESSION['son_meta'] = $metademandtasks_tasks_id;
+//                                if (!isset($post)) {
+//                                    $post[$id] = 0;
+//                                }
+//                                foreach ($checkchild as $keyId => $check_value) {
+//                                    $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
+//                                    $wizard->checkValueOk($check_value, $plugin_metademands_tasks_id[$keyId], $metademandtasks_tasks_id, $id, $value, $post);
+//                                }
+//                            }
+//
+//                            foreach ($checkchild as $keyId => $check_value) {
+//                                $value['check_value'] = $check_value;
+//                                if (isset(PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId])) {
+//                                    $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId];
+//                                }
+//                                $value['fields_link'] = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
+//                            }
+//                        }
 
                         if ($value['type'] == 'radio') {
                             if (!isset($_POST['field'][$id])) {

@@ -36,33 +36,6 @@ if (empty($_GET["id"])) {
 
 $field = new PluginMetademandsField();
 
-if (!isset($_POST["check_value"])) {
-   $_POST["check_value"] = PluginMetademandsField::_serialize([]);
-} else {
-   $field->getFromDB($_POST["id"]);
-   $hidden_kinks = PluginMetademandsField::_unserialize($field->fields["hidden_link"]);
-   if (is_array($hidden_kinks)) {
-      foreach ($hidden_kinks as $hidden_link) {
-         $update["id"]      = $hidden_link;
-         $update["to_hide"] = 0;
-         $field->update($update);
-      }
-   }
-   if (isset($_POST["hidden_link"])) {
-      foreach ($_POST["hidden_link"] as $idField) {
-         $update            = [];
-         $update["id"]      = $idField;
-         $update["to_hide"] = 1;
-         $field->update($update);
-      }
-   }
-}
-if (isset($_POST["checkbox_id"]) && is_array($_POST["checkbox_id"])) {
-   $_POST["checkbox_id"] = PluginMetademandsField::_serialize($_POST["checkbox_id"]);
-}
-if (isset($_POST["checkbox_value"]) && is_array($_POST["checkbox_value"])) {
-   $_POST["checkbox_value"] = PluginMetademandsField::_serialize($_POST["checkbox_value"]);
-}
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
     && isset($_POST['item']) && ($_POST['item'] == 'Group'
        || $_POST['item'] == 'User')) {
@@ -116,11 +89,7 @@ if (isset($_POST["add"])) {
          $_POST["informations_to_display"] = PluginMetademandsField::_serialize($_POST["informations_to_display"]);
       }
    }
-   if (isset($_POST["hidden_link"])) {
-      $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
-   } else {
-      $_POST["hidden_link"] = PluginMetademandsField::_serialize([]);
-   }
+
 
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
@@ -176,31 +145,6 @@ if (isset($_POST["add"])) {
       $_POST["value"] = PluginMetademandsField::_serialize($_POST["value"]);
    }
 
-   if (isset($_POST["check_value"]) && is_array($_POST["check_value"])) {
-      $_POST["check_value"] = PluginMetademandsField::_serialize($_POST["check_value"]);
-   }
-   if (isset($_POST["plugin_metademands_tasks_id"])) {
-      $_POST["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
-   }
-   if (isset($_POST["fields_link"])) {
-      $_POST["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
-   }
-   if (isset($_POST["hidden_link"])) {
-      $_POST["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
-   }
-   if (isset($_POST["hidden_block"])) {
-      $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
-   }
-
-   if (isset($_POST["childs_blocks"])) {
-       $_POST["childs_blocks"] = json_encode($_POST["childs_blocks"]);
-   } else {
-       $_POST["childs_blocks"] = json_encode([]);
-   }
-
-   if (isset($_POST["users_id_validate"])) {
-      $_POST["users_id_validate"] = PluginMetademandsField::_serialize($_POST["users_id_validate"]);
-   }
    $informations_to_display = [];
    if (isset($_POST['informations_to_display'])) {
       $informations_to_display = $_POST['informations_to_display'];
@@ -232,70 +176,15 @@ if (isset($_POST["add"])) {
       }
    }
 
-   Html::redirect($field->getFormURL() . "?id=" . $_POST["id"]);
+    Html::back();
 
 } else if (isset($_POST["purge"])) {
 
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
    $field->delete($_POST, 1);
-
    PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
-   $field->redirectToList();
-
-} else if (isset($_POST["clear_option"])) {
-   // Check update rights for fields
-
-   if (isset($_POST["option"])) {
-      $ids = $_POST['option'];
-      foreach ($ids as $k => $v) {
-         unset($_POST["check_value"][$k]);
-         unset($_POST["plugin_metademands_tasks_id"][$k]);
-         unset($_POST["fields_link"][$k]);
-         unset($_POST["hidden_link"][$k]);
-         unset($_POST["hidden_block"][$k]);
-         unset($_POST["childs_blocks"][$k]);
-      }
-   }
-   $input["id"] = $_POST["id"];
-   if (isset($_POST["check_value"])) {
-      $input["check_value"] = PluginMetademandsField::_serialize($_POST["check_value"]);
-   }
-   if (isset($_POST["plugin_metademands_tasks_id"])) {
-      $input["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($_POST["plugin_metademands_tasks_id"]);
-   }
-   if (isset($_POST["fields_link"])) {
-      $input["fields_link"] = PluginMetademandsField::_serialize($_POST["fields_link"]);
-   }
-   if (isset($_POST["hidden_link"])) {
-      $input["hidden_link"] = PluginMetademandsField::_serialize($_POST["hidden_link"]);
-   }
-   if (isset($_POST["hidden_block"])) {
-      $input["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
-   }
-   if (isset($_POST["childs_blocks"])) {
-      $input["childs_blocks"] = json_encode($_POST["childs_blocks"]);
-   }
-
-   $field->check(-1, UPDATE, $_POST);
-   $field->update($input);
-   Html::redirect($field->getFormURL() . "?id=" . $input["id"]);
-
-} else if (isset($_POST["clear_all_options"])) {
-
-    $input["id"] = $_POST["id"];
-    $empty = [];
-    $input["check_value"] = PluginMetademandsField::_serialize($empty);
-    $input["plugin_metademands_tasks_id"] = PluginMetademandsField::_serialize($empty);
-    $input["fields_link"] = PluginMetademandsField::_serialize($empty);
-    $input["hidden_link"] = PluginMetademandsField::_serialize($empty);
-    $input["hidden_block"] = PluginMetademandsField::_serialize($empty);
-    $input["childs_blocks"] = json_encode("");
-
-
-//    $field->check(-1, UPDATE, $input);
-    $field->update($input);
-    Html::redirect($field->getFormURL() . "?id=" . $input["id"]);
+    Html::back();
 
 } else if (isset($_POST["delete_custom_value"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])) {

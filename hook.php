@@ -303,6 +303,12 @@ function plugin_metademands_install() {
     //version 3.3.0
     if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "is_template")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.0.sql");
+
+        include(PLUGIN_METADEMANDS_DIR . "/install/migrateFieldsOptions.php");
+        migrateFieldsOptions();
+
+        $query = "UPDATE `glpi_plugin_metademands_fieldoptions` SET `childs_blocks` = '[]' WHERE `childs_blocks` = '\"\"'";
+        $DB->query($query);
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
@@ -336,6 +342,7 @@ function plugin_metademands_uninstall() {
                "glpi_plugin_metademands_ticketfields",
                "glpi_plugin_metademands_tickets_fields",
                "glpi_plugin_metademands_fields",
+               "glpi_plugin_metademands_fieldoptions",
                "glpi_plugin_metademands_tasks",
                "glpi_plugin_metademands_metademands",
                "glpi_plugin_metademands_basketlines",

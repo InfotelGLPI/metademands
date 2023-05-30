@@ -99,7 +99,7 @@ class PluginMetademandsWizard extends CommonDBTM
     /**
      *
      * @param CommonGLPI $item
-     * @param int        $withtemplate
+     * @param int $withtemplate
      *
      * @return array|string
      */
@@ -126,8 +126,8 @@ class PluginMetademandsWizard extends CommonDBTM
      * @static
      *
      * @param CommonGLPI $item
-     * @param int        $tabnum
-     * @param int        $withtemplate
+     * @param int $tabnum
+     * @param int $withtemplate
      *
      * @return bool|true
      */
@@ -165,11 +165,11 @@ class PluginMetademandsWizard extends CommonDBTM
             $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
         } else {
             // Create item
-            $item    = $options['item'];
+            $item = $options['item'];
             $canedit = $metademand->can($item->fields['id'], UPDATE);
             $this->getEmpty();
             $this->fields["plugin_metademands_metademands_id"] = $item->fields['id'];
-            $this->fields['color']                             = '#000';
+            $this->fields['color'] = '#000';
         }
 
         $wizard = new PluginMetademandsWizard();
@@ -182,9 +182,9 @@ class PluginMetademandsWizard extends CommonDBTM
 //            }
 //        }
         echo "<tr><td>";
-        $options = ['step'           => PluginMetademandsMetademand::STEP_SHOW,
+        $options = ['step' => PluginMetademandsMetademand::STEP_SHOW,
             'metademands_id' => $item->getID(),
-            'preview'        => true];
+            'preview' => true];
         $wizard->showWizard($options);
         echo "</td></tr>";
         echo "</table>";
@@ -286,7 +286,7 @@ class PluginMetademandsWizard extends CommonDBTM
             echo __('Please come back later', 'metademands') . "</div></h3>";
         } else {
 //            if (!$parameters['preview']) {
-                echo "<div class='bt-container-fluid asset metademands_wizard_rank'> ";
+            echo "<div class='bt-container-fluid asset metademands_wizard_rank'> ";
 //            }
             if ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
                 // Wizard title
@@ -1287,21 +1287,34 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($preview || $seeform) {
             $use_as_step = 0;
         }
+
+
         $hidden_blocks = [];
         $all_hidden_blocks = [];
+
         foreach ($allranks as $rank) {
             foreach ($line as $fields) {
                 if ($rank == $fields["rank"]) {
                     $allfields[$rank][] = $fields;
                     if ($use_as_step == 1) {
-                        $allhidden = PluginMetademandsField::_unserialize($fields['hidden_block']);
-                        if (is_array($allhidden) && count($allhidden) > 0) {
-                            foreach ($allhidden as $k => $hidden) {
-                                $hidden_blocks[$rank][] = $hidden;
-                                $all_hidden_blocks[] = $hidden;
-                            }
-                            $hidden_blocks[$rank] = array_filter($hidden_blocks[$rank]);
-                        }
+
+//                        if (isset($fields['options'])) {
+//                            $check_values = $fields['options'];
+//                            if (is_array($check_values)) {
+//                                if (count($check_values) > 0) {
+//                                    foreach ($check_values as $idc => $check_value) {
+//                                        if (isset($check_value['hidden_block'])) {
+//                                            $allhidden = $check_value['hidden_block'];
+//                                            if ($allhidden > 0) {
+//                                                $hidden_blocks[$rank][] = $allhidden;
+//                                                $all_hidden_blocks[] = $allhidden;
+//                                                $hidden_blocks[$rank] = array_filter($hidden_blocks[$rank]);
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
                     }
                 }
             }
@@ -1386,7 +1399,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 if ($line[$keys[0]]['type'] == 'title-block') {
 
                     $color = self::hex2rgba($line[$keys[0]]['color'], "0.03");
-                    $style_background = "style='background-color: $color!important;border-color: ".$line[$keys[0]]['color']."!important;border-radius: 0;'";
+                    $style_background = "style='background-color: $color!important;border-color: " . $line[$keys[0]]['color'] . "!important;border-radius: 0;'";
 
                     if ($preview) {
                         echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";
@@ -1432,11 +1445,10 @@ class PluginMetademandsWizard extends CommonDBTM
                      });");
                     echo "</span></h2>";
                     echo "</div>";
-                if (!empty($line[$keys[0]]['comment'])) {
-                    if (empty($comment = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'comment'))) {
-                        $comment = $line[$keys[0]]['comment'];
-                    }
-                    $comment = htmlspecialchars_decode(stripslashes($comment));
+                    if (!empty($line[$keys[0]]['comment'])) {
+                        if (empty($comment = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'comment'))) {
+                            $comment = $line[$keys[0]]['comment'];
+                        }
                         $comment = htmlspecialchars_decode(stripslashes($comment));
                         echo "<div class='card-body'><i>" . $comment . "</i></div>";
                     }
@@ -1517,17 +1529,17 @@ class PluginMetademandsWizard extends CommonDBTM
                             echo "<i id='up" . $data["rank"] . "' class='fa-1x fas fa-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
                             $rand = mt_rand();
                             echo Html::scriptBlock("
-                     var myelement$rand = '#up" . $data["rank"] . "';
-                     var bloc$rand = 'bloc" . $data["rank"] . "';
-                     $(myelement$rand).click(function() {     
-                         if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
-                             $('[bloc-hideid =' + bloc$rand + ']').hide();
-                             $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
-                         } else {
-                             $('[bloc-hideid =' + bloc$rand + ']').show();
-                             $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
-                         }
-                     });");
+                                 var myelement$rand = '#up" . $data["rank"] . "';
+                                 var bloc$rand = 'bloc" . $data["rank"] . "';
+                                 $(myelement$rand).click(function() {     
+                                     if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
+                                         $('[bloc-hideid =' + bloc$rand + ']').hide();
+                                         $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
+                                     } else {
+                                         $('[bloc-hideid =' + bloc$rand + ']').show();
+                                         $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
+                                     }
+                                 });");
                             echo "</span></h4>";
                             if (!empty($data['comment'])) {
                                 if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
@@ -1591,7 +1603,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     // Title field
                     if ($data['type'] == 'title') {
                         $color = self::hex2rgba($data['color'], "0.03");
-                        $style_background = "style='background-color: $color!important;border-color:".$data['color']."!important;border-radius: 0;'";
+                        $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;'";
                         echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
                         echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
 
@@ -1766,1486 +1778,16 @@ class PluginMetademandsWizard extends CommonDBTM
 //                }
 
                 // Fields linked
+
+
                 foreach ($line as $data) {
-                    if (!empty($data['fields_link'])
-                        && is_array(PluginMetademandsField::_unserialize($data['fields_link']))) {
-                        $script = "";
-                        if ($data['fields_link']) {
-                            $fields_link = PluginMetademandsField::_unserialize($data['fields_link']);
-                            $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                            $fields_link2 = $fields_link;
-                            if (count($fields_link) > 0) {
-                                foreach ($fields_link as $key => $fields) {
-                                    $rand = mt_rand();
-                                    if (isset($check_value[$key])) {
-                                        $script .= "var metademandWizard$rand = $(document).metademandWizard();";
-                                        $script .= "metademandWizard$rand.metademand_setMandatoryField(
-                                        'metademands_wizard_red" . $fields_link[$key] . "', 
-                                        'field[" . $data['id'] . "]',[";
-                                        if ($check_value[$key] > 0
-                                            || (($data['type'] == 'checkbox' || $data['type'] == 'radio')
-                                                && $check_value[$key] == 0)) {
-                                            $script .= $check_value[$key];
-                                        }
+                    PluginMetademandsFieldOption::fieldsLinkScript($data);
 
-                                        foreach ($fields_link2 as $key2 => $fields2) {
-                                            if ($key != $key2) {
-                                                if ($fields_link[$key] == $fields_link[$key2]) {
-                                                    $script .= "," . $check_value[$key2];
-                                                }
-                                            }
-                                        }
-                                        $script .= "], '" . $data['item'] . "');";
-                                    }
-                                }
-                            }
-                        }
-                        echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-                    }
-                }
-                // Fields hidden
-                foreach ($line as $data) {
-                    if (!empty($data['hidden_link'])) {
-                        switch ($data['type']) {
-                            case 'yesno':
-                                $script2 = "";
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    if (is_array($check_value) && count($check_value) > 0) {
-                                        foreach ($hidden_link as $key => $fields) {
-                                            $val = Toolbox::addslashes_deep($check_value[$key]);
-                                            $script .= "
-                                               if($(this).val() == $val){
-                                                 $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
-                                                 
-                                               }else{
-                                                $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
-                                                " . PluginMetademandsField::getJStorersetFieldsByField($hidden_link[$key]) . " 
-                                               }
-                                                ";
-                                            if ($check_value[$key] == $data["custom_values"]) {
-                                                $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                    && $_SESSION['plugin_metademands']['fields'][$data["id"]] != $check_value[$key]) {
-                                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                                }
-                                            } else {
-                                                $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                    && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
-                                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if (isset($data['childs_blocks'])) {
-                                    $childs_blocks = json_decode($data['childs_blocks'], true);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    if (is_array($check_value) && count($check_value) > 0) {
-                                        if (is_array($childs_blocks) && count($childs_blocks) > 0) {
-                                            foreach ($childs_blocks as $customvalue => $childs) {
-                                                $script .= "
-                                            if($(this).val() != $check_value[$customvalue]){";
-                                                foreach ($childs as $v) {
-                                                    $script .= PluginMetademandsField::getJStorersetFields($v);
-                                                    $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
-                                                }
-                                                $script .= " }else{
-                                             $('div[bloc-id=\"bloc$v\"]').show();
-                                            }";
-//                                            $script .= "};";
-
-                                                foreach ($childs as $v) {
-                                                    if ($v > 0) {
-                                                        $hiddenblocks[] = $v;
-                                                        $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                $script .= "});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    $check_value = (is_array($check_value)) ? array_flip($check_value) : $check_value;
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                                            $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                                            if ($idv > 0) {
-                                                $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-
-                                break;
-                            case 'dropdown_multiple':
-                                if ($data["display_type"] == PluginMetademandsField::CLASSIC_DISPLAY) {
-                                    $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-
-                                    $script2 = "";
-                                    if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                        $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
-                                        $script .= "var tohide = {};";
-                                        foreach ($hidden_link as $key => $fields) {
-                                            $script .= "
-                                             if($fields in tohide){
-                                                
-                                             }else{
-                                                tohide[$fields] = true;
-                                             }
-                                             ";
-                                        }
-                                        $script .= "
-                                            $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
-                                            ";
-                                        foreach ($check_value as $key => $fields) {
-                                            if ($fields != 0) {
-                                                if ($data["item"] == "other") {
-                                                    $val = Toolbox::addslashes_deep($custom_value[$fields]);
-                                                    $script .= "
-                                                      if($(value).attr('title') == '$val'){
-                                                         tohide[" . $hidden_link[$key] . "] = false;
-                                                      }
-                                                   ";
-                                                } else {
-                                                    $script .= "
-                                                      if($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($fields) . "'){
-                                                         tohide[" . $hidden_link[$key] . "] = false;
-                                                      }
-                                                   ";
-                                                }
-
-                                                $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                    && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
-                                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                }
-                                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                        if ($fieldSession == $check_value[$key]) {
-                                                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        $script .= "});";
-                                        //dropdown_multiple
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                      $('[id-field =\"field'+key+'\"]').hide();
-                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-                                     
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 if(this.checked == true) {
-                                                        this.click();
-                                                        this.checked = false;
-                                                        break;
-                                                    }
-                                        }
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                                      $('[name =\"field['+key+']\"]').removeAttr('required');
-                                    }else{
-                                       $('[id-field =\"field'+key+'\"]').show();
-                                    }
-                                 });";
-                                        $script .= "});";
-                                    }
-
-                                    //Initialize id default value
-                                    if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                        $check_value = (is_array($check_value)) ? array_flip($check_value) : $check_value;
-                                        foreach ($default_values as $k => $v) {
-                                            if ($v == 1) {
-                                                $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                                                $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                                                if ($idv > 0) {
-                                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                                }
-                                            }
-                                        }
-                                    }
-                                    echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                } else {
-                                    $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
-
-                                    $script2 = "";
-                                    if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                        $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
-                                        $script .= "var tohide = {};";
-                                        foreach ($hidden_link as $key => $fields) {
-                                            $script .= "
-                                          if($fields in tohide){
-                                             
-                                          }else{
-                                             tohide[$fields] = true;
-                                          }
-                                          ";
-                                        }
-                                        $script .= "
-                          $.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {
-                          ";
-                                        foreach ($check_value as $key => $fields) {
-                                            if ($fields != 0) {
-                                                $script .= " 
-                                                if($(value).attr('value') == '$fields'){
-                                                
-                                                   tohide[" . $hidden_link[$key] . "] = false;
-                                                }
-                                             ";
-                                                $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                    && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
-                                                    $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                }
-                                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                        if ($fieldSession == $check_value[$key]) {
-                                                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        $script .= "});";
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                      $('[id-field =\"field'+key+'\"]').hide();
-                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-                                     
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 if(this.checked == true) {
-                                                        this.click();
-                                                        this.checked = false;
-                                                        break;
-                                                    }
-                                        }
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                                      $('[name =\"field['+key+']\"]').removeAttr('required');
-                                    }else{
-                                       $('[id-field =\"field'+key+'\"]').show();
-                                    }
-                                 });";
-                                        $script .= "});";
-                                    }
-
-                                    //Initialize id default value
-                                    if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                        $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                        $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                        $check_value = (is_array($check_value)) ? array_flip($check_value) : $check_value;
-                                        foreach ($default_values as $k => $v) {
-                                            if ($v == 1) {
-                                                $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                                                $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                                                if ($idv > 0) {
-                                                    $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                                }
-                                            }
-                                        }
-                                    }
-                                    echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                }
-
-                                break;
-                            case 'checkbox':
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $script2 = "";
-                                    $script .= "var tohide = {};";
-                                    if (is_array($check_value) && count($check_value) > 0) {
-                                        //                     $('[name^=\"field[".$data["id"]."]\"]').each()
-                                        $script .= " if (this.checked){ ";
-                                        foreach ($hidden_link as $key => $fields) {
-                                            $script .= " if($(this).val() == $check_value[$key] || $check_value[$key] == -1){
-                                             if($fields in tohide){
-                                             
-                                             }else{
-                                                tohide[$fields] = true;
-                                             }
-                                             tohide[$fields] = false;
-                                          }";
-
-                                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                                foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                    if ($fieldSession == $check_value[$key]) {
-                                                        $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        //checkbox
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                       $('[id-field =\"field'+key+'\"]').hide();
-                                       $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-                                     
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 if(this.checked == true) {
-                                                        this.click();
-                                                        this.checked = false;
-                                                        break;
-                                                    }
-                                        }
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                                       $('[name =\"field['+key+']\"]').removeAttr('required');
-                                    }else{
-                                       $('[id-field =\"field'+key+'\"]').show();
-                                    }
-                                 });";
-                                        $script .= "} else {";
-                                        foreach ($hidden_link as $key => $fields) {
-                                            $script .= "if($(this).val() == $check_value[$key]){
-                                                if($fields in tohide){
-                                                
-                                                }else{
-                                                   tohide[$fields] = true;
-                                                }
-                                                $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
-                                                  ";
-                                            foreach ($hidden_link as $key2 => $fields2) {
-                                                $script .= "if($(value).val() == $check_value[$key2] || $check_value[$key2] == -1){
-                                                   tohide[$fields2] = false;
-                                                   }
-                                               ";
-                                            }
-                                            $script .= " 
-                                          });
-                                       }";
-
-                                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                                foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                    if ($fieldSession == $check_value[$key]) {
-                                                        $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                       $('[id-field =\"field'+key+'\"]').hide();
-                                       $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-                                     
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 if(this.checked == true) {
-                                                        this.click();
-                                                        this.checked = false;
-                                                        break;
-                                                    }
-                                        }
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                                       $('[name =\"field['+key+']\"]').removeAttr('required');
-                                    }else{
-                                       $('[id-field =\"field'+key+'\"]').show();
-                                    }
-                                 });";
-                                        $script .= "}";
-                                    }
-                                }
-                                $script .= "});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-
-                                    $check_value = (is_array($check_value)) ? array_flip($check_value) : $check_value;
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                                            $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                                            if ($idv > 0) {
-                                                $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-
-                            case 'text':
-                            case 'textarea':
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                                $script2 = "";
-
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    foreach ($hidden_link as $key => $fields) {
-                                        if (isset($check_value[$key]) && $check_value[$key] == 1) {
-                                            $script .= "
-                                          if($(this).val().trim().length < 1){
-                                             $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
-                                              " . PluginMetademandsField::getJStorersetFieldsByField($hidden_link[$key]) . " 
-                                          }else{
-                                             $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
-                                          }
-                                        ";
-                                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
-                                                $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                            }
-                                        } else {
-                                            $script .= "
-                                          if($(this).val().trim().length < 1){
-                                                $('[id-field =\"field" . $hidden_link[$key] . "\"]').show();
-                                             }else{
-                                                $('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();
-                                                 " . PluginMetademandsField::getJStorersetFieldsByField($hidden_link[$key]) . " 
-                                             }
-                                        ";
-                                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
-                                                $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                $script .= "});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    $check_value = (is_array($check_value)) ? array_flip($check_value) : $check_value;
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                                            $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                                            if ($idv > 0) {
-                                                $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-
-                            case 'radio':
-                                $script2 = "";
-
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                                //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
-
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $script .= "var tohide = {};";
-                                    foreach ($hidden_link as $key => $fields) {
-                                        $script .= "
-                                          if($fields in tohide){
-                                          
-                                          }else{
-                                             tohide[$fields] = true;
-                                          }
-                                          if($(this).val() == $check_value[$key] || $check_value[$key] == -1){
-                                             tohide[$fields] = false;
-                                          }
-                                           ";
-                                        $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                        if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                            && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || $check_value[$key] == -1)) {
-                                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                        }
-                                    }
-                                    //radio
-                                    $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                      $('[id-field =\"field'+key+'\"]').hide();
-                                      $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-                                     
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 if(this.checked == true) {
-                                                        this.click();
-                                                        this.checked = false;
-                                                        break;
-                                                    }
-                                        }
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                                      $('[name =\"field['+key+']\"]').removeAttr('required');
-                                    }else{
-                                       $('[id-field =\"field'+key+'\"]').show();
-                                    }
-                                 });";
-                                }
-                                $script .= "});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    $check_value = (is_array($check_value)) ? array_flip($check_value) : $check_value;
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            $idc = isset($check_value[$k]) ? $check_value[$k] : 0;
-                                            $idv = ($idc > 0) ? $hidden_link[$idc] : 0;
-                                            if ($idv > 0) {
-                                                $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-
-                            case 'group':
-                            case 'dropdown':
-                            case 'dropdown_object':
-                            case 'dropdown_meta':
-                                if ($data['item'] == "ITILCategory_Metademands") {
-                                    $name = "field_plugin_servicecatalog_itilcategories_id";
-                                } else {
-                                    $name = "field[" . $data["id"] . "]";
-                                }
-                                $script = "$('[name=\"$name\"]').change(function() {";
-                                //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
-
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $script2 = "";
-                                    $script .= "var tohide = {};";
-                                    if (is_array($check_value) && count($check_value) > 0) {
-                                        foreach ($hidden_link as $key => $fields) {
-                                            $script .= "
-                                             if($fields in tohide){
-                                             
-                                             }else{
-                                                tohide[$fields] = true;
-                                             }
-                                             if($(this).val() != 0 && ($(this).val() == $check_value[$key] || $check_value[$key] == 0 ) ){
-                                                tohide[$fields] = false;
-                                             }";
-
-                                            $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || ($_SESSION['plugin_metademands']['fields'][$data["id"]] != 0 && $check_value[$key] == 0))) {
-                                                $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                            } else {
-                                                if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
-                                                    if (Session::getLoginUserID() == $check_value[$key]) {
-                                                        $script2 .= "$('[id-field =\"field" . $hidden_link[$key] . "\"]').show();";
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                       $('[id-field =\"field'+key+'\"]').hide();
-                                       $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-                                     
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 if(this.checked == true) {
-                                                        this.click();
-                                                        this.checked = false;
-                                                        break;
-                                                    }
-                                        }
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                                       $('[name =\"field['+key+']\"]').removeAttr('required');
-                                    }else{
-                                       $('[id-field =\"field'+key+'\"]').show();
-                                    }
-                                 });";
-                                    }
-                                }
-                                $script .= "});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_link = PluginMetademandsField::_unserialize($data['hidden_link']);
-                                    if (is_array($check_value) && count($check_value) > 0) {
-                                        $check_value = array_flip($check_value);
-
-                                        foreach ($default_values as $k => $v) {
-                                            if ($v == 1) {
-                                                foreach ($check_value as $key => $val) {
-                                                    if ($k == $key || $key == 0) {
-                                                        $idv = $hidden_link[$val];
-                                                        if ($idv > 0) {
-                                                            $script .= " $('[id-field =\"field" . $idv . "\"]').show();";
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-                        }
-                    }
-                    if (!empty($data['hidden_block'])) {// && $use_as_step == 0
-                        switch ($data['type']) {
-                            case 'yesno':
-                                $script2 = "";
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    if (is_array($check_value) && count($check_value) > 0) {
-                                        foreach ($hidden_block as $key => $fields) {
-                                            $script .= "
-                                            if($(this).val() == $check_value[$key]){
-                                              $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
-                                              
-                                            }else{
-                                             $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                                            $script .= "}
-                                             ";
-                                            if ($check_value[$key] == $data["custom_values"]) {
-                                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                    && $_SESSION['plugin_metademands']['fields'][$data["id"]] != $check_value[$key]) {
-                                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                                }
-                                            } else {
-                                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                    && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
-                                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                $script .= "});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = (is_array($check_value)) ? array_flip($check_value) : $check_value;
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            if (isset($check_value[$k])) {
-                                                $idc = $check_value[$k];
-                                                $idv = $hidden_block[$idc];
-                                                $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-
-
-                                //                  case 'PluginResourcesResource':
-                                //                  case 'PluginMetademandsITILApplication':
-                                //                  case 'PluginMetademandsITILEnvironment':
-
-                                break;
-                            case 'dropdown_multiple':
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                                $script2 = "";
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
-                                    $script .= "var tohide = {};";
-                                    foreach ($hidden_block as $key => $fields) {
-                                        $script .= "
-                           if($fields in tohide){
-                              
-                           }else{
-                              tohide[$fields] = true;
-                           }
-                           ";
-                                    }
-                                    $script .= "
-                          $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
-                          ";
-                                    foreach ($check_value as $key => $fields) {
-                                        if ($fields != 0) {
-                                            $val = Toolbox::addslashes_deep($custom_value[$fields]);
-                                            $script .= "
-                                    if($(value).attr('title') == '$val'){
-                                       tohide[" . $hidden_block[$key] . "] = false;
-                                    }
-                                 ";
-                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key]) {
-                                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                            }
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                                foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                    if ($fieldSession == $check_value[$key]) {
-                                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    $script .= "});";
-                                    $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                     $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                     $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
-                                        switch(this.type) {
-                                               case 'password':
-                                               case 'text':
-                                               case 'textarea':
-                                               case 'file':
-                                               case 'date':
-                                               case 'number':
-                                               case 'tel':
-                                               case 'email':
-                                                   jQuery(this).val('');
-                                                   break;
-                                               case 'select-one':
-                                               case 'select-multiple':
-                                                   jQuery(this).val('0').trigger('change');
-                                                   jQuery(this).val('0');
-                                                   break;
-                                               case 'checkbox':
-                                               case 'radio':
-                                                   this.checked = false;
-                                                   break;
-                                           }
-                                       });
-                                    } else {
-                                    $('[bloc-id =\"bloc'+key+'\"]').show();
-                            
-                                    }
-                                   
-                                 });";
-                                    $script .= "fixButtonIndicator();console.log('5')});";
-                                }
-
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = array_flip($check_value);
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            if (isset($check_value[$k])) {
-                                                $idc = $check_value[$k];
-                                                $idv = $hidden_block[$idc];
-                                                $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-                            case 'checkbox':
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                                //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
-
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $script2 = "";
-                                    $script .= "var tohide = {};";
-                                    if (is_array($check_value) && count($check_value) > 0) {
-                                        //                     $('[name^=\"field[".$data["id"]."]\"]').each()
-                                        $script .= " if (this.checked){ ";
-                                        foreach ($hidden_block as $key => $fields) {
-                                            $script .= "                       
-                                          if($(this).val() == $check_value[$key] || $check_value[$key] == -1 ){
-                                             if($fields in tohide){
-                                             
-                                             }else{
-                                                tohide[$fields] = true;
-                                             }
-                                             tohide[$fields] = false;
-                                          }";
-                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                                foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                    if ($fieldSession == $check_value[$key] || $check_value[$key] == -1) {
-                                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                                    }
-                                                }
-                                            }
-                                        }
-
-
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                     $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                     $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
-                                        switch(this.type) {
-                                               case 'password':
-                                               case 'text':
-                                               case 'textarea':
-                                               case 'file':
-                                               case 'date':
-                                               case 'number':
-                                               case 'tel':
-                                               case 'email':
-                                                   jQuery(this).val('');
-                                                   break;
-                                               case 'select-one':
-                                               case 'select-multiple':
-                                                   jQuery(this).val('0').trigger('change');
-                                                   jQuery(this).val('0');
-                                                   break;
-                                               case 'checkbox':
-                                               case 'radio':
-                                                   this.checked = false;
-                                                   break;
-                                           }
-                                       });
-                                    } else {
-                                    $('[bloc-id =\"bloc'+key+'\"]').show();
-                            
-                                    }
-                                   
-                                 });";
-                                        $script .= "fixButtonIndicator();} else {";
-                                        foreach ($hidden_block as $key => $fields) {
-                                            $script .= "
-                                          if($(this).val() == $check_value[$key]){
-                                             if($fields in tohide){
-                                             
-                                             }else{
-                                                tohide[$fields] = true;
-                                             }
-                                             $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
-                                               ";
-                                            foreach ($hidden_block as $key2 => $fields2) {
-                                                $script .= "if($(value).val() == $check_value[$key2] 
-                                                      || $check_value[$key2] == -1 ){
-                                                   tohide[$fields2] = false;
-                                                }
-                                            ";
-                                            }
-                                            $script .= " 
-                                            fixButtonIndicator();console.log('4'); });
-                                          }";
-
-                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                                foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                    if ($fieldSession == $check_value[$key] || $check_value[$key] == -1) {
-                                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                     $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                     $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
-                                        switch(this.type) {
-                                               case 'password':
-                                               case 'text':
-                                               case 'textarea':
-                                               case 'file':
-                                               case 'date':
-                                               case 'number':
-                                               case 'tel':
-                                               case 'email':
-                                                   jQuery(this).val('');
-                                                   break;
-                                               case 'select-one':
-                                               case 'select-multiple':
-                                                   jQuery(this).val('0').trigger('change');
-                                                   jQuery(this).val('0');
-                                                   break;
-                                               case 'checkbox':
-                                               case 'radio':
-                                                    if(this.checked == true) {
-                                                        this.click();
-                                                        this.checked = false;
-                                                        break;
-                                                    }
-                                           }
-                                       });
-                                    } else {
-                                    $('[bloc-id =\"bloc'+key+'\"]').show();
-                            
-                                    }
-                                   
-                                fixButtonIndicator();console.log('3'); });";
-                                        $script .= "}";
-                                    }
-                                }
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = (is_array($check_value)) ? array_flip($check_value) : $check_value;
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            if (isset($check_value[$k])) {
-                                                $idc = $check_value[$k];
-                                                $idv = $hidden_block[$idc];
-                                                $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                $script .= "});";
-
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-
-                            case 'text':
-                            case 'textarea':
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                                $script2 = "";
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    foreach ($hidden_block as $key => $fields) {
-                                        if (isset($check_value[$key]) && $check_value[$key] == 1) {
-                                            $script .= "
-                                          if($(this).val().trim().length < 1){
-                                             $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                                            $script .= "
-                                          } else {
-                                             $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
-                                          }
-                                        ";
-                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] != "") {
-                                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                            }
-                                        } else {
-                                            $script .= "
-                                             if($(this).val().trim().length < 1){
-                                                   $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();
-                                                } else {
-                                                   $('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            $script .= PluginMetademandsField::getJStorersetFields($hidden_block[$key]);
-                                            $script .= " }";
-                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && $_SESSION['plugin_metademands']['fields'][$data["id"]] == "") {
-                                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                    if (isset($data['childs_blocks'])) {
-                                        $childs_blocks = json_decode($data['childs_blocks'], true);
-                                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                        if (is_array($check_value) && count($check_value) > 0) {
-                                            if (is_array($childs_blocks) && count($childs_blocks) > 0) {
-                                                foreach ($childs_blocks as $customvalue => $childs) {
-                                                    if (isset($check_value[$customvalue]) && $check_value[$customvalue] == 1) {
-                                                        $script .= "
-                                              if($(this).val().trim().length < 1){";
-                                                        foreach ($childs as $v) {
-                                                            $script .= PluginMetademandsField::getJStorersetFields($v);
-                                                        }
-
-                                                        $script .= "}
-                                          ";
-                                                    } else {
-                                                        $script .= "
-                                              if($(this).val().trim().length >= 1){";
-                                                        foreach ($childs as $v) {
-                                                            $script .= PluginMetademandsField::getJStorersetFields($v);
-                                                        }
-
-                                                        $script .= "}";
-                                                    }
-
-                                                    foreach ($childs as $v) {
-                                                        if ($v > 0) {
-                                                            $hiddenblocks[] = $v;
-                                                            $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                $script .= "fixButtonIndicator();";
-                            $script .= "});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = array_flip($check_value);
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            if (isset($check_value[$k])) {
-                                                $idc = $check_value[$k];
-                                                $idv = $hidden_block[$idc];
-                                                $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-
-
-                            case 'radio':
-                                $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $script .= "var tohide = {};";
-                                    foreach ($hidden_block as $key => $fields) {
-                                        $script .= "
-                                          if($fields in tohide){
-                                          
-                                          }else{
-                                             tohide[$fields] = true;
-                                          }
-                                          if($(this).val() == $check_value[$key] || $check_value[$key] == -1){
-                                             tohide[$fields] = false;
-                                          }";
-                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                        if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                            && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || $check_value[$key] == -1)) {
-                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                        }
-                                    }
-                                    $script .= "$.each( tohide, function( key, value ) {
-
-                                    if(value == true){
-                                     $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                     $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
-                                        switch(this.type) {
-                                               case 'password':
-                                               case 'text':
-                                               case 'textarea':
-                                               case 'file':
-                                               case 'date':
-                                               case 'number':
-                                               case 'tel':
-                                               case 'email':
-                                                   jQuery(this).val('');
-                                                   break;
-                                               case 'select-one':
-                                               case 'select-multiple':
-                                                   jQuery(this).val('0').trigger('change');
-                                                   jQuery(this).val('0');
-                                                   break;
-                                               case 'checkbox':
-                                               case 'radio':
-                                                   this.checked = false;
-                                                   break;
-                                           }
-                                       });
-                                    } else {
-                                    $('[bloc-id =\"bloc'+key+'\"]').show();
-                                    }
-                                ";
-                                }
-                                $script .= "});";
-                                $script .= "fixButtonIndicator();console.log('2');});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = array_flip($check_value);
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            if (isset($check_value[$k])) {
-                                                $idc = $check_value[$k];
-                                                $idv = $hidden_block[$idc];
-                                                $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-
-                            case 'group':
-                            case 'dropdown':
-                            case 'dropdown_object':
-                            case 'dropdown_meta':
-                                if ($data['item'] == "ITILCategory_Metademands") {
-                                    $name = "field_plugin_servicecatalog_itilcategories_id";
-                                } else {
-                                    $name = "field[" . $data["id"] . "]";
-                                }
-
-                                $script = "$('[name=\"$name\"]').change(function() { ";
-                                //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
-
-                                if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $script2 = "";
-                                    $script .= "var tohide = {};";
-                                    if (is_array($check_value) && count($check_value) > 0) {
-                                        foreach ($hidden_block as $key => $fields) {
-                                            $script .= "
-                                          if($fields in tohide){
-                                          
-                                          }else{
-                                             tohide[$fields] = true;
-                                          }
-                                          if($(this).val() == $check_value[$key] || ($(this).val() != 0 &&  $check_value[$key] == 0 ) ){
-                                          
-                                             tohide[$fields] = false;
-                                          }";
-
-                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').hide();";
-                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                                && ($_SESSION['plugin_metademands']['fields'][$data["id"]] == $check_value[$key] || ($_SESSION['plugin_metademands']['fields'][$data["id"]] != 0 && $check_value[$key] == 0))) {
-                                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                            } else {
-                                                if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
-                                                    if (Session::getLoginUserID() == $check_value[$key]) {
-                                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block[$key] . "\"]').show();";
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                    if(value == true){
-                                     $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                     $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
-                                              switch(this.type) {
-                                                     case 'password':
-                                                     case 'text':
-                                                     case 'textarea':
-                                                     case 'file':
-                                                     case 'date':
-                                                     case 'number':
-                                                     case 'tel':
-                                                     case 'email':
-                                                         jQuery(this).val('');
-                                                         break;
-                                                     case 'select-one':
-                                                     case 'select-multiple':
-                                                         jQuery(this).val('0').trigger('change');
-                                                         jQuery(this).val('0');
-                                                         break;
-                                                     case 'checkbox':
-                                                     case 'radio':
-                                                         this.checked = false;
-                                                         break;
-                                                 }
-                                             });
-                                    } else {
-                                    $('[bloc-id =\"bloc'+key+'\"]').show();
-                                   
-                                    }
-                                   
-                                 });";
-                                        if (isset($data['childs_blocks'])) {
-                                            $childs_blocks = json_decode($data['childs_blocks'], true);
-                                            $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                            if (is_array($check_value) && count($check_value) > 0) {
-                                                if (is_array($childs_blocks) && count($childs_blocks) > 0) {
-                                                    foreach ($childs_blocks as $customvalue => $childs) {
-                                                        if (isset($check_value[$customvalue])) {
-                                                            $script .= "
-                                                     if((($(this).val() != $check_value[$customvalue] && $check_value[$customvalue] != 0 )  
-                                                     ||  ($(this).val() == 0 &&  $check_value[$customvalue] == 0 ) )){";
-                                                            foreach ($childs as $v) {
-                                                                $script .= PluginMetademandsField::getJStorersetFields($v);
-                                                            }
-
-                                                            $script .= "}";
-
-                                                            foreach ($childs as $v) {
-                                                                if ($v > 0) {
-                                                                    $hiddenblocks[] = $v;
-                                                                    $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                $script .= "fixButtonIndicator();});";
-                                //Initialize id default value
-                                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
-                                    $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                    $hidden_block = PluginMetademandsField::_unserialize($data['hidden_block']);
-                                    $check_value = array_flip($check_value);
-                                    foreach ($default_values as $k => $v) {
-                                        if ($v == 1) {
-                                            foreach ($check_value as $key => $val) {
-                                                if ($k == $key || $key == 0) {
-                                                    $idv = $hidden_block[$val];
-                                                    if ($idv > 0) {
-                                                        $script2 .= "$('[bloc-id =\"bloc" . $idv . "\"]').show();";
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    if (!empty($data['checkbox_id']) && !empty($data['checkbox_value'])) {
-                        switch ($data['type']) {
-                            case 'dropdown_multiple':
-                                if ($data["display_type"] == PluginMetademandsField::CLASSIC_DISPLAY) {
-                                    $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
-                                    if (is_array(PluginMetademandsField::_unserialize($data['checkbox_id'])) &&
-                                        is_array(PluginMetademandsField::_unserialize($data['checkbox_value']))) {
-                                        $checkbox_id = PluginMetademandsField::_unserialize($data['checkbox_id']);
-                                        $checkbox_value = PluginMetademandsField::_unserialize($data['checkbox_value']);
-                                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                        $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
-                                        $script .= "
-                          $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
-                          ";
-                                        foreach ($check_value as $key => $fields) {
-                                            if ($fields != 0 &&
-                                                (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0)) {
-                                                if ($data["item"] == "other") {
-                                                    $title = Toolbox::addslashes_deep($custom_value[$fields]);
-                                                    $script .= "
-                                       if($(value).attr('title') == '$title'){
-                                          document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
-                                       }
-                                    ";
-                                                } else {
-                                                    $script .= "
-                                       if($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($fields) . "'){
-                                          document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
-                                       }
-                                    ";
-                                                }
-                                            }
-                                        }
-
-                                        $script .= "});
-                           fixButtonIndicator();});";
-                                    }
-                                    echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-                                } else {
-                                    $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
-
-                                    if (is_array(PluginMetademandsField::_unserialize($data['hidden_link']))) {
-                                        $checkbox_id = PluginMetademandsField::_unserialize($data['checkbox_id']);
-                                        $checkbox_value = PluginMetademandsField::_unserialize($data['checkbox_value']);
-                                        $check_value = PluginMetademandsField::_unserialize($data['check_value']);
-                                        $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
-
-                                        $script .= "
-                          $.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {
-                          ";
-                                        foreach ($check_value as $key => $fields) {
-                                            if ($fields != 0 &&
-                                                (isset($checkbox_id[$key]) && $checkbox_id[$key] > 0)) {
-                                                $fields = Toolbox::addslashes_deep($fields);
-                                                $script .= " 
-                           if($(value).attr('value') == '$fields'){
-                              document.getElementById('field[$checkbox_id[$key]][$checkbox_value[$key]]').checked=true;
-                           }
-                        ";
-                                            }
-                                        }
-
-                                        $script .= "});
-                           fixButtonIndicator();});";
-                                    }
-
-                                    echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-                                }
-
-                                break;
-                        }
-                    }
+                    PluginMetademandsFieldOption::fieldsHiddenScript($data);
+//
+                    PluginMetademandsFieldOption::blocksHiddenScript($data);
+//
+                    PluginMetademandsFieldOption::checkboxScript($data);
                 }
 
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
@@ -3269,7 +1811,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             ($meta_validated
                                 && $metademands->fields['can_clone'] == true))
                         && Session::haveRight('plugin_metademands_updatemeta', READ)))
-            && $step - 1 >= count($metademands_data)) {
+                && $step - 1 >= count($metademands_data)) {
                 echo "<br>";
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
@@ -3379,11 +1921,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         $blocks[] = $f["rank"];
                     }
 //                    if (count($list_blocks2) > 0) {
-                        foreach ($blocks as $block) {
-                            if (!in_array($block, $list_blocks2)) {
-                                $list_blocks[] = $block;
-                            }
+                    foreach ($blocks as $block) {
+                        if (!in_array($block, $list_blocks2)) {
+                            $list_blocks[] = $block;
                         }
+                    }
 //                    }
 
                     if (!isset($steps) || (is_array($steps) && count($steps) == 0)) {
@@ -3411,6 +1953,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     if (isset($_SESSION['plugin_metademands']['hidden_blocks'])) {
                         if (is_array($_SESSION['plugin_metademands']['hidden_blocks'])) {
                             $hidden_blocks = $_SESSION['plugin_metademands']['hidden_blocks'];
+                            $script = "";
                             foreach ($hidden_blocks as $hidden_block) {
                                 $script .= "$('div[bloc-id=\"bloc$hidden_block\"]').hide();";
                             }
@@ -3445,7 +1988,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 $stepConfig = new PluginMetademandsConfigstep();
                 $res = $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
                 $modal = true;
-                if(!$stepConfig->fields['link_user_block'] && !$stepConfig->fields['multiple_link_groups_blocks']) {
+                if(!isset($stepConfig->fields['link_user_block'])
+                    && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
                     $modal = false;
                 }
                 echo "<script>
@@ -4293,6 +2837,7 @@ class PluginMetademandsWizard extends CommonDBTM
         //Don't check hidden fields of hidden blocks
         $hidden_blocks = $_SESSION['plugin_metademands']['hidden_blocks'] ?? [];
         $dbu = new DbUtils();
+//        Toolbox::logInfo($hidden_blocks);
         foreach ($hidden_blocks as $hidden_block) {
             $crit["rank"] = $hidden_block;
             $crit["plugin_metademands_metademands_id"] = $post["metademands_id"];
@@ -4336,7 +2881,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 && (empty($all_fields[$value['fields_link']]) || $all_fields[$value['fields_link']] == 'NULL')
             ) {
                 $field = new PluginMetademandsField();
-                $fields_links = PluginMetademandsField::_unserialize($value['fields_link']);
+                $fields_links = $value['fields_link'];
 
                 if (is_array($fields_links)) {
                     foreach ($fields_links as $k => $fields_link) {
@@ -4388,8 +2933,6 @@ class PluginMetademandsWizard extends CommonDBTM
                     $checkKo[] = 1;
                 }
                 // date not < today
-                $value["check_value"] = PluginMetademandsField::_unserialize($value["check_value"]);
-
                 if ($fields['value'] != 'NULL'
                     && !empty($fields['value'])
                     && !empty($value['check_value'])
@@ -4529,155 +3072,43 @@ class PluginMetademandsWizard extends CommonDBTM
         }
     }
 
-    /**
-     * Unset values in data & post for hiddens fields
-     * Add metademands_hide in Session for hidden fields
-     *
-     * @param $data
-     * @param $post
-     */
-    public static function unsetHidden(&$data, &$post)
-    {
-        foreach ($data as $id => $value) {
-            //if field is hidden remove it from Data & Post
-            $unserialisedCheck = PluginMetademandsField::_unserialize($value['check_value']);
-            $unserialisedHiddenLink = PluginMetademandsField::_unserialize($value['hidden_link']);
-            $unserialisedHiddenBloc = PluginMetademandsField::_unserialize($value['hidden_block']);
-            $unserialisedTaskChild = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
-            $toKeep = [];
-            if (is_array($unserialisedCheck) && is_array($unserialisedHiddenLink)) {
-                foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
-                    if (!isset($toKeep[$hiddenFields])) {
-                        $toKeep[$hiddenFields] = false;
-                    }
-                    if (isset($post[$id]) && isset($unserialisedCheck[$key])) {
-                        $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
-                    } else {
-                        $test = false;
-                    }
-
-                    if ($test == true) {
-                        $toKeep[$hiddenFields] = true;
-                        if ($unserialisedTaskChild[$key] != 0) {
-                            $metaTask = new PluginMetademandsMetademandTask();
-                            $metaTask->getFromDB($unserialisedTaskChild[$key]);
-                            $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                            unset($_SESSION['metademands_hide'][$idChild]);
-                        }
-                    } else {
-                        if ($unserialisedTaskChild[$key] != 0) {
-                            $metaTask = new PluginMetademandsMetademandTask();
-                            $metaTask->getFromDB($unserialisedTaskChild[$key]);
-                            $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                            $_SESSION['metademands_hide'][$idChild] = $idChild;
-                        }
-                    }
-                }
-                if (is_array($unserialisedHiddenBloc)) {
-                    foreach ($unserialisedHiddenBloc as $key => $hiddenBloc) {
-                        $metademandsFields = new PluginMetademandsField();
-                        $metademandsFields = $metademandsFields->find(["rank" => $hiddenBloc,
-                            'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id']], 'order');
-
-                        foreach ($metademandsFields as $metademandField) {
-                            if (!isset($toKeep[$metademandField['id']])) {
-                                $toKeep[$metademandField['id']] = false;
-                            }
-                            if (isset($post[$id]) && isset($metademandField['id'])) {
-                                $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $unserialisedCheck[$key], $value['type']);
-                            } else {
-                                $test = false;
-                            }
-
-                            if ($test == true) {
-                                $toKeep[$metademandField['id']] = true;
-                                if ($unserialisedTaskChild[$key] != 0) {
-                                    $metaTask = new PluginMetademandsMetademandTask();
-                                    $metaTask->getFromDB($unserialisedTaskChild[$key]);
-                                    $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                                    unset($_SESSION['metademands_hide'][$idChild]);
-                                }
-                            } else {
-                                if ($unserialisedTaskChild[$key] != 0) {
-                                    $metaTask = new PluginMetademandsMetademandTask();
-                                    $metaTask->getFromDB($unserialisedTaskChild[$key]);
-                                    $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                                    $_SESSION['metademands_hide'][$idChild] = $idChild;
-                                }
-                            }
-                        }
-                    }
-                }
-                foreach ($toKeep as $k => $v) {
-                    if ($v == false) {
-                        if (isset($post[$k])) {
-                            unset($post[$k]);
-                        }
-                        if (isset($data[$k])) {
-                            unset($data[$k]);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    public static function getMandatoryFields($id, $value, $fields)
-    {
-        $unserialisedCheck = PluginMetademandsField::_unserialize($value['check_value']);
-        $unserialisedFieldsLink = PluginMetademandsField::_unserialize($value['fields_link']);
-        $toBeMandatory = [];
-        if (is_array($unserialisedCheck) && !empty($unserialisedCheck)) {
-            foreach ($unserialisedCheck as $key => $check) {
-                if (isset($fields[$id]) && is_array($fields[$id])) {
-                    if (in_array($check, $fields[$id])) {
-                        $toBeMandatory[] = $unserialisedFieldsLink[$key];
-                    }
-                } else {
-                    if (isset($fields[$id]) && $check == $fields[$id] && $fields[$id] != null) {
-                        $toBeMandatory[] = $unserialisedFieldsLink[$key];
-                    }
-                }
-            }
-        }
-        return $toBeMandatory;
-    }
 
     //* Function to convert Hex colors to RGBA
-    public static function hex2rgba( $color, $opacity = false ) {
+    public static function hex2rgba($color, $opacity = false)
+    {
 
         $defaultColor = 'rgb(0,0,0)';
 
         // Return default color if no color provided
-        if ( empty( $color ) ) {
+        if (empty($color)) {
             return $defaultColor;
         }
 
         // Ignore "#" if provided
-        if ( $color[0] == '#' ) {
-            $color = substr( $color, 1 );
+        if ($color[0] == '#') {
+            $color = substr($color, 1);
         }
 
         // Check if color has 6 or 3 characters, get values
-        if ( strlen($color) == 6 ) {
-            $hex = array( $color[0] . $color[1], $color[2] . $color[3], $color[4] . $color[5] );
-        } elseif ( strlen( $color ) == 3 ) {
-            $hex = array( $color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2] );
+        if (strlen($color) == 6) {
+            $hex = array($color[0] . $color[1], $color[2] . $color[3], $color[4] . $color[5]);
+        } elseif (strlen($color) == 3) {
+            $hex = array($color[0] . $color[0], $color[1] . $color[1], $color[2] . $color[2]);
         } else {
             return $defaultColor;
         }
 
         // Convert hex values to rgb values
-        $rgb =  array_map( 'hexdec', $hex );
+        $rgb = array_map('hexdec', $hex);
 
         // Check if opacity is set(rgba or rgb)
-        if ( $opacity ) {
-            if( abs( $opacity ) > 1 ) {
+        if ($opacity) {
+            if (abs($opacity) > 1) {
                 $opacity = 1.0;
             }
-            $output = 'rgba(' . implode( ",", $rgb ) . ',' . $opacity . ')';
+            $output = 'rgba(' . implode(",", $rgb) . ',' . $opacity . ')';
         } else {
-            $output = 'rgb(' . implode( ",", $rgb ) . ')';
+            $output = 'rgb(' . implode(",", $rgb) . ')';
         }
 
         // Return rgb(a) color string

@@ -39,22 +39,22 @@ include_once('metademandpdf.class.php');
  */
 class PluginMetademandsMetademand extends CommonDBTM
 {
-    const LOG_ADD        = 1;
-    const LOG_UPDATE     = 2;
-    const LOG_DELETE     = 3;
-    const SLA_TODO       = 1;
-    const SLA_LATE       = 2;
-    const SLA_FINISHED   = 3;
-    const SLA_PLANNED    = 4;
+    const LOG_ADD = 1;
+    const LOG_UPDATE = 2;
+    const LOG_DELETE = 3;
+    const SLA_TODO = 1;
+    const SLA_LATE = 2;
+    const SLA_FINISHED = 3;
+    const SLA_PLANNED = 4;
     const SLA_NOTCREATED = 5;
 
     public static $PARENT_PREFIX = '';
-    public static $SON_PREFIX    = '';
-    public static $rightname     = 'plugin_metademands';
+    public static $SON_PREFIX = '';
+    public static $rightname = 'plugin_metademands';
 
-    const STEP_INIT   = 0;
-    const STEP_LIST   = 1;
-    const STEP_SHOW   = 2;
+    const STEP_INIT = 0;
+    const STEP_LIST = 1;
+    const STEP_SHOW = 2;
 
     const STEP_CREATE = "create_metademands";
 
@@ -68,10 +68,10 @@ class PluginMetademandsMetademand extends CommonDBTM
 
     public function __construct()
     {
-        $config              = PluginMetademandsConfig::getInstance();
-        $this->config        = $config;
+        $config = PluginMetademandsConfig::getInstance();
+        $this->config = $config;
         self::$PARENT_PREFIX = $config['parent_ticket_tag'] . ' ';
-        self::$SON_PREFIX    = $config['son_ticket_tag'] . ' ';
+        self::$SON_PREFIX = $config['son_ticket_tag'] . ' ';
     }
 
     /**
@@ -120,7 +120,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      * Display tab for each tickets
      *
      * @param CommonGLPI $item
-     * @param int        $withtemplate
+     * @param int $withtemplate
      *
      * @return array|string
      */
@@ -132,17 +132,17 @@ class PluginMetademandsMetademand extends CommonDBTM
             if (!$withtemplate
                 && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
                 if ($item->getType() == 'Ticket' && $this->canView()) {
-                    $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+                    $ticket_metademand = new PluginMetademandsTicket_Metademand();
                     $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
-                    $tickets_found          = [];
+                    $tickets_found = [];
                     // If ticket is Parent : Check if all sons ticket are closed
                     if (count($ticket_metademand_data)) {
                         $ticket_metademand_data = reset($ticket_metademand_data);
-                        $tickets_found          = PluginMetademandsTicket::getSonTickets(
+                        $tickets_found = PluginMetademandsTicket::getSonTickets(
                             $item->fields['id'],
                             $ticket_metademand_data['plugin_metademands_metademands_id']
                         );
-                        $total                  = 0;
+                        $total = 0;
                         foreach ($tickets_found as $ticket_found) {
                             if (isset($ticket_found['parent_tickets_id'])
                                 && $ticket_found['tickets_id'] == 0) {
@@ -152,7 +152,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                         }
                         $name = _n('Child ticket', 'Child tickets', 2, 'metademands');
                     } else {
-                        $ticket_task      = new PluginMetademandsTicket_Task();
+                        $ticket_task = new PluginMetademandsTicket_Task();
                         $ticket_task_data = $ticket_task->find(['tickets_id' => $item->fields['id']]);
 
                         if (count($ticket_task_data)) {
@@ -162,7 +162,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                             );
                         }
                         $total = count($tickets_found);
-                        $name  = self::getTypeName($total);
+                        $name = self::getTypeName($total);
                     }
 
                     return self::createTabEntry(
@@ -189,8 +189,8 @@ class PluginMetademandsMetademand extends CommonDBTM
      * @static
      *
      * @param CommonGLPI $item
-     * @param int        $tabnum
-     * @param int        $withtemplate
+     * @param int $tabnum
+     * @param int $withtemplate
      *
      * @return bool|true
      * @throws \GlpitestSQLError
@@ -229,7 +229,10 @@ class PluginMetademandsMetademand extends CommonDBTM
         $this->addDefaultFormTab($ong);
         $this->addStandardTab('PluginMetademandsField', $ong, $options);
         $this->addStandardTab('PluginMetademandsWizard', $ong, $options);
-        $this->addStandardTab('PluginMetademandsStep', $ong, $options);
+        if ($this->getField('step_by_step_mode') == 1) {
+            $this->addStandardTab('PluginMetademandsStep', $ong, $options);
+            $this->addStandardTab('PluginMetademandsConfigstep', $ong, $options);
+        }
         //TODO Change / problem ?
         if ($this->getField('object_to_create') == 'Ticket') {
             $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
@@ -259,20 +262,20 @@ class PluginMetademandsMetademand extends CommonDBTM
     {
         global $CFG_GLPI;
 
-        $conf   = new PluginMetademandsConfig();
+        $conf = new PluginMetademandsConfig();
         $config = $conf->getInstance();
         if ($config['simpleticket_to_metademand']) {
             if (($type == 'show' && $object->fields["id"] == 0)
                 || ($type == 'update' && $object->fields["id"] > 0)) {
                 if (!empty($object->input["itilcategories_id"])) {
-                    $dbu        = new DbUtils();
+                    $dbu = new DbUtils();
                     $metademand = new self();
-                    $metas      = $metademand->find(['is_active'  => 1,
-                                                     'is_deleted' => 0,
-                                                     'is_template' => 0,
-                                                     //                                                'type'       => $ticket->input["type"]
-                                                    ]);
-                    $cats       = [];
+                    $metas = $metademand->find(['is_active' => 1,
+                        'is_deleted' => 0,
+                        'is_template' => 0,
+                        //                                                'type'       => $ticket->input["type"]
+                    ]);
+                    $cats = [];
 
                     foreach ($metas as $meta) {
                         $categories = [];
@@ -280,7 +283,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                             if (is_array(json_decode($meta['itilcategories_id'], true))) {
                                 $categories = $meta['itilcategories_id'];
                             } else {
-                                $array      = [$meta['itilcategories_id']];
+                                $array = [$meta['itilcategories_id']];
                                 $categories = json_encode($array);
                             }
                         }
@@ -303,8 +306,8 @@ class PluginMetademandsMetademand extends CommonDBTM
                         )) {
                             unset($_SESSION['plugin_metademands']);
                             return PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?itilcategories_id=" .
-                                   $object->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned .
-                                   "&tickets_id=" . $object->fields["id"] . "&step=" . self::STEP_SHOW;
+                                $object->input['itilcategories_id'] . "&metademands_id=" . $meta_concerned .
+                                "&tickets_id=" . $object->fields["id"] . "&step=" . self::STEP_SHOW;
                         }
                     }
                 }
@@ -330,8 +333,8 @@ class PluginMetademandsMetademand extends CommonDBTM
         if (isset($input['itilcategories_id']) && !empty($input['itilcategories_id'])) {
             //retrieve all multiple cats from all metademands
             $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
-                                           'FROM'   => $this->getTable(),
-                                           'WHERE'  => ['is_deleted' => 0,'is_template' => 0, 'type' => $input['type']]]);
+                'FROM' => $this->getTable(),
+                'WHERE' => ['is_deleted' => 0, 'is_template' => 0, 'type' => $input['type']]]);
 
             $cats = $input['itilcategories_id'];
             foreach ($iterator_cats as $data) {
@@ -366,7 +369,7 @@ class PluginMetademandsMetademand extends CommonDBTM
 
         if (isset($input['object_to_create'])
             && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
-            $input['type']               = 0;
+            $input['type'] = 0;
             $input['force_create_tasks'] = 1;
         }
 
@@ -395,12 +398,12 @@ class PluginMetademandsMetademand extends CommonDBTM
         $cat_already_store = false;
         if (isset($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
             //retrieve all multiple cats from all metademands
-            $iterator_cats               = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
-                                                         'FROM'   => $this->getTable(),
-                                                         'WHERE'  => ['is_deleted' => 0,'is_template' => 0, 'type' => $input['type']]]);
+            $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
+                'FROM' => $this->getTable(),
+                'WHERE' => ['is_deleted' => 0, 'is_template' => 0, 'type' => $input['type']]]);
             $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
-                                                         'FROM'   => $this->getTable(),
-                                                         'WHERE'  => ['id' => $input['id'], 'is_deleted' => 0,'is_template' => 0, 'type' => $input['type']]]);
+                'FROM' => $this->getTable(),
+                'WHERE' => ['id' => $input['id'], 'is_deleted' => 0, 'is_template' => 0, 'type' => $input['type']]]);
             $cats = [];
             $number_cats_meta = count($iterator_meta_existing_cats);
             if ($number_cats_meta) {
@@ -459,7 +462,7 @@ class PluginMetademandsMetademand extends CommonDBTM
 
         if (isset($input['object_to_create'])
             && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
-            $input['type']               = 0;
+            $input['type'] = 0;
             $input['force_create_tasks'] = 1;
         }
 
@@ -550,7 +553,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         parent::post_updateItem($history);
 
         if (isset($this->updates['is_order']) && $this->input['is_order'] == 1) {
-            $fields      = new PluginMetademandsField();
+            $fields = new PluginMetademandsField();
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $this->getID()]);
             if (count($fields_data) > 0) {
                 foreach ($fields_data as $field) {
@@ -582,32 +585,32 @@ class PluginMetademandsMetademand extends CommonDBTM
         $tab = [];
 
         $tab[] = [
-            'id'   => 'common',
+            'id' => 'common',
             'name' => self::getTypeName(2)
         ];
 
         $tab[] = [
-            'id'            => '1',
-            'table'         => $this->getTable(),
-            'field'         => 'name',
-            'name'          => __('Name'),
-            'datatype'      => 'itemlink',
+            'id' => '1',
+            'table' => $this->getTable(),
+            'field' => 'name',
+            'name' => __('Name'),
+            'datatype' => 'itemlink',
             'itemlink_type' => $this->getType(),
         ];
 
         $tab[] = [
-            'id'       => '2',
-            'table'    => $this->getTable(),
-            'field'    => 'comment',
-            'name'     => __('Comments'),
+            'id' => '2',
+            'table' => $this->getTable(),
+            'field' => 'comment',
+            'name' => __('Comments'),
             'datatype' => 'text'
         ];
 
         $tab[] = [
-            'id'       => '3',
-            'table'    => $this->getTable(),
-            'field'    => 'is_active',
-            'name'     => __('Active'),
+            'id' => '3',
+            'table' => $this->getTable(),
+            'field' => 'is_active',
+            'name' => __('Active'),
             'datatype' => 'bool',
         ];
 
@@ -620,114 +623,114 @@ class PluginMetademandsMetademand extends CommonDBTM
         //      ];
 
         $tab[] = [
-            'id'       => '5',
-            'table'    => $this->getTable(),
-            'field'    => 'is_order',
-            'name'     => __('Use as basket', 'metademands'),
+            'id' => '5',
+            'table' => $this->getTable(),
+            'field' => 'is_order',
+            'name' => __('Use as basket', 'metademands'),
             'datatype' => 'bool'
         ];
 
         $tab[] = [
-            'id'       => '6',
-            'table'    => $this->getTable(),
-            'field'    => 'create_one_ticket',
-            'name'     => __('Create one ticket for all lines of the basket', 'metademands'),
+            'id' => '6',
+            'table' => $this->getTable(),
+            'field' => 'create_one_ticket',
+            'name' => __('Create one ticket for all lines of the basket', 'metademands'),
             'datatype' => 'bool'
         ];
 
         $tab[] = [
-            'id'            => '7',
-            'table'         => $this->getTable(),
-            'field'         => 'type',
-            'name'          => __('Type'),
-            'searchtype'    => ['equals', 'notequals'],
-            'datatype'      => 'specific',
+            'id' => '7',
+            'table' => $this->getTable(),
+            'field' => 'type',
+            'name' => __('Type'),
+            'searchtype' => ['equals', 'notequals'],
+            'datatype' => 'specific',
             'massiveaction' => false,
         ];
 
         $tab[] = [
-            'id'            => '8',
-            'table'         => $this->getTable(),
-            'field'         => 'object_to_create',
-            'name'          => __('Object to create', 'metademands'),
-            'searchtype'    => ['equals', 'notequals'],
-            'datatype'      => 'specific',
+            'id' => '8',
+            'table' => $this->getTable(),
+            'field' => 'object_to_create',
+            'name' => __('Object to create', 'metademands'),
+            'searchtype' => ['equals', 'notequals'],
+            'datatype' => 'specific',
             'massiveaction' => false,
         ];
 
         $tab[] = [
-            'id'       => '9',
-            'table'    => $this->getTable(),
-            'field'    => 'maintenance_mode',
-            'name'     => __('Maintenance mode'),
+            'id' => '9',
+            'table' => $this->getTable(),
+            'field' => 'maintenance_mode',
+            'name' => __('Maintenance mode'),
             'datatype' => 'bool',
         ];
 
         $tab[] = [
-            'id'         => '10',
-            'table'      => $this->getTable(),
-            'field'      => 'title_color',
-            'name'       => __('Title color', 'metademands'),
+            'id' => '10',
+            'table' => $this->getTable(),
+            'field' => 'title_color',
+            'name' => __('Title color', 'metademands'),
             'searchtype' => 'equals',
-            'datatype'   => 'color'
+            'datatype' => 'color'
         ];
 
         $tab[] = [
-            'id'         => '11',
-            'table'      => $this->getTable(),
-            'field'      => 'background_color',
-            'name'       => __('Background color', 'metademands'),
+            'id' => '11',
+            'table' => $this->getTable(),
+            'field' => 'background_color',
+            'name' => __('Background color', 'metademands'),
             'searchtype' => 'equals',
-            'datatype'   => 'color'
+            'datatype' => 'color'
         ];
 
         $tab[] = [
-            'id'       => '12',
-            'table'    => $this->getTable(),
-            'field'    => 'can_update',
-            'name'     => __('Allow form modification before validation', 'metademands'),
+            'id' => '12',
+            'table' => $this->getTable(),
+            'field' => 'can_update',
+            'name' => __('Allow form modification before validation', 'metademands'),
             'datatype' => 'bool',
         ];
 
         $tab[] = [
-            'id'       => '13',
-            'table'    => $this->getTable(),
-            'field'    => 'can_clone',
-            'name'     => __('Allow form modification after validation', 'metademands'),
+            'id' => '13',
+            'table' => $this->getTable(),
+            'field' => 'can_clone',
+            'name' => __('Allow form modification after validation', 'metademands'),
             'datatype' => 'bool',
         ];
 
         $tab[] = [
-            'id'            => '92',
-            'table'         => $this->getTable(),
-            'field'         => 'itilcategories_id',
-            'name'          => __('Category'),
-            'searchtype'    => ['equals', 'notequals'],
-            'datatype'      => 'specific',
+            'id' => '92',
+            'table' => $this->getTable(),
+            'field' => 'itilcategories_id',
+            'name' => __('Category'),
+            'searchtype' => ['equals', 'notequals'],
+            'datatype' => 'specific',
             'massiveaction' => false,
         ];
 
         $tab[] = [
-            'id'       => '30',
-            'table'    => $this->getTable(),
-            'field'    => 'id',
-            'name'     => __('ID'),
+            'id' => '30',
+            'table' => $this->getTable(),
+            'field' => 'id',
+            'name' => __('ID'),
             'datatype' => 'number'
         ];
 
         $tab[] = [
-            'id'       => '80',
-            'table'    => 'glpi_entities',
-            'field'    => 'completename',
-            'name'     => __('Entity'),
+            'id' => '80',
+            'table' => 'glpi_entities',
+            'field' => 'completename',
+            'name' => __('Entity'),
             'datatype' => 'dropdown'
         ];
 
         $tab[] = [
-            'id'       => '86',
-            'table'    => $this->getTable(),
-            'field'    => 'is_recursive',
-            'name'     => __('Child entities'),
+            'id' => '86',
+            'table' => $this->getTable(),
+            'field' => 'is_recursive',
+            'name' => __('Child entities'),
             'datatype' => 'bool'
         ];
 
@@ -736,9 +739,9 @@ class PluginMetademandsMetademand extends CommonDBTM
 
 
     /**
-     * @param string       $field
+     * @param string $field
      * @param array|string $values
-     * @param array        $options
+     * @param array $options
      *
      * @return string
      */
@@ -781,9 +784,9 @@ class PluginMetademandsMetademand extends CommonDBTM
         }
         switch ($field) {
             case 'itilcategories_id':
-                $opt = ['name'    => $name,
-                        'value'   => $values[$field],
-                        'display' => false];
+                $opt = ['name' => $name,
+                    'value' => $values[$field],
+                    'display' => false];
                 return ITILCategory::dropdown($opt);
             case 'type':
                 $options['value'] = $values[$field];
@@ -821,9 +824,9 @@ class PluginMetademandsMetademand extends CommonDBTM
     private static function getObjectTypes()
     {
         return [
-            null      => Dropdown::EMPTY_VALUE,
-            'Ticket'  => __('Ticket'),
-            'Change'  => __('Change'),
+            null => Dropdown::EMPTY_VALUE,
+            'Ticket' => __('Ticket'),
+            'Change' => __('Change'),
             'Problem' => __('Problem'),
         ];
     }
@@ -835,8 +838,8 @@ class PluginMetademandsMetademand extends CommonDBTM
         $this->initForm($ID, $options);
         $this->showFormHeader($options);
 
-        $is_template = isset($options['withtemplate']) && (int) $options['withtemplate'] === 1;
-        $from_template = isset($options['withtemplate']) && (int) $options['withtemplate'] === 2;
+        $is_template = isset($options['withtemplate']) && (int)$options['withtemplate'] === 1;
+        $from_template = isset($options['withtemplate']) && (int)$options['withtemplate'] === 2;
 
         if ($is_template & !$this->isNewItem()) {
             // Show template name after creation (creation is already handled by
@@ -910,7 +913,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         echo __('Object to create', 'metademands') . "&nbsp;<span style='color:red;'>*</span></td>";
         echo "<td>";
         if ($ID == 0 || empty($ID)) {
-            $objects    = self::getObjectTypes();
+            $objects = self::getObjectTypes();
             $idDropdown = Dropdown::showFromArray('object_to_create', $objects, ['value' => $this->fields['object_to_create']]);
             Ajax::updateItemOnEvent(
                 "dropdown_object_to_create" . $idDropdown,
@@ -937,15 +940,15 @@ class PluginMetademandsMetademand extends CommonDBTM
             if ($this->fields['object_to_create'] == 'Ticket') {
                 echo "<td>" . _n('Type', 'Types', 1) . "</td>";
                 echo "<td>";
-                $opt  = [
+                $opt = [
                     'value' => $this->fields['type'],
                 ];
                 $rand = Ticket::dropdownType('type', $opt);
 
-                $params = ['type'            => '__VALUE__',
-                           'entity_restrict' => $this->fields['entities_id'],
-                           'value'           => $this->fields['itilcategories_id'],
-                           'currenttype'     => $this->fields['type']];
+                $params = ['type' => '__VALUE__',
+                    'entity_restrict' => $this->fields['entities_id'],
+                    'value' => $this->fields['itilcategories_id'],
+                    'currenttype' => $this->fields['type']];
 
                 Ajax::updateItemOnSelectEvent(
                     "dropdown_type$rand",
@@ -988,7 +991,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                 true
             );
 
-            $dbu    = new DbUtils();
+            $dbu = new DbUtils();
 
             $crit["is_deleted"] = 0;
             $crit["is_template"] = 0;
@@ -999,10 +1002,10 @@ class PluginMetademandsMetademand extends CommonDBTM
 
             $used = [];
             foreach ($cats as $item) {
-                $tempcats   = json_decode($item['itilcategories_id'], true);
+                $tempcats = json_decode($item['itilcategories_id'], true);
                 if (is_array($tempcats)) {
                     foreach ($tempcats as $tempcat) {
-                        $used []= $tempcat;
+                        $used [] = $tempcat;
                     }
                 }
             }
@@ -1010,7 +1013,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             $ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
             foreach ($ticketcats as $item) {
                 if ($item['itilcategories_id'] > 0) {
-                    $used []= $item['itilcategories_id'];
+                    $used [] = $item['itilcategories_id'];
                 }
             }
             $used = array_unique($used);
@@ -1020,7 +1023,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                 ]];
             }
             $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
-            $temp   = [];
+            $temp = [];
             foreach ($result as $item) {
                 $temp[$item['id']] = $item['completename'];
             }
@@ -1032,7 +1035,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                 } elseif (is_array(json_decode($this->fields['itilcategories_id'], true))) {
                     $categories = $this->fields['itilcategories_id'];
                 } else {
-                    $array      = [$this->fields['itilcategories_id']];
+                    $array = [$this->fields['itilcategories_id']];
                     $categories = json_encode($array);
                 }
             }
@@ -1043,10 +1046,10 @@ class PluginMetademandsMetademand extends CommonDBTM
             Dropdown::showFromArray(
                 'itilcategories_id',
                 $temp,
-                ['values'   => $values,
-                 'width'    => '100%',
-                 'multiple' => true,
-                 'entity'   => $_SESSION['glpiactiveentities']]
+                ['values' => $values,
+                    'width' => '100%',
+                    'multiple' => true,
+                    'entity' => $_SESSION['glpiactiveentities']]
             );
             echo "</span>";
             echo "</td>";
@@ -1062,12 +1065,12 @@ class PluginMetademandsMetademand extends CommonDBTM
 
         echo "<td rowspan='2'>" . __('Comments') . "</td>";
         echo "<td rowspan='2'>";
-        Html::textarea(['name'              => 'comment',
-                        'value'             => $this->fields["comment"],
-                        'cols'              => 50,
-                        'rows'              => 10,
-                        'enable_richtext'   => false,
-                        'enable_fileupload' => false]);
+        Html::textarea(['name' => 'comment',
+            'value' => $this->fields["comment"],
+            'cols' => 50,
+            'rows' => 10,
+            'enable_richtext' => false,
+            'enable_fileupload' => false]);
         echo "</td>";
 
         echo "</tr>";
@@ -1080,9 +1083,9 @@ class PluginMetademandsMetademand extends CommonDBTM
             'icon',
             [$this->fields['icon'] => $this->fields['icon']],
             [
-                'id'       => $icon_selector_id,
+                'id' => $icon_selector_id,
                 'selected' => $this->fields['icon'],
-                'style'    => 'width:175px;'
+                'style' => 'width:175px;'
             ]
         );
 
@@ -1223,7 +1226,7 @@ JAVASCRIPT
                     true
                 );
 
-                $dbu    = new DbUtils();
+                $dbu = new DbUtils();
 
                 $crit["is_deleted"] = 0;
                 $crit["is_template"] = 0;
@@ -1234,10 +1237,10 @@ JAVASCRIPT
 
                 $used = [];
                 foreach ($cats as $item) {
-                    $tempcats   = json_decode($item['itilcategories_id'], true);
+                    $tempcats = json_decode($item['itilcategories_id'], true);
                     if (is_array($tempcats)) {
                         foreach ($tempcats as $tempcat) {
-                            $used []= $tempcat;
+                            $used [] = $tempcat;
                         }
                     }
                 }
@@ -1245,7 +1248,7 @@ JAVASCRIPT
                 $ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
                 foreach ($ticketcats as $item) {
                     if ($item['itilcategories_id'] > 0) {
-                        $used []= $item['itilcategories_id'];
+                        $used [] = $item['itilcategories_id'];
                     }
                 }
                 if (count($used) > 0) {
@@ -1254,9 +1257,9 @@ JAVASCRIPT
                         'id' => $used
                     ]];
                 }
-                $dbu    = new DbUtils();
+                $dbu = new DbUtils();
                 $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
-                $temp   = [];
+                $temp = [];
                 foreach ($result as $item) {
                     $temp[$item['id']] = $item['completename'];
                 }
@@ -1265,7 +1268,7 @@ JAVASCRIPT
                     if (is_array(json_decode($this->fields['itilcategories_id'], true))) {
                         $categories = $this->fields['itilcategories_id'];
                     } else {
-                        $array      = [$this->fields['itilcategories_id']];
+                        $array = [$this->fields['itilcategories_id']];
                         $categories = json_encode($array);
                     }
                 }
@@ -1274,16 +1277,16 @@ JAVASCRIPT
                 Dropdown::showFromArray(
                     'itilcategories_id',
                     $temp,
-                    ['values'   => $values,
-                     'width'    => '100%',
-                     'multiple' => true,
-                     'entity'   => $_SESSION['glpiactiveentities']]
+                    ['values' => $values,
+                        'width' => '100%',
+                        'multiple' => true,
+                        'entity' => $_SESSION['glpiactiveentities']]
                 );
                 break;
             case 'tickettemplates_id':
                 $opt['condition'] = [];
-                $opt['value']     = $this->fields['tickettemplates_id'];
-                $opt['entity']    = $_SESSION['glpiactiveentities'];
+                $opt['value'] = $this->fields['tickettemplates_id'];
+                $opt['entity'] = $_SESSION['glpiactiveentities'];
                 TicketTemplate::dropdown($opt);
                 break;
             case 'icon':
@@ -1292,9 +1295,9 @@ JAVASCRIPT
                     'icon',
                     [$this->fields['icon'] => $this->fields['icon']],
                     [
-                        'id'       => $icon_selector_id,
+                        'id' => $icon_selector_id,
                         'selected' => $this->fields['icon'],
-                        'style'    => 'width:175px;'
+                        'style' => 'width:175px;'
                     ]
                 );
 
@@ -1365,8 +1368,8 @@ JAVASCRIPT
     /**
      * methodAddMetademands : Add metademand from WEBSERVICE plugin
      *
-     * @param type  $params
-     * @param type  $protocol
+     * @param type $params
+     * @param type $protocol
      *
      * @return type
      * @throws \GlpitestSQLError
@@ -1487,7 +1490,7 @@ JAVASCRIPT
 
 
     /**
-     * @param bool  $forceview
+     * @param bool $forceview
      * @param array $options
      *
      * @return array
@@ -1497,7 +1500,7 @@ JAVASCRIPT
     {
         global $DB;
 
-        $dbu                 = new DbUtils();
+        $dbu = new DbUtils();
         $params['condition'] = '';
 
         foreach ($options as $key => $value) {
@@ -1564,7 +1567,7 @@ JAVASCRIPT
     /**
      * @param       $metademands_id
      * @param array $forms
-     * @param int   $step
+     * @param int $step
      *
      * @return array
      * @throws \GlpitestSQLError
@@ -1583,23 +1586,50 @@ JAVASCRIPT
 
         if (!empty($metademands_id) && !$hidden) {
             // get normal form data
-            $field     = new PluginMetademandsField();
+            $field = new PluginMetademandsField();
             $form_data = $field->find(
                 ['plugin_metademands_metademands_id' => $metademands_id],
                 ['rank', 'order']
             );
 
+
             // Construct array
-            $forms[$step][$metademands_id]['form']  = [];
+            $forms[$step][$metademands_id]['form'] = [];
             $forms[$step][$metademands_id]['tasks'] = [];
+
             if (count($form_data)) {
+//TODO add array options
+                foreach ($form_data as $idf => $form_data_fields) {
+
+                    $fieldopt = new PluginMetademandsFieldOption();
+                    if($opts = $fieldopt->find(["plugin_metademands_fields_id" => $idf])) {
+
+                        foreach ($opts as $opt) {
+                            $check_value = $opt["check_value"];
+                            if ($idf > 0 && $fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $idf, "check_value" => $check_value])) {
+                                $form_data[$idf]["options"][$check_value]['plugin_metademands_tasks_id'] = $fieldopt->fields['plugin_metademands_tasks_id'] ?? 0;
+                                $form_data[$idf]["options"][$check_value]['fields_link'] = $fieldopt->fields['fields_link'] ?? 0;
+                                $form_data[$idf]["options"][$check_value]['hidden_link'] = $fieldopt->fields['hidden_link'] ?? 0;
+                                $form_data[$idf]["options"][$check_value]['hidden_block'] = $fieldopt->fields['hidden_block'] ?? 0;
+                                $form_data[$idf]["options"][$check_value]['users_id_validate'] = $fieldopt->fields['users_id_validate'] ?? 0;
+                                $form_data[$idf]["options"][$check_value]['childs_blocks'] = $fieldopt->fields['childs_blocks'];
+                                $form_data[$idf]["options"][$check_value]['checkbox_value'] = $fieldopt->fields['checkbox_value'] ?? 0;
+                                $form_data[$idf]["options"][$check_value]['checkbox_id'] = $fieldopt->fields['checkbox_id'] ?? 0;
+                                $form_data[$idf]["options"][$check_value]['parent_field_id'] = $fieldopt->fields['parent_field_id'] ?? 0;
+                            }
+                        }
+                    }
+
+                }
+
                 $forms[$step][$metademands_id]['form'] = $form_data;
             }
+
             // Task only for demands
             if (isset($metademands->fields['type'])) {
                 if (isset($metademands->fields['force_create_tasks'])
                     && $metademands->fields['force_create_tasks'] > 0) {
-                    $tasks      = new PluginMetademandsTask();
+                    $tasks = new PluginMetademandsTask();
                     $tasks_data = $tasks->getTasks(
                         $metademands_id,
                         ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TASK_TYPE]]
@@ -1607,7 +1637,7 @@ JAVASCRIPT
 
                     $forms[$step][$metademands_id]['tasks'] = $tasks_data;
                 } else {
-                    $tasks      = new PluginMetademandsTask();
+                    $tasks = new PluginMetademandsTask();
                     $tasks_data = $tasks->getTasks(
                         $metademands_id,
                         ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]
@@ -1619,7 +1649,7 @@ JAVASCRIPT
 
             // Check if task are metademands, if some found : recursive call
             if (isset($metademands->fields['type'])) {
-                $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` AS link_metademands_id
+                $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` AS link_metademands_id
                         FROM `glpi_plugin_metademands_tasks`
                         RIGHT JOIN `glpi_plugin_metademands_metademandtasks`
                           ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
@@ -1644,17 +1674,17 @@ JAVASCRIPT
      */
     public function convertMetademandToTicket($ticket, $metademands_id)
     {
-        $tickets_id        = $ticket->input["id"];
-        $oldlanguage       = $_SESSION['glpilanguage'];
-        $ticket_task       = new PluginMetademandsTicket_Task();
+        $tickets_id = $ticket->input["id"];
+        $oldlanguage = $_SESSION['glpilanguage'];
+        $ticket_task = new PluginMetademandsTicket_Task();
         $ticket_metademand = new PluginMetademandsTicket_Metademand();
-        $ticket_field      = new PluginMetademandsTicket_Field();
-        $ticket_ticket     = new Ticket_Ticket();
+        $ticket_field = new PluginMetademandsTicket_Field();
+        $ticket_ticket = new Ticket_Ticket();
 
 
         // Try to convert name
         $ticket->input["name"] = addslashes(str_replace(self::$PARENT_PREFIX .
-                                                        Dropdown::getDropdownName($this->getTable(), $metademands_id) . '&nbsp;:&nbsp;', '', $ticket->fields["name"]));
+            Dropdown::getDropdownName($this->getTable(), $metademands_id) . '&nbsp;:&nbsp;', '', $ticket->fields["name"]));
         if ($ticket->input["name"] == $ticket->fields["name"]) {
             $ticket->input["name"] = addslashes(str_replace(self::$PARENT_PREFIX, '', $ticket->fields["name"]));
         }
@@ -1715,15 +1745,15 @@ JAVASCRIPT
             return false;
         }
         $object_class = $this->fields['object_to_create'];
-        $object       = new $object_class();
+        $object = new $object_class();
 
-        $ticket_metademand   = new PluginMetademandsTicket_Metademand();
-        $ticket_field        = new PluginMetademandsTicket_Field();
-        $ticket_ticket       = new Ticket_Ticket();
-        $KO                  = [];
+        $ticket_metademand = new PluginMetademandsTicket_Metademand();
+        $ticket_field = new PluginMetademandsTicket_Field();
+        $ticket_ticket = new Ticket_Ticket();
+        $KO = [];
         $ancestor_tickets_id = 0;
         $ticket_exists_array = [];
-        $config              = $this->getConfig();
+        $config = $this->getConfig();
 
         $itilcategory = 0;
         if (isset($values['field_plugin_servicecatalog_itilcategories_id'])) {
@@ -1769,23 +1799,23 @@ JAVASCRIPT
                             }
                             if ($config['show_form_changes'] && $forms_id > 0) {
                                 foreach ($values['fields'] as $idField => $valueField) {
-                                    $diffRemove    = "";
+                                    $diffRemove = "";
                                     $oldFormValues = new PluginMetademandsForm_Value();
-                                    if ($oldFormValues->getFromDBByCrit(['plugin_metademands_forms_id'  => $forms_id,
-                                                                         'plugin_metademands_fields_id' => $idField])) {
+                                    if ($oldFormValues->getFromDBByCrit(['plugin_metademands_forms_id' => $forms_id,
+                                        'plugin_metademands_fields_id' => $idField])) {
                                         $jsonDecode = json_decode($oldFormValues->getField('value'), true);
                                         if (is_array($jsonDecode)) {
                                             if (empty($valueField)) {
                                                 $valueField = [];
                                             }
-                                            $diffAdd    = array_diff($valueField, $jsonDecode);
+                                            $diffAdd = array_diff($valueField, $jsonDecode);
                                             $diffRemove = array_diff($jsonDecode, $valueField);
                                         } elseif (is_array($oldFormValues->getField('value'))) {
                                             if (empty($valueField)) {
                                                 $valueField = [];
                                             }
                                             $diffRemove = array_diff($oldFormValues->getField('value'), $valueField);
-                                            $diffAdd    = array_diff($valueField, $oldFormValues->getField('value'));
+                                            $diffAdd = array_diff($valueField, $oldFormValues->getField('value'));
                                         } elseif ($oldFormValues->getField('value') != $valueField) {
                                             $values['fields'][$idField . '#orange'] = $valueField;
                                         }
@@ -1806,8 +1836,8 @@ JAVASCRIPT
                                 }
                             }
                             unset($_SESSION['plugin_metademands']['form_to_compare']);
-                            $values_form[0]           = $values['fields'];
-                            $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
+                            $values_form[0] = $values['fields'];
+                            $parent_fields = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
                             $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                         }
                     } elseif ($metademand->fields['is_order'] == 1) {
@@ -1831,7 +1861,7 @@ JAVASCRIPT
                             }
                         }
 
-                        $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
+                        $parent_fields = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
                         $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                     }
 
@@ -1853,12 +1883,12 @@ JAVASCRIPT
                             if (isset($metademands_fields->fields['users_id_validate'])
                                 && !empty($metademands_fields->fields['users_id_validate'])) {
                                 if (isset($metademands_fields->fields['check_value']) && is_array($datav)) {
-                                    $checkeValue   = json_decode($metademands_fields->fields['check_value'], 1);
+                                    $checkeValue = json_decode($metademands_fields->fields['check_value'], 1);
                                     $usersValidate = json_decode($metademands_fields->fields['users_id_validate'], 1);
                                     foreach ($checkeValue as $key => $checkVal) {
                                         if (in_array($checkVal, $datav)) {
-                                            $add_validation      = '0';
-                                            $validatortype       = 'user';
+                                            $add_validation = '0';
+                                            $validatortype = 'user';
                                             $users_id_validate[] = $usersValidate[$key];
                                         }
                                     }
@@ -1872,7 +1902,7 @@ JAVASCRIPT
                     }
 
                     $parent_fields['name'] = self::$PARENT_PREFIX .
-                                             $n;
+                        $n;
                     if ($object_class == 'Ticket') {
                         $parent_fields['type'] = $this->fields['type'];
                         // Existing tickets id field
@@ -1901,9 +1931,9 @@ JAVASCRIPT
                         $parent_fields['_users_id_requester'] = Session::getLoginUserID();
                     }
 
-                    $default_use_notif                          = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
-                    $parent_fields['_users_id_requester_notif'] = ['use_notification'  => $default_use_notif,
-                                                                   'alternative_email' => ''];
+                    $default_use_notif = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
+                    $parent_fields['_users_id_requester_notif'] = ['use_notification' => $default_use_notif,
+                        'alternative_email' => ''];
 
 
                     // Get predefined ticket fields
@@ -1914,7 +1944,7 @@ JAVASCRIPT
                         $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester']);
                     }
 
-                    $list_fields  = $line['form'];
+                    $list_fields = $line['form'];
                     $searchOption = Search::getOptions($object_class);
                     foreach ($list_fields as $id => $fields_values) {
                         if ($fields_values['used_by_ticket'] > 0) {
@@ -1934,20 +1964,20 @@ JAVASCRIPT
                                         $name = "_groups_id_observer";
                                     }
 
-                                    $parent_fields[$name]       = $v[$id];
+                                    $parent_fields[$name] = $v[$id];
                                     $parent_ticketfields[$name] = $v[$id];
                                     if ($fields_values['used_by_ticket'] == 59) {
-                                        $parent_fields["_add_validation"]         = '0';
-                                        $parent_ticketfields["_add_validation"]   = '0';
-                                        $parent_fields["validatortype"]           = 'user';
-                                        $parent_ticketfields["validatortype"]     = 'user';
-                                        $parent_fields["users_id_validate"]       = [$v[$id]];
+                                        $parent_fields["_add_validation"] = '0';
+                                        $parent_ticketfields["_add_validation"] = '0';
+                                        $parent_fields["validatortype"] = 'user';
+                                        $parent_ticketfields["validatortype"] = 'user';
+                                        $parent_fields["users_id_validate"] = [$v[$id]];
                                         $parent_ticketfields["users_id_validate"] = [$v[$id]];
                                     }
                                     if ($fields_values['used_by_ticket'] == 13) {
                                         if ($fields_values['type'] == "dropdown_meta"
                                             && $fields_values["item"] == "mydevices") {
-                                            $item                      = explode('_', $v[$id]);
+                                            $item = explode('_', $v[$id]);
                                             $parent_fields["items_id"] = [$item[0] => [$item[1]]];
                                         }
                                         if ($fields_values['type'] == "dropdown_object"
@@ -1996,15 +2026,15 @@ JAVASCRIPT
                     //END TODO Add options
 
                     if (isset($users_id_validate)) {
-                        $parent_fields["_add_validation"]       = $add_validation;
+                        $parent_fields["_add_validation"] = $add_validation;
                         $parent_ticketfields["_add_validation"] = $add_validation;
-                        $parent_fields["validatortype"]         = $validatortype;
-                        $parent_ticketfields["validatortype"]   = $validatortype;
+                        $parent_fields["validatortype"] = $validatortype;
+                        $parent_ticketfields["validatortype"] = $validatortype;
                         if (isset($parent_fields["users_id_validate"])) {
-                            $parent_fields["users_id_validate"]       = array_merge($parent_fields["users_id_validate"], $users_id_validate);
+                            $parent_fields["users_id_validate"] = array_merge($parent_fields["users_id_validate"], $users_id_validate);
                             $parent_ticketfields["users_id_validate"] = array_merge($parent_ticketfields["users_id_validate"], $users_id_validate);
                         } else {
-                            $parent_fields["users_id_validate"]       = $users_id_validate;
+                            $parent_fields["users_id_validate"] = $users_id_validate;
                             $parent_ticketfields["users_id_validate"] = $users_id_validate;
                         }
                     }
@@ -2056,10 +2086,10 @@ JAVASCRIPT
                         }
                         $inputFieldMain = [];
                         if (Plugin::isPluginActive('fields')) {
-                            $pluginfield  = new PluginMetademandsPluginfields();
+                            $pluginfield = new PluginMetademandsPluginfields();
                             $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
                             foreach ($pluginfields as $plfield) {
-                                $fields_field     = new PluginFieldsField();
+                                $fields_field = new PluginFieldsField();
                                 $fields_container = new PluginFieldsContainer();
                                 if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
                                     if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
@@ -2067,14 +2097,14 @@ JAVASCRIPT
                                             if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
                                                 if ($fields_field->fields['type'] == 'dropdown') {
                                                     if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
-                                                        $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                        $input["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                         $inputFieldMain["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                     }
                                                 } elseif ($fields_field->fields['type'] == 'yesno') {
-                                                    $input[$fields_field->fields['name']]          = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
+                                                    $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
                                                     $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
                                                 } else {
-                                                    $input[$fields_field->fields['name']]          = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                    $input[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                     $inputFieldMain[$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                 }
                                             }
@@ -2096,17 +2126,17 @@ JAVASCRIPT
                             $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                         }
                         $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
-                        $input         = Toolbox::addslashes_deep($input);
+                        $input = Toolbox::addslashes_deep($input);
 
 
                         //ADD TICKET
                         if (isset($options['current_ticket_id'])
                             && $options['current_ticket_id'] > 0
                             && !$options['meta_validated']) {
-                            $inputUpdate['id']      = $options['current_ticket_id'];
+                            $inputUpdate['id'] = $options['current_ticket_id'];
                             $inputUpdate['content'] = $input['content'];
-                            $inputUpdate['name']    = $input['name'];
-                            $parent_tickets_id      = $inputUpdate['id'];
+                            $inputUpdate['name'] = $input['name'];
+                            $parent_tickets_id = $inputUpdate['id'];
                             $object->update($inputUpdate);
                             $object->getFromDB($inputUpdate['id']);
                             $ticket_exists_array[] = 1;
@@ -2121,17 +2151,17 @@ JAVASCRIPT
                         //Link object to forms_id
                         if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_id'])) {
                             $form = new PluginMetademandsForm();
-                            $form->update(['id'       => $_SESSION['plugin_metademands']['plugin_metademands_forms_id'],
-                                           'items_id' => $parent_tickets_id,
-                                           'itemtype' => $object_class]);
+                            $form->update(['id' => $_SESSION['plugin_metademands']['plugin_metademands_forms_id'],
+                                'items_id' => $parent_tickets_id,
+                                'itemtype' => $object_class]);
                         }
                         $inputField = [];
                         if (Plugin::isPluginActive('fields')) {
-                            $inputField   = [];
-                            $pluginfield  = new PluginMetademandsPluginfields();
+                            $inputField = [];
+                            $pluginfield = new PluginMetademandsPluginfields();
                             $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
                             foreach ($pluginfields as $plfield) {
-                                $fields_field     = new PluginFieldsField();
+                                $fields_field = new PluginFieldsField();
                                 $fields_container = new PluginFieldsContainer();
                                 if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
                                     if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
@@ -2153,20 +2183,20 @@ JAVASCRIPT
                             }
 
                             foreach ($inputField as $containers_id => $vals) {
-                                $container                           = new PluginFieldsContainer;
+                                $container = new PluginFieldsContainer;
                                 $vals['plugin_fields_containers_id'] = $containers_id;
-                                $vals['itemtype']                    = $object_class;
-                                $vals['items_id']                    = $parent_tickets_id;
+                                $vals['itemtype'] = $object_class;
+                                $vals['items_id'] = $parent_tickets_id;
                                 $container->updateFieldsValues($vals, $object_class, false);
                             }
                         }
                         //Hook to do action after ticket creation with metademands
                         if (isset($PLUGIN_HOOKS['metademands'])) {
                             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                                $p            = [];
+                                $p = [];
                                 $p["options"] = $options;
-                                $p["values"]  = $values;
-                                $p["line"]    = $line;
+                                $p["values"] = $values;
+                                $p["line"] = $line;
 
                                 $new_res = PluginMetademandsMetademand::getPluginAfterCreateTicket($plug, $p);
                             }
@@ -2192,7 +2222,7 @@ JAVASCRIPT
                                     $values_form['0'] = isset($values) ? $values : [];
                                 } else {
                                     //create one ticket for all basket
-                                    $baskets          = [];
+                                    $baskets = [];
                                     $values['basket'] = isset($values['basket']) ? $values['basket'] : [];
                                     foreach ($values['basket'] as $k => $v) {
                                         $baskets[$k]['basket'] = $v;
@@ -2204,21 +2234,21 @@ JAVASCRIPT
                             }
                             $docPdf->Close();
                             //TODO TO Tranlate
-                            $name    = PluginMetaDemandsMetaDemandPdf::cleanTitle($n);
+                            $name = PluginMetaDemandsMetaDemandPdf::cleanTitle($n);
                             $docitem = $docPdf->addDocument($name, $object_class, $object->getID(), $_SESSION['glpiactive_entity']);
                         }
 
-                    // Ticket already exists
+                        // Ticket already exists
                     } else {
                         if ($object_class == 'Ticket') {
                             $parent_tickets_id = $parent_fields['id'];
                             $object->getFromDB($parent_tickets_id);
-                            $parent_fields['content']       = $object->fields['content']
-                                                              . "<br>" . $parent_fields['content'];
-                            $parent_fields['name']          = Html::cleanPostForTextArea($parent_fields['name'])
-                                                              . '&nbsp;:&nbsp;' . Html::cleanPostForTextArea($object->fields['name']);
-                            $ticket_exists_array[]          = 1;
-                            $ticket_exists                  = true;
+                            $parent_fields['content'] = $object->fields['content']
+                                . "<br>" . $parent_fields['content'];
+                            $parent_fields['name'] = Html::cleanPostForTextArea($parent_fields['name'])
+                                . '&nbsp;:&nbsp;' . Html::cleanPostForTextArea($object->fields['name']);
+                            $ticket_exists_array[] = 1;
+                            $ticket_exists = true;
                             $values['fields']['tickets_id'] = 0;
                         }
                     }
@@ -2252,14 +2282,14 @@ JAVASCRIPT
                         if ($object_class == 'Ticket') {
                             // Metademands - ticket relation
                             //TODO Change / problem ?
-                            if (!$ticket_metademand->getFromDBByCrit(['tickets_id'                        => $parent_tickets_id,
-                                                                      'parent_tickets_id'                 => $ancestor_tickets_id,
-                                                                      'plugin_metademands_metademands_id' => $form_metademands_id,
-                                                                     ])) {
-                                $ticket_metademand->add(['tickets_id'                        => $parent_tickets_id,
-                                                         'parent_tickets_id'                 => $ancestor_tickets_id,
-                                                         'plugin_metademands_metademands_id' => $form_metademands_id,
-                                                         'status'                            => PluginMetademandsTicket_Metademand::RUNNING]);
+                            if (!$ticket_metademand->getFromDBByCrit(['tickets_id' => $parent_tickets_id,
+                                'parent_tickets_id' => $ancestor_tickets_id,
+                                'plugin_metademands_metademands_id' => $form_metademands_id,
+                            ])) {
+                                $ticket_metademand->add(['tickets_id' => $parent_tickets_id,
+                                    'parent_tickets_id' => $ancestor_tickets_id,
+                                    'plugin_metademands_metademands_id' => $form_metademands_id,
+                                    'status' => PluginMetademandsTicket_Metademand::RUNNING]);
                             }
 
                             // Save all form values of the ticket
@@ -2272,8 +2302,8 @@ JAVASCRIPT
                             if (!empty($ancestor_tickets_id) && $object_class == 'Ticket') {
                                 // Add son link to parent
                                 $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
-                                                     'tickets_id_2' => $ancestor_tickets_id,
-                                                     'link'         => Ticket_Ticket::SON_OF]);
+                                    'tickets_id_2' => $ancestor_tickets_id,
+                                    'link' => Ticket_Ticket::SON_OF]);
                                 $ancestor_tickets_id = $parent_tickets_id;
                             }
                         }
@@ -2285,15 +2315,15 @@ JAVASCRIPT
                                     if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $parent_tickets_id)) {
                                         $input = [];
                                         if ($object_class == 'Problem') {
-                                            $task                 = new ProblemTask();
+                                            $task = new ProblemTask();
                                             $input['problems_id'] = $parent_tickets_id;
                                         } else {
-                                            $task                = new ChangeTask();
+                                            $task = new ChangeTask();
                                             $input['changes_id'] = $parent_tickets_id;
                                         }
-                                        $input['content']        = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                                        $input['content'] = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
                                         $input['groups_id_tech'] = $meta_task["groups_id_assign"];
-                                        $input['users_id_tech']  = $meta_task["users_id_assign"];
+                                        $input['users_id_tech'] = $meta_task["users_id_assign"];
                                         $task->add($input);
                                     }
                                 }
@@ -2321,7 +2351,7 @@ JAVASCRIPT
                                                     if (isset($values['fields'][$title])) {
                                                         $field = new PluginMetademandsField();
                                                         $field->getFromDB($title);
-                                                        $fields          = $field->fields;
+                                                        $fields = $field->fields;
                                                         $fields['value'] = '';
 
                                                         $fields['value'] = $values['fields'][$title];
@@ -2330,12 +2360,12 @@ JAVASCRIPT
                                                         if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                                             $fields['value2'] = $values['fields'][$title . '-2'];
                                                         }
-                                                        $result                                  = [];
-                                                        $result['content']                       = "";
-                                                        $result[$fields['rank']]['content']      = "";
-                                                        $result[$fields['rank']]['display']      = false;
-                                                        $parent_fields_id                        = 0;
-                                                        $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                        $result = [];
+                                                        $result['content'] = "";
+                                                        $result[$fields['rank']]['content'] = "";
+                                                        $result[$fields['rank']]['display'] = false;
+                                                        $parent_fields_id = 0;
+                                                        $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                                     } else {
                                                         $explodeTitle2 = explode(".", $title);
@@ -2344,19 +2374,19 @@ JAVASCRIPT
                                                             $field_object = new PluginMetademandsField();
                                                             if ($field_object->getFromDB($explodeTitle2[0])) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                                    $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                                                    $users_id = $values['fields'][$explodeTitle2[0]];
                                                                     $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                                                 }
                                                             }
                                                         }
-                                                        $users_id                                = $parent_fields['_users_id_requester'];
+                                                        $users_id = $parent_fields['_users_id_requester'];
                                                         $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                                     }
                                                 }
                                             } else {
-                                                $explodeVal     = [];
-                                                $explodeVal     = explode("|", $match);
-                                                $find           = false;
+                                                $explodeVal = [];
+                                                $explodeVal = explode("|", $match);
+                                                $find = false;
                                                 $val_to_replace = "";
                                                 foreach ($explodeVal as $str) {
                                                     $explodeTitle = explode("#", $str);
@@ -2364,7 +2394,7 @@ JAVASCRIPT
                                                         if (isset($values['fields'][$title])) {
                                                             $field = new PluginMetademandsField();
                                                             $field->getFromDB($title);
-                                                            $fields          = $field->fields;
+                                                            $fields = $field->fields;
                                                             $fields['value'] = '';
 
                                                             $fields['value'] = $values['fields'][$title];
@@ -2373,13 +2403,13 @@ JAVASCRIPT
                                                             if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                                                 $fields['value2'] = $values['fields'][$title . '-2'];
                                                             }
-                                                            $result                             = [];
-                                                            $result['content']                  = "";
+                                                            $result = [];
+                                                            $result['content'] = "";
                                                             $result[$fields['rank']]['content'] = "";
                                                             $result[$fields['rank']]['display'] = false;
-                                                            $parent_fields_id                   = 0;
-                                                            $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                            $parent_fields_id = 0;
+                                                            $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                            $str = str_replace("#" . $title . "#", $value, $str);
                                                             if (!is_null($value) && !empty($value)) {
                                                                 $find = true;
                                                             }
@@ -2391,12 +2421,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeTitle2[0]];
-                                                                        $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                                        $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $str      = self::getContentForUser($title, $users_id, $title, $str, true);
+                                                            $str = self::getContentForUser($title, $users_id, $title, $str, true);
                                                         }
                                                     }
                                                     if ($find == true) {
@@ -2406,10 +2436,10 @@ JAVASCRIPT
 
                                                 if (str_contains($match, "#")) {
                                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['tickettasks_name']);
-                                                    $l['tickettasks_name']                   = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
+                                                    $l['tickettasks_name'] = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
                                                 } else {
                                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['tickettasks_name']);
-                                                    $l['tickettasks_name']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
+                                                    $l['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
                                                 }
                                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                             }
@@ -2417,31 +2447,31 @@ JAVASCRIPT
 
                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("<@", "[", $line['tasks'][$key]['tickettasks_name']);
                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("@>", "]", $line['tasks'][$key]['tickettasks_name']);
-                                        $l['tickettasks_name']                   = str_replace("<@", "[", $l['tickettasks_name']);
-                                        $l['tickettasks_name']                   = str_replace("@>", "]", $l['tickettasks_name']);
+                                        $l['tickettasks_name'] = str_replace("<@", "[", $l['tickettasks_name']);
+                                        $l['tickettasks_name'] = str_replace("@>", "]", $l['tickettasks_name']);
 
                                         $explodeTitle = explode("#", $l['tickettasks_name']);
                                         foreach ($explodeTitle as $title) {
                                             if (isset($values['fields'][$title])) {
                                                 $field = new PluginMetademandsField();
                                                 $field->getFromDB($title);
-                                                $fields          = $field->fields;
+                                                $fields = $field->fields;
                                                 $fields['value'] = '';
 
                                                 $fields['value'] = $values['fields'][$title];
 
                                                 $fields['value2'] = '';
                                                 if (($fields['type'] == 'date_interval'
-                                                     || $fields['type'] == 'datetime_interval')
+                                                        || $fields['type'] == 'datetime_interval')
                                                     && isset($values['fields'][$title . '-2'])) {
                                                     $fields['value2'] = $values['fields'][$title . '-2'];
                                                 }
-                                                $result                                  = [];
-                                                $result['content']                       = "";
-                                                $result[$fields['rank']]['content']      = "";
-                                                $result[$fields['rank']]['display']      = false;
-                                                $parent_fields_id                        = 0;
-                                                $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                $result = [];
+                                                $result['content'] = "";
+                                                $result[$fields['rank']]['content'] = "";
+                                                $result[$fields['rank']]['display'] = false;
+                                                $parent_fields_id = 0;
+                                                $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                                 $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
                                             } else {
                                                 $explodeTitle2 = explode(".", $title);
@@ -2450,12 +2480,12 @@ JAVASCRIPT
                                                     $field_object = new PluginMetademandsField();
                                                     if ($field_object->getFromDB($explodeTitle2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                            $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                                            $users_id = $values['fields'][$explodeTitle2[0]];
                                                             $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                                         }
                                                     }
                                                 }
-                                                $users_id                                = $parent_fields['_users_id_requester'];
+                                                $users_id = $parent_fields['_users_id_requester'];
                                                 $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                             }
                                         }
@@ -2470,7 +2500,7 @@ JAVASCRIPT
                                                     if (isset($values['fields'][$content])) {
                                                         $field = new PluginMetademandsField();
                                                         $field->getFromDB($content);
-                                                        $fields          = $field->fields;
+                                                        $fields = $field->fields;
                                                         $fields['value'] = '';
 
                                                         $fields['value'] = $values['fields'][$content];
@@ -2479,12 +2509,12 @@ JAVASCRIPT
                                                         if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                                             $fields['value2'] = $values['fields'][$content . '-2'];
                                                         }
-                                                        $result                             = [];
-                                                        $result['content']                  = "";
+                                                        $result = [];
+                                                        $result['content'] = "";
                                                         $result[$fields['rank']]['content'] = "";
                                                         $result[$fields['rank']]['display'] = false;
-                                                        $parent_fields_id                   = 0;
-                                                        $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                        $parent_fields_id = 0;
+                                                        $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                                         if ($fields['type'] == "textarea") {
                                                             if ($line['tasks'][$key]["formatastable"] == 0) {
                                                                 $value = str_replace("\\n", '","', $value);
@@ -2498,19 +2528,19 @@ JAVASCRIPT
                                                             $field_object = new PluginMetademandsField();
                                                             if ($field_object->getFromDB($explodeContent2[0])) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                                    $users_id                       = $values['fields'][$explodeContent2[0]];
+                                                                    $users_id = $values['fields'][$explodeContent2[0]];
                                                                     $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                                                 }
                                                             }
                                                         }
-                                                        $users_id                       = $parent_fields['_users_id_requester'];
+                                                        $users_id = $parent_fields['_users_id_requester'];
                                                         $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                                     }
                                                 }
                                             } else {
-                                                $explodeVal     = [];
-                                                $explodeVal     = explode("|", $match);
-                                                $find           = false;
+                                                $explodeVal = [];
+                                                $explodeVal = explode("|", $match);
+                                                $find = false;
                                                 $val_to_replace = "";
                                                 foreach ($explodeVal as $str) {
                                                     $explodeContent = explode("#", $str);
@@ -2518,7 +2548,7 @@ JAVASCRIPT
                                                         if (isset($values['fields'][$content])) {
                                                             $field = new PluginMetademandsField();
                                                             $field->getFromDB($content);
-                                                            $fields          = $field->fields;
+                                                            $fields = $field->fields;
                                                             $fields['value'] = '';
 
                                                             $fields['value'] = $values['fields'][$content];
@@ -2527,12 +2557,12 @@ JAVASCRIPT
                                                             if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                                                 $fields['value2'] = $values['fields'][$content . '-2'];
                                                             }
-                                                            $result                             = [];
-                                                            $result['content']                  = "";
+                                                            $result = [];
+                                                            $result['content'] = "";
                                                             $result[$fields['rank']]['content'] = "";
                                                             $result[$fields['rank']]['display'] = false;
-                                                            $parent_fields_id                   = 0;
-                                                            $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                            $parent_fields_id = 0;
+                                                            $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                                             if ($fields['type'] == "textarea") {
                                                                 if ($line['tasks'][$key]["formatastable"] == 0) {
                                                                     $value = str_replace("\\n", '","', $value);
@@ -2550,12 +2580,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeContent2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
-                                                                        $str      = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
+                                                                        $str = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $str      = self::getContentForUser($content, $users_id, $content, $str, true);
+                                                            $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                                         }
                                                     }
                                                     if ($find == true) {
@@ -2565,10 +2595,10 @@ JAVASCRIPT
                                                 //                                    $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
                                                 if (str_contains($match, "#")) {
                                                     $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
-                                                    $l['content']                   = str_replace("[" . $match . "]", $str, $l['content']);
+                                                    $l['content'] = str_replace("[" . $match . "]", $str, $l['content']);
                                                 } else {
                                                     $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['content']);
-                                                    $l['content']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
+                                                    $l['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
                                                 }
                                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                             }
@@ -2576,31 +2606,31 @@ JAVASCRIPT
 
                                         $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
                                         $line['tasks'][$key]['content'] = str_replace("@>", "]", $line['tasks'][$key]['content']);
-                                        $l['content']                   = str_replace("<@", "[", $l['content']);
-                                        $l['content']                   = str_replace("@>", "]", $l['content']);
+                                        $l['content'] = str_replace("<@", "[", $l['content']);
+                                        $l['content'] = str_replace("@>", "]", $l['content']);
 
                                         $explodeContent = explode("#", $l['content']);
                                         foreach ($explodeContent as $content) {
                                             if (isset($values['fields'][$content])) {
                                                 $field = new PluginMetademandsField();
                                                 $field->getFromDB($content);
-                                                $fields          = $field->fields;
+                                                $fields = $field->fields;
                                                 $fields['value'] = '';
 
                                                 $fields['value'] = $values['fields'][$content];
 
                                                 $fields['value2'] = '';
                                                 if (($fields['type'] == 'date_interval'
-                                                     || $fields['type'] == 'datetime_interval')
+                                                        || $fields['type'] == 'datetime_interval')
                                                     && isset($values['fields'][$content . '-2'])) {
                                                     $fields['value2'] = $values['fields'][$content . '-2'];
                                                 }
-                                                $result                             = [];
-                                                $result['content']                  = "";
+                                                $result = [];
+                                                $result['content'] = "";
                                                 $result[$fields['rank']]['content'] = "";
                                                 $result[$fields['rank']]['display'] = false;
-                                                $parent_fields_id                   = 0;
-                                                $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                $parent_fields_id = 0;
+                                                $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                                 if ($fields['type'] == "textarea") {
                                                     if ($line['tasks'][$key]["formatastable"] == 0) {
                                                         $value = str_replace("\\n", '","', $value);
@@ -2614,12 +2644,12 @@ JAVASCRIPT
                                                     $field_object = new PluginMetademandsField();
                                                     if ($field_object->getFromDB($explodeContent2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                            $users_id                       = $values['fields'][$explodeContent2[0]];
+                                                            $users_id = $values['fields'][$explodeContent2[0]];
                                                             $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                                         }
                                                     }
                                                 }
-                                                $users_id                       = $parent_fields['_users_id_requester'];
+                                                $users_id = $parent_fields['_users_id_requester'];
                                                 $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                             }
                                         }
@@ -2645,12 +2675,12 @@ JAVASCRIPT
                                         if (is_array($meta_tasks)) {
                                             foreach ($meta_tasks as $meta_task) {
                                                 if (PluginMetademandsTicket_Field::checkTicketCreation($meta_task['tasks_id'], $parent_tickets_id)) {
-                                                    $ticket_task             = new TicketTask();
-                                                    $input                   = [];
-                                                    $input['content']        = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
-                                                    $input['tickets_id']     = $parent_tickets_id;
+                                                    $ticket_task = new TicketTask();
+                                                    $input = [];
+                                                    $input['content'] = Toolbox::addslashes_deep($meta_task['tickettasks_name']) . " " . Toolbox::addslashes_deep($meta_task['content']);
+                                                    $input['tickets_id'] = $parent_tickets_id;
                                                     $input['groups_id_tech'] = $meta_task["groups_id_assign"];
-                                                    $input['users_id_tech']  = $meta_task["users_id_assign"];
+                                                    $input['users_id_tech'] = $meta_task["users_id_assign"];
                                                     if (!$ticket_task->add($input)) {
                                                         $KO[] = 1;
                                                     }
@@ -2659,12 +2689,12 @@ JAVASCRIPT
                                         }
                                     }
                                 } else {
-                                    $metaValid                                    = new PluginMetademandsMetademandValidation();
-                                    $paramIn["tickets_id"]                        = $parent_tickets_id;
+                                    $metaValid = new PluginMetademandsMetademandValidation();
+                                    $paramIn["tickets_id"] = $parent_tickets_id;
                                     $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
-                                    $paramIn["users_id"]                          = 0;
-                                    $paramIn["validate"]                          = PluginMetademandsMetademandValidation::TO_VALIDATE;
-                                    $paramIn["date"]                              = date("Y-m-d H:i:s");
+                                    $paramIn["users_id"] = 0;
+                                    $paramIn["validate"] = PluginMetademandsMetademandValidation::TO_VALIDATE;
+                                    $paramIn["date"] = date("Y-m-d H:i:s");
 
                                     foreach ($line['tasks'] as $key => $l) {
                                         //replace #id# in title with the value
@@ -2684,7 +2714,7 @@ JAVASCRIPT
                                                     if (isset($values['fields'][$title])) {
                                                         $field = new PluginMetademandsField();
                                                         $field->getFromDB($title);
-                                                        $fields          = $field->fields;
+                                                        $fields = $field->fields;
                                                         $fields['value'] = '';
 
                                                         $fields['value'] = $values['fields'][$title];
@@ -2693,13 +2723,16 @@ JAVASCRIPT
                                                         if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                                             $fields['value2'] = $values['fields'][$title . '-2'];
                                                         }
-                                                        $result                                  = [];
-                                                        $result['content']                       = "";
-                                                        $result[$fields['rank']]['content']      = "";
-                                                        $result[$fields['rank']]['display']      = false;
-                                                        $parent_fields_id                        = 0;
-                                                        $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                                        $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                        $result = [];
+                                                        $result['content'] = "";
+                                                        $result[$fields['rank']]['content'] = "";
+                                                        $result[$fields['rank']]['display'] = false;
+                                                        $parent_fields_id = 0;
+                                                        $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                        if ($value != null) {
+                                                            $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                        }
+
                                                     } else {
                                                         $explodeTitle2 = explode(".", $title);
 
@@ -2707,19 +2740,19 @@ JAVASCRIPT
                                                             $field_object = new PluginMetademandsField();
                                                             if ($field_object->getFromDB($explodeTitle2[0])) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                                    $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                                                    $users_id = $values['fields'][$explodeTitle2[0]];
                                                                     $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                                                 }
                                                             }
                                                         }
-                                                        $users_id                                = $parent_fields['_users_id_requester'];
+                                                        $users_id = $parent_fields['_users_id_requester'];
                                                         $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                                     }
                                                 }
                                             } else {
-                                                $explodeVal     = [];
-                                                $explodeVal     = explode("|", $match);
-                                                $find           = false;
+                                                $explodeVal = [];
+                                                $explodeVal = explode("|", $match);
+                                                $find = false;
                                                 $val_to_replace = "";
                                                 foreach ($explodeVal as $str) {
                                                     $explodeTitle = explode("#", $str);
@@ -2727,7 +2760,7 @@ JAVASCRIPT
                                                         if (isset($values['fields'][$title])) {
                                                             $field = new PluginMetademandsField();
                                                             $field->getFromDB($title);
-                                                            $fields          = $field->fields;
+                                                            $fields = $field->fields;
                                                             $fields['value'] = '';
 
                                                             $fields['value'] = $values['fields'][$title];
@@ -2736,13 +2769,13 @@ JAVASCRIPT
                                                             if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                                                 $fields['value2'] = $values['fields'][$title . '-2'];
                                                             }
-                                                            $result                             = [];
-                                                            $result['content']                  = "";
+                                                            $result = [];
+                                                            $result['content'] = "";
                                                             $result[$fields['rank']]['content'] = "";
                                                             $result[$fields['rank']]['display'] = false;
-                                                            $parent_fields_id                   = 0;
-                                                            $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                                            $str                                = str_replace("#" . $title . "#", $value, $str);
+                                                            $parent_fields_id = 0;
+                                                            $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                            $str = str_replace("#" . $title . "#", $value, $str);
                                                             if (!is_null($value) && !empty($value)) {
                                                                 $find = true;
                                                             }
@@ -2754,12 +2787,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeTitle2[0]];
-                                                                        $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                                        $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $str      = self::getContentForUser($title, $users_id, $title, $str, true);
+                                                            $str = self::getContentForUser($title, $users_id, $title, $str, true);
                                                         }
                                                     }
                                                     if ($find == true) {
@@ -2769,10 +2802,10 @@ JAVASCRIPT
 
                                                 if (str_contains($match, "#")) {
                                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['tickettasks_name']);
-                                                    $l['tickettasks_name']                   = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
+                                                    $l['tickettasks_name'] = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
                                                 } else {
                                                     $line['tasks'][$key]['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['tickettasks_name']);
-                                                    $l['tickettasks_name']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
+                                                    $l['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
                                                 }
                                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                             }
@@ -2780,33 +2813,35 @@ JAVASCRIPT
 
                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("<@", "[", $line['tasks'][$key]['tickettasks_name']);
                                         $line['tasks'][$key]['tickettasks_name'] = str_replace("@>", "]", $line['tasks'][$key]['tickettasks_name']);
-                                        $l['tickettasks_name']                   = str_replace("<@", "[", $l['tickettasks_name']);
-                                        $l['tickettasks_name']                   = str_replace("@>", "]", $l['tickettasks_name']);
+                                        $l['tickettasks_name'] = str_replace("<@", "[", $l['tickettasks_name']);
+                                        $l['tickettasks_name'] = str_replace("@>", "]", $l['tickettasks_name']);
 
                                         $explodeTitle = explode("#", $l['tickettasks_name']);
                                         foreach ($explodeTitle as $title) {
                                             if (isset($values['fields'][$title])) {
                                                 $field = new PluginMetademandsField();
                                                 $field->getFromDB($title);
-                                                $fields          = $field->fields;
+                                                $fields = $field->fields;
                                                 $fields['value'] = '';
 
                                                 $fields['value'] = $values['fields'][$title];
 
                                                 $fields['value2'] = '';
                                                 if (($fields['type'] == 'date_interval'
-                                                     || $fields['type'] == 'datetime_interval')
+                                                        || $fields['type'] == 'datetime_interval')
                                                     && isset($values['fields'][$title . '-2'])) {
                                                     $fields['value2'] = $values['fields'][$title . '-2'];
                                                 }
-                                                $result                             = [];
-                                                $result['content']                  = "";
+                                                $result = [];
+                                                $result['content'] = "";
                                                 $result[$fields['rank']]['content'] = "";
                                                 $result[$fields['rank']]['display'] = false;
 
-                                                $parent_fields_id                        = 0;
-                                                $value                                   = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                                $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                $parent_fields_id = 0;
+                                                $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                if ($value != null) {
+                                                    $line['tasks'][$key]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $line['tasks'][$key]['tickettasks_name']);
+                                                }
                                             } else {
                                                 $explodeTitle2 = explode(".", $title);
 
@@ -2814,13 +2849,13 @@ JAVASCRIPT
                                                     $field_object = new PluginMetademandsField();
                                                     if ($field_object->getFromDB($explodeTitle2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                            $users_id                                = $values['fields'][$explodeTitle2[0]];
+                                                            $users_id = $values['fields'][$explodeTitle2[0]];
                                                             $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
                                                         }
                                                     }
                                                 }
 
-                                                $users_id                                = $parent_fields['_users_id_requester'];
+                                                $users_id = $parent_fields['_users_id_requester'];
                                                 $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
                                             }
                                         }
@@ -2834,7 +2869,7 @@ JAVASCRIPT
                                                     if (isset($values['fields'][$content])) {
                                                         $field = new PluginMetademandsField();
                                                         $field->getFromDB($content);
-                                                        $fields          = $field->fields;
+                                                        $fields = $field->fields;
                                                         $fields['value'] = '';
 
                                                         $fields['value'] = $values['fields'][$content];
@@ -2843,12 +2878,12 @@ JAVASCRIPT
                                                         if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                                             $fields['value2'] = $values['fields'][$content . '-2'];
                                                         }
-                                                        $result                             = [];
-                                                        $result['content']                  = "";
+                                                        $result = [];
+                                                        $result['content'] = "";
                                                         $result[$fields['rank']]['content'] = "";
                                                         $result[$fields['rank']]['display'] = false;
-                                                        $parent_fields_id                   = 0;
-                                                        $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                        $parent_fields_id = 0;
+                                                        $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                                         if ($fields['type'] == "textarea") {
                                                             if ($line['tasks'][$key]["formatastable"] == 0) {
                                                                 $value = str_replace("\\n", '","', $value);
@@ -2862,19 +2897,19 @@ JAVASCRIPT
                                                             $field_object = new PluginMetademandsField();
                                                             if ($field_object->getFromDB($explodeContent2[0])) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                                    $users_id                       = $values['fields'][$explodeContent2[0]];
+                                                                    $users_id = $values['fields'][$explodeContent2[0]];
                                                                     $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                                                 }
                                                             }
                                                         }
-                                                        $users_id                       = $parent_fields['_users_id_requester'];
+                                                        $users_id = $parent_fields['_users_id_requester'];
                                                         $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                                     }
                                                 }
                                             } else {
-                                                $explodeVal     = [];
-                                                $explodeVal     = explode("|", $match);
-                                                $find           = false;
+                                                $explodeVal = [];
+                                                $explodeVal = explode("|", $match);
+                                                $find = false;
                                                 $val_to_replace = "";
                                                 foreach ($explodeVal as $str) {
                                                     $explodeContent = explode("#", $str);
@@ -2882,7 +2917,7 @@ JAVASCRIPT
                                                         if (isset($values['fields'][$content])) {
                                                             $field = new PluginMetademandsField();
                                                             $field->getFromDB($content);
-                                                            $fields          = $field->fields;
+                                                            $fields = $field->fields;
                                                             $fields['value'] = '';
 
                                                             $fields['value'] = $values['fields'][$content];
@@ -2891,12 +2926,12 @@ JAVASCRIPT
                                                             if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                                                 $fields['value2'] = $values['fields'][$content . '-2'];
                                                             }
-                                                            $result                             = [];
-                                                            $result['content']                  = "";
+                                                            $result = [];
+                                                            $result['content'] = "";
                                                             $result[$fields['rank']]['content'] = "";
                                                             $result[$fields['rank']]['display'] = false;
-                                                            $parent_fields_id                   = 0;
-                                                            $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                            $parent_fields_id = 0;
+                                                            $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                                             if ($fields['type'] == "textarea") {
                                                                 if ($line['tasks'][$key]["formatastable"] == 0) {
                                                                     $value = str_replace("\\n", '","', $value);
@@ -2915,12 +2950,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeContent2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
-                                                                        $str      = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
+                                                                        $str = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $str      = self::getContentForUser($content, $users_id, $content, $str, true);
+                                                            $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                                         }
                                                     }
                                                     if ($find == true) {
@@ -2930,10 +2965,10 @@ JAVASCRIPT
 
                                                 if (str_contains($match, "#")) {
                                                     $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
-                                                    $l['content']                   = str_replace("[" . $match . "]", $str, $l['content']);
+                                                    $l['content'] = str_replace("[" . $match . "]", $str, $l['content']);
                                                 } else {
                                                     $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['content']);
-                                                    $l['content']                   = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
+                                                    $l['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
                                                 }
                                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                             }
@@ -2941,31 +2976,31 @@ JAVASCRIPT
 
                                         $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
                                         $line['tasks'][$key]['content'] = str_replace("@>", "]", $line['tasks'][$key]['content']);
-                                        $l['content']                   = str_replace("<@", "[", $l['content']);
-                                        $l['content']                   = str_replace("@>", "]", $l['content']);
+                                        $l['content'] = str_replace("<@", "[", $l['content']);
+                                        $l['content'] = str_replace("@>", "]", $l['content']);
 
                                         $explodeContent = explode("#", $l['content']);
                                         foreach ($explodeContent as $content) {
                                             if (isset($values['fields'][$content])) {
                                                 $field = new PluginMetademandsField();
                                                 $field->getFromDB($content);
-                                                $fields          = $field->fields;
+                                                $fields = $field->fields;
                                                 $fields['value'] = '';
 
                                                 $fields['value'] = $values['fields'][$content];
 
                                                 $fields['value2'] = '';
                                                 if (($fields['type'] == 'date_interval'
-                                                     || $fields['type'] == 'datetime_interval')
+                                                        || $fields['type'] == 'datetime_interval')
                                                     && isset($values['fields'][$content . '-2'])) {
                                                     $fields['value2'] = $values['fields'][$content . '-2'];
                                                 }
-                                                $result                             = [];
-                                                $result['content']                  = "";
+                                                $result = [];
+                                                $result['content'] = "";
                                                 $result[$fields['rank']]['content'] = "";
                                                 $result[$fields['rank']]['display'] = false;
-                                                $parent_fields_id                   = 0;
-                                                $value                              = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                $parent_fields_id = 0;
+                                                $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
                                                 if ($fields['type'] == "textarea") {
                                                     if ($line['tasks'][$key]["formatastable"] == 0) {
                                                         $value = str_replace("\\n", '","', $value);
@@ -2979,12 +3014,12 @@ JAVASCRIPT
                                                     $field_object = new PluginMetademandsField();
                                                     if ($field_object->getFromDB($explodeContent2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                            $users_id                       = $values['fields'][$explodeContent2[0]];
+                                                            $users_id = $values['fields'][$explodeContent2[0]];
                                                             $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
                                                         }
                                                     }
                                                 }
-                                                $users_id                       = $parent_fields['_users_id_requester'];
+                                                $users_id = $parent_fields['_users_id_requester'];
                                                 $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                             }
                                         }
@@ -2997,14 +3032,14 @@ JAVASCRIPT
                                             if (isset($input['items_id']['PluginResourcesResource'])) {
                                                 if ($resource->getFromDB($resource_id)) {
                                                     $tasks[$key]['tickettasks_name'] .= " " . $resource->fields['name'] . " " . $resource->fields['firstname'];
-                                                    $tasks[$key]['items_id']         = ['PluginResourcesResource' => [$resource_id]];
+                                                    $tasks[$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
                                                 }
                                             }
                                             if ($val['tasks_completename'] != null) {
                                                 $tasks[$key]['tasks_completename'] = addslashes(urlencode($val['tasks_completename']));
                                             }
-                                            $tasks[$key]['content']            = addslashes(urlencode($val['content']));
-                                            $tasks[$key]['block_use']          = json_decode($val["block_use"], true);
+                                            $tasks[$key]['content'] = addslashes(urlencode($val['content']));
+                                            $tasks[$key]['block_use'] = json_decode($val["block_use"], true);
                                         } else {
                                             unset($tasks[$key]);
                                         }
@@ -3020,12 +3055,12 @@ JAVASCRIPT
                                 }
                             } else {
                                 if ($this->fields["validation_subticket"] == 1) {
-                                    $metaValid                                    = new PluginMetademandsMetademandValidation();
-                                    $paramIn["tickets_id"]                        = $parent_tickets_id;
+                                    $metaValid = new PluginMetademandsMetademandValidation();
+                                    $paramIn["tickets_id"] = $parent_tickets_id;
                                     $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
-                                    $paramIn["users_id"]                          = 0;
-                                    $paramIn["validate"]                          = PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK;
-                                    $paramIn["date"]                              = date("Y-m-d H:i:s");
+                                    $paramIn["users_id"] = 0;
+                                    $paramIn["validate"] = PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK;
+                                    $paramIn["date"] = date("Y-m-d H:i:s");
 
                                     $paramIn["tickets_to_create"] = "";
                                     if ($metaValid->getFromDBByCrit(['tickets_id' => $paramIn["tickets_id"]])) {
@@ -3042,22 +3077,22 @@ JAVASCRIPT
                                 if (isset($parent_ticketfields['_users_id_observer'])
                                     && !empty($parent_ticketfields['_users_id_observer'])) {
                                     $parent_ticketfields['_itil_observer'] = ['users_id' => $parent_ticketfields['_users_id_observer'],
-                                                                              '_type'    => 'user'];
+                                        '_type' => 'user'];
                                 }
                                 if (isset($parent_ticketfields['_groups_id_observer'])
                                     && !empty($parent_ticketfields['_groups_id_observer'])) {
                                     $parent_ticketfields['_itil_observer'] = ['groups_id' => $parent_ticketfields['_groups_id_observer'],
-                                                                              '_type'     => 'group'];
+                                        '_type' => 'group'];
                                 }
                                 if (isset($parent_ticketfields['_users_id_assign'])
                                     && !empty($parent_ticketfields['_users_id_assign'])) {
                                     $parent_ticketfields['_itil_assign'] = ['users_id' => $parent_ticketfields['_users_id_assign'],
-                                                                            '_type'    => 'user'];
+                                        '_type' => 'user'];
                                 }
                                 if (isset($parent_ticketfields['_groups_id_assign'])
                                     && !empty($parent_ticketfields['_groups_id_assign'])) {
                                     $parent_ticketfields['_itil_assign'] = ['groups_id' => $parent_ticketfields['_groups_id_assign'],
-                                                                            '_type'     => 'group'];
+                                        '_type' => 'group'];
                                 }
 
                                 $object->update($this->mergeFields($parent_fields, $parent_ticketfields));
@@ -3134,143 +3169,143 @@ JAVASCRIPT
      *
      * @return array
      */
-     public function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
-     {
-         $config_data       = PluginMetademandsConfig::getInstance();
-         $langTech          = $config_data['languageTech'];
-         $result            = [];
-         $result['content'] = "";
-         $parent_fields_id  = 0;
-         $colors            = [];
+    public function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
+    {
+        $config_data = PluginMetademandsConfig::getInstance();
+        $langTech = $config_data['languageTech'];
+        $result = [];
+        $result['content'] = "";
+        $parent_fields_id = 0;
+        $colors = [];
 
 
-         foreach ($values_form as $k => $values) {
-             if (is_array($values) && $config_data['show_form_changes']) {
-                 foreach ($values as $key => $val) {
-                     if (strpos($key, '#') > 0) {
-                         $newKey       = substr($key, 0, strpos($key, '#'));
-                         $colors[$key] = $val;//substr($key,strpos($key,'#')+1);
-                         unset($values_form[$k][$newKey]);
-                     }
-                 }
-             }
-             if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name', $langTech))) {
-                 $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
-             }
-             if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                 $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
+        foreach ($values_form as $k => $values) {
+            if (is_array($values) && $config_data['show_form_changes']) {
+                foreach ($values as $key => $val) {
+                    if (strpos($key, '#') > 0) {
+                        $newKey = substr($key, 0, strpos($key, '#'));
+                        $colors[$key] = $val;//substr($key,strpos($key,'#')+1);
+                        unset($values_form[$k][$newKey]);
+                    }
+                }
+            }
+            if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name', $langTech))) {
+                $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
+            }
+            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                $result['content'] .= "<table class='tab_cadre_fixe' style='width: 100%;'>"; // class='mticket'
 //                 $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
-             }
+            }
 
-             if (!empty($options['resources_id'])) {
-                 $resourceMeta      = new PluginMetademandsMetademand_Resource();
-                 $result['content'] .= $resourceMeta::getTableResource($options);
-             }
+            if (!empty($options['resources_id'])) {
+                $resourceMeta = new PluginMetademandsMetademand_Resource();
+                $result['content'] .= $resourceMeta::getTableResource($options);
+            }
             //      $result['content'] .= "</table>";
-             $resultTemp = [];
-             $nb         = 0;
-             foreach ($parent_fields as $fields_id => $field) {
-                 if (!isset($resultTemp[$field['rank']])) {
-                     $resultTemp[$field['rank']]['content'] = "";
-                     $resultTemp[$field['rank']]['display'] = false;
-                 }
-                 $field['value'] = '';
-                 if (isset($values[$fields_id])) {
-                     $field['value'] = $values[$fields_id];
-                 }
-                 $field['value2'] = '';
-                 if (($field['type'] == 'date_interval'
-                      || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
-                     $field['value2'] = $values[$fields_id . '-2'];
-                 }
+            $resultTemp = [];
+            $nb = 0;
+            foreach ($parent_fields as $fields_id => $field) {
+                if (!isset($resultTemp[$field['rank']])) {
+                    $resultTemp[$field['rank']]['content'] = "";
+                    $resultTemp[$field['rank']]['display'] = false;
+                }
+                $field['value'] = '';
+                if (isset($values[$fields_id])) {
+                    $field['value'] = $values[$fields_id];
+                }
+                $field['value2'] = '';
+                if (($field['type'] == 'date_interval'
+                        || $field['type'] == 'datetime_interval') && isset($values[$fields_id . '-2'])) {
+                    $field['value2'] = $values[$fields_id . '-2'];
+                }
 
-                 $self = new self();
-                 $self->getFromDB($metademands_id);
-                 if ($self->getField('hide_no_field') == 1) {
-                     if ($field['type'] == 'radio' && $field['value'] === "") {
-                         continue;
-                     }
-                     if ($field['type'] == 'number' && $field['value'] == "0") {
-                         continue;
-                     }
-                     if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
-                         continue;
-                     }
-                     if ($field['type'] == 'yesno' && $field['value'] != "2") {
-                         continue;
-                     }
-                     if ($field['type'] == 'dropdown_meta' && $field['value'] == "0") {
-                         continue;
-                     }
-                 }
+                $self = new self();
+                $self->getFromDB($metademands_id);
+                if ($self->getField('hide_no_field') == 1) {
+                    if ($field['type'] == 'radio' && $field['value'] === "") {
+                        continue;
+                    }
+                    if ($field['type'] == 'number' && $field['value'] == "0") {
+                        continue;
+                    }
+                    if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
+                        continue;
+                    }
+                    if ($field['type'] == 'yesno' && $field['value'] != "2") {
+                        continue;
+                    }
+                    if ($field['type'] == 'dropdown_meta' && $field['value'] == "0") {
+                        continue;
+                    }
+                }
 
-                 if ($field['type'] == "dropdown_meta"
-                     && $field['item'] == "PluginResourcesResource") {
-                     $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
-                 }
+                if ($field['type'] == "dropdown_meta"
+                    && $field['item'] == "PluginResourcesResource") {
+                    $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
+                }
 
-                 if (!isset($options['formatastable'])
-                     || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                     if ($nb % 2 == 0) {
-                         $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
-                     } else {
-                         $resultTemp[$field['rank']]['content'] .= "<tr class='odd'>";
-                     }
-                 }
-                 $nb++;
-                 $formatAsTable = $options['formatastable'] ?? true;
+                if (!isset($options['formatastable'])
+                    || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                    if ($nb % 2 == 0) {
+                        $resultTemp[$field['rank']]['content'] .= "<tr class='even'>";
+                    } else {
+                        $resultTemp[$field['rank']]['content'] .= "<tr class='odd'>";
+                    }
+                }
+                $nb++;
+                $formatAsTable = $options['formatastable'] ?? true;
 
-                 if (isset($colors) && !empty($colors)) {
-                     $i = 0;
-                     foreach ($colors as $key => $val) {
-                         $newKey = substr($key, 0, strpos($key, '#'));
-                         if ($field['id'] == $newKey) {
-                             if ($i > 0) {
-                                 $resultTemp[$field['rank']]['content'] .= "<tr>";
-                             }
-                             $i++;
-                             $field['value'] = $val;
-                             $color          = substr($key, strpos($key, '#') + 1);
-                             self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech, $color);
-                             unset($colors[$key]);
-                             if (!isset($options['formatastable'])
-                                 || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                                 $resultTemp[$field['rank']]['content'] .= "</tr>";
-                             }
-                         }
-                     }
-                 } else {
-                     self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
+                if (isset($colors) && !empty($colors)) {
+                    $i = 0;
+                    foreach ($colors as $key => $val) {
+                        $newKey = substr($key, 0, strpos($key, '#'));
+                        if ($field['id'] == $newKey) {
+                            if ($i > 0) {
+                                $resultTemp[$field['rank']]['content'] .= "<tr>";
+                            }
+                            $i++;
+                            $field['value'] = $val;
+                            $color = substr($key, strpos($key, '#') + 1);
+                            self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech, $color);
+                            unset($colors[$key]);
+                            if (!isset($options['formatastable'])
+                                || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                                $resultTemp[$field['rank']]['content'] .= "</tr>";
+                            }
+                        }
+                    }
+                } else {
+                    self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
 
-                     if (!isset($options['formatastable'])
-                         || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                         $resultTemp[$field['rank']]['content'] .= "</tr>";
-                     }
-                 }
-             }
-             foreach ($resultTemp as $blockId => $tab) {
-                 if ($tab['display'] == true) {
-                     $result['content'] .= $tab['content'];
-                 }
-             }
-             if (!isset($options['formatastable'])
-                 || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                 $result['content'] .= "</table>";
-             }
-         }
-         return $result;
-     }
+                    if (!isset($options['formatastable'])
+                        || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                        $resultTemp[$field['rank']]['content'] .= "</tr>";
+                    }
+                }
+            }
+            foreach ($resultTemp as $blockId => $tab) {
+                if ($tab['display'] == true) {
+                    $result['content'] .= $tab['content'];
+                }
+            }
+            if (!isset($options['formatastable'])
+                || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+                $result['content'] .= "</table>";
+            }
+        }
+        return $result;
+    }
 
     /**
-      * Format fields to display on ticket content
-      *
-      * @param $parent_fields
-      * @param $fields_id
-      * @param $field
-      * @param $result
-      * @param $parent_fields_id
-      * @param $return_value
-      */
+     * Format fields to display on ticket content
+     *
+     * @param $parent_fields
+     * @param $fields_id
+     * @param $field
+     * @param $result
+     * @param $parent_fields_id
+     * @param $return_value
+     */
     public static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color = '')
     {
         global $PLUGIN_HOOKS;
@@ -3372,9 +3407,9 @@ JAVASCRIPT
                                     }
 
                                     $result[$field['rank']]['display'] = true;
-                                    $item                              = new $field['item']();
-                                    $content                           = "";
-                                    $information                       = json_decode($field['informations_to_display']);
+                                    $item = new $field['item']();
+                                    $content = "";
+                                    $information = json_decode($field['informations_to_display']);
                                     if ($item->getFromDB($field['value'])) {
                                         if (in_array('full_name', $information)) {
                                             $content .= "" . $field["item"]::getFriendlyNameById($field['value']) . " ";
@@ -3416,7 +3451,7 @@ JAVASCRIPT
 
                                     break;
                                 case 'ITILCategory_Metademands':
-                                    $dbu                               = new DbUtils();
+                                    $dbu = new DbUtils();
                                     $result[$field['rank']]['display'] = true;
                                     if ($formatAsTable) {
                                         $result[$field['rank']]['content'] .= "<td $style_title>";
@@ -3441,7 +3476,7 @@ JAVASCRIPT
                                     }
                                     break;
                                 case 'mydevices':
-                                    $dbu                               = new DbUtils();
+                                    $dbu = new DbUtils();
                                     $result[$field['rank']]['display'] = true;
                                     if ($formatAsTable) {
                                         $result[$field['rank']]['content'] .= "<td $style_title>";
@@ -3537,7 +3572,7 @@ JAVASCRIPT
                                     }
                                     break;
                                 default:
-                                    $dbu                               = new DbUtils();
+                                    $dbu = new DbUtils();
                                     $result[$field['rank']]['display'] = true;
                                     if ($formatAsTable) {
                                         $result[$field['rank']]['content'] .= "<td $style_title>";
@@ -3574,7 +3609,7 @@ JAVASCRIPT
                                 $custom_values[$k] = $field["item"]::getFriendlyNameById($k);
                             }
                             $field['value'] = PluginMetademandsField::_unserialize($field['value']);
-                            $parseValue     = [];
+                            $parseValue = [];
                             foreach ($field['value'] as $value) {
                                 $parseValue[] = $custom_values[$value];
                             }
@@ -3603,7 +3638,7 @@ JAVASCRIPT
                                 }
                             }
                             $field['value'] = PluginMetademandsField::_unserialize($field['value']);
-                            $parseValue     = [];
+                            $parseValue = [];
                             foreach ($field['value'] as $k => $value) {
                                 $parseValue[] = $custom_values[$value];
                             }
@@ -3626,7 +3661,7 @@ JAVASCRIPT
                         }
                     } elseif ($field['item'] == 'User') {
                         $information = json_decode($field['informations_to_display']);
-                        $parseValue  = [];
+                        $parseValue = [];
                         if ($formatAsTable) {
                             $dataItems = "<table>";
                         }
@@ -3772,7 +3807,7 @@ JAVASCRIPT
                                 $field['value'] = json_decode(json_encode($field['value']), true);
                             }
                         }
-                        $custom_checkbox                   = [];
+                        $custom_checkbox = [];
                         $result[$field['rank']]['display'] = true;
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "<td $style_title>";
@@ -4013,7 +4048,7 @@ JAVASCRIPT
                 case 'parent_field':
                     $metademand_field = new PluginMetademandsField();
                     if (isset($field['parent_field_id']) && $metademand_field->getFromDB($field['parent_field_id'])) {
-                        $parent_field  = $field;
+                        $parent_field = $field;
                         $custom_values = PluginMetademandsField::_unserialize($metademand_field->fields['custom_values']);
                         foreach ($custom_values as $k => $val) {
                             if (!empty($ret = PluginMetademandsField::displayField($field["parent_field_id"], "custom" . $k, $lang))) {
@@ -4021,8 +4056,8 @@ JAVASCRIPT
                             }
                         }
                         $parent_field['custom_values'] = $custom_values;
-                        $parent_field['type']          = $metademand_field->fields['type'];
-                        $parent_field['item']          = $metademand_field->fields['item'];
+                        $parent_field['type'] = $metademand_field->fields['type'];
+                        $parent_field['item'] = $metademand_field->fields['item'];
 
                         self::getContentWithField($parent_fields, $fields_id, $parent_field, $result, $parent_fields_id, false, false, $lang);
                     }
@@ -4072,12 +4107,12 @@ JAVASCRIPT
      */
     public function formatTicketFields($metademands_id, $itilcategory, $values, $users_id_requester)
     {
-        $inputs              = [];
-        $ticket_field        = new PluginMetademandsTicketField();
+        $inputs = [];
+        $ticket_field = new PluginMetademandsTicketField();
         $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
         $ticket = new Ticket();
-        $meta   = new PluginMetademandsMetademand();
+        $meta = new PluginMetademandsMetademand();
         $meta->getFromDB($metademands_id);
         $tt = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $itilcategory, $meta->fields['entities_id']);
 
@@ -4097,7 +4132,7 @@ JAVASCRIPT
                                     if (isset($values['fields'][$title])) {
                                         $field = new PluginMetademandsField();
                                         $field->getFromDB($title);
-                                        $fields          = $field->fields;
+                                        $fields = $field->fields;
                                         $fields['value'] = '';
 
                                         $fields['value'] = $values['fields'][$title];
@@ -4107,12 +4142,12 @@ JAVASCRIPT
                                             && isset($values['fields'][$title . '-2'])) {
                                             $fields['value2'] = $values['fields'][$title . '-2'];
                                         }
-                                        $result                             = [];
+                                        $result = [];
                                         $result[$fields['rank']]['content'] = "";
                                         $result[$fields['rank']]['display'] = false;
-                                        $parent_fields_id                   = 0;
-                                        $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                        $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                        $parent_fields_id = 0;
+                                        $v = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                        $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                     } else {
                                         $explodeTitle2 = explode(".", $title);
 
@@ -4120,7 +4155,7 @@ JAVASCRIPT
                                             $field_object = new PluginMetademandsField();
                                             if ($field_object->getFromDB($explodeTitle2[0])) {
                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                    $users_id       = $values['fields'][$explodeTitle2[0]];
+                                                    $users_id = $values['fields'][$explodeTitle2[0]];
                                                     $value['value'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $value['value']);
                                                 }
                                             }
@@ -4131,34 +4166,34 @@ JAVASCRIPT
                                             case "requester.login":
                                                 $user = new User();
                                                 $user->getFromDB($users_id);
-                                                $v              = $user->fields['name'];
+                                                $v = $user->fields['name'];
                                                 $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                                 break;
                                             case "requester.name":
                                                 $user = new User();
                                                 $user->getFromDB($users_id);
-                                                $v              = $user->fields['realname'];
+                                                $v = $user->fields['realname'];
                                                 $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                                 break;
                                             case "requester.firstname":
                                                 $user = new User();
                                                 $user->getFromDB($users_id);
-                                                $v              = $user->fields['firstname'];
+                                                $v = $user->fields['firstname'];
                                                 $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                                 break;
                                             case "requester.email":
                                                 $user = new UserEmail();
                                                 $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
-                                                $v              = $user->fields['email'];
+                                                $v = $user->fields['email'];
                                                 $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                                 break;
                                         }
                                     }
                                 }
                             } else {
-                                $explodeVal     = [];
-                                $explodeVal     = explode("|", $match);
-                                $find           = false;
+                                $explodeVal = [];
+                                $explodeVal = explode("|", $match);
+                                $find = false;
                                 $val_to_replace = "";
                                 foreach ($explodeVal as $str) {
                                     $explodeTitle = explode("#", $str);
@@ -4166,7 +4201,7 @@ JAVASCRIPT
                                         if (isset($values['fields'][$title])) {
                                             $field = new PluginMetademandsField();
                                             $field->getFromDB($title);
-                                            $fields          = $field->fields;
+                                            $fields = $field->fields;
                                             $fields['value'] = '';
 
                                             $fields['value'] = $values['fields'][$title];
@@ -4176,12 +4211,12 @@ JAVASCRIPT
                                                 && isset($values['fields'][$title . '-2'])) {
                                                 $fields['value2'] = $values['fields'][$title . '-2'];
                                             }
-                                            $result                             = [];
+                                            $result = [];
                                             $result[$fields['rank']]['content'] = "";
                                             $result[$fields['rank']]['display'] = false;
-                                            $parent_fields_id                   = 0;
-                                            $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                            $str                                = str_replace("#" . $title . "#", $v, $str);
+                                            $parent_fields_id = 0;
+                                            $v = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                            $str = str_replace("#" . $title . "#", $v, $str);
                                             if (!is_null($v) && !empty($v)) {
                                                 $find = true;
                                             }
@@ -4191,25 +4226,25 @@ JAVASCRIPT
                                                 case "requester.login":
                                                     $user = new User();
                                                     $user->getFromDB($users_id);
-                                                    $v   = $user->fields['name'];
+                                                    $v = $user->fields['name'];
                                                     $str = str_replace("#" . $title . "#", $v, $str);
                                                     break;
                                                 case "requester.name":
                                                     $user = new User();
                                                     $user->getFromDB($users_id);
-                                                    $v   = $user->fields['realname'];
+                                                    $v = $user->fields['realname'];
                                                     $str = str_replace("#" . $title . "#", $v, $str);
                                                     break;
                                                 case "requester.firstname":
                                                     $user = new User();
                                                     $user->getFromDB($users_id);
-                                                    $v   = $user->fields['firstname'];
+                                                    $v = $user->fields['firstname'];
                                                     $str = str_replace("#" . $title . "#", $v, $str);
                                                     break;
                                                 case "requester.email":
                                                     $user = new UserEmail();
                                                     $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
-                                                    $v   = $user->fields['email'];
+                                                    $v = $user->fields['email'];
                                                     $str = str_replace("#" . $title . "#", $v, $str);
                                                     break;
                                             }
@@ -4229,13 +4264,13 @@ JAVASCRIPT
 
                         $value['value'] = str_replace("<@", "[", $value['value']);
                         $value['value'] = str_replace("@>", "]", $value['value']);
-                        $explodeTitle   = [];
-                        $explodeTitle   = explode("#", $value['value']);
+                        $explodeTitle = [];
+                        $explodeTitle = explode("#", $value['value']);
                         foreach ($explodeTitle as $title) {
                             if (isset($values['fields'][$title])) {
                                 $field = new PluginMetademandsField();
                                 $field->getFromDB($title);
-                                $fields          = $field->fields;
+                                $fields = $field->fields;
                                 $fields['value'] = '';
 
                                 $fields['value'] = $values['fields'][$title];
@@ -4245,37 +4280,37 @@ JAVASCRIPT
                                     && isset($values['fields'][$title . '-2'])) {
                                     $fields['value2'] = $values['fields'][$title . '-2'];
                                 }
-                                $result                             = [];
+                                $result = [];
                                 $result[$fields['rank']]['content'] = "";
                                 $result[$fields['rank']]['display'] = false;
-                                $parent_fields_id                   = 0;
-                                $v                                  = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                $value['value']                     = str_replace("#" . $title . "#", $v, $value['value']);
+                                $parent_fields_id = 0;
+                                $v = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                             } else {
                                 $users_id = $users_id_requester;
                                 switch ($title) {
                                     case "requester.login":
                                         $user = new User();
                                         $user->getFromDB($users_id);
-                                        $v              = $user->fields['name'];
+                                        $v = $user->fields['name'];
                                         $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                         break;
                                     case "requester.name":
                                         $user = new User();
                                         $user->getFromDB($users_id);
-                                        $v              = $user->fields['realname'];
+                                        $v = $user->fields['realname'];
                                         $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                         break;
                                     case "requester.firstname":
                                         $user = new User();
                                         $user->getFromDB($users_id);
-                                        $v              = $user->fields['firstname'];
+                                        $v = $user->fields['firstname'];
                                         $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                         break;
                                     case "requester.email":
                                         $user = new UserEmail();
                                         $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
-                                        $v              = $user->fields['email'];
+                                        $v = $user->fields['email'];
                                         $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                         break;
                                 }
@@ -4296,7 +4331,7 @@ JAVASCRIPT
     /**
      * @param array $tickettasks_data
      * @param       $parent_tickets_id
-     * @param int   $tasklevel
+     * @param int $tasklevel
      * @param       $parent_fields
      * @param       $ancestor_tickets_id
      *
@@ -4306,10 +4341,10 @@ JAVASCRIPT
     public function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1, $inputField = [], $inputFieldMain = [])
     {
         $ticket_ticket = new Ticket_Ticket();
-        $ticket_task   = new PluginMetademandsTicket_Task();
-        $task          = new PluginMetademandsTask();
-        $ticket        = new Ticket();
-        $KO            = [];
+        $ticket_task = new PluginMetademandsTicket_Task();
+        $task = new PluginMetademandsTask();
+        $ticket = new Ticket();
+        $KO = [];
 
         foreach ($tickettasks_data as $son_ticket_data) {
             if ($son_ticket_data['level'] == $tasklevel) {
@@ -4341,9 +4376,9 @@ JAVASCRIPT
                     $this->getFromDB($ticket_meta->fields['plugin_metademands_metademands_id']);
                 }
 
-                $values_form  = [];
+                $values_form = [];
                 $ticket_field = new PluginMetademandsTicket_Field();
-                $fields       = $ticket_field->find(['tickets_id' => $ancestor_tickets_id]);
+                $fields = $ticket_field->find(['tickets_id' => $ancestor_tickets_id]);
                 foreach ($fields as $f) {
                     $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
                     if ($values_form[$f['plugin_metademands_fields_id']] === null) {
@@ -4361,7 +4396,7 @@ JAVASCRIPT
                 if (count($metademands_data)) {
                     foreach ($metademands_data as $form_step => $data) {
                         foreach ($data as $form_metademands_id => $line) {
-                            $list_fields  = $line['form'];
+                            $list_fields = $line['form'];
                             $searchOption = Search::getOptions('Ticket');
                             if ($task->getFromDB($son_ticket_data['tasks_id'])) {
                                 if (isset($task->fields['useBlock']) && $task->fields['useBlock'] == 1) {
@@ -4373,7 +4408,7 @@ JAVASCRIPT
                                                 unset($values_form[$i]);
                                             }
                                         }
-                                        $parent_fields_content            = $this->formatFields($line['form'], $this->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
+                                        $parent_fields_content = $this->formatFields($line['form'], $this->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
                                         $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
                                     } else {
                                         $parent_fields_content['content'] = $parent_fields['content'];
@@ -4407,19 +4442,19 @@ JAVASCRIPT
 
                 // Add son ticket
 //                $son_ticket_data['_disablenotif']      = true;
-                $son_ticket_data['name']               = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
-                $son_ticket_data['name']               = trim($son_ticket_data['name']);
-                $son_ticket_data['name']               = Glpi\RichText\RichText::getTextFromHtml($son_ticket_data['name']);
-                $son_ticket_data['type']               = $parent_fields['type'];
-                $son_ticket_data['entities_id']        = $parent_fields['entities_id'];
+                $son_ticket_data['name'] = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
+                $son_ticket_data['name'] = trim($son_ticket_data['name']);
+                $son_ticket_data['name'] = Glpi\RichText\RichText::getTextFromHtml($son_ticket_data['name']);
+                $son_ticket_data['type'] = $parent_fields['type'];
+                $son_ticket_data['entities_id'] = $parent_fields['entities_id'];
                 $son_ticket_data['users_id_recipient'] = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
                 //Must use used_by_child parameter if can
                 if (!$son_ticket_data['_users_id_requester']) {
                     $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
                 }
                 $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
-                $son_ticket_data['_auto_import']    = 1;
-                $son_ticket_data['status']          = Ticket::INCOMING;
+                $son_ticket_data['_auto_import'] = 1;
+                $son_ticket_data['status'] = Ticket::INCOMING;
                 if (isset($parent_fields['urgency'])) {
                     $son_ticket_data['urgency'] = $parent_fields['urgency'];
                 }
@@ -4431,14 +4466,14 @@ JAVASCRIPT
                 }
 
                 $content = '';
-                $config  = new PluginMetademandsConfig();
+                $config = new PluginMetademandsConfig();
                 $config->getFromDB(1);
 
                 if (!empty($son_ticket_data['content'])) {
                     if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
                         $content = "<table class='tab_cadre_fixe' style='width: 100%;'>";
                         $content .= "<tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
-                                    "</th></tr><tr><td colspan='2'>";
+                            "</th></tr><tr><td colspan='2'>";
                     }
 
                     $content .= Glpi\RichText\RichText::getSafeHtml($son_ticket_data['content']);
@@ -4454,7 +4489,7 @@ JAVASCRIPT
                         //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                         $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
                         $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
-                                    "</th></tr><tr><td colspan='2'>" . Glpi\RichText\RichText::getSafeHtml($parent_fields_content['content']);
+                            "</th></tr><tr><td colspan='2'>" . Glpi\RichText\RichText::getSafeHtml($parent_fields_content['content']);
                         //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
                         $content .= "</td></tr></table><br>";
                         //}
@@ -4469,23 +4504,23 @@ JAVASCRIPT
                 if ($son_tickets_id = $ticket->add(Toolbox::addslashes_deep($son_ticket_data))) {
                     if (Plugin::isPluginActive('fields')) {
                         foreach ($inputField as $containers_id => $vals) {
-                            $container                           = new PluginFieldsContainer;
+                            $container = new PluginFieldsContainer;
                             $vals['plugin_fields_containers_id'] = $containers_id;
-                            $vals['itemtype']                    = "Ticket";
-                            $vals['items_id']                    = $son_tickets_id;
+                            $vals['itemtype'] = "Ticket";
+                            $vals['items_id'] = $son_tickets_id;
                             $container->updateFieldsValues($vals, "Ticket", false);
                         }
                     }
                     // Add son link to parent
                     $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
-                                         'tickets_id_2' => $son_tickets_id,
-                                         'link'         => Ticket_Ticket::PARENT_OF]);
+                        'tickets_id_2' => $son_tickets_id,
+                        'link' => Ticket_Ticket::PARENT_OF]);
 
                     // task - ticket relation
-                    $ticket_task->add(['tickets_id'                  => $son_tickets_id,
-                                       'parent_tickets_id'           => $parent_tickets_id,
-                                       'level'                       => $son_ticket_data['level'],
-                                       'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                    $ticket_task->add(['tickets_id' => $son_tickets_id,
+                        'parent_tickets_id' => $parent_tickets_id,
+                        'level' => $son_ticket_data['level'],
+                        'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
                 } else {
                     $KO[] = 1;
                 }
@@ -4498,10 +4533,10 @@ JAVASCRIPT
                 if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $parent_tickets_id)) {
                     continue;
                 }
-                $ticket_task->add(['tickets_id'                  => 0,
-                                   'parent_tickets_id'           => $parent_tickets_id,
-                                   'level'                       => $son_ticket_data['level'],
-                                   'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                $ticket_task->add(['tickets_id' => 0,
+                    'parent_tickets_id' => $parent_tickets_id,
+                    'level' => $son_ticket_data['level'],
+                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
             }
         }
 
@@ -4521,16 +4556,16 @@ JAVASCRIPT
     {
         global $DB;
 
-        $ticket_task    = new PluginMetademandsTicket_Task();
-        $ticket         = new Ticket();
+        $ticket_task = new PluginMetademandsTicket_Task();
+        $ticket = new Ticket();
         $groups_tickets = new Group_Ticket();
-        $users_tickets  = new Ticket_User();
+        $users_tickets = new Ticket_User();
 
         // We can add task if one is not already present for ticket
         $search_ticket = $ticket_task->find(['parent_tickets_id' => $tickets_data['id']]);
         if (!count($search_ticket)) {
-            $task   = new PluginMetademandsTask();
-            $query  = "SELECT `glpi_plugin_metademands_tickettasks`.*,
+            $task = new PluginMetademandsTask();
+            $query = "SELECT `glpi_plugin_metademands_tickettasks`.*,
                              `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id`,
                              `glpi_plugin_metademands_tasks`.`id` AS tasks_id,
                              `glpi_plugin_metademands_tickets_tasks`.`level` AS parent_level
@@ -4543,10 +4578,10 @@ JAVASCRIPT
             $result = $DB->query($query);
 
             if ($DB->numrows($result)) {
-                $values       = [];
+                $values = [];
                 $ticket_field = new PluginMetademandsTicket_Field();
-                $ticket_id    = PluginMetademandsTicket_Task::getFirstTicket($tickets_data['id']);
-                $fields       = $ticket_field->find(['tickets_id' => $ticket_id]);
+                $ticket_id = PluginMetademandsTicket_Task::getFirstTicket($tickets_data['id']);
+                $fields = $ticket_field->find(['tickets_id' => $ticket_id]);
                 foreach ($fields as $f) {
                     $values['fields'][$f['plugin_metademands_fields_id']] = json_decode($f['value']);
                     if ($values['fields'][$f['plugin_metademands_fields_id']] === null) {
@@ -4570,27 +4605,27 @@ JAVASCRIPT
                             $ticket->getFromDB($tickets_data['id']);
 
                             // Find parent metademand tickets_id and get its _groups_id_assign
-                            $tickets_found              = PluginMetademandsTicket::getAncestorTickets($tickets_data['id'], true);
+                            $tickets_found = PluginMetademandsTicket::getAncestorTickets($tickets_data['id'], true);
                             $parent_groups_tickets_data = $groups_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
-                                                                                 'type'       => CommonITILActor::ASSIGN]);
+                                'type' => CommonITILActor::ASSIGN]);
 
                             if (count($parent_groups_tickets_data)) {
-                                $parent_groups_tickets_data          = reset($parent_groups_tickets_data);
+                                $parent_groups_tickets_data = reset($parent_groups_tickets_data);
                                 $ticket->fields['_groups_id_assign'] = $parent_groups_tickets_data['groups_id'];
                             }
                             $parent_groups_tickets_data = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
-                                                                                'type'       => CommonITILActor::ASSIGN]);
-                            $requesters                 = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
-                                                                                'type'       => CommonITILActor::REQUESTER]);
+                                'type' => CommonITILActor::ASSIGN]);
+                            $requesters = $users_tickets->find(['tickets_id' => $tickets_found[0]['tickets_id'],
+                                'type' => CommonITILActor::REQUESTER]);
                             if (!empty($requesters)) {
-                                $requester                            = array_shift($requesters);
+                                $requester = array_shift($requesters);
                                 $parent_fields['_users_id_requester'] = $requester['users_id'];
                             } else {
                                 $parent_fields['_users_id_requester'] = Session::getLoginUserID();
                             }
 
                             if (count($parent_groups_tickets_data)) {
-                                $parent_groups_tickets_data         = reset($parent_groups_tickets_data);
+                                $parent_groups_tickets_data = reset($parent_groups_tickets_data);
                                 $ticket->fields['_users_id_assign'] = $parent_groups_tickets_data['users_id'];
                             }
 
@@ -4604,7 +4639,7 @@ JAVASCRIPT
                                         if (isset($values['fields'][$title])) {
                                             $field = new PluginMetademandsField();
                                             $field->getFromDB($title);
-                                            $fields          = $field->fields;
+                                            $fields = $field->fields;
                                             $fields['value'] = '';
 
                                             $fields['value'] = $values['fields'][$title];
@@ -4613,12 +4648,12 @@ JAVASCRIPT
                                             if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                                 $fields['value2'] = $values['fields'][$title . '-2'];
                                             }
-                                            $resultData                                      = [];
-                                            $resultData['content']                           = "";
-                                            $resultData[$fields['rank']]['content']          = "";
-                                            $resultData[$fields['rank']]['display']          = false;
-                                            $parent_fields_id                                = 0;
-                                            $value                                           = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                            $resultData = [];
+                                            $resultData['content'] = "";
+                                            $resultData[$fields['rank']]['content'] = "";
+                                            $resultData[$fields['rank']]['display'] = false;
+                                            $parent_fields_id = 0;
+                                            $value = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
                                             $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                         } else {
                                             $explodeTitle2 = explode(".", $title);
@@ -4627,7 +4662,7 @@ JAVASCRIPT
                                                 $field_object = new PluginMetademandsField();
                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                        $users_id                                        = $values['fields'][$explodeTitle2[0]];
+                                                        $users_id = $values['fields'][$explodeTitle2[0]];
                                                         $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                                     }
                                                 }
@@ -4638,9 +4673,9 @@ JAVASCRIPT
                                         }
                                     }
                                 } else {
-                                    $explodeVal     = [];
-                                    $explodeVal     = explode("|", $match);
-                                    $find           = false;
+                                    $explodeVal = [];
+                                    $explodeVal = explode("|", $match);
+                                    $find = false;
                                     $val_to_replace = "";
                                     foreach ($explodeVal as $str) {
                                         $explodeTitle = explode("#", $str);
@@ -4648,7 +4683,7 @@ JAVASCRIPT
                                             if (isset($values['fields'][$title])) {
                                                 $field = new PluginMetademandsField();
                                                 $field->getFromDB($title);
-                                                $fields          = $field->fields;
+                                                $fields = $field->fields;
                                                 $fields['value'] = '';
 
                                                 $fields['value'] = $values['fields'][$title];
@@ -4657,13 +4692,13 @@ JAVASCRIPT
                                                 if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$title . '-2'])) {
                                                     $fields['value2'] = $values['fields'][$title . '-2'];
                                                 }
-                                                $resultData                             = [];
-                                                $resultData['content']                  = "";
+                                                $resultData = [];
+                                                $resultData['content'] = "";
                                                 $resultData[$fields['rank']]['content'] = "";
                                                 $resultData[$fields['rank']]['display'] = false;
-                                                $parent_fields_id                       = 0;
-                                                $value                                  = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
-                                                $str                                    = str_replace("#" . $title . "#", $value, $str);
+                                                $parent_fields_id = 0;
+                                                $value = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                                $str = str_replace("#" . $title . "#", $value, $str);
                                                 if (!is_null($value) && !empty($value)) {
                                                     $find = true;
                                                 }
@@ -4675,12 +4710,12 @@ JAVASCRIPT
                                                     if ($field_object->getFromDB($explodeTitle2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                             $users_id = $values['fields'][$explodeTitle2[0]];
-                                                            $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                            $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                                         }
                                                     }
                                                 }
                                                 $users_id = $parent_fields['_users_id_requester'];
-                                                $str      = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
                                             }
                                         }
                                         if ($find == true) {
@@ -4690,10 +4725,10 @@ JAVASCRIPT
 
                                     if (str_contains($match, "#")) {
                                         $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                        $l['tickettasks_name']                           = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
+                                        $l['tickettasks_name'] = str_replace("[" . $match . "]", $str, $l['tickettasks_name']);
                                     } else {
                                         $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $tasks_data[$child_tasks_id]['tickettasks_name']);
-                                        $l['tickettasks_name']                           = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
+                                        $l['tickettasks_name'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['tickettasks_name']);
                                     }
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                 }
@@ -4701,31 +4736,31 @@ JAVASCRIPT
 
                             $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("<@", "[", $tasks_data[$child_tasks_id]['tickettasks_name']);
                             $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("@>", "]", $tasks_data[$child_tasks_id]['tickettasks_name']);
-                            $l['tickettasks_name']                           = str_replace("<@", "[", $l['tickettasks_name']);
-                            $l['tickettasks_name']                           = str_replace("@>", "]", $l['tickettasks_name']);
+                            $l['tickettasks_name'] = str_replace("<@", "[", $l['tickettasks_name']);
+                            $l['tickettasks_name'] = str_replace("@>", "]", $l['tickettasks_name']);
 
                             $explodeTitle = explode("#", $l['tickettasks_name']);
                             foreach ($explodeTitle as $title) {
                                 if (isset($values['fields'][$title])) {
                                     $field = new PluginMetademandsField();
                                     $field->getFromDB($title);
-                                    $fields          = $field->fields;
+                                    $fields = $field->fields;
                                     $fields['value'] = '';
 
                                     $fields['value'] = $values['fields'][$title];
 
                                     $fields['value2'] = '';
                                     if (($fields['type'] == 'date_interval'
-                                         || $fields['type'] == 'datetime_interval')
+                                            || $fields['type'] == 'datetime_interval')
                                         && isset($values['fields'][$title . '-2'])) {
                                         $fields['value2'] = $values['fields'][$title . '-2'];
                                     }
-                                    $resultData                                      = [];
-                                    $resultData['content']                           = "";
-                                    $resultData[$fields['rank']]['content']          = "";
-                                    $resultData[$fields['rank']]['display']          = false;
-                                    $parent_fields_id                                = 0;
-                                    $value                                           = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                    $resultData = [];
+                                    $resultData['content'] = "";
+                                    $resultData[$fields['rank']]['content'] = "";
+                                    $resultData[$fields['rank']]['display'] = false;
+                                    $parent_fields_id = 0;
+                                    $value = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
                                     $tasks_data[$child_tasks_id]['tickettasks_name'] = str_replace("#" . $title . "#", $value, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                 } else {
                                     $explodeTitle2 = explode(".", $title);
@@ -4734,12 +4769,12 @@ JAVASCRIPT
                                         $field_object = new PluginMetademandsField();
                                         if ($field_object->getFromDB($explodeTitle2[0])) {
                                             if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                $users_id                                        = $values['fields'][$explodeTitle2[0]];
+                                                $users_id = $values['fields'][$explodeTitle2[0]];
                                                 $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                             }
                                         }
                                     }
-                                    $users_id                                        = $parent_fields['_users_id_requester'];
+                                    $users_id = $parent_fields['_users_id_requester'];
                                     $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
                                 }
                             }
@@ -4753,7 +4788,7 @@ JAVASCRIPT
                                         if (isset($values['fields'][$content])) {
                                             $field = new PluginMetademandsField();
                                             $field->getFromDB($content);
-                                            $fields          = $field->fields;
+                                            $fields = $field->fields;
                                             $fields['value'] = '';
 
                                             $fields['value'] = $values['fields'][$content];
@@ -4762,12 +4797,12 @@ JAVASCRIPT
                                             if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                                 $fields['value2'] = $values['fields'][$content . '-2'];
                                             }
-                                            $resultData                             = [];
-                                            $resultData['content']                  = "";
+                                            $resultData = [];
+                                            $resultData['content'] = "";
                                             $resultData[$fields['rank']]['content'] = "";
                                             $resultData[$fields['rank']]['display'] = false;
-                                            $parent_fields_id                       = 0;
-                                            $value                                  = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                            $parent_fields_id = 0;
+                                            $value = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
                                             $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
                                         } else {
                                             $explodeContent2 = explode(".", $content);
@@ -4776,19 +4811,19 @@ JAVASCRIPT
                                                 $field_object = new PluginMetademandsField();
                                                 if ($field_object->getFromDB($explodeContent2[0])) {
                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                        $users_id                               = $values['fields'][$explodeContent2[0]];
+                                                        $users_id = $values['fields'][$explodeContent2[0]];
                                                         $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $tasks_data[$child_tasks_id]['content']);
                                                     }
                                                 }
                                             }
-                                            $users_id                               = $parent_fields['_users_id_requester'];
+                                            $users_id = $parent_fields['_users_id_requester'];
                                             $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
                                         }
                                     }
                                 } else {
-                                    $explodeVal     = [];
-                                    $explodeVal     = explode("|", $match);
-                                    $find           = false;
+                                    $explodeVal = [];
+                                    $explodeVal = explode("|", $match);
+                                    $find = false;
                                     $val_to_replace = "";
                                     foreach ($explodeVal as $str) {
                                         $explodeContent = explode("#", $str);
@@ -4796,7 +4831,7 @@ JAVASCRIPT
                                             if (isset($values['fields'][$content])) {
                                                 $field = new PluginMetademandsField();
                                                 $field->getFromDB($content);
-                                                $fields          = $field->fields;
+                                                $fields = $field->fields;
                                                 $fields['value'] = '';
 
                                                 $fields['value'] = $values['fields'][$content];
@@ -4805,13 +4840,13 @@ JAVASCRIPT
                                                 if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
                                                     $fields['value2'] = $values['fields'][$content . '-2'];
                                                 }
-                                                $resultData                             = [];
-                                                $resultData['content']                  = "";
+                                                $resultData = [];
+                                                $resultData['content'] = "";
                                                 $resultData[$fields['rank']]['content'] = "";
                                                 $resultData[$fields['rank']]['display'] = false;
-                                                $parent_fields_id                       = 0;
-                                                $value                                  = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
-                                                $str                                    = str_replace("#" . $content . "#", $value, $str);
+                                                $parent_fields_id = 0;
+                                                $value = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                                $str = str_replace("#" . $content . "#", $value, $str);
                                                 if (!is_null($value) && !empty($value)) {
                                                     $find = true;
                                                 }
@@ -4823,12 +4858,12 @@ JAVASCRIPT
                                                     if ($field_object->getFromDB($explodeContent2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                             $users_id = $values['fields'][$explodeContent2[0]];
-                                                            $str      = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
+                                                            $str = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
                                                         }
                                                     }
                                                 }
                                                 $users_id = $parent_fields['_users_id_requester'];
-                                                $str      = self::getContentForUser($content, $users_id, $content, $str, true);
+                                                $str = self::getContentForUser($content, $users_id, $content, $str, true);
                                             }
                                         }
                                         if ($find == true) {
@@ -4838,10 +4873,10 @@ JAVASCRIPT
                                     //                                    $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['content']);
                                     if (str_contains($match, "#")) {
                                         $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", $str, $tasks_data[$child_tasks_id]['content']);
-                                        $l['content']                           = str_replace("[" . $match . "]", $str, $l['content']);
+                                        $l['content'] = str_replace("[" . $match . "]", $str, $l['content']);
                                     } else {
                                         $tasks_data[$child_tasks_id]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $tasks_data[$child_tasks_id]['content']);
-                                        $l['content']                           = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
+                                        $l['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
                                     }
                                     //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                 }
@@ -4849,31 +4884,31 @@ JAVASCRIPT
 
                             $tasks_data[$child_tasks_id]['content'] = str_replace("<@", "[", $tasks_data[$child_tasks_id]['content']);
                             $tasks_data[$child_tasks_id]['content'] = str_replace("@>", "]", $tasks_data[$child_tasks_id]['content']);
-                            $l['content']                           = str_replace("<@", "[", $l['content']);
-                            $l['content']                           = str_replace("@>", "]", $l['content']);
+                            $l['content'] = str_replace("<@", "[", $l['content']);
+                            $l['content'] = str_replace("@>", "]", $l['content']);
 
                             $explodeContent = explode("#", $l['content']);
                             foreach ($explodeContent as $content) {
                                 if (isset($values['fields'][$content])) {
                                     $field = new PluginMetademandsField();
                                     $field->getFromDB($content);
-                                    $fields          = $field->fields;
+                                    $fields = $field->fields;
                                     $fields['value'] = '';
 
                                     $fields['value'] = $values['fields'][$content];
 
                                     $fields['value2'] = '';
                                     if (($fields['type'] == 'date_interval'
-                                         || $fields['type'] == 'datetime_interval')
+                                            || $fields['type'] == 'datetime_interval')
                                         && isset($values['fields'][$content . '-2'])) {
                                         $fields['value2'] = $values['fields'][$content . '-2'];
                                     }
-                                    $resultData                             = [];
-                                    $resultData['content']                  = "";
+                                    $resultData = [];
+                                    $resultData['content'] = "";
                                     $resultData[$fields['rank']]['content'] = "";
                                     $resultData[$fields['rank']]['display'] = false;
-                                    $parent_fields_id                       = 0;
-                                    $value                                  = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
+                                    $parent_fields_id = 0;
+                                    $value = self::getContentWithField([], 0, $fields, $resultData, $parent_fields_id, true);
                                     $tasks_data[$child_tasks_id]['content'] = str_replace("#" . $content . "#", $value, $tasks_data[$child_tasks_id]['content']);
                                 } else {
                                     $explodeContent2 = explode(".", $content);
@@ -4882,12 +4917,12 @@ JAVASCRIPT
                                         $field_object = new PluginMetademandsField();
                                         if ($field_object->getFromDB($explodeContent2[0])) {
                                             if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                $users_id                               = $values['fields'][$explodeContent2[0]];
+                                                $users_id = $values['fields'][$explodeContent2[0]];
                                                 $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $tasks_data[$child_tasks_id]['content']);
                                             }
                                         }
                                     }
-                                    $users_id                               = $parent_fields['_users_id_requester'];
+                                    $users_id = $parent_fields['_users_id_requester'];
                                     $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
                                 }
                             }
@@ -4898,8 +4933,8 @@ JAVASCRIPT
                 }
             } else {
                 if (count($ticket_metademand->fields) > 0) {
-                    $ticket_metademand->update(['id'     => $ticket_metademand->getID(),
-                                                'status' => PluginMetademandsTicket_Metademand::CLOSED]);
+                    $ticket_metademand->update(['id' => $ticket_metademand->getID(),
+                        'status' => PluginMetademandsTicket_Metademand::CLOSED]);
                 }
             }
         }
@@ -4916,7 +4951,7 @@ JAVASCRIPT
         if (!$this->canView()) {
             return false;
         }
-        $tovalidate     = 0;
+        $tovalidate = 0;
         $metaValidation = new PluginMetademandsMetademandValidation();
         if ($metaValidation->getFromDBByCrit(['tickets_id' => $ticket->fields['id']])
             && ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE
@@ -4933,16 +4968,16 @@ JAVASCRIPT
             echo "<br>";
             echo "<br>";
             echo "<a class='btn primary mb-2 answer-action $style' data-bs-toggle='modal' data-bs-target='#metavalidation'>"
-                 . "<i class='fas fa-thumbs-up'></i>&nbsp;" . __('Metademand validation', 'metademands') . "</a>";
+                . "<i class='fas fa-thumbs-up'></i>&nbsp;" . __('Metademand validation', 'metademands') . "</a>";
 
             echo Ajax::createIframeModalWindow(
                 'metavalidation',
                 PLUGIN_METADEMANDS_WEBDIR . '/front/metademandvalidation.form.php?tickets_id=' . $ticket->fields['id'],
-                ['title'         => __('Metademand validation', 'metademands'),
-                 'display'       => false,
-                 'width'         => 200,
-                 'height'        => 400,
-                 'reloadonclose' => true]
+                ['title' => __('Metademand validation', 'metademands'),
+                    'display' => false,
+                    'width' => 200,
+                    'height' => 400,
+                    'reloadonclose' => true]
             );
 
             echo "</div>";
@@ -5008,18 +5043,18 @@ JAVASCRIPT
             }
         }
 
-        $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+        $ticket_metademand = new PluginMetademandsTicket_Metademand();
         $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $ticket->fields['id']]);
-        $tickets_found          = [];
+        $tickets_found = [];
         // If ticket is Parent : Check if all sons ticket are closed
         if (count($ticket_metademand_data)) {
             $ticket_metademand_data = reset($ticket_metademand_data);
-            $tickets_found          = PluginMetademandsTicket::getSonTickets(
+            $tickets_found = PluginMetademandsTicket::getSonTickets(
                 $ticket->fields['id'],
                 $ticket_metademand_data['plugin_metademands_metademands_id']
             );
         } else {
-            $ticket_task      = new PluginMetademandsTicket_Task();
+            $ticket_task = new PluginMetademandsTicket_Task();
             $ticket_task_data = $ticket_task->find(['tickets_id' => $ticket->fields['id']]);
 
             if (count($ticket_task_data)) {
@@ -5027,7 +5062,7 @@ JAVASCRIPT
             }
         }
         $tickets_existant = [];
-        $tickets_next     = [];
+        $tickets_next = [];
 
         if ($tovalidate == 0) {
             if (count($tickets_found)) {
@@ -5065,21 +5100,21 @@ JAVASCRIPT
 
                         // SLA State
                         $sla_state = Dropdown::EMPTY_VALUE;
-                        $is_late   = false;
+                        $is_late = false;
                         switch ($this->checkSlaState($values)) {
                             case self::SLA_FINISHED:
                                 $sla_state = __('Task completed.');
                                 break;
                             case self::SLA_LATE:
-                                $is_late     = true;
+                                $is_late = true;
                                 $color_class = "metademand_metademandfollowup_red";
-                                $sla_state   = __('Late');
+                                $sla_state = __('Late');
                                 break;
                             case self::SLA_PLANNED:
                                 $sla_state = __('Processing');
                                 break;
                             case self::SLA_TODO:
-                                $sla_state   = __('To do');
+                                $sla_state = __('To do');
                                 $color_class = "metademand_metademandfollowup_yellow";
                                 break;
                         }
@@ -5096,7 +5131,7 @@ JAVASCRIPT
 
                         if (!empty($values['tickets_id'])) {
                             echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
-                                 "?id=" . $ticket->fields['id'] . "&glpi_tab=Ticket$" . 'main' . "'>" . $ticket->fields['name'] . "</a>";
+                                "?id=" . $ticket->fields['id'] . "&glpi_tab=Ticket$" . 'main' . "'>" . $ticket->fields['name'] . "</a>";
                         } else {
                             echo self::$SON_PREFIX . $values['tasks_name'];
                         }
@@ -5205,7 +5240,7 @@ JAVASCRIPT
 
                         if (!empty($values['tickets_id'])) {
                             echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
-                                 "?id=" . $ticket->fields['id'] . "'>" . $ticket->fields['name'] . "</a>";
+                                "?id=" . $ticket->fields['id'] . "'>" . $ticket->fields['name'] . "</a>";
                         } else {
                             echo self::$SON_PREFIX . $values['tasks_name'];
                         }
@@ -5289,11 +5324,11 @@ JAVASCRIPT
         if (isset($options['metademands_id'])) {
             $metademands_id = $options['metademands_id'];
 
-            $fields          = new PluginMetademandsField();
-            $ticketfields    = new PluginMetademandsTicketField();
-            $tasks           = new PluginMetademandsTask();
-            $groups          = new PluginMetademandsGroup();
-            $tickettasks     = new PluginMetademandsTicketTask();
+            $fields = new PluginMetademandsField();
+            $ticketfields = new PluginMetademandsTicketField();
+            $tasks = new PluginMetademandsTask();
+            $groups = new PluginMetademandsGroup();
+            $tickettasks = new PluginMetademandsTicketTask();
             $metademandtasks = new PluginMetademandsMetademandTask();
 
             // Add the new metademand
@@ -5303,10 +5338,10 @@ JAVASCRIPT
 
             //TODO To translate ?
             $this->fields['comment'] = addslashes($this->fields['comment']);
-            $this->fields['name']    = addslashes($this->fields['name']);
+            $this->fields['name'] = addslashes($this->fields['name']);
 
             if ($new_metademands_id = $this->add($this->fields)) {
-                $translationMeta  = new PluginMetademandsMetademandTranslation();
+                $translationMeta = new PluginMetademandsMetademandTranslation();
                 $translationsMeta = $translationMeta->find(['itemtype' => "PluginMetademandsMetademand", "items_id" => $metademands_id]);
                 foreach ($translationsMeta as $tr) {
                     $translationMeta->getFromDB($tr['id']);
@@ -5315,7 +5350,7 @@ JAVASCRIPT
                 $metademands_data = $this->constructMetademands($metademands_id);
                 if (count($metademands_data)) {
                     $associated_fields = [];
-                    $associated_tasks  = [];
+                    $associated_tasks = [];
                     foreach ($metademands_data as $form_step => $data) {
                         foreach ($data as $form_metademands_id => $line) {
                             if (count($line['form'])) {
@@ -5325,14 +5360,14 @@ JAVASCRIPT
                                         $id = $values['id'];
                                         unset($values['id']);
                                         $values['plugin_metademands_metademands_id'] = $new_metademands_id;
-                                        $values['name']                              = addslashes($values['name']);
-                                        $values['label2']                            = addslashes($values['label2']);
-                                        $values['comment']                           = addslashes($values['comment']);
+                                        $values['name'] = addslashes($values['name']);
+                                        $values['label2'] = addslashes($values['label2']);
+                                        $values['comment'] = addslashes($values['comment']);
 
-                                        $newID                  = $fields->add($values);
+                                        $newID = $fields->add($values);
                                         $associated_fields[$id] = $newID;
-                                        $translation            = new PluginMetademandsFieldTranslation();
-                                        $translations           = $translation->find(['itemtype' => "PluginMetademandsField", "items_id" => $id]);
+                                        $translation = new PluginMetademandsFieldTranslation();
+                                        $translations = $translation->find(['itemtype' => "PluginMetademandsField", "items_id" => $id]);
                                         foreach ($translations as $tr) {
                                             $translation->getFromDB($tr['id']);
                                             $translation->clone(["items_id" => $newID]);
@@ -5360,8 +5395,8 @@ JAVASCRIPT
                                         $tasks->fields['plugin_metademands_tasks_id'] = $parent_tasks[$values['parent_task']];
                                     }
                                     $tasks->fields['plugin_metademands_metademands_id'] = $new_metademands_id;
-                                    $tasks->fields['sons_cache']                        = '';
-                                    $tasks->fields['ancestors_cache']                   = '';
+                                    $tasks->fields['sons_cache'] = '';
+                                    $tasks->fields['ancestors_cache'] = '';
                                     if (isset($tasks->fields['name'])) {
                                         $tasks->fields['name'] = addslashes($tasks->fields['name']);
                                     }
@@ -5374,9 +5409,9 @@ JAVASCRIPT
 
                                     unset($tasks->fields['id']);
 
-                                    $new_tasks_id                          = $tasks->add($tasks->fields);
+                                    $new_tasks_id = $tasks->add($tasks->fields);
                                     $associated_tasks[$values['tasks_id']] = $new_tasks_id;
-                                    $parent_tasks[$values['tasks_id']]     = $new_tasks_id;
+                                    $parent_tasks[$values['tasks_id']] = $new_tasks_id;
 
                                     // Ticket tasks
                                     if ($values['type'] == PluginMetademandsTask::TICKET_TYPE) {
@@ -5385,7 +5420,7 @@ JAVASCRIPT
                                             foreach ($tickettasks_data as $values) {
                                                 unset($values['id']);
                                                 $values['plugin_metademands_tasks_id'] = $new_tasks_id;
-                                                $values['content']                     = addslashes($values['content']);
+                                                $values['content'] = addslashes($values['content']);
                                                 $tickettasks->add($values);
                                             }
                                         }
@@ -5396,22 +5431,22 @@ JAVASCRIPT
                     }
                 }
                 $associated_fields[0] = 0;
-                $associated_tasks[0]  = 0;
+                $associated_tasks[0] = 0;
                 // Add metademand task
                 $tasks_data = $tasks->find(['plugin_metademands_metademands_id' => $metademands_id,
-                                            'type'                              => PluginMetademandsTask::METADEMAND_TYPE]);
+                    'type' => PluginMetademandsTask::METADEMAND_TYPE]);
                 if (count($tasks_data)) {
                     foreach ($tasks_data as $values) {
                         $metademandtasks_data = $metademandtasks->find(['plugin_metademands_tasks_id' => $values['id']]);
-                        $id                   = $values['id'];
+                        $id = $values['id'];
                         unset($values['id']);
                         $values['plugin_metademands_metademands_id'] = $new_metademands_id;
-                        $new_tasks_id                                = $tasks->add($values);
-                        $associated_tasks[$id]                       = $new_tasks_id;
+                        $new_tasks_id = $tasks->add($values);
+                        $associated_tasks[$id] = $new_tasks_id;
                         if (count($metademandtasks_data)) {
                             foreach ($metademandtasks_data as $data) {
                                 $metademandtasks->add(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
-                                                       'plugin_metademands_tasks_id'       => $new_tasks_id]);
+                                    'plugin_metademands_tasks_id' => $new_tasks_id]);
                             }
                         }
                     }
@@ -5420,31 +5455,34 @@ JAVASCRIPT
                 $newFields = $fields->find(['plugin_metademands_metademands_id' => $new_metademands_id]);
                 foreach ($newFields as $newField) {
                     $input['plugin_metademands_fields_id'] = isset($associated_fields[$newField["plugin_metademands_fields_id"]]);
-                    $tasksold                              = PluginMetademandsField::_unserialize($newField['plugin_metademands_tasks_id']);
-                    $tasksnew                              = [];
+                    //TODO Debug it
+                    $tasksold = PluginMetademandsField::_unserialize($newField['plugin_metademands_tasks_id']);
+                    $tasksnew = [];
                     if (is_array($tasksold)) {
                         foreach ($tasksold as $k => $t) {
                             $tasksnew[$k] = isset($associated_tasks[$t]) ? $associated_tasks[$t] : 0;
                         }
                     }
                     $input['plugin_metademands_tasks_id'] = PluginMetademandsField::_serialize($tasksnew);
-                    $fieldslinksold                       = PluginMetademandsField::_unserialize($newField['fields_link']);
-                    $fieldslinksnew                       = [];
+                    //TODO Debug it
+                    $fieldslinksold = PluginMetademandsField::_unserialize($newField['fields_link']);
+                    $fieldslinksnew = [];
                     if (is_array($fieldslinksold)) {
                         foreach ($fieldslinksold as $k => $t) {
                             $fieldslinksnew[$k] = isset($associated_fields[$t]) ? $associated_fields[$t] : 0;
                         }
                     }
                     $input['fields_link'] = PluginMetademandsField::_serialize($fieldslinksnew);
-                    $hiddenlinksold       = PluginMetademandsField::_unserialize($newField['hidden_link']);
-                    $hiddenlinksnew       = [];
+                    //TODO Debug it
+                    $hiddenlinksold = PluginMetademandsField::_unserialize($newField['hidden_link']);
+                    $hiddenlinksnew = [];
                     if (is_array($hiddenlinksold)) {
                         foreach ($hiddenlinksold as $k => $t) {
                             $hiddenlinksnew[$k] = isset($associated_fields[$t]) ? $associated_fields[$t] : 0;
                         }
                     }
                     $input['hidden_link'] = PluginMetademandsField::_serialize($hiddenlinksnew);
-                    $input['id']          = $newField['id'];
+                    $input['id'] = $newField['id'];
                     $fields->update($input);
                 }
                 // Add ticket fields
@@ -5453,7 +5491,7 @@ JAVASCRIPT
                     foreach ($ticketfields_data as $values) {
                         unset($values['id']);
                         $values['plugin_metademands_metademands_id'] = $new_metademands_id;
-                        $values['value']                             = addslashes($values['value']);
+                        $values['value'] = addslashes($values['value']);
                         $ticketfields->add($values);
                     }
                 }
@@ -5491,8 +5529,8 @@ JAVASCRIPT
         // SLA State
         if (!$notcreated) {
             if ((!empty($ticket->fields['time_to_resolve'])
-                 && ($ticket->fields['solvedate'] > $ticket->fields['time_to_resolve'])
-                 || (!empty($ticket->fields['time_to_resolve']) && (strtotime($ticket->fields['time_to_resolve']) < time())))
+                    && ($ticket->fields['solvedate'] > $ticket->fields['time_to_resolve'])
+                    || (!empty($ticket->fields['time_to_resolve']) && (strtotime($ticket->fields['time_to_resolve']) < time())))
                 && !in_array($ticket->fields['status'], $status)
             ) {
                 $sla_state = self::SLA_LATE;
@@ -5500,7 +5538,7 @@ JAVASCRIPT
                 if (!in_array($ticket->fields['status'], $status)
                     && $ticket->fields['time_to_resolve'] != null
                     && $ticket->fields['date'] != null) {
-                    $total_time   = (strtotime($ticket->fields['time_to_resolve']) - strtotime($ticket->fields['date']));
+                    $total_time = (strtotime($ticket->fields['time_to_resolve']) - strtotime($ticket->fields['date']));
                     $current_time = $total_time - (strtotime($ticket->fields['time_to_resolve']) - time());
 
                     if ($total_time > 0) {
@@ -5558,7 +5596,7 @@ JAVASCRIPT
         switch ($ma->getAction()) {
             case 'duplicate':
                 echo "&nbsp;" .
-                     Html::submit(__('Validate'), ['name' => 'massiveaction']);
+                    Html::submit(__('Validate'), ['name' => 'massiveaction']);
                 return true;
         }
         return parent::showMassiveActionsSubForm($ma);
@@ -5566,8 +5604,8 @@ JAVASCRIPT
 
     /**
      * @param MassiveAction $ma
-     * @param CommonDBTM    $item
-     * @param array         $ids
+     * @param CommonDBTM $item
+     * @param array $ids
      *
      * @return void
      * @since version 0.85
@@ -5579,7 +5617,8 @@ JAVASCRIPT
         MassiveAction $ma,
         CommonDBTM    $item,
         array         $ids
-    ) {
+    )
+    {
         switch ($ma->getAction()) {
             case 'duplicate':
                 if (__CLASS__ == $item->getType()) {
@@ -5638,7 +5677,7 @@ JAVASCRIPT
                         continue;
                     }
                     $form[$pluginclass] = [];
-                    $item               = $dbu->getItemForItemtype($pluginclass);
+                    $item = $dbu->getItemForItemtype($pluginclass);
                     if ($item && is_callable([$item, 'afterCreateTicket'])) {
                         return $item->afterCreateTicket($params);
                     }
@@ -5651,11 +5690,11 @@ JAVASCRIPT
      * Returns the translation of the field
      *
      * @param        $id
-     * @param type   $field
+     * @param type $field
      * @param string $lang
      *
      * @return type
-     * @global type  $DB
+     * @global type $DB
      */
     public static function displayField($id, $field, $lang = '')
     {
@@ -5664,23 +5703,23 @@ JAVASCRIPT
         $res = "";
         // Make new database object and fill variables
         $iterator = $DB->request([
-                                     'FROM'  => 'glpi_plugin_metademands_metademandtranslations',
-                                     'WHERE' => [
-                                         'itemtype' => self::getType(),
-                                         'items_id' => $id,
-                                         'field'    => $field,
-                                         'language' => $_SESSION['glpilanguage']
-                                     ]]);
+            'FROM' => 'glpi_plugin_metademands_metademandtranslations',
+            'WHERE' => [
+                'itemtype' => self::getType(),
+                'items_id' => $id,
+                'field' => $field,
+                'language' => $_SESSION['glpilanguage']
+            ]]);
 
         if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
             $iterator2 = $DB->request([
-                                          'FROM'  => 'glpi_plugin_metademands_metademandtranslations',
-                                          'WHERE' => [
-                                              'itemtype' => self::getType(),
-                                              'items_id' => $id,
-                                              'field'    => $field,
-                                              'language' => $lang
-                                          ]]);
+                'FROM' => 'glpi_plugin_metademands_metademandtranslations',
+                'WHERE' => [
+                    'itemtype' => self::getType(),
+                    'items_id' => $id,
+                    'field' => $field,
+                    'language' => $lang
+                ]]);
         }
 
 
@@ -5704,11 +5743,12 @@ JAVASCRIPT
 
     public function checkTaskAllowed($metademands_id, $values, $tasks)
     {
-        $in     = [];
-        $out    = [];
-        $field  = new PluginMetademandsField();
+        $in = [];
+        $out = [];
+        $field = new PluginMetademandsField();
         $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
         foreach ($fields as $f) {
+            //TODO Debug it
             $check_values = PluginMetademandsField::_unserialize($f['check_value']);
             $tasks_fields = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
             if (is_array($check_values)) {
@@ -5746,12 +5786,12 @@ JAVASCRIPT
 
     public static function getRunningMetademands(array $params = []): array
     {
-        $DB  = DBConnection::getReadConnection();
+        $DB = DBConnection::getReadConnection();
         $dbu = new DbUtils();
 
         $default_params = [
-            'label'         => __("Running metademands", 'metademands'),
-            'icon'          => PluginMetademandsMenu::getIcon(),
+            'label' => __("Running metademands", 'metademands'),
+            'icon' => PluginMetademandsMenu::getIcon(),
             'apply_filters' => [],
         ];
 
@@ -5774,36 +5814,36 @@ JAVASCRIPT
         $s_criteria = [
             'criteria' => [
                 [
-                    'link'       => 'AND',
-                    'field'      => 9500, // status
+                    'link' => 'AND',
+                    'field' => 9500, // status
                     'searchtype' => 'equals',
-                    'value'      => PluginMetademandsTicket_Metademand::RUNNING
+                    'value' => PluginMetademandsTicket_Metademand::RUNNING
                 ]
             ],
-            'reset'    => 'reset'
+            'reset' => 'reset'
         ];
 
         $url = Ticket::getSearchURL() . "?" . Toolbox::append_params($s_criteria);
 
 
         return [
-            'number'     => $total_running,
-            'url'        => $url,
-            'label'      => $default_params['label'],
-            'icon'       => $default_params['icon'],
+            'number' => $total_running,
+            'url' => $url,
+            'label' => $default_params['label'],
+            'icon' => $default_params['icon'],
             's_criteria' => $s_criteria,
-            'itemtype'   => 'Ticket',
+            'itemtype' => 'Ticket',
         ];
     }
 
     public static function getRunningMetademandsAndMygroups(array $params = []): array
     {
-        $DB  = DBConnection::getReadConnection();
+        $DB = DBConnection::getReadConnection();
         $dbu = new DbUtils();
 
         $default_params = [
-            'label'         => __("Running metademands with tickets of my groups", "metademands"),
-            'icon'          => PluginMetademandsMenu::getIcon(),
+            'label' => __("Running metademands with tickets of my groups", "metademands"),
+            'icon' => PluginMetademandsMenu::getIcon(),
             'apply_filters' => [],
         ];
 
@@ -5829,49 +5869,49 @@ JAVASCRIPT
         $s_criteria = [
             'criteria' => [
                 [
-                    'link'       => 'AND',
-                    'field'      => 9500, // metademand status
+                    'link' => 'AND',
+                    'field' => 9500, // metademand status
                     'searchtype' => 'equals',
-                    'value'      => PluginMetademandsTicket_Metademand::RUNNING
+                    'value' => PluginMetademandsTicket_Metademand::RUNNING
                 ],
                 [
-                    'link'       => 'AND',
-                    'field'      => 9502, // group
+                    'link' => 'AND',
+                    'field' => 9502, // group
                     'searchtype' => 'equals',
-                    'value'      => "mygroups"
+                    'value' => "mygroups"
                 ],
                 [
-                    'link'       => 'AND',
-                    'field'      => 12, // status
+                    'link' => 'AND',
+                    'field' => 12, // status
                     'searchtype' => 'equals',
-                    'value'      => "notold"
+                    'value' => "notold"
                 ]
             ],
-            'reset'    => 'reset'
+            'reset' => 'reset'
         ];
 
         $url = Ticket::getSearchURL() . "?" . Toolbox::append_params($s_criteria);
 
 
         return [
-            'number'     => $total_running,
-            'url'        => $url,
-            'label'      => $default_params['label'],
-            'icon'       => $default_params['icon'],
+            'number' => $total_running,
+            'url' => $url,
+            'label' => $default_params['label'],
+            'icon' => $default_params['icon'],
             's_criteria' => $s_criteria,
-            'itemtype'   => 'Ticket',
+            'itemtype' => 'Ticket',
         ];
     }
 
 
     public static function getMetademandsToBeClosed(array $params = []): array
     {
-        $DB  = DBConnection::getReadConnection();
+        $DB = DBConnection::getReadConnection();
         $dbu = new DbUtils();
 
         $default_params = [
-            'label'         => __("Metademands to be closed", 'metademands'),
-            'icon'          => PluginMetademandsMenu::getIcon(),
+            'label' => __("Metademands to be closed", 'metademands'),
+            'icon' => PluginMetademandsMenu::getIcon(),
             'apply_filters' => [],
         ];
 
@@ -5894,41 +5934,41 @@ JAVASCRIPT
         $s_criteria = [
             'criteria' => [
                 [
-                    'link'       => 'AND',
-                    'field'      => 9500, // status
+                    'link' => 'AND',
+                    'field' => 9500, // status
                     'searchtype' => 'equals',
-                    'value'      => PluginMetademandsTicket_Metademand::TO_CLOSED
+                    'value' => PluginMetademandsTicket_Metademand::TO_CLOSED
                 ],
                 [
-                    'link'       => 'AND',
-                    'field'      => 12, // status
+                    'link' => 'AND',
+                    'field' => 12, // status
                     'searchtype' => 'equals',
-                    'value'      => "notold"
+                    'value' => "notold"
                 ]
             ],
-            'reset'    => 'reset'
+            'reset' => 'reset'
         ];
 
         $url = Ticket::getSearchURL() . "?" . Toolbox::append_params($s_criteria);
 
         return [
-            'number'     => $total_closed,
-            'url'        => $url,
-            'label'      => $default_params['label'],
-            'icon'       => $default_params['icon'],
+            'number' => $total_closed,
+            'url' => $url,
+            'label' => $default_params['label'],
+            'icon' => $default_params['icon'],
             's_criteria' => $s_criteria,
-            'itemtype'   => 'Ticket',
+            'itemtype' => 'Ticket',
         ];
     }
 
     public static function getMetademandsToBeValidated(array $params = []): array
     {
-        $DB  = DBConnection::getReadConnection();
+        $DB = DBConnection::getReadConnection();
         $dbu = new DbUtils();
 
         $default_params = [
-            'label'         => __("Metademands to be validated", 'metademands'),
-            'icon'          => PluginMetademandsMenu::getIcon(),
+            'label' => __("Metademands to be validated", 'metademands'),
+            'icon' => PluginMetademandsMenu::getIcon(),
             'apply_filters' => [],
         ];
 
@@ -5952,41 +5992,41 @@ JAVASCRIPT
         $s_criteria = [
             'criteria' => [
                 0 => [
-                    'link'       => 'AND',
-                    'field'      => 12, // status
+                    'link' => 'AND',
+                    'field' => 12, // status
                     'searchtype' => 'equals',
-                    'value'      => "notold"
+                    'value' => "notold"
                 ],
                 [
-                    'link'     => 'AND',
+                    'link' => 'AND',
                     'criteria' => [
                         [
-                            'link'       => 'AND',
-                            'field'      => 9501, // validation status
+                            'link' => 'AND',
+                            'field' => 9501, // validation status
                             'searchtype' => 'equals',
-                            'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE
+                            'value' => PluginMetademandsMetademandValidation::TO_VALIDATE
                         ],
                         [
-                            'link'       => 'OR',
-                            'field'      => 9501, // validation status
+                            'link' => 'OR',
+                            'field' => 9501, // validation status
                             'searchtype' => 'equals',
-                            'value'      => PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK
+                            'value' => PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK
                         ]
                     ]
                 ],
             ],
-            'reset'    => 'reset'
+            'reset' => 'reset'
         ];
 
         $url = Ticket::getSearchURL() . "?" . Toolbox::append_params($s_criteria);
 
         return [
-            'number'     => $total_to_validated,
-            'url'        => $url,
-            'label'      => $default_params['label'],
-            'icon'       => $default_params['icon'],
+            'number' => $total_to_validated,
+            'url' => $url,
+            'label' => $default_params['label'],
+            'icon' => $default_params['icon'],
             's_criteria' => $s_criteria,
-            'itemtype'   => 'Ticket',
+            'itemtype' => 'Ticket',
         ];
     }
 
@@ -6056,7 +6096,7 @@ JAVASCRIPT
     public function getTags($id)
     {
         $fields = $this->find(['id' => $id]);
-        $res    = [];
+        $res = [];
         foreach ($fields as $field) {
             $res[$field['id']] = $field['name'];
         }
@@ -6066,15 +6106,15 @@ JAVASCRIPT
 
     public function exportAsXML()
     {
-        $fields          = $this->fields;
+        $fields = $this->fields;
         $metatranslation = new PluginMetademandsMetademandTranslation();
-        $translations    = $metatranslation->find(['items_id' => $this->getID(),
-                                                   'itemtype' => PluginMetademandsMetademand::getType()]);
+        $translations = $metatranslation->find(['items_id' => $this->getID(),
+            'itemtype' => PluginMetademandsMetademand::getType()]);
         foreach ($translations as $id => $translation) {
             $fields['translations']['meta_translation' . $id] = $translation;
         }
-        $metafield            = new PluginMetademandsField();
-        $metafields           = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
+        $metafield = new PluginMetademandsField();
+        $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
         foreach ($metafields as $id => $metafield) {
             $fields['metafields']['field' . $id] = $metafield;
@@ -6083,7 +6123,7 @@ JAVASCRIPT
         $fieldtranslation = new PluginMetademandsFieldTranslation();
         foreach ($fields['metafields'] as $id => $f) {
             $translationsfield = $fieldtranslation->find(['items_id' => $f['id'],
-                                                          'itemtype' => PluginMetademandsField::getType()]);
+                'itemtype' => PluginMetademandsField::getType()]);
             foreach ($translationsfield as $k => $v) {
                 $fields['metafields'][$id]['fieldtranslations']['translation'] = $v;
             }
@@ -6091,13 +6131,13 @@ JAVASCRIPT
         $resourceMeta = new PluginMetademandsMetademand_Resource();
         $resourceMeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['resource'] = $resourceMeta->fields;
-        $meta_Task          = new PluginMetademandsTask();
-        $tasks              = $meta_Task->find(['plugin_metademands_metademands_id' => $this->getID()]);
-        $fields['tasks']    = [];
+        $meta_Task = new PluginMetademandsTask();
+        $tasks = $meta_Task->find(['plugin_metademands_metademands_id' => $this->getID()]);
+        $fields['tasks'] = [];
         foreach ($tasks as $id => $task) {
             $fields['tasks']['task' . $id] = $task;
         }
-        $metaTask  = new PluginMetademandsMetademandTask();
+        $metaTask = new PluginMetademandsMetademandTask();
         $metatasks = $metaTask->find(['plugin_metademands_metademands_id' => $this->getID()]);
         foreach ($metatasks as $id => $task) {
             $fields['metatasks']['metatask' . $id] = $task;
@@ -6167,11 +6207,11 @@ JAVASCRIPT
                         break;
                 }
             } else {
-                $tmp       = explode(".", $_FILES['meta_file']['name']);
+                $tmp = explode(".", $_FILES['meta_file']['name']);
                 $extension = array_pop($tmp);
                 if (Toolbox::getMime($_FILES['meta_file']['tmp_name'], 'text') && $extension == "xml") {
                     // Unlink old picture (clean on changing format)
-                    $filename     = "tmpfileMeta";
+                    $filename = "tmpfileMeta";
                     $picture_path = GLPI_PLUGIN_DOC_DIR . "/metademands/{$filename}.$extension";
                     Document::renameForce($_FILES['meta_file']['tmp_name'], $picture_path);
                     $file = $picture_path;
@@ -6188,19 +6228,19 @@ JAVASCRIPT
 
 
         //      $xml   = simplexml_load_file(GLPI_PLUGIN_DOC_DIR . '/test.xml');
-        $xml   = simplexml_load_file($file);
-        $json  = json_encode($xml);
+        $xml = simplexml_load_file($file);
+        $json = json_encode($xml);
         $datas = json_decode($json, true);
 
         $metademand = new PluginMetademandsMetademand();
-        $oldId      = $datas['id'];
+        $oldId = $datas['id'];
         unset($datas['id']);
         unset($datas['date_creation']);
         unset($datas['date_mod']);
         unset($datas['itilcategories_id']);
         $datas['entities_id'] = $_SESSION['glpiactive_entity'];
 
-        $mapTableField        = [];
+        $mapTableField = [];
         $mapTableFieldReverse = [];
 
 
@@ -6237,7 +6277,7 @@ JAVASCRIPT
                 $datas[$key] = Html::entity_decode_deep($data);
             }
         }
-        $datas     = Toolbox::addslashes_deep($datas);
+        $datas = Toolbox::addslashes_deep($datas);
         $newIDMeta = $metademand->add($datas);
         //      $translations = [];
         foreach ($fields as $k => $field) {
@@ -6315,20 +6355,20 @@ JAVASCRIPT
 
             $oldIDField = $fields[$k]["id"];
             unset($fields[$k]["id"]);
-            $fields[$k]['entities_id']                       = $_SESSION['glpiactive_entity'];
-            $fields[$k]                                      = Toolbox::addslashes_deep($fields[$k]);
+            $fields[$k]['entities_id'] = $_SESSION['glpiactive_entity'];
+            $fields[$k] = Toolbox::addslashes_deep($fields[$k]);
             $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
-            $fields[$k]["date_creation"]                     = $_SESSION['glpi_currenttime'];
-            $fields[$k]["date_mod"]                          = $_SESSION['glpi_currenttime'];
-            $metaField                                       = new PluginMetademandsField();
-            $newIDField                                      = $metaField->add($fields[$k]);
-            $mapTableField[$oldIDField]                      = $newIDField;
-            $mapTableFieldReverse[$newIDField]               = $oldIDField;
+            $fields[$k]["date_creation"] = $_SESSION['glpi_currenttime'];
+            $fields[$k]["date_mod"] = $_SESSION['glpi_currenttime'];
+            $metaField = new PluginMetademandsField();
+            $newIDField = $metaField->add($fields[$k]);
+            $mapTableField[$oldIDField] = $newIDField;
+            $mapTableFieldReverse[$newIDField] = $oldIDField;
             if (isset($fieldstranslations)) {
                 foreach ($fieldstranslations as $fieldstranslation) {
                     unset($fieldstranslation['id']);
-                    $fieldstranslation['value']    = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['value']));
-                    $fieldstranslation['field']    = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['field']));
+                    $fieldstranslation['value'] = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['value']));
+                    $fieldstranslation['field'] = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['field']));
                     $fieldstranslation['items_id'] = $newIDField;
 
                     $trans = new PluginMetademandsFieldTranslation();
@@ -6336,7 +6376,7 @@ JAVASCRIPT
                 }
             }
         }
-        $mapTableTask        = [];
+        $mapTableTask = [];
         $mapTableTaskReverse = [];
 
         foreach ($tasks as $k => $task) {
@@ -6344,7 +6384,7 @@ JAVASCRIPT
             unset($task['id']);
             unset($task['ancestors_cache']);
             unset($task['sons_cache']);
-            $task       = Toolbox::addslashes_deep($task);
+            $task = Toolbox::addslashes_deep($task);
             $tickettask = $task['tickettask'];
             foreach ($task as $key => $val) {
                 if (is_array($val)) {
@@ -6356,10 +6396,10 @@ JAVASCRIPT
             $task['entities_id'] = $_SESSION['glpiactive_entity'];
 
             $task['plugin_metademands_metademands_id'] = $newIDMeta;
-            $meta_task                                 = new PluginMetademandsTask();
-            $newIDTask                                 = $meta_task->add($task);
+            $meta_task = new PluginMetademandsTask();
+            $newIDTask = $meta_task->add($task);
 
-            $mapTableTask[$oldIDTask]        = $newIDTask;
+            $mapTableTask[$oldIDTask] = $newIDTask;
             $mapTableTaskReverse[$newIDTask] = $oldIDTask;
 
 
@@ -6373,28 +6413,28 @@ JAVASCRIPT
                     }
                 }
                 $tickettask['plugin_metademands_tasks_id'] = $newIDTask;
-                $tickettaskP                               = new PluginMetademandsTicketTask();
+                $tickettaskP = new PluginMetademandsTicketTask();
                 $tickettaskP->add($tickettask);
             }
         }
         foreach ($mapTableFieldReverse as $new => $old) {
             $fieldMeta = new PluginMetademandsField();
             $fieldMeta->getFromDB($new);
-            $fields_link                 = $fieldMeta->getField("fields_link");
-            $hidden_link                 = $fieldMeta->getField("hidden_link");
+            $fields_link = $fieldMeta->getField("fields_link");
+            $hidden_link = $fieldMeta->getField("hidden_link");
             $plugin_metademands_tasks_id = $fieldMeta->getField("plugin_metademands_tasks_id");
-            $fields_link                 = PluginMetademandsField::_unserialize($fields_link);
-            $hidden_link                 = PluginMetademandsField::_unserialize($hidden_link);
+            $fields_link = PluginMetademandsField::_unserialize($fields_link);
+            $hidden_link = PluginMetademandsField::_unserialize($hidden_link);
             $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($plugin_metademands_tasks_id);
-            $toUpdate                    = [];
-            $toUpdate['id']              = $new;
+            $toUpdate = [];
+            $toUpdate['id'] = $new;
             if (is_array($fields_link)) {
                 foreach ($fields_link as $key => $field_link) {
                     if ($field_link != 0 && isset($mapTableField[$field_link])) {
                         $fields_link[$key] = $mapTableField[$field_link];
                     }
                 }
-                $fields_link             = PluginMetademandsField::_serialize($fields_link);
+                $fields_link = PluginMetademandsField::_serialize($fields_link);
                 $toUpdate["fields_link"] = $fields_link;
             }
 
@@ -6404,7 +6444,7 @@ JAVASCRIPT
                         $hidden_link[$key] = $mapTableField[$hidden];
                     }
                 }
-                $hidden_link             = PluginMetademandsField::_serialize($hidden_link);
+                $hidden_link = PluginMetademandsField::_serialize($hidden_link);
                 $toUpdate["hidden_link"] = $hidden_link;
             }
 
@@ -6414,7 +6454,7 @@ JAVASCRIPT
                         $plugin_metademands_tasks_id[$key] = $mapTableTask[$task];
                     }
                 }
-                $plugin_metademands_tasks_id             = PluginMetademandsField::_serialize($plugin_metademands_tasks_id);
+                $plugin_metademands_tasks_id = PluginMetademandsField::_serialize($plugin_metademands_tasks_id);
                 $toUpdate["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
             }
             if ($fieldMeta->getField('plugin_metademands_fields_id') != 0 && isset($mapTableField[$fieldMeta->getField('plugin_metademands_fields_id')])) {
@@ -6427,7 +6467,7 @@ JAVASCRIPT
         foreach ($mapTableTaskReverse as $new => $old) {
             $meta_task = new PluginMetademandsTask();
             $meta_task->getFromDB($new);
-            $toUpdate       = [];
+            $toUpdate = [];
             $toUpdate['id'] = $new;
             if (isset($mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]])) {
                 $toUpdate["plugin_metademands_tasks_id"] = $mapTableTask[$meta_task->fields["plugin_metademands_tasks_id"]];
@@ -6437,17 +6477,17 @@ JAVASCRIPT
 
         if (!empty($resource)) {
             $resource['plugin_metademands_metademands_id'] = $newIDMeta;
-            $resource_meta                                 = new PluginMetademandsMetademand_Resource();
+            $resource_meta = new PluginMetademandsMetademand_Resource();
             $resource_meta->add($resource);
         }
 
 
         if (!empty($metatasks)) {
             foreach ($metatasks as $key => $metatask) {
-                $meta_metatask                              = new PluginMetademandsMetademandTask();
-                $metat                                      = [];
+                $meta_metatask = new PluginMetademandsMetademandTask();
+                $metat = [];
                 $metat['plugin_metademands_metademands_id'] = $newIDMeta;
-                $metat['plugin_metademands_tasks_id']       = $mapTableTask[$metatask['plugin_metademands_tasks_id']];
+                $metat['plugin_metademands_tasks_id'] = $mapTableTask[$metatask['plugin_metademands_tasks_id']];
                 $meta_metatask->add($metat);
             }
         }
@@ -6456,8 +6496,8 @@ JAVASCRIPT
         if (!empty($translations)) {
             foreach ($translations as $key => $trans) {
                 $meta_translation = new PluginMetademandsMetademandTranslation();
-                $trans['value']   = Html::entity_decode_deep(Toolbox::addslashes_deep($trans['value']));
-                $trans['field']   = Html::entity_decode_deep($trans['field']);
+                $trans['value'] = Html::entity_decode_deep(Toolbox::addslashes_deep($trans['value']));
+                $trans['field'] = Html::entity_decode_deep($trans['field']);
                 unset($trans['id']);
                 $trans['items_id'] = $newIDMeta;
 
@@ -6498,8 +6538,8 @@ JAVASCRIPT
     {
         if (str_contains($string, $start)) { // required if $start not exist in $string
             $startCharCount = strpos($string, $start) + strlen($start);
-            $firstSubStr    = substr($string, $startCharCount, strlen($string));
-            $endCharCount   = strpos($firstSubStr, $end);
+            $firstSubStr = substr($string, $startCharCount, strlen($string));
+            $endCharCount = strpos($firstSubStr, $end);
             if ($endCharCount == 0) {
                 $endCharCount = strlen($firstSubStr);
             }
@@ -6603,13 +6643,13 @@ JAVASCRIPT
         echo "</div>";
         echo "</article>";
 
-        $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+        $ticket_metademand = new PluginMetademandsTicket_Metademand();
         $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
-        $tickets_found          = [];
+        $tickets_found = [];
         // If ticket is Parent : Check if all sons ticket are closed
         if (count($ticket_metademand_data)) {
             $ticket_metademand_data = reset($ticket_metademand_data);
-            $tickets_found          = PluginMetademandsTicket::getSonTickets(
+            $tickets_found = PluginMetademandsTicket::getSonTickets(
                 $item->fields['id'],
                 $ticket_metademand_data['plugin_metademands_metademands_id']
             );
@@ -6637,7 +6677,7 @@ JAVASCRIPT
                     // Get ticket values if it exists
                     $ticket->getFromDB($values['tickets_id']);
                     $class = "";
-                    $fa    = "fa-tasks";
+                    $fa = "fa-tasks";
                     $state = self::TODO;
                     if (in_array($ticket->fields['status'], $ticket->getSolvedStatusArray())) {
                         $state = self::DONE;
@@ -6646,9 +6686,9 @@ JAVASCRIPT
 
 
                     if (Plugin::isPluginActive("servicecatalog")) {
-                        $fa          = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], 'icon');
-                        $color       = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], "background_color");
-                        $class       = "background-color: $color;box-shadow: 0 0 0 7px $color !important;";
+                        $fa = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], 'icon');
+                        $color = PluginServicecatalogCategory::getUsedConfig("inherit_config", $ticket->fields['itilcategories_id'], "background_color");
+                        $class = "background-color: $color;box-shadow: 0 0 0 7px $color !important;";
                         $class_state = "box-shadow: 0 0 0 7px $color !important;";
                     }
 
@@ -6674,9 +6714,9 @@ JAVASCRIPT
         }
 
         //end ticket
-        $dateEnd   = (!empty($item->fields["solvedate"])) ? Html::convDateTime($item->fields["solvedate"]) : __("Not yet completed", 'metademands');
+        $dateEnd = (!empty($item->fields["solvedate"])) ? Html::convDateTime($item->fields["solvedate"]) : __("Not yet completed", 'metademands');
         $class_end = (!empty($item->fields["solvedate"])) ? "bulleDone" : "";
-        $fa_end    = (!empty($item->fields["solvedate"])) ? "fa-check" : "fa-hourglass-half";
+        $fa_end = (!empty($item->fields["solvedate"])) ? "fa-check" : "fa-hourglass-half";
         echo "<article>";
         echo "<div class='inner'>";
         echo "<span class='bulle bulleMarge $class_end'>";
@@ -6711,7 +6751,7 @@ JAVASCRIPT
         switch ($action) {
             case 'getHtml':
                 $placeholder = $title;
-                $html        = <<<HTML
+                $html = <<<HTML
                <div class="" tabindex="-1" id="mt-fuzzysearch">
                   <div class="">
                      <div class="modal-content">
@@ -6729,7 +6769,7 @@ HTML;
                 break;
 
             default:
-                $metas       = [];
+                $metas = [];
                 $metademands = PluginMetademandsWizard::selectMetademands(false, "", $type);
 
                 foreach ($metademands as $id => $values) {
@@ -6747,8 +6787,8 @@ HTML;
 
                         $metas[] = [
                             'title' => $name,
-                            'icon'  => $icon,
-                            'url'   => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2",
+                            'icon' => $icon,
+                            'url' => PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2",
                         ];
                     }
                 }
@@ -6763,7 +6803,8 @@ HTML;
      * @param     $target
      * @param int $add
      */
-    function listOfTemplates($target, $add = 0) {
+    function listOfTemplates($target, $add = 0)
+    {
         $dbu = new DbUtils();
 
         $restrict = ["is_template" => 1] +

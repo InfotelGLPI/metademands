@@ -56,8 +56,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     }
     if (isset($_POST['next_users_id'])) {
         $_SESSION ['plugin_metademands'][$user_id]['users_id_dest'] = $_POST['next_users_id'];
-        $res = $user->getFromDBByCrit(['id' =>  $_POST['next_users_id']]);
-        $userName = $user->fields['realname']." ".$user->fields['firstname'];
+        $userName = getUserName($_POST['next_users_id']);
         $msg = sprintf(__('The form has been sent to user %s from group %s, you can close the window', 'metademands'), $userName, $groupName);
     } else {
         $msg = sprintf(__('The form has been sent to the group %s, you can close the window', 'metademands'), $groupName);
@@ -70,7 +69,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     if ($KO === false) {
 
         $_SESSION['plugin_metademands'][$user_id]['redirect_wizard'] = true;
-        Html::popHeader(__('Next group', 'metademands'), $_SERVER['PHP_SELF'],true);
+        Html::popHeader(__('Next recipient', 'metademands'), $_SERVER['PHP_SELF'],true);
         $display = "<div class='alert alert-info alert-info d-flex'>";
         $display .= "$msg";
         $display .= "</div>";
@@ -78,7 +77,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
         echo $display;
 
     } else {
-        Html::popHeader(__('Next group', 'metademands'), $_SERVER['PHP_SELF'],true);
+        Html::popHeader(__('Next recipient', 'metademands'), $_SERVER['PHP_SELF'],true);
         $msg = __('A problem occurred, the form was not sent', 'metademands');
         $display = "<div class='alert alert-info alert-info d-flex'>";
         $display .= "$msg";

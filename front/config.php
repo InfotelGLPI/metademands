@@ -29,7 +29,8 @@
 
 include('../../../inc/includes.php');
 
-global $CFG_GLPI;
+include(PLUGIN_METADEMANDS_DIR . "/install/migrateFieldsOptions.php");
+migrateFieldsOptions();
 
 if (Plugin::isPluginActive("metademands")) {
     if (Session::haveRight("plugin_metademands", UPDATE)) {

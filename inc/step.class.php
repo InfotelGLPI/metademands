@@ -362,7 +362,7 @@ class PluginMetademandsStep extends CommonDBChild
         $blocks = [];
         $self = new self();
         foreach ($fields as $f) {
-            if ($configStep->fields['multiple_link_groups_blocks']) {
+            if (isset($configStep->fields['multiple_link_groups_blocks'])) {
                 if (!isset($blocks[$f['rank']])) {
                     $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
                 }
@@ -517,7 +517,7 @@ class PluginMetademandsStep extends CommonDBChild
         $user = new User();
         $nextGroups = [];
         $rand = mt_rand();
-        $title = __('Next group', 'metademands');
+        $title = __('Next recipient', 'metademands');
         if (isset($_POST['metademands_id']) && !empty($_POST['metademands_id'])) {
             $meta_id = $_POST['metademands_id'];
         }
@@ -535,7 +535,7 @@ class PluginMetademandsStep extends CommonDBChild
             'modalgroup',
             $url,
             [
-                'title' => __('Next group', 'metademands'),
+                'title' => __('Next recipient', 'metademands'),
                 'display' => false,
                 'reloadonclose' => true,
                 'autoopen' => true,
@@ -553,6 +553,7 @@ class PluginMetademandsStep extends CommonDBChild
      */
     static function showModalForm(){
         global $CFG_GLPI;
+
         $conf = new PluginMetademandsConfigstep();
         $step = new PluginMetademandsStep();
         $group = new Group();
@@ -632,7 +633,7 @@ class PluginMetademandsStep extends CommonDBChild
                 foreach ($groupUsers as $grpUsr) {
                     $res = $user->getFromDBByCrit(['id' => $grpUsr['users_id']]);
                     if ($res) {
-                        $users[$grpUsr['users_id']] = $user->fields['name'];
+                        $users[$grpUsr['users_id']] = getUserName($grpUsr['users_id']);
                     }
                 }
                 $return .= "<tr class='tab_bg_1'>";

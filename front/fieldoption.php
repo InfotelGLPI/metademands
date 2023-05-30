@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
  -------------------------------------------------------------------------
  Metademands plugin for GLPI
- Copyright (C) 2018-2019 by the Metademands Development Team.
+ Copyright (C) 2018-2022 by the Metademands Development Team.
 
  https://github.com/InfotelGLPI/metademands
  -------------------------------------------------------------------------
@@ -28,14 +28,6 @@
  */
 
 include('../../../inc/includes.php');
-header("Content-Type: text/html; charset=UTF-8");
-
-Html::header_nocache();
-
 Session::checkLoginUser();
-$KO          = false;
-$fields = new PluginMetademandsField();
-$fields->getFromDB($_POST['checkbox_id_val']);
-$arrayValues = PluginMetademandsField::_unserialize($fields->getField('custom_values'));
 
-Dropdown::showFromArray('checkbox_value',$arrayValues,['display_emptychoice'=> false]);
+Html::back();

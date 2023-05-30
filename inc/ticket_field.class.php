@@ -105,17 +105,19 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
     */
    static function checkTicketCreation($tasks_id, $parent_tickets_id) {
       global $DB;
-
+//TODO Debug it
       $check  = [];
       $tasks  = is_array($tasks_id) ? implode(",", $tasks_id) : $tasks_id;
-      $query  = "SELECT `glpi_plugin_metademands_fields`.`check_value`,
+      $query  = "SELECT `glpi_plugin_metademands_fieldoptions`.`check_value`,
                        `glpi_plugin_metademands_fields`.`type`,
-                       `glpi_plugin_metademands_fields`.`plugin_metademands_tasks_id`,
+                       `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_tasks_id`,
                        `glpi_plugin_metademands_tickets_fields`.`plugin_metademands_fields_id`,
                        `glpi_plugin_metademands_tickets_fields`.`value` as field_value
                FROM `glpi_plugin_metademands_tickets_fields`
                RIGHT JOIN `glpi_plugin_metademands_fields`
                   ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_tickets_fields`.`plugin_metademands_fields_id`)
+              RIGHT JOIN `glpi_plugin_metademands_fieldoptions`
+                  ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldoptions`.`plugin_metademands_fields_id`)
                AND `glpi_plugin_metademands_tickets_fields`.`tickets_id` = " . $parent_tickets_id;
       $result = $DB->query($query);
 

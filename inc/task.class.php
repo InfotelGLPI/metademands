@@ -804,7 +804,7 @@ class PluginMetademandsTask extends CommonDBChild {
             }
         }
 
-        return Dropdown::showFromArray('plugin_metademands_tasks_id[]', $data, ['value'   => $selected_value,
+        return Dropdown::showFromArray('plugin_metademands_tasks_id', $data, ['value'   => $selected_value,
                                                                                 'tree'    => true,
                                                                                 'display' => $display]);
     }

@@ -96,9 +96,6 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `custom_values`                     text COLLATE utf8mb4_unicode_ci          DEFAULT NULL,
     `default_values`                    text COLLATE utf8mb4_unicode_ci          DEFAULT NULL,
     `comment_values`                    text COLLATE utf8mb4_unicode_ci          DEFAULT NULL,
-    `check_value`                       varchar(255)                             DEFAULT NULL,
-    `checkbox_value`                    varchar(255)                    NOT NULL DEFAULT '[]',
-    `checkbox_id`                       varchar(255)                    NOT NULL DEFAULT '[]',
     `rank`                              int                             NOT NULL DEFAULT '0',
     `order`                             int                             NOT NULL DEFAULT '0',
     `name`                              varchar(255)                             DEFAULT NULL,
@@ -107,17 +104,10 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `type`                              varchar(255)                             DEFAULT NULL,
     `item`                              varchar(255)                             DEFAULT NULL,
     `is_mandatory`                      int                             NOT NULL DEFAULT '0',
-    `plugin_metademands_fields_id`      int unsigned                    NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned                    NOT NULL DEFAULT '0',
-    `plugin_metademands_tasks_id`       varchar(255)                             DEFAULT NULL,
-    `fields_link`                       varchar(255)                    NOT NULL DEFAULT '0',
-    `hidden_link`                       varchar(255)                    NOT NULL DEFAULT '0',
-    `hidden_block`                      varchar(255)                    NOT NULL DEFAULT '0',
-    `users_id_validate`                 varchar(255)                    NOT NULL DEFAULT '0',
     `max_upload`                        int                             NOT NULL DEFAULT 0,
     `regex`                             VARCHAR(255)                    NOT NULL DEFAULT '',
     `color`                             varchar(255)                             DEFAULT NULL,
-    `parent_field_id`                   int                             NOT NULL DEFAULT '0',
     `row_display`                       tinyint                                  DEFAULT 0,
     `is_basket`                         tinyint                                  DEFAULT 0,
     `date_creation`                     timestamp                       NULL     DEFAULT NULL,
@@ -131,7 +121,6 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `additional_number_day`             int                                      DEFAULT 0,
     `informations_to_display`           varchar(255)                    NOT NULL DEFAULT '[]',
     `use_richtext`                      tinyint                         NOT NULL DEFAULT '1',
-    `childs_blocks`                     VARCHAR(255)                    NOT NULL DEFAULT '[]',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
@@ -141,6 +130,34 @@ CREATE TABLE `glpi_plugin_metademands_fields`
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = DYNAMIC;
 
+
+-- ------------------------------------------------------------
+--
+-- Structure de la table 'glpi_plugin_metademands_fieldoptions'
+--
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `glpi_plugin_metademands_fieldoptions`;
+CREATE TABLE `glpi_plugin_metademands_fieldoptions`
+(
+    `id`                           int unsigned NOT NULL AUTO_INCREMENT,
+    `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
+    `check_value`                  varchar(255)          DEFAULT NULL,
+    `plugin_metademands_tasks_id`  varchar(255)          DEFAULT NULL,
+    `fields_link`                  varchar(255) NOT NULL DEFAULT '0',
+    `hidden_link`                  varchar(255) NOT NULL DEFAULT '0',
+    `hidden_block`                 varchar(255) NOT NULL DEFAULT '0',
+    `users_id_validate`            varchar(255) NOT NULL DEFAULT '0',
+    `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
+    `checkbox_value`               varchar(255) NOT NULL DEFAULT '[]',
+    `checkbox_id`                  varchar(255) NOT NULL DEFAULT '[]',
+    `parent_field_id`              int          NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
+    KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = DYNAMIC;
 
 -- ------------------------------------------------------------
 --

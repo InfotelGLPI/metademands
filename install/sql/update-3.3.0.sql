@@ -1,3 +1,25 @@
+CREATE TABLE `glpi_plugin_metademands_fieldoptions`
+(
+    `id`                           int unsigned NOT NULL AUTO_INCREMENT,
+    `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
+    `check_value`                  varchar(255)          DEFAULT NULL,
+    `plugin_metademands_tasks_id`  varchar(255)          DEFAULT NULL,
+    `fields_link`                  varchar(255) NOT NULL DEFAULT '0',
+    `hidden_link`                  varchar(255) NOT NULL DEFAULT '0',
+    `hidden_block`                 varchar(255) NOT NULL DEFAULT '0',
+    `users_id_validate`            varchar(255) NOT NULL DEFAULT '0',
+    `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
+    `checkbox_value`               varchar(255) NOT NULL DEFAULT '[]',
+    `checkbox_id`                  varchar(255) NOT NULL DEFAULT '[]',
+    `parent_field_id`              int          NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
+    KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = DYNAMIC;
+
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `is_template` tinyint NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `template_name` varchar(255) DEFAULT NULL;
 ALTER TABLE `glpi_plugin_metademands_metademandtasks` ADD `entities_id` int unsigned NOT NULL DEFAULT '0';
@@ -19,7 +41,8 @@ CREATE TABLE `glpi_plugin_metademands_configsteps`
     `plugin_metademands_metademands_id` int unsigned NOT NULL           DEFAULT '0',
     `link_user_block`                   tinyint      NOT NULL           DEFAULT '0',
     `multiple_link_groups_blocks`       tinyint      NOT NULL           DEFAULT '0',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
