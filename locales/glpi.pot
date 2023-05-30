@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-27 13:02+0000\n"
+"POT-Creation-Date: 2023-05-30 14:47+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -229,20 +229,36 @@ msgstr ""
 msgid "Display metademands list into ServiceCatalog plugin"
 msgstr ""
 
-#: inc/config.class.php:233
+#: inc/config.class.php:232 inc/configstep.class.php:126
+msgid "Link multiple groups to a block"
+msgstr ""
+
+#: inc/config.class.php:238 inc/configstep.class.php:132
+msgid "Allow sending the form to a user"
+msgstr ""
+
+#: inc/config.class.php:248
 msgid "Configuration of the Service Catalog plugin"
 msgstr ""
 
-#: inc/config.class.php:236
+#: inc/config.class.php:251
 msgid "Title for Service Catalog widget"
 msgstr ""
 
-#: inc/config.class.php:247
+#: inc/config.class.php:262
 msgid "Comment for Service Catalog widget"
 msgstr ""
 
-#: inc/config.class.php:259
+#: inc/config.class.php:274
 msgid "Icon for Service Catalog widget"
+msgstr ""
+
+#: inc/configstep.class.php:62
+msgid "Block setting"
+msgstr ""
+
+#: inc/configstep.class.php:163
+msgid "Cannot change settings because blocks are linked to multiple groups"
 msgstr ""
 
 #: inc/draft.class.php:95
@@ -302,7 +318,7 @@ msgid "Takes the whole row"
 msgstr ""
 
 #: inc/field.class.php:357 inc/field.class.php:963 inc/field.class.php:4710
-#: inc/step.class.php:268 inc/step.class.php:348
+#: inc/step.class.php:273 inc/step.class.php:354
 msgid "Block"
 msgstr ""
 
@@ -566,8 +582,9 @@ msgid ""
 "set"
 msgstr ""
 
-#: inc/field.class.php:3878 inc/step.class.php:243 inc/step.class.php:362
-#: inc/task.class.php:522 inc/task.class.php:901 inc/tickettask.class.php:161
+#: inc/field.class.php:3878 inc/step.class.php:247 inc/step.class.php:365
+#: inc/step.class.php:384 inc/task.class.php:522 inc/task.class.php:901
+#: inc/tickettask.class.php:161
 #, php-format
 msgid "Block %s"
 msgstr ""
@@ -1079,26 +1096,30 @@ msgstr[1] ""
 msgid "Add a new association"
 msgstr ""
 
-#: inc/step.class.php:250
+#: inc/step.class.php:255
 msgid ""
 "Be careful if all blocks are not assigned, they will be displayed to the "
 "last assigned group"
 msgstr ""
 
-#: inc/step.class.php:262
+#: inc/step.class.php:267
 msgid "List of associations"
 msgstr ""
 
-#: inc/step.class.php:270
+#: inc/step.class.php:275
 msgid "Message"
 msgstr ""
 
-#: inc/step.class.php:316
+#: inc/step.class.php:321
 msgid "No association found"
 msgstr ""
 
-#: inc/step.class.php:416
+#: inc/step.class.php:439
 msgid "Message to next group on form"
+msgstr ""
+
+#: inc/step.class.php:496
+msgid "This group is already assigned to this block"
 msgstr ""
 
 #: inc/stepform.class.php:47
@@ -1341,22 +1362,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:4329
+#: inc/wizard.class.php:4327
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:4338
+#: inc/wizard.class.php:4336
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:4384
+#: inc/wizard.class.php:4382
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:4388
+#: inc/wizard.class.php:4386
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
