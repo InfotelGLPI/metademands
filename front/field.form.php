@@ -203,7 +203,7 @@ if (isset($_POST["add"])) {
       $field->update($_POST);
    }
 
-   Html::back();
+    $field->redirectToList();
 
 } else if (isset($_POST["delete_field_custom_values"])) {
 

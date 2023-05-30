@@ -466,7 +466,9 @@ CREATE TABLE `glpi_plugin_metademands_drafts_values`
     `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
     `value`                        text         NOT NULL,
     `value2`                       text         NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_drafts_id` (`plugin_metademands_drafts_id`),
+    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -480,7 +482,8 @@ CREATE TABLE `glpi_plugin_metademands_drafts`
     `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
     `users_id`                          int unsigned NOT NULL DEFAULT '0',
     `date`                              timestamp    NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -493,7 +496,10 @@ CREATE TABLE `glpi_plugin_metademands_pluginfields`
     `plugin_fields_fields_id`           int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_fields_id`      int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_fields_fields_id` (`plugin_fields_fields_id`),
+    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -511,7 +517,8 @@ CREATE TABLE `glpi_plugin_metademands_forms`
     `date`                              timestamp    NOT NULL,
     `is_model`                          tinyint      NOT NULL                   DEFAULT '0',
     `resources_id`                      int unsigned NOT NULL                   DEFAULT '0',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -525,7 +532,9 @@ CREATE TABLE `glpi_plugin_metademands_forms_values`
     `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
     `value`                        text         NOT NULL,
     `value2`                       text         NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_forms_id` (`plugin_metademands_forms_id`),
+    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -563,7 +572,8 @@ CREATE TABLE `glpi_plugin_metademands_stepforms`
     `date`                              timestamp    NULL     DEFAULT NULL,
     `reminder_date`                     timestamp    NULL     DEFAULT NULL,
     `block_id`                          int unsigned NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -576,7 +586,9 @@ CREATE TABLE `glpi_plugin_metademands_stepforms_values`
     `plugin_metademands_fields_id`    int unsigned NOT NULL           DEFAULT '0',
     `value`                           text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `value2`                          text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_stepforms_id` (`plugin_metademands_stepforms_id`),
+    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -590,7 +602,8 @@ CREATE TABLE `glpi_plugin_metademands_steps`
     `groups_id`                         int unsigned NOT NULL           DEFAULT '0',
     `reminder_delay`                    text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `message`                           text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -602,7 +615,8 @@ CREATE TABLE `glpi_plugin_metademands_configsteps`
     `plugin_metademands_metademands_id` int unsigned NOT NULL           DEFAULT '0',
     `link_user_block`                   tinyint      NOT NULL           DEFAULT '0',
     `multiple_link_groups_blocks`       tinyint      NOT NULL           DEFAULT '0',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci

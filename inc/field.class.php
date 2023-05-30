@@ -525,7 +525,7 @@ class PluginMetademandsField extends CommonDBChild
 
         echo "</td>";
         // Is_Basket Fields
-        if ($item->fields['is_order'] == 1) {
+        if ($metademand->fields['is_order'] == 1) {
             echo "<td>" . __('Display into the basket', 'metademands') . "</td>";
             echo "<td>";
             if ($ID > 0) {
@@ -1257,16 +1257,10 @@ class PluginMetademandsField extends CommonDBChild
             echo "<th class='center b'>" . __('Order', 'metademands') . "</th>";
             echo "</tr>";
             // Init navigation list for field items
-//            Session::initNavigateListItems($self->getType(), self::getTypeName(1));
+            Session::initNavigateListItems($self->getType(), self::getTypeName(1));
 
             foreach ($data as $value) {
-//                Session::addToNavigateListItems($self->getType(), $id);
-
-                $onhover = '';
-                if ($canedit) {
-                    $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditField" . $item->getType() . $value['id'] . "$rand();\"";
-                }
+                Session::addToNavigateListItems($self->getType(), $value['id']);
 
                 echo "<tr class='tab_bg_1'>";
                 if ($canedit) {
@@ -1274,33 +1268,33 @@ class PluginMetademandsField extends CommonDBChild
                     Html::showMassiveActionCheckBox(__CLASS__, $value["id"]);
                     echo "</td>";
                 }
-                echo "<td $onhover>";
-                if ($canedit) {
-                    echo "\n<script type='text/javascript' >\n";
-                    echo "function viewEditField" . $item->getType() . $value['id'] . "$rand() {\n";
-                    $params = ['type' => __CLASS__,
-                        'parenttype' => get_class($item),
-                        $item->getForeignKeyField() => $item->getID(),
-                        'id' => $value["id"]];
-                    Ajax::updateItemJsCode("viewfield" . $item->getType() . $item->getID() . "$rand",
-                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                        $params);
-                    echo "};";
-                    echo "</script>\n";
-                }
+                echo "<td>";
+//                if ($canedit) {
+//                    echo "\n<script type='text/javascript' >\n";
+//                    echo "function viewEditField" . $item->getType() . $value['id'] . "$rand() {\n";
+//                    $params = ['type' => __CLASS__,
+//                        'parenttype' => get_class($item),
+//                        $item->getForeignKeyField() => $item->getID(),
+//                        'id' => $value["id"]];
+//                    Ajax::updateItemJsCode("viewfield" . $item->getType() . $item->getID() . "$rand",
+//                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
+//                        $params);
+//                    echo "};";
+//                    echo "</script>\n";
+//                }
                 echo $value['id'];
                 echo "</td>";
                 $name = $value['name'];
-                echo "<td $onhover>";
-//                echo " <a href='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $id . "'>";
+                echo "<td >";
+                echo " <a href='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'] . "'>";
                 if (empty(trim($name))) {
                     echo __('ID') . " - " . $value['id'];
                 } else {
                     echo $name;
                 }
-//                echo "</a>";
+                echo "</a>";
                 echo "</td>";
-                echo "<td $onhover>" . self::getFieldTypesName($value['type']);
+                echo "<td >" . self::getFieldTypesName($value['type']);
                 //name of parent field
                 if ($value['type'] == 'parent_field') {
                     $fieldopt = new PluginMetademandsFieldOption();
@@ -1316,10 +1310,10 @@ class PluginMetademandsField extends CommonDBChild
                     }
                 }
                 echo "</td>";
-                echo "<td $onhover>" . self::getFieldItemsName($value['item']) . "</td>";
-                echo "<td $onhover>" . Dropdown::getYesNo($value['is_mandatory']) . "</td>";
+                echo "<td >" . self::getFieldItemsName($value['item']) . "</td>";
+                echo "<td >" . Dropdown::getYesNo($value['is_mandatory']) . "</td>";
 
-                echo "<td $onhover>";
+                echo "<td >";
 
                 $fieldopt = new PluginMetademandsFieldOption();
                 if($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
@@ -1340,7 +1334,7 @@ class PluginMetademandsField extends CommonDBChild
                 }
                 echo "</td>";
 
-                echo "<td $onhover>";
+                echo "<td >";
                 $fieldopt = new PluginMetademandsFieldOption();
                 if($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
                     $nbopts = count($opts);
@@ -1362,9 +1356,9 @@ class PluginMetademandsField extends CommonDBChild
                 }
                 echo "</td>";
                 if ($item->fields['is_order'] == 1) {
-                    echo "<td $onhover>" . Dropdown::getYesNo($value['is_basket']) . "</td>";
+                    echo "<td >" . Dropdown::getYesNo($value['is_basket']) . "</td>";
                 }
-                echo "<td $onhover>";
+                echo "<td >";
 
                 $searchOption = Search::getOptions('Ticket');
                 if (isset($searchOption[$value['used_by_ticket']]['name'])) {

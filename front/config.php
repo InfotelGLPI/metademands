@@ -29,8 +29,9 @@
 
 include('../../../inc/includes.php');
 
-include(PLUGIN_METADEMANDS_DIR . "/install/migrateFieldsOptions.php");
-migrateFieldsOptions();
+//For migration if needed
+//include(PLUGIN_METADEMANDS_DIR . "/install/migrateFieldsOptions.php");
+//migrateFieldsOptions();
 
 if (Plugin::isPluginActive("metademands")) {
     if (Session::haveRight("plugin_metademands", UPDATE)) {

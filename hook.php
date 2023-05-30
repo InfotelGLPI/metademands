@@ -309,6 +309,27 @@ function plugin_metademands_install() {
 
         $query = "UPDATE `glpi_plugin_metademands_fieldoptions` SET `childs_blocks` = '[]' WHERE `childs_blocks` = '\"\"'";
         $DB->query($query);
+
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `check_value`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `plugin_metademands_tasks_id`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `fields_link`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `hidden_link`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `hidden_block`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `users_id_validate`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `childs_blocks`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `parent_field_id`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `checkbox_value`";
+        $DB->query($query);
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `checkbox_id`";
+        $DB->query($query);
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
