@@ -1752,39 +1752,8 @@ JAVASCRIPT
 
                     // Create parent ticket
                     // Get form fields
-                    $parent_fields['content'] = '';
+//                    $parent_fields['content'] = '';
 
-                    foreach ($values['fields'] as $id => $datav) {
-                        $metademands_fields = new PluginMetademandsField();
-                        if (strpos($id, '-2')) {
-                            $id = str_replace("-2", "", $id);
-                        }
-                        if ($metademands_fields->getFromDB($id)) {
-                            switch ($metademands_fields->fields['item']) {
-                                case 'ITILCategory_Metademands':
-                                    $parent_fields['itilcategories_id'] = $datav;
-                                    if ($itilcategory > 0) {
-                                        $parent_fields['itilcategories_id'] = $itilcategory;
-                                    }
-                                    break;
-                            }
-
-                            if (isset($metademands_fields->fields['users_id_validate'])
-                                && !empty($metademands_fields->fields['users_id_validate'])) {
-                                if (isset($metademands_fields->fields['check_value']) && is_array($datav)) {
-                                    $checkeValue   = json_decode($metademands_fields->fields['check_value'], 1);
-                                    $usersValidate = json_decode($metademands_fields->fields['users_id_validate'], 1);
-                                    foreach ($checkeValue as $key => $checkVal) {
-                                        if (in_array($checkVal, $datav)) {
-                                            $add_validation      = '0';
-                                            $validatortype       = 'user';
-                                            $users_id_validate[] = $usersValidate[$key];
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
                     if ($metademand->fields['is_order'] == 0) {
                         if (count($line['form'])
                             && isset($values['fields'])) {
@@ -1860,6 +1829,38 @@ JAVASCRIPT
 
                         $parent_fields            = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
                         $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
+                    }
+
+                    foreach ($values['fields'] as $id => $datav) {
+                        $metademands_fields = new PluginMetademandsField();
+                        if (strpos($id, '-2')) {
+                            $id = str_replace("-2", "", $id);
+                        }
+                        if ($metademands_fields->getFromDB($id)) {
+                            switch ($metademands_fields->fields['item']) {
+                                case 'ITILCategory_Metademands':
+                                    $parent_fields['itilcategories_id'] = $datav;
+                                    if ($itilcategory > 0) {
+                                        $parent_fields['itilcategories_id'] = $itilcategory;
+                                    }
+                                    break;
+                            }
+
+                            if (isset($metademands_fields->fields['users_id_validate'])
+                                && !empty($metademands_fields->fields['users_id_validate'])) {
+                                if (isset($metademands_fields->fields['check_value']) && is_array($datav)) {
+                                    $checkeValue   = json_decode($metademands_fields->fields['check_value'], 1);
+                                    $usersValidate = json_decode($metademands_fields->fields['users_id_validate'], 1);
+                                    foreach ($checkeValue as $key => $checkVal) {
+                                        if (in_array($checkVal, $datav)) {
+                                            $add_validation      = '0';
+                                            $validatortype       = 'user';
+                                            $users_id_validate[] = $usersValidate[$key];
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     if (empty($n = PluginMetademandsMetademand::displayField($form_metademands_id, 'name'))) {
@@ -1949,6 +1950,13 @@ JAVASCRIPT
                                             && Ticket::isPossibleToAssignType($fields_values["item"])) {
                                             $parent_fields["items_id"] = [$fields_values["item"] => [$v[$id]]];
                                         }
+                                        if ($fields_values['type'] == "dropdown_multiple"
+//                                            && Ticket::isPossibleToAssignType("Appliance")
+                                            && $fields_values["item"] == "Appliance") {
+                                            foreach ($v[$id] as $k => $items_id) {
+                                                $parent_fields["items_id"] = ['Appliance' => [$items_id]];
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -2000,6 +2008,7 @@ JAVASCRIPT
                     // Case of simple ticket convertion
                     // Ticket does not exist : ADD
                     $ticket_exists = false;
+
                     if (empty($parent_fields['id'])) {
                         unset($parent_fields['id']);
 
@@ -2084,6 +2093,8 @@ JAVASCRIPT
                         }
                         $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
                         $input         = Toolbox::addslashes_deep($input);
+
+
                         //ADD TICKET
                         if (isset($options['current_ticket_id'])
                             && $options['current_ticket_id'] > 0

@@ -687,6 +687,8 @@ class PluginMetademandsField extends CommonDBChild
 
             if (($this->fields['type'] == "dropdown_meta"
               && $this->fields["item"] == "mydevices")
+                || ($this->fields['type'] == "dropdown_multiple"
+                    && $this->fields["item"] == "Appliance")
              || ($this->fields['type'] == "dropdown_object"
                  && Ticket::isPossibleToAssignType($this->fields["item"]))) {
                 $granted_fields = [
@@ -2757,25 +2759,40 @@ class PluginMetademandsField extends CommonDBChild
                 $field = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
                 break;
             case 'yesno':
-                $option[1] = __('No');
-                $option[2] = __('Yes');
+
+                $options[1] = __('No');
+                $options[2] = __('Yes');
+
+                $defaults = self::_unserialize($data['custom_values']);
+
                 if ($value == "") {
+                    //warning : this is default value
                     $value = $data['custom_values'];
                 }
                 if (is_array($value)) {
                     $value = "";
                 }
+                $value = !empty($value) ? $value : $defaults;
+
                 $field = "";
-                $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $option, ['value'               => $value,
-                                                                                              'display_emptychoice' => false,
-                                                                                              'class'               => '',
-                                                                                              'required'            => ($data['is_mandatory'] ? "required" : ""),
-                                                                                              'display'             => false]);
+                $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $options, ['value' => $value,
+                    'display_emptychoice' => false,
+                    'class' => '',
+//                    'noselect2' => true,
+                    'width' => '70px',
+                    'required' => ($data['is_mandatory'] ? "required" : ""),
+                        'id' => $data['id'],
+                    'display' => false
+                    ]
+                );
+
+
                 break;
             case 'upload':
                 $arrayFiles = json_decode($value, true);
                 $field      = "";
                 $nb         = 0;
+                $container = 'fileupload_info_ticket'.$namefield . $data['id'];
                 if ($arrayFiles != "") {
                     foreach ($arrayFiles as $k => $file) {
                         $field .= str_replace($file['_prefix_filename'], "", $file['_filename']);
@@ -2798,13 +2815,15 @@ class PluginMetademandsField extends CommonDBChild
                     }
                     if ($data["max_upload"] > $nb) {
                         if ($data["max_upload"] > 1) {
-                            $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                            $field .= Html::file([
+                                'filecontainer' => $container,
                                            'editor_id'     => '',
                                            'showtitle'     => false,
                                            'multiple'      => true,
                                            'display'       => false]);
                         } else {
-                            $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                            $field .= Html::file([
+                                'filecontainer' => $container,
                                            'editor_id'     => '',
                                            'showtitle'     => false,
                                            'display'       => false
@@ -2813,13 +2832,15 @@ class PluginMetademandsField extends CommonDBChild
                     }
                 } else {
                     if ($data["max_upload"] > 1) {
-                        $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                        $field .= Html::file([
+                            'filecontainer' => $container,
                                         'editor_id'     => '',
                                         'showtitle'     => false,
                                         'multiple'      => true,
                                         'display'       => false]);
                     } else {
-                        $field .= Html::file(['filecontainer' => 'fileupload_info_ticket',
+                        $field .= Html::file([
+                            'filecontainer' => $container,
                                         'editor_id'     => '',
                                         'showtitle'     => false,
                                         'display'       => false
@@ -3096,14 +3117,17 @@ class PluginMetademandsField extends CommonDBChild
                     echo "<tr><th colspan='2'>" . __('Options', 'metademands') . "&nbsp;";
                     echo "<i class='fas fa-plus-circle pointer' id='addNewOpt' title='".__('Add a new option', 'metademands')."'></i>";
                     echo "<div class='right'>";
-                    echo self::showSimpleForm(
-                        $this->getFormURL(),
-                        'clear_all_options',
-                        __('Delete all options', 'metademands'),
-                        ['id' => $params['id'], 'metademands_id' => $params['metademands_id']],
-                        'fa-trash pointer'
-                    );
-                    echo "</div></th></tr>";
+                    if (isset($params['id'])) {
+                        echo self::showSimpleForm(
+                            $this->getFormURL(),
+                            'clear_all_options',
+                            __('Delete all options', 'metademands'),
+                            ['id' => $params['id'], 'metademands_id' => $params['metademands_id']],
+                            'fa-trash pointer'
+                        );
+                        echo "</div>";
+                    }
+                    echo "</th></tr>";
 
                    //               echo "<tr>";
                     $nb  = 0;
@@ -3271,6 +3295,7 @@ class PluginMetademandsField extends CommonDBChild
                     if (empty($opts)) {
                         $opts = [];
                     }
+
                     if (is_array($opts)) {
                         echo Html::hidden('nbOptions', ['id' => 'nbOptions', 'value' => count($opts)]);
                     }
@@ -3302,7 +3327,7 @@ class PluginMetademandsField extends CommonDBChild
 
       let root_metademands_doc = '" . PLUGIN_METADEMANDS_WEBDIR . "';
       
-                $('#addNewOpt').click(function(){
+                $('#addNewOpt').click(function() {
                     let nb = document.getElementById('nbOptions').valueOf().value;
                     nb++;
                     parent.parent.window.location.replace(root_metademands_doc + '/front/" . $url . "&nbOpt='+nb);
@@ -3364,10 +3389,14 @@ class PluginMetademandsField extends CommonDBChild
             $params['hidden_block'] = $params['hidden_block'][$optid];
         }
 
-        $params['childs_blocks'] = json_decode($params['childs_blocks'], true);
+        if ($params['childs_blocks'] != null) {
+            $params['childs_blocks'] = json_decode($params['childs_blocks'], true);
 
-        if (isset($params['childs_blocks'][$optid])) {
-            $params['childs_blocks'] = $params['childs_blocks'][$optid];
+            if (isset($params['childs_blocks'][$optid])) {
+                $params['childs_blocks'] = $params['childs_blocks'][$optid];
+            } else {
+                $params['childs_blocks'] = [];
+            }
         } else {
             $params['childs_blocks'] = [];
         }
@@ -3743,6 +3772,9 @@ class PluginMetademandsField extends CommonDBChild
         }
         $res   .= "<tr><td colspan='2' class='center'>";
         $res   .= Html::hidden('clear_option', ['value' => "clear_option"]);
+        if ($opt > 0) {
+            $opt = $opt - 1;
+        }
         $name  = "option[$opt]";
         $title = "<i class='fa-1x fas fa-trash' data-hasqtip='0' aria-hidden='true'></i>";
        //      $title .= _sx('button', 'Delete permanently');
@@ -3848,16 +3880,16 @@ class PluginMetademandsField extends CommonDBChild
         }
         ksort($blocks);
 
-        if (!empty($selected_values)) {
-            $name = "childs_blocks[" . $opt . "]";
-        } else {
-            $name = "childs_blocks[" . $opt-1 . "]";
+        if (empty($opt)) {
+            $opt = 0;
         }
 
+        $name = "childs_blocks[" . $opt . "]";
         return Dropdown::showFromArray(
             $name,
             $blocks,
-            ['values'   => $selected_values,
+            [
+                'values'   => $selected_values,
             'display'  => $display,
             'width'    => '100%',
             'multiple' => true,

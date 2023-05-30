@@ -168,7 +168,8 @@ if (isset($_POST["add"])) {
       $_POST["custom_values"]  = PluginMetademandsField::_serialize($_POST['custom_values']);
       $_POST["comment_values"] = '';
    } else if ($_POST["type"] != 'yesno') {
-      $_POST["custom_values"]  = '';
+       //used for default_values don't uncomment
+//      $_POST["custom_values"]  = '';
       $_POST["comment_values"] = '';
    }
    if (isset($_POST["value"]) && is_array($_POST["value"])) {
@@ -190,11 +191,11 @@ if (isset($_POST["add"])) {
    if (isset($_POST["hidden_block"])) {
       $_POST["hidden_block"] = PluginMetademandsField::_serialize($_POST["hidden_block"]);
    }
+
    if (isset($_POST["childs_blocks"])) {
-      $_POST["childs_blocks"] = json_encode($_POST['childs_blocks']);
+       $_POST["childs_blocks"] = json_encode($_POST["childs_blocks"]);
    } else {
-       //Must be here becaused it's not an array
-       $_POST["childs_blocks"] = json_encode("");
+       $_POST["childs_blocks"] = json_encode([]);
    }
 
    if (isset($_POST["users_id_validate"])) {
@@ -244,6 +245,7 @@ if (isset($_POST["add"])) {
 
 } else if (isset($_POST["clear_option"])) {
    // Check update rights for fields
+
    if (isset($_POST["option"])) {
       $ids = $_POST['option'];
       foreach ($ids as $k => $v) {

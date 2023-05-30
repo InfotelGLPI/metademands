@@ -564,7 +564,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             //
                             //                     echo "</div>";
                             echo "<div class='alert alert-light' style='margin-bottom: 10px;'>";
-                            echo "<button form='' class='btn btn-info btn-submit' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __('More informations', 'servicecatalog') . "\"> ";
+                            echo "<button form='' class='btn btn-primary' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __('More informations', 'servicecatalog') . "\"> ";
                             echo __('More informations of this category ? click here', 'servicecatalog');
                             echo "</button>";
                             echo "</div>";
@@ -1027,12 +1027,12 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (!isset($_POST['form_metademands_id']) ||
                                 (isset($_POST['form_metademands_id']) && $form_metademands_id != $_POST['form_metademands_id'])) {
                                 if (!isset($_SESSION['metademands_hide'][$form_metademands_id])) {
-                                    self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
+                                    self::constructForm($metademands_id, $metademands_data, $step, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
                                 } else {
                                     $step++;
                                 }
                             } else {
-                                self::constructForm($metademands_id, $metademands_data, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
+                                self::constructForm($metademands_id, $metademands_data, $step, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
                             }
                             unset($_SESSION['plugin_metademands']['fields']);
                             if ($metademands->fields['is_order'] == 1) {
@@ -1208,6 +1208,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             //                     }
                         }
                     } else {
+                        echo "<br>";
                         $title = "<i class='fas fa-chevron-right' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                         $title .= __('Next');
                         echo Html::submit($title, ['name' => 'next', 'class' => 'btn btn-primary metademand_next_button']);
@@ -1242,7 +1243,7 @@ class PluginMetademandsWizard extends CommonDBTM
      * @param bool $preview
      * @param int $itilcategories_id
      */
-    public static function constructForm($metademands_id, $metademands_data, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1)
+    public static function constructForm($metademands_id, $metademands_data, $step, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1)
     {
         global $CFG_GLPI;
         $metademands = new PluginMetademandsMetademand();
@@ -1584,7 +1585,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     if ($data['type'] == 'title') {
                         $color = self::hex2rgba($data['color'], "0.03");
                         $style_background = "style='background-color: $color!important;border-color:".$data['color']."!important;border-radius: 0;'";
-                        echo "<div class='card-header' $style_background>";
+                        echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
                         echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
 
                         if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
@@ -1836,22 +1837,24 @@ class PluginMetademandsWizard extends CommonDBTM
                                     $childs_blocks = json_decode($data['childs_blocks'], true);
                                     $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                                     if (is_array($check_value) && count($check_value) > 0) {
-                                        foreach ($childs_blocks as $customvalue => $childs) {
-                                            $script .= "
+                                        if (is_array($childs_blocks) && count($childs_blocks) > 0) {
+                                            foreach ($childs_blocks as $customvalue => $childs) {
+                                                $script .= "
                                             if($(this).val() != $check_value[$customvalue]){";
-                                            foreach ($childs as $v) {
-                                                $script .= PluginMetademandsField::getJStorersetFields($v);
-                                                $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
-                                            }
-                                            $script .= " }else{
+                                                foreach ($childs as $v) {
+                                                    $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                    $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                                                }
+                                                $script .= " }else{
                                              $('div[bloc-id=\"bloc$v\"]').show();
                                             }";
 //                                            $script .= "};";
 
-                                            foreach ($childs as $v) {
-                                                if ($v > 0) {
-                                                    $hiddenblocks[] = $v;
-                                                    $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                foreach ($childs as $v) {
+                                                    if ($v > 0) {
+                                                        $hiddenblocks[] = $v;
+                                                        $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                    }
                                                 }
                                             }
                                         }
@@ -2903,30 +2906,32 @@ class PluginMetademandsWizard extends CommonDBTM
                                         $childs_blocks = json_decode($data['childs_blocks'], true);
                                         $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                                         if (is_array($check_value) && count($check_value) > 0) {
-                                            foreach ($childs_blocks as $customvalue => $childs) {
-                                                if (isset($check_value[$customvalue]) && $check_value[$customvalue] == 1) {
-                                                    $script .= "
+                                            if (is_array($childs_blocks) && count($childs_blocks) > 0) {
+                                                foreach ($childs_blocks as $customvalue => $childs) {
+                                                    if (isset($check_value[$customvalue]) && $check_value[$customvalue] == 1) {
+                                                        $script .= "
                                               if($(this).val().trim().length < 1){";
-                                                    foreach ($childs as $v) {
-                                                        $script .= PluginMetademandsField::getJStorersetFields($v);
-                                                    }
+                                                        foreach ($childs as $v) {
+                                                            $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                        }
 
-                                                    $script .= "}
+                                                        $script .= "}
                                           ";
-                                                } else {
-                                                    $script .= "
+                                                    } else {
+                                                        $script .= "
                                               if($(this).val().trim().length >= 1){";
-                                                    foreach ($childs as $v) {
-                                                        $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                        foreach ($childs as $v) {
+                                                            $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                        }
+
+                                                        $script .= "}";
                                                     }
 
-                                                    $script .= "}";
-                                                }
-
-                                                foreach ($childs as $v) {
-                                                    if ($v > 0) {
-                                                        $hiddenblocks[] = $v;
-                                                        $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                    foreach ($childs as $v) {
+                                                        if ($v > 0) {
+                                                            $hiddenblocks[] = $v;
+                                                            $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                        }
                                                     }
                                                 }
                                             }
@@ -3109,21 +3114,23 @@ class PluginMetademandsWizard extends CommonDBTM
                                             $childs_blocks = json_decode($data['childs_blocks'], true);
                                             $check_value = PluginMetademandsField::_unserialize($data['check_value']);
                                             if (is_array($check_value) && count($check_value) > 0) {
-                                                foreach ($childs_blocks as $customvalue => $childs) {
-                                                    if (isset($check_value[$customvalue])) {
-                                                        $script .= "
-                                                 if((($(this).val() != $check_value[$customvalue] && $check_value[$customvalue] != 0 )  
-                                                 ||  ($(this).val() == 0 &&  $check_value[$customvalue] == 0 ) )){";
-                                                        foreach ($childs as $v) {
-                                                            $script .= PluginMetademandsField::getJStorersetFields($v);
-                                                        }
+                                                if (is_array($childs_blocks) && count($childs_blocks) > 0) {
+                                                    foreach ($childs_blocks as $customvalue => $childs) {
+                                                        if (isset($check_value[$customvalue])) {
+                                                            $script .= "
+                                                     if((($(this).val() != $check_value[$customvalue] && $check_value[$customvalue] != 0 )  
+                                                     ||  ($(this).val() == 0 &&  $check_value[$customvalue] == 0 ) )){";
+                                                            foreach ($childs as $v) {
+                                                                $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                            }
 
-                                                        $script .= "}";
+                                                            $script .= "}";
 
-                                                        foreach ($childs as $v) {
-                                                            if ($v > 0) {
-                                                                $hiddenblocks[] = $v;
-                                                                $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                            foreach ($childs as $v) {
+                                                                if ($v > 0) {
+                                                                    $hiddenblocks[] = $v;
+                                                                    $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -3252,7 +3259,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                 && $metademands->fields['can_update'] == true) ||
                             ($meta_validated
                                 && $metademands->fields['can_clone'] == true))
-                        && Session::haveRight('plugin_metademands_updatemeta', READ)))) {
+                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
+            && $step - 1 >= count($metademands_data)) {
                 echo "<br>";
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
@@ -3347,13 +3355,12 @@ class PluginMetademandsWizard extends CommonDBTM
                             $list_blocks[] = $s['block_id'];
                         }
                     }
-
-                    $steps2 = $step->find(['plugin_metademands_metademands_id' => $ID]);
-
-                    foreach ($steps2 as $s) {
-                        $list_blocks2[] = $s['block_id'];
+                    $step2 = new PluginMetademandsStep();
+                    if ($steps2 = $step2->find(['plugin_metademands_metademands_id' => $ID])) {
+                        foreach ($steps2 as $s) {
+                            $list_blocks2[] = $s['block_id'];
+                        }
                     }
-
                     $field = new PluginMetademandsField();
                     $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
                     $blocks = [];
@@ -3361,13 +3368,15 @@ class PluginMetademandsWizard extends CommonDBTM
                     foreach ($fields as $f) {
                         $blocks[] = $f["rank"];
                     }
-                    foreach ($blocks as $block) {
-                        if (!in_array($block, $list_blocks2)) {
-                            $list_blocks[] = $block;
+//                    if (count($list_blocks2) > 0) {
+                        foreach ($blocks as $block) {
+                            if (!in_array($block, $list_blocks2)) {
+                                $list_blocks[] = $block;
+                            }
                         }
-                    }
+//                    }
 
-                    if (count($steps) == 0) {
+                    if (!isset($steps) || (is_array($steps) && count($steps) == 0)) {
                         $submitsteptitle = $submittitle;
                     }
                     $list_blocks = array_unique($list_blocks);
