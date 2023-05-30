@@ -334,7 +334,8 @@ class PluginMetademandsStep extends CommonDBChild
      */
     public function showForm($ID = -1, $options = [])
     {
-        $config = PluginMetademandsConfig::getInstance();
+
+
 
         if (isset($options['parent']) && !empty($options['parent'])) {
             $item = $options['parent'];
@@ -348,7 +349,8 @@ class PluginMetademandsStep extends CommonDBChild
             // Create item
             $this->check(-1, CREATE, $options);
         }
-
+        $configStep = new PluginMetademandsConfigstep();
+        $res = $configStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->fields['id']]);
         $this->showFormHeader($options);
         echo "<tr class='tab_bg_1'>";
         echo "<td>" . __('Block', 'metademands') . "</td>";
@@ -360,22 +362,23 @@ class PluginMetademandsStep extends CommonDBChild
         $blocks = [];
         $self = new self();
         foreach ($fields as $f) {
-            if ($config['multiple_link_groups_blocks']) {
+            if ($configStep->fields['multiple_link_groups_blocks']) {
                 if (!isset($blocks[$f['rank']])) {
                     $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
                 }
-            } else {
+            }
+            else {
                 //Remove block_id <=> groups_id multiple links
-                $blocks_link = new PluginMetademandsStep();
-                $block_links = $blocks_link->find([
-                    'plugin_metademands_metademands_id' => $options['items_id'],
-                    'block_id' => $f['rank']
-                ]);
-                if (count($block_links) > 1) {
-                    foreach ($block_links as $bl) {
-                        $blocks_link->delete(['id' => $bl['id']]);
-                    }
-                }
+//                $blocks_link = new PluginMetademandsStep();
+//                $block_links = $blocks_link->find([
+//                    'plugin_metademands_metademands_id' => $options['items_id'],
+//                    'block_id' => $f['rank']
+//                ]);
+//                if (count($block_links) > 1) {
+//                    foreach ($block_links as $bl) {
+//                        $blocks_link->delete(['id' => $bl['id']]);
+//                    }
+//                }
                 if (!isset($blocks[$f['rank']]) &&
                     (!$self->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->getID(),
                             'block_id' => intval($f['rank'])])
@@ -497,6 +500,363 @@ class PluginMetademandsStep extends CommonDBChild
             $input = [];
         }
         return $input;
+    }
+    /**
+     * display the next group modal
+     *
+     * @return string
+     */
+    static function showModal() {
+        global $CFG_GLPI;
+        $step = new PluginMetademandsStep();
+        $group = new Group();
+        $groupUser = new Group_User();
+        $user_id = Session::getLoginUserID();
+        $nextGroups = [];
+        $conf = new PluginMetademandsConfigstep();
+        $user = new User();
+        $nextGroups = [];
+        $rand = mt_rand();
+        $title = __('Next group', 'metademands');
+        if (isset($_POST['metademands_id']) && !empty($_POST['metademands_id'])) {
+            $meta_id = $_POST['metademands_id'];
+        }
+        if (isset($_POST['block_id']) && !empty($_POST['block_id'])) {
+            $block_id = $_POST['block_id'];
+            $nextBlock = $block_id + 1;
+        }
+        $steps = $step->find([
+            'plugin_metademands_metademands_id' => $meta_id,
+            'block_id' => $nextBlock
+        ]);
+        $_SESSION['plugin_metademands'][$user_id]=$_POST;
+        $url = PLUGIN_METADEMANDS_WEBDIR . '/front/nextGroup.form.php?block_id=' . $block_id;
+        $return = Ajax::createIframeModalWindow(
+            'modalgroup',
+            $url,
+            [
+                'title' => __('Next group', 'metademands'),
+                'display' => false,
+                'reloadonclose' => true,
+                'autoopen' => true,
+                'width' => 400,
+                'height' => 300
+            ]
+        );
+
+        return $return;
+    }
+    /**
+     * Create and display the form inside next group modal
+     *
+     * @return string
+     */
+    static function showModalForm(){
+        global $CFG_GLPI;
+        $conf = new PluginMetademandsConfigstep();
+        $step = new PluginMetademandsStep();
+        $group = new Group();
+        $groupUser = new Group_User();
+        $user_id = Session::getLoginUserID();
+        $user = new User();
+        $nextGroups = [];
+        $rand = mt_rand();
+        if (isset($_SESSION['plugin_metademands'][$user_id])) {
+            $meta_id = $_SESSION['plugin_metademands'][$user_id]['metademands_id'];
+            $conf->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id]);
+        }
+
+        if (isset($_GET['block_id']) && !empty($_GET['block_id'])) {
+            $block_id = $_GET['block_id'];
+            $nextBlock = $block_id + 1;
+        }
+        if (!$conf->fields['multiple_link_groups_blocks'] && !$conf->fields['link_user_block']) {
+            $return = "";
+        } else if ($conf->fields['multiple_link_groups_blocks'] || (!$conf->fields['multiple_link_groups_blocks'] && $conf->fields['link_user_block'])) {
+            $return = Html::popHeader('nextGroup');
+            
+            $return .= "<table class='tab_cadre_fixe'>";
+            $return .= "<form name='nextGroup_form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php'>";
+            if (isset($_SESSION['plugin_metademands'][$user_id])) {
+                $post = $_SESSION['plugin_metademands'][$user_id];
+                $return .= "<input type ='hidden' name ='tickets_id' value='" . $post['tickets_id'] . "'>";
+                $return .= "<input type='hidden' name='resources_id' value = '" . $post['resources_id'] . "'>";
+                $return .= "<input type='hidden' name='resources_step' value = '" . $post['resources_step'] . "'>";
+                $return .= "<input type='hidden' name='block_id' value = '" . $post['block_id'] . "'>";
+                $return .= "<input type='hidden' name='form_name' value = '" . $post['form_name'] . "'>";
+                $return .= "<input type='hidden' name='_users_id_requester' value = '" . $post['_users_id_requester'] . "'>";
+                $return .= "<input type='hidden' name='form_metademands_id' value = '" . $post['form_metademands_id'] . "'>";
+                $return .= "<input type='hidden' name='metademands_id' value = '" . $post['metademands_id'] . "'>";
+                $return .= "<input type='hidden' name='update_fields' value = '" . $post['update_fields'] . "'>";
+                $return .= "<input type='hidden' name='create_metademands' value = '" . $post['create_metademands'] . "'>";
+                $return .= "<input type='hidden' name='step' value = '" . $post['step'] . "'>";
+                $return .= "<input type='hidden' name='action' value = '" . $post['action'] . "'>";
+                $return .= "<input type='hidden' name='_glpi_csrf_token' value = '" . $post['_glpi_csrf_token'] . "'>";
+
+            }
+
+            $steps = $step->find([
+                'plugin_metademands_metademands_id' => $meta_id,
+                'block_id' => $nextBlock
+            ]);
+
+            if (count($steps) > 0) {
+                foreach ($steps as $s) {
+                    $res = $group->getFromDBByCrit(['id' => $s['groups_id']]);
+                    if ($res) {
+                        $nextGroups[$group->fields['id']] = $group->fields['name'];
+                    }
+                }
+                $return .= "<tr class='tab_bg_1'>";
+                $return .= "<td colspan='2'>";
+                $return .= "<label class='control-label center' for='next_groups_id'>" . __('Select the next group', 'metademands') . "&nbsp;</label>";
+                $return .= "</td>";
+                $return .= "<td colspan='2'>";
+                $return .= Dropdown::showFromArray('next_groups_id',
+                    $nextGroups,
+                    ['display' => false,
+                        'rand' => $rand,
+                    ]
+                );
+                $return .= "</td>";
+                $return .= "</tr>";
+
+                $groupUsers = $groupUser->find([
+                    'groups_id' => array_key_first($nextGroups)
+                ]);
+
+            }
+        }
+        if ($conf->fields['link_user_block']) {
+            if (count($groupUsers) > 0) {
+                foreach ($groupUsers as $grpUsr) {
+                    $res = $user->getFromDBByCrit(['id' => $grpUsr['users_id']]);
+                    if ($res) {
+                        $users[$grpUsr['users_id']] = $user->fields['name'];
+                    }
+                }
+                $return .= "<tr class='tab_bg_1'>";
+                $return .= "<td colspan='2'>";
+                $return .= "<label class='control-label center' for='next_users_id'>" . __('User') . "&nbsp;</label>";
+                $return .= "</td>";
+                $return .= "<td colspan='2'>";
+
+            }
+            $return .= Ajax::updateItemOnSelectEvent(
+                "dropdown_next_groups_id$rand",
+                "dropdown_next_users_id",
+                PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownNextUser.php?rand=$rand",
+                [
+                    'next_groups_id' => '__VALUE__',
+                    'display' => false
+                ]
+            );
+            $return .= "<div id ='dropdown_next_users_id'>";
+            $return .= Dropdown::showFromArray('next_users_id', $users, ['display' => false, 'display_emptychoice' => true, 'rand' => $rand]);
+            $return .= "</div>";
+            $return .= "</td>";
+        }
+
+        $return .= "</tr>";
+        $return .= "<tr class='tab_bg_1'>";
+        $return .= "<td colspan='1'>";
+        $return .= "<button id='submitNextGroupModal' type='submit' class='btn btn-primary'><span>" . _sx('button', 'Validate') . "</span></button>";
+        $return .= "</td>";
+        $return .= "</tr>";
+        $return .= "</table>";
+
+        $return .= Html::footer();
+
+        return $return;
+    }
+
+    static function nextUser() {
+        $KO          = false;
+        $step        = $_POST['step'] + 1;
+        $metademands = new PluginMetademandsMetademand();
+        $wizard      = new PluginMetademandsWizard();
+        $fields      = new PluginMetademandsField();
+        $user_id     = Session::getLoginUserID();
+
+        if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
+            $nblines = 0;
+            $KO      = false;
+
+            if ($nblines == 0) {
+                if(isset($_POST['field'])){
+                    $post    = $_POST['field'];
+                } else {
+                    $post = $_SESSION['plugin_metademands'][$user_id]['field'];
+                }
+                $nblines = 1;
+            }
+
+            if ($KO === false) {
+                $checks  = [];
+                $content = [];
+
+                for ($i = 0; $i < $nblines; $i++) {
+                    $_POST['field']   = $post;
+                    $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                    if (count($metademands_data)) {
+                        foreach ($metademands_data as $form_step => $data) {
+                            $docitem = null;
+                            foreach ($data as $form_metademands_id => $line) {
+                                foreach ($line['form'] as $id => $value) {
+                                    if (!isset($post[$id])) {
+                                        if (isset($_SESSION['plugin_metademands']['fields'][$id])
+                                            && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
+                                            $_POST['field'][$id] = $_SESSION['plugin_metademands']['fields'][$id];
+                                        } else {
+                                            $_POST['field'][$id] = [];
+                                        }
+                                    } else {
+                                        $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
+                                    }
+
+                                    if ($value['type'] == 'radio') {
+                                        if (!isset($_POST['field'][$id])) {
+                                            $_POST['field'][$id] = null;
+                                        }
+                                    }
+                                    if ($value['type'] == 'checkbox') {
+                                        if (!isset($_POST['field'][$id])) {
+                                            $_POST['field'][$id] = 0;
+                                        }
+                                    }
+                                    if ($value['type'] == 'informations'
+                                        || $value['type'] == 'title') {
+                                        if (!isset($_POST['field'][$id])) {
+                                            $_POST['field'][$id] = 0;
+                                        }
+                                    }
+                                    if ($value['item'] == 'ITILCategory_Metademands') {
+                                        $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $metademands->getFromDB($_POST['metademands_id']);
+                    if ($KO === false) {
+                        // Save requester user
+                        $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+                        // Case of simple ticket convertion
+                        if (isset($_POST['items_id']) && $_POST['itemtype'] == 'Ticket') {
+                            $_SESSION['plugin_metademands']['fields']['tickets_id'] = $_POST['items_id'];
+                        }
+                        // Resources id
+                        $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
+                        // Resources step
+                        $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
+
+                        //Category id if have category field
+                        $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+                        $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
+                            (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
+                        $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
+                    }
+
+                    $forms = new PluginMetademandsStepform();
+                    //         if (isset($_POST['plugin_metademands_forms_id'])
+                    //             && !empty($_POST['plugin_metademands_forms_id'])) {
+                    //            $form_id = $_POST['plugin_metademands_forms_id'];
+                    //            $forms->getFromDB($_POST['plugin_metademands_forms_id']);
+                    //            $forms_values = new PluginMetademandsForm_Value();
+                    //            $forms_values->deleteByCriteria(['plugin_metademands_forms_id' => $form_id]);
+                    //            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                    //            if (count($metademands_data)) {
+                    //               foreach ($metademands_data as $form_step => $data) {
+                    //                  $docitem = null;
+                    //                  foreach ($data as $form_metademands_id => $line) {
+                    //                     PluginMetademandsForm_Value::setFormValues($line['form'], $_POST['field'], $form_id);
+                    //                  }
+                    //               }
+                    //            }
+                    //            PluginMetademandsForm_Value::loadFormValues($form_id);
+                    //            $_POST['form_name'] = $forms->getField('name');
+                    //         } else {
+                    if (!isset($_POST['block_id']) || (isset($_POST['block_id']) && empty($_POST['block_id']))) {
+                        Session::addMessageAfterRedirect(__('Error assigning to next group', 'metademands'), false, ERROR);
+                        break;
+                    }
+
+                    $inputs                                      = [];
+                    $inputs['name']                              = Toolbox::addslashes_deep($_POST['form_name']);
+                    $inputs['users_id']                          = Session::getLoginUserID();
+                    if (isset($_POST['next_groups_id'])) {
+                        $inputs['groups_id_dest'] = $_POST['next_groups_id'];
+                    } else {
+                        $inputs['groups_id_dest'] = PluginMetademandsStep::getGroupForNextBlock($_POST['metademands_id'], $_POST['block_id']);
+                    }
+                    $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
+                    $inputs['date']                              = date('Y-m-d H:i:s');
+                    $nbday                                       = 7;
+                    if(isset($_SESSION['plugin_metademands'][$user_id]['users_id_dest'])){
+                        $inputs['users_id_dest'] = $_SESSION['plugin_metademands'][$user_id]['users_id_dest'];
+                    }
+                    if ($nbday == 0) {
+                        $inputs['reminder_date'] = null;
+                    } elseif ($nbday == 1) {
+                        $inputs['reminder_date']                     = date('Y-m-d', strtotime("+ $nbday day"));
+                    } elseif ($nbday > 1) {
+                        $inputs['reminder_date']                     = date('Y-m-d', strtotime("+ $nbday days"));
+                    }
+                    $inputs['block_id']                           = $_POST['block_id'];
+
+
+
+//         if (isset($_POST['resources_id']) && $_POST['resources_id'] > 0) {
+//            $resForm = $forms->find(['plugin_metademands_metademands_id' => $_POST['metademands_id'],
+//                                     'resources_id'                      => $_POST['resources_id']]);
+//            if (count($resForm)) {
+//               foreach ($resForm as $res) {
+//                  $last = $res['id'];
+//               }
+//            } else {
+//               $last = 0;
+//            }
+//            $_SESSION['plugin_metademands']['form_to_compare'] = $last;
+//         }
+                    if (isset($_POST['plugin_metademands_stepforms_id']) && !empty($_POST['plugin_metademands_stepforms_id'])) {
+                        $form_new_id = $_POST['plugin_metademands_stepforms_id'];
+//            $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
+//            $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
+
+                        $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                        if (count($metademands_data) && $form_new_id > 0) {
+                            foreach ($metademands_data as $form_step => $data) {
+                                $docitem = null;
+                                foreach ($data as $form_metademands_id => $line) {
+                                    PluginMetademandsStepform_Value::setFormValues($line['form'], $_POST['field'], $form_new_id);
+                                }
+                            }
+                        }
+                    } else {
+                        if ($form_new_id = $forms->add($inputs)) {
+                            unset($_SESSION['plugin_metademands'][$user_id]);
+//            $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
+//            $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
+
+                            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                            if (count($metademands_data) && $form_new_id > 0) {
+                                foreach ($metademands_data as $form_step => $data) {
+                                    $docitem = null;
+                                    foreach ($data as $form_metademands_id => $line) {
+                                        PluginMetademandsStepform_Value::setFormValues($line['form'], $_POST['field'], $form_new_id);
+                                    }
+                                }
+                            }
+                        } else {
+                            $KO = false;
+                        }
+                    }
+
+                    //         }
+                }
+            }
+        }
+        return $KO;
     }
 
 }

@@ -593,7 +593,10 @@ class PluginMetademandsStepform extends CommonDBTM
             if ($forms = $stepform->find(['plugin_metademands_metademands_id' => $s['plugin_metademands_metademands_id'],
                                           'block_id' => $s['block_id']])) {
                 foreach ($forms as $id => $form) {
+                if(Session::getLoginUserID() == $form['users_id_dest'] || $form['users_id_dest'] == 0) {
                     $stepforms[$id] = $form;
+                }
+
                 }
             }
         }

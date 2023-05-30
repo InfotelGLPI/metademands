@@ -350,7 +350,8 @@ function plugin_metademands_uninstall() {
                "glpi_plugin_metademands_interticketfollowups",
                "glpi_plugin_metademands_stepforms",
                "glpi_plugin_metademands_stepforms_values",
-               "glpi_plugin_metademands_steps"];
+               "glpi_plugin_metademands_steps",
+               "glpi_plugin_metademands_configsteps"];
     foreach ($tables as $table) {
         $DB->query("DROP TABLE IF EXISTS `$table`;");
     }
@@ -471,7 +472,8 @@ function plugin_metademands_getDatabaseRelations() {
                                                           "glpi_plugin_metademands_basketlines"           => "plugin_metademands_metademands_id",
                                                           "glpi_plugin_metademands_metademandvalidations" => "plugin_metademands_metademands_id",
                                                           "glpi_plugin_metademands_metademands_resources" => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_drafts"                => "plugin_metademands_metademands_id"],
+                                                          "glpi_plugin_metademands_drafts"                => "plugin_metademands_metademands_id",
+                                                          "glpi_plugin_metademands_configsteps"           => "plugin_metademands_metademands_id"],
 
                 "glpi_tickets"                   => ["glpi_plugin_metademands_tickets_fields"        => "tickets_id",
                                                      "glpi_plugin_metademands_metademandvalidations" => "tickets_id",

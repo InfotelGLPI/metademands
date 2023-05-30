@@ -1246,6 +1246,13 @@ class PluginMetademandsWizard extends CommonDBTM
     public static function constructForm($metademands_id, $metademands_data, $step, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1)
     {
         global $CFG_GLPI;
+        $user_id = Session::getLoginUserID();
+
+        if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
+            $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
+            unset($_SESSION['plugin_metademands'][$user_id]);
+            Html::redirect($url);
+        }
         $metademands = new PluginMetademandsMetademand();
         $metademands->getFromDB($metademands_id);
 
@@ -1747,9 +1754,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         $count = 0;
                     }
                 }
+
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
+
 //                if ($preview) {
 //                    $color = PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']);
 //                    echo "<div class=\"row\" style='border-bottom: 3px solid #" . $color . ";' >";
@@ -3287,8 +3296,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 //                        echo "</div>";
                 //                    }
                 //                }
-                echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button' onclick='nextPrev(1)'>";
+                echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'  onclick='nextPrev(1)'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
+
                 //TODO v3.3
                 if ($use_as_step == 1) {
                     echo "<div id='nextMsg' class='alert alert-info center'>";
@@ -3345,9 +3355,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 $list_blocks = [];
                 $list_blocks2 = [];
                 if ($use_as_step == 1) {
-
+                    $step = new PluginMetademandsStep();
+                    $steps = [];
                     if (!empty($groups)) {
-                        $step = new PluginMetademandsStep();
                         $steps = $step->find(['plugin_metademands_metademands_id' => $ID,
                             'groups_id' => $groups]);
 
@@ -3377,6 +3387,8 @@ class PluginMetademandsWizard extends CommonDBTM
 //                    }
 
                     if (!isset($steps) || (is_array($steps) && count($steps) == 0)) {
+                    }
+                    if (count($steps) == 0) {
                         $submitsteptitle = $submittitle;
                     }
                     $list_blocks = array_unique($list_blocks);
@@ -3426,17 +3438,25 @@ class PluginMetademandsWizard extends CommonDBTM
 //                        $submitstepmsg = $msg;
 //                    }
 //                }
+
+                echo "<span id = 'modalgroupspan'>";
+                echo "</span>";
+
+                $stepConfig = new PluginMetademandsConfigstep();
+                $res = $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
+                $modal = true;
+                if(!$stepConfig->fields['link_user_block'] && !$stepConfig->fields['multiple_link_groups_blocks']) {
+                    $modal = false;
+                }
                 echo "<script>
-                  
                   var nexttitle = '$nexttitle';
+               
                   var submittitle = '$submittitle';
-                  var submitmsg = '$submitmsg';
-                  
+                  var submitmsg = '$submitmsg'; 
                   var use_as_step = '$use_as_step';
                   var nextsteptitle = '$nextsteptitle';
                   var submitsteptitle = '$submitsteptitle';
                   var submitstepmsg = '$submitstepmsg';
-                  
                   var hiddenblocs = {$json_hidden_blocks};
                   var msg = '$alert';
                   var firstnumTab = 0;
@@ -3508,6 +3528,7 @@ class PluginMetademandsWizard extends CommonDBTM
                       }
                   }
                   function nextPrev(n) {
+                      var modal = '$modal';
                      // This function will figure out which tab to display
                      if (use_as_step == 1) {
                         var x = document.getElementsByClassName('tab-step');
@@ -3613,20 +3634,34 @@ class PluginMetademandsWizard extends CommonDBTM
                      bloc = x[currentTab].firstChild.getAttribute('bloc-id');
                      id_bloc = parseInt(bloc.replace('bloc',''));
  
-                     if(!listBlock.includes(id_bloc)) {
-                    
+                     if(!listBlock.includes(id_bloc)) { 
                         var meta_id = {$ID};
                         if (typeof tinyMCE !== 'undefined') {
                            tinyMCE.triggerSave();
                         }
+                      
+                        
                         jQuery('.resume_builder_input').trigger('change');
                         $('select[id$=\"_to\"] option').each(function () {
                            $(this).prop('selected', true);
                         });
                         arrayDatas = $('form').serializeArray();
-                        arrayDatas.push({name: 'block_id', value: id_bloc});
-                        arrayDatas.push({name: 'action', value: 'nextUser'});
-                        $.ajax(
+                        arrayDatas.push({name: 'block_id', value: id_bloc});  
+                        arrayDatas.push({name: 'action', value: 'nextUser'});  
+                        if(modal == true) {
+                            showModal(arrayDatas);
+                        } else {
+                            nextUser(arrayDatas);
+                        }                      
+
+                     } else {
+                        showTab(currentTab,create, submittitle, submitmsg);
+                     }
+                     // Otherwise, display the correct tab:
+                  }
+                  
+                  function nextUser(arrayDatas) {
+                     $.ajax(
                             {
                                 type: 'POST',
                                 url: '" . $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/nextUser.php" . "',
@@ -3647,11 +3682,46 @@ class PluginMetademandsWizard extends CommonDBTM
                                     }
                             }
                         );
-                     } else {
-                        showTab(currentTab,create, submittitle, submitmsg);
-                     }
-                     // Otherwise, display the correct tab:
                   }
+                  
+                  function showModal(arrayDatas) {
+                        $.ajax(
+                            {
+                                type : 'POST',
+                                url :'" . $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/ajax/showModal.php',
+                                data : arrayDatas,
+                                dataType : 'JSON',
+                                success: function(response) {
+                                try {
+
+                                        // For modern browsers except IE:
+                                        var event = new Event('show.bs.modal');
+                                        
+                                        } catch(err) {
+                                        
+                                        // If IE 11 (or 10 or 9...?) do it this way:
+                                        
+                                        // Create the event.
+                                        var event = document.createEvent('Event');
+                                        
+                                }
+//                                console.log(response);
+//                                $('#modalgroupspan').html(response.html);
+                                $('#modalgroupspan').html(response);
+                                $.globalEval(response.js);
+                                $('#modalgroup').modal('show');
+                                document.dispatchEvent(event);
+                                },
+                                error : function (xhr, status, error) {
+                                       console.log(xhr);
+                                       console.log(status);
+                                       console.log(error);
+                                    }
+                                
+                            });
+                                         
+                  }
+                 
                   
                   function validateForm() {
                      // This function deals with validation of the form fields

@@ -26,18 +26,44 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-
-include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
-header("Content-Type: application/json; charset=UTF-8");
-
-//Html::header_nocache();
-
-Session::checkLoginUser();
-
-$KO = PluginMetademandsStep::nextUser();
-if ($KO === false) {
-    echo 0;
-} else {
-    echo $KO;
+if (strpos($_SERVER['PHP_SELF'], "dropdownNextUser.php")) {
+    include('../../../inc/includes.php');
+    header("Content-Type: text/html; charset=UTF-8");
+    Html::header_nocache();
+} else if (!defined('GLPI_ROOT')) {
+    die("Sorry. You can't access this file directly");
 }
+//header("Content-Type: text/html; charset=UTF-8");
+
+Session::checkCentralAccess();
+$return = "";
+$groupUser = new Group_User();
+$user = new User();
+$users = [];
+$rand = $_GET['rand'];
+if (isset($_POST['next_groups_id']) && $_POST['next_groups_id'] > 0) {
+    $groupUsers = $groupUser->find([
+        'groups_id' => $_POST['next_groups_id']
+    ]);
+    if (count($groupUsers) > 0) {
+        foreach ($groupUsers as $grpUsr) {
+            $res = $user->getFromDBByCrit(['id' => $grpUsr['users_id']]);
+            if ($res) {
+                $users[$grpUsr['users_id']] = $user->fields['name'];
+            }
+        }
+        Dropdown::showFromArray(
+            'next_users_id',
+            $users,
+            [
+                'display' => true,
+                'display_emptychoice' => true,
+            ]);
+        Ajax::updateItem(
+
+        );
+
+    }
+
+}
+

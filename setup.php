@@ -71,6 +71,7 @@ function plugin_init_metademands()
         Plugin::registerClass('PluginMetademandsForm', ['addtabon' => ['Ticket', 'Problem', 'Change', 'User']]);
         Plugin::registerClass('PluginMetademandsProfile', ['addtabon' => 'Profile']);
         Plugin::registerClass('PluginMetademandsMetademand_Resource', ['addtabon' => 'PluginResourcesContractType']);
+        Plugin::registerClass('PluginMetademandsConfigstep', ['addtabon' => 'PluginMetademandsMetademand']);
         Plugin::registerClass(
             'PluginMetademandsInterticketfollowup',
             ['notificationtemplates_types' => true]
