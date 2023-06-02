@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-02 13:49+0000\n"
+"POT-Creation-Date: 2023-06-02 14:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,39 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:594
+#: hook.php:597
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:607
+#: hook.php:610
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:623
+#: hook.php:626
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:634
+#: hook.php:637
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:646
+#: hook.php:649
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:997 inc/metademand.class.php:5793
+#: hook.php:1048 inc/metademand.class.php:5793
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1015 inc/metademand.class.php:5913
+#: hook.php:1066 inc/metademand.class.php:5913
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1032 inc/metademand.class.php:5970
+#: hook.php:1083 inc/metademand.class.php:5970
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1049 inc/metademand.class.php:5845
+#: hook.php:1100 inc/metademand.class.php:5845
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -1055,35 +1055,35 @@ msgctxt "quantity"
 msgid "Number of inter ticket followups"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:51
+#: inc/notificationtargetstepform.class.php:52
 msgid "A new form has been completed"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:52
-msgid "Reminder for a waiting form"
-msgstr ""
-
-#: inc/notificationtargetstepform.class.php:63
+#: inc/notificationtargetstepform.class.php:65
 msgid "Next group in charge of demand"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:64
+#: inc/notificationtargetstepform.class.php:66
 msgid "Next user in charge of demand"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:149
+#: inc/notificationtargetstepform.class.php:156
 msgid "Publisher"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:150
+#: inc/notificationtargetstepform.class.php:157
 msgid "Group in charge of the next step"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:151
+#: inc/notificationtargetstepform.class.php:158
+msgid "User in charge of the next step"
+msgstr ""
+
+#: inc/notificationtargetstepform.class.php:159
 msgid "Date of the last step"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:152
+#: inc/notificationtargetstepform.class.php:160
 msgid "Date of the next reminder"
 msgstr ""
 
