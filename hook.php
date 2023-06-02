@@ -39,6 +39,7 @@ function plugin_metademands_install() {
     if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.0.sql");
         install_notifications_metademands();
+        install_notifications_forms_metademands();
     }
 
     if ($DB->tableExists("glpi_plugin_metademands_profiles")
@@ -333,6 +334,8 @@ function plugin_metademands_install() {
         $DB->query($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `checkbox_id`";
         $DB->query($query);
+
+        install_notifications_forms_metademands();
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
@@ -974,8 +977,56 @@ Ticket ###ticket.id##
     $DB->query($query);
 
 
-    //for step forms
-    //TODO
+    $migration->executeMigration();
+    return true;
+
+
+}
+
+function install_notifications_forms_metademands() {
+
+    global $DB;
+
+    $migration = new Migration(1.0);
+
+    // Notification
+    // Request
+    $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('New form completed','PluginMetademandsStepform', NOW());";
+    $DB->query($query_id) or die($DB->error());
+
+    $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='PluginMetademandsStepform' AND `name` = 'New form completed'";
+    $result = $DB->query($query_id) or die($DB->error());
+    $templates_id = $DB->result($result, 0, 'id');
+
+    $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
+VALUES('" . $templates_id . "',
+'##pluginmetademandsstepform.action##',
+'##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
+##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
+##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##
+','##lang.pluginmetademandsmetademand.title## : ##pluginmetademandsmetademand.title##
+##lang.pluginmetademandsstepform.date## : ##pluginmetademandsstepform.date##
+##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
+##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
+##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##');";
+    $DB->query($query);
+
+    $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`)
+              VALUES ('New form completed', 0, 'PluginMetademandsStepform', 'new_step_form', 1);";
+    $DB->query($query);
+
+    //retrieve notification id
+    $query_id = "SELECT `id` FROM `glpi_notifications`
+               WHERE `name` = 'New form completed' AND `itemtype` = 'PluginMetademandsStepform' AND `event` = 'new_step_form'";
+    $result = $DB->query($query_id) or die ($DB->error());
+    $notification = $DB->result($result, 0, 'id');
+
+    $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
+               VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
+    $DB->query($query);
+
 
     $migration->executeMigration();
     return true;
