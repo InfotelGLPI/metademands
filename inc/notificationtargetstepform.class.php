@@ -37,6 +37,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsNotificationTargetStepform extends NotificationTarget
 {
     const TARGET_NEXT_GROUP = 6300;
+    const TARGET_NEXT_USER = 6301;
 
     /**
      * Get events related to Itil Object
@@ -60,6 +61,7 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
      */
     public function addNotificationTargets($event = '') {
         $this->addTarget(self::TARGET_NEXT_GROUP, __('Next group in charge of demand', 'metademands'));
+        $this->addTarget(self::TARGET_NEXT_USER, __('Next user in charge of demand', 'metademands'));
     }
 
     /**
@@ -75,7 +77,19 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
         switch ($data['items_id']) {
             case self::TARGET_NEXT_GROUP:
                 return $this->addForGroup(0, $this->obj->fields['groups_id_dest']);
+                break;
+            case self::TARGET_NEXT_USER:
+                return $this->getUserAddress($this->obj->fields['users_id_dest']);
         }
+    }
+
+    function getUserAddress($userId)
+    {
+        global $DB;
+        $user = new User();
+        $user->getFromDBByCrit(['id' =>$userId]);
+        $data['email'] = $user->fields['name'];
+        $this->addToRecipientsList($data);
     }
 
     public function addDataForTemplate($event, $options = []) {
