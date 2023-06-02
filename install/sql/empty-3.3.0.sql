@@ -117,6 +117,7 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `used_by_child`                     tinyint                                  DEFAULT 0,
     `link_to_user`                      int                                      DEFAULT 0,
     `default_use_id_requester`          int unsigned                             DEFAULT 0,
+    `use_future_date`                   tinyint                                  DEFAULT 0,
     `use_date_now`                      tinyint                                  DEFAULT 0,
     `additional_number_day`             int                                      DEFAULT 0,
     `informations_to_display`           varchar(255)                    NOT NULL DEFAULT '[]',

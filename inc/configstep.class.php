@@ -70,18 +70,18 @@ class PluginMetademandsConfigstep extends CommonDBChild
      * @return array|string
      * @see CommonGLPI::getTabNameForItem()
      */
-//    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
-//    {
-//        switch ($item->getType()) {
-//            case PluginMetademandsMetademand::getType():
-//                if ($item->fields['step_by_step_mode'] == 1) {
-//                    return self::createTabEntry(self::getTypeName());
-//                } else {
-//                    return false;
-//                }
-//                break;
-//        }
-//    }
+    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
+    {
+        switch ($item->getType()) {
+            case PluginMetademandsMetademand::getType():
+                if ($item->fields['step_by_step_mode'] == 1) {
+                    return self::createTabEntry(self::getTypeName());
+                } else {
+                    return false;
+                }
+                break;
+        }
+    }
 
     static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
         $field = new self();

@@ -68,8 +68,6 @@ $CFG_GLPI['use_notifications']     = 0;
 
 function migrateFieldsOptions()
 {
-    global $CFG_GLPI;
-
     $input = [];
     $field = new PluginMetademandsField();
     $fields = $field->find();
@@ -85,6 +83,13 @@ function migrateFieldsOptions()
             if (is_array($check_values)) {
                 foreach ($check_values as $k => $check_value) {
 
+                    if (($f["type"] == 'date' ||
+                            $f["type"] == 'datetime' ||
+                            $f["type"] == 'date_interval' ||
+                            $f["type"] == 'datetime_interval'
+                        ) && $check_value == 1) {
+                        $field->update(["id" => $f["id"], "use_future_date" => 1]);
+                    }
                     $input["check_value"] = $check_value;
 
                     $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);

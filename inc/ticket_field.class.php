@@ -261,7 +261,13 @@ class PluginMetademandsTicket_Field extends CommonDBTM {
       return true;
    }
 
-   static function isCheckValueOKFieldsLinks($value, $check_value, $type) {
+    /**
+     * @param $value
+     * @param $check_value
+     * @param $type
+     * @return bool
+     */
+    static function isCheckValueOKFieldsLinks($value, $check_value, $type) {
 
 
       if (isset($check_value)) {

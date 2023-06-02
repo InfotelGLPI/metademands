@@ -304,6 +304,9 @@ function plugin_metademands_install() {
     if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "is_template")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.0.sql");
 
+        $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `use_future_date` tinyint DEFAULT 0";
+        $DB->query($query);
+
         include(PLUGIN_METADEMANDS_DIR . "/install/migrateFieldsOptions.php");
         migrateFieldsOptions();
 
