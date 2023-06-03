@@ -35,11 +35,11 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-$KO          = false;
-$step        = $_POST['step'] + 1;
+$KO = false;
+$step = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
-$wizard      = new PluginMetademandsWizard();
-$fields      = new PluginMetademandsField();
+$wizard = new PluginMetademandsWizard();
+$fields = new PluginMetademandsField();
 
 if (isset($_POST['update_fields'])) {
 
@@ -48,11 +48,11 @@ if (isset($_POST['update_fields'])) {
         $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
         $metademands->getFromDB($_POST['form_metademands_id']);
 
-        $meta   = [];
+        $meta = [];
         if (Plugin::isPluginActive('orderprojects')
             && $metademands->fields['is_order'] == 1) {
             $orderprojects = new PluginOrderprojectsMetademand();
-            $meta          = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+            $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
         }
 
         if (count($meta) == 1) {
@@ -62,9 +62,9 @@ if (isset($_POST['update_fields'])) {
             $nblines = 0;
             //Create ticket
             if ($metademands->fields['is_order'] == 1) {
-                $basketline   = new PluginMetademandsBasketline();
+                $basketline = new PluginMetademandsBasketline();
                 $basketToSend = $basketline->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
-                                                   'users_id'                          => Session::getLoginUserID()]);
+                    'users_id' => Session::getLoginUserID()]);
 
                 $basketLines = [];
                 foreach ($basketToSend as $basketLine) {
@@ -96,7 +96,7 @@ if (isset($_POST['update_fields'])) {
                 $nblines = 1;
             }
             if ($KO === false) {
-                $checks  = [];
+                $checks = [];
                 $content = [];
 
                 for ($i = 0; $i < $nblines; $i++) {
@@ -104,15 +104,15 @@ if (isset($_POST['update_fields'])) {
                         $post = $_SESSION['plugin_metademands']['basket'][$i];
                     }
 
-
                     foreach ($data as $idf => $form_data_fields) {
 
                         $fieldopt = new PluginMetademandsFieldOption();
-                        if($opts = $fieldopt->find(["plugin_metademands_fields_id" => $idf])) {
+                        if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $idf])) {
 
                             foreach ($opts as $opt) {
                                 $check_value = $opt["check_value"];
-                                if ($fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $idf, "check_value" => $check_value])) {
+                                if ($fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $idf,
+                                    "check_value" => $check_value])) {
                                     $data[$idf]["options"][$check_value]['plugin_metademands_tasks_id'] = $fieldopt->fields['plugin_metademands_tasks_id'] ?? 0;
                                     $data[$idf]["options"][$check_value]['fields_link'] = $fieldopt->fields['fields_link'] ?? 0;
                                     $data[$idf]["options"][$check_value]['hidden_link'] = $fieldopt->fields['hidden_link'] ?? 0;
@@ -126,7 +126,7 @@ if (isset($_POST['update_fields'])) {
                             }
                         }
                     }
-
+                    //Toolbox::logInfo($post);
                     //Clean $post & $data & $_POST
                     $dataOld = $data;
                     // Double appel for prevent order fields
@@ -134,6 +134,7 @@ if (isset($_POST['update_fields'])) {
                     PluginMetademandsFieldOption::unsetHidden($dataOld, $post);
                     $_POST['field'] = $post;
 
+//
 //                    Toolbox::logInfo($data);
 
                     //check fields_link to be mandatory
@@ -147,18 +148,27 @@ if (isset($_POST['update_fields'])) {
                         }
                     }
 
-                    foreach ($data as $id => $value) {
-                        $toBeMandatory = PluginMetademandsFieldOption::getMandatoryFields($id, $value, $fields_links, $_POST['field']);
-                        if (is_array($toBeMandatory) && !empty($toBeMandatory)) {
-                            foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
-                                if (isset($data[$valueMandatory]['type'])) {
-                                    $data[$valueMandatory]['is_mandatory'] = true;
-                                }
-                            }
+                    $fields_links = array_unique($fields_links);
+                    $fields_links = array_filter($fields_links);
+
+                    $toBeMandatory = [];
+                    foreach ($fields_links as $fields_link) {
+                        if (isset($_POST['field'][$fields_link]) && empty($_POST['field'][$fields_link])) {
+                            $toBeMandatory[] = $fields_link;
                         }
                     }
 
+                    $toBeMandatory = array_unique($toBeMandatory);
+                    $toBeMandatory = array_filter($toBeMandatory);
 
+                    if (is_array($toBeMandatory) && count($toBeMandatory) > 0) {
+                        foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
+                            if (isset($data[$valueMandatory]['type'])) {
+                                $data[$valueMandatory]['is_mandatory'] = true;
+                            }
+                        }
+                    }
+                    //end fields_link to be mandatory
                     foreach ($data as $id => $value) {
                         if (!isset($post[$id])) {
                             $post[$id] = [];
@@ -209,7 +219,6 @@ if (isset($_POST['update_fields'])) {
                         if ($value['item'] == 'ITILCategory_Metademands') {
                             $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
                         }
-
                         $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
                     }
 
@@ -233,8 +242,8 @@ if (isset($_POST['update_fields'])) {
                         //Category id if have category field
                         $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                         $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
-                           (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'];
-                        $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
+                            (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'];
+                        $_SESSION['plugin_metademands']['field_type'] = $metademands->fields['type'];
                     }
 
                     if ($KO) {

@@ -44,6 +44,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     static $rightname = 'plugin_metademands';
 
+    public static $allowed_options_types = ['yesno',
+        'checkbox', 'radio', 'dropdown_multiple', 'dropdown', 'dropdown_object',
+        'parent_field', 'text', 'textarea'];
+    public static $allowed_options_items = ['other', 'ITILCategory_Metademands'];
+
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -155,6 +160,29 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         $rand = mt_rand();
         $canedit = $item->can($item->getID(), UPDATE);
+
+        $allowed_options_types = self::$allowed_options_types;
+        $allowed_options_items = self::$allowed_options_items;
+        $new_fields = [];
+
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                if (Plugin::isPluginActive($plug)) {
+                    $new_fields = self::addPluginFieldItems($plug);
+                    if (is_array($new_fields) && count($new_fields) > 0) {
+                        $allowed_options_types = array_merge($allowed_options_types, $new_fields);
+                    }
+                }
+            }
+        }
+
+        //TODO Debug $new_fields ?
+
+        if (!in_array($item->fields['type'], $allowed_options_types)
+            && !in_array($item->fields['item'], $allowed_options_items)) {
+            echo __('No options are allowed for this field type','metademands');
+            return false;
+        }
 
         if ($canedit) {
             echo "<div id='viewoption" . $item->getType() . $item->getID() . "$rand'></div>\n";
@@ -363,7 +391,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
      */
     function showForm($ID = -1, $options = [])
     {
-        global $CFG_GLPI;
+        global $PLUGIN_HOOKS;
 
         if (isset($options['parent']) && !empty($options['parent'])) {
             $item = $options['parent'];
@@ -407,13 +435,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $p = [];
-                $p["plugin_metademands_fields_id"] = $this->fields['plugin_metademands_fields_id'];
+                $p["plugin_metademands_fields_id"] = $item->getID();
                 $p["plugin_metademands_metademands_id"] = $item->fields["plugin_metademands_metademands_id"];
                 $p["nbOpt"] = $this->fields['id'];
 
                 $new_params = self::getPluginParamsOptions($plug, $p);
+
                 if (Plugin::isPluginActive($plug)
                     && is_array($new_params)) {
+
                     $params = array_merge($params, $new_params);
                 }
             }
@@ -541,7 +571,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             'value' => $params['check_value'],
                             'condition' => ["id" => $values],
                             'display' => true];
-                        echo ITILCategory::dropdown($opt);
+                         ITILCategory::dropdown($opt);
 
                         break;
                     case 'User':
@@ -581,7 +611,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             //               } else {
                             $name = "check_value";
                             //               }
-                            echo $params['item']::Dropdown(["name" => $name,
+                            $params['item']::Dropdown(["name" => $name,
                                 "value" => $params['check_value']]);
                         } else {
                             if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
@@ -1022,7 +1052,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     && $idc == 0)) {
                                 $script .= $idc;
                             }
-//TODO Debug - used ?
+//TODO used ?
 //                            foreach ($fields_link2 as $key2 => $fields2) {
 //                                if ($key != $key2) {
 //                                    if ($fields_link[$key] == $fields_link[$key2]) {
@@ -1030,6 +1060,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
 //                                    }
 //                                }
 //                            }
+
+
                             $script .= "], '" . $data['item'] . "');";
 //                        }
                             echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
@@ -1481,13 +1513,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 }
                                                 $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
                                                   ";
-                                    //TODO debug used ?
-                                    //                                            foreach ($hidden_link as $key2 => $fields2) {
-                                    //                                                $script .= "if($(value).val() == $idc[$key2] || $idc[$key2] == -1){
-                                    //                                                   tohide[$fields2] = false;
-                                    //                                                   }
-                                    //                                               ";
-                                    //                                            }
+                                    $script .= "if($(value).val() == $idc
+                                                      || $idc == -1 ){
+                                                   tohide[$hidden_link] = false;
+                                                }
+                                            ";
+
                                     $script .= "
                                               });
                                            }";
@@ -1935,40 +1966,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             }
                                         }
                                     }
-//TODO Debug add it ?
-//                                    $childs_blocks = [];
-//                                    if (isset($data['options'])) {
-//                                        $opts = $data['options'];
-//                                        foreach ($opts as $optid => $opt) {
-//                                            if ($optid == $idc) {
-//                                                if (!empty($opt['childs_blocks'])) {
-//                                                    $childs_blocks[] = json_decode($opt['childs_blocks'], true);
-//                                                }
-//                                            }
-//                                        }
-//                                    }
-
-//                                    if (is_array($childs_blocks[0])) {
-//                                        if (count($childs_blocks[0]) > 0) {
-//                                            $script .= "
-//                                            if($(this).val() != $idc){";
-//                                            foreach ($childs_blocks[0] as $k => $v) {
-//                                                $script .= PluginMetademandsField::getJStorersetFields($v[0]);
-//                                                $script .= "$('div[bloc-id=\"bloc$v[0]\"]').show();";
-//                                            }
-//                                            $script .= " }else{
-//                                             $('div[bloc-id=\"bloc$v[0]\"]').hide();
-//                                            }";
-////                                            $script .= "};";
-//
-//                                            foreach ($childs_blocks[0] as $k => $v) {
-//                                                if ($v[0] > 0) {
-//                                                    $hiddenblocks[] = $v[0];
-//                                                    $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
-//                                                }
-//                                            }
-//                                        }
-//                                    }
 
                                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
 
@@ -2117,7 +2114,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     }
 //                                        }
 
-
                                     $script .= "$.each( tohide, function( key, value ) {
                                             if(value == true){
                                              $('[bloc-id =\"bloc'+key+'\"]').hide();
@@ -2161,14 +2157,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                              }
                                              $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
                                                ";
-                                    //TODO debug used ?
-//                                            foreach ($hidden_block as $key2 => $fields2) {
-//                                                $script .= "if($(value).val() == $idc[$key2]
-//                                                      || $idc[$key2] == -1 ){
-//                                                   tohide[$fields2] = false;
-//                                                }
-//                                            ";
-//                                            }
+                                    $script .= "if($(value).val() == $idc
+                                                      || $idc == -1 ){
+                                                   tohide[$hidden_block] = false;
+                                                }
+                                            ";
                                     $script .= "
                                             fixButtonIndicator();console.log('hidden-checkbox2'); });
                                           }";
@@ -2731,11 +2724,24 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
 //                        if (is_array($unserialisedHiddenLink)) {
 //                            foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
+
+                        //for hidden fields
                         if (!isset($toKeep[$hidden_link])) {
                             $toKeep[$hidden_link] = false;
                         }
                         if (isset($post[$id]) && isset($hidden_link)) {
+//                            Toolbox::logInfo($hidden_link);
+//                            if ($id == 83) {
+                            Toolbox::logInfo($post);
+//                            }
+//                                Toolbox::logInfo($idc);
+//                                Toolbox::logInfo($value['type']);
+////                                $test = true;
+//                            } else {
                             $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $idc, $value['type']);
+//                            }
+
+
                         } else {
                             $test = false;
                         }
@@ -2760,6 +2766,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
 //                        }
 //                    if (is_array($unserialisedHiddenBloc)) {
 //                        foreach ($unserialisedHiddenBloc as $key => $hiddenBloc) {
+
+                        //for hidden blocks
                         $metademandsFields = new PluginMetademandsField();
                         $metademandsFields = $metademandsFields->find(["rank" => $hidden_block,
                             'plugin_metademands_metademands_id' => $value['plugin_metademands_metademands_id']], 'order');
@@ -2793,16 +2801,156 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         }
 //                        }
 //                    }
+//                        Toolbox::logInfo($toKeep);
                         foreach ($toKeep as $k => $v) {
                             if ($v == false) {
                                 if (isset($post[$k])) {
                                     unset($post[$k]);
                                 }
-                                if (isset($data[$k])) {
-                                    unset($data[$k]);
-                                }
+//                                if (isset($data[$k])) {
+//                                    unset($data[$k]);
+//                                }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    public static function addPluginDropdownFieldItems($plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'addDropdownFieldItems'])) {
+                    return $item->addDropdownFieldItems();
+                }
+            }
+        }
+    }
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    public static function addPluginDropdownMultipleFieldItems($plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'addDropdownMultipleFieldItems'])) {
+                    return $item->addDropdownMultipleFieldItems();
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     *
+     * @return void
+     */
+    public static function addPluginTextFieldItems($plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'addTextFieldItems'])) {
+                    return $item->addTextFieldItems();
+                }
+            }
+        }
+    }
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    public static function getPluginFieldItemsName($plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getFieldItemsName'])) {
+                    return $item->getFieldItemsName();
+                }
+            }
+        }
+    }
+
+
+
+    /**
+     * saves data fields option from plugins
+     *
+     * @param $plug
+     */
+    public static function getPluginSaveOptions($plug, $params)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            if (Plugin::isPluginActive($plug)) {
+                $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+                foreach ($pluginclasses as $pluginclass) {
+                    if (!class_exists($pluginclass)) {
+                        continue;
+                    }
+                    $form[$pluginclass] = [];
+                    $item               = $dbu->getItemForItemtype($pluginclass);
+                    if ($item && is_callable([$item, 'saveOptions'])) {
+                        return $item->saveOptions($params);
                     }
                 }
             }
