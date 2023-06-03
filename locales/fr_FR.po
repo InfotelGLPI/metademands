@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-02 14:31+0000\n"
+"POT-Creation-Date: 2023-06-03 14:41+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -436,13 +436,13 @@ msgstr "Ajouter un nouveau champ"
 msgid "Form fields"
 msgstr "Champs du formulaire"
 
-#: inc/field.class.php:1176 inc/fieldoption.class.php:203
-#: inc/fieldoption.class.php:767
+#: inc/field.class.php:1176 inc/fieldoption.class.php:231
+#: inc/fieldoption.class.php:797
 msgid "Link a task to the field"
 msgstr "Lier le champ à une sous demande"
 
-#: inc/field.class.php:1177 inc/fieldoption.class.php:202
-#: inc/fieldoption.class.php:432 inc/fieldoption.class.php:450
+#: inc/field.class.php:1177 inc/fieldoption.class.php:230
+#: inc/fieldoption.class.php:462 inc/fieldoption.class.php:480
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
@@ -576,81 +576,85 @@ msgstr "Prénom du demandeur"
 msgid "Requester email"
 msgstr "Email du demandeur"
 
-#: inc/fieldoption.class.php:57
+#: inc/fieldoption.class.php:62
 msgid "Option"
 msgid_plural "Options"
 msgstr[0] "Option"
 msgstr[1] "Options"
 msgstr[2] "Options"
 
-#: inc/fieldoption.class.php:175
+#: inc/fieldoption.class.php:183
+msgid "No options are allowed for this field type"
+msgstr "Aucune option n'est disponible pour ce type de champ"
+
+#: inc/fieldoption.class.php:203
 msgid "Add a new option"
 msgstr "Ajouter une nouvelle option"
 
-#: inc/fieldoption.class.php:195
+#: inc/fieldoption.class.php:223
 msgid "List of options"
 msgstr "Liste d'options"
 
-#: inc/fieldoption.class.php:204 inc/fieldoption.class.php:777
+#: inc/fieldoption.class.php:232 inc/fieldoption.class.php:807
 msgid "Link a field to the field"
 msgstr "Lier le champ à un autre champ"
 
-#: inc/fieldoption.class.php:205 inc/fieldoption.class.php:797
+#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:827
 msgid "Link a hidden field"
 msgstr "Lier à un champ caché"
 
-#: inc/fieldoption.class.php:206 inc/fieldoption.class.php:814
+#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:844
 msgid "Link a hidden block"
 msgstr "Lier un bloc caché"
 
-#: inc/fieldoption.class.php:207 inc/fieldoption.class.php:841
+#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:871
 msgid "Childs blocks"
 msgstr "Blocs enfants"
 
-#: inc/fieldoption.class.php:208 inc/fieldoption.class.php:850
+#: inc/fieldoption.class.php:236 inc/fieldoption.class.php:880
 msgid "Link a validation"
 msgstr "Lier a une demande de validation"
 
-#: inc/fieldoption.class.php:209 inc/fieldoption.class.php:869
+#: inc/fieldoption.class.php:237 inc/fieldoption.class.php:899
 msgid "Bind to the value of this checkbox"
 msgstr "Lier à la valeur de cette case à cocher"
 
-#: inc/fieldoption.class.php:451
+#: inc/fieldoption.class.php:481
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
-#: inc/fieldoption.class.php:474
+#: inc/fieldoption.class.php:504
 msgid "If field empty"
 msgstr "Si le champ est vide"
 
-#: inc/fieldoption.class.php:768
+#: inc/fieldoption.class.php:798
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la sous-demande "
 "est créée"
 
-#: inc/fieldoption.class.php:778
+#: inc/fieldoption.class.php:808
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
 " obligatoire"
 
-#: inc/fieldoption.class.php:798
+#: inc/fieldoption.class.php:828
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le champ devient"
 " visible"
 
-#: inc/fieldoption.class.php:815
+#: inc/fieldoption.class.php:845
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le bloc devient "
 "visible"
 
-#: inc/fieldoption.class.php:842
+#: inc/fieldoption.class.php:872
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
@@ -658,7 +662,7 @@ msgstr ""
 "Si des blocs enfants existent, ces blocs sont masqués lorsque vous "
 "désélectionnez l'option configurée"
 
-#: inc/fieldoption.class.php:851
+#: inc/fieldoption.class.php:881
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
@@ -666,7 +670,7 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la demande de "
 "validation sera envoyée à l'utilisateur"
 
-#: inc/fieldoption.class.php:870
+#: inc/fieldoption.class.php:900
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
@@ -674,7 +678,7 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la valeur de la "
 "case à cocher est définie"
 
-#: inc/fieldoption.class.php:969 inc/step.class.php:247 inc/step.class.php:367
+#: inc/fieldoption.class.php:999 inc/step.class.php:247 inc/step.class.php:367
 #: inc/step.class.php:387 inc/task.class.php:522 inc/task.class.php:901
 #: inc/tickettask.class.php:161
 #, php-format
