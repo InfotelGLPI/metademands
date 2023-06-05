@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-05 10:21+0000\n"
+"POT-Creation-Date: 2023-06-05 17:00+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -23,44 +23,44 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: hook.php:603
+#: hook.php:608
 msgid "Metademand approver"
 msgstr "Valideur de la métademande"
 
-#: hook.php:616
+#: hook.php:621
 msgid "Metademand status"
 msgstr "Statut de la métademande"
 
-#: hook.php:632
+#: hook.php:637
 msgid "Group child ticket"
 msgstr "Groupe des tickets enfants"
 
-#: hook.php:643
+#: hook.php:648
 msgid "Link to metademands"
 msgstr "Lié à une métademande"
 
-#: hook.php:655
+#: hook.php:660
 msgid "Technician child ticket"
 msgstr "Techniciens des tickets enfants"
 
-#: hook.php:1054 inc/metademand.class.php:5793
+#: hook.php:1059 inc/metademand.class.php:5782
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: hook.php:1072 inc/metademand.class.php:5913
+#: hook.php:1077 inc/metademand.class.php:5902
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: hook.php:1089 inc/metademand.class.php:5970
+#: hook.php:1094 inc/metademand.class.php:5959
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: hook.php:1106 inc/metademand.class.php:5845
+#: hook.php:1111 inc/metademand.class.php:5834
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 
 #: setup.php:169 inc/menu.class.php:42 inc/metademand.class.php:87
-#: inc/profile.class.php:129 inc/profile.class.php:172
+#: inc/profile.class.php:129 inc/profile.class.php:172 inc/tools.class.php:132
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] "Meta-Demande"
@@ -155,13 +155,13 @@ msgstr "Un problème est survenu, le formulaire n'a pas été envoyé"
 msgid "Continue metademand"
 msgstr "Continuer une métademande"
 
-#: front/wizard.form.php:250 front/wizard.form.php:253
-#: front/wizard.form.php:255 front/wizard.form.php:621
-#: front/wizard.form.php:624 front/wizard.form.php:626 inc/menu.class.php:62
+#: front/wizard.form.php:253 front/wizard.form.php:256
+#: front/wizard.form.php:258 front/wizard.form.php:624
+#: front/wizard.form.php:627 front/wizard.form.php:629 inc/menu.class.php:62
 msgid "Create a demand"
 msgstr "Créer une demande"
 
-#: front/wizard.form.php:416
+#: front/wizard.form.php:419
 msgid "There is a problem with the basket"
 msgstr "Il y a un problème avec le panier"
 
@@ -274,23 +274,23 @@ msgstr "Commentaire pour le widget de ServiceCatalog"
 msgid "Icon for Service Catalog widget"
 msgstr "Icône pour le widget de ServiceCatalog"
 
-#: inc/configstep.class.php:62
+#: inc/configstep.class.php:61
 msgid "Step by step settings"
 msgstr "Paramètres du mode pas à pas"
 
-#: inc/configstep.class.php:122
+#: inc/configstep.class.php:121
 msgid "Link multiple groups to a block"
 msgstr "Lier plusieurs groupes à un bloc"
 
-#: inc/configstep.class.php:128
+#: inc/configstep.class.php:127
 msgid "Allow sending the form to a user"
 msgstr "Autoriser l'envoi du formulaire à un utilisateur"
 
-#: inc/configstep.class.php:136
+#: inc/configstep.class.php:135
 msgid "Add all form actors as ticket requester"
 msgstr "Ajouter tous les acteurs du formulaire comme demandeur du ticket"
 
-#: inc/configstep.class.php:174
+#: inc/configstep.class.php:173
 msgid "Cannot change settings because blocks are linked to multiple groups"
 msgstr ""
 "Impossible de modifier les paramètres car les blocs sont liés à plusieurs "
@@ -329,7 +329,7 @@ msgstr "Sauver comme brouillon"
 msgid "Your drafts"
 msgstr "Vos brouillons"
 
-#: inc/field.class.php:92 inc/ticket_field.class.php:52
+#: inc/field.class.php:92 inc/ticket_field.class.php:54
 msgid "Wizard creation"
 msgstr "Création du formulaire"
 
@@ -939,35 +939,35 @@ msgstr "A venir"
 msgid "There is no childs tickets"
 msgstr "Il n'y a pas de tickets enfants"
 
-#: inc/metademand.class.php:5658
+#: inc/metademand.class.php:5648
 msgid "Configure demands"
 msgstr "Configurer les demandes"
 
-#: inc/metademand.class.php:6520
+#: inc/metademand.class.php:6488
 msgid "Metademand file to import"
 msgstr "Fichier Métademande à importer"
 
-#: inc/metademand.class.php:6529
+#: inc/metademand.class.php:6497
 msgid "Import"
 msgstr "Importer"
 
-#: inc/metademand.class.php:6626
+#: inc/metademand.class.php:6594
 msgid "Progression of your demand"
 msgstr "Progression de votre demande"
 
-#: inc/metademand.class.php:6704
+#: inc/metademand.class.php:6672
 msgid "Done on"
 msgstr "Fait le"
 
-#: inc/metademand.class.php:6704
+#: inc/metademand.class.php:6672
 msgid "In progress"
 msgstr "En cours"
 
-#: inc/metademand.class.php:6717
+#: inc/metademand.class.php:6685
 msgid "Not yet completed"
 msgstr "Non finalisé"
 
-#: inc/metademand.class.php:6749 inc/wizard.class.php:883
+#: inc/metademand.class.php:6717 inc/wizard.class.php:883
 msgid "Find a form"
 msgstr "Trouver un formulaire"
 
@@ -1353,6 +1353,22 @@ msgstr "Créer après la sous-demande"
 #: inc/tickettask.class.php:244
 msgid "Actors"
 msgstr "Acteurs"
+
+#: inc/tools.class.php:48
+msgid "Tools"
+msgstr "Outils"
+
+#: inc/tools.class.php:114
+msgid "Duplicates fields options"
+msgstr "Doublons d'options des champs"
+
+#: inc/tools.class.php:135
+msgid "Number of duplicates"
+msgstr "Nombre de duplicas"
+
+#: inc/tools.class.php:156
+msgid "No duplicates founded"
+msgstr "Pas de doublons trouvés"
 
 #: inc/wizard.class.php:71
 msgid "Wizard overview"
