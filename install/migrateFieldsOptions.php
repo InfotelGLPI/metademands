@@ -36,7 +36,7 @@ ini_set("max_execution_time", 0);
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
 if (!defined('GLPI_ROOT')) {
-   define('GLPI_ROOT', realpath('../../..'));
+    define('GLPI_ROOT', realpath('../../..'));
 }
 
 include_once(GLPI_ROOT . "/inc/autoload.function.php");
@@ -50,9 +50,9 @@ $GLPI->initLogger();
 Config::detectRootDoc();
 
 if (is_writable(GLPI_SESSION_DIR)) {
-   Session::setPath();
+    Session::setPath();
 } else {
-   die("Can't write in " . GLPI_SESSION_DIR . "\r\n");
+    die("Can't write in " . GLPI_SESSION_DIR . "\r\n");
 }
 Session::start();
 $_SESSION['glpi_use_mode'] = 0;
@@ -60,11 +60,11 @@ Session::loadLanguage();
 
 global $DB;
 if (!$DB->connected) {
-   die("No DB connection\r\n");
+    die("No DB connection\r\n");
 }
-$CFG_GLPI['notifications_ajax']    = 0;
+$CFG_GLPI['notifications_ajax'] = 0;
 $CFG_GLPI['notifications_mailing'] = 0;
-$CFG_GLPI['use_notifications']     = 0;
+$CFG_GLPI['use_notifications'] = 0;
 
 function migrateFieldsOptions()
 {
@@ -90,7 +90,146 @@ function migrateFieldsOptions()
                         ) && $check_value == 1) {
                         $field->update(["id" => $f["id"], "use_future_date" => 1]);
                     }
-                    $input["check_value"] = $check_value;
+
+                    if ($f["type"] != 'date' &&
+                        $f["type"] != 'datetime' &&
+                        $f["type"] != 'date_interval' &&
+                        $f["type"] != 'datetime_interval') {
+
+
+                        $input["check_value"] = $check_value;
+
+                        $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
+
+                        if (is_array($plugin_metademands_tasks_id)) {
+                            if (isset($plugin_metademands_tasks_id[$check_value])) {
+                                $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id[$check_value];
+                            } else {
+                                if (isset($plugin_metademands_tasks_id[0])) {
+                                    $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id[0];
+                                } else {
+                                    $input["plugin_metademands_tasks_id"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
+                        }
+
+                        $users_id_validate = PluginMetademandsField::_unserialize($f['users_id_validate']);
+                        if (is_array($users_id_validate)) {
+                            if (isset($users_id_validate[$check_value])) {
+                                $input["users_id_validate"] = $users_id_validate[$check_value];
+                            } else {
+                                if (isset($users_id_validate[0])) {
+                                    $input["users_id_validate"] = $users_id_validate[0];
+                                } else {
+                                    $input["users_id_validate"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["users_id_validate"] = $users_id_validate;
+                        }
+
+                        $fields_link = PluginMetademandsField::_unserialize($f['fields_link']);
+                        if (is_array($fields_link)) {
+                            if (isset($fields_link[$check_value])) {
+                                $input["fields_link"] = $fields_link[$check_value];
+                            } else {
+                                if (isset($fields_link[0])) {
+                                    $input["fields_link"] = $fields_link[0];
+                                } else {
+                                    $input["fields_link"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["fields_link"] = $fields_link;
+                        }
+
+                        $hidden_link = PluginMetademandsField::_unserialize($f['hidden_link']);
+                        if (is_array($hidden_link)) {
+                            if (isset($hidden_link[$check_value])) {
+                                $input["hidden_link"] = $hidden_link[$check_value];
+                            } else {
+                                if (isset($hidden_link[0])) {
+                                    $input["hidden_link"] = $hidden_link[0];
+                                } else {
+                                    $input["hidden_link"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["hidden_link"] = $hidden_link;
+                        }
+
+                        $hidden_block = PluginMetademandsField::_unserialize($f['hidden_block']);
+                        if (is_array($hidden_block)) {
+                            if (isset($hidden_block[$check_value])) {
+                                $input["hidden_block"] = $hidden_block[$check_value];
+                            } else {
+                                if (isset($hidden_block[0])) {
+                                    $input["hidden_block"] = $hidden_block[0];
+                                } else {
+                                    $input["hidden_block"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["hidden_block"] = $hidden_block;
+                        }
+
+
+                        $childs_blocks = json_decode($f['childs_blocks'], true);
+
+                        if (is_array($childs_blocks)) {
+                            if (isset($childs_blocks[$check_value])) {
+                                $input["childs_blocks"] = json_encode($childs_blocks[$check_value]);
+                            } else {
+                                $input["childs_blocks"] = json_encode([]);
+                            }
+                        } else {
+                            $input["childs_blocks"] = json_encode($childs_blocks);
+                        }
+
+
+                        $checkbox_value = PluginMetademandsField::_unserialize($f['checkbox_value']);
+                        if (is_array($checkbox_value)) {
+                            if (isset($checkbox_value[$check_value])) {
+                                $input["checkbox_value"] = $checkbox_value[$check_value];
+                            } else {
+                                if (isset($checkbox_value[0])) {
+                                    $input["checkbox_value"] = $checkbox_value[0];
+                                } else {
+                                    $input["checkbox_value"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["checkbox_value"] = $checkbox_value;
+                        }
+
+                        $checkbox_id = PluginMetademandsField::_unserialize($f['checkbox_id']);
+                        if (is_array($checkbox_id)) {
+                            if (isset($checkbox_id[$check_value])) {
+                                $input["checkbox_id"] = $checkbox_id[$check_value];
+                            } else {
+                                if (isset($checkbox_id[0])) {
+                                    $input["checkbox_id"] = $checkbox_id[0];
+                                } else {
+                                    $input["checkbox_id"] = 0;
+                                }
+                            }
+                        } else {
+                            $input["checkbox_id"] = $checkbox_id;
+                        }
+
+                        $fieldopt->add($input);
+                    }
+                }
+
+            } else {
+
+                if ($f["type"] != 'date' &&
+                    $f["type"] != 'datetime' &&
+                    $f["type"] != 'date_interval' &&
+                    $f["type"] != 'datetime_interval') {
+                    $input["check_value"] = $check_value = $f["check_value"];
 
                     $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
 
@@ -214,131 +353,6 @@ function migrateFieldsOptions()
 
                     $fieldopt->add($input);
                 }
-
-            } else {
-                $input["check_value"] = $check_value = $f["check_value"];
-
-                $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
-
-                if (is_array($plugin_metademands_tasks_id)) {
-                    if (isset($plugin_metademands_tasks_id[$check_value])) {
-                        $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id[$check_value];
-                    } else {
-                        if (isset($plugin_metademands_tasks_id[0])) {
-                            $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id[0];
-                        } else {
-                            $input["plugin_metademands_tasks_id"] = 0;
-                        }
-                    }
-                } else {
-                    $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
-                }
-
-                $users_id_validate = PluginMetademandsField::_unserialize($f['users_id_validate']);
-                if (is_array($users_id_validate)) {
-                    if (isset($users_id_validate[$check_value])) {
-                        $input["users_id_validate"] = $users_id_validate[$check_value];
-                    } else {
-                        if (isset($users_id_validate[0])) {
-                            $input["users_id_validate"] = $users_id_validate[0];
-                        } else {
-                            $input["users_id_validate"] = 0;
-                        }
-                    }
-                } else {
-                    $input["users_id_validate"] = $users_id_validate;
-                }
-
-                $fields_link = PluginMetademandsField::_unserialize($f['fields_link']);
-                if (is_array($fields_link)) {
-                    if (isset($fields_link[$check_value])) {
-                        $input["fields_link"] = $fields_link[$check_value];
-                    } else {
-                        if (isset($fields_link[0])) {
-                            $input["fields_link"] = $fields_link[0];
-                        } else {
-                            $input["fields_link"] = 0;
-                        }
-                    }
-                } else {
-                    $input["fields_link"] = $fields_link;
-                }
-
-                $hidden_link = PluginMetademandsField::_unserialize($f['hidden_link']);
-                if (is_array($hidden_link)) {
-                    if (isset($hidden_link[$check_value])) {
-                        $input["hidden_link"] = $hidden_link[$check_value];
-                    } else {
-                        if (isset($hidden_link[0])) {
-                            $input["hidden_link"] = $hidden_link[0];
-                        } else {
-                            $input["hidden_link"] = 0;
-                        }
-                    }
-                } else {
-                    $input["hidden_link"] = $hidden_link;
-                }
-
-                $hidden_block = PluginMetademandsField::_unserialize($f['hidden_block']);
-                if (is_array($hidden_block)) {
-                    if (isset($hidden_block[$check_value])) {
-                        $input["hidden_block"] = $hidden_block[$check_value];
-                    } else {
-                        if (isset($hidden_block[0])) {
-                            $input["hidden_block"] = $hidden_block[0];
-                        } else {
-                            $input["hidden_block"] = 0;
-                        }
-                    }
-                } else {
-                    $input["hidden_block"] = $hidden_block;
-                }
-
-
-                $childs_blocks = json_decode($f['childs_blocks'], true);
-
-                if (is_array($childs_blocks)) {
-                    if (isset($childs_blocks[$check_value])) {
-                        $input["childs_blocks"] = json_encode($childs_blocks[$check_value]);
-                    } else {
-                        $input["childs_blocks"] = json_encode([]);
-                    }
-                } else {
-                    $input["childs_blocks"] = json_encode($childs_blocks);
-                }
-
-
-                $checkbox_value = PluginMetademandsField::_unserialize($f['checkbox_value']);
-                if (is_array($checkbox_value)) {
-                    if (isset($checkbox_value[$check_value])) {
-                        $input["checkbox_value"] = $checkbox_value[$check_value];
-                    } else {
-                        if (isset($checkbox_value[0])) {
-                            $input["checkbox_value"] = $checkbox_value[0];
-                        } else {
-                            $input["checkbox_value"] = 0;
-                        }
-                    }
-                } else {
-                    $input["checkbox_value"] = $checkbox_value;
-                }
-
-                $checkbox_id = PluginMetademandsField::_unserialize($f['checkbox_id']);
-                if (is_array($checkbox_id)) {
-                    if (isset($checkbox_id[$check_value])) {
-                        $input["checkbox_id"] = $checkbox_id[$check_value];
-                    } else {
-                        if (isset($checkbox_id[0])) {
-                            $input["checkbox_id"] = $checkbox_id[0];
-                        } else {
-                            $input["checkbox_id"] = 0;
-                        }
-                    }
-                } else {
-                    $input["checkbox_id"] = $checkbox_id;
-                }
-
-                $fieldopt->add($input);
             }
         }
     }

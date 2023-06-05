@@ -41,6 +41,10 @@ ALTER TABLE `glpi_plugin_metademands_metademands` ADD `is_template` tinyint NOT 
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `template_name` varchar(255) DEFAULT NULL;
 ALTER TABLE `glpi_plugin_metademands_metademandtasks` ADD `entities_id` int unsigned NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_groups` ADD `entities_id` int unsigned NOT NULL DEFAULT '0';
+
+ALTER TABLE `glpi_plugin_metademands_configs` CHANGE `show_form_changes` `show_form_changes` tinyint NOT NULL DEFAULT 0;
+ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `default_use_id_requester` `default_use_id_requester` int DEFAULT 0;
+
 ALTER TABLE `glpi_plugin_metademands_metademandtasks` ADD KEY `entities_id` (`entities_id`);
 ALTER TABLE `glpi_plugin_metademands_groups` ADD KEY `entities_id` (`entities_id`);
 
@@ -60,3 +64,12 @@ ALTER TABLE `glpi_plugin_metademands_forms` ADD KEY `plugin_metademands_metadema
 ALTER TABLE `glpi_plugin_metademands_pluginfields` ADD KEY `plugin_fields_fields_id` (`plugin_fields_fields_id`);
 ALTER TABLE `glpi_plugin_metademands_pluginfields` ADD KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`);
 ALTER TABLE `glpi_plugin_metademands_pluginfields` ADD KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`);
+
+ALTER TABLE `glpi_plugin_metademands_drafts` ADD KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`);
+ALTER TABLE `glpi_plugin_metademands_drafts_values` ADD KEY `plugin_metademands_drafts_id` (`plugin_metademands_drafts_id`);
+ALTER TABLE `glpi_plugin_metademands_drafts_values` ADD KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`);
+
+ALTER TABLE `glpi_plugin_metademands_metademandvalidations` ADD KEY `users_id` (`users_id`);
+ALTER TABLE `glpi_plugin_metademands_metademandvalidations` ADD KEY `tickets_id` (`tickets_id`);
+ALTER TABLE `glpi_plugin_metademands_metademandvalidations` ADD KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`);
+ALTER TABLE `glpi_plugin_metademands_metademands` ADD KEY `itilcategories_id` (`itilcategories_id`);

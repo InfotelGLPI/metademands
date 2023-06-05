@@ -2724,9 +2724,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         $taskChild = $check_value['plugin_metademands_tasks_id'];
                         $toKeep = [];
 
-//                        if (is_array($unserialisedHiddenLink)) {
-//                            foreach ($unserialisedHiddenLink as $key => $hiddenFields) {
-
                         //for hidden fields
                         if (!isset($toKeep[$hidden_link])) {
                             $toKeep[$hidden_link] = false;
@@ -2753,10 +2750,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 $_SESSION['metademands_hide'][$idChild] = $idChild;
                             }
                         }
-//                            }
-//                        }
-//                    if (is_array($unserialisedHiddenBloc)) {
-//                        foreach ($unserialisedHiddenBloc as $key => $hiddenBloc) {
 
                         //for hidden blocks
                         $metademandsFields = new PluginMetademandsField();
@@ -2790,17 +2783,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 }
                             }
                         }
-//                        }
-//                    }
-//                        Toolbox::logInfo($toKeep);
+
                         foreach ($toKeep as $k => $v) {
                             if ($v == false) {
                                 if (isset($post[$k])) {
                                     unset($post[$k]);
                                 }
-//                                if (isset($data[$k])) {
-//                                    unset($data[$k]);
-//                                }
+                                if (isset($data[$k])) {
+                                    $data[$k]['is_mandatory'] = false;
+                                }
                             }
                         }
                     }

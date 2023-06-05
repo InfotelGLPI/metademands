@@ -104,6 +104,7 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `type`                              varchar(255)                             DEFAULT NULL,
     `item`                              varchar(255)                             DEFAULT NULL,
     `is_mandatory`                      int                             NOT NULL DEFAULT '0',
+    `plugin_metademands_fields_id`      int unsigned                    NOT NULL DEFAULT '0',
     `plugin_metademands_metademands_id` int unsigned                    NOT NULL DEFAULT '0',
     `max_upload`                        int                             NOT NULL DEFAULT 0,
     `regex`                             VARCHAR(255)                    NOT NULL DEFAULT '',
@@ -123,7 +124,8 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `informations_to_display`           varchar(255)                    NOT NULL DEFAULT '[]',
     `use_richtext`                      tinyint                         NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
-    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
+    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci

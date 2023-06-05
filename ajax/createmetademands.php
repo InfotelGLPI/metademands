@@ -129,6 +129,8 @@ if (isset($_POST['update_fields'])) {
 
                     //Clean $post & $data & $_POST
                     $dataOld = $data;
+
+
                     // Double appel for prevent order fields
                     PluginMetademandsFieldOption::unsetHidden($data, $post);
                     PluginMetademandsFieldOption::unsetHidden($dataOld, $post);
@@ -165,6 +167,7 @@ if (isset($_POST['update_fields'])) {
                             }
                         }
                     }
+
                     //end fields_link to be mandatory
                     foreach ($data as $id => $value) {
                         if (!isset($post[$id])) {
