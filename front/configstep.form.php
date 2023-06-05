@@ -37,7 +37,8 @@ if (isset($_POST['update_configstep']) && isset($_POST['plugin_metademands_metad
     $input = [
         'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
         'link_user_block' => $_POST['link_user_block'],
-        'multiple_link_groups_blocks' => $_POST['multiple_link_groups_blocks']
+        'multiple_link_groups_blocks' => $_POST['multiple_link_groups_blocks'],
+        'add_user_as_requester' => $_POST['add_user_as_requester']
     ];
     if ($res) {
         $input['id'] = $stepConfig->fields['id'];
