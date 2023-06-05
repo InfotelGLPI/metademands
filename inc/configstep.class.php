@@ -40,8 +40,7 @@ class PluginMetademandsConfigstep extends CommonDBChild
     public static $itemtype = 'PluginMetademandsMetademand';
     public static $items_id = 'plugin_metademands_metademands_id';
 
-
-
+    public static $disableAutoEntityForwarding   = true;
     static function canView() {
         return Session::haveRight(self::$rightname, UPDATE);
     }

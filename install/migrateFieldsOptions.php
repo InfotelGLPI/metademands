@@ -219,6 +219,38 @@ function migrateFieldsOptions()
                             $input["checkbox_id"] = $checkbox_id;
                         }
 
+                        if (empty($input["check_value"])) {
+                            $input["check_value"] = 0;
+                        }
+                        if ($input["check_value"] == -1) {
+                            $input["check_value"] = 0;
+                        }
+                        if (empty($input["plugin_metademands_tasks_id"])) {
+                            $input["plugin_metademands_tasks_id"] = 0;
+                        }
+                        if (empty($input["fields_link"])) {
+                            $input["fields_link"] = 0;
+                        }
+                        if (empty($input["hidden_link"])) {
+                            $input["hidden_link"] = 0;
+                        }
+                        if (empty($input["hidden_block"])) {
+                            $input["hidden_block"] = 0;
+                        }
+                        if (empty($input["users_id_validate"])) {
+                            $input["users_id_validate"] = 0;
+                        }
+                        if (empty($input["checkbox_value"])) {
+                            $input["checkbox_value"] = 0;
+                        }
+                        if (empty($input["checkbox_id"])) {
+                            $input["checkbox_id"] = 0;
+                        }
+                        if (empty($input["parent_field_id"])) {
+                            $input["parent_field_id"] = 0;
+                        }
+
+                        Toolbox::logInfo($input["check_value"]);
                         $fieldopt->add($input);
                     }
                 }
@@ -351,9 +383,53 @@ function migrateFieldsOptions()
                         $input["checkbox_id"] = $checkbox_id;
                     }
 
+                    if (empty($input["check_value"])) {
+                        $input["check_value"] = 0;
+                    }
+                    if ($input["check_value"] == -1) {
+                        $input["check_value"] = 0;
+                    }
+                    if (empty($input["plugin_metademands_tasks_id"])) {
+                        $input["plugin_metademands_tasks_id"] = 0;
+                    }
+                    if (empty($input["fields_link"])) {
+                        $input["fields_link"] = 0;
+                    }
+                    if (empty($input["hidden_link"])) {
+                        $input["hidden_link"] = 0;
+                    }
+                    if (empty($input["hidden_block"])) {
+                        $input["hidden_block"] = 0;
+                    }
+                    if (empty($input["users_id_validate"])) {
+                        $input["users_id_validate"] = 0;
+                    }
+                    if (empty($input["checkbox_value"])) {
+                        $input["checkbox_value"] = 0;
+                    }
+                    if (empty($input["checkbox_id"])) {
+                        $input["checkbox_id"] = 0;
+                    }
+                    if (empty($input["parent_field_id"])) {
+                        $input["parent_field_id"] = 0;
+                    }
+                    Toolbox::logInfo($input["check_value"]);
                     $fieldopt->add($input);
                 }
             }
         }
+    }
+
+    //delete empty options
+    $fieldopt = new PluginMetademandsFieldOption();
+    $fieldemptyopts = $fieldopt->find(["plugin_metademands_tasks_id" => 0,
+        "fields_link" => 0,
+        "hidden_link" => 0,
+        "hidden_block" => 0,
+        "childs_blocks" => "[]",
+        "checkbox_value" => 0,
+        "checkbox_id" => 0]);
+    foreach ($fieldemptyopts as $opt) {
+        $fieldopt->delete(["id" => $opt["id"]], 1);
     }
 }

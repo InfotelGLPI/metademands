@@ -119,9 +119,9 @@ class PluginMetademandsConfig extends CommonDBTM {
         $ong = [];
         //      $this->addDefaultFormTab($ong);
         $this->addStandardTab(__CLASS__, $ong, $options);
-//        if ($_SESSION['glpi_use_mode'] == Session::DEBUG_MODE) {
-            $this->addStandardTab('PluginMetademandsCheckSchema', $ong, $options);
-//        }
+        $this->addStandardTab('PluginMetademandsTools', $ong, $options);
+        $this->addStandardTab('PluginMetademandsCheckSchema', $ong, $options);
+
         return $ong;
     }
 

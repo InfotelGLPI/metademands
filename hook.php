@@ -344,7 +344,6 @@ function plugin_metademands_install() {
         install_notifications_forms_metademands();
 
         if ($DB->fieldExists("glpi_plugin_metademands_tickets_fields", "color")) {
-
             $query = "ALTER TABLE `glpi_plugin_metademands_tickets_fields` DROP `color`";
             $DB->query($query);
         }

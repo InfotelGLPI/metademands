@@ -2,15 +2,15 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
 (
     `id`                           int unsigned NOT NULL AUTO_INCREMENT,
     `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
-    `check_value`                  varchar(255)          DEFAULT NULL,
-    `plugin_metademands_tasks_id`  varchar(255)          DEFAULT NULL,
-    `fields_link`                  varchar(255) NOT NULL DEFAULT '0',
-    `hidden_link`                  varchar(255) NOT NULL DEFAULT '0',
-    `hidden_block`                 varchar(255) NOT NULL DEFAULT '0',
-    `users_id_validate`            varchar(255) NOT NULL DEFAULT '0',
+    `check_value`                  int unsigned NOT NULL DEFAULT '0',
+    `plugin_metademands_tasks_id`  int unsigned NOT NULL DEFAULT '0',
+    `fields_link`                  int unsigned NOT NULL DEFAULT '0',
+    `hidden_link`                  int unsigned NOT NULL DEFAULT '0',
+    `hidden_block`                 int unsigned NOT NULL DEFAULT '0',
+    `users_id_validate`            int unsigned NOT NULL DEFAULT '0',
     `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
-    `checkbox_value`               varchar(255) NOT NULL DEFAULT '[]',
-    `checkbox_id`                  varchar(255) NOT NULL DEFAULT '[]',
+    `checkbox_value`               int unsigned NOT NULL DEFAULT '0',
+    `checkbox_id`                  int unsigned NOT NULL DEFAULT '0',
     `parent_field_id`              int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
@@ -43,7 +43,7 @@ ALTER TABLE `glpi_plugin_metademands_metademandtasks` ADD `entities_id` int unsi
 ALTER TABLE `glpi_plugin_metademands_groups` ADD `entities_id` int unsigned NOT NULL DEFAULT '0';
 
 ALTER TABLE `glpi_plugin_metademands_configs` CHANGE `show_form_changes` `show_form_changes` tinyint NOT NULL DEFAULT 0;
-ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `default_use_id_requester` `default_use_id_requester` int DEFAULT 0;
+ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `default_use_id_requester` `default_use_id_requester` int unsigned DEFAULT 0;
 
 ALTER TABLE `glpi_plugin_metademands_metademandtasks` ADD KEY `entities_id` (`entities_id`);
 ALTER TABLE `glpi_plugin_metademands_groups` ADD KEY `entities_id` (`entities_id`);
