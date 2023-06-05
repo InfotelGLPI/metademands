@@ -3514,7 +3514,7 @@ class PluginMetademandsField extends CommonDBChild
                             echo "</tr>";
                         }
                         if (isset($params['id'])) {
-                            echo Html::hidden('fields_id', ['value' => $params["id"]]);
+                            echo Html::hidden('fields_id', ['value' => $params["id"], 'id' => 'fields_id']);
                         }
                         echo '</table>';
                         echo '</div>';
@@ -3879,9 +3879,6 @@ class PluginMetademandsField extends CommonDBChild
 
     public function cleanDBonPurge()
     {
-        $field = new self();
-        $field->deleteByCriteria(['parent_field_id' => $this->getID(),
-                                'type'            => 'parent_field']);
 
         $temp = new PluginMetademandsTicket_Field();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
@@ -3891,6 +3888,9 @@ class PluginMetademandsField extends CommonDBChild
 
         $temp = new PluginMetademandsFieldOption();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsFieldOption();
+        $temp->deleteByCriteria(['parent_field_id' => $this->fields['id']]);
     }
 
    /**
