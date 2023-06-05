@@ -288,7 +288,7 @@ msgstr "Autoriser l'envoi du formulaire à un utilisateur"
 
 #: inc/configstep.class.php:136
 msgid "Add users who completed blocks as ticket requesters"
-msgstr "Ajouter tous les acteurs comme demandeur du ticket"
+msgstr "Ajouter tous les acteurs du formulaire comme demandeur du ticket"
 
 #: inc/configstep.class.php:174
 msgid "Cannot change settings because blocks are linked to multiple groups"
