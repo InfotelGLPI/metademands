@@ -59,7 +59,7 @@ class PluginMetademandsConfigstep extends CommonDBChild
      */
     public static function getTypeName($nb = 0)
     {
-        return __('Block settings', 'metademands');
+        return __('Step by step settings', 'metademands');
     }
 
 
@@ -133,7 +133,7 @@ class PluginMetademandsConfigstep extends CommonDBChild
         echo "</tr>";
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo __('Add users who completed blocks as requesters', 'metademands');
+        echo __('Add users who completed blocks as ticket requesters', 'metademands');
         echo "</td>";
         echo "<td>";
         Dropdown::showYesNo('add_user_as_requester', $confStep->fields['add_user_as_requester']);
