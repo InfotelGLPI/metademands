@@ -1364,7 +1364,7 @@ msgstr "Doublons d'options des champs"
 
 #: inc/tools.class.php:135
 msgid "Number of duplicates"
-msgstr "Nombre de duplicas"
+msgstr "Nombre de doublons"
 
 #: inc/tools.class.php:156
 msgid "No duplicates founded"
