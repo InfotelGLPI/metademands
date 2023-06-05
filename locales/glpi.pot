@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-05 10:11+0000\n"
+"POT-Creation-Date: 2023-06-05 10:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -262,7 +262,7 @@ msgid "Icon for Service Catalog widget"
 msgstr ""
 
 #: inc/configstep.class.php:62
-msgid "Block settings"
+msgid "Step by step settings"
 msgstr ""
 
 #: inc/configstep.class.php:122
@@ -274,7 +274,7 @@ msgid "Allow sending the form to a user"
 msgstr ""
 
 #: inc/configstep.class.php:136
-msgid "Add users who completed blocks as requesters"
+msgid "Add users who completed blocks as ticket requesters"
 msgstr ""
 
 #: inc/configstep.class.php:174
