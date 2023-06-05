@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-05 10:21+0000\n"
+"POT-Creation-Date: 2023-06-05 13:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1054 inc/metademand.class.php:5793
+#: hook.php:1054 inc/metademand.class.php:5782
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1072 inc/metademand.class.php:5913
+#: hook.php:1072 inc/metademand.class.php:5902
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1089 inc/metademand.class.php:5970
+#: hook.php:1089 inc/metademand.class.php:5959
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1106 inc/metademand.class.php:5845
+#: hook.php:1106 inc/metademand.class.php:5834
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -144,13 +144,13 @@ msgstr ""
 msgid "Continue metademand"
 msgstr ""
 
-#: front/wizard.form.php:250 front/wizard.form.php:253
-#: front/wizard.form.php:255 front/wizard.form.php:621
-#: front/wizard.form.php:624 front/wizard.form.php:626 inc/menu.class.php:62
+#: front/wizard.form.php:253 front/wizard.form.php:256
+#: front/wizard.form.php:258 front/wizard.form.php:624
+#: front/wizard.form.php:627 front/wizard.form.php:629 inc/menu.class.php:62
 msgid "Create a demand"
 msgstr ""
 
-#: front/wizard.form.php:416
+#: front/wizard.form.php:419
 msgid "There is a problem with the basket"
 msgstr ""
 
@@ -313,7 +313,7 @@ msgstr ""
 msgid "Your drafts"
 msgstr ""
 
-#: inc/field.class.php:92 inc/ticket_field.class.php:52
+#: inc/field.class.php:92 inc/ticket_field.class.php:54
 msgid "Wizard creation"
 msgstr ""
 
@@ -894,35 +894,35 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5658
+#: inc/metademand.class.php:5648
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:6520
+#: inc/metademand.class.php:6488
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:6529
+#: inc/metademand.class.php:6497
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:6626
+#: inc/metademand.class.php:6594
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:6704
+#: inc/metademand.class.php:6672
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:6704
+#: inc/metademand.class.php:6672
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:6717
+#: inc/metademand.class.php:6685
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:6749 inc/wizard.class.php:883
+#: inc/metademand.class.php:6717 inc/wizard.class.php:883
 msgid "Find a form"
 msgstr ""
 
