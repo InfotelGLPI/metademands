@@ -123,9 +123,7 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `informations_to_display`           varchar(255)                    NOT NULL DEFAULT '[]',
     `use_richtext`                      tinyint                         NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
-    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
-    KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-    KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
+    KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
@@ -151,10 +149,10 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
     `childs_blocks`                varchar(255) NOT NULL DEFAULT '[]',
     `checkbox_value`               varchar(255) NOT NULL DEFAULT '[]',
     `checkbox_id`                  varchar(255) NOT NULL DEFAULT '[]',
-    `parent_field_id`              int          NOT NULL DEFAULT '0',
+    `parent_field_id`              int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
-    KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
+    KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
