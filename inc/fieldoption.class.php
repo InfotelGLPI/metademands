@@ -1081,7 +1081,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
             if (is_array($check_values)) {
                 if (count($check_values) > 0) {
                     foreach ($check_values as $idc => $check_value) {
-                        if (!empty($data['options'][$idc]['hidden_link'])) {
+                        if (isset($data['options'][$idc]['hidden_link'])
+                            && !empty($data['options'][$idc]['hidden_link'])) {
 
                             switch ($data['type']) {
                                 case 'yesno':
@@ -1873,7 +1874,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         $default_values = PluginMetademandsField::_unserialize($data['default_values']);
 
                                         $hidden_link = $data['options'][$idc]['hidden_link'];
-                                        if (is_array($idc) && count($idc) > 0) {
+//                                        if (is_array($idc) && count($idc) > 0) {
 //                                        $idc = array_flip($idc);
 
 //                                        foreach ($default_values as $k => $v) {
@@ -1897,7 +1898,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                     }
                                                 }
                                             }
-                                        }
+//                                        }
                                     }
                                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                                     break;
@@ -1924,7 +1925,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     $script2 = "";
                                     $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-                                    if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                                    if ($data['options'][$idc]['hidden_block']) {
                                         $hidden_block = $data['options'][$idc]['hidden_block'];
 
                                         $script .= "
@@ -2349,7 +2350,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 case 'radio':
                                     $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
                                     $script2 = "";
-                                    if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                                    if ($data['options'][$idc]['hidden_block']) {
                                         $hidden_block = $data['options'][$idc]['hidden_block'];
 
                                         $script .= "var tohide = {};";
@@ -2444,7 +2445,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     $script = "$('[name=\"$name\"]').change(function() { ";
                                     //             $script .= "      alert( \"Handler for .change() called.  \"+$(this).val()  );";
 
-                                    if (is_array(PluginMetademandsField::_unserialize($data['hidden_block']))) {
+                                    if ($data['options'][$idc]['hidden_block']) {
                                         $hidden_block = $data['options'][$idc]['hidden_block'];
 
                                         $script2 = "";
@@ -2630,11 +2631,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     } else {
                                         $script = "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
 
-                                        if (is_array($data['options'][$idc]['hidden_link'])) {
+                                        if (isset($data['options'][$idc]['hidden_link'])
+                                            && !empty($data['options'][$idc]['hidden_link'])) {
                                             $checkbox_id = $data['options'][$idc]['checkbox_id'];
                                             $checkbox_value = $data['options'][$idc]['checkbox_value'];
 //                                        
-                                            $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+//                                            $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
 
                                             $script .= "
                           $.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {
@@ -2730,18 +2732,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             $toKeep[$hidden_link] = false;
                         }
                         if (isset($post[$id]) && isset($hidden_link)) {
-//                            Toolbox::logInfo($hidden_link);
-//                            if ($id == 83) {
-                            Toolbox::logInfo($post);
-//                            }
-//                                Toolbox::logInfo($idc);
-//                                Toolbox::logInfo($value['type']);
-////                                $test = true;
-//                            } else {
                             $test = PluginMetademandsTicket_Field::isCheckValueOKFieldsLinks($post[$id], $idc, $value['type']);
-//                            }
-
-
                         } else {
                             $test = false;
                         }

@@ -5325,6 +5325,7 @@ JAVASCRIPT
             $metademands_id = $options['metademands_id'];
 
             $fields = new PluginMetademandsField();
+            $fieldoptions = new PluginMetademandsFieldOption();
             $ticketfields = new PluginMetademandsTicketField();
             $tasks = new PluginMetademandsTask();
             $groups = new PluginMetademandsGroup();
@@ -5348,6 +5349,8 @@ JAVASCRIPT
                     $translationMeta->clone(["items_id" => $new_metademands_id]);
                 }
                 $metademands_data = $this->constructMetademands($metademands_id);
+
+
                 if (count($metademands_data)) {
                     $associated_fields = [];
                     $associated_tasks = [];
@@ -5366,6 +5369,7 @@ JAVASCRIPT
 
                                         $newID = $fields->add($values);
                                         $associated_fields[$id] = $newID;
+                                        $associated_fields[$newID] = $id;
                                         $translation = new PluginMetademandsFieldTranslation();
                                         $translations = $translation->find(['itemtype' => "PluginMetademandsField", "items_id" => $id]);
                                         foreach ($translations as $tr) {
@@ -5432,7 +5436,7 @@ JAVASCRIPT
                 }
                 $associated_fields[0] = 0;
                 $associated_tasks[0] = 0;
-                // Add metademand task
+                // duplicate metademand task
                 $tasks_data = $tasks->find(['plugin_metademands_metademands_id' => $metademands_id,
                     'type' => PluginMetademandsTask::METADEMAND_TYPE]);
                 if (count($tasks_data)) {
@@ -5454,36 +5458,22 @@ JAVASCRIPT
 
                 $newFields = $fields->find(['plugin_metademands_metademands_id' => $new_metademands_id]);
                 foreach ($newFields as $newField) {
-                    $input['plugin_metademands_fields_id'] = isset($associated_fields[$newField["plugin_metademands_fields_id"]]);
-                    //TODO Debug it
-                    $tasksold = PluginMetademandsField::_unserialize($newField['plugin_metademands_tasks_id']);
-                    $tasksnew = [];
-                    if (is_array($tasksold)) {
-                        foreach ($tasksold as $k => $t) {
-                            $tasksnew[$k] = isset($associated_tasks[$t]) ? $associated_tasks[$t] : 0;
-                        }
+
+                    $old_field_id = $associated_fields[$newField["id"]];
+                    $oldOptions = $fieldoptions->find(['plugin_metademands_fields_id' => $old_field_id]);
+                    foreach ($oldOptions as $oldOption) {
+                        $input['plugin_metademands_tasks_id'] = $associated_tasks[$oldOption['plugin_metademands_tasks_id']];
+                        $input['check_value'] = $oldOption['check_value'];
+                        $input['fields_link'] = $associated_fields[$oldOption['fields_link']];
+                        $input['hidden_link'] = $associated_fields[$oldOption['hidden_link']];
+                        $input['hidden_block'] = $oldOption['hidden_block'];
+                        $input['users_id_validate'] = $oldOption['users_id_validate'];
+                        $input['childs_blocks'] = $oldOption['childs_blocks'];
+                        $input['checkbox_value'] = $oldOption['checkbox_value'];
+                        $input['checkbox_id'] = $oldOption['checkbox_id'];
+                        $input['plugin_metademands_fields_id'] = $newField['id'];
+                        $fieldoptions->add($input);
                     }
-                    $input['plugin_metademands_tasks_id'] = PluginMetademandsField::_serialize($tasksnew);
-                    //TODO Debug it
-                    $fieldslinksold = PluginMetademandsField::_unserialize($newField['fields_link']);
-                    $fieldslinksnew = [];
-                    if (is_array($fieldslinksold)) {
-                        foreach ($fieldslinksold as $k => $t) {
-                            $fieldslinksnew[$k] = isset($associated_fields[$t]) ? $associated_fields[$t] : 0;
-                        }
-                    }
-                    $input['fields_link'] = PluginMetademandsField::_serialize($fieldslinksnew);
-                    //TODO Debug it
-                    $hiddenlinksold = PluginMetademandsField::_unserialize($newField['hidden_link']);
-                    $hiddenlinksnew = [];
-                    if (is_array($hiddenlinksold)) {
-                        foreach ($hiddenlinksold as $k => $t) {
-                            $hiddenlinksnew[$k] = isset($associated_fields[$t]) ? $associated_fields[$t] : 0;
-                        }
-                    }
-                    $input['hidden_link'] = PluginMetademandsField::_serialize($hiddenlinksnew);
-                    $input['id'] = $newField['id'];
-                    $fields->update($input);
                 }
                 // Add ticket fields
                 $ticketfields_data = $ticketfields->find(['plugin_metademands_metademands_id' => $metademands_id]);
@@ -5741,47 +5731,46 @@ JAVASCRIPT
         return $res;
     }
 
-    public function checkTaskAllowed($metademands_id, $values, $tasks)
-    {
-        $in = [];
-        $out = [];
-        $field = new PluginMetademandsField();
-        $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
-        foreach ($fields as $f) {
-            //TODO Debug it
-            $check_values = PluginMetademandsField::_unserialize($f['check_value']);
-            $tasks_fields = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
-            if (is_array($check_values)) {
-                foreach ($check_values as $id => $check) {
-                    if ($check != "0") {
-                        switch ($f['type']) {
-                        }
-                        if (isset($values["fields"][$f['id']])) {
-                            if (is_array($values["fields"][$f['id']])) {
-                                if (in_array($check, $values["fields"][$f['id']])) {
-                                    $in[] = $tasks_fields[$id];
-                                } else {
-                                    $out[] = $tasks_fields[$id];
-                                }
-                            } else {
-                                if ($check == $values["fields"][$f['id']]) {
-                                    $in[] = $tasks_fields[$id];
-                                } else {
-                                    $out[] = $tasks_fields[$id];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        foreach ($out as $o) {
-            if (!in_array($o, $in)) {
-                unset($tasks[$o]);
-            }
-        }
-        return $tasks;
-    }
+//    public function checkTaskAllowed($metademands_id, $values, $tasks)
+//    {
+//        $in = [];
+//        $out = [];
+//        $field = new PluginMetademandsField();
+//        $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
+//        foreach ($fields as $f) {
+//            $check_values = PluginMetademandsField::_unserialize($f['check_value']);
+//            $tasks_fields = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
+//            if (is_array($check_values)) {
+//                foreach ($check_values as $id => $check) {
+//                    if ($check != "0") {
+//                        switch ($f['type']) {
+//                        }
+//                        if (isset($values["fields"][$f['id']])) {
+//                            if (is_array($values["fields"][$f['id']])) {
+//                                if (in_array($check, $values["fields"][$f['id']])) {
+//                                    $in[] = $tasks_fields[$id];
+//                                } else {
+//                                    $out[] = $tasks_fields[$id];
+//                                }
+//                            } else {
+//                                if ($check == $values["fields"][$f['id']]) {
+//                                    $in[] = $tasks_fields[$id];
+//                                } else {
+//                                    $out[] = $tasks_fields[$id];
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        foreach ($out as $o) {
+//            if (!in_array($o, $in)) {
+//                unset($tasks[$o]);
+//            }
+//        }
+//        return $tasks;
+//    }
 
 
     public static function getRunningMetademands(array $params = []): array
@@ -6114,11 +6103,18 @@ JAVASCRIPT
             $fields['translations']['meta_translation' . $id] = $translation;
         }
         $metafield = new PluginMetademandsField();
+        $metafieldoption = new PluginMetademandsFieldOption();
         $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
         foreach ($metafields as $id => $metafield) {
             $fields['metafields']['field' . $id] = $metafield;
+            $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+            $fields['metafieldoptions'] = [];
+            foreach ($metafieldoptions as $idoptions => $metafieldopt) {
+                $fields['metafieldoptions']['fieldoptions' . $metafield["id"]] = $metafieldopt;
+            }
         }
+
         //      $fields['metafields'] = $metafields;
         $fieldtranslation = new PluginMetademandsFieldTranslation();
         foreach ($fields['metafields'] as $id => $f) {
@@ -6249,6 +6245,11 @@ JAVASCRIPT
             $fields = $datas['metafields'];
         }
 
+        $fieldoptions = [];
+        if (isset($datas['metafieldoptions'])) {
+            $fieldoptions = $datas['metafieldoptions'];
+        }
+
         $tasks = [];
         if (isset($datas['tasks'])) {
             $tasks = $datas['tasks'];
@@ -6284,13 +6285,7 @@ JAVASCRIPT
             foreach ($field as $key => $f) {
                 $fields[$k][$key] = Html::entity_decode_deep($f);
 
-                if ($key == "fields_link") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "custom_values") {
+                if ($key == "custom_values") {
                     $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                     $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
                     if (is_null($fields[$k][$key])) {
@@ -6305,36 +6300,6 @@ JAVASCRIPT
                 } elseif ($key == "default_values") {
                     $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                     $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "check_value") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "plugin_metademands_tasks_id") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "hidden_link") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "hidden_block") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "childs_blocks") {
-                    $fields[$k][$key] = json_encode($f);
-                    $fields[$k][$key] = json_decode($fields[$k][$key], true);
                     if (is_null($fields[$k][$key])) {
                         $fields[$k][$key] = "[]";
                     }
@@ -6417,6 +6382,9 @@ JAVASCRIPT
                 $tickettaskP->add($tickettask);
             }
         }
+
+        //TODO Debug
+        //Add new options & update fields into fields_link / hidden_link / plugin_metademands_tasks_id / plugin_metademands_fields_id
         foreach ($mapTableFieldReverse as $new => $old) {
             $fieldMeta = new PluginMetademandsField();
             $fieldMeta->getFromDB($new);

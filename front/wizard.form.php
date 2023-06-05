@@ -155,30 +155,33 @@ if (isset($_POST['next'])) {
                             if (!isset($post[$id])) {
                                 $post[$id] = [];
                             }
-                            //TODO Debug it
-                            //Permit to launch child metademand on check value
-//                            $checkchild = PluginMetademandsField::_unserialize($value['check_value']);
-//                            if (is_array($checkchild)) {
-//                                // Check if no form values block the creation of meta
-//                                $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-//
-//                                if (!is_null($metademandtasks_tasks_id)) {
-//                                    $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-//                                    if (!isset($post)) {
-//                                        $post[$id] = 0;
-//                                    }
+                            if (isset($value['options'])) {
+                                $check_values = $value['options'];
+                                foreach ($check_values as $key => $check) {
+                                    //Permit to launch child metademand on check value
+//                                $checkchild = $key;
+//                                if (is_array($checkchild)) {
+//                             Check if no form values block the creation of meta
+                                    $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
+
+                                    if (!is_null($metademandtasks_tasks_id)) {
+                                        $_SESSION['son_meta'] = $metademandtasks_tasks_id;
+                                        if (!isset($post)) {
+                                            $post[$id] = 0;
+                                        }
+                                        $wizard->checkValueOk($key, $check['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value, $post);
+                                    }
+
 //                                    foreach ($checkchild as $keyId => $check_value) {
-//                                        $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($value['plugin_metademands_tasks_id']);
-//                                        $wizard->checkValueOk($check_value, $plugin_metademands_tasks_id[$keyId], $metademandtasks_tasks_id, $id, $value, $post);
+                                    $value['check_value'] = $key;
+                                    if (isset($check['hidden_link'])) {
+                                        $value['plugin_metademands_tasks_id'] = $check['hidden_link'];
+                                    }
+                                    $value['fields_link'] = $check['fields_link'] ?? 0;
 //                                    }
 //                                }
-//
-//                                foreach ($checkchild as $keyId => $check_value) {
-//                                    $value['check_value']                 = $check_value;
-//                                    $value['plugin_metademands_tasks_id'] = PluginMetademandsField::_unserialize($value['hidden_link'])[$keyId];
-//                                    $value['fields_link']                 = isset(PluginMetademandsField::_unserialize($value['fields_link'])[$keyId]) ? PluginMetademandsField::_unserialize($value['fields_link'])[$keyId] : 0;
-//                                }
-//                            }
+                                }
+                            }
 
                             if ($value['type'] == 'radio') {
                                 if (!isset($_POST['field'][$id])) {
