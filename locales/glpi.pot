@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-05 10:18+0000\n"
+"POT-Creation-Date: 2023-06-05 10:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -274,7 +274,7 @@ msgid "Allow sending the form to a user"
 msgstr ""
 
 #: inc/configstep.class.php:136
-msgid "Add users who completed blocks as ticket requesters"
+msgid "Add all form actors as ticket requester"
 msgstr ""
 
 #: inc/configstep.class.php:174
