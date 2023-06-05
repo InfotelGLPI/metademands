@@ -133,7 +133,7 @@ class PluginMetademandsConfigstep extends CommonDBChild
         echo "</tr>";
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo __('Add users who completed blocks as ticket requesters', 'metademands');
+        echo __('Add all form actors as ticket requester', 'metademands');
         echo "</td>";
         echo "<td>";
         Dropdown::showYesNo('add_user_as_requester', $confStep->fields['add_user_as_requester']);
