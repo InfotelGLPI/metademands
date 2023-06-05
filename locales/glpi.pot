@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-05 15:07+0000\n"
+"POT-Creation-Date: 2023-06-05 17:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,44 +18,44 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:609
+#: hook.php:608
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:622
+#: hook.php:621
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:638
+#: hook.php:637
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:649
+#: hook.php:648
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:661
+#: hook.php:660
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1060 inc/metademand.class.php:5782
+#: hook.php:1059 inc/metademand.class.php:5782
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1078 inc/metademand.class.php:5902
+#: hook.php:1077 inc/metademand.class.php:5902
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1095 inc/metademand.class.php:5959
+#: hook.php:1094 inc/metademand.class.php:5959
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1112 inc/metademand.class.php:5834
+#: hook.php:1111 inc/metademand.class.php:5834
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
 #: setup.php:169 inc/menu.class.php:42 inc/metademand.class.php:87
-#: inc/profile.class.php:129 inc/profile.class.php:172
+#: inc/profile.class.php:129 inc/profile.class.php:172 inc/tools.class.php:132
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -261,23 +261,23 @@ msgstr ""
 msgid "Icon for Service Catalog widget"
 msgstr ""
 
-#: inc/configstep.class.php:62
+#: inc/configstep.class.php:61
 msgid "Step by step settings"
 msgstr ""
 
-#: inc/configstep.class.php:122
+#: inc/configstep.class.php:121
 msgid "Link multiple groups to a block"
 msgstr ""
 
-#: inc/configstep.class.php:128
+#: inc/configstep.class.php:127
 msgid "Allow sending the form to a user"
 msgstr ""
 
-#: inc/configstep.class.php:136
+#: inc/configstep.class.php:135
 msgid "Add all form actors as ticket requester"
 msgstr ""
 
-#: inc/configstep.class.php:174
+#: inc/configstep.class.php:173
 msgid "Cannot change settings because blocks are linked to multiple groups"
 msgstr ""
 
@@ -1294,6 +1294,22 @@ msgstr ""
 
 #: inc/tickettask.class.php:244
 msgid "Actors"
+msgstr ""
+
+#: inc/tools.class.php:48
+msgid "Tools"
+msgstr ""
+
+#: inc/tools.class.php:114
+msgid "Duplicates fields options"
+msgstr ""
+
+#: inc/tools.class.php:135
+msgid "Number of duplicates"
+msgstr ""
+
+#: inc/tools.class.php:156
+msgid "No duplicates founded"
 msgstr ""
 
 #: inc/wizard.class.php:71
