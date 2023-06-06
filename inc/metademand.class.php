@@ -6113,7 +6113,7 @@ JAVASCRIPT
             $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
 
             foreach ($metafieldoptions as $idoptions => $metafieldopt) {
-                $fields['metafieldoptions']['fieldoptions' . $metafield["id"]] = $metafieldopt;
+                $fields['metafieldoptions']['fieldoptions' . $idoptions] = $metafieldopt;
             }
         }
 
@@ -6390,23 +6390,23 @@ JAVASCRIPT
 
 
         //Add new options & update fields
-        $fieldMeta = new PluginMetademandsFieldOption();
-
+        $fieldMetaopt = new PluginMetademandsFieldOption();
+//        Toolbox::logInfo($fieldoptions);
         foreach ($fieldoptions as $new => $old) {
 
 //            $fieldMeta->getFromDBByCrit(["plugin_metademands_fileds_id" => $new]);
 
-            $check_value = $old["check_value"];
-            $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"];
-            $plugin_metademands_tasks_id = $old["plugin_metademands_tasks_id"];
-            $fields_link = $old["fields_link"];
-            $hidden_link = $old["hidden_link"];
-            $hidden_block = $old["hidden_block"];
-            $users_id_validate = $old["users_id_validate"];
-            $childs_blocks = $old["childs_blocks"];
-            $checkbox_value = $old["checkbox_value"];
-            $checkbox_id = $old["checkbox_id"];
-//            $parent_field_id = $old["parent_field_id"];
+            $check_value = $old["check_value"]??0;
+            $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"]??0;
+            $plugin_metademands_tasks_id = $old["plugin_metademands_tasks_id"]??0;
+            $fields_link = $old["fields_link"]??0;
+            $hidden_link = $old["hidden_link"]??0;
+            $hidden_block = $old["hidden_block"]??0;
+            $users_id_validate = $old["users_id_validate"]??0;
+            $childs_blocks = $old["childs_blocks"]??[];
+            $checkbox_value = $old["checkbox_value"]??0;
+            $checkbox_id = $old["checkbox_id"]??0;
+//            $parent_field_id = $old["parent_field_id"]??0;
 //
             $toUpdate = [];
             if ($check_value != 0) {
@@ -6444,7 +6444,8 @@ JAVASCRIPT
                 && isset($mapTableField[$plugin_metademands_fields_id])) {
                 $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
             }
-            $fieldMeta->add($toUpdate);
+//            Toolbox::logInfo($toUpdate);
+            $fieldMetaopt->add($toUpdate);
         }
 
         foreach ($mapTableTaskReverse as $new => $old) {
