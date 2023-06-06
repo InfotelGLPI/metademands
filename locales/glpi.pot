@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-06 17:39+0000\n"
+"POT-Creation-Date: 2023-06-06 17:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -898,31 +898,31 @@ msgstr ""
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:6503
+#: inc/metademand.class.php:6504
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:6512
+#: inc/metademand.class.php:6513
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:6609
+#: inc/metademand.class.php:6610
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:6687
+#: inc/metademand.class.php:6688
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:6687
+#: inc/metademand.class.php:6688
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:6700
+#: inc/metademand.class.php:6701
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:6732 inc/wizard.class.php:883
+#: inc/metademand.class.php:6733 inc/wizard.class.php:883
 msgid "Find a form"
 msgstr ""
 
