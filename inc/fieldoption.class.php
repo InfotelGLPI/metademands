@@ -176,8 +176,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
             }
         }
 
-        //TODO Debug $new_fields ?
-
         if (!in_array($item->fields['type'], $allowed_options_types)
             && !in_array($item->fields['item'], $allowed_options_items)) {
             echo __('No options are allowed for this field type','metademands');
@@ -279,8 +277,17 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 echo "<td $onhover>";
                 $tasks = new PluginMetademandsTask();
                 if ($tasks->getFromDB($data['plugin_metademands_tasks_id'])) {
-                    echo $tasks->getName();
+                    if ($tasks->fields['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
+                        $metatask = new PluginMetademandsMetademandTask();
+                        if ($metatask->getFromDBByCrit(["plugin_metademands_tasks_id" => $data['plugin_metademands_tasks_id']])) {
+                            echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metatask->fields['plugin_metademands_metademands_id']);
+                        }
+                    } else {
+                        echo $tasks->getName();
+                    }
+
                 }
+
                 echo "</td>";
 
                 echo "<td $onhover>";

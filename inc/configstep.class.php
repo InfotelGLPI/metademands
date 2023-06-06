@@ -107,10 +107,12 @@ class PluginMetademandsConfigstep extends CommonDBChild
         }
         $userLink = 0;
         $multipleGroup = 0;
+        $addasrequester = 0;
         $confStep = new self();
         if($confStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $item->fields['id']])) {
             $userLink = $confStep->fields['link_user_block'];
             $multipleGroup = $confStep->fields['multiple_link_groups_blocks'];
+            $addasrequester = $confStep->fields['add_user_as_requester'];
         }
 
         echo "<form name = 'form' method='post' action='".Toolbox::getItemTypeFormURL('PluginMetademandsConfigstep')."'>";
@@ -135,7 +137,7 @@ class PluginMetademandsConfigstep extends CommonDBChild
         echo __('Add all form actors as ticket requester', 'metademands');
         echo "</td>";
         echo "<td>";
-        Dropdown::showYesNo('add_user_as_requester', $confStep->fields['add_user_as_requester']);
+        Dropdown::showYesNo('add_user_as_requester', $addasrequester);
         echo "</td>";
         echo "<td>";
         echo "</tr>";

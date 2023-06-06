@@ -150,7 +150,9 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
                 if (isset($val['tickettasks_id'])
                     && $task->getFromDB($val['tickettasks_id'])) {
                     $meta_tasks[$key]['tickettasks_name']   = urldecode($val['tickettasks_name']);
-                    $meta_tasks[$key]['tasks_completename'] = urldecode($val['tasks_completename']);
+                    if ($val['tasks_completename'] != null) {
+                        $meta_tasks[$key]['tasks_completename'] = urldecode($val['tasks_completename']);
+                    }
                     $meta_tasks[$key]['content']            = urldecode($val['content']);
                 } else {
                     unset($meta_tasks[$key]);

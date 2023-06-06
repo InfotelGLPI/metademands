@@ -794,6 +794,7 @@ class PluginMetademandsTask extends CommonDBChild {
         $tasks      = new self();
         $tasks_data = $tasks->getTasks($metademands_id);
         $data       = [Dropdown::EMPTY_VALUE];
+
         foreach ($tasks_data as $id => $value) {
             if ($value['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
                 $value['name'] = Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']);

@@ -6106,16 +6106,17 @@ JAVASCRIPT
         $metafieldoption = new PluginMetademandsFieldOption();
         $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
+        $fields['metafieldoptions'] = [];
         foreach ($metafields as $id => $metafield) {
             $fields['metafields']['field' . $id] = $metafield;
+
             $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
-            $fields['metafieldoptions'] = [];
+
             foreach ($metafieldoptions as $idoptions => $metafieldopt) {
                 $fields['metafieldoptions']['fieldoptions' . $metafield["id"]] = $metafieldopt;
             }
         }
 
-        //      $fields['metafields'] = $metafields;
         $fieldtranslation = new PluginMetademandsFieldTranslation();
         foreach ($fields['metafields'] as $id => $f) {
             $translationsfield = $fieldtranslation->find(['items_id' => $f['id'],
@@ -6327,6 +6328,8 @@ JAVASCRIPT
             $fields[$k]["date_mod"] = $_SESSION['glpi_currenttime'];
             $metaField = new PluginMetademandsField();
             $newIDField = $metaField->add($fields[$k]);
+
+
             $mapTableField[$oldIDField] = $newIDField;
             $mapTableFieldReverse[$newIDField] = $oldIDField;
             if (isset($fieldstranslations)) {
@@ -6340,6 +6343,8 @@ JAVASCRIPT
                     $trans->add($fieldstranslation);
                 }
             }
+
+            //TODO Change fields id for link_to_user fields
         }
         $mapTableTask = [];
         $mapTableTaskReverse = [];
@@ -6383,53 +6388,63 @@ JAVASCRIPT
             }
         }
 
-        //TODO Debug
-        //Add new options & update fields into fields_link / hidden_link / plugin_metademands_tasks_id / plugin_metademands_fields_id
-        foreach ($mapTableFieldReverse as $new => $old) {
-            $fieldMeta = new PluginMetademandsField();
-            $fieldMeta->getFromDB($new);
-            $fields_link = $fieldMeta->getField("fields_link");
-            $hidden_link = $fieldMeta->getField("hidden_link");
-            $plugin_metademands_tasks_id = $fieldMeta->getField("plugin_metademands_tasks_id");
-            $fields_link = PluginMetademandsField::_unserialize($fields_link);
-            $hidden_link = PluginMetademandsField::_unserialize($hidden_link);
-            $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($plugin_metademands_tasks_id);
+
+        //Add new options & update fields
+        $fieldMeta = new PluginMetademandsFieldOption();
+
+        foreach ($fieldoptions as $new => $old) {
+
+//            $fieldMeta->getFromDBByCrit(["plugin_metademands_fileds_id" => $new]);
+
+            $check_value = $old["check_value"];
+            $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"];
+            $plugin_metademands_tasks_id = $old["plugin_metademands_tasks_id"];
+            $fields_link = $old["fields_link"];
+            $hidden_link = $old["hidden_link"];
+            $hidden_block = $old["hidden_block"];
+            $users_id_validate = $old["users_id_validate"];
+            $childs_blocks = $old["childs_blocks"];
+            $checkbox_value = $old["checkbox_value"];
+            $checkbox_id = $old["checkbox_id"];
+//            $parent_field_id = $old["parent_field_id"];
+//
             $toUpdate = [];
-            $toUpdate['id'] = $new;
-            if (is_array($fields_link)) {
-                foreach ($fields_link as $key => $field_link) {
-                    if ($field_link != 0 && isset($mapTableField[$field_link])) {
-                        $fields_link[$key] = $mapTableField[$field_link];
-                    }
-                }
-                $fields_link = PluginMetademandsField::_serialize($fields_link);
-                $toUpdate["fields_link"] = $fields_link;
+            if ($check_value != 0) {
+                $toUpdate["check_value"] = $check_value;
             }
-
-            if (is_array($hidden_link)) {
-                foreach ($hidden_link as $key => $hidden) {
-                    if ($hidden != 0 && isset($mapTableField[$hidden])) {
-                        $hidden_link[$key] = $mapTableField[$hidden];
-                    }
-                }
-                $hidden_link = PluginMetademandsField::_serialize($hidden_link);
-                $toUpdate["hidden_link"] = $hidden_link;
+            if ($plugin_metademands_tasks_id != 0 && isset($mapTableTask[$plugin_metademands_tasks_id])) {
+                $toUpdate["plugin_metademands_tasks_id"] = $mapTableTask[$plugin_metademands_tasks_id];
             }
-
-            if (is_array($plugin_metademands_tasks_id)) {
-                foreach ($plugin_metademands_tasks_id as $key => $task) {
-                    if ($task != 0 && isset($mapTableTask[$task])) {
-                        $plugin_metademands_tasks_id[$key] = $mapTableTask[$task];
-                    }
-                }
-                $plugin_metademands_tasks_id = PluginMetademandsField::_serialize($plugin_metademands_tasks_id);
-                $toUpdate["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
+            if ($fields_link != 0 && isset($mapTableField[$fields_link])) {
+                $toUpdate["fields_link"] = $mapTableField[$fields_link];
             }
-            if ($fieldMeta->getField('plugin_metademands_fields_id') != 0 && isset($mapTableField[$fieldMeta->getField('plugin_metademands_fields_id')])) {
-                $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$fieldMeta->getField('plugin_metademands_fields_id')];
+            if ($hidden_link != 0 && isset($mapTableField[$hidden_link])) {
+                $toUpdate["hidden_link"] = $mapTableField[$hidden_link];
             }
-
-            $fieldMeta->update($toUpdate);
+            if ($hidden_block != 0) {
+                $toUpdate["hidden_block"] = $hidden_block;
+            }
+            if ($users_id_validate != 0) {
+                $toUpdate["users_id_validate"] = $users_id_validate;
+            }
+            if ($childs_blocks) {
+                $toUpdate["childs_blocks"] = $childs_blocks;
+            }
+            if ($checkbox_value != 0) {
+                $toUpdate["checkbox_value"] = $checkbox_value;
+            }
+            if ($checkbox_id != 0) {
+                $toUpdate["checkbox_id"] = $checkbox_id;
+            }
+//            if ($parent_field_id != 0 && isset($mapTableField[$parent_field_id])) {
+//                $toUpdate["parent_field_id"] = $mapTableField[$parent_field_id];
+//            }
+//
+            if ($plugin_metademands_fields_id != 0
+                && isset($mapTableField[$plugin_metademands_fields_id])) {
+                $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+            }
+            $fieldMeta->add($toUpdate);
         }
 
         foreach ($mapTableTaskReverse as $new => $old) {
