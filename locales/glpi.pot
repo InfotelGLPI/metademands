@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-07 15:39+0000\n"
+"POT-Creation-Date: 2023-06-07 16:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,39 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:608
+#: hook.php:609
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:621
+#: hook.php:622
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:637
+#: hook.php:638
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:648
+#: hook.php:649
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:660
+#: hook.php:661
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1059 inc/metademand.class.php:5782
+#: hook.php:1060 inc/metademand.class.php:5782
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1077 inc/metademand.class.php:5902
+#: hook.php:1078 inc/metademand.class.php:5902
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1094 inc/metademand.class.php:5959
+#: hook.php:1095 inc/metademand.class.php:5959
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1111 inc/metademand.class.php:5834
+#: hook.php:1112 inc/metademand.class.php:5834
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -1153,11 +1153,11 @@ msgstr ""
 msgid "This group is already assigned to this block"
 msgstr ""
 
-#: inc/step.class.php:633
+#: inc/step.class.php:634
 msgid "Select the next group"
 msgstr ""
 
-#: inc/step.class.php:798
+#: inc/step.class.php:799
 msgid "Error assigning to next group"
 msgstr ""
 
@@ -1203,6 +1203,12 @@ msgstr ""
 #: inc/stepform.class.php:695
 msgid "Step"
 msgstr ""
+
+#: inc/stepform_actor.class.php:42
+msgid "Step form actor"
+msgid_plural "Step form actors"
+msgstr[0] ""
+msgstr[1] ""
 
 #: inc/task.class.php:170
 msgid "Add a task"
@@ -1425,22 +1431,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:2965
+#: inc/wizard.class.php:2976
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2974
+#: inc/wizard.class.php:2985
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3020
+#: inc/wizard.class.php:3031
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3024
+#: inc/wizard.class.php:3035
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
