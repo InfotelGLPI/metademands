@@ -37,10 +37,6 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsStepform_Actor extends CommonDBTM {
     static $rightname = "plugin_metademands";
 
-    static function getTypeName($nb = 1)
-    {
-        return _n('Step form actor', 'Step form actors', $nb, 'metademands');
-    }
 
     public function prepareInputForAdd($input)
     {
