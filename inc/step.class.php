@@ -611,6 +611,7 @@ class PluginMetademandsStep extends CommonDBChild
                 $return .= "<input type='hidden' name='create_metademands' value = '" . $post['create_metademands'] . "'>";
                 $return .= "<input type='hidden' name='step' value = '" . $post['step'] . "'>";
                 $return .= "<input type='hidden' name='action' value = '" . $post['action'] . "'>";
+                $return .= "<input type='hidden' name='plugin_metademands_stepforms_id' value = '" . $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'] . "'>";
                 $return .= "<input type='hidden' name='update_stepform' value = '" . $post['update_stepform'] . "'>";
                 $return .= "<input type='hidden' name='_glpi_csrf_token' value = '" . $post['_glpi_csrf_token'] . "'>";
 
@@ -821,6 +822,7 @@ class PluginMetademandsStep extends CommonDBChild
                         $inputs['reminder_date']                     = date('Y-m-d', strtotime("+ $nbday days"));
                     }
                     $inputs['block_id']                           = $_POST['block_id'];
+                    $actor = new PluginMetademandsStepform_Actor();
 
 
 
@@ -853,6 +855,10 @@ class PluginMetademandsStep extends CommonDBChild
                             $inputsUpdate['users_id_dest'] = $inputs['users_id_dest'];
                         }
                         $forms->update($inputsUpdate);
+                        $actor->add([
+                            'plugin_metademands_stepforms_id' => $form_new_id,
+                            'users_id' => $user_id
+                        ]);
                         $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
                         if (count($metademands_data) && $form_new_id > 0) {
                             foreach ($metademands_data as $form_step => $data) {
@@ -864,6 +870,10 @@ class PluginMetademandsStep extends CommonDBChild
                         }
                     } else {
                         if ($form_new_id = $forms->add($inputs)) {
+                            $actor->add([
+                                'plugin_metademands_stepforms_id' => $form_new_id,
+                                'users_id' => $inputs['users_id']
+                            ]);
                             unset($_SESSION['plugin_metademands'][$user_id]);
 //            $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
 //            $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];

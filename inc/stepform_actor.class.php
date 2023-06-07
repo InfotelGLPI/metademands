@@ -26,41 +26,33 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-if (strpos($_SERVER['PHP_SELF'], "dropdownNextUser.php")) {
-    include('../../../inc/includes.php');
-    header("Content-Type: text/html; charset=UTF-8");
-    Html::header_nocache();
-} else if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access this file directly");
+
+if (!defined('GLPI_ROOT')) {
+    die("Sorry. You can't access directly to this file");
 }
-//header("Content-Type: text/html; charset=UTF-8");
 
-Session::checkCentralAccess();
-$return = "";
-$groupUser = new Group_User();
-$user = new User();
-$users = [];
-$rand = $_GET['rand'];
-if (isset($_POST['next_groups_id']) && $_POST['next_groups_id'] > 0) {
-    $groupUsers = $groupUser->find([
-        'groups_id' => $_POST['next_groups_id']
-    ]);
-    if (count($groupUsers) > 0) {
-        foreach ($groupUsers as $grpUsr) {
-            $res = $user->getFromDBByCrit(['id' => $grpUsr['users_id']]);
-            if ($res) {
-                $users[$grpUsr['users_id']] = $user->fields['name'];
-            }
-        }
-        Dropdown::showFromArray(
-            'next_users_id',
-            $users,
-            [
-                'display' => true,
-                'display_emptychoice' => true,
-            ]);
+/**
+ * Class PluginMetademandsTicket
+ */
+class PluginMetademandsStepform_Actor extends CommonDBTM {
+    static $rightname = "plugin_metademands";
 
+    static function getTypeName($nb = 1)
+    {
+        return _n('Step form actor', 'Step form actors', $nb, 'metademands');
     }
 
-}
+    public function prepareInputForAdd($input)
+    {
+        $res = $this->getFromDBByCrit([
+            'plugin_metademands_stepforms_id' => $input['plugin_metademands_stepforms_id'],
+            'users_id' => $input['users_id']
+        ]);
+        if($res) {
+            $input = [];
+        }
+        return $input;
+    }
 
+
+}

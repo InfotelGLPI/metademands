@@ -2656,6 +2656,17 @@ class PluginMetademandsWizard extends CommonDBTM
                 //not in basket
                 $result = $metademands->addObjects($metademands_id, $values, $options);
                 if (isset($values['plugin_metademands_stepforms_id'])) {
+                    //Add all form contributors as ticket requester
+                    $ticketUser = new Ticket_User();
+                    $stepformActor = new PluginMetademandsStepform_Actor();
+                    $stepformActors = $stepformActor->find(['plugin_metademands_stepforms_id' => $values['plugin_metademands_stepforms_id']]);
+                    foreach ($stepformActors as $actor) {
+                        $ticketUser->add([
+                            'tickets_id' => $result['id'],
+                            'users_id' => $actor['users_id'],
+                            'type' => CommonITILActor::REQUESTER
+                        ]);
+                    }
                     PluginMetademandsStepform::deleteAfterCreate($values['plugin_metademands_stepforms_id']);
                 }
 

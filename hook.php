@@ -464,7 +464,8 @@ function plugin_metademands_uninstall() {
         "glpi_plugin_metademands_stepforms",
         "glpi_plugin_metademands_stepforms_values",
         "glpi_plugin_metademands_steps",
-        "glpi_plugin_metademands_configsteps"];
+        "glpi_plugin_metademands_configsteps",
+        "glpi_plugin_metademands_stepforms_actors"];
     foreach ($tables as $table) {
         $DB->query("DROP TABLE IF EXISTS `$table`;");
     }

@@ -35,6 +35,18 @@ CREATE TABLE `glpi_plugin_metademands_configsteps`
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = DYNAMIC;
 
+CREATE TABLE `glpi_plugin_metademands_stepforms_actors`
+(
+    `id`                                int unsigned NOT NULL AUTO_INCREMENT,
+    `plugin_metademands_stepforms_id`   int unsigned NOT NULL           DEFAULT '0',
+    `users_id`                          int unsigned NOT NULL           DEFAULT '0',
+    PRIMARY KEY (`id`),
+    KEY `plugin_metademands_stepforms_id` (`plugin_metademands_stepforms_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci
+  ROW_FORMAT = DYNAMIC;
+
 ALTER TABLE `glpi_plugin_metademands_stepforms` ADD `users_id_dest` int unsigned NOT NULL DEFAULT '0';
 
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `is_template` tinyint NOT NULL DEFAULT '0';
