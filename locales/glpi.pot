@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-07 16:03+0000\n"
+"POT-Creation-Date: 2023-06-07 16:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1203,12 +1203,6 @@ msgstr ""
 #: inc/stepform.class.php:695
 msgid "Step"
 msgstr ""
-
-#: inc/stepform_actor.class.php:42
-msgid "Step form actor"
-msgid_plural "Step form actors"
-msgstr[0] ""
-msgstr[1] ""
 
 #: inc/task.class.php:170
 msgid "Add a task"
