@@ -99,15 +99,7 @@
 
       };
 
-      /**
-       * changeNbValue : display text input
-       *
-       * @param newValue
-       */
-      this.changeNbValue = function (newValue) {
-         document.getElementById('nbValue').value = newValue;
-         return true;
-      };
+
 
       /**
        * metademands_add_custom_values : add text input
@@ -187,6 +179,8 @@
        */
       this.metademand_checkEmptyField = function (toupdate, toobserve, check_value, type) {
 
+         var obs;
+         var id_field;
          if (type == 'checkbox') {
             obs = $("input[check='" + toobserve + "']:checked");
          } else if (type == 'radio') {
@@ -194,36 +188,33 @@
          } else {
             obs = $("[name='" + toobserve + "']");
          }
-         // const zerodiff = (currentValue) => currentValue == 0;
+
          var op1 = (!Array.isArray(check_value) &&
             check_value != 0 &&
             obs.val() == check_value);
          var op2 = (Array.isArray(check_value) &&
             (obs.val() != 0 || ((type == 'radio' || type == 'checkbox') && obs.val() == 0)) &&
             check_value.includes(parseInt(obs.val(), 10)));
-         if (op1 || op2
-            //  ||
-            // check_value == 'NOT_NULL' &&
-            // $("[name='" + toobserve + "']").val() != 0
-         ) {
+         if (op1 || op2) {
             $('#' + toupdate).html('*');
             id_field = toupdate.substring(22);
             // if ($("[name='field[" + id_field + "]']").length > 0) {
                $("[name='field[" + id_field + "]']").attr('required', 'required');
-               $("[name='field[" + id_field + "]']").css('color', 'red');
+               $("[for='field[" + id_field + "]']").css('color', 'red');
                //hack for date field..
                $("[name='field[" + id_field + "]']").next('input').attr('required', 'required');
             // }
          } else {
-            if (type != 'checkbox') {
+            if (type != 'checkbox' && type != 'radio') {
                $('#' + toupdate).html('');
                id_field = toupdate.substring(22);
                $("[name='field[" + id_field + "]']").removeAttr('required');
-               $("[name='field[" + id_field + "]']").css('color', 'unset');
+               $("[for='field[" + id_field + "]']").css('color', 'unset');
                //hack for date field..
                $("[name='field[" + id_field + "]']").next('input').removeAttr('required');
             }
          }
+
       };
 
       // this.metademand_displayField = function (toupdate, toobserve, check_value) {

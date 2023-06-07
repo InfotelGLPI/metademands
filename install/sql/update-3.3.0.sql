@@ -85,3 +85,17 @@ ALTER TABLE `glpi_plugin_metademands_metademandvalidations` ADD KEY `users_id` (
 ALTER TABLE `glpi_plugin_metademands_metademandvalidations` ADD KEY `tickets_id` (`tickets_id`);
 ALTER TABLE `glpi_plugin_metademands_metademandvalidations` ADD KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`);
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD KEY `itilcategories_id` (`itilcategories_id`);
+ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `use_date_now` `use_date_now` tinyint DEFAULT 0;
+ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `used_by_child` `used_by_child` tinyint DEFAULT 0;
+ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `link_to_user` `link_to_user` int DEFAULT 0;
+ALTER TABLE `glpi_plugin_metademands_tickets_tasks` ADD KEY `parent_tickets_id` (`parent_tickets_id`);
+ALTER TABLE `glpi_plugin_metademands_tickets_metademands` ADD KEY `parent_tickets_id` (`parent_tickets_id`);
+ALTER TABLE `glpi_plugin_metademands_tickets_metademands` ADD KEY `tickettemplates_id` (`tickettemplates_id`);
+ALTER TABLE `glpi_plugin_metademands_metademands_resources` ADD KEY `entities_id` (`entities_id`);
+ALTER TABLE `glpi_plugin_metademands_ticketfields` ADD KEY `entities_id` (`entities_id`);
+ALTER TABLE `glpi_plugin_metademands_basketlines` ADD KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`);
+ALTER TABLE `glpi_plugin_metademands_basketlines` ADD KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`);
+ALTER TABLE `glpi_plugin_metademands_basketlines` ADD KEY `users_id` (`users_id`);
+ALTER TABLE glpi_plugin_metademands_basketlines
+    DROP INDEX unicity,
+    ADD UNIQUE KEY `unicity` (`plugin_metademands_metademands_id`,`plugin_metademands_fields_id`,`line`,`name`,`users_id`);

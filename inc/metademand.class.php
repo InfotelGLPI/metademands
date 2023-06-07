@@ -6326,6 +6326,7 @@ JAVASCRIPT
             $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
             $fields[$k]["date_creation"] = $_SESSION['glpi_currenttime'];
             $fields[$k]["date_mod"] = $_SESSION['glpi_currenttime'];
+
             $metaField = new PluginMetademandsField();
             $newIDField = $metaField->add($fields[$k]);
 

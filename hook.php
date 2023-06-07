@@ -347,6 +347,10 @@ function plugin_metademands_install() {
             $query = "ALTER TABLE `glpi_plugin_metademands_tickets_fields` DROP `color`";
             $DB->query($query);
         }
+        if (!$DB->fieldExists("glpi_plugin_metademands_drafts_values", "value2")) {
+            $query = "ALTER TABLE `glpi_plugin_metademands_drafts_values` ADD `value2` text NOT NULL;";
+            $DB->query($query);
+        }
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
