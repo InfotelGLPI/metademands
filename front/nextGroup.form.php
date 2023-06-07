@@ -49,19 +49,21 @@ $groupName ="";
 $userName ="";
 if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
 
+    if (isset($_POST['update_stepform'])){
+        $_SESSION ['plugin_metademands'][$user_id]['update_stepform'] = $_POST['update_stepform'];
+    }
     if (isset($_POST['next_groups_id'])) {
         $_SESSION ['plugin_metademands'][$user_id]['groups_id_dest'] = $_POST['next_groups_id'];
         $res = $group->getFromDBByCrit(['id' =>  $_POST['next_groups_id']]);
         $groupName = $group->fields['name'];
     }
-    if (isset($_POST['next_users_id'])) {
+    if (isset($_POST['next_users_id']) && $_POST['next_users_id'] != 0) {
         $_SESSION ['plugin_metademands'][$user_id]['users_id_dest'] = $_POST['next_users_id'];
         $userName = getUserName($_POST['next_users_id']);
         $msg = sprintf(__('The form has been sent to user %s from group %s, you can close the window', 'metademands'), $userName, $groupName);
     } else {
         $msg = sprintf(__('The form has been sent to the group %s, you can close the window', 'metademands'), $groupName);
     }
-    $_SESSION['plugin_metademands'][$user_id]['call_next_user'] = true;
     $KO = PluginMetademandsStep::nextUser();
     $dest = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
     $dest = addslashes($dest);

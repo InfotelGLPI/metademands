@@ -362,7 +362,7 @@ class PluginMetademandsStep extends CommonDBChild
         $blocks = [];
         $self = new self();
         foreach ($fields as $f) {
-            if (isset($configStep->fields['multiple_link_groups_blocks'])) {
+            if ($configStep->fields['multiple_link_groups_blocks']) {
                 if (!isset($blocks[$f['rank']])) {
                     $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
                 }
@@ -486,6 +486,38 @@ class PluginMetademandsStep extends CommonDBChild
         return true;
     }
 
+    /**
+     * @param $metademands_id
+     * @param $block_id
+     * @param $user_id
+     *
+     *
+     * @return bool
+     */
+    static function canSeeBlock($metademand_id, $block_id )
+    {
+        $return = false;
+        $user_id = Session::getLoginUserID();
+        $metademandStep = new PluginMetademandsStep();
+        $steps = $metademandStep->find(
+            [
+                'plugin_metademands_metademands_id' => $metademand_id,
+                'block_id' => $block_id
+            ]
+        );
+        $groups_id = [];
+        foreach ($steps as $step) {
+            $groups_id[] = $step['groups_id'];
+        }
+        $groupsUser = Group_User::getUserGroups($user_id);
+        foreach ($groupsUser as $gu) {
+            if(in_array($gu['id'], $groups_id)){
+                $return = true;
+            }
+        }
+        return $return;
+    }
+
     function prepareInputForAdd($input)
     {
         $steps = new PluginMetademandsStep();
@@ -509,26 +541,14 @@ class PluginMetademandsStep extends CommonDBChild
     static function showModal() {
         global $CFG_GLPI;
         $step = new PluginMetademandsStep();
-        $group = new Group();
-        $groupUser = new Group_User();
         $user_id = Session::getLoginUserID();
-        $nextGroups = [];
-        $conf = new PluginMetademandsConfigstep();
-        $user = new User();
-        $nextGroups = [];
-        $rand = mt_rand();
-        $title = __('Next recipient', 'metademands');
         if (isset($_POST['metademands_id']) && !empty($_POST['metademands_id'])) {
             $meta_id = $_POST['metademands_id'];
         }
         if (isset($_POST['block_id']) && !empty($_POST['block_id'])) {
             $block_id = $_POST['block_id'];
-            $nextBlock = $block_id + 1;
         }
-        $steps = $step->find([
-            'plugin_metademands_metademands_id' => $meta_id,
-            'block_id' => $nextBlock
-        ]);
+
         $_SESSION['plugin_metademands'][$user_id]=$_POST;
         $url = PLUGIN_METADEMANDS_WEBDIR . '/front/nextGroup.form.php?block_id=' . $block_id;
         $return = Ajax::createIframeModalWindow(
@@ -569,7 +589,6 @@ class PluginMetademandsStep extends CommonDBChild
 
         if (isset($_GET['block_id']) && !empty($_GET['block_id'])) {
             $block_id = $_GET['block_id'];
-            $nextBlock = $block_id + 1;
         }
         if (!$conf->fields['multiple_link_groups_blocks'] && !$conf->fields['link_user_block']) {
             $return = "";
@@ -592,13 +611,14 @@ class PluginMetademandsStep extends CommonDBChild
                 $return .= "<input type='hidden' name='create_metademands' value = '" . $post['create_metademands'] . "'>";
                 $return .= "<input type='hidden' name='step' value = '" . $post['step'] . "'>";
                 $return .= "<input type='hidden' name='action' value = '" . $post['action'] . "'>";
+                $return .= "<input type='hidden' name='update_stepform' value = '" . $post['update_stepform'] . "'>";
                 $return .= "<input type='hidden' name='_glpi_csrf_token' value = '" . $post['_glpi_csrf_token'] . "'>";
 
             }
 
             $steps = $step->find([
                 'plugin_metademands_metademands_id' => $meta_id,
-                'block_id' => $nextBlock
+                'block_id' => $block_id
             ]);
 
             if (count($steps) > 0) {
@@ -629,32 +649,30 @@ class PluginMetademandsStep extends CommonDBChild
             }
         }
         if ($conf->fields['link_user_block']) {
-            if (count($groupUsers) > 0) {
-                foreach ($groupUsers as $grpUsr) {
-                    $res = $user->getFromDBByCrit(['id' => $grpUsr['users_id']]);
-                    if ($res) {
-                        $users[$grpUsr['users_id']] = getUserName($grpUsr['users_id']);
-                    }
+            $users = [];
+            foreach ($groupUsers as $grpUsr) {
+                $res = $user->getFromDBByCrit(['id' => $grpUsr['users_id']]);
+                if ($res) {
+                    $users[$grpUsr['users_id']] = getUserName($grpUsr['users_id']);
                 }
-                $return .= "<tr class='tab_bg_1'>";
-                $return .= "<td colspan='2'>";
-                $return .= "<label class='control-label center' for='next_users_id'>" . __('User') . "&nbsp;</label>";
-                $return .= "</td>";
-                $return .= "<td colspan='2'>";
-
             }
+            $return .= "<tr class='tab_bg_1'>";
+            $return .= "<td colspan='2'>";
+            $return .= "<label class='control-label center' for='next_users_id'>" . __('User') . "&nbsp;</label>";
+            $return .= "</td>";
+            $return .= "<td colspan='2'>";
             $return .= Ajax::updateItemOnSelectEvent(
                 "dropdown_next_groups_id$rand",
-                "dropdown_next_users_id",
+                "show_users_by_group",
                 PLUGIN_METADEMANDS_WEBDIR . "/ajax/dropdownNextUser.php?rand=$rand",
                 [
                     'next_groups_id' => '__VALUE__',
                     'display' => false
                 ]
             );
-            $return .= "<div id ='dropdown_next_users_id'>";
-            $return .= Dropdown::showFromArray('next_users_id', $users, ['display' => false, 'display_emptychoice' => true, 'rand' => $rand]);
-            $return .= "</div>";
+            $return .= "<span id ='show_users_by_group'>";
+            $return .= Dropdown::showFromArray('next_users_id', $users, ['display' => false, 'display_emptychoice' => true]);
+            $return .= "</span>";
             $return .= "</td>";
         }
 
@@ -673,7 +691,6 @@ class PluginMetademandsStep extends CommonDBChild
 
     static function nextUser() {
         $KO          = false;
-        $step        = $_POST['step'] + 1;
         $metademands = new PluginMetademandsMetademand();
         $wizard      = new PluginMetademandsWizard();
         $fields      = new PluginMetademandsField();
@@ -819,11 +836,23 @@ class PluginMetademandsStep extends CommonDBChild
 //            }
 //            $_SESSION['plugin_metademands']['form_to_compare'] = $last;
 //         }
-                    if (isset($_POST['plugin_metademands_stepforms_id']) && !empty($_POST['plugin_metademands_stepforms_id'])) {
+                    if ((isset($_POST['plugin_metademands_stepforms_id']) && !empty($_POST['plugin_metademands_stepforms_id'])) || $_POST['update_stepform'] == 1) {
                         $form_new_id = $_POST['plugin_metademands_stepforms_id'];
 //            $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
 //            $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
 
+                        $inputsUpdate = [
+                            'id' => $form_new_id,
+                            'users_id' => $user_id,
+                            'groups_id_dest' => $inputs['groups_id_dest'],
+                            'reminder_date' => $inputs['reminder_date'],
+                            'date' => $inputs['date'],
+                            'block_id' => $inputs['block_id']
+                        ];
+                        if(isset($inputs['users_id_dest'])){
+                            $inputsUpdate['users_id_dest'] = $inputs['users_id_dest'];
+                        }
+                        $forms->update($inputsUpdate);
                         $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
                         if (count($metademands_data) && $form_new_id > 0) {
                             foreach ($metademands_data as $form_step => $data) {

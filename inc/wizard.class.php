@@ -1246,10 +1246,9 @@ class PluginMetademandsWizard extends CommonDBTM
     public static function constructForm($metademands_id, $metademands_data, $step, $line = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1)
     {
         global $CFG_GLPI;
+        $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
         $user_id = Session::getLoginUserID();
-
         if (isset($_SESSION['plugin_metademands'][$user_id]['redirect_wizard'])) {
-            $url = $CFG_GLPI['root_doc'] . PLUGIN_METADEMANDS_DIR_NOFULL . "/front/wizard.form.php";
             unset($_SESSION['plugin_metademands'][$user_id]);
             Html::redirect($url);
         }
@@ -1263,6 +1262,12 @@ class PluginMetademandsWizard extends CommonDBTM
 
         $ranks = [];
         $block_current_id_stepform = $_SESSION['plugin_metademands']['block_id'] ?? 99999999;
+        if ($block_current_id_stepform != 99999999) {
+            if (!PluginMetademandsStep::canSeeBlock($metademands_id, $block_current_id_stepform) && $preview == false) {
+                Session::addMessageAfterRedirect(__('You do not have access to the form', 'metademands'));
+                Html::redirect($url);
+            }
+        }
         $lineForStepByStep = [];
         $data_form = [];
         $values_saved = $_SESSION['plugin_metademands']['fields'] ?? [];
@@ -1937,18 +1942,32 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
 
                 if (!empty($data_form)) {
+                    $modal_html = '';
                     $parent_fields = $metademands->formatFields($lineForStepByStep, $metademands_id, [$metademands_id => $data_form], []);
-
-                    $modal_html = Glpi\RichText\RichText::getSafeHtml($parent_fields['content']);
-                    $title = __('Previous data edited', 'metademands');
-                    $setting_dialog = json_encode($modal_html);
-                    echo Html::scriptBlock("$(function() {
+                    $form = new PluginMetademandsStepform();
+                    if ($form->getFromDBByCrit(['id' => $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id']])) {
+                        $previousUser = new User();
+                        if ($previousUser->getFromDBByCrit(['id' => $form->fields['users_id']])) {
+                            $lbl = __('Previous user', 'metademands');
+                            $modal_html .= "
+                        <table class='tab_cadre_fixe' style='width: 100%;'>
+                            <tr class='even'>
+                                <td class='title'> $lbl : " . $previousUser->fields['realname'] . " " . $previousUser->fields['firstname'] . "</td>
+                            </tr>
+                        </table>";
+                        }
+                    }
+                        $modal_html .= Glpi\RichText\RichText::getSafeHtml($parent_fields['content']);
+                        $title = __('Previous data edited', 'metademands');
+                        $setting_dialog = json_encode($modal_html);
+                        echo Html::scriptBlock("$(function() {
                                                         glpi_html_dialog({
                                                              title: '$title',
                                                              body: {$setting_dialog},
                                                              dialogclass: 'modal-lg',
                                                         });
                                                     });");
+
 
                     if (isset($_SESSION['plugin_metademands']['hidden_blocks'])) {
                         if (is_array($_SESSION['plugin_metademands']['hidden_blocks'])) {
@@ -1988,13 +2007,19 @@ class PluginMetademandsWizard extends CommonDBTM
                 $stepConfig = new PluginMetademandsConfigstep();
                 $res = $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
                 $modal = true;
-                if(!isset($stepConfig->fields['link_user_block'])
-                    && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
+                $updateStepform = 0;
+                if (!$stepConfig->fields['link_user_block']
+                    && !$stepConfig->fields['multiple_link_groups_blocks']) {
                     $modal = false;
+                } else if($block_current_id_stepform != 99999999){
+                    $canSeeNextBlock = PluginMetademandsStep::canSeeBlock($metademands_id, $block_current_id_stepform + 1);
+                    if(!$canSeeNextBlock) {
+                        $modal = true;
+                        $updateStepform = 1;
+                    }
                 }
                 echo "<script>
                   var nexttitle = '$nexttitle';
-               
                   var submittitle = '$submittitle';
                   var submitmsg = '$submitmsg'; 
                   var use_as_step = '$use_as_step';
@@ -2183,8 +2208,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         if (typeof tinyMCE !== 'undefined') {
                            tinyMCE.triggerSave();
                         }
-                      
-                        
+                        var updatestepform = '$updateStepform';                       
                         jQuery('.resume_builder_input').trigger('change');
                         $('select[id$=\"_to\"] option').each(function () {
                            $(this).prop('selected', true);
@@ -2192,6 +2216,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         arrayDatas = $('form').serializeArray();
                         arrayDatas.push({name: 'block_id', value: id_bloc});  
                         arrayDatas.push({name: 'action', value: 'nextUser'});  
+                        arrayDatas.push({name: 'update_stepform', value: updatestepform});  
                         if(modal == true) {
                             showModal(arrayDatas);
                         } else {
