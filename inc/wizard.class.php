@@ -2657,16 +2657,22 @@ class PluginMetademandsWizard extends CommonDBTM
                 $result = $metademands->addObjects($metademands_id, $values, $options);
                 if (isset($values['plugin_metademands_stepforms_id'])) {
                     //Add all form contributors as ticket requester
-                    $ticketUser = new Ticket_User();
-                    $stepformActor = new PluginMetademandsStepform_Actor();
-                    $stepformActors = $stepformActor->find(['plugin_metademands_stepforms_id' => $values['plugin_metademands_stepforms_id']]);
-                    foreach ($stepformActors as $actor) {
-                        $ticketUser->add([
-                            'tickets_id' => $result['id'],
-                            'users_id' => $actor['users_id'],
-                            'type' => CommonITILActor::REQUESTER
-                        ]);
+                    $configstep = new PluginMetademandsConfigstep();
+                    if ($configstep->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
+                        if ($configstep->fields['add_user_as_requester']) {
+                            $ticketUser = new Ticket_User();
+                            $stepformActor = new PluginMetademandsStepform_Actor();
+                            $stepformActors = $stepformActor->find(['plugin_metademands_stepforms_id' => $values['plugin_metademands_stepforms_id']]);
+                            foreach ($stepformActors as $actor) {
+                                $ticketUser->add([
+                                    'tickets_id' => $result['id'],
+                                    'users_id' => $actor['users_id'],
+                                    'type' => CommonITILActor::REQUESTER
+                                ]);
+                            }
+                        }
                     }
+
                     PluginMetademandsStepform::deleteAfterCreate($values['plugin_metademands_stepforms_id']);
                 }
 
