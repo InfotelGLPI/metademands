@@ -1224,7 +1224,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     }
                                 }
 
-                                $script .= "});";
+                                $script .= "});console.log('fieldshidden-dropdown_multiple');";
                                 //dropdown_multiple
                                 $script .= "$.each( tohide, function( key, value ) {
                                                 if(value == true){
@@ -1327,7 +1327,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     }
                                 }
 
-                                $script .= "});";
+                                $script .= "});console.log('fieldshidden-dropdown_multiple-2');";
                                 $script .= "$.each( tohide, function( key, value ) {
                                                     if(value == true){
                                                       $('[id-field =\"field'+key+'\"]').hide();
@@ -1402,136 +1402,134 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 $hidden_link = $check_value['hidden_link'];
                                 $script .= " if (this.checked){ ";
                                 //                                        foreach ($hidden_link as $key => $fields) {
-                                $script .= " if($(this).val() == $idc || $idc == -1){
-                                                 if($hidden_link in tohide){
-    
-                                                 }else{
-                                                    tohide[$hidden_link] = true;
-                                                 }
-                                                 tohide[$hidden_link] = false;
-                                              }";
+                                    $script .= " if($(this).val() == $idc || $idc == -1){
+                                                     if($hidden_link in tohide){
+        
+                                                     }else{
+                                                        tohide[$hidden_link] = true;
+                                                     }
+                                                     tohide[$hidden_link] = false;
+                                                  }";
 
-                                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
-                                if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                    && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                    foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                        if ($fieldSession == $idc) {
-                                            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                                    $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                                    if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                        && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                        foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                            if ($fieldSession == $idc) {
+                                                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                                            }
                                         }
                                     }
-                                }
 
-                                //checkbox
-                                $script .= "$.each( tohide, function( key, value ) {
-                                                    if(value == true){
-                                                       $('[id-field =\"field'+key+'\"]').hide();
-                                                       $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
-    
-                                                     switch(this.type) {
-                                                            case 'password':
-                                                            case 'text':
-                                                            case 'textarea':
-                                                            case 'file':
-                                                            case 'date':
-                                                            case 'number':
-                                                            case 'tel':
-                                                            case 'email':
-                                                                jQuery(this).val('');
-                                                                break;
-                                                            case 'select-one':
-                                                            case 'select-multiple':
-                                                                jQuery(this).val('0').trigger('change');
-                                                                jQuery(this).val('0');
-                                                                break;
-                                                            case 'checkbox':
-                                                            case 'radio':
-                                                                 if(this.checked == true) {
-                                                                        this.click();
-                                                                        this.checked = false;
-                                                                        break;
-                                                                    }
+                                    //checkbox
+                                    $script .= "$.each( tohide, function( key, value ) {
+                                                        if(value == true){
+                                                           $('[id-field =\"field'+key+'\"]').hide();
+                                                           $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
+        
+                                                         switch(this.type) {
+                                                                case 'password':
+                                                                case 'text':
+                                                                case 'textarea':
+                                                                case 'file':
+                                                                case 'date':
+                                                                case 'number':
+                                                                case 'tel':
+                                                                case 'email':
+                                                                    jQuery(this).val('');
+                                                                    break;
+                                                                case 'select-one':
+                                                                case 'select-multiple':
+                                                                    jQuery(this).val('0').trigger('change');
+                                                                    jQuery(this).val('0');
+                                                                    break;
+                                                                case 'checkbox':
+                                                                case 'radio':
+                                                                     if(this.checked == true) {
+                                                                            this.click();
+                                                                            this.checked = false;
+                                                                            break;
+                                                                        }
+                                                            }
+                                                            regex = /multiselectfield.*_to/g;
+                                                            totest = this.id;
+                                                            found = totest.match(regex);
+                                                            if(found !== null) {
+                                                              regex = /multiselectfield[0-9]*/;
+                                                               found = totest.match(regex);
+                                                               $('#'+found[0]+'_leftAll').click();
+                                                            }
+                                                        });
+                                                           $('[name =\"field['+key+']\"]').removeAttr('required');
+                                                        }else{
+                                                           $('[id-field =\"field'+key+'\"]').show();
                                                         }
-                                                        regex = /multiselectfield.*_to/g;
-                                                        totest = this.id;
-                                                        found = totest.match(regex);
-                                                        if(found !== null) {
-                                                          regex = /multiselectfield[0-9]*/;
-                                                           found = totest.match(regex);
-                                                           $('#'+found[0]+'_leftAll').click();
-                                                        }
-                                                    });
-                                                       $('[name =\"field['+key+']\"]').removeAttr('required');
-                                                    }else{
-                                                       $('[id-field =\"field'+key+'\"]').show();
-                                                    }
-                                                 });";
+                                                     });";
                                 $script .= "} else {";
                                 //                                        foreach ($hidden_link as $key => $fields) {
-                                $script .= "if($(this).val() == $idc){
-                                                    if($hidden_link in tohide){
-    
-                                                    }else{
-                                                       tohide[$hidden_link] = true;
-                                                    }
-                                                    $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
-                                                      ";
-                                $script .= "if($(value).val() == $idc
-                                                          || $idc == -1 ){
-                                                       tohide[$hidden_link] = false;
-                                                    }
-                                                ";
-                                $script .= "});
-                                            }";
+                                            $script .= "if($(this).val() == $idc){
+                                                                if($hidden_link in tohide){
+                
+                                                                }else{
+                                                                   tohide[$hidden_link] = true;
+                                                                }
+                                                                $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
+                                                                $script .= "if($(value).val() == $idc
+                                                                                          || $idc == -1 ){
+                                                                                   tohide[$hidden_link] = false;
+                                                                                }";
+                                                                 $script .= "});
+                                                        }";
 
-                            }
 
-                            $script .= "$.each( tohide, function( key, value ) {
-                                            if(value == true){
-                                               $('[id-field =\"field'+key+'\"]').hide();
-                                               $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
 
-                                             switch(this.type) {
-                                                    case 'password':
-                                                    case 'text':
-                                                    case 'textarea':
-                                                    case 'file':
-                                                    case 'date':
-                                                    case 'number':
-                                                    case 'tel':
-                                                    case 'email':
-                                                        jQuery(this).val('');
-                                                        break;
-                                                    case 'select-one':
-                                                    case 'select-multiple':
-                                                        jQuery(this).val('0').trigger('change');
-                                                        jQuery(this).val('0');
-                                                        break;
-                                                    case 'checkbox':
-                                                    case 'radio':
-                                                         if(this.checked == true) {
-                                                                this.click();
-                                                                this.checked = false;
-                                                                break;
+                                            $script .= "$.each( tohide, function( key, value ) {
+                                                            if(value == true){
+                                                               $('[id-field =\"field'+key+'\"]').hide();
+                                                               $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
+                
+                                                             switch(this.type) {
+                                                                    case 'password':
+                                                                    case 'text':
+                                                                    case 'textarea':
+                                                                    case 'file':
+                                                                    case 'date':
+                                                                    case 'number':
+                                                                    case 'tel':
+                                                                    case 'email':
+                                                                        jQuery(this).val('');
+                                                                        break;
+                                                                    case 'select-one':
+                                                                    case 'select-multiple':
+                                                                        jQuery(this).val('0').trigger('change');
+                                                                        jQuery(this).val('0');
+                                                                        break;
+                                                                    case 'checkbox':
+                                                                    case 'radio':
+                                                                         if(this.checked == true) {
+                                                                                this.click();
+                                                                                this.checked = false;
+                                                                                break;
+                                                                            }
+                                                                }
+                                                                regex = /multiselectfield.*_to/g;
+                                                                totest = this.id;
+                                                                found = totest.match(regex);
+                                                                if(found !== null) {
+                                                                  regex = /multiselectfield[0-9]*/;
+                                                                   found = totest.match(regex);
+                                                                   $('#'+found[0]+'_leftAll').click();
+                                                                }
+                                                            });
+                                                               $('[name =\"field['+key+']\"]').removeAttr('required');
+                                                            }else{
+                                                               $('[id-field =\"field'+key+'\"]').show();
                                                             }
-                                                }
-                                                regex = /multiselectfield.*_to/g;
-                                                totest = this.id;
-                                                found = totest.match(regex);
-                                                if(found !== null) {
-                                                  regex = /multiselectfield[0-9]*/;
-                                                   found = totest.match(regex);
-                                                   $('#'+found[0]+'_leftAll').click();
-                                                }
-                                            });
-                                               $('[name =\"field['+key+']\"]').removeAttr('required');
-                                            }else{
-                                               $('[id-field =\"field'+key+'\"]').show();
-                                            }
-                                         });";
-                            $script .= "}";
+                                                         });";
+                                 $script .= "}";
 //                                    }
-//                                }
-                            $script .= "});";
+                            }
+                            $script .= "});console.log('fieldshidden-checkbox');";
 
                             foreach ($check_values as $idc => $check_value) {
 
@@ -1600,7 +1598,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 }
                                 //                                    }
                                 //                                }
-                                $script .= "});";
+                                $script .= "});console.log('fieldshidden-text');";
                             }
                             foreach ($check_values as $idc => $check_value) {
                                 $hidden_link = $check_value['hidden_link'];
@@ -1611,7 +1609,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     foreach ($default_values as $k => $v) {
                                         if ($v == 1) {
                                             if ($idc == $k) {
-                                                $idv = $hidden_block[$idc];
                                                 $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
                                             }
                                         }
@@ -1683,7 +1680,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             }
                                      });";
 
-                            $script .= "});";
+                            $script .= "});console.log('fieldshidden-radio');";
 
                             foreach ($check_values as $idc => $check_value) {
                                 $hidden_link = $check_value['hidden_link'];
@@ -1999,90 +1996,27 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         $hidden_block = $check_value['hidden_block'];
                                         $script .= " if (this.checked){ ";
 
-                                        $script .= "
-                                              if($(this).val() == $idc || $idc == -1 ){
-                                                 if($hidden_block in tohide){
+                                            $script .= "
+                                                  if($(this).val() == $idc || $idc == -1 ){
+                                                     if($hidden_block in tohide){
     
-                                                 }else{
-                                                    tohide[$hidden_block] = true;
-                                                 }
-                                                 tohide[$hidden_block] = false;
-                                              }";
-                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-                                        if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                            && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                            foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                if ($fieldSession == $idc || $idc == -1) {
-                                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                                                }
-                                            }
-                                        }
-    //                                        }
-
-                                        $script .= "$.each( tohide, function( key, value ) {
-                                                if(value == true){
-                                                 $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                                 $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
-                                                    switch(this.type) {
-                                                           case 'password':
-                                                           case 'text':
-                                                           case 'textarea':
-                                                           case 'file':
-                                                           case 'date':
-                                                           case 'number':
-                                                           case 'tel':
-                                                           case 'email':
-                                                               jQuery(this).val('');
-                                                               break;
-                                                           case 'select-one':
-                                                           case 'select-multiple':
-                                                               jQuery(this).val('0').trigger('change');
-                                                               jQuery(this).val('0');
-                                                               break;
-                                                           case 'checkbox':
-                                                           case 'radio':
-                                                               this.checked = false;
-                                                               break;
-                                                       }
-                                                   });
-                                                } else {
-                                                $('[bloc-id =\"bloc'+key+'\"]').show();
-            
-                                                }
-            
-                                             });";
-                                        $script .= "fixButtonIndicator();console.log('hidden-checkbox1');} else {";
-    //                                        foreach ($hidden_block as $key => $fields) {
-                                        $script .= "
-                                              if($(this).val() == $idc){
-                                                 if($hidden_block in tohide){
-    
-                                                 }else{
-                                                    tohide[$hidden_block] = true;
-                                                 }
-                                                 $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
-                                                   ";
-                                        $script .= "if($(value).val() == $idc
-                                                          || $idc == -1 ){
-                                                       tohide[$hidden_block] = false;
+                                                     }else{
+                                                        tohide[$hidden_block] = true;
+                                                     }
+                                                     tohide[$hidden_block] = false;
+                                                  }";
+                                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+                                            if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                                && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                                foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                                    if ($fieldSession == $idc || $idc == -1) {
+                                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
                                                     }
-                                                ";
-                                        $script .= "
-                                                fixButtonIndicator();console.log('hidden-checkbox2'); });
-                                              }";
-
-                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-                                        if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
-                                            && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
-                                            foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
-                                                if ($fieldSession == $idc || $idc == -1) {
-                                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
                                                 }
                                             }
-                                        }
-                                    }
+        //                                        }
 
-                                    $script .= "$.each( tohide, function( key, value ) {
+                                            $script .= "$.each( tohide, function( key, value ) {
                                                     if(value == true){
                                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                                      $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2104,23 +2038,84 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                                    break;
                                                                case 'checkbox':
                                                                case 'radio':
-                                                                    if(this.checked == true) {
-                                                                        this.click();
-                                                                        this.checked = false;
-                                                                        break;
-                                                                    }
+                                                                   this.checked = false;
+                                                                   break;
                                                            }
                                                        });
                                                     } else {
                                                     $('[bloc-id =\"bloc'+key+'\"]').show();
-                
+    
                                                     }
-                
-                                                fixButtonIndicator();console.log('hidden-checkbox3'); });";
-                                    $script .= "}";
-//                                    }
-//                                }
+    
+                                                 });";
+                                            $script .= "fixButtonIndicator();console.log('hidden-checkbox1');";
+                                        $script .= " } else { ";
+    //                                        foreach ($hidden_block as $key => $fields) {
+                                            $script .= "
+                                                  if($(this).val() == $idc){
+                                                     if($hidden_block in tohide){
+    
+                                                     }else{
+                                                        tohide[$hidden_block] = true;
+                                                     }
+                                                     $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){";
+                                                        $script .= "if($(value).val() == $idc
+                                                                          || $idc == -1 ){
+                                                                       tohide[$hidden_block] = false;
+                                                                    }";
+                                            $script .= " });
+                                                        }
+                                                        fixButtonIndicator();console.log('hidden-checkbox2');";
+                                        $script .= " }";
+
+                                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+                                        if (isset($_SESSION['plugin_metademands']['fields'][$data["id"]])
+                                            && is_array($_SESSION['plugin_metademands']['fields'][$data["id"]])) {
+                                            foreach ($_SESSION['plugin_metademands']['fields'][$data["id"]] as $fieldSession) {
+                                                if ($fieldSession == $idc || $idc == -1) {
+                                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                                                }
+                                            }
+                                        }
+
+                                        $script .= "$.each( tohide, function( key, value ) {
+                                                        if(value == true){
+                                                             $('[bloc-id =\"bloc'+key+'\"]').hide();
+                                                             $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
+                                                                switch(this.type) {
+                                                                       case 'password':
+                                                                       case 'text':
+                                                                       case 'textarea':
+                                                                       case 'file':
+                                                                       case 'date':
+                                                                       case 'number':
+                                                                       case 'tel':
+                                                                       case 'email':
+                                                                           jQuery(this).val('');
+                                                                           break;
+                                                                       case 'select-one':
+                                                                       case 'select-multiple':
+                                                                           jQuery(this).val('0').trigger('change');
+                                                                           jQuery(this).val('0');
+                                                                           break;
+                                                                       case 'checkbox':
+                                                                       case 'radio':
+                                                                            if(this.checked == true) {
+                                                                                this.click();
+                                                                                this.checked = false;
+                                                                                break;
+                                                                            }
+                                                                   }
+                                                               });
+                                                        } else {
+                                                            $('[bloc-id =\"bloc'+key+'\"]').show();
+                                                        }
+                                                    });
+                                                    fixButtonIndicator();console.log('hidden-checkbox3');
+                                                    ";
+                                    }
                                     $script .= "});";
+
                                     //Initialize id default value
                                     foreach ($check_values as $idc => $check_value) {
                                         $hidden_block = $check_value['hidden_block'];

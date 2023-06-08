@@ -682,7 +682,7 @@ class PluginMetademandsStep extends CommonDBChild
         $return .= "</tr>";
         $return .= "<tr class='tab_bg_1'>";
         $return .= "<td colspan='1'>";
-        $return .= "<button id='submitNextGroupModal' type='submit' class='btn btn-primary'><span>" . _sx('button', 'Validate') . "</span></button>";
+        $return .= "<button id='submitNextGroupModal' type='submit' class='btn btn-primary'><span>" . _sx('button', 'Validate', 'metademands') . "</span></button>";
         $return .= "</td>";
         $return .= "</tr>";
         $return .= "</table>";
@@ -840,7 +840,9 @@ class PluginMetademandsStep extends CommonDBChild
 //            }
 //            $_SESSION['plugin_metademands']['form_to_compare'] = $last;
 //         }
-                    if ((isset($_POST['plugin_metademands_stepforms_id']) && !empty($_POST['plugin_metademands_stepforms_id'])) || $_POST['update_stepform'] == 1) {
+                    if ((isset($_POST['plugin_metademands_stepforms_id'])
+                            && !empty($_POST['plugin_metademands_stepforms_id']))
+                        || $_POST['update_stepform'] == 1) {
                         $form_new_id = $_POST['plugin_metademands_stepforms_id'];
 //            $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
 //            $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
