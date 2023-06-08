@@ -92,7 +92,7 @@ class PluginMetademandsTools extends CommonDBTM
     {
         global $DB;
 
-        echo "<br><div class='center'>";
+        echo "<br><div class='left'>";
         echo "<table class='tab_cadre_fixe'>";
 
         $query = "SELECT plugin_metademands_fields_id, COUNT(plugin_metademands_fields_id),
@@ -110,13 +110,13 @@ class PluginMetademandsTools extends CommonDBTM
 
         if ($DB->numrows($result) > 0) {
             echo "<tr class='tab_bg_2'>";
-            echo "<th class='center'>";
+            echo "<th class='left'>";
             echo __('Duplicates fields options', 'metademands');
             echo "</th>";
             echo "</tr>";
 
             echo "<tr class='tab_bg_2'>";
-            echo "<td class='center'>";
+            echo "<td class='left'>";
 
             while ($array = $DB->fetchAssoc($result)) {
 
@@ -152,7 +152,7 @@ class PluginMetademandsTools extends CommonDBTM
             }
         } else {
             echo "<tr class='tab_bg_2'>";
-            echo "<th class='center'>";
+            echo "<th class='left'>";
             echo __('No duplicates founded', 'metademands');
             echo "</th>";
             echo "</tr>";

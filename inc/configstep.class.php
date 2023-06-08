@@ -34,7 +34,7 @@ if (!defined('GLPI_ROOT')) {
  * PluginMetademandsConfigStep Class
  *
  **/
-class PluginMetademandsConfigstep extends CommonDBChild
+class PluginMetademandsConfigstep extends CommonDBTM
 {
     static $rightname = 'plugin_metademands';
     public static $itemtype = 'PluginMetademandsMetademand';

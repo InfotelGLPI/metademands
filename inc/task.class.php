@@ -963,7 +963,7 @@ class PluginMetademandsTask extends CommonDBChild {
         $field = new self();
         $field->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
 
-        $temp = new PluginMetademandsField();
+        $temp = new PluginMetademandsFieldOption();
         $temp->deleteByCriteria(['plugin_metademands_tasks_id' => $this->fields['id']]);
 
         $temp = new PluginMetademandsTicket_Task();
