@@ -225,6 +225,9 @@ function migrateFieldsOptions()
                         if ($input["check_value"] == -1) {
                             $input["check_value"] = 0;
                         }
+                        if ($input["check_value"] == 'NOT_NULL') {
+                            $input["check_value"] = 0;
+                        }
                         if (empty($input["plugin_metademands_tasks_id"])) {
                             $input["plugin_metademands_tasks_id"] = 0;
                         }
@@ -250,7 +253,7 @@ function migrateFieldsOptions()
                             $input["parent_field_id"] = 0;
                         }
 
-                        Toolbox::logInfo($input["check_value"]);
+
                         $fieldopt->add($input);
                     }
                 }
@@ -389,6 +392,9 @@ function migrateFieldsOptions()
                     if ($input["check_value"] == -1) {
                         $input["check_value"] = 0;
                     }
+                    if ($input["check_value"] == 'NOT_NULL') {
+                        $input["check_value"] = 0;
+                    }
                     if (empty($input["plugin_metademands_tasks_id"])) {
                         $input["plugin_metademands_tasks_id"] = 0;
                     }
@@ -413,7 +419,7 @@ function migrateFieldsOptions()
                     if (empty($input["parent_field_id"])) {
                         $input["parent_field_id"] = 0;
                     }
-                    Toolbox::logInfo($input["check_value"]);
+
                     $fieldopt->add($input);
                 }
             }

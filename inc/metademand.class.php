@@ -4147,7 +4147,9 @@ JAVASCRIPT
                                         $result[$fields['rank']]['display'] = false;
                                         $parent_fields_id = 0;
                                         $v = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                        $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        if ($v != null) {
+                                            $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        }
                                     } else {
                                         $explodeTitle2 = explode(".", $title);
 

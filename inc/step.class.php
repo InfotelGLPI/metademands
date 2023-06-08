@@ -362,7 +362,7 @@ class PluginMetademandsStep extends CommonDBChild
         $blocks = [];
         $self = new self();
         foreach ($fields as $f) {
-            if ($configStep->fields['multiple_link_groups_blocks']) {
+            if (isset($configStep->fields['multiple_link_groups_blocks'])) {
                 if (!isset($blocks[$f['rank']])) {
                     $blocks[intval($f['rank'])] = sprintf(__("Block %s", 'metademands'), $f["rank"]);
                 }

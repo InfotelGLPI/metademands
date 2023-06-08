@@ -304,7 +304,8 @@ function plugin_metademands_install() {
         $DB->query($query);
     }
     //version 3.2.19
-    if (!$DB->tableExists("glpi_plugin_metademands_fieldoptions")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldoptions")
+        && !$DB->fieldExists("glpi_plugin_metademands_drafts_values", "value2")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.19.sql");
     }
     //version 3.3.0
