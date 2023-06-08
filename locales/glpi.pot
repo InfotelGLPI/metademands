@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-08 10:25+0000\n"
+"POT-Creation-Date: 2023-06-08 10:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1399,53 +1399,53 @@ msgstr ""
 msgid "You do not have access to the form"
 msgstr ""
 
-#: inc/wizard.class.php:1835
+#: inc/wizard.class.php:1836
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:1847 inc/wizard.class.php:1878
-#: inc/wizard.class.php:1882
+#: inc/wizard.class.php:1848 inc/wizard.class.php:1879
+#: inc/wizard.class.php:1883
 msgid "Next"
 msgstr ""
 
-#: inc/wizard.class.php:1879
+#: inc/wizard.class.php:1880
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/wizard.class.php:1883
+#: inc/wizard.class.php:1884
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1895
+#: inc/wizard.class.php:1896
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1951
+#: inc/wizard.class.php:1952
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:1961
+#: inc/wizard.class.php:1962
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:2982
+#: inc/wizard.class.php:2983
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2991
+#: inc/wizard.class.php:2992
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3037
+#: inc/wizard.class.php:3038
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3041
+#: inc/wizard.class.php:3042
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
