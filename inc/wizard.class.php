@@ -1670,13 +1670,13 @@ class PluginMetademandsWizard extends CommonDBTM
                         if ($data['row_display'] == 1) {
                             echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
                             if ($data['type'] == 'informations') {
-                                echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close'>&times;</a>";
+//                                echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close'>&times;</a>";
                             }
                             $count++;
                         } else {
                             echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-5 $bottomclass $class\">";
                             if ($data['type'] == 'informations') {
-                                echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close'>&times;</a>";
+//                                echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close'>&times;</a>";
                             }
                         }
                         //see fields
@@ -1696,7 +1696,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 echo "</div><div class=\"form-group col-md-5 md-bottom\">";
                             } else {
                                 $class = "";
-                                echo "<div class=\"form-group\" style='padding: 10px 15px;'>";
+//                                echo "<div class=\"form-group\" style='padding: 10px 10px;'>";
                             }
                             if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                                 $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
@@ -1707,7 +1707,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             }
 
                             if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                                echo "<br><label class='col-form-label' $style>" . Glpi\RichText\RichText::getSafeHtml($label2) . "</label>";
+                                echo Glpi\RichText\RichText::getSafeHtml($label2);
                             } else {
                                 echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) . $required_icon . "</label>";
                             }
@@ -1715,21 +1715,22 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (isset($data['value-2'])) {
                                 $value2 = $data['value-2'];
                             }
-
-                            echo "<span style='width: 50%!important;display: -webkit-box;'>";
-                            switch ($data['type']) {
-                                case 'date_interval':
-                                    Html::showDateField("field[" . $data['id'] . "-2]", ['value' => $value2, 'required' => ($data['is_mandatory'] ? "required" : "")]);
-                                    $count++; // If date interval : pass to next line
-                                    break;
-                                case 'datetime_interval':
-                                    Html::showDateTimeField("field[" . $data['id'] . "-2]", ['value' => $value2, 'required' => ($data['is_mandatory'] ? "required" : "")]);
-                                    $count++; // If date interval : pass to next line
-                                    break;
+                            if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
+                                echo "<span style='width: 50%!important;display: -webkit-box;'>";
+                                switch ($data['type']) {
+                                    case 'date_interval':
+                                        Html::showDateField("field[" . $data['id'] . "-2]", ['value' => $value2, 'required' => ($data['is_mandatory'] ? "required" : "")]);
+                                        $count++; // If date interval : pass to next line
+                                        break;
+                                    case 'datetime_interval':
+                                        Html::showDateTimeField("field[" . $data['id'] . "-2]", ['value' => $value2, 'required' => ($data['is_mandatory'] ? "required" : "")]);
+                                        $count++; // If date interval : pass to next line
+                                        break;
+                                }
+                                echo "</span>";
                             }
-                            echo "</span>";
                             if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                                echo "</div>";
+//                                echo "</div>";
                             }
                         }
                         echo "</div>";
@@ -2008,8 +2009,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 $res = $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
                 $modal = true;
                 $updateStepform = 0;
-                if (!$stepConfig->fields['link_user_block']
-                    && !$stepConfig->fields['multiple_link_groups_blocks']) {
+                if (!isset($stepConfig->fields['link_user_block'])
+                    && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
                     $modal = false;
                 } else if($block_current_id_stepform != 99999999){
                     $canSeeNextBlock = PluginMetademandsStep::canSeeBlock($metademands_id, $block_current_id_stepform + 1);
