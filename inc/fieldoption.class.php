@@ -1910,8 +1910,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                   $.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {
                                                   ";
     //                                    foreach ($idc as $key => $fields) {
-    //                                        if ($fields != 0) {
-                                        $val = Toolbox::addslashes_deep($custom_value[$idc]);
+    //                                        if ($idc != 0) {
+                                        $val =  0;
+                                        if (isset($custom_value[$idc])) {
+                                            $val =  Toolbox::addslashes_deep($custom_value[$idc]);
+                                        }
+
                                         $script .= "
                                         if($(value).attr('title') == '$val'){
                                            tohide[" . $hidden_block . "] = false;
