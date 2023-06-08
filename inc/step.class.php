@@ -598,6 +598,9 @@ class PluginMetademandsStep extends CommonDBChild
             $return .= "<table class='tab_cadre_fixe'>";
             $return .= "<form name='nextGroup_form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php'>";
             if (isset($_SESSION['plugin_metademands'][$user_id])) {
+                if (isset($_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'])) {
+                    $return .= "<input type='hidden' name='plugin_metademands_stepforms_id' value = '" . $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'] . "'>";
+                }
                 $post = $_SESSION['plugin_metademands'][$user_id];
                 $return .= "<input type ='hidden' name ='tickets_id' value='" . $post['tickets_id'] . "'>";
                 $return .= "<input type='hidden' name='resources_id' value = '" . $post['resources_id'] . "'>";
@@ -611,7 +614,7 @@ class PluginMetademandsStep extends CommonDBChild
                 $return .= "<input type='hidden' name='create_metademands' value = '" . $post['create_metademands'] . "'>";
                 $return .= "<input type='hidden' name='step' value = '" . $post['step'] . "'>";
                 $return .= "<input type='hidden' name='action' value = '" . $post['action'] . "'>";
-                $return .= "<input type='hidden' name='plugin_metademands_stepforms_id' value = '" . $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'] ?? 0 . "'>";
+                $return .= "<input type='hidden' name='plugin_metademands_stepforms_id' value = '" . $stepform_id . "'>";
                 $return .= "<input type='hidden' name='update_stepform' value = '" . $post['update_stepform'] . "'>";
                 $return .= "<input type='hidden' name='_glpi_csrf_token' value = '" . $post['_glpi_csrf_token'] . "'>";
 
