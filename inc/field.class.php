@@ -60,7 +60,7 @@ class PluginMetademandsField extends CommonDBChild
         'dropdown_multiple', 'dropdown_object'];
     public static $allowed_options_items = ['User'];
 
-    public static $allowed_custom_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple'];
+    public static $allowed_custom_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple', 'number'];
     public static $allowed_custom_items = ['other'];
 
     public static $not_null = 'NOT_NULL';
@@ -2919,9 +2919,9 @@ class PluginMetademandsField extends CommonDBChild
             case 'number':
                 $data['custom_values'] = self::_unserialize($data['custom_values']);
                 $opt                   = ['value'         => $value,
-                                      'min'           => ((isset($data['custom_values']['min']) && $data['custom_values']['min'] != "") ? $data['custom_values']['min'] : 0),
-                                      'max'           => ((isset($data['custom_values']['max']) && $data['custom_values']['max'] != "") ? $data['custom_values']['max'] : 999999),
-                                      'step'          => ((isset($data['custom_values']['step']) && $data['custom_values']['step'] != "") ? $data['custom_values']['step'] : 1),
+                                      'min'           => ((isset($data['custom_values'][0]) && $data['custom_values'][0] != "") ? $data['custom_values'][0] : 0),
+                                      'max'           => ((isset($data['custom_values'][1]) && $data['custom_values'][1] != "") ? $data['custom_values'][1] : 999999),
+                                      'step'          => ((isset($data['custom_values'][2]) && $data['custom_values'][2] != "") ? $data['custom_values'][2] : 1),
                                       'display'       => false,
                 ];
                 if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
@@ -3044,9 +3044,6 @@ class PluginMetademandsField extends CommonDBChild
                                         && isset($_SESSION['plugin_metademands']['fields'][$parent_field_id])) {
 
                                             $value = $_SESSION['plugin_metademands']['fields'][$parent_field_id];
-
-                                            Toolbox::logInfo($line_data['form'][$parent_field_id]['type']);
-                                            Toolbox::logInfo($value);
 
                                             switch ($line_data['form'][$parent_field_id]['type']) {
                                                 case 'dropdown_multiple':
@@ -3573,6 +3570,7 @@ class PluginMetademandsField extends CommonDBChild
                 case 'yesno': // Show yes/no default value
                     echo "<tr><td id='show_custom_fields'>";
                     echo _n('Default value', 'Default values', 1, 'metademands') . "&nbsp;";
+                    $p= [];
                     if (isset($params['custom_values'])) {
                         $p['value'] = $params['custom_values'];
                     }
@@ -3581,6 +3579,35 @@ class PluginMetademandsField extends CommonDBChild
 
                     Dropdown::showFromArray("custom_values", $data, $p);
                     echo "</td></tr>";
+                    break;
+                case 'number': // Show number custom value
+                    echo "<tr><td id='show_custom_fields'>";
+                    $min = 0;
+                    $max  = 0;
+                    $step  = 0;
+                    if (isset($params['custom_values']) && !empty($params['custom_values'])) {
+                        $params['custom_values'] = self::_unserialize($params['custom_values']);
+                        $min                = $params['custom_values'][0] ?? "";
+                        $max                 = $params['custom_values'][1] ?? "";
+                        $step                 = $params['custom_values'][2] ?? "";
+                    }
+                    echo '<label>' . __("Minimal count") . '</label>&nbsp;';
+                    $opt                   = ['value'         => $min];
+                    Dropdown::showNumber("custom_values[0]", $opt);
+                    echo "</td>";
+
+                    echo "<td>";
+                    echo '<label>' . __("Maximal count") . '</label>&nbsp;';
+                    $opt                   = ['value'         => $max];
+                    Dropdown::showNumber("custom_values[1]", $opt);
+                    echo "</td>";
+
+                    echo "<td>";
+                    echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
+                    $opt                   = ['value'         => $step];
+                    Dropdown::showNumber("custom_values[2]", $opt);
+                    echo "</td>";
+                    echo "</tr>";
                     break;
                 case 'link': // Show yes/no default value
                     echo "<tr><td id='show_custom_fields'>";
@@ -3610,7 +3637,7 @@ class PluginMetademandsField extends CommonDBChild
                     break;
             }
 
-            echo '</td></tr></table>';
+            echo '</table>';
             echo "</td></tr></table>";
         }
     }
