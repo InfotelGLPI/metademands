@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-10 09:31+0000\n"
+"POT-Creation-Date: 2023-06-10 13:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -325,7 +325,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:316 inc/field.class.php:3939 inc/field.class.php:4022
+#: inc/field.class.php:316 inc/field.class.php:3966 inc/field.class.php:4049
 msgid "Additional label"
 msgstr ""
 
@@ -333,7 +333,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/field.class.php:356 inc/field.class.php:1182 inc/field.class.php:4004
+#: inc/field.class.php:356 inc/field.class.php:1182 inc/field.class.php:4031
 #: inc/step.class.php:273 inc/step.class.php:356
 msgid "Block"
 msgstr ""
@@ -342,11 +342,11 @@ msgstr ""
 msgid "Display field after"
 msgstr ""
 
-#: inc/field.class.php:430 inc/field.class.php:1174 inc/field.class.php:3941
+#: inc/field.class.php:430 inc/field.class.php:1174 inc/field.class.php:3968
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:529 inc/field.class.php:1179 inc/field.class.php:4046
+#: inc/field.class.php:529 inc/field.class.php:1179 inc/field.class.php:4073
 msgid "Display into the basket"
 msgstr ""
 
@@ -436,7 +436,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:1183 inc/field.class.php:4013
+#: inc/field.class.php:1183 inc/field.class.php:4040
 msgid "Order"
 msgstr ""
 
@@ -517,47 +517,51 @@ msgstr ""
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/field.class.php:3290
+#: inc/field.class.php:3287
 msgid "Custom values"
 msgstr ""
 
-#: inc/field.class.php:3340 inc/field.class.php:3396 inc/field.class.php:3446
-#: inc/field.class.php:3507 inc/field.class.php:3557 inc/field.class.php:3575
-#: inc/field.class.php:3721
+#: inc/field.class.php:3337 inc/field.class.php:3393 inc/field.class.php:3443
+#: inc/field.class.php:3504 inc/field.class.php:3554 inc/field.class.php:3572
+#: inc/field.class.php:3748
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/field.class.php:3458
+#: inc/field.class.php:3455
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: inc/field.class.php:3599
+#: inc/field.class.php:3606
+msgid "Step for number"
+msgstr ""
+
+#: inc/field.class.php:3626
 msgid "Button Type"
 msgstr ""
 
-#: inc/field.class.php:3603
+#: inc/field.class.php:3630
 msgid "button"
 msgstr ""
 
-#: inc/field.class.php:3608
+#: inc/field.class.php:3635
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
-#: inc/field.class.php:4685
+#: inc/field.class.php:4712
 msgid "Requester login"
 msgstr ""
 
-#: inc/field.class.php:4689
+#: inc/field.class.php:4716
 msgid "Requester name"
 msgstr ""
 
-#: inc/field.class.php:4693
+#: inc/field.class.php:4720
 msgid "Requester firstname"
 msgstr ""
 
-#: inc/field.class.php:4697
+#: inc/field.class.php:4724
 msgid "Requester email"
 msgstr ""
 
