@@ -267,7 +267,7 @@ class PluginMetademandsStep extends CommonDBChild
             echo "<th colspan='3'>" . __("List of associations", 'metademands') . "</th></tr><tr>";
             if ($canedit) {
                 echo "<th width='10'>";
-                Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
+                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
                 echo "</th>";
             }
             echo "<th>" . __("Block", 'metademands') . "</th>";

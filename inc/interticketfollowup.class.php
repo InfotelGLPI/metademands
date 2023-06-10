@@ -282,7 +282,6 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
         $options['formoptions'] = ($options['formoptions'] ?? '') . ' data-track-changes=true';
 
         $item       = $options['item'];
-        $this->item = $item;
 
         if ($ID > 0) {
             $this->check($ID, READ);

@@ -548,9 +548,10 @@ function plugin_metademands_getDatabaseRelations() {
                 ],
                 "glpi_plugin_metademands_fields" => ["glpi_plugin_metademands_tickets_fields" => "plugin_metademands_fields_id",
                                                      "glpi_plugin_metademands_drafts_values"  => "plugin_metademands_fields_id",
-                                                     "glpi_plugin_metademands_basketlines"    => "plugin_metademands_fields_id"],
+                                                     "glpi_plugin_metademands_basketlines"    => "plugin_metademands_fields_id",
+                                                     "glpi_plugin_metademands_fieldoptions"    => "plugin_metademands_fields_id"],
 
-                "glpi_plugin_metademands_tasks" => ["glpi_plugin_metademands_fields"          => "plugin_metademands_tasks_id",
+                "glpi_plugin_metademands_tasks" => ["glpi_plugin_metademands_fieldoptions"          => "plugin_metademands_tasks_id",
                                                     "glpi_plugin_metademands_tickettasks"     => "plugin_metademands_tasks_id",
                                                     "glpi_plugin_metademands_tickets_tasks"   => "plugin_metademands_tasks_id",
                                                     "glpi_plugin_metademands_metademandtasks" => "plugin_metademands_tasks_id"],

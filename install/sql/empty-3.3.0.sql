@@ -61,6 +61,7 @@ CREATE TABLE `glpi_plugin_metademands_tasks`
     `completename`                      varchar(255)                    DEFAULT NULL,
     `comment`                           text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `entities_id`                       int unsigned NOT NULL           DEFAULT '0',
+    `is_recursive`                      int          NOT NULL           DEFAULT '0',
     `level`                             int          NOT NULL           DEFAULT '0',
     `type`                              int          NOT NULL           DEFAULT '0',
     `ancestors_cache`                   text COLLATE utf8mb4_unicode_ci DEFAULT NULL,

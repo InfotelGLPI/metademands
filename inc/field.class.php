@@ -1165,7 +1165,7 @@ class PluginMetademandsField extends CommonDBChild
             echo "</tr><tr>";
             if ($canedit) {
                 echo "<th width='10'>";
-                Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
+                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
                 echo "</th>";
             }
             echo "<th class='center b'>" . __('ID') . "</th>";

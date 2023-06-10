@@ -59,7 +59,8 @@ if (isset($_POST["add"])) {
       }
 
       if ($tickettask->isMandatoryField($_POST) && $tasks_id = $task->add($_POST)) {
-         if ($_POST['taskType'] == PluginMetademandsTask::TICKET_TYPE || $_POST['taskType'] == PluginMetademandsTask::TASK_TYPE) {
+         if ($_POST['taskType'] == PluginMetademandsTask::TICKET_TYPE
+             || $_POST['taskType'] == PluginMetademandsTask::TASK_TYPE) {
             $_POST['plugin_metademands_tasks_id'] = $tasks_id;
             $_POST['type']                        = Ticket::DEMAND_TYPE;
             $tickettask->add($_POST);
@@ -74,47 +75,84 @@ if (isset($_POST["add"])) {
 
    Html::back();
 
-} else if (isset($_POST['up'])) {
-   // Replace current parent task by parent's parent task
-   foreach ($_POST["up"] as $tasks_id => $parent_task) {
 
-      $parent_task = key($parent_task);
+//} else if (isset($_POST['up'])) {
+//   // Replace current parent task by parent's parent task
+//   foreach ($_POST["up"] as $tasks_id => $parent_task) {
+//
+//      $parent_task = key($parent_task);
+//
+//      if ($task->can($tasks_id, UPDATE)) {
+//         // Get parent data
+//         $parentTaskData = new PluginMetademandsTask();
+//         $parentTaskData->getFromDB($parent_task);
+//         $task->update(['id' => $tasks_id, 'plugin_metademands_tasks_id' => $parentTaskData->fields['plugin_metademands_tasks_id']]);
+//      }
+//   }
+//
+//   Html::back();
+//
+//} else if (isset($_POST['down'])) {
+//   // Replace current parent task by parent's parent task
+//   foreach ($_POST["down"] as $tasks_id => $parent_task) {
+//
+//      $parent_task = key($parent_task);
+//
+//      if ($task->can($tasks_id, UPDATE)) {
+//         // Get first child
+//         $task->getFromDB($tasks_id);
+//         $first_child_task = $task->getChildrenForLevel($parent_task, $task->fields['level']);
+//         $first_child_task = array_shift($first_child_task);
+//         // Current
+//         $task->update(['id' => $tasks_id, 'plugin_metademands_tasks_id' => $first_child_task]);
+//      }
+//   }
+//
+//   Html::back();
 
-      if ($task->can($tasks_id, UPDATE)) {
-         // Get parent data
-         $parentTaskData = new PluginMetademandsTask();
-         $parentTaskData->getFromDB($parent_task);
-         $task->update(['id' => $tasks_id, 'plugin_metademands_tasks_id' => $parentTaskData->fields['plugin_metademands_tasks_id']]);
-      }
-   }
+} if (isset($_POST["update"])) {
+    // Check update rights for clients
+    $task->check(-1, UPDATE, $_POST);
 
-   Html::back();
+    $input = $_POST;
+    $input['type'] = $_POST['taskType'];
+    $input['id'] = $_POST['tickettask_id'];
+    $input['content'] = $_POST['content'];
 
-} else if (isset($_POST['down'])) {
-   // Replace current parent task by parent's parent task
-   foreach ($_POST["down"] as $tasks_id => $parent_task) {
+    if ($tickettask->isMandatoryField($input) && $tickettask->update($input)) {
 
-      $parent_task = key($parent_task);
+        $tasks_id    = $_POST['id'];
+        $parent_task = $_POST['parent_tasks_id'] ?? 0;
+        unset($input['content']);
+        if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
+            $input['block_use'] = json_encode([]);
+        } else {
+            $input['block_use'] = json_encode($_POST['block_use']);
+        }
 
-      if ($task->can($tasks_id, UPDATE)) {
-         // Get first child
-         $task->getFromDB($tasks_id);
-         $first_child_task = $task->getChildrenForLevel($parent_task, $task->fields['level']);
-         $first_child_task = array_shift($first_child_task);
-         // Current
-         $task->update(['id' => $tasks_id, 'plugin_metademands_tasks_id' => $first_child_task]);
-      }
-   }
+        if ($parent_task > 0) {
+            $parenttask = new PluginMetademandsTask();
+            $parenttask->getFromDB($parent_task);
+            $input['level'] = $parenttask->fields['level'] + 1;
+        } else {
+            $input['plugin_metademands_tasks_id'] = 0;
+            $input['level'] = 1;
+        }
 
-   Html::back();
+        $input['name'] = $_POST['name'];
+        $input['formatastable'] = $_POST['formatastable'];
+        $input['useBlock'] = $_POST['useBlock'];
+        $input['id'] = $tasks_id;
+        $input['plugin_metademands_tasks_id'] = $parent_task;
+        if (!empty($input)) {
+            $task->update($input);
+        }
+    }
 
-} else if (isset($_POST['showForMetademands'])) {
-   $_SESSION["metademandsHelpdeskSaved"] = $_POST;
-   Html::back();
-
-} else {
-   $task->checkGlobal(READ);
-   Html::header(PluginMetademandsTask::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
-   $task->display(['id' => $_GET["id"]]);
-   Html::footer();
+    Html::back();
+} elseif (isset($_POST["purge"])) {
+    // Check update rights for clients
+    $task->check(-1, UPDATE, $_POST);
+    $task->delete($_POST);
+    Html::back();
 }

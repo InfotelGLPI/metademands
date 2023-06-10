@@ -54,6 +54,7 @@ ALTER TABLE `glpi_plugin_metademands_metademands` ADD `is_template` tinyint NOT 
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `template_name` varchar(255) DEFAULT NULL;
 ALTER TABLE `glpi_plugin_metademands_metademandtasks` ADD `entities_id` int unsigned NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_groups` ADD `entities_id` int unsigned NOT NULL DEFAULT '0';
+ALTER TABLE `glpi_plugin_metademands_tasks` ADD `is_recursive` int NOT NULL DEFAULT '0';
 
 ALTER TABLE `glpi_plugin_metademands_configs` CHANGE `show_form_changes` `show_form_changes` tinyint NOT NULL DEFAULT 0;
 ALTER TABLE `glpi_plugin_metademands_fields` CHANGE `default_use_id_requester` `default_use_id_requester` int unsigned DEFAULT 0;

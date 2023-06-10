@@ -221,7 +221,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             echo "<th colspan='10'>" . __("List of options", 'metademands') . "</th></tr><tr>";
             if ($canedit) {
                 echo "<th width='10'>";
-                Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
+                echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
                 echo "</th>";
             }
             echo "<th>" . __("ID") . "</th>";

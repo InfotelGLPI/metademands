@@ -783,11 +783,11 @@ class PluginMetademandsMetademand extends CommonDBTM
             $values = [$field => $values];
         }
         switch ($field) {
-            case 'itilcategories_id':
-                $opt = ['name' => $name,
-                    'value' => $values[$field],
-                    'display' => false];
-                return ITILCategory::dropdown($opt);
+//            case 'itilcategories_id':
+//                $opt = ['name' => $name,
+//                    'value' => $values[$field],
+//                    'display' => false];
+//                return ITILCategory::dropdown($opt);
             case 'type':
                 $options['value'] = $values[$field];
                 return Ticket::dropdownType($name, $options);
@@ -1180,7 +1180,7 @@ JAVASCRIPT
     {
         echo "<h3><div class='alert alert-warning' role='alert'>";
         echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
-        echo __('Tasks level cannot be changed as unresolved related tickets exist', 'metademands');
+        echo __('Tasks tree cannot be changed as unresolved related tickets exist or activate maintenance mode', 'metademands');
 
         echo "<br><br><form name='task_form' id='task_form' method='post' 
                action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";

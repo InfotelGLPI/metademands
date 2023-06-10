@@ -213,7 +213,7 @@ class PluginMetademandsMetademandTask extends CommonDBChild {
 
       //delete of the metademand fields in the present child requests as father fields
       foreach ($fields as $data) {
-         if ($field->getFromDB($data['parent_field_id'])) {
+         if (isset($data['parent_field_id']) && $field->getFromDB($data['parent_field_id'])) {
             if (!in_array($field->fields['plugin_metademands_metademands_id'], $metademands_parent)) {
                $field->delete(['id' => $field->getID()]);
             }
