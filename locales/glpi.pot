@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-10 13:29+0000\n"
+"POT-Creation-Date: 2023-06-10 16:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,7 @@ msgstr ""
 
 #: setup.php:169 inc/menu.class.php:42 inc/metademand.class.php:87
 #: inc/profile.class.php:129 inc/profile.class.php:172 inc/tools.class.php:132
+#: inc/tools.class.php:202
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -116,7 +117,7 @@ msgid ""
 "the following information."
 msgstr ""
 
-#: front/config.form.php:58 front/config.php:45
+#: front/config.form.php:58 front/config.php:45 front/tools.php:41
 msgid "Please activate the plugin"
 msgstr ""
 
@@ -142,6 +143,10 @@ msgstr ""
 
 #: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:72
 msgid "Continue metademand"
+msgstr ""
+
+#: front/tools.form.php:43
+msgid "Empty option has been deleted"
 msgstr ""
 
 #: front/wizard.form.php:253 front/wizard.form.php:256
@@ -423,7 +428,7 @@ msgid "Form fields"
 msgstr ""
 
 #: inc/field.class.php:1176 inc/fieldoption.class.php:229
-#: inc/fieldoption.class.php:804
+#: inc/fieldoption.class.php:821
 msgid "Link a task to the field"
 msgstr ""
 
@@ -583,27 +588,27 @@ msgstr ""
 msgid "List of options"
 msgstr ""
 
-#: inc/fieldoption.class.php:230 inc/fieldoption.class.php:814
+#: inc/fieldoption.class.php:230 inc/fieldoption.class.php:831
 msgid "Link a field to the field"
 msgstr ""
 
-#: inc/fieldoption.class.php:231 inc/fieldoption.class.php:834
+#: inc/fieldoption.class.php:231 inc/fieldoption.class.php:851
 msgid "Link a hidden field"
 msgstr ""
 
-#: inc/fieldoption.class.php:232 inc/fieldoption.class.php:851
+#: inc/fieldoption.class.php:232 inc/fieldoption.class.php:868
 msgid "Link a hidden block"
 msgstr ""
 
-#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:878
+#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:895
 msgid "Childs blocks"
 msgstr ""
 
-#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:887
+#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:904
 msgid "Link a validation"
 msgstr ""
 
-#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:906
+#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:923
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
@@ -615,44 +620,44 @@ msgstr ""
 msgid "If field empty"
 msgstr ""
 
-#: inc/fieldoption.class.php:805
+#: inc/fieldoption.class.php:822
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: inc/fieldoption.class.php:815
+#: inc/fieldoption.class.php:832
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: inc/fieldoption.class.php:835
+#: inc/fieldoption.class.php:852
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:852
+#: inc/fieldoption.class.php:869
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:879
+#: inc/fieldoption.class.php:896
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
 msgstr ""
 
-#: inc/fieldoption.class.php:888
+#: inc/fieldoption.class.php:905
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
 msgstr ""
 
-#: inc/fieldoption.class.php:907
+#: inc/fieldoption.class.php:924
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
 msgstr ""
 
-#: inc/fieldoption.class.php:1006 inc/step.class.php:247 inc/step.class.php:367
+#: inc/fieldoption.class.php:1023 inc/step.class.php:247 inc/step.class.php:367
 #: inc/step.class.php:387 inc/task.class.php:621 inc/task.class.php:1001
 #: inc/tickettask.class.php:166
 #, php-format
@@ -1318,8 +1323,16 @@ msgstr ""
 msgid "Number of duplicates"
 msgstr ""
 
-#: inc/tools.class.php:156
+#: inc/tools.class.php:155
 msgid "No duplicates founded"
+msgstr ""
+
+#: inc/tools.class.php:184
+msgid "Empty fields options"
+msgstr ""
+
+#: inc/tools.class.php:229
+msgid "No empty field options founded"
 msgstr ""
 
 #: inc/wizard.class.php:71
