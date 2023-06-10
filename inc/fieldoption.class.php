@@ -551,8 +551,21 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
+    /**
+     * @param $item
+     * @param $params
+     * @return void
+     * @throws GlpitestSQLError
+     */
     public static function showValueToCheck($item, $params)
     {
+
+        $field = new self();
+        $options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
+        $already_used = [];
+        foreach ($options as $option) {
+            $already_used[$option["check_value"]] = $option["check_value"];
+        }
 
         switch ($params['type']) {
             case 'textarea':
@@ -560,12 +573,13 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'yesno':
                 $options[1] = __('No');
                 $options[2] = __('Yes');
-                Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value']]);
+                Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value'], 'used' => $already_used]);
                 break;
             case 'dropdown':
             case 'dropdown_object':
             case 'dropdown_meta':
             case 'dropdown_multiple':
+
                 switch ($params["item"]) {
                     case 'ITILCategory_Metademands':
                         $metademand = new PluginMetademandsMetademand();
@@ -577,7 +591,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             'right' => 'all',
                             'value' => $params['check_value'],
                             'condition' => ["id" => $values],
-                            'display' => true];
+                            'display' => true,
+                            'used' => $already_used];
                         ITILCategory::dropdown($opt);
 
                         break;
@@ -589,7 +604,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             'right' => 'all',
                             'rand' => $userrand,
                             'value' => $params['check_value'],
-                            'display' => true
+                            'display' => true,
+                            'used' => $already_used
                         ]);
                         break;
                     case 'Group':
@@ -606,7 +622,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             'value' => $params['check_value'],
                             //                                            'readonly'  => true,
                             'condition' => $cond,
-                            'display' => true
+                            'display' => true,
+                            'used' => $already_used
                         ]);
                         break;
                     default:
@@ -619,7 +636,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             $name = "check_value";
                             //               }
                             $params['item']::Dropdown(["name" => $name,
-                                "value" => $params['check_value']]);
+                                "value" => $params['check_value'], 'used' => $already_used]);
                         } else {
                             if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
                                 $elements[0] = Dropdown::EMPTY_VALUE;
@@ -643,7 +660,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             Dropdown::showFromArray(
                                 "check_value",
                                 $elements,
-                                ['value' => $params['check_value']]
+                                ['value' => $params['check_value'], 'used' => $already_used]
                             );
                         }
                         break;
@@ -661,7 +678,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 Dropdown::showFromArray(
                     "check_value",
                     $elements,
-                    ['value' => $params['check_value']]
+                    ['value' => $params['check_value'], 'used' => $already_used]
                 );
                 break;
 

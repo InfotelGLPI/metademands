@@ -228,6 +228,9 @@ function migrateFieldsOptions()
                         if ($input["check_value"] == 'NOT_NULL') {
                             $input["check_value"] = 0;
                         }
+                        if ($input["plugin_metademands_tasks_id"] == 'NULL') {
+                            $input["plugin_metademands_tasks_id"] = 0;
+                        }
                         if (empty($input["plugin_metademands_tasks_id"])) {
                             $input["plugin_metademands_tasks_id"] = 0;
                         }
@@ -394,6 +397,9 @@ function migrateFieldsOptions()
                     }
                     if ($input["check_value"] == 'NOT_NULL') {
                         $input["check_value"] = 0;
+                    }
+                    if ($input["plugin_metademands_tasks_id"] == 'NULL') {
+                        $input["plugin_metademands_tasks_id"] = 0;
                     }
                     if (empty($input["plugin_metademands_tasks_id"])) {
                         $input["plugin_metademands_tasks_id"] = 0;

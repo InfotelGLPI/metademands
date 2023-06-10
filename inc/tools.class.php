@@ -92,7 +92,7 @@ class PluginMetademandsTools extends CommonDBTM
     {
         global $DB;
 
-        echo "<br><div class='left'>";
+        echo "<div class='left'>";
         echo "<table class='tab_cadre_fixe'>";
 
         $query = "SELECT plugin_metademands_fields_id, COUNT(plugin_metademands_fields_id),
@@ -125,26 +125,25 @@ class PluginMetademandsTools extends CommonDBTM
 
                 echo "<table class='tab_cadre_fixe'>";
                 echo "<tr class='tab_bg_2'>";
-                echo "<th class='center'>";
+                echo "<th class='left' width='50%'>";
                 echo __('Field');
                 echo "</th>";
-                echo "<th class='center'>";
+                echo "<th class='left'>";
                 echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
                 echo "</th>";
-                echo "<th class='center'>";
+                echo "<th class='left'>";
                 echo __('Number of duplicates', 'metademands');
                 echo "</th>";
-                echo "<th class='center'>";
-                echo "</th>";
                 echo "</tr>";
+
                 echo "<tr class='tab_bg_2'>";
-                echo "<td class='center'>";
+                echo "<td class='left'>";
                 echo $field->getLink();
                 echo "</td>";
-                echo "<td class='center'>";
+                echo "<td class='left'>";
                 echo Dropdown::getDropdownName("glpi_plugin_metademands_metademands", $field->fields['plugin_metademands_metademands_id']);
                 echo "</td>";
-                echo "<td class='center'>";
+                echo "<td class='left'>";
                 echo $array['nbr_doublon'];
                 echo "</td>";
                 echo "</tr>";
@@ -154,6 +153,80 @@ class PluginMetademandsTools extends CommonDBTM
             echo "<tr class='tab_bg_2'>";
             echo "<th class='left'>";
             echo __('No duplicates founded', 'metademands');
+            echo "</th>";
+            echo "</tr>";
+        }
+
+        echo "</table></div>";
+
+        echo "<br><div class='left'>";
+        echo "<table class='tab_cadre_fixe'>";
+
+        $query = "SELECT id, plugin_metademands_fields_id
+                    FROM
+                        glpi_plugin_metademands_fieldoptions
+                    WHERE
+                        (`plugin_metademands_tasks_id` = 0 OR `plugin_metademands_tasks_id` IS NULL) AND
+                        `fields_link` = 0 AND
+                        `hidden_link` = 0 AND
+                        `hidden_block` = 0 AND
+                        `users_id_validate` = 0 AND
+                        `childs_blocks` = '[]' AND
+                        `checkbox_value` = 0 AND
+                        `checkbox_id` = 0 AND
+                        `parent_field_id` = 0";
+
+        $result = $DB->query($query);
+
+        if ($DB->numrows($result) > 0) {
+            echo "<tr class='tab_bg_2'>";
+            echo "<th class='left'>";
+            echo __('Empty fields options', 'metademands');
+            echo "</th>";
+            echo "</tr>";
+
+            echo "<tr class='tab_bg_2'>";
+            echo "<td class='left'>";
+
+            while ($array = $DB->fetchAssoc($result)) {
+
+                $field = new PluginMetademandsField();
+                $field->getfromDB($array['plugin_metademands_fields_id']);
+
+                echo "<table class='tab_cadre_fixe'>";
+                echo "<tr class='tab_bg_2'>";
+                echo "<th class='left' width='50%'>";
+                echo __('Field');
+                echo "</th>";
+                echo "<th class='left'>";
+                echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
+                echo "</th>";
+                echo "<th class='center'>";
+                echo "</th>";
+                echo "</tr>";
+                echo "<tr class='tab_bg_2'>";
+                echo "<td class='left'>";
+                echo $field->getLink();
+                echo "</td>";
+                echo "<td class='left'>";
+                echo Dropdown::getDropdownName("glpi_plugin_metademands_metademands", $field->fields['plugin_metademands_metademands_id']);
+                echo "</td>";
+                echo "<td class='center'>";
+                echo Html::getSimpleForm(
+                    PluginMetademandsTools::getFormURL(),
+                    'purge_emptyoptions',
+                    _x('button', 'Delete permanently'),
+                    ['id' => $array['id']],
+                    'fa-times-circle'
+                );
+                echo "</td>";
+                echo "</tr>";
+                echo "</table>";
+            }
+        } else {
+            echo "<tr class='tab_bg_2'>";
+            echo "<th class='left'>";
+            echo __('No empty field options founded', 'metademands');
             echo "</th>";
             echo "</tr>";
         }

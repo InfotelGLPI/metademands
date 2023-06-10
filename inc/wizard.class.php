@@ -896,7 +896,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     if ($meta->getFromDB($id)) {
                         echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
                         echo '<div class="btnsc-normal" >';
-                        $fasize = "fa-4x";
+                        $fasize = "fa-3x";
                         echo "<div class='center'>";
                         $icon = "fa-share-alt";
                         if (!empty($meta->fields['icon'])) {
@@ -1659,7 +1659,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             $color = $data['color'];
                             $style = "";
                             //                  $class = "metademands_wizard_informations";
-                            $class = "alert d-flex alert-warning alert-dismissible fade show";  //alert-important alert-warning alert-dismissible
+                            $class = "alert alert-warning alert-dismissible fade show";  //alert-important alert-warning alert-dismissible
                         } else {
                             $class = "form-group ";
                         }
