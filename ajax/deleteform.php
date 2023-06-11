@@ -45,8 +45,8 @@ $forms = $self->find(['users_id'                          => $users_id,
                        'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id,
                       'is_model' => 1]);
 if($_POST['self_delete'] == true){
-   unset($_SESSION['plugin_metademands']['plugin_metademands_forms_id']);
-   unset($_SESSION['plugin_metademands']['plugin_metademands_forms_name']);
+   unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id']);
+   unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name']);
 }
 $return = "";
 if (count($forms) > 0) {

@@ -65,20 +65,20 @@ class PluginMetademandsStepform extends CommonDBTM
         }
         $forms = $self->find($condition, ['date DESC']);
 
-        if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_name'])) {
-            $formname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands']['plugin_metademands_forms_name'])) ?? '';
+        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
+            $formname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) ?? '';
         } else {
             $formname = '';
         }
-        if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_id'])) {
-            $form_id = $_SESSION['plugin_metademands']['plugin_metademands_forms_id'];
+        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id'])) {
+            $form_id = $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_id'];
         } else {
             $form_id = 0;
         }
         $return = "<span class=''>";
         $rand   = mt_rand();
         if ($is_model == true) {
-            if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_name'])) {
+            if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
                 $return .= "<div class='card-header'>";
                 $return .= __("Current form", 'metademands');
                 $return .= "</div>";
@@ -233,7 +233,7 @@ class PluginMetademandsStepform extends CommonDBTM
                       function loadForm(form_id) {
                          $('#ajax_loader').show();
                          var data_send = $('form').serializeArray();
-                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id});
+                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
                                 type: 'POST',

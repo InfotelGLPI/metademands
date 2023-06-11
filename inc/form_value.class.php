@@ -67,23 +67,24 @@ class PluginMetademandsForm_Value extends CommonDBTM {
    }
 
    /**
-    * @param $plugin_metademands_drafts_id
-    * @param $users_id
+    * @param $plugin_metademands_metademands_id
+    * @param $plugin_metademands_forms_id
     */
-   static function loadFormValues($plugin_metademands_forms_id) {
+   static function loadFormValues($plugin_metademands_metademands_id, $plugin_metademands_forms_id) {
       $form_value   = new self();
       $forms_values = $form_value->find(['plugin_metademands_forms_id' => $plugin_metademands_forms_id]);
+
       foreach ($forms_values as $values) {
-         if (isset($_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id']])) {
-            unset($_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id']]);
-         }
-         if (isset($_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id'] . "-2"])) {
-            unset($_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id'] . "-2"]);
-         }
-         $_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'], true)) ?? Toolbox::addslashes_deep($values['value']);
-         if (!empty($values['value2'])) {
-            $_SESSION['plugin_metademands']['fields'][$values['plugin_metademands_fields_id'] . "-2"] = Toolbox::addslashes_deep(json_decode($values['value2'], true)) ?? Toolbox::addslashes_deep($values['value2']);
-         }
+          if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']])) {
+              unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']]);
+          }
+          if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"])) {
+              unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"]);
+          }
+          $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'], true)) ?? Toolbox::addslashes_deep($values['value']);
+          if (!empty($values['value2'])) {
+              $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"] = Toolbox::addslashes_deep(json_decode($values['value2'], true)) ?? Toolbox::addslashes_deep($values['value2']);
+          }
       }
    }
 }

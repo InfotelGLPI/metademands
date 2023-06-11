@@ -2407,6 +2407,7 @@ class PluginMetademandsField extends CommonDBChild
                                                && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                             $_POST['id_fielduser'] = $data['link_to_user'];
                             $_POST['fields_id']    = $data['id'];
+                            $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
                             $_POST['is_mandatory'] = $data['is_mandatory'] ?? 0;
                             include(PLUGIN_METADEMANDS_DIR . "/ajax/ugroupUpdate.php");
                             echo "</div>";
@@ -2435,8 +2436,8 @@ class PluginMetademandsField extends CommonDBChild
                                 }
                                 unset($cond['user_group']);
                             }
-                            $val_group = (isset($_SESSION['plugin_metademands']['fields'][$data['id']])
-                                   && !is_array($_SESSION['plugin_metademands']['fields'][$data['id']])) ? $_SESSION['plugin_metademands']['fields'][$data['id']] : 0;
+                            $val_group = (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])
+                                   && !is_array($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) ? $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] : 0;
 
                             $opt = ['name'      => $name,
                              'entity'    => $_SESSION['glpiactiveentities'],
@@ -2508,13 +2509,14 @@ class PluginMetademandsField extends CommonDBChild
                                 $_POST['value']        = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                                 $_POST['id_fielduser'] = $data['link_to_user'];
                                 $_POST['fields_id']    = $data['id'];
+                                $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
                                 include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
                                 echo "</div>";
                             } else {
                                 $rand  = mt_rand();
                                 $p     = ['rand'  => $rand,
                                   'name'  => $_POST["field"],
-                                  'value' => $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0];
+                                  'value' => $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0];
                                 $field .= PluginMetademandsField::dropdownMyDevices(Session::getLoginUserID(), $_SESSION['glpiactiveentities'], 0, 0, $p, false);
                             }
                         } else {
@@ -2548,7 +2550,7 @@ class PluginMetademandsField extends CommonDBChild
                             $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                             if (isset($meta_tt->predefined['urgency'])) {
                                 $default_value    = $meta_tt->predefined['urgency'];
-                                $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? $default_value;
+                                $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
                             }
                         }
                         $options['name']     = $namefield . "[" . $data['id'] . "]";
@@ -2571,7 +2573,7 @@ class PluginMetademandsField extends CommonDBChild
                             $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                             if (isset($meta_tt->predefined['impact'])) {
                                 $default_value    = $meta_tt->predefined['impact'];
-                                $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? $default_value;
+                                $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
                             }
                         }
                         $options['name']     = $namefield . "[" . $data['id'] . "]";
@@ -2594,7 +2596,7 @@ class PluginMetademandsField extends CommonDBChild
                             $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                             if (isset($meta_tt->predefined['priority'])) {
                                 $default_value    = $meta_tt->predefined['priority'];
-                                $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? $default_value;
+                                $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
                             }
                         }
                         $options['name']     = $namefield . "[" . $data['id'] . "]";
@@ -2642,6 +2644,7 @@ class PluginMetademandsField extends CommonDBChild
                                                   && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                                 $_POST['id_fielduser'] = $data['link_to_user'];
                                 $_POST['fields_id']    = $data['id'];
+                                $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
                                 include(PLUGIN_METADEMANDS_DIR . "/ajax/ulocationUpdate.php");
                                 echo "</div>";
                             } else {
@@ -2650,8 +2653,8 @@ class PluginMetademandsField extends CommonDBChild
                                 if ($data['is_mandatory'] == 1) {
                                     $options['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                                 }
-                                //TODO Error if mode basket : $value good value - not $_SESSION['plugin_metademands']['fields'][$data['id']]
-                                $options['value'] = $_SESSION['plugin_metademands']['fields'][$data['id']] ?? 0;
+                                //TODO Error if mode basket : $value good value - not $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']]
+                                $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
                                 $field            .= Location::dropdown($options);
                             }
                         } else {
@@ -2940,10 +2943,12 @@ class PluginMetademandsField extends CommonDBChild
                     //warning : this is default value
                     $value = $data['custom_values'];
                 }
+
+                $value = !empty($value) ? $value : $defaults;
+
                 if (is_array($value)) {
                     $value = "";
                 }
-                $value = !empty($value) ? $value : $defaults;
 
                 $field = "";
                 $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $options, ['value' => $value,
@@ -3024,7 +3029,6 @@ class PluginMetademandsField extends CommonDBChild
 
             case 'parent_field':
 
-
                 foreach ($metademands_data as $metademands_data_steps) {
                     foreach ($metademands_data_steps as $line_data) {
                         foreach ($line_data['form'] as $field_id => $field_value) {
@@ -3040,10 +3044,13 @@ class PluginMetademandsField extends CommonDBChild
                                             $parent_field_id = $opts[0]['parent_field_id'];
                                         }
 
-                                        if (isset($line_data['form'][$parent_field_id]['type'])
-                                        && isset($_SESSION['plugin_metademands']['fields'][$parent_field_id])) {
-
-                                            $value = $_SESSION['plugin_metademands']['fields'][$parent_field_id];
+                                    if (isset($line_data['form'][$parent_field_id]['type'])
+                                        && isset($_SESSION['plugin_metademands'][$metademand->getID()]['fields'][$parent_field_id])) {
+                                            if (isset($_SESSION['plugin_metademands'][$metademand->getID()]['fields'][$parent_field_id])) {
+                                                $value = $_SESSION['plugin_metademands'][$metademand->getID()]['fields'][$parent_field_id];
+                                            } else {
+                                                $value = 0;
+                                            }
 
                                             switch ($line_data['form'][$parent_field_id]['type']) {
                                                 case 'dropdown_multiple':
@@ -3129,8 +3136,8 @@ class PluginMetademandsField extends CommonDBChild
 
                                                 case 'date_interval':
                                                     $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                    if (isset($_SESSION['plugin_metademands']['fields'][$data['parent_field_id'] . "-2"])) {
-                                                        $value2 = $_SESSION['plugin_metademands']['fields'][$parent_field_id . "-2"];
+                                                    if (isset($_SESSION['plugin_metademands'][$metademand->getID()]['fields'][$data['parent_field_id'] . "-2"])) {
+                                                        $value2 = $_SESSION['plugin_metademands'][$metademand->getID()]['fields'][$parent_field_id . "-2"];
                                                         $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . $value2 . "'>";
                                                     } else {
                                                         $value2 = 0;
@@ -3140,8 +3147,8 @@ class PluginMetademandsField extends CommonDBChild
 
                                                 case 'datetime_interval':
                                                     $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
-                                                    if (isset($_SESSION['plugin_metademands']['fields'][$data['parent_field_id'] . "-2"])) {
-                                                        $value2 = $_SESSION['plugin_metademands']['fields'][$parent_field_id . "-2"];
+                                                    if (isset($_SESSION['plugin_metademands'][$metademand->getID()]['fields'][$data['parent_field_id'] . "-2"])) {
+                                                        $value2 = $_SESSION['plugin_metademands'][$metademand->getID()]['fields'][$parent_field_id . "-2"];
                                                         $value_parent_field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "-2]' value='" . $value2 . "'>";
                                                     } else {
                                                         $value2 = 0;

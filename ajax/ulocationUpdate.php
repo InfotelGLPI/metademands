@@ -45,8 +45,8 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
          $_POST["field"] = "field[" . $fieldUser->fields['id'] . "]";
       }
    } else {
-      if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
-         $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
+      if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
+         $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
       }
    }
 }
@@ -61,8 +61,8 @@ if (isset($_POST['value']) && $_POST["value"] > 0
 }
 
 if (isset($_POST['fields_id'])
-    && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])) {
-   $locations_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
+    && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
+   $locations_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 $opt = ['name'  => $_POST["field"],

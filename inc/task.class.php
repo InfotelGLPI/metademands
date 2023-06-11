@@ -253,30 +253,60 @@ class PluginMetademandsTask extends CommonDBChild {
 
                 $tickettask = new PluginMetademandsTicketTask();
                 $tickettask->getFromDBByCrit(["plugin_metademands_tasks_id" => $ID]);
-                $values = [
-                    'tickettask_id' => $tickettask->getID(),
-                    'itilcategories_id' => $tickettask->fields['itilcategories_id'],
-                    'type' => $type,
-                    'parent_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
-                    'plugin_metademands_tasks_id' => $ID,
-                    'content' => $tickettask->fields['content'],
-                    'name' => $this->fields['name'],
-                    'block_use' => json_decode($this->fields['block_use'], true),
-                    'useBlock' => $this->fields['useBlock'],
-                    'formatastable' => $this->fields['formatastable'],
-                    'entities_id' => $this->fields['entities_id'],
-                    'is_recursive' => $this->fields['is_recursive'],
-                    'users_id_requester' => $tickettask->fields['users_id_requester'],
-                    'users_id_observer' => $tickettask->fields['users_id_observer'],
-                    'users_id_assign' => $tickettask->fields['users_id_assign'],
-                    'groups_id_requester' => $tickettask->fields['groups_id_requester'],
-                    'groups_id_observer' => $tickettask->fields['groups_id_observer'],
-                    'groups_id_assign' => $tickettask->fields['groups_id_assign'],
-                    'status' => $tickettask->fields['status'],
-                    'requesttypes_id' => $tickettask->fields['requesttypes_id'],
+
+                if ($type == self::TICKET_TYPE || $type == self::TASK_TYPE) {
+                    $values = [
+                        'tickettask_id' => $tickettask->getID(),
+                        'itilcategories_id' => $tickettask->fields['itilcategories_id'],
+                        'type' => $type,
+                        'parent_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
+                        'plugin_metademands_tasks_id' => $ID,
+                        'content' => $tickettask->fields['content'],
+                        'name' => $this->fields['name'],
+                        'block_use' => json_decode($this->fields['block_use'], true),
+                        'useBlock' => $this->fields['useBlock'],
+                        'formatastable' => $this->fields['formatastable'],
+                        'entities_id' => $this->fields['entities_id'],
+                        'is_recursive' => $this->fields['is_recursive'],
+                        'users_id_requester' => $tickettask->fields['users_id_requester'],
+                        'users_id_observer' => $tickettask->fields['users_id_observer'],
+                        'users_id_assign' => $tickettask->fields['users_id_assign'],
+                        'groups_id_requester' => $tickettask->fields['groups_id_requester'],
+                        'groups_id_observer' => $tickettask->fields['groups_id_observer'],
+                        'groups_id_assign' => $tickettask->fields['groups_id_assign'],
+                        'status' => $tickettask->fields['status'],
+                        'requesttypes_id' => $tickettask->fields['requesttypes_id'],
 //                    'actiontime' => $tickettask->fields['actiontime'],
 //                    'itemtype' => $tickettask->fields['itemtype']
-                ];
+                    ];
+                } else {
+                    $values = [
+                        'tickettask_id' => $tickettask->getID(),
+//                        'itilcategories_id' => $tickettask->fields['itilcategories_id'],
+                        'type' => $type,
+//                        'parent_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
+//                        'plugin_metademands_tasks_id' => $ID,
+//                        'content' => $tickettask->fields['content'],
+//                        'name' => $this->fields['name'],
+//                        'block_use' => json_decode($this->fields['block_use'], true),
+//                        'useBlock' => $this->fields['useBlock'],
+//                        'formatastable' => $this->fields['formatastable'],
+//                        'entities_id' => $this->fields['entities_id'],
+//                        'is_recursive' => $this->fields['is_recursive'],
+//                        'users_id_requester' => $tickettask->fields['users_id_requester'],
+//                        'users_id_observer' => $tickettask->fields['users_id_observer'],
+//                        'users_id_assign' => $tickettask->fields['users_id_assign'],
+//                        'groups_id_requester' => $tickettask->fields['groups_id_requester'],
+//                        'groups_id_observer' => $tickettask->fields['groups_id_observer'],
+//                        'groups_id_assign' => $tickettask->fields['groups_id_assign'],
+//                        'status' => $tickettask->fields['status'],
+//                        'requesttypes_id' => $tickettask->fields['requesttypes_id'],
+//                    'actiontime' => $tickettask->fields['actiontime'],
+//                    'itemtype' => $tickettask->fields['itemtype']
+                    ];
+                }
+
+
 
                 PluginMetademandsTicketTask::showTicketTaskForm($item->getID(), $solved, $type, $values);
             } else {
@@ -446,6 +476,7 @@ class PluginMetademandsTask extends CommonDBChild {
                 echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
             }
             echo "</th>";
+            echo "<th class='center b'></th>";
             echo "<th class='center b'>" . __('ID') . "</th>";
             echo "<th class='center b'>" . __('Name') . "</th>";
             echo "<th class='center b'>" . __('Type') . "</th>";
@@ -468,7 +499,7 @@ class PluginMetademandsTask extends CommonDBChild {
                 }
 
                 $onhover = '';
-                if ($canedit) {
+                if ($canedit && ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE)) {
                     $onhover = "style='cursor:pointer'
                            onClick=\"viewEditchild" . $item->getType() . $id . "$rand();\"";
                 }
@@ -483,6 +514,17 @@ class PluginMetademandsTask extends CommonDBChild {
 
                 // ID
                 $color_class = '';
+
+                echo "<td $onhover>";
+                if ($value['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                    if ($value['level'] > 1) {
+                        echo "&nbsp;&nbsp;".$value['parent_task'];
+                        $width = (10 * $value['level']);
+                        echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
+                    }
+                }
+                echo "</td>";
+
                 echo "<td $onhover>";
                 if ($canedit) {
                     echo "\n<script type='text/javascript' >\n";
@@ -504,10 +546,7 @@ class PluginMetademandsTask extends CommonDBChild {
 //                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
 //                    echo "<td $onhover>";
 //                    $width = 0;
-//                    if ($value['level'] > 1) {
-//                        $width = (10 * $value['level']);
-//                        echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
-//                    }
+
 //                    $name = "#metademandTicketTask" . $value['tickettasks_id'];
 //                    echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . PluginMetademandsTicketTask::getTypeName() . "' >";
 //                    echo $value['tickettasks_id'];
@@ -531,11 +570,13 @@ class PluginMetademandsTask extends CommonDBChild {
 //                }
 
                 // Name
-//                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
-                    echo "<td $onhover>";
+
+                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
+
 //                    $width = 0;
 //                    $name  = "#metademandTicketTask" . $value['tickettasks_id'];
 //                    echo "<a href='#' data-bs-toggle='modal' data-bs-target='$name' title='" . PluginMetademandsTicketTask::getTypeName() . "' >";
+                    echo "<td $onhover>";
                     echo $value['tickettasks_name'];
 //                    echo "</a>";
 //                    echo Ajax::createIframeModalWindow(
@@ -550,11 +591,11 @@ class PluginMetademandsTask extends CommonDBChild {
                //                                             ['title' => PluginMetademandsTicketTask::getTypeName(), 'reloadonclose' => true]);
                //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
                     echo "</td>";
-//                } else {
-//                    $color_class = "class='metademand_metademandtasks'";
-//                    echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') .
-//                         "?id=" . $value['link_metademands_id'] . "'>" . Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']) . "</a></td>";
-//                }
+                } else {
+                    $color_class = "class='metademand_metademandtasks'";
+                    echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') .
+                        "?id=" . $value['link_metademands_id'] . "'>" . Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']) . "</a></td>";
+                }
 
                 // Type
                 echo "<td $onhover $color_class>" . self::getTaskTypeName($value['type']) . "</td>";

@@ -14,7 +14,7 @@ color: unset;
 
 div[class^="btnsc"] {
    margin: 0 10px 10px 0;
-   height: 240px !important;
+   height: 250px !important;
    cursor: pointer;
    transition: all .4s ease;
    user-drag: element;

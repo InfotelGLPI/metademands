@@ -65,14 +65,14 @@ if (isset($_POST['save_draft'])) {
                foreach ($data as $form_metademands_id => $line) {
                   foreach ($line['form'] as $id => $value) {
                      if (!isset($post[$id])) {
-                        if (isset($_SESSION['plugin_metademands']['fields'][$id])
+                        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                             && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
-                           $_POST['field'][$id] = $_SESSION['plugin_metademands']['fields'][$id];
+                           $_POST['field'][$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
                         } else {
                            $_POST['field'][$id] = [];
                         }
                      } else {
-                        $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
+                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id] = $post[$id];
                      }
 
                      if ($value['type'] == 'radio') {
@@ -102,19 +102,20 @@ if (isset($_POST['save_draft'])) {
          $metademands->getFromDB($_POST['metademands_id']);
          if ($KO === false) {
             // Save requester user
-            $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
             // Case of simple ticket convertion
-            $_SESSION['plugin_metademands']['fields']['tickets_id'] = $_POST['tickets_id'];
+            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['tickets_id'] = $_POST['tickets_id'];
             // Resources id
-            $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
+            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['resources_id'] = $_POST['resources_id'];
             // Resources step
-            $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
+            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['resources_step'] = $_POST['resources_step'];
 
             //Category id if have category field
-            $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
-            $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
-               (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
-            $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
+            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
+               (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
+                   && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
+//            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
          }
 
          $drafts = new PluginMetademandsDraft();
@@ -133,7 +134,7 @@ if (isset($_POST['save_draft'])) {
                   }
                }
             }
-            PluginMetademandsDraft_Value::loadDraftValues($draft_id);
+            PluginMetademandsDraft_Value::loadDraftValues($_POST['metademands_id'], $draft_id);
             $_POST['draft_name'] = $drafts->getField('name');
          } else {
             if (!isset($_POST['draft_name']) || (isset($_POST['draft_name']) && empty($_POST['draft_name']))) {
@@ -159,8 +160,8 @@ if (isset($_POST['save_draft'])) {
                }
             }
          }
-         $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']   = $draft_id;
-         $_SESSION['plugin_metademands']['plugin_metademands_drafts_name'] = $_POST['draft_name'];
+         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id']   = $draft_id;
+         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_name'] = $_POST['draft_name'];
 
       }
    }

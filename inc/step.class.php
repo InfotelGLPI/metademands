@@ -598,8 +598,8 @@ class PluginMetademandsStep extends CommonDBChild
             $return .= "<table class='tab_cadre_fixe'>";
             $return .= "<form name='nextGroup_form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php'>";
             if (isset($_SESSION['plugin_metademands'][$user_id])) {
-                if (isset($_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'])) {
-                    $return .= "<input type='hidden' name='plugin_metademands_stepforms_id' value = '" . $_SESSION['plugin_metademands']['plugin_metademands_stepforms_id'] . "'>";
+                if (isset($_SESSION['plugin_metademands'][$post['metademands_id']]['plugin_metademands_stepforms_id'])) {
+                    $return .= "<input type='hidden' name='plugin_metademands_stepforms_id' value = '" . $_SESSION['plugin_metademands'][$post['metademands_id']]['plugin_metademands_stepforms_id'] . "'>";
                 }
                 $post = $_SESSION['plugin_metademands'][$user_id];
                 $return .= "<input type ='hidden' name ='tickets_id' value='" . $post['tickets_id'] . "'>";
@@ -725,14 +725,14 @@ class PluginMetademandsStep extends CommonDBChild
                             foreach ($data as $form_metademands_id => $line) {
                                 foreach ($line['form'] as $id => $value) {
                                     if (!isset($post[$id])) {
-                                        if (isset($_SESSION['plugin_metademands']['fields'][$id])
+                                        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                                             && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
-                                            $_POST['field'][$id] = $_SESSION['plugin_metademands']['fields'][$id];
+                                            $_POST['field'][$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
                                         } else {
                                             $_POST['field'][$id] = [];
                                         }
                                     } else {
-                                        $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
+                                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id] = $post[$id];
                                     }
 
                                     if ($value['type'] == 'radio') {
@@ -761,21 +761,21 @@ class PluginMetademandsStep extends CommonDBChild
                     $metademands->getFromDB($_POST['metademands_id']);
                     if ($KO === false) {
                         // Save requester user
-                        $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                         // Case of simple ticket convertion
                         if (isset($_POST['items_id']) && $_POST['itemtype'] == 'Ticket') {
-                            $_SESSION['plugin_metademands']['fields']['tickets_id'] = $_POST['items_id'];
+                            $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['tickets_id'] = $_POST['items_id'];
                         }
                         // Resources id
-                        $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
+                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['resources_id'] = $_POST['resources_id'];
                         // Resources step
-                        $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
+                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['resources_step'] = $_POST['resources_step'];
 
                         //Category id if have category field
-                        $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
-                        $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
-                            (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
-                        $_SESSION['plugin_metademands']['field_type']                                    = $metademands->fields['type'];
+                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
+                            (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
+                                && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
                     }
 
                     $forms = new PluginMetademandsStepform();
@@ -826,26 +826,10 @@ class PluginMetademandsStep extends CommonDBChild
                     $inputs['block_id']                           = $_POST['block_id'];
                     $actor = new PluginMetademandsStepform_Actor();
 
-
-
-//         if (isset($_POST['resources_id']) && $_POST['resources_id'] > 0) {
-//            $resForm = $forms->find(['plugin_metademands_metademands_id' => $_POST['metademands_id'],
-//                                     'resources_id'                      => $_POST['resources_id']]);
-//            if (count($resForm)) {
-//               foreach ($resForm as $res) {
-//                  $last = $res['id'];
-//               }
-//            } else {
-//               $last = 0;
-//            }
-//            $_SESSION['plugin_metademands']['form_to_compare'] = $last;
-//         }
                     if ((isset($_POST['plugin_metademands_stepforms_id'])
                             && !empty($_POST['plugin_metademands_stepforms_id']))
                         || $_POST['update_stepform'] == 1) {
                         $form_new_id = $_POST['plugin_metademands_stepforms_id'];
-//            $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
-//            $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
 
                         $inputsUpdate = [
                             'id' => $form_new_id,
@@ -879,8 +863,6 @@ class PluginMetademandsStep extends CommonDBChild
                                 'users_id' => $inputs['users_id']
                             ]);
                             unset($_SESSION['plugin_metademands'][$user_id]);
-//            $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $form_new_id;
-//            $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
 
                             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
                             if (count($metademands_data) && $form_new_id > 0) {

@@ -208,11 +208,13 @@ class PluginMetademandsMetademand_Resource extends CommonDBTM {
       $metademand_resource = new self();
       $resources_step      = $resources->fields['resources_step'];
 
-      if (isset($resources->fields["plugin_resources_resources_id"]) && !empty($resources->fields["plugin_resources_resources_id"])) {
+      if (isset($resources->fields["plugin_resources_resources_id"])
+          && !empty($resources->fields["plugin_resources_resources_id"])) {
          $resources->getFromDB($resources->fields["plugin_resources_resources_id"]);
       }
 
-      if (!empty($resources->fields["plugin_resources_contracttypes_id"]) && $resources->fields["is_template"] != 1) {
+      if (!empty($resources->fields["plugin_resources_contracttypes_id"])
+          && $resources->fields["is_template"] != 1) {
          $data = $metademand_resource->getDataForResourceContractType($resources->fields['plugin_resources_contracttypes_id'], ['entities_id' => $_SESSION['glpiactive_entity']]);
          $data = array_shift($data);
          if (!empty($data["plugin_metademands_metademands_id"])) {

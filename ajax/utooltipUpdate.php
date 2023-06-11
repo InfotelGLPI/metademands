@@ -36,8 +36,8 @@ if (strpos($_SERVER['PHP_SELF'], "utooltipUpdate.php")) {
 
 Session::checkLoginUser();
 
-if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']]) && !isset($_POST['value'])) {
-   $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
+if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']]) && !isset($_POST['value'])) {
+   $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
 }
 
 $user = new User();

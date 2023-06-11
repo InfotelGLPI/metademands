@@ -39,6 +39,7 @@ Session::checkLoginUser();
 $fieldGroup = new PluginMetademandsField();
 $cond       = [];
 
+
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
         if ($fieldGroup->getFromDBByCrit(['link_to_user'                      => $_POST['id_fielduser'],
@@ -49,14 +50,14 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
             $_POST["field"] = "field[$id]";
         }
     } else {
-        if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
-            $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
+        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
+            $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
         }
 
         $fieldGroup->getFromDB($_POST['fields_id']);
     }
 
-    if (!empty($fieldGroup->fields['custom_values'])) {
+    if (!empty($fieldGroup->fields['custom_values']) && $_POST["value"]) {
         $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
         $group_user_data = Group_User::getUserGroups($_POST["value"], $condition);
 
@@ -92,8 +93,8 @@ if (isset($_POST['value']) && $_POST["value"] > 0
 }
 
 if (isset($_POST['fields_id'])
-    && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])) {
-    $groups_id = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
+    && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
+    $groups_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 

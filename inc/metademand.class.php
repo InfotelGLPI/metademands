@@ -893,11 +893,11 @@ class PluginMetademandsMetademand extends CommonDBTM
         echo "<tr class='tab_bg_1'>";
 
         echo "<td>";
-        //TODO v3.3
+
         echo __('Step-by-step mode', 'metademands');
         echo "</td>";
         echo "<td>";
-        //TODO v3.3
+
         Dropdown::showYesNo("step_by_step_mode", $this->fields['step_by_step_mode']);
         echo "</td>";
 
@@ -1735,6 +1735,10 @@ JAVASCRIPT
     {
         global $PLUGIN_HOOKS;
 
+//        Toolbox::logInfo($metademands_id);
+//        Toolbox::logInfo($values);
+//        Toolbox::logInfo($options);
+
         $tasklevel = 1;
 
         $metademands_data = $this->constructMetademands($metademands_id);
@@ -1792,8 +1796,8 @@ JAVASCRIPT
                         if (count($line['form'])
                             && isset($values['fields'])) {
                             $forms_id = 0;
-                            if (isset($_SESSION['plugin_metademands']['form_to_compare'])) {
-                                $forms_id = $_SESSION['plugin_metademands']['form_to_compare'];
+                            if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['form_to_compare'])) {
+                                $forms_id = $_SESSION['plugin_metademands'][$form_metademands_id]['form_to_compare'];
                             } elseif (isset($values['plugin_metademands_forms_id'])) {
                                 $forms_id = $values['plugin_metademands_forms_id'];
                             }
@@ -1835,7 +1839,7 @@ JAVASCRIPT
                                     }
                                 }
                             }
-                            unset($_SESSION['plugin_metademands']['form_to_compare']);
+                            unset($_SESSION['plugin_metademands'][$form_metademands_id]['form_to_compare']);
                             $values_form[0] = $values['fields'];
                             $parent_fields = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
                             $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
@@ -2144,14 +2148,14 @@ JAVASCRIPT
                             $parent_tickets_id = $object->add($input);
                         }
                         //delete drafts
-                        if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
+                        if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id'])) {
                             $draft = new PluginMetademandsDraft();
-                            $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands']['plugin_metademands_drafts_id']]);
+                            $draft->deleteByCriteria(['id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id']]);
                         }
                         //Link object to forms_id
-                        if (isset($_SESSION['plugin_metademands']['plugin_metademands_forms_id'])) {
+                        if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id'])) {
                             $form = new PluginMetademandsForm();
-                            $form->update(['id' => $_SESSION['plugin_metademands']['plugin_metademands_forms_id'],
+                            $form->update(['id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id'],
                                 'items_id' => $parent_tickets_id,
                                 'itemtype' => $object_class]);
                         }

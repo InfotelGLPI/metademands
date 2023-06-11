@@ -53,8 +53,8 @@ if (isset($_POST['save_model'])) {
 
       if ($newid = $form->add($input)) {
          $KO                                                              = false;
-         $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
-         $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $newid;
+         $_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
+         $_SESSION['plugin_metademands'][$form->fields['plugin_metademands_metademands_id']]['plugin_metademands_forms_id']   = $newid;
          $form_values                                                     = new PluginMetademandsForm_Value();
          $values                                                          = $form_values->find(['plugin_metademands_forms_id' => $_POST['plugin_metademands_forms_id']]);
          foreach ($values as $value) {
@@ -102,14 +102,14 @@ if (isset($_POST['save_model'])) {
                foreach ($data as $form_metademands_id => $line) {
                   foreach ($line['form'] as $id => $value) {
                      if (!isset($post[$id])) {
-                        if (isset($_SESSION['plugin_metademands']['fields'][$id])
+                        if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                             && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
-                           $_POST['field'][$id] = $_SESSION['plugin_metademands']['fields'][$id];
+                           $_POST['field'][$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
                         } else {
                            $_POST['field'][$id] = [];
                         }
                      } else {
-                        $_SESSION['plugin_metademands']['fields'][$id] = $post[$id];
+                        $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id] = $post[$id];
                      }
 
                      if ($value['type'] == 'radio') {
@@ -145,10 +145,10 @@ if (isset($_POST['save_model'])) {
                }
             }
          }
-         PluginMetademandsForm_Value::loadFormValues($_POST['plugin_metademands_forms_id']);
+         PluginMetademandsForm_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
 
-         $_SESSION['plugin_metademands']['plugin_metademands_forms_name'] = $_POST['form_name'];
-         $_SESSION['plugin_metademands']['plugin_metademands_forms_id']   = $_POST['plugin_metademands_forms_id'];
+         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
+         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id']   = $_POST['plugin_metademands_forms_id'];
       }
    }
 }

@@ -45,8 +45,8 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
       }
 
    } else {
-      if (isset($_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']])) {
-         $_POST['value'] = $_SESSION['plugin_metademands']['fields'][$_POST['id_fielduser']];
+      if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
+         $_POST['value'] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']];
       }
    }
 }
@@ -62,8 +62,8 @@ if (isset($_POST['value']) && $_POST["value"] > 0) {
 
 $val = 0;
 if (isset($_POST['fields_id'])
-    && isset($_SESSION['plugin_metademands']['fields'][$_POST['fields_id']])) {
-   $val = $_SESSION['plugin_metademands']['fields'][$_POST['fields_id']];
+    && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
+   $val = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 

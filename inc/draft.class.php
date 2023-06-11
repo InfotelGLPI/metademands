@@ -82,14 +82,14 @@ class PluginMetademandsDraft extends CommonDBTM {
                         "
 
       );
-      if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_name'])) {
-         $draftname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands']['plugin_metademands_drafts_name'])) ?? '';
+      if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'])) {
+         $draftname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'])) ?? '';
       } else {
          $draftname = '';
       }
 
 
-      if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_name'])) {
+      if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'])) {
 
          $return .= "<div class='card-header'>";
          $return .= __("Current draft", 'metademands');
@@ -98,7 +98,7 @@ class PluginMetademandsDraft extends CommonDBTM {
          $return .= "<tr class=''>";
          $return .= "<td colspan='4' class='center'>";
          $title  = "<i class='fas fa-1x fa-save pointer'></i>&nbsp;";
-         $title  .= _sx('button', 'Save draft', 'metademands') . "&nbsp;(" . $_SESSION['plugin_metademands']['plugin_metademands_drafts_name'] . ")";
+         $title  .= _sx('button', 'Save draft', 'metademands') . "&nbsp;(" . $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'] . ")";
          $return .= Html::submit($title, ['name'  => 'save_draft',
                                           'form'  => '',
                                           'id'    => 'submitSave',
@@ -174,8 +174,8 @@ class PluginMetademandsDraft extends CommonDBTM {
       $return .= "</table>";
       $return .= "</p>";
 
-      if (isset($_SESSION['plugin_metademands']['plugin_metademands_drafts_id'])) {
-         $draft_id = $_SESSION['plugin_metademands']['plugin_metademands_drafts_id'];
+      if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id'])) {
+         $draft_id = $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id'];
       } else {
          $draft_id = 0;
       }
@@ -222,7 +222,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                       function loadDraft(draft_id) {
                          $('#ajax_loader').show();
                          var data_send = $('form').serializeArray();
-                         data_send.push({name: 'plugin_metademands_drafts_id', value: draft_id});
+                         data_send.push({name: 'plugin_metademands_drafts_id', value: draft_id},{name: 'metademands_id', value: meta_id});
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loaddraft.php',
                                 type: 'POST',

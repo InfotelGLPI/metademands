@@ -78,7 +78,7 @@ if (isset($_POST['update_fields'])) {
                             $basket[$v['plugin_metademands_fields_id']] = $v['value'];
                         }
 
-                        $_SESSION['plugin_metademands']['basket'][$nblines] = $basket;
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['basket'][$nblines] = $basket;
                         $nblines++;
                     }
                     $_POST['field'] = $basket;
@@ -101,7 +101,7 @@ if (isset($_POST['update_fields'])) {
 
                 for ($i = 0; $i < $nblines; $i++) {
                     if ($metademands->fields['is_order'] == 1) {
-                        $post = $_SESSION['plugin_metademands']['basket'][$i];
+                        $post = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['basket'][$i];
                     }
 
                     foreach ($data as $idf => $form_data_fields) {
@@ -233,19 +233,20 @@ if (isset($_POST['update_fields'])) {
 
                     if ($KO === false) {
                         // Save requester user
-                        $_SESSION['plugin_metademands']['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                         // Case of simple ticket convertion
-                        $_SESSION['plugin_metademands']['fields']['tickets_id'] = $_POST['tickets_id'];
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['tickets_id'] = $_POST['tickets_id'];
                         // Resources id
-                        $_SESSION['plugin_metademands']['fields']['resources_id'] = $_POST['resources_id'];
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['resources_id'] = $_POST['resources_id'];
                         // Resources step
-                        $_SESSION['plugin_metademands']['fields']['resources_step'] = $_POST['resources_step'];
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['resources_step'] = $_POST['resources_step'];
 
                         //Category id if have category field
-                        $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
-                        $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] =
-                            (isset($_POST['basket_plugin_servicecatalog_itilcategories_id']) && $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : $_SESSION['plugin_metademands']['field_plugin_servicecatalog_itilcategories_id'];
-                        $_SESSION['plugin_metademands']['field_type'] = $metademands->fields['type'];
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
+                            (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
+                                && $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'];
+//                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_type'] = $metademands->fields['type'];
                     }
 
                     if ($KO) {
