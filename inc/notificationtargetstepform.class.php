@@ -82,7 +82,7 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
                 return $this->addForGroup(0, $this->obj->fields['groups_id_dest']);
                 break;
             case self::TARGET_NEXT_USER:
-                return $this->getUserAddress($this->obj->fields['users_id_dest']);//
+                return $this->getUserAddress($this->obj->fields['users_id_dest']);
         }
     }
 

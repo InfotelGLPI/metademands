@@ -598,8 +598,8 @@ class PluginMetademandsStep extends CommonDBChild
             $return .= "<table class='tab_cadre_fixe'>";
             $return .= "<form name='nextGroup_form' method='post' action='" . PLUGIN_METADEMANDS_WEBDIR . "/front/nextGroup.form.php'>";
             if (isset($_SESSION['plugin_metademands'][$user_id])) {
-                if (isset($_SESSION['plugin_metademands'][$post['metademands_id']]['plugin_metademands_stepforms_id'])) {
-                    $return .= "<input type='hidden' name='plugin_metademands_stepforms_id' value = '" . $_SESSION['plugin_metademands'][$post['metademands_id']]['plugin_metademands_stepforms_id'] . "'>";
+                if (isset($_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id'])) {
+                    $return .= "<input type='hidden' name='plugin_metademands_stepforms_id' value = '" . $_SESSION['plugin_metademands'][$meta_id]['plugin_metademands_stepforms_id'] . "'>";
                 }
                 $post = $_SESSION['plugin_metademands'][$user_id];
                 $return .= "<input type ='hidden' name ='tickets_id' value='" . $post['tickets_id'] . "'>";
@@ -610,7 +610,7 @@ class PluginMetademandsStep extends CommonDBChild
                 $return .= "<input type='hidden' name='_users_id_requester' value = '" . $post['_users_id_requester'] . "'>";
                 $return .= "<input type='hidden' name='form_metademands_id' value = '" . $post['form_metademands_id'] . "'>";
                 $return .= "<input type='hidden' name='metademands_id' value = '" . $post['metademands_id'] . "'>";
-                $return .= "<input type='hidden' name='update_fields' value = '" . $post['update_fields'] . "'>";
+//                $return .= "<input type='hidden' name='update_fields' value = '" . $post['update_fields'] . "'>";
                 $return .= "<input type='hidden' name='create_metademands' value = '" . $post['create_metademands'] . "'>";
                 $return .= "<input type='hidden' name='step' value = '" . $post['step'] . "'>";
                 $return .= "<input type='hidden' name='action' value = '" . $post['action'] . "'>";
