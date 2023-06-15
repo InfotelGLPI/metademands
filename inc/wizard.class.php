@@ -1792,21 +1792,15 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
                 echo "</div>";
 
-//                if ($preview) {
-//                    $color = PluginMetademandsField::setColor($line[$keys[count($keys) - 1]]['rank']);
-//                    echo "<div class=\"row\" style='border-bottom: 3px solid #" . $color . ";' >";
-//                    echo "</div>";
-//                }
-
                 // Fields linked
 
                 foreach ($line as $data) {
                     PluginMetademandsFieldOption::fieldsLinkScript($data);
 
                     PluginMetademandsFieldOption::fieldsHiddenScript($data);
-//
+
                     PluginMetademandsFieldOption::blocksHiddenScript($data);
-//
+
                     PluginMetademandsFieldOption::checkboxScript($data);
                 }
 

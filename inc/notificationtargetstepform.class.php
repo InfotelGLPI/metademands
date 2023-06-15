@@ -155,7 +155,7 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
         $tags = [$objettypeMeta . '.title' => __('Title'),
             $objettype . '.user_editor' => __('Publisher', 'metademands'),
             $objettype . '.nextgroup' => __('Group in charge of the next step', 'metademands'),
-            $objettype . '.users_id_dest' => __('User in charge of the next step', 'users_id_dest'),
+            $objettype . '.users_id_dest' => __('User in charge of the next step', 'metademands'),
             $objettype . '.date' => __('Date of the last step', 'metademands'),
             $objettype . '.reminder_date' => __('Date of the next reminder', 'metademands'),
         ];

@@ -94,6 +94,7 @@ ALTER TABLE `glpi_plugin_metademands_tickets_tasks` ADD KEY `parent_tickets_id` 
 ALTER TABLE `glpi_plugin_metademands_tickets_metademands` ADD KEY `parent_tickets_id` (`parent_tickets_id`);
 ALTER TABLE `glpi_plugin_metademands_tickets_metademands` ADD KEY `tickettemplates_id` (`tickettemplates_id`);
 ALTER TABLE `glpi_plugin_metademands_metademands_resources` ADD KEY `entities_id` (`entities_id`);
+ALTER TABLE `glpi_plugin_metademands_metademands_resources` ADD KEY `plugin_resources_contracttypes_id` (`plugin_resources_contracttypes_id`);
 ALTER TABLE `glpi_plugin_metademands_ticketfields` ADD KEY `entities_id` (`entities_id`);
 ALTER TABLE `glpi_plugin_metademands_basketlines` ADD KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`);
 ALTER TABLE `glpi_plugin_metademands_basketlines` ADD KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`);

@@ -247,6 +247,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         if (!isset($options['withtemplate']) || empty($options['withtemplate'])) {
             if ($this->getField('object_to_create') == 'Ticket') {
                 $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
+                $this->addStandardTab('PluginMetademandsStepform', $ong, $options);
             }
         }
         return $ong;

@@ -1884,9 +1884,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     $script .= "fixButtonIndicator();console.log('hidden-yesno-1');";
                                     //Initialize id default value
                                     foreach ($check_values as $idc => $check_value) {
-                                        $hidden_block = $check_value['hidden_block'];
 
-                                        //include child blocks
+                                        $hidden_block = $check_value['hidden_block'];
                                         //include child blocks
                                         if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
                                             $childs_blocks = json_decode($check_value['childs_blocks'], true);
@@ -1909,7 +1908,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 }
                                             }
                                         }
-                                        $script2 .= "$('[bloc-id =\"bloc4\"]').hide();";
                                     }
 
                                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');

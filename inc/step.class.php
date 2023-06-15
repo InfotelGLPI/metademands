@@ -591,7 +591,10 @@ class PluginMetademandsStep extends CommonDBChild
             $block_id = $_GET['block_id'];
         }
         if (!$conf->fields['multiple_link_groups_blocks'] && !$conf->fields['link_user_block']) {
-            $return = "";
+            $return = Html::popHeader('nextGroup');
+
+            $return .= "<div class='alert alert-important alert-danger d-flex'>";
+            $return .= "<b>".__('There is a problem with the setup', 'metademands')."</b></div>";
         } else if ($conf->fields['multiple_link_groups_blocks'] || (!$conf->fields['multiple_link_groups_blocks'] && $conf->fields['link_user_block'])) {
             $return = Html::popHeader('nextGroup');
             
@@ -610,7 +613,7 @@ class PluginMetademandsStep extends CommonDBChild
                 $return .= "<input type='hidden' name='_users_id_requester' value = '" . $post['_users_id_requester'] . "'>";
                 $return .= "<input type='hidden' name='form_metademands_id' value = '" . $post['form_metademands_id'] . "'>";
                 $return .= "<input type='hidden' name='metademands_id' value = '" . $post['metademands_id'] . "'>";
-                $return .= "<input type='hidden' name='update_fields' value = '" . $post['update_fields'] . "'>";
+//                $return .= "<input type='hidden' name='update_fields' value = '" . $post['update_fields'] . "'>";
                 $return .= "<input type='hidden' name='create_metademands' value = '" . $post['create_metademands'] . "'>";
                 $return .= "<input type='hidden' name='step' value = '" . $post['step'] . "'>";
                 $return .= "<input type='hidden' name='action' value = '" . $post['action'] . "'>";
@@ -678,15 +681,15 @@ class PluginMetademandsStep extends CommonDBChild
             $return .= "</span>";
             $return .= "</td>";
         }
-
-        $return .= "</tr>";
-        $return .= "<tr class='tab_bg_1'>";
-        $return .= "<td colspan='1'>";
-        $return .= "<button id='submitNextGroupModal' type='submit' class='btn btn-primary'><span>" . _sx('button', 'Validate', 'metademands') . "</span></button>";
-        $return .= "</td>";
-        $return .= "</tr>";
-        $return .= "</table>";
-
+        if ($conf->fields['multiple_link_groups_blocks'] || (!$conf->fields['multiple_link_groups_blocks'] && $conf->fields['link_user_block'])) {
+            $return .= "</tr>";
+            $return .= "<tr class='tab_bg_1'>";
+            $return .= "<td colspan='1'>";
+            $return .= "<button id='submitNextGroupModal' type='submit' class='btn btn-primary'><span>" . _sx('button', 'Validate', 'metademands') . "</span></button>";
+            $return .= "</td>";
+            $return .= "</tr>";
+            $return .= "</table>";
+        }
         $return .= Html::footer();
 
         return $return;

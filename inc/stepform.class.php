@@ -322,29 +322,15 @@ class PluginMetademandsStepform extends CommonDBTM
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        if (($item->getType() == 'Ticket' && $_SESSION['glpiactiveprofile']['interface'] == 'helpdesk')
-            || $item->getType() == 'Problem'
-            || $item->getType() == 'Change') {
-            if ($this->canView()
-                && !$withtemplate
-                && countElementsInTable("glpi_plugin_metademands_forms", ["itemtype" => $item->getType(),
-                                                                          "items_id" => $item->fields['id']])) {
-                $form_metademand_data = $this->find(['itemtype' => $item->getType(), 'items_id' => $item->fields['id']]);
-                $total                = count($form_metademand_data);
-                $name                 = _n('Initial form', 'Initial forms', $total, 'metademands');
+        if ($item->getType() == 'PluginMetademandsMetademand') {
+            $form_metademand_data = $this->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
 
-                return self::createTabEntry(
-                    $name,
-                    $total
-                );
-            }
-        } elseif ($item->getType() == 'User') {
-            if ($this->canView()
-                && !$withtemplate
-                && countElementsInTable("glpi_plugin_metademands_forms", ["users_id" => $item->fields['id']])) {
-                $form_metademand_data = $this->find(['users_id' => $item->fields['id']]);
+            if (
+                $this->canView()
+                && !$withtemplate) {
+
                 $total                = count($form_metademand_data);
-                $name                 = _n('Associated form', 'Associated forms', $total, 'metademands');
+                $name                 = _n('Form in progress', 'Forms in progress', $total, 'metademands');
 
                 return self::createTabEntry(
                     $name,
@@ -355,8 +341,9 @@ class PluginMetademandsStepform extends CommonDBTM
         return '';
     }
 
+
+
     /**
-     * Display content for each users
      *
      * @static
      *
@@ -369,16 +356,44 @@ class PluginMetademandsStepform extends CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        $form = new self();
+        global $DB;
 
         switch ($item->getType()) {
-            case 'Ticket':
-            case 'Problem':
-            case 'Change':
-//                $form->showFormsForItilObject($item);
-                break;
-            case 'User':
-//                $form->showFormsForUser($item);
+
+            case 'PluginMetademandsMetademand':
+                $stepform   = new self();
+
+                $stepforms  = $stepform->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
+
+                if (count($stepforms) > 0) {
+                    echo "<table class='tab_cadrehov'>";
+                    echo "<tr>";
+                    echo "<th>" . __('ID') . "</th>";
+                    echo "<th>" . __('Publisher', 'metademands') . "</th>";
+                    echo "<th>" . __('Next user in charge of demand', 'metademands') . "</th>";
+                    echo "<th>" . __('Date') . "</th>";
+                    echo "</tr>";
+                    foreach ($stepforms as $id => $form) {
+
+                        echo "<tr>";
+                        echo "<td>";
+                        echo $id;
+                        echo "</td>";
+                        echo "<td>";
+                        echo getUserName($form['users_id']);
+                        echo "</td>";
+                        echo "<td>";
+                        echo getUserName($form['users_id_dest']);
+                        echo "</td>";
+                        echo "<td>";
+                        echo Html::convDateTime($form['date']);
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                    echo "</table>";
+                } else {
+                    echo "<div class='alert alert-important alert-info center'>" . __('No item found') . "</div>";
+                }
                 break;
         }
 
@@ -541,7 +556,7 @@ class PluginMetademandsStepform extends CommonDBTM
         $meta->getFromDB($this->fields["plugin_metademands_metademands_id"]);
 
         $options = [
-            'entities_id' => $meta->fields["entities_id"],
+            'entities_id' => $_SESSION['glpiactive_entity'],
             'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
         ];
         NotificationEvent::raiseEvent("new_step_form", $this, $options);

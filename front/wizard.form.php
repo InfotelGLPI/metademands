@@ -63,6 +63,7 @@ if (empty($_GET['resources_id'])) {
                     $_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'] = $field;
                 }
             }
+
         }
     }
 } else {
@@ -75,6 +76,19 @@ if (empty($_GET['resources_step'])) {
 
 if (empty($_GET['step'])) {
     $_GET['step'] = PluginMetademandsMetademand::STEP_INIT;
+}
+
+$config = new PluginMetademandsConfig();
+$config->getFromDB(1);
+
+if (Session::getCurrentInterface() != 'central'
+    && Plugin::isPluginActive('servicecatalog')
+    && ($_GET['step'] == PluginMetademandsMetademand::STEP_INIT || $_GET['step'] == PluginMetademandsMetademand::STEP_LIST)
+    && $config->getField('display_buttonlist_servicecatalog') == 0
+    && Session::haveRight("plugin_servicecatalog", READ)) {
+
+    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
+
 }
 
 // Url Redirect case
