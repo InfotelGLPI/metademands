@@ -41,7 +41,7 @@ $metademands = new PluginMetademandsMetademand();
 $wizard = new PluginMetademandsWizard();
 $fields = new PluginMetademandsField();
 
-if (isset($_POST['update_fields'])) {
+//if (isset($_POST['update_fields'])) {
 
     if ($metademands->canCreate()
         || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
@@ -168,6 +168,7 @@ if (isset($_POST['update_fields'])) {
                         }
                     }
 
+//                    Toolbox::logInfo($data);
                     //end fields_link to be mandatory
                     foreach ($data as $id => $value) {
                         if (!isset($post[$id])) {
@@ -261,7 +262,7 @@ if (isset($_POST['update_fields'])) {
             }
         }
     }
-}
+//}
 if ($KO === false) {
     echo 0;
 } else {

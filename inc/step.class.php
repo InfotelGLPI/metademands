@@ -610,7 +610,7 @@ class PluginMetademandsStep extends CommonDBChild
                 $return .= "<input type='hidden' name='_users_id_requester' value = '" . $post['_users_id_requester'] . "'>";
                 $return .= "<input type='hidden' name='form_metademands_id' value = '" . $post['form_metademands_id'] . "'>";
                 $return .= "<input type='hidden' name='metademands_id' value = '" . $post['metademands_id'] . "'>";
-//                $return .= "<input type='hidden' name='update_fields' value = '" . $post['update_fields'] . "'>";
+                $return .= "<input type='hidden' name='update_fields' value = '" . $post['update_fields'] . "'>";
                 $return .= "<input type='hidden' name='create_metademands' value = '" . $post['create_metademands'] . "'>";
                 $return .= "<input type='hidden' name='step' value = '" . $post['step'] . "'>";
                 $return .= "<input type='hidden' name='action' value = '" . $post['action'] . "'>";

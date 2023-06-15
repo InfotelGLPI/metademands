@@ -998,7 +998,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             }
                             if (!isset($_POST['form_metademands_id']) ||
                                 (isset($_POST['form_metademands_id']) && $form_metademands_id != $_POST['form_metademands_id'])) {
-                                if (!isset($_SESSION['metademands_hide'][$form_metademands_id])) {
+                                if (!isset($_SESSION['metademands_hide'])) {
                                     self::constructForm($metademands_id, $metademands_data, $step, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
                                 } else {
                                     $step++;
@@ -1192,7 +1192,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             'form' => '',
                             'id' => 'childmeta',
                             'class' => 'btn btn-primary metademand_next_button']);
-                        $ID = array_key_first($metademands_data[$step+1]);
+                        $ID = array_key_first($metademands_data[$step + 1]);
                         echo "<script>
                                           $('#childmeta').click(function() {
                                              var meta_id = {$ID};
@@ -1618,37 +1618,38 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     // Title field
                     if ($data['type'] == 'title') {
-                        $color = self::hex2rgba($data['color'], "0.03");
-                        $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;'";
-                        echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
-                        echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
+                        if ($data['hide_title'] == 0) {
+                            $color = self::hex2rgba($data['color'], "0.03");
+                            $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;'";
+                            echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
+                            echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
 
-                        if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
-                            $label = $data['name'];
-                        }
-
-                        echo $label;
-                        echo $config_link;
-                        if (isset($data['label2']) && !empty($data['label2'])) {
-                            echo "&nbsp;";
-                            if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                                $label2 = $data['label2'];
+                            if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
+                                $label = $data['name'];
                             }
-                            Html::showToolTip(
-                                Glpi\RichText\RichText::getSafeHtml($label2),
-                                ['awesome-class' => 'fa-info-circle']
-                            );
-                        }
-                        echo "</span></h2>";
-                        echo "</div>";
-                        if (!empty($data['comment'])) {
-                            if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
-                                $comment = $data['comment'];
-                            }
-                            $comment = htmlspecialchars_decode(stripslashes($comment));
-                            echo "<div class='card-body'><i>" . $comment . "</i></div>";
-                        }
 
+                            echo $label;
+                            echo $config_link;
+                            if (isset($data['label2']) && !empty($data['label2'])) {
+                                echo "&nbsp;";
+                                if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                                    $label2 = $data['label2'];
+                                }
+                                Html::showToolTip(
+                                    Glpi\RichText\RichText::getSafeHtml($label2),
+                                    ['awesome-class' => 'fa-info-circle']
+                                );
+                            }
+                            echo "</span></h2>";
+                            echo "</div>";
+                            if (!empty($data['comment'])) {
+                                if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
+                                    $comment = $data['comment'];
+                                }
+                                $comment = htmlspecialchars_decode(stripslashes($comment));
+                                echo "<div class='card-body'><i>" . $comment . "</i></div>";
+                            }
+                        }
                         $count = $count + $columns;
 
                         // Other fields
@@ -1955,7 +1956,8 @@ class PluginMetademandsWizard extends CommonDBTM
                     $modal_html = '';
                     $parent_fields = $metademands->formatFields($lineForStepByStep, $metademands_id, [$metademands_id => $data_form], []);
                     $form = new PluginMetademandsStepform();
-                    if ($form->getFromDBByCrit(['id' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']])) {
+                    if (isset($_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id'])
+                        && $form->getFromDBByCrit(['id' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']])) {
                         $previousUser = new User();
                         if ($previousUser->getFromDBByCrit(['id' => $form->fields['users_id']])) {
                             $lbl = __('Previous user', 'metademands');
@@ -1966,7 +1968,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             </tr>
                         </table>";
                         }
-                    }
+
                         $modal_html .= Glpi\RichText\RichText::getSafeHtml($parent_fields['content']);
                         $title = __('Previous data edited', 'metademands');
                         $setting_dialog = json_encode($modal_html);
@@ -1979,14 +1981,15 @@ class PluginMetademandsWizard extends CommonDBTM
                                                     });");
 
 
-                    if (isset($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
-                        if (is_array($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
-                            $hidden_blocks = $_SESSION['plugin_metademands'][$ID]['hidden_blocks'];
-                            $script = "";
-                            foreach ($hidden_blocks as $hidden_block) {
-                                $script .= "$('div[bloc-id=\"bloc$hidden_block\"]').hide();";
+                        if (isset($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
+                            if (is_array($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
+                                $hidden_blocks = $_SESSION['plugin_metademands'][$ID]['hidden_blocks'];
+                                $script = "";
+                                foreach ($hidden_blocks as $hidden_block) {
+                                    $script .= "$('div[bloc-id=\"bloc$hidden_block\"]').hide();";
+                                }
+                                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                             }
-                            echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                         }
                     }
                 }
@@ -2021,9 +2024,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 if (!isset($stepConfig->fields['link_user_block'])
                     && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
                     $modal = false;
-                } else if($block_current_id_stepform != 99999999){
+                } else if ($block_current_id_stepform != 99999999) {
                     $canSeeNextBlock = PluginMetademandsStep::canSeeBlock($metademands_id, $block_current_id_stepform + 1);
-                    if(!$canSeeNextBlock) {
+                    if (!$canSeeNextBlock) {
                         $modal = true;
                         $updateStepform = 1;
                     }
@@ -2743,6 +2746,7 @@ class PluginMetademandsWizard extends CommonDBTM
     {
         $KO = false;
         $content = [];
+
         if (($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval') && !isset($value['second_date_ok'])) {
             $value['second_date_ok'] = true;
             $value['id'] = $id . '-2';
@@ -3005,6 +3009,7 @@ class PluginMetademandsWizard extends CommonDBTM
             // Check File upload field
             if ($value['type'] == "upload"
                 && $value['is_mandatory']) {
+
                 if (isset($post['_filename'])) {
                     if (empty($post['_filename'][0])) {
                         $msg[] = $value['name'];

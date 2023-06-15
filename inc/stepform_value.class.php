@@ -74,6 +74,8 @@ class PluginMetademandsStepform_Value extends CommonDBTM
     {
         $form_value   = new self();
         $forms_values = $form_value->find(['plugin_metademands_stepforms_id' => $plugin_metademands_forms_id]);
+
+        $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_stepforms_id'] = $plugin_metademands_forms_id;
         foreach ($forms_values as $values) {
             if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']])) {
                 unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']]);
