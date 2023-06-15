@@ -2690,7 +2690,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     $hidden_blocks[] =$childs_block;
                                 }
                             }
-                            }
+                        }
 
 
                         //for hidden blocks

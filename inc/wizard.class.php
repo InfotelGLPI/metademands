@@ -514,7 +514,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     && Plugin::isPluginActive('servicecatalog')) {
                     $configsc = new PluginServicecatalogConfig();
 
-                    $seedetail = $configsc->getDetailBeforeFormRedirect();
+                    $seedetail = 1;
+                    if (method_exists("PluginServicecatalogConfig", "getDetailBeforeFormRedirect")) {
+                        $seedetail = $configsc->getDetailBeforeFormRedirect();
+                    }
 
                     if ($configsc->seeCategoryDetails() && $seedetail == 0) {
                         $itilcategories_id = 0;
@@ -1357,7 +1360,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 
                             }
                 });');
-            $block_current_id_stepform = $_SESSION['plugin_metademands']['block_id'] ?? 99999999;
+            $block_current_id_stepform = $_SESSION['plugin_metademands'][$metademands_id]['block_id'] ?? 99999999;
 
             foreach ($allfields as $blocks => $line) {
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
@@ -2000,7 +2003,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
 
                 //Html::scriptBlock('var step = sessionStorage.currentStep; return step;');
-                $block_id = $_SESSION['plugin_metademands']['block_id'] ?? 0;
+                $block_id = $_SESSION['plugin_metademands'][$ID]['block_id'] ?? 0;
 
                 //TODO v3.3
 //                if ($metademands->fields['step_by_step_mode'] == 1
