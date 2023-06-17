@@ -150,23 +150,24 @@ $fields = new PluginMetademandsField();
                     $fields_links = array_unique($fields_links);
                     $fields_links = array_filter($fields_links);
 
-                    $toBeMandatory = [];
-                    foreach ($fields_links as $fields_link) {
-                        if (isset($_POST['field'][$fields_link]) && empty($_POST['field'][$fields_link])) {
-                            $toBeMandatory[] = $fields_link;
-                        }
-                    }
+//                    $toBeMandatory = [];
+//                    foreach ($fields_links as $fields_link) {
+//                        if (isset($_POST['field'][$fields_link])
+//                            && empty($_POST['field'][$fields_link])) {
+//                            $toBeMandatory[] = $fields_link;
+//                        }
+//                    }
+//
+//                    $toBeMandatory = array_unique($toBeMandatory);
+//                    $toBeMandatory = array_filter($toBeMandatory);
 
-                    $toBeMandatory = array_unique($toBeMandatory);
-                    $toBeMandatory = array_filter($toBeMandatory);
-
-                    if (is_array($toBeMandatory) && count($toBeMandatory) > 0) {
-                        foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
-                            if (isset($data[$valueMandatory]['type'])) {
-                                $data[$valueMandatory]['is_mandatory'] = true;
-                            }
-                        }
-                    }
+//                    if (is_array($toBeMandatory) && count($toBeMandatory) > 0) {
+//                        foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
+//                            if (isset($data[$valueMandatory]['type'])) {
+//                                $data[$valueMandatory]['is_mandatory'] = true;
+//                            }
+//                        }
+//                    }
 
 //                    Toolbox::logInfo($data);
                     //end fields_link to be mandatory

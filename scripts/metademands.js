@@ -205,7 +205,7 @@
                $("[name='field[" + id_field + "]']").next('input').attr('required', 'required');
             // }
          } else {
-            if (type != 'checkbox' && type != 'radio') {
+            if (type != 'checkbox') {
                $('#' + toupdate).html('');
                id_field = toupdate.substring(22);
                $("[name='field[" + id_field + "]']").removeAttr('required');

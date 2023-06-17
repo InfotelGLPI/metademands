@@ -2358,19 +2358,27 @@ class PluginMetademandsWizard extends CommonDBTM
                   //                           }
                         }
                         if (y[i].type == 'radio' && fieldmandatory == true) {
-                           if (y[i].checked) lengthr++;
-                           var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                           if (res != 'none' && lengthr == 0) {
-                              $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                              $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                              ko++;
-                           } else {
+                            
+                            var boutonsRadio = document.querySelectorAll('input[name=\"' + fieldname + '\"]')
+                            var check = false;
+                            for (var b = 0; b < boutonsRadio.length; b++) {
+                              if (boutonsRadio[b].checked) {
+                                check = true;
+                                break;
+                              }
+                            }
+                            // Vérifier le résultat
+                            if (check) {
                               $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                               $('[name=\"' + fieldname + '\"]').removeAttr('required');
                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
-                              ko--;
-                           }
+                            } else {
+                               $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                              $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                              ko++;
+                            }
+
                         }
                         if (y[i].type == 'checkbox' && fieldmandatory == true) {
                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
@@ -2699,7 +2707,11 @@ class PluginMetademandsWizard extends CommonDBTM
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php?changeactiveentity");
                 } else {
                     $type = $metademands->fields['type'];
-                    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
+                    if ($type > 0) {
+                        Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
+                    } else {
+                        Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
+                    }
                 }
 
 

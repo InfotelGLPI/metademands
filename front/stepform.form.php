@@ -38,12 +38,14 @@ if (!isset($_GET["withtemplate"])) {
 
 if (isset($_POST['delete_form_from_list'])) {
 
-    $step      = new PluginMetademandsStepform();
-    $step->deleteByCriteria(['id' => $_POST['plugin_metademands_stepforms_id']]);
-
-    $step_values      = new PluginMetademandsStepform_Value();
-    $step_values->deleteByCriteria(['plugin_metademands_stepforms_id' => $_POST['plugin_metademands_stepforms_id']]);
+    PluginMetademandsStepform::deleteAfterCreate($_POST['plugin_metademands_stepforms_id']);
 
     Html::redirect(PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php");
+
+} else if (isset($_POST['delete_form_from_metademands'])) {
+
+    PluginMetademandsStepform::deleteAfterCreate($_POST['plugin_metademands_stepforms_id']);
+
+    Html::back();
 
 }

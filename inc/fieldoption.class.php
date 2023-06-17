@@ -1091,6 +1091,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                             $script .= "], '" . $data['item'] . "');";
 //                        }
+
                             echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                         }
                     }

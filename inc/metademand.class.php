@@ -397,8 +397,14 @@ class PluginMetademandsMetademand extends CommonDBTM
     {
         global $DB;
         $cat_already_store = false;
+
+
         if (isset($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
             //retrieve all multiple cats from all metademands
+            if ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change') {
+                $input['type'] = 0;
+            }
+
             $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
                 'FROM' => $this->getTable(),
                 'WHERE' => ['is_deleted' => 0, 'is_template' => 0, 'type' => $input['type']]]);

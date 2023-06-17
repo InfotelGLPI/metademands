@@ -197,7 +197,7 @@ class PluginMetademandsGroup extends CommonDBChild {
             Toolbox::getItemTypeFormURL('PluginMetademandsGroup')."'>";
 
          echo "<div align='center'><table class='tab_cadre_fixe'>";
-         echo "<tr><th colspan='6'>".__('Add a group', 'metademands')."</th></tr>";
+         echo "<tr><th>".__('Add a group', 'metademands')."</th></tr>";
 
          echo "<tr class='tab_bg_1'>";
          // Dropdown group
@@ -205,13 +205,14 @@ class PluginMetademandsGroup extends CommonDBChild {
          echo __('Group').'&nbsp;';
          Dropdown::showFromArray("groups_id", $groups, ['name'     => 'groups_id',
                                                              'width'    => '150',
-                                                             'multiple' => true
+                                                             'multiple' => true,
+                                                            'used' => $used_groups
          ]);
          echo "</td>";
          echo "</tr>";
 
          echo "<tr>";
-         echo "<td class='tab_bg_2 center' colspan='6'>";
+         echo "<td class='tab_bg_2 center'>";
          echo Html::submit(_sx('button', 'Add'), ['name' => 'add_groups', 'class' => 'btn btn-primary']);
          echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
          echo "</td>";

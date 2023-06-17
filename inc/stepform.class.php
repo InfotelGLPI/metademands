@@ -361,195 +361,69 @@ class PluginMetademandsStepform extends CommonDBTM
         switch ($item->getType()) {
 
             case 'PluginMetademandsMetademand':
-                $stepform   = new self();
-
-                $stepforms  = $stepform->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
-
-                if (count($stepforms) > 0) {
-                    echo "<table class='tab_cadrehov'>";
-                    echo "<tr>";
-                    echo "<th>" . __('ID') . "</th>";
-                    echo "<th>" . __('Publisher', 'metademands') . "</th>";
-                    echo "<th>" . __('Next user in charge of demand', 'metademands') . "</th>";
-                    echo "<th>" . __('Date') . "</th>";
-                    echo "</tr>";
-                    foreach ($stepforms as $id => $form) {
-
-                        echo "<tr>";
-                        echo "<td>";
-                        echo $id;
-                        echo "</td>";
-                        echo "<td>";
-                        echo getUserName($form['users_id']);
-                        echo "</td>";
-                        echo "<td>";
-                        echo getUserName($form['users_id_dest']);
-                        echo "</td>";
-                        echo "<td>";
-                        echo Html::convDateTime($form['date']);
-                        echo "</td>";
-                        echo "</tr>";
-                    }
-                    echo "</table>";
-                } else {
-                    echo "<div class='alert alert-important alert-info center'>" . __('No item found') . "</div>";
-                }
+                self::listFormFromMetademand($item);
                 break;
         }
 
         return true;
     }
 
+
     /**
-     * @param $ticket
-     *
-     * @return bool
-     * @throws \GlpitestSQLError
+     * @param $item
+     * @return void
      */
-    public function showFormsForItilObject($item)
+    public function listFormFromMetademand($item)
     {
-        if (!$this->canView()) {
-            return false;
-        }
-        $form_metademand_data = $this->find(['itemtype' => $item->getType(),
-                                             'items_id' => $item->fields['id'],
-                                             'is_model' => 0], ['date DESC']);
+        $stepform = new self();
 
-        if (count($form_metademand_data)) {
-            $name = _n('Initial form', 'Initial forms', count($form_metademand_data), 'metademands');
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='center'>";
-            echo "<th colspan='4'>" . $name . "</th>";
+        $stepforms = $stepform->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
+
+        if (count($stepforms) > 0) {
+            echo "<table class='tab_cadrehov'>";
+            echo "<tr>";
+            echo "<th>" . __('ID') . "</th>";
+            echo "<th>" . __('Publisher', 'metademands') . "</th>";
+            echo "<th>" . __('Next user in charge of demand', 'metademands') . "</th>";
+            echo "<th>" . __('Date') . "</th>";
+            echo "<th></th>";
             echo "</tr>";
+            foreach ($stepforms as $id => $form) {
 
-            echo "<tr class='tab_bg_1'>";
-            echo "<th>" . __('Name') . "</th>";
-            echo "<th>" . __('Creation date') . "</th>";
-            echo "<th>" . __('By') . "</th>";
-            echo "<th>" . __('See form', 'metademands') . "</th>";
-            echo "</tr>";
-
-            foreach ($form_metademand_data as $form_metademand_fields) {
-                $plugin_metademands_metademands_id = $form_metademand_fields['plugin_metademands_metademands_id'];
-                $users_id                          = $form_metademand_fields['users_id'];
-                $items_id                          = $item->fields['id'];
-                $itemtype                          = $item->getType();
-                echo "<tr class='tab_bg_1'>";
+                echo "<tr>";
                 echo "<td>";
-                $meta = new PluginMetademandsMetademand();
-                $meta->getFromDB($plugin_metademands_metademands_id);
-                echo $meta->getName();
+                echo $id;
                 echo "</td>";
-
                 echo "<td>";
-                echo Html::convDateTime($form_metademand_fields['date']);
+                echo getUserName($form['users_id']);
                 echo "</td>";
-
                 echo "<td>";
-                echo User::getFriendlyNameById($form_metademand_fields['users_id']);
+                echo getUserName($form['users_id_dest']);
                 echo "</td>";
-
                 echo "<td>";
-                $rand = mt_rand();
-                echo "<button form='' class='submit btn btn-info btn-sm' onclick=\"loadForm$rand(" . $form_metademand_fields['id'] . ", " . $form_metademand_fields['plugin_metademands_metademands_id'] . ")\">";
-                echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "' 
-                           data-hasqtip='0' aria-hidden='true'></i>";
-                echo "</button>";
-                $step           = PluginMetademandsMetademand::STEP_SHOW;
-                $is_validate    = 1;
-                $metaValidation = new PluginMetademandsMetademandValidation();
-                if ($metaValidation->getFromDBByCrit(['tickets_id' => $items_id])) {
-                    $is_validate = $metaValidation->fields['validate'];
+                echo Html::convDateTime($form['date']);
+                echo "</td>";
+                echo "<td>";
+                if (Session::haveRight("plugin_metademands", DELETE)) {
+                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                    echo "<br><span style='color:darkred'>";
+                    Html::showSimpleForm(
+                        $target,
+                        'delete_form_from_metademands',
+                        _sx('button', 'Delete form', 'metademands'),
+                        ['plugin_metademands_stepforms_id' => $id],
+                        'fa-trash-alt fa-1x'
+                    );
+                    echo "</span>";
                 }
-                echo "<script>
-                      var step = {$step};
-                      function loadForm$rand(form_id, meta_id) {
-                         $('#ajax_loader').show();
-                         var data_send = {plugin_metademands_forms_id: form_id,
-                                         metademands_id: meta_id,
-                                         _users_id_requester: $users_id,
-                                         items_id: $items_id,
-                                         itemtype: '$itemtype'};
-                          $.ajax({
-                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
-                                type: 'POST',
-                                data: data_send,
-                                success: function(response){
-                                    if (response == 0) {
-                                       $('#ajax_loader').hide();
-                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?current_ticket_id=$items_id&meta_validated=$is_validate&see_form=1&metademands_id=' + meta_id + '&step=' + step;
-                                    }
-                                }
-                             });
-                       };
-                     </script>";
+                echo "</td>";
+                echo "</tr>";
             }
-            echo "</td>";
-            echo "</tr>";
             echo "</table>";
         } else {
-            //         echo "<div class='alert alert-important alert-info center'>" . __('No item found') . "</div>";
+            echo "<div class='alert alert-important alert-info center'>" . __('No item found') . "</div>";
         }
     }
-
-    /**
-     * @param $ticket
-     *
-     * @return bool
-     * @throws \GlpitestSQLError
-     */
-    public function showFormsForUser($user)
-    {
-        if (!$this->canView()) {
-            return false;
-        }
-        $forms_metademands = $this->find(['users_id' => $user->fields['id'],
-                                          'is_model' => 0], ['date DESC']);
-
-        if (count($forms_metademands)) {
-            $name = _n('Associated form', 'Associated forms', count($forms_metademands), 'metademands');
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='center'>";
-            echo "<th colspan='3'>" . $name . "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<th>" . __('Name') . "</th>";
-            echo "<th>" . __('Creation date') . "</th>";
-            echo "<th>" . __('See form', 'metademands') . "</th>";
-            echo "</tr>";
-            foreach ($forms_metademands as $forms_metademand) {
-                $plugin_metademands_metademands_id = $forms_metademand['plugin_metademands_metademands_id'];
-
-                echo "<tr class='tab_bg_1'>";
-                echo "<td>";
-                $meta = new PluginMetademandsMetademand();
-                $meta->getFromDB($plugin_metademands_metademands_id);
-                echo $meta->getName();
-                echo "</td>";
-
-                echo "<td>";
-                echo Html::convDateTime($forms_metademand['date']);
-                echo "</td>";
-
-                echo "<td>";
-                $rand = mt_rand();
-                echo "<button form='' class='submit btn btn-success btn-sm' 
-            onclick=\"loadForm$rand(" . $forms_metademand['id'] . ", " . $forms_metademand['plugin_metademands_metademands_id'] . ")\">";
-                echo "<i class='fas fa-2x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load form', 'metademands') . "'
-                           data-hasqtip='0' aria-hidden='true'></i>";
-                echo "</button>";
-            }
-            echo "</td>";
-            echo "</tr>";
-            echo "</table>";
-        } else {
-            echo "<div class='alert alert-important alert-info center'>";
-            echo __("No existing forms founded", 'metademands');
-            echo "</div>";
-        }
-    }
-
     public function post_addItem()
     {
         $meta = new PluginMetademandsMetademand();
@@ -766,6 +640,7 @@ class PluginMetademandsStepform extends CommonDBTM
 
 
     static function deleteAfterCreate($stepformID) {
+
         $step      = new PluginMetademandsStepform();
         $step->deleteByCriteria(['id' => $stepformID]);
 
