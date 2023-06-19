@@ -2251,7 +2251,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             if (isset($idc) && $idc == 1) {
                                                 $script .= "
                                                   if($(this).val().trim().length < 1){";
-                                                foreach ($childs_blocks[0] as $v) {
+                                                foreach ($childs_blocks[0] as $k => $v) {
                                                     $script .= PluginMetademandsField::getJStorersetFields($v);
                                                 }
 
@@ -2260,14 +2260,14 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             } else {
                                                 $script .= "
                                                   if($(this).val().trim().length >= 1){";
-                                                foreach ($childs_blocks[0] as $v) {
+                                                foreach ($childs_blocks[0] as $k => $v) {
                                                     $script .= PluginMetademandsField::getJStorersetFields($v);
                                                 }
 
                                                 $script .= "}";
                                             }
 
-                                            foreach ($childs_blocks[0] as $v) {
+                                            foreach ($childs_blocks[0] as $k => $v) {
                                                 if ($v > 0) {
                                                     $hiddenblocks[] = $v;
                                                     $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
@@ -2475,13 +2475,14 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 $script .= "
                                                      if((($(this).val() != $idc && $idc != 0 )
                                                      ||  ($(this).val() == 0 &&  $idc == 0 ) )){";
-                                                foreach ($childs_blocks as $v) {
+
+                                                foreach ($childs_blocks[0] as $k => $v) {
                                                     $script .= PluginMetademandsField::getJStorersetFields($v);
                                                 }
 
                                                 $script .= "}";
 
-                                                foreach ($childs_blocks as $v) {
+                                                foreach ($childs_blocks[0] as $k => $v) {
                                                     if ($v > 0) {
                                                         $hiddenblocks[] = $v;
                                                         $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
