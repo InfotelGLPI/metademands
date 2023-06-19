@@ -316,16 +316,17 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 echo "<td $onhover>";
                 $blocks = json_decode($data["childs_blocks"], true);
                 $i = 0;
-
-                $nb = count($blocks);
-                if ($nb > 0) {
-                    foreach ($blocks as $block) {
-                        if (is_array($block)) {
-                            foreach ($block as $block_number) {
-                                $i++;
-                                echo $block_number;
-                                if ($i < $nb) {
-                                    echo ", ";
+                if (is_array($blocks)) {
+                    $nb = count($blocks);
+                    if ($nb > 0) {
+                        foreach ($blocks as $block) {
+                            if (is_array($block)) {
+                                foreach ($block as $block_number) {
+                                    $i++;
+                                    echo $block_number;
+                                    if ($i < $nb) {
+                                        echo ", ";
+                                    }
                                 }
                             }
                         }
@@ -473,7 +474,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 self::showValueToCheck($this, $params);
                 echo "</td>";
 
-                echo self::showLinkHtml($this, $params, 1, 1, 1);
+                echo self::showLinkHtml($item->getID(), $params, 1, 1, 1);
 
                 break;
 
@@ -492,7 +493,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 self::showValueToCheck($this, $params);
                 echo "</td>";
 
-                echo self::showLinkHtml($this, $params, 1, 1, 1);
+                echo self::showLinkHtml($item->getID(), $params, 1, 1, 1);
 
                 break;
             case 'parent_field':
@@ -515,7 +516,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 self::showValueToCheck($this, $params);
                 echo "</td>";
 
-                echo self::showLinkHtml($this, $params, 1, 0, 1);
+                echo self::showLinkHtml($item->getID(), $params, 1, 0, 1);
                 break;
 
             default:
@@ -808,7 +809,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
      * @throws \GlpitestSQLError
      */
 
-    public static function showLinkHtml($item, $params, $task = 1, $field = 1, $hidden = 0)
+    public static function showLinkHtml($id, $params, $task = 1, $field = 1, $hidden = 0)
     {
         global $PLUGIN_HOOKS, $CFG_GLPI;
 
@@ -838,6 +839,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
             $fields = new PluginMetademandsField();
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+            unset($fields_data[$id]);
+            Toolbox::logInfo($id);
+            Toolbox::logInfo($fields_data);
             $data = [Dropdown::EMPTY_VALUE];
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands"
@@ -858,6 +862,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
             $fields = new PluginMetademandsField();
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+            unset($fields_data[$id]);
             $data = [Dropdown::EMPTY_VALUE];
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands") {
@@ -1066,7 +1071,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         if (!empty($data['options'][$idc]['fields_link'])) {
                             $script = "";
                             $fields_link = $data['options'][$idc]['fields_link'];
-//
+
                             $fields_link2 = $fields_link;
                             $rand = mt_rand();
 //                        if (isset($check_value[$key])) {
@@ -1093,6 +1098,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 //                        }
 
                             echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
+//                            Toolbox::logInfo($script);
                         }
                     }
                 }

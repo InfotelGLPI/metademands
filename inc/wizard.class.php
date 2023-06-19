@@ -260,22 +260,14 @@ class PluginMetademandsWizard extends CommonDBTM
             $parameters['resources_step'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_step'];
         }
         Html::requireJs("metademands");
-        //      echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/bootstrap/4.5.3/js/bootstrap.bundle.min.js");
-        //      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_main.css");
-        //      echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/style_bootstrap_ticket.css");
 
         echo "<div id ='content'>";
-        $background_color = "";
+
         $meta = new PluginMetademandsMetademand();
         $maintenance_mode = 0;
-        $use_as_step = 0;
         if ($meta->getFromDB($parameters['metademands_id'])) {
-            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                $background_color = $meta->fields['background_color'];
-            }
             $maintenance_mode = $meta->fields['maintenance_mode'];
             $_SESSION['servicecatalog']['sc_itilcategories_id'] = $meta->fields['itilcategories_id'];
-            $use_as_step = $meta->fields['step_by_step_mode'];
         }
 
         if ($maintenance_mode == 1 && !$parameters['preview']) {
@@ -285,9 +277,9 @@ class PluginMetademandsWizard extends CommonDBTM
             echo __('This form is in maintenance mode', 'metademands') . "<br>";
             echo __('Please come back later', 'metademands') . "</div></h3>";
         } else {
-//            if (!$parameters['preview']) {
+
             echo "<div class='bt-container-fluid asset metademands_wizard_rank'> ";
-//            }
+
             if ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
                 // Wizard title
                 if ($meta->getFromDB($parameters['metademands_id'])
@@ -380,21 +372,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $color = self::hex2rgba($title_color, "0.03");
                 $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
                 echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
-//                echo "<div class='left' style='display: inline;float: left;'>";
-//
-//                if ($parameters['preview'] || $parameters['seeform']) {
-//                    $use_as_step = 0;
-//                }
-//                if (
-////                    Session::getCurrentInterface() != 'central'
-////                    &&
-//                    $use_as_step == 0) {
-//                    $title = "<i class='fas fa-chevron-left fa-2x' title=\"".__('Previous')."\" data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-////                    $title .= __('Previous');
-//                    echo Html::submit($title, ['name' => 'previous', 'class' => 'btn btn-link']);
-//                }
-//                echo "</div>";
-//                echo "<div class='center' style='display: inline;text-align: center;font-size: 16px;'>";
+
                 $meta = new PluginMetademandsMetademand();
                 if ($meta->getFromDB($parameters['metademands_id'])) {
                     if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
@@ -420,8 +398,6 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
 
-
-                //         echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $parameters['metademands_id']);
                 if (Session::getCurrentInterface() == 'central'
                     && Session::haveRight('plugin_metademands', UPDATE)
                     && !$parameters['seeform']) {
@@ -429,24 +405,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         <i class='fas fa-wrench'></i></a>";
                 }
                 echo "</h2>";
-//                echo "</div>";
+
                 $config = PluginMetademandsConfig::getInstance();
-                //            if (!$parameters['preview']
-                //                && !$parameters['seeform']
-                //                && $config['use_draft']) {
-                //               echo "<span class='mydraft'>";
-                //               $count_drafts = PluginMetademandsDraft::countDraftsForUserMetademand(Session::getLoginUserID(), $parameters['metademands_id']);
-                //               if ($count_drafts > 0) {
-                //                  echo "<span class='mydraft-text'>";
-                //                  echo sprintf(_n('You have %d draft', 'You have %d drafts', $count_drafts, 'metademands'),
-                //                               $count_drafts);
-                //                  echo "</span>&nbsp;";
-                //               }
-                //
-                //               echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-cloud-download-alt pointer' title='" . _sx('button', 'Your drafts', 'metademands') . "'
-                //                data-hasqtip='0' aria-hidden='true' onclick='$(\"#divdrafts\").toggle();' ></i>";
-                //               echo "</span>";
-                //            }
+
                 if (!$parameters['preview'] && !$parameters['seeform']) {
                     echo "<div class='mydraft right' style='display: inline;float: right;'>";
                     echo "&nbsp;<i class='fas fa-2x mydraft-fa fa-align-justify pointer' title='" . _sx('button', 'Your forms', 'metademands') . "' 
@@ -656,70 +617,6 @@ class PluginMetademandsWizard extends CommonDBTM
     }
 
     /**
-     * @param $file_data
-     */
-    //   function uploadFiles($file_data) {
-    //
-    //      echo "<div class=\"row\">";
-    //      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-    //      echo "<form name='wizard_form' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "' enctype='multipart/form-data'>";
-    //      echo "<h1>";
-    //      echo __('Add documents on the demand', 'metademands');
-    //      echo "</h1>";
-    //
-    //      $ticket = new Ticket();
-    //      $ticket->getFromDB($file_data['tickets_id']);
-    //
-    //      $docadded = $ticket->addFiles($file_data['tickets_id'], 0);
-    //      if (count($docadded) > 0) {
-    //         foreach ($docadded as $name) {
-    //            echo __('Added document', 'metademands') . " $name";
-    //         }
-    //      }
-    //      echo "</div>";
-    //      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-    //      echo "<input type='submit' class='submit' name='return' value='" . _sx('button', 'Finish', 'metademands') . "'>";
-    //      echo "</div>";
-    //
-    //      Html::closeForm();
-    //      echo "</div>";
-    //      echo "</div>";
-    //   }
-
-    /**
-     * @param $step
-     */
-    //   static function chooseType($step) {
-    //
-    //      echo "<div class=\"row\">";
-    //      echo "<div class=\"bt-feature col-md-12 metademands_wizard_border\">";
-    //      echo "<h4 class=\"bt-title-divider\"><span>";
-    //      echo sprintf(__('Step %d - Ticket type choice', 'metademands'), $step);
-    //      echo "</span></h4>";
-    //      echo "</div>";
-    //      echo "</div>";
-    //
-    //      echo "<div class=\"row\">";
-    //      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-    //      // Type
-    //      echo '<b>' . __('Type') . '</b>';
-    //      echo "</div>";
-    //      echo "<div class=\"bt-feature bt-col-sm-6 bt-col-md-6\">";
-    //      $types    = PluginMetademandsTask::getTaskTypes();
-    //      $types[0] = Dropdown::EMPTY_VALUE;
-    //      ksort($types);
-    //      Dropdown::showFromArray('type', $types, ['width' => 150]);
-    //      echo "</div>";
-    //      echo "</div>";
-    //
-    //      echo "<div class=\"row\">";
-    //      echo "<div class=\"bt-feature col-md-12 right\">";
-    //      echo "<input type='submit' class='submit' name='next' value='" . __('Next') . "'>";
-    //      echo "</div>";
-    //      echo "</div>";
-    //   }
-
-    /**
      * @param string $limit
      *
      * @param int $type
@@ -785,13 +682,7 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function listMetademandTypes()
     {
-        global $CFG_GLPI;
-
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
-
-        $config = PluginMetademandsConfig::getInstance();
-
-        $meta = new PluginMetademandsMetademand();
 
         $data = [];
 
@@ -842,7 +733,6 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function listMetademands($type)
     {
-        global $CFG_GLPI;
 
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
 
@@ -947,7 +837,6 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function showMetademands($metademands_id, $step, $current_ticket, $meta_validated, $preview = false, $options = [], $seeform = false)
     {
-        global $CFG_GLPI;
 
         $parameters = ['itilcategories_id' => 0];
 
@@ -963,7 +852,7 @@ class PluginMetademandsWizard extends CommonDBTM
         $metademands->getFromDB($metademands_id);
 
         echo "<div class='md-wizard'>";
-        //      echo "<div width='100%'>";
+
         //Delete metademand wich need to be hide from $metademands_data
         if (isset($_SESSION['metademands_hide'])) {
             foreach ($metademands_data as $form_step => $data) {
@@ -1123,66 +1012,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                           });
                                 </script>";
                             }
-                        } else {
-                            //                     if ($use_as_step == 0) {
-                            //                        echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-                            //                        echo "</div>";
-                            //
-                            //                        $title = "<i class='fas fa-save' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
-                            //                        $title .= _sx('button', 'Save & Post', 'metademands');
-                            //                        echo Html::submit($title, ['name'  => 'next_button',
-                            //                                                   'form'  => '',
-                            //                                                   'title' => _sx('button', 'Save & Post', 'metademands'),
-                            //                                                   'id'    => 'submitjob',
-                            //                                                   'class' => 'btn btn-success metademand_next_button']);
-                            //
-                            //                        $ID   = $metademands->fields['id'];
-                            //                        $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-                            //                        echo "<script>
-                            //                       $('#submitjob').click(function() {
-                            //                          var meta_id = {$ID};
-                            //                          if(typeof tinyMCE !== 'undefined'){
-                            //                                tinyMCE.triggerSave();
-                            //                             }
-                            //                          jQuery('.resume_builder_input').trigger('change');
-                            //                          $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                            //                          $('#ajax_loader').show();
-                            //                          arrayDatas = $('form').serializeArray();
-                            //                          arrayDatas.push({name: \"save_form\", value: true});
-                            //                          arrayDatas.push({name: \"form_name\", value: '$name'});
-                            //                          $.ajax({
-                            //                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                            //                                type: 'POST',
-                            //                                data: arrayDatas,
-                            //                                success: function(response){
-                            //                                 },
-                            //                                error: function(xhr, status, error) {
-                            //                                   console.log(xhr);
-                            //                                   console.log(status);
-                            //                                   console.log(error);
-                            //                                 }
-                            //                             });
-                            //                          $.ajax({
-                            //                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-                            //                                type: 'POST',
-                            //                                data: $('form').serializeArray(),
-                            //                                success: function(response){
-                            //                                    $('#ajax_loader').hide();
-                            //                                    if (response == 1) {
-                            //                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
-                            //                                    } else {
-                            //                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
-                            //                                    }
-                            //                                 },
-                            //                                error: function(xhr, status, error) {
-                            //                                   console.log(xhr);
-                            //                                   console.log(status);
-                            //                                   console.log(error);
-                            //                                 }
-                            //                             });
-                            //                       });
-                            //                     </script>";
-                            //                     }
                         }
                     } else {
                         echo "<br>";
@@ -1229,9 +1058,6 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</div>";
                     echo "</div>";
                 }
-                //            if ($metademands->getField('is_order')) {
-                //               PluginMetademandsBasketline::constructBasket($metademands_id, $line['form'], $preview);
-                //            }
             }
         } else {
             echo "</div>";
@@ -1315,26 +1141,6 @@ class PluginMetademandsWizard extends CommonDBTM
             foreach ($line as $fields) {
                 if ($rank == $fields["rank"]) {
                     $allfields[$rank][] = $fields;
-                    if ($use_as_step == 1) {
-
-//                        if (isset($fields['options'])) {
-//                            $check_values = $fields['options'];
-//                            if (is_array($check_values)) {
-//                                if (count($check_values) > 0) {
-//                                    foreach ($check_values as $idc => $check_value) {
-//                                        if (isset($check_value['hidden_block'])) {
-//                                            $allhidden = $check_value['hidden_block'];
-//                                            if ($allhidden > 0) {
-//                                                $hidden_blocks[$rank][] = $allhidden;
-//                                                $all_hidden_blocks[] = $allhidden;
-//                                                $hidden_blocks[$rank] = array_filter($hidden_blocks[$rank]);
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-                    }
                 }
             }
         }
@@ -1365,15 +1171,11 @@ class PluginMetademandsWizard extends CommonDBTM
             foreach ($allfields as $blocks => $line) {
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
                     if (!in_array($blocks, $all_hidden_blocks)) {
-                        //                  continue;
-
                         echo "<div class='tab-step'>";
                         $cpt++;
-                    } else {
-                        //                  echo "<div class='tab-sc-child-" . $blocks . "'>";
                     }
                 }
-                $style = 'padding: 0.5rem 0.5rem;';
+
                 $style_left_right = 'padding: 0.5rem 0.5rem;';
                 $keys = array_keys($line);
                 $keyIndexes = array_flip($keys);
@@ -1667,8 +1469,6 @@ class PluginMetademandsWizard extends CommonDBTM
                             && $data['item'] == "ITILCategory_Metademands"
                             && Session::getCurrentInterface() != 'central') {
                             $class .= " itilmeta";
-                            //xaca to delete ??
-                            //echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
                         }
                         if ($data['type'] == 'informations') {
                             $color = $data['color'];
@@ -1684,15 +1484,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                         if ($data['row_display'] == 1) {
                             echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
-                            if ($data['type'] == 'informations') {
-//                                echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close'>&times;</a>";
-                            }
                             $count++;
                         } else {
                             echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-5 $bottomclass $class\">";
-                            if ($data['type'] == 'informations') {
-//                                echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close'>&times;</a>";
-                            }
                         }
                         //see fields
                         PluginMetademandsField::getFieldType($metademands_data, $data, $preview, $config_link, $itilcategories_id);
@@ -1709,20 +1503,23 @@ class PluginMetademandsWizard extends CommonDBTM
 
                             if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
                                 echo "</div><div class=\"form-group col-md-5 md-bottom\">";
-                            } else {
-                                $class = "";
-//                                echo "<div class=\"form-group\" style='padding: 10px 10px;'>";
                             }
                             if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
                                 $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
                             }
                             $style = "";
                             if ($data['type'] != 'informations') {
-                                $style = "style='background: #EEE;padding: 10px'";
+                                $style = "style='padding: 10px;margin-top:10px'";
                             }
 
                             if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
+                                if ($data['type'] != 'informations') {
+                                    echo "<div class='alert alert-secondary' $style>";
+                                }
                                 echo Glpi\RichText\RichText::getSafeHtml($label2);
+                                if ($data['type'] != 'informations') {
+                                    echo "</div>";
+                                }
                             } else {
                                 echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) . $required_icon . "</label>";
                             }
@@ -1744,24 +1541,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                 }
                                 echo "</span>";
                             }
-                            if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-//                                echo "</div>";
-                            }
                         }
                         echo "</div>";
                     }
-
-//                    if ($data['type'] == 'title-block') {
-//                        $count--;
-//                    }
-                    // If next field is date interval : pass to next line
-//                    if (isset($keyIndexes[$key])
-//                        && isset($keys[$keyIndexes[$key] + 1])
-//                        && ($line[$keys[$keyIndexes[$key] + 1]]['type'] == 'datetime_interval' || $line[$keys[$keyIndexes[$key] + 1]]['type'] == 'date_interval')) {
-//                        $count++;
-//                    }
-
-//                    $count++;
 
                     // Next row
                     if ($count > $columns) {
@@ -1829,29 +1611,12 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<br>";
                 echo "<div class=\"form-sc-group\">";
                 echo "<div class='center'>";
-                //               if ($tt->isField('id') && ($tt->fields['id'] > 0)) {
-                //                  echo Html::hidden('_tickettemplates_id', ['value' => $tt->fields['id']]);
-                //                  echo Html::hidden('_predefined_fields', ['value' => Toolbox::prepareArrayForInput($predefined_fields)]);
-                //               }
-                //               if ($config->getBypassCategories() == 0) {
-                //                  echo Html::hidden('itilcategories_id', ['value' => $category_id]);
-                //               }
-                //               echo Html::hidden('type', ['value' => $type]);
-                //               echo Html::hidden('add', ['value' => 1]);
+
                 echo "<div style='overflow:auto;'>";
 
                 echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
-                //TODO v3.3
-                //                if ($metademands->fields['step_by_step_mode'] == 1
-                //                ) {
-                //                    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), 1);
-                //                    if ($msg) {
-                //                        echo "<div class='alert alert-info center'>";
-                //                        echo $msg;
-                //                        echo "</div>";
-                //                    }
-                //                }
+
                 echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'  onclick='nextPrev(1)'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
@@ -1863,13 +1628,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
-//                echo "<br>";
-                //            }
-
 
                 //Circles which indicates the steps of the form:
                 echo "<div style='text-align:center;margin-top:20px;'>";
-                //            $cpt--;
 
                 if ($cpt > 1) {
                     for ($j = 1; $j <= $cpt; $j++) {
@@ -1933,13 +1694,11 @@ class PluginMetademandsWizard extends CommonDBTM
                     foreach ($fields as $f) {
                         $blocks[] = $f["rank"];
                     }
-//                    if (count($list_blocks2) > 0) {
                     foreach ($blocks as $block) {
                         if (!in_array($block, $list_blocks2)) {
                             $list_blocks[] = $block;
                         }
                     }
-//                    }
 
                     if (!isset($steps) || (is_array($steps) && count($steps) == 0)) {
                     }
@@ -1996,20 +1755,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo Html::hidden('plugin_metademands_stepforms_id', ['value' => $_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id']]);
                 }
 
-                //Html::scriptBlock('var step = sessionStorage.currentStep; return step;');
                 $block_id = $_SESSION['plugin_metademands'][$ID]['block_id'] ?? 0;
-
-                //TODO v3.3
-//                if ($metademands->fields['step_by_step_mode'] == 1
-//                ) {
-//                    $submitmsg = $submitstepmsg =  __('Your form will be redirected to another group of people who will complete the following information.', 'metademands');
-//
-//                    $msg = PluginMetademandsStep::getMsgForNextBlock($metademands->getID(), $block_id);
-//                    if ($msg) {
-//                        $submitmsg = $msg;
-//                        $submitstepmsg = $msg;
-//                    }
-//                }
 
                 echo "<span id = 'modalgroupspan'>";
                 echo "</span>";
@@ -2063,30 +1809,12 @@ class PluginMetademandsWizard extends CommonDBTM
                      document.getElementById('nextBtn').innerHTML = nexttitle;
                      if (n == (x.length - 1) || create == true) {
                         document.getElementById('nextBtn').innerHTML = submittitle;
-//                        document.getElementById('nextMsg').style.display = 'block';
-//                        document.getElementById('nextMsg').innerHTML = submitmsg;
                      }
                      
                      //... and run a function that will display the correct step indicator:
                      if (use_as_step == 1) {
                         fixStepIndicator(n);
                      }
-                      //sessionStorage.setItem('blocks', JSON.stringify(loaded_blocks));
-                       //var storedBlocks = JSON.parse(sessionStorage.getItem('loaded_blocks'));
-                       //console.log(storedBlocks);
-                     //hide hidden blocks
-                  //                     if (n == 0) {
-                  //                        var output = Object.entries(hiddenblocs).map(([key, value]) => ({key,value}));
-                  //                        for(var j = 0; j < output.length; j++) {
-                  //                           var values = output[j].value;
-                  //                          for(var v = 0; v < values.length; v++) {
-                  //                             var y = document.getElementsByClassName('tab-sc-child-' + values[v]);
-                  //                             if (y[n] !== undefined) {
-                  //                                 y[n].style.display = 'none';
-                  //                             }
-                  //                          }
-                  //                        }
-                  //                     }
                   }
                   function findFirstTab(block_id) {
                       if (use_as_step == 1) {
@@ -2319,9 +2047,11 @@ class PluginMetademandsWizard extends CommonDBTM
                      for (i = 0; i < y.length; i++) {
                   
                         // If a field is empty...
+                        fieldid = y[i].id;
                         fieldname = y[i].name;
                         fieldtype = y[i].type;
                         fieldmandatory = y[i].required;
+                        console.log(fieldtype);
                         if (fieldname != '_uploader_filename[]'
                            && fieldname != '_uploader_content[]'
                            && fieldtype != 'file'
@@ -2347,16 +2077,21 @@ class PluginMetademandsWizard extends CommonDBTM
                               $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                            }
-                  
-                  //                           if (y[i].value == '') {
-                  //                              // add an 'invalid' class to the field:
-                  //                              y[i].classList.add('invalid');
-                  //                              // and set the current valid status to false
-                  //                              ko++;
-                  //                           } else {
-                  //                              y[i].classList.remove('invalid');
-                  //                           }
                         }
+                        if (y[i].type == 'file' && fieldmandatory == true) {
+                            var inputPieceJointe = document.getElementById(fieldid);
+                            if (inputPieceJointe.files.length > 0) {
+                               $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                               $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                            } else {
+                               $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                               $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                               $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                               ko++;
+                            }
+                        }
+                        
                         if (y[i].type == 'radio' && fieldmandatory == true) {
                             
                             var boutonsRadio = document.querySelectorAll('input[name=\"' + fieldname + '\"]')
@@ -2618,7 +2353,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         $datas['fields'] = $values['fields'];
 
                         $result = $metademands->addObjects($metademands_id, $datas, $options);
-//                    PluginMetademandsStepform::deleteAfterCreate($stepformID);
                         Session::addMessageAfterRedirect($result['message']);
                     }
                     $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
@@ -3068,52 +2802,6 @@ class PluginMetademandsWizard extends CommonDBTM
         return true;
     }
 
-    /**
-     * @param       $name
-     * @param       $data
-     * @param array $options
-     */
-    public function showDropdownFromArray($name, $data, $options = [])
-    {
-        $params['on_change'] = '';
-        $params['no_empty'] = 0;
-        $params['value'] = '';
-        $params['tree'] = false;
-        foreach ($options as $key => $val) {
-            $params[$key] = $val;
-        }
-        //print_r($params['value']);
-        echo "<select class='form-select' id='" . $name . "' name='" . $name . "' onchange='" . $params['on_change'] . "'>";
-        if (!$params['no_empty']) {
-            echo "<option value='0'>-----</option>";
-        }
-        foreach ($data as $id => $values) {
-            $level = 0;
-            $class = "";
-            $raquo = "";
-
-            if ($params['tree']) {
-                $level = $values['level'];
-                $class = " class='tree' ";
-                $raquo = "&raquo;";
-
-                if ($level == 1) {
-                    $class = " class='treeroot'";
-                    $raquo = "";
-                }
-            }
-
-            echo "<option value='" . $id . "' $class " . ($params['value'] == $id ? 'selected' : '') . " >" . str_repeat("&nbsp;&nbsp;&nbsp;", $level) . $raquo;
-
-            if ($params['tree']) {
-                echo $values['name'];
-            } else {
-                echo $values;
-            }
-            echo "</option>";
-        }
-        echo "</select>";
-    }
 
     /**
      * Used for check if hide child metademands

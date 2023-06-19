@@ -3,6 +3,7 @@
  *
  * @param  options
  */
+
 (function ($) {
    $.fn.metademandWizard = function (options) {
 
@@ -13,9 +14,9 @@
        * Start the plugin
        */
       function init() {
-         object.params = new Array();
-         object.params['lang'] = '';
-         object.params['root_doc'] = '';
+         object.params = [];
+         object.params.lang = '';
+         object.params.root_doc = '';
 
          if (options != undefined) {
             $.each(options, function (index, val) {
@@ -111,7 +112,7 @@
          var display_comment = $('#display_comment').val();
          var display_default = $('#display_default').val();
          $.ajax({
-            url: object.params['root_doc'] + '/ajax/addnewvalue.php',
+            url: object.params.root_doc + '/ajax/addnewvalue.php',
             type: "POST",
             dataType: "html",
             data: {
@@ -120,12 +121,12 @@
                'display_default': display_default,
                'count': $('#count_custom_values').val()
             },
-            success: function (response, opts) {
+            success: function (response) {
                var item_bloc = $('#' + field_id);
                item_bloc.append(response);
 
                var scripts, scriptsFinder = /<script[^>]*>([\s\S]+?)<\/script>/gi;
-               while (scripts = scriptsFinder.exec(response)) {
+               while (scripts == scriptsFinder.exec(response)) {
                   eval(scripts[1]);
                }
             }
@@ -199,8 +200,8 @@
             $('#' + toupdate).html('*');
             id_field = toupdate.substring(22);
             // if ($("[name='field[" + id_field + "]']").length > 0) {
-               $("[name='field[" + id_field + "]']").attr('required', 'required');
-               $("[for='field[" + id_field + "]']").css('color', 'red');
+               $("[name^='field[" + id_field + "]']").attr('required', 'required');
+               $("[for^='field[" + id_field + "]']").css('color', 'red');
                //hack for date field..
                $("[name='field[" + id_field + "]']").next('input').attr('required', 'required');
             // }
@@ -208,8 +209,8 @@
             if (type != 'checkbox') {
                $('#' + toupdate).html('');
                id_field = toupdate.substring(22);
-               $("[name='field[" + id_field + "]']").removeAttr('required');
-               $("[for='field[" + id_field + "]']").css('color', 'unset');
+               $("[name^='field[" + id_field + "]']").removeAttr('required');
+               $("[for^='field[" + id_field + "]']").css('color', 'unset');
                //hack for date field..
                $("[name='field[" + id_field + "]']").next('input').removeAttr('required');
             }
