@@ -3545,11 +3545,11 @@ JAVASCRIPT
                                 case 'impact':
                                     $result[$field['rank']]['display'] = true;
                                     if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                                        $result[$field['rank']]['content'] .= "<td $style_title>";
                                     }
-                                    $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                                    $result[$field['rank']]['content'] .= $label;
                                     if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td>";
+                                        $result[$field['rank']]['content'] .= "</td>";
                                         $result[$field['rank']]['content'] .= "<td>";
                                     }
                                     $result[$field['rank']]['content'] .= Ticket::getImpactName($field['value']);
@@ -3782,10 +3782,27 @@ JAVASCRIPT
                     }
                     break;
                 case 'textarea':
+                    $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
+                    if ($return_value == true) {
+                        return $field['value'];
+                    } else {
+                        $result[$field['rank']]['display'] = true;
+                        if ($formatAsTable) {
+                            $result[$field['rank']]['content'] .= "<td $style_title>";
+                        }
+                        $result[$field['rank']]['content'] .= $label;
+                        if ($formatAsTable) {
+                            $result[$field['rank']]['content'] .= "</td><td>";
+                        }
+                        $result[$field['rank']]['content'] .= ($field['value']);
+                        if ($formatAsTable) {
+                            $result[$field['rank']]['content'] .= "</td>";
+                        }
+                    }
+                    break;
                 case 'text':
                     $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
                     $field['value'] = Glpi\RichText\RichText::getTextFromHtml($field['value']);
-                    //               $field['value']    = Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($field['value']));
                     if ($return_value == true) {
                         return $field['value'];
                     } else {
