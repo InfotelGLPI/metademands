@@ -274,7 +274,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $metas = $metademand->find(['is_active' => 1,
                         'is_deleted' => 0,
                         'is_template' => 0,
-                        //                                                'type'       => $ticket->input["type"]
+                        'type' => $object->input["type"]
                     ]);
                     $cats = [];
 
