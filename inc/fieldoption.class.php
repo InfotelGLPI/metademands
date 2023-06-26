@@ -1249,9 +1249,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             }
                                         }
                                     }
+                                    $script .= "});console.log('fieldshidden-dropdown_multiple');";
                                 }
 
-                                $script .= "});console.log('fieldshidden-dropdown_multiple');";
+
                                 //dropdown_multiple
                                 $script .= "$.each( tohide, function( key, value ) {
                                                 if(value == true){
@@ -1292,7 +1293,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                     }
                                                 });
                                                   $('[name =\"field['+key+']\"]').removeAttr('required');
-                                                }else{
+                                                } else {
                                                    $('[id-field =\"field'+key+'\"]').show();
                                                 }
                                              });";
@@ -1969,9 +1970,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 }
                                             }
                                         }
+                                        $script .= "});";
                                     }
 
-                                    $script .= "});";
+
                                     $script .= "$.each( tohide, function( key, value ) {
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();

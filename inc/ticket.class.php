@@ -569,7 +569,7 @@ class PluginMetademandsTicket extends CommonDBTM
     {
         global $CFG_GLPI;
 
-        if (!Session::haveRight("ticket", Create)) {
+        if (!Session::haveRight("ticket", CREATE)) {
             return false;
         }
 
