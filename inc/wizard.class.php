@@ -2051,7 +2051,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         fieldname = y[i].name;
                         fieldtype = y[i].type;
                         fieldmandatory = y[i].required;
-                        console.log(fieldtype);
+                        //console.log(fieldtype);
                         if (fieldname != '_uploader_filename[]'
                            && fieldname != '_uploader_content[]'
                            && fieldtype != 'file'
@@ -2078,7 +2078,7 @@ class PluginMetademandsWizard extends CommonDBTM
                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                            }
                         }
-                        if (y[i].type == 'file' && fieldmandatory == true) {
+                        if (y[i].type == 'file' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
                             var inputPieceJointe = document.getElementById(fieldid);
                             if (inputPieceJointe.files.length > 0) {
                                $('[name=\"' + fieldname + '\"]').removeClass('invalid');
