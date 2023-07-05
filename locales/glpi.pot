@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-05 15:39+0000\n"
+"POT-Creation-Date: 2023-07-05 16:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,39 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:615
+#: hook.php:621
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:628
+#: hook.php:634
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:644
+#: hook.php:650
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:655
+#: hook.php:661
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:667
+#: hook.php:673
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1066 inc/metademand.class.php:5812
+#: hook.php:1072 inc/metademand.class.php:5812
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1084 inc/metademand.class.php:5932
+#: hook.php:1090 inc/metademand.class.php:5932
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1101 inc/metademand.class.php:5989
+#: hook.php:1107 inc/metademand.class.php:5989
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1118 inc/metademand.class.php:5864
+#: hook.php:1124 inc/metademand.class.php:5864
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -702,15 +702,31 @@ msgstr[1] ""
 msgid "See form"
 msgstr ""
 
-#: inc/group.class.php:53
+#: inc/group.class.php:55
 msgid "Groups rights"
 msgstr ""
 
-#: inc/group.class.php:200
+#: inc/group.class.php:181
+msgid "Define visibility"
+msgstr ""
+
+#: inc/group.class.php:186
+msgid "Visibility"
+msgstr ""
+
+#: inc/group.class.php:187
+msgid "Only these groups"
+msgstr ""
+
+#: inc/group.class.php:188
+msgid "All groups and not these groups"
+msgstr ""
+
+#: inc/group.class.php:254
 msgid "Add a group"
 msgstr ""
 
-#: inc/group.class.php:244
+#: inc/group.class.php:299
 msgid "Groups allowed to enter a demand"
 msgstr ""
 
