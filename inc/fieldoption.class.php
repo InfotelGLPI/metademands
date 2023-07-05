@@ -840,8 +840,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             $fields = new PluginMetademandsField();
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
             unset($fields_data[$id]);
-            Toolbox::logInfo($id);
-            Toolbox::logInfo($fields_data);
+
             $data = [Dropdown::EMPTY_VALUE];
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands"
@@ -904,7 +903,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 echo '</br><span class="metademands_wizard_comments">' . __('If child blocks exist, these blocks are hidden when you deselect the option configured', 'metademands') . '</span>';
                 echo "</td>";
                 echo "<td>";
-                echo self::showChildsBlocksDropdown($metademands_id, $params['childs_blocks']);
+                echo self::showChildsBlocksDropdown($metademands_id, $params['hidden_block'], $params['childs_blocks']);
                 echo "</td></tr>";
             }
             if ($field_class->getField("type") == "checkbox") {
@@ -1021,7 +1020,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
      *
      * @return int|string
      */
-    public static function showChildsBlocksDropdown($metademands_id, $selected_values)
+    public static function showChildsBlocksDropdown($metademands_id, $hidden_block,  $selected_values)
     {
         $fields = new PluginMetademandsField();
         $fields = $fields->find(["plugin_metademands_metademands_id" => $metademands_id]);
@@ -1033,7 +1032,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
         ksort($blocks);
 
-//        Toolbox::logInfo($selected_values);
+        unset($blocks[$hidden_block]);
         $values = [];
         foreach ($selected_values as $k => $v) {
             if (is_array($v)) {
@@ -1162,8 +1161,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         $script .= "
                                             if($(this).val() != $idc){";
                                         foreach ($childs_blocks[0] as $k => $v) {
-                                            $script .= PluginMetademandsField::getJStorersetFields($v);
-                                            $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                                            if (!is_array($v)) {
+                                                $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+                                            }
+
                                         }
                                         $script .= " }else{
                                              $('div[bloc-id=\"bloc$v\"]').show();
@@ -2254,7 +2256,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 $script .= "
                                                   if($(this).val().trim().length < 1){";
                                                 foreach ($childs_blocks[0] as $k => $v) {
-                                                    $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                    if (!is_array($v)) {
+                                                        $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                    }
                                                 }
 
                                                 $script .= "}
@@ -2263,7 +2267,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 $script .= "
                                                   if($(this).val().trim().length >= 1){";
                                                 foreach ($childs_blocks[0] as $k => $v) {
-                                                    $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                    if (!is_array($v)) {
+                                                        $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                    }
                                                 }
 
                                                 $script .= "}";
@@ -2479,7 +2485,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                      ||  ($(this).val() == 0 &&  $idc == 0 ) )){";
 
                                                 foreach ($childs_blocks[0] as $k => $v) {
-                                                    $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                    if (!is_array($v)) {
+                                                        $script .= PluginMetademandsField::getJStorersetFields($v);
+                                                    }
                                                 }
 
                                                 $script .= "}";
@@ -2695,11 +2703,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             $childs_blocks = json_decode($check_value['childs_blocks'], true);
                             if (is_array($childs_blocks)) {
                                 foreach ($childs_blocks as $childs_block) {
-                                    $hidden_blocks[] =$childs_block;
+                                    if (!is_array($childs_block)) {
+                                        $hidden_blocks[] =$childs_block;
+                                    }
                                 }
                             }
                         }
-
 
                         //for hidden blocks
                         $metademandsFields = new PluginMetademandsField();
