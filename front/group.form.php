@@ -33,11 +33,24 @@ Session::checkLoginUser();
 $group = new PluginMetademandsGroup();
 
 if (isset($_POST["add_groups"]) && isset($_POST['groups_id'])) {
-   $group->check(-1, UPDATE, $_POST);
-   //add groups
-   foreach ($_POST['groups_id'] as $groups_id) {
-      $group->add(['groups_id'                         => $groups_id,
-                   'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
-   }
-   Html::back();
+    $group->check(-1, UPDATE, $_POST);
+    //add groups
+    foreach ($_POST['groups_id'] as $groups_id) {
+        $group->add(['groups_id' => $groups_id,
+            'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
+    }
+    Html::back();
+} else if (isset($_POST["define_visibility"])) {
+
+    $groupconfig = new PluginMetademandsGroupConfig();
+    if (!$groupconfig->getFromDBByCrit(['plugin_metademands_metademands_id'=> $_POST['plugin_metademands_metademands_id']])) {
+        $groupconfig->add(['visibility' => $_POST['visibility'],
+            'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
+    } else {
+        $id = $groupconfig->getID();
+        $groupconfig->update(['id' => $id,
+            'visibility' => $_POST['visibility'],
+            'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]);
+    }
+    Html::back();
 }

@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.0.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.1.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -352,6 +352,11 @@ function plugin_metademands_install() {
             $query = "ALTER TABLE `glpi_plugin_metademands_drafts_values` ADD `value2` text NOT NULL;";
             $DB->query($query);
         }
+
+        //version 3.2.19
+        if (!$DB->tableExists("glpi_plugin_metademands_groupconfigs")) {
+            $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.1.sql");
+        }
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
@@ -446,6 +451,7 @@ function plugin_metademands_uninstall() {
         "glpi_plugin_metademands_itilenvironments",
         "glpi_plugin_metademands_itilapplications",
         "glpi_plugin_metademands_groups",
+        "glpi_plugin_metademands_groupconfigs",
         "glpi_plugin_metademands_metademandtasks",
         "glpi_plugin_metademands_tickets_metademands",
         "glpi_plugin_metademands_tickets_tasks",
