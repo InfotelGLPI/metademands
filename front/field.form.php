@@ -184,7 +184,7 @@ if (isset($_POST["add"])) {
    $field->check(-1, UPDATE, $_POST);
    $field->delete($_POST, 1);
    PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
-    Html::back();
+   $field->redirectToList();
 
 } else if (isset($_POST["delete_custom_value"])) {
    if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])) {
