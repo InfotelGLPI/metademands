@@ -3126,7 +3126,8 @@ JAVASCRIPT
             }
             if ($object_class == 'Ticket') {
                 if (!in_array(1, $ticket_exists_array)) {
-                    $message = sprintf(__('Demand "%s" added with success', 'metademands'), $parent_metademands_name);
+                    $message = sprintf(__('Demand "%s" added with success', 'metademands'),
+                        "<a href='".Ticket::getFormURL()."?id=".$parent_tickets_id."'>".$parent_metademands_name."</a>");
                 } else {
                     $message = sprintf(
                         __('%s %d successfully updated', 'metademands'),

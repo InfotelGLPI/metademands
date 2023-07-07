@@ -373,7 +373,7 @@ class PluginMetademandsStepform extends CommonDBTM
      * @param $item
      * @return void
      */
-    public function listFormFromMetademand($item)
+    public static function listFormFromMetademand($item)
     {
         $stepform = new self();
 

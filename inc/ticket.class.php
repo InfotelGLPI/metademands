@@ -654,7 +654,11 @@ class PluginMetademandsTicket extends CommonDBTM
             foreach ($ticket_metademand_data as $meta) {
                 $tickets_found = self::getSonTickets($meta['tickets_id'], 0, [], true);
 
-                $tickets[] = $meta['tickets_id'];
+                $job = new Ticket();
+                if ($job->getfromDB($meta['tickets_id'])
+                    && $job->fields['is_deleted'] == 0) {
+                    $tickets[] = $meta['tickets_id'];
+                }
                 foreach ($tickets_found as $k => $v) {
                     $tickets[] = $v["tickets_id"];
                 }

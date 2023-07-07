@@ -861,7 +861,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
             $fields = new PluginMetademandsField();
             $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-            unset($fields_data[$id]);
+//            unset($fields_data[$id]);
             $data = [Dropdown::EMPTY_VALUE];
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands") {
@@ -2765,134 +2765,134 @@ class PluginMetademandsFieldOption extends CommonDBChild
      *
      * @param $plug
      */
-    public static function addPluginDropdownFieldItems($plug)
-    {
-        global $PLUGIN_HOOKS;
-
-        $dbu = new DbUtils();
-        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-            foreach ($pluginclasses as $pluginclass) {
-                if (!class_exists($pluginclass)) {
-                    continue;
-                }
-                $form[$pluginclass] = [];
-                $item = $dbu->getItemForItemtype($pluginclass);
-                if ($item && is_callable([$item, 'addDropdownFieldItems'])) {
-                    return $item->addDropdownFieldItems();
-                }
-            }
-        }
-    }
-
-    /**
-     * Load fields from plugins
-     *
-     * @param $plug
-     */
-    public static function addPluginDropdownMultipleFieldItems($plug)
-    {
-        global $PLUGIN_HOOKS;
-
-        $dbu = new DbUtils();
-        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-            foreach ($pluginclasses as $pluginclass) {
-                if (!class_exists($pluginclass)) {
-                    continue;
-                }
-                $form[$pluginclass] = [];
-                $item = $dbu->getItemForItemtype($pluginclass);
-                if ($item && is_callable([$item, 'addDropdownMultipleFieldItems'])) {
-                    return $item->addDropdownMultipleFieldItems();
-                }
-            }
-        }
-    }
-
-
-    /**
-     * Load fields from plugins
-     *
-     * @param $plug
-     *
-     * @return void
-     */
-    public static function addPluginTextFieldItems($plug)
-    {
-        global $PLUGIN_HOOKS;
-
-        $dbu = new DbUtils();
-        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-            foreach ($pluginclasses as $pluginclass) {
-                if (!class_exists($pluginclass)) {
-                    continue;
-                }
-                $form[$pluginclass] = [];
-                $item = $dbu->getItemForItemtype($pluginclass);
-                if ($item && is_callable([$item, 'addTextFieldItems'])) {
-                    return $item->addTextFieldItems();
-                }
-            }
-        }
-    }
-
-    /**
-     * Load fields from plugins
-     *
-     * @param $plug
-     */
-    public static function getPluginFieldItemsName($plug)
-    {
-        global $PLUGIN_HOOKS;
-
-        $dbu = new DbUtils();
-        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-            foreach ($pluginclasses as $pluginclass) {
-                if (!class_exists($pluginclass)) {
-                    continue;
-                }
-                $form[$pluginclass] = [];
-                $item = $dbu->getItemForItemtype($pluginclass);
-                if ($item && is_callable([$item, 'getFieldItemsName'])) {
-                    return $item->getFieldItemsName();
-                }
-            }
-        }
-    }
-
-
-    /**
-     * saves data fields option from plugins
-     *
-     * @param $plug
-     */
-    public static function getPluginSaveOptions($plug, $params)
-    {
-        global $PLUGIN_HOOKS;
-
-        $dbu = new DbUtils();
-        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-            if (Plugin::isPluginActive($plug)) {
-                $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-                foreach ($pluginclasses as $pluginclass) {
-                    if (!class_exists($pluginclass)) {
-                        continue;
-                    }
-                    $form[$pluginclass] = [];
-                    $item = $dbu->getItemForItemtype($pluginclass);
-                    if ($item && is_callable([$item, 'saveOptions'])) {
-                        return $item->saveOptions($params);
-                    }
-                }
-            }
-        }
-    }
+//    public static function addPluginDropdownFieldItems($plug)
+//    {
+//        global $PLUGIN_HOOKS;
+//
+//        $dbu = new DbUtils();
+//        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+//            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+//
+//            foreach ($pluginclasses as $pluginclass) {
+//                if (!class_exists($pluginclass)) {
+//                    continue;
+//                }
+//                $form[$pluginclass] = [];
+//                $item = $dbu->getItemForItemtype($pluginclass);
+//                if ($item && is_callable([$item, 'addDropdownFieldItems'])) {
+//                    return $item->addDropdownFieldItems();
+//                }
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Load fields from plugins
+//     *
+//     * @param $plug
+//     */
+//    public static function addPluginDropdownMultipleFieldItems($plug)
+//    {
+//        global $PLUGIN_HOOKS;
+//
+//        $dbu = new DbUtils();
+//        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+//            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+//
+//            foreach ($pluginclasses as $pluginclass) {
+//                if (!class_exists($pluginclass)) {
+//                    continue;
+//                }
+//                $form[$pluginclass] = [];
+//                $item = $dbu->getItemForItemtype($pluginclass);
+//                if ($item && is_callable([$item, 'addDropdownMultipleFieldItems'])) {
+//                    return $item->addDropdownMultipleFieldItems();
+//                }
+//            }
+//        }
+//    }
+//
+//
+//    /**
+//     * Load fields from plugins
+//     *
+//     * @param $plug
+//     *
+//     * @return void
+//     */
+//    public static function addPluginTextFieldItems($plug)
+//    {
+//        global $PLUGIN_HOOKS;
+//
+//        $dbu = new DbUtils();
+//        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+//            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+//
+//            foreach ($pluginclasses as $pluginclass) {
+//                if (!class_exists($pluginclass)) {
+//                    continue;
+//                }
+//                $form[$pluginclass] = [];
+//                $item = $dbu->getItemForItemtype($pluginclass);
+//                if ($item && is_callable([$item, 'addTextFieldItems'])) {
+//                    return $item->addTextFieldItems();
+//                }
+//            }
+//        }
+//    }
+//
+//    /**
+//     * Load fields from plugins
+//     *
+//     * @param $plug
+//     */
+//    public static function getPluginFieldItemsName($plug)
+//    {
+//        global $PLUGIN_HOOKS;
+//
+//        $dbu = new DbUtils();
+//        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+//            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+//
+//            foreach ($pluginclasses as $pluginclass) {
+//                if (!class_exists($pluginclass)) {
+//                    continue;
+//                }
+//                $form[$pluginclass] = [];
+//                $item = $dbu->getItemForItemtype($pluginclass);
+//                if ($item && is_callable([$item, 'getFieldItemsName'])) {
+//                    return $item->getFieldItemsName();
+//                }
+//            }
+//        }
+//    }
+//
+//
+//    /**
+//     * saves data fields option from plugins
+//     *
+//     * @param $plug
+//     */
+//    public static function getPluginSaveOptions($plug, $params)
+//    {
+//        global $PLUGIN_HOOKS;
+//
+//        $dbu = new DbUtils();
+//        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+//            if (Plugin::isPluginActive($plug)) {
+//                $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+//
+//                foreach ($pluginclasses as $pluginclass) {
+//                    if (!class_exists($pluginclass)) {
+//                        continue;
+//                    }
+//                    $form[$pluginclass] = [];
+//                    $item = $dbu->getItemForItemtype($pluginclass);
+//                    if ($item && is_callable([$item, 'saveOptions'])) {
+//                        return $item->saveOptions($params);
+//                    }
+//                }
+//            }
+//        }
+//    }
 }
