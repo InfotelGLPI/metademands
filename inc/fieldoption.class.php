@@ -156,7 +156,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
      **/
     static function showOptions($item)
     {
-        global $CFG_GLPI;
+        global $CFG_GLPI, $PLUGIN_HOOKS;
 
         $rand = mt_rand();
         $canedit = $item->can($item->getID(), UPDATE);
@@ -168,7 +168,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 if (Plugin::isPluginActive($plug)) {
-                    $new_fields = self::addPluginFieldItems($plug);
+                    $new_fields = PluginMetademandsField::addPluginFieldItems($plug);
                     if (is_array($new_fields) && count($new_fields) > 0) {
                         $allowed_options_types = array_merge($allowed_options_types, $new_fields);
                     }

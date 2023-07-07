@@ -47,10 +47,10 @@ switch ($_POST['step']) {
       break;
    case 'object':
       global $CFG_GLPI;
-      if ($_POST["type"] == "dropdown"
-          || $_POST["type"] == "dropdown_object"
-          || $_POST["type"] == "dropdown_meta"
-          || $_POST["type"] == "dropdown_multiple") {
+//      if ($_POST["type"] == "dropdown"
+//          || $_POST["type"] == "dropdown_object"
+//          || $_POST["type"] == "dropdown_meta"
+//          || $_POST["type"] == "dropdown_multiple") {
          $randItem   = PluginMetademandsField::dropdownFieldItems("item", $_POST["type"], ['value' => $_POST['item'], 'rand' => $_POST["rand"]]);
          $paramsItem = ['value'          => '__VALUE__',
                         'item'           => '__VALUE__',
@@ -67,7 +67,7 @@ switch ($_POST['step']) {
 
          Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", PLUGIN_METADEMANDS_WEBDIR .
                                                                                    "/ajax/viewtypefields.php?id=" . $_POST['metademands_id'], $paramsItem);
-      }
+//      }
 
       break;
    default:

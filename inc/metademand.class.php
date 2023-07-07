@@ -2154,6 +2154,8 @@ JAVASCRIPT
                         } else {
                             $parent_tickets_id = $object->add($input);
                         }
+
+
                         //delete drafts
                         if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id'])) {
                             $draft = new PluginMetademandsDraft();
@@ -2205,6 +2207,7 @@ JAVASCRIPT
                         if (isset($PLUGIN_HOOKS['metademands'])) {
                             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                                 $p = [];
+                                $options["tickets_id"] = $parent_tickets_id;
                                 $p["options"] = $options;
                                 $p["values"] = $values;
                                 $p["line"] = $line;
@@ -4093,6 +4096,20 @@ JAVASCRIPT
 
                     break;
                 default:
+
+                    if (isset($PLUGIN_HOOKS['metademands'])) {
+                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                            $new_fields = self::displayPluginFieldItems($plug);
+                            if (Plugin::isPluginActive($plug)) {
+                                if ($return_value == true) {
+                                    return $new_fields;
+                                } else {
+                                    $result[$field['rank']]['display'] = true;
+                                    $result[$field['rank']]['content'] .= $new_fields;
+                                }
+                            }
+                        }
+                    }
                     //plugins case
                     break;
             }
@@ -4106,25 +4123,25 @@ JAVASCRIPT
      *
      * @param $plug
      */
-    //   static function displayPluginFieldItems($plug) {
-    //      global $PLUGIN_HOOKS;
-    //
-    //      $dbu = new DbUtils();
-    //      if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-    //         $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-    //
-    //         foreach ($pluginclasses as $pluginclass) {
-    //            if (!class_exists($pluginclass)) {
-    //               continue;
-    //            }
-    //            $form[$pluginclass] = [];
-    //            $item               = $dbu->getItemForItemtype($pluginclass);
-    //            if ($item && is_callable([$item, 'displayFieldItems'])) {
-    //               return $item->displayFieldItems();
-    //            }
-    //         }
-    //      }
-    //   }
+       static function displayPluginFieldItems($plug) {
+          global $PLUGIN_HOOKS;
+
+          $dbu = new DbUtils();
+          if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+             $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+             foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                   continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'displayFieldItems'])) {
+                   return $item->displayFieldItems();
+                }
+             }
+          }
+       }
 
     /**
      * @param $metademands_id

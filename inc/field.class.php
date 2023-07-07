@@ -223,6 +223,8 @@ class PluginMetademandsField extends CommonDBChild
     */
     public function showForm($ID, $options = [])
     {
+        global $PLUGIN_HOOKS;
+
         if (!$this->canview()) {
             return false;
         }
@@ -517,6 +519,11 @@ class PluginMetademandsField extends CommonDBChild
                  'value_informations' => 'informations',
                  'value_title_block'  => 'title-block',
         ];
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $params['value_plugin'] = self::addPluginFieldTypeValue($plug);
+            }
+        }
 
         $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(['root_doc' => PLUGIN_METADEMANDS_WEBDIR]) . ");";
         $script .= "metademandWizard.metademands_show_field_onchange(" . json_encode($params) . ");";
@@ -1105,6 +1112,15 @@ class PluginMetademandsField extends CommonDBChild
                 echo "</table>";
                 echo "</td></tr>";
             }
+
+            if (isset($PLUGIN_HOOKS['metademands'])) {
+                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                    if (Plugin::isPluginActive($plug)) {
+                        return self::showPluginCustomvalues($plug, $params);
+                    }
+                }
+            }
+
             echo "</tbody></table>";
             echo "</div>";
 
@@ -1439,7 +1455,8 @@ class PluginMetademandsField extends CommonDBChild
             default:
                 if (isset($PLUGIN_HOOKS['metademands'])) {
                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                        $new_fields = self::getPluginFieldItemsName($plug);
+                        $new_fields = self::getPluginFieldTypesName($plug);
+
                         if (Plugin::isPluginActive($plug)
                         && is_array($new_fields)) {
                             if (isset($new_fields[$value])) {
@@ -1452,6 +1469,85 @@ class PluginMetademandsField extends CommonDBChild
                     }
                 }
                 return Dropdown::EMPTY_VALUE;
+        }
+    }
+
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    public static function addPluginCaseCustomFields($plug, $name, $p)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'addCaseCustomFields'])) {
+                    return $item->addCaseCustomFields($name, $p);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    public static function showPluginCustomvalues($plug, $params)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'showCustomvalues'])) {
+                    return $item->showCustomvalues($params);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    public static function showPluginFieldCase($plug,$metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'showFieldCase'])) {
+                    return $item->showFieldCase($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
+                }
+            }
         }
     }
 
@@ -1535,6 +1631,35 @@ class PluginMetademandsField extends CommonDBChild
     }
 
 
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     *
+     * @return void
+     */
+    public static function addPluginFieldTypeValue($plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'addFieldTypeValue'])) {
+                    return $item->addFieldTypeValue();
+                }
+            }
+        }
+    }
+
     /**
      * Load fields from plugins
      *
@@ -1568,6 +1693,32 @@ class PluginMetademandsField extends CommonDBChild
     *
     * @param $plug
     */
+    public static function getPluginFieldTypesName($plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getFieldTypesName'])) {
+                    return $item->getFieldTypesName();
+                }
+            }
+        }
+    }
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
     public static function getPluginFieldItemsName($plug)
     {
         global $PLUGIN_HOOKS;
@@ -1638,6 +1789,7 @@ class PluginMetademandsField extends CommonDBChild
 
         $type_fields          = self::$dropdown_meta_items;
         $type_fields_multiple = self::$dropdown_multiple_items;
+
         switch ($typefield) {
             case "dropdown_multiple":
                 foreach ($type_fields_multiple as $key => $items) {
@@ -1682,6 +1834,15 @@ class PluginMetademandsField extends CommonDBChild
             case "dropdown_object":
                 $options = self::getGlpiObject();
                 return Dropdown::showFromArray($name, $options, $p);
+                break;
+            default :
+
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        $newcase = self::addPluginCaseCustomFields($plug, $name, $p);
+                    }
+                    return $newcase;
+                }
                 break;
         }
     }
@@ -1888,7 +2049,7 @@ class PluginMetademandsField extends CommonDBChild
     */
     public static function getFieldInput($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0)
     {
-        global $DB;
+        global $DB, $PLUGIN_HOOKS;
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
@@ -2899,6 +3060,7 @@ class PluginMetademandsField extends CommonDBChild
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
                 }
                 break;
+
             case 'date':
             case 'date_interval':
                 $field = "<span style='width: 50%!important;display: -webkit-box;'>";
@@ -3173,6 +3335,17 @@ class PluginMetademandsField extends CommonDBChild
                                     }
 //                                }
                             }
+                        }
+                    }
+                }
+                break;
+            default:
+                //plugin case
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        if (Plugin::isPluginActive($plug)) {
+                            $case = self::showPluginFieldCase($plug, $metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
+                            return $case;
                         }
                     }
                 }
