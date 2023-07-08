@@ -370,6 +370,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
      */
     public function setFields($form, $field_forms, $with_basket = false)
     {
+        global $PLUGIN_HOOKS;
 
         $nb = count($field_forms);
 
@@ -849,12 +850,46 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label2, $value2, 'LRBT', 'L', '', 0, '', 'black');
                             break;
+                        default:
+
+                            if (isset($PLUGIN_HOOKS['metademands'])) {
+                                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                                    $value = self::displayPluginFieldPDF($plug, $elt,$fields, $label);
+                                    $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                                }
+                            }
+                            break;
                     }
                 }
             }
         }
     }
 
+
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    static function displayPluginFieldPDF($plug, $elt,$fields, $label) {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item               = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'displayFieldPDF'])) {
+                    return $item->displayFieldPDF($elt,$fields, $label);
+                }
+            }
+        }
+    }
 
     /**
      *
