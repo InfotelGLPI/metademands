@@ -2064,7 +2064,7 @@ class PluginMetademandsWizard extends CommonDBTM
                            if (res != 'none' && y[i].value == '') {
                               $('[name=\"' + fieldname + '\"]').addClass('invalid');
                               $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
+//                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
                               //hack for date
                               $('[name=\"' + fieldname + '\"]').next('input').addClass('invalid');
                               $('[name=\"' + fieldname + '\"]').next('input').attr('required', 'required');
@@ -2075,7 +2075,7 @@ class PluginMetademandsWizard extends CommonDBTM
                               //hack for date
                               $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
                               $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
-                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+//                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                            }
                         }
                         if (y[i].type == 'file' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
@@ -2083,18 +2083,18 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (inputPieceJointe.files.length > 0) {
                                $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                                $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+//                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                             } else {
                                $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                               $('[for=\"' + fieldname + '\"]').css('color', 'red');
+//                               $('[for=\"' + fieldname + '\"]').css('color', 'red');
                                ko++;
                             }
                         }
                         
                         if (y[i].type == 'radio' && fieldmandatory == true) {
                             
-                            var boutonsRadio = document.querySelectorAll('input[name=\"' + fieldname + '\"]')
+                            var boutonsRadio = document.querySelectorAll('input[name=\"' + fieldname + '\"]');
                             var check = false;
                             for (var b = 0; b < boutonsRadio.length; b++) {
                               if (boutonsRadio[b].checked) {
@@ -2106,29 +2106,37 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (check) {
                               $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                               $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+//                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                             } else {
                                $('[name=\"' + fieldname + '\"]').addClass('invalid');
                               $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
+//                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
                               ko++;
                             }
 
                         }
                         if (y[i].type == 'checkbox' && fieldmandatory == true) {
-                           var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                           if (res != 'none') {
-                              result = fieldname.substring(0, fieldname.length - 3);
-                              var boxes =  $('[check*=\"' + result + '\"]:checked');
-                              if (boxes.length > 0) {
-                                 $('[check*=\"' + result + '\"]').removeClass('invalid');
-                                 $('[check*=\"' + result + '\"]').removeAttr('required');
-                              } else {
-                                 $('[check*=\"' + result + '\"]').addClass('invalid');
-                                 $('[check*=\"' + result + '\"]').attr('required', 'required');
-                                 ko++;
-                              }
-                           }
+                          var newfieldname = fieldname.match(/^(.*?)\[\w+\]/)[0];
+                          var casesACocher = document.querySelectorAll('input[name*=\"' + newfieldname + '\"]');
+
+                            // Parcourir les cases à cocher pour vérifier s'il y en a au moins une de cochée
+                                var check = false;
+                                for (var c = 0; c < casesACocher.length; c++) {
+                                  if (casesACocher[c].checked) {
+                                    check = true;
+                                    break;
+                                  }
+                            }
+                           if (check) {
+                              $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
+                              $('[name*=\"' + newfieldname + '\"]').removeAttr('required');
+//                              $('[for*=\"' + newfieldname + '\"]').css('color', 'unset');
+                            } else {
+                               $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
+                              $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
+//                              $('[for*=\"' + newfieldname + '\"]').css('color', 'red');
+                              ko++;
+                            }
                         }
                      }
                   
@@ -2143,12 +2151,12 @@ class PluginMetademandsWizard extends CommonDBTM
                               if (res != 'none') {
                                  $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                  $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
+//                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
                                  ko++;
                               } else {
                                  $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                                  $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+//                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                               }
                            } else {
                               w[i].classList.remove('invalid');
@@ -2169,12 +2177,12 @@ class PluginMetademandsWizard extends CommonDBTM
                               if (res != 'none') {
                                  $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                  $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
+//                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
                                  ko++;
                               } else {
                                  $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                                  $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+//                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                               }
                   
                            } else {

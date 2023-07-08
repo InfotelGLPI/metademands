@@ -130,11 +130,12 @@ $fields = new PluginMetademandsField();
                     //Clean $post & $data & $_POST
                     $dataOld = $data;
 
-
                     // Double appel for prevent order fields
                     PluginMetademandsFieldOption::unsetHidden($data, $post);
                     PluginMetademandsFieldOption::unsetHidden($dataOld, $post);
                     $_POST['field'] = $post;
+
+
 
                     //check fields_link to be mandatory
                     $fields_links = [];
@@ -169,7 +170,6 @@ $fields = new PluginMetademandsField();
 //                        }
 //                    }
 
-//                    Toolbox::logInfo($data);
                     //end fields_link to be mandatory
                     foreach ($data as $id => $value) {
                         if (!isset($post[$id])) {
@@ -257,6 +257,10 @@ $fields = new PluginMetademandsField();
                         }
                         $step = $_POST['step'];
                     } elseif (isset($_POST['create_metademands'])) {
+
+                        if (Plugin::isPluginActive('ordermaterial')) {
+                            $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['quantities'] = $_POST['quantity'];
+                        }
                         $step = PluginMetademandsMetademand::STEP_CREATE;
                     }
                 }

@@ -99,6 +99,7 @@ if (isset($_GET['id'])) {
 }
 
 if (isset($_POST['next'])) {
+
     $KO   = false;
     $step = $_POST['step'] + 1;
     if (isset($_POST['update_fields'])) {

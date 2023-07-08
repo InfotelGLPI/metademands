@@ -1938,9 +1938,9 @@ class PluginMetademandsField extends CommonDBChild
         global $PLUGIN_HOOKS;
 
         $required = "";
-        if ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field') {
-            $required = "required=required style='color:red'";
-        }
+//        if ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field') {
+//            $required = "required=required style='color:red'";
+//        }
 
         $upload = "";
         if ($data['type'] == "upload") {
@@ -1951,9 +1951,9 @@ class PluginMetademandsField extends CommonDBChild
 
             $upload = "$max (" . Document::getMaxUploadSize() . ")";
         }
-        if ($data['is_mandatory'] == 1) {
-            $required = "style='color:red'";
-        }
+//        if ($data['is_mandatory'] == 1) {
+//            $required = "style='color:red'";
+//        }
 
         if (empty($label = self::displayField($data['id'], 'name'))) {
             $label = $data['name'];
@@ -1975,7 +1975,7 @@ class PluginMetademandsField extends CommonDBChild
             }
         }
         if ($data['hide_title'] == 0) {
-            echo "<span  $required class='col-form-label metademand-label'>";
+            echo "<span $required class='col-form-label metademand-label'>";
             echo $label . " $upload";
             if ($preview) {
                 echo $config_link;

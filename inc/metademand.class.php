@@ -4099,18 +4099,15 @@ JAVASCRIPT
 
                     if (isset($PLUGIN_HOOKS['metademands'])) {
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                            $new_fields = self::displayPluginFieldItems($plug);
-                            if (Plugin::isPluginActive($plug)) {
-                                if ($return_value == true) {
-                                    return $new_fields;
-                                } else {
-                                    $result[$field['rank']]['display'] = true;
-                                    $result[$field['rank']]['content'] .= $new_fields;
-                                }
+                            if ($return_value == true) {
+                                return $field['value'];
+                            } else {
+                                $result[$field['rank']]['display'] = true;
+                                $content = self::displayPluginFieldItems($plug, $formatAsTable, $style_title, $label, $field);
+                                $result[$field['rank']]['content'] .= $content;
                             }
                         }
                     }
-                    //plugins case
                     break;
             }
             //         $result[$field['rank']]['content'] .= "<br>";
@@ -4123,7 +4120,7 @@ JAVASCRIPT
      *
      * @param $plug
      */
-       static function displayPluginFieldItems($plug) {
+       static function displayPluginFieldItems($plug, $formatAsTable, $style_title, $label, $field) {
           global $PLUGIN_HOOKS;
 
           $dbu = new DbUtils();
@@ -4137,7 +4134,7 @@ JAVASCRIPT
                 $form[$pluginclass] = [];
                 $item               = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'displayFieldItems'])) {
-                   return $item->displayFieldItems();
+                   return $item->displayFieldItems($formatAsTable, $style_title, $label, $field);
                 }
              }
           }

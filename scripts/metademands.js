@@ -163,7 +163,7 @@
          object.metademand_checkEmptyField(toupdate, toobserve, check_value, type);
 
          if (type == 'checkbox') {
-            $("input[check='" + toobserve + "']").change(function () {
+            $("input[check*='" + toobserve + "']").change(function () {
                object.metademand_checkEmptyField(toupdate, toobserve, check_value, type);
             });
          } else {
@@ -185,7 +185,7 @@
          var obs;
          var id_field;
          if (type == 'checkbox') {
-            obs = $("input[check='" + toobserve + "']:checked");
+            obs = $("input[check*='" + toobserve + "']:checked");
          } else if (type == 'radio') {
             obs = $("[name='" + toobserve + "']:checked");
          } else {
@@ -202,8 +202,12 @@
             $('#' + toupdate).html('*');
             id_field = toupdate.substring(22);
             // if ($("[name='field[" + id_field + "]']").length > 0) {
-               $("[name^='field[" + id_field + "]']").attr('required', 'required');
-               $("[for^='field[" + id_field + "]']").css('color', 'red');
+               if (type == 'radio' || type == 'checkbox') {
+                  $("[name^='field[" + id_field + "]']").attr('required', 'required');
+               } else {
+                  $("[name='field[" + id_field + "]']").attr('required', 'required');
+               }
+               // $("[for^='field[" + id_field + "]']").css('color', 'red');
                //hack for date field..
                $("[name='field[" + id_field + "]']").next('input').attr('required', 'required');
             // }
@@ -212,7 +216,7 @@
                $('#' + toupdate).html('');
                id_field = toupdate.substring(22);
                $("[name^='field[" + id_field + "]']").removeAttr('required');
-               $("[for^='field[" + id_field + "]']").css('color', 'unset');
+               // $("[for^='field[" + id_field + "]']").css('color', 'unset');
                //hack for date field..
                $("[name='field[" + id_field + "]']").next('input').removeAttr('required');
             }

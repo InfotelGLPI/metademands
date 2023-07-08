@@ -520,6 +520,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
 
             default:
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        self::getPluginParamsValueToCheck($plug, $this, $item->getID(), $params);
+                    }
+                }
                 break;
         }
 
@@ -548,6 +553,58 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 $item = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'getParamsOptions'])) {
                     return $item->getParamsOptions($params);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load data options saves from plugins
+     *
+     * @param $plug
+     */
+    public static function getPluginParamsValueToCheck($plug, $fieldoption, $id, $params)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getParamsValueToCheck'])) {
+                    return $item->getParamsValueToCheck($fieldoption, $id, $params);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load data options saves from plugins
+     *
+     * @param $plug
+     */
+    public static function showPluginParamsValueToCheck($plug, $params)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'showParamsValueToCheck'])) {
+                    return $item->showParamsValueToCheck($params);
                 }
             }
         }
@@ -715,6 +772,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     public static function getValueToCheck($params)
     {
+        global $PLUGIN_HOOKS;
 
         switch ($params['type']) {
             case 'textarea':
@@ -793,6 +851,14 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     }
                 }
 
+                break;
+
+            default:
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        echo self::showPluginParamsValueToCheck($plug, $params);
+                    }
+                }
                 break;
         }
     }
@@ -967,21 +1033,21 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
 
         //Hook to print new options from plugins
-        if (isset($PLUGIN_HOOKS['metademands'])) {
-            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                $p = $params;
-                $p["plugin_metademands_fields_id"] = $field_id;
-                $p["plugin_metademands_metademands_id"] = $metademands_id;
-                $p["hidden"] = $hidden;
-
-
-                $new_res = self::getPluginShowOptions($plug, $p);
-                if (Plugin::isPluginActive($plug)
-                    && !empty($new_res)) {
-                    echo $new_res;
-                }
-            }
-        }
+//        if (isset($PLUGIN_HOOKS['metademands'])) {
+//            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+//                $p = $params;
+//                $p["plugin_metademands_fields_id"] = $field_id;
+//                $p["plugin_metademands_metademands_id"] = $metademands_id;
+//                $p["hidden"] = $hidden;
+//
+//
+//                $new_res = self::getPluginShowOptions($plug, $p);
+//                if (Plugin::isPluginActive($plug)
+//                    && !empty($new_res)) {
+//                    echo $new_res;
+//                }
+//            }
+//        }
     }
 
 
@@ -990,26 +1056,26 @@ class PluginMetademandsFieldOption extends CommonDBChild
      *
      * @param $plug
      */
-    public static function getPluginShowOptions($plug, $params)
-    {
-        global $PLUGIN_HOOKS;
-
-        $dbu = new DbUtils();
-        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-            foreach ($pluginclasses as $pluginclass) {
-                if (!class_exists($pluginclass)) {
-                    continue;
-                }
-                $form[$pluginclass] = [];
-                $item = $dbu->getItemForItemtype($pluginclass);
-                if ($item && is_callable([$item, 'showOptions'])) {
-                    return $item->showOptions($params);
-                }
-            }
-        }
-    }
+//    public static function getPluginShowOptions($plug, $params)
+//    {
+//        global $PLUGIN_HOOKS;
+//
+//        $dbu = new DbUtils();
+//        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+//            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+//
+//            foreach ($pluginclasses as $pluginclass) {
+//                if (!class_exists($pluginclass)) {
+//                    continue;
+//                }
+//                $form[$pluginclass] = [];
+//                $item = $dbu->getItemForItemtype($pluginclass);
+//                if ($item && is_callable([$item, 'showOptions'])) {
+//                    return $item->showOptions($params);
+//                }
+//            }
+//        }
+//    }
 
 
     /**
@@ -1078,9 +1144,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             $script .= "metademandWizard$rand.metademand_setMandatoryField(
                                         'metademands_wizard_red" . $fields_link . "',
                                         'field[" . $data['id'] . "]',[";
-                            if ($check_value > 0
-                                || (($data['type'] == 'checkbox' || $data['type'] == 'radio')
-                                    && $idc == 0)) {
+                            if ($data['type'] == 'checkbox' || $data['type'] == 'radio') {
+                                $script .= 1;
+                            } else if ($check_value > 0 && $data['type'] != 'checkbox' && $data['type'] != 'radio') {
                                 $script .= $idc;
                             }
 //TODO used ?
@@ -1107,6 +1173,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     public static function fieldsHiddenScript($data)
     {
+        global $PLUGIN_HOOKS;
 
         if (isset($data['options'])) {
             $check_values = $data['options'];
@@ -1428,14 +1495,16 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
                             $script2 = "";
                             $script .= "var tohide = {};";
+
                             foreach ($check_values as $idc => $check_value) {
                                 $hidden_link = $check_value['hidden_link'];
-                                $script .= " if (this.checked){ ";
+
+                                $script .= " if (this.checked){";
                                 //                                        foreach ($hidden_link as $key => $fields) {
                                     $script .= " if($(this).val() == $idc || $idc == -1){
                                                      if($hidden_link in tohide){
         
-                                                     }else{
+                                                     } else {
                                                         tohide[$hidden_link] = true;
                                                      }
                                                      tohide[$hidden_link] = false;
@@ -1452,7 +1521,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     }
 
                                     //checkbox
-                                    $script .= "$.each( tohide, function( key, value ) {
+                                    $script .= "
+                                    $.each( tohide, function( key, value ) {
                                                         if(value == true){
                                                            $('[id-field =\"field'+key+'\"]').hide();
                                                            $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1491,7 +1561,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                             }
                                                         });
                                                            $('[name =\"field['+key+']\"]').removeAttr('required');
-                                                        }else{
+                                                        } else {
                                                            $('[id-field =\"field'+key+'\"]').show();
                                                         }
                                                      });";
@@ -1843,6 +1913,17 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             }
                             echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                             break;
+                        default:
+                            //plugin case
+                            if (isset($PLUGIN_HOOKS['metademands'])) {
+                                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                                    if (Plugin::isPluginActive($plug)) {
+                                        $case = self::addPluginFieldHiddenLink($plug, $data, $check_values);
+                                        return $case;
+                                    }
+                                }
+                            }
+                            break;
                     }
                 }
             }
@@ -1851,6 +1932,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     public static function blocksHiddenScript($data)
     {
+        global $PLUGIN_HOOKS;
 
         if (isset($data['options'])) {
             $check_values = $data['options'];
@@ -2520,6 +2602,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
                                     break;
                                 default:
+                                    //plugin case
+                                    if (isset($PLUGIN_HOOKS['metademands'])) {
+                                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                                            if (Plugin::isPluginActive($plug)) {
+                                                $case = self::addPluginBlockHiddenLink($plug, $data, $check_values);
+                                                return $case;
+                                            }
+                                        }
+                                    }
                                     break;
                             }
                         }
@@ -2846,53 +2937,47 @@ class PluginMetademandsFieldOption extends CommonDBChild
 //     *
 //     * @param $plug
 //     */
-//    public static function getPluginFieldItemsName($plug)
-//    {
-//        global $PLUGIN_HOOKS;
-//
-//        $dbu = new DbUtils();
-//        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-//            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-//
-//            foreach ($pluginclasses as $pluginclass) {
-//                if (!class_exists($pluginclass)) {
-//                    continue;
-//                }
-//                $form[$pluginclass] = [];
-//                $item = $dbu->getItemForItemtype($pluginclass);
-//                if ($item && is_callable([$item, 'getFieldItemsName'])) {
-//                    return $item->getFieldItemsName();
-//                }
-//            }
-//        }
-//    }
-//
-//
-//    /**
-//     * saves data fields option from plugins
-//     *
-//     * @param $plug
-//     */
-//    public static function getPluginSaveOptions($plug, $params)
-//    {
-//        global $PLUGIN_HOOKS;
-//
-//        $dbu = new DbUtils();
-//        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-//            if (Plugin::isPluginActive($plug)) {
-//                $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-//
-//                foreach ($pluginclasses as $pluginclass) {
-//                    if (!class_exists($pluginclass)) {
-//                        continue;
-//                    }
-//                    $form[$pluginclass] = [];
-//                    $item = $dbu->getItemForItemtype($pluginclass);
-//                    if ($item && is_callable([$item, 'saveOptions'])) {
-//                        return $item->saveOptions($params);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    public static function addPluginFieldHiddenLink($plug,$data, $check_values)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'addFieldHiddenLink'])) {
+                    return $item->addFieldHiddenLink($data, $check_values);
+                }
+            }
+        }
+
+    }
+
+    public static function addPluginBlockHiddenLink($plug,$data, $check_values)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'addBlockHiddenLink'])) {
+                    return $item->addBlockHiddenLink($data, $check_values);
+                }
+            }
+        }
+
+    }
 }
