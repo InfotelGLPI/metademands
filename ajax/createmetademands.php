@@ -28,8 +28,13 @@
  */
 
 include('../../../inc/includes.php');
-//header("Content-Type: text/html; charset=UTF-8");
-header("Content-Type: application/json; charset=UTF-8");
+
+if (isset($_POST['see_basket_summary'])) {
+    header("Content-Type: text/html; charset=UTF-8");
+} else {
+    header("Content-Type: application/json; charset=UTF-8");
+}
+
 
 Html::header_nocache();
 
@@ -41,7 +46,16 @@ $metademands = new PluginMetademandsMetademand();
 $wizard = new PluginMetademandsWizard();
 $fields = new PluginMetademandsField();
 
-//if (isset($_POST['update_fields'])) {
+
+if (isset($_POST['see_basket_summary'])) {
+
+    unset($_POST['see_basket_summary']);
+    $post = $_POST;
+
+    echo PluginOrdermaterialMetademand::displayBasketSummary($post);
+
+
+} else {
 
     if ($metademands->canCreate()
         || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
@@ -136,7 +150,6 @@ $fields = new PluginMetademandsField();
                     $_POST['field'] = $post;
 
 
-
                     //check fields_link to be mandatory
                     $fields_links = [];
                     foreach ($data as $id => $value) {
@@ -183,22 +196,22 @@ $fields = new PluginMetademandsField();
 //                                $checkchild = $key;
 //                                if (is_array($checkchild)) {
 //                             Check if no form values block the creation of meta
-                                    $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
+                                $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
 
-                                    if (!is_null($metademandtasks_tasks_id)) {
-                                        $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-                                        if (!isset($post)) {
-                                            $post[$id] = 0;
-                                        }
-                                        $wizard->checkValueOk($key, $check['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value, $post);
+                                if (!is_null($metademandtasks_tasks_id)) {
+                                    $_SESSION['son_meta'] = $metademandtasks_tasks_id;
+                                    if (!isset($post)) {
+                                        $post[$id] = 0;
                                     }
+                                    $wizard->checkValueOk($key, $check['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value, $post);
+                                }
 
 //                                    foreach ($checkchild as $keyId => $check_value) {
-                                        $value['check_value'] = $key;
-                                        if (isset($check['hidden_link'])) {
-                                            $value['plugin_metademands_tasks_id'] = $check['hidden_link'];
-                                        }
-                                        $value['fields_link'] = $check['fields_link'] ?? 0;
+                                $value['check_value'] = $key;
+                                if (isset($check['hidden_link'])) {
+                                    $value['plugin_metademands_tasks_id'] = $check['hidden_link'];
+                                }
+                                $value['fields_link'] = $check['fields_link'] ?? 0;
 //                                    }
 //                                }
                             }
@@ -268,8 +281,10 @@ $fields = new PluginMetademandsField();
         }
     }
 //}
-if ($KO === false) {
-    echo 0;
-} else {
-    echo $KO;
+    if ($KO === false) {
+        echo 0;
+    } else {
+        echo $KO;
+    }
+
 }

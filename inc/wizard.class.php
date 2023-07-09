@@ -1614,6 +1614,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "<div style='overflow:auto;'>";
 
+
                 echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
 
@@ -1645,7 +1646,15 @@ class PluginMetademandsWizard extends CommonDBTM
 
 
                 $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-                $title = _sx('button', 'Save & Post', 'metademands');
+                $see_summary = 0;
+                if (Plugin::isPluginActive('ordermaterial')) {
+                    $title = _sx('button', 'See basket summary & send it', 'metademands');
+                    echo Html::hidden('see_basket_summary', ['value' => 1]);
+                    $see_summary = 1;
+                } else {
+                    $title = _sx('button', 'Save & Post', 'metademands');
+                }
+
                 $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
                 $submitmsg = "";
                 $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -1782,6 +1791,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   var nextsteptitle = '$nextsteptitle';
                   var submitsteptitle = '$submitsteptitle';
                   var submitstepmsg = '$submitstepmsg';
+                  var seesummary = '$see_summary';
                   var hiddenblocs = {$json_hidden_blocks};
                   var msg = '$alert';
                   var firstnumTab = 0;
@@ -1848,7 +1858,10 @@ class PluginMetademandsWizard extends CommonDBTM
                      // Increase or decrease the current tab by 1:
                      nextTab = currentTab + n;
                      // Hide the current tab:
-                     x[currentTab].style.display = 'none';
+                     if(x[currentTab] !== undefined) {
+                         x[currentTab].style.display = 'none';
+                     }
+                     
                   
                      // Increase or decrease the current tab by 1:
                      currentTab = currentTab + n;
@@ -1904,36 +1917,56 @@ class PluginMetademandsWizard extends CommonDBTM
                         arrayDatas.push({name: 'step', value: 2});
                         arrayDatas.push({name: 'form_name', value: '$name'});
                         
-                        $.ajax({
-                           url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-                           type: 'POST',
-                           data: $('form').serializeArray(),
-                           success: function (response) {
-                              $('#ajax_loader').hide();
-                              if (response == 1) {
-                                 window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
-                              } else {
-                                 $.ajax({
-                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                                    type: 'POST',
-                                    data: arrayDatas,
-                                    success: function (response) {
-                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
-                                    },
-                                    error: function (xhr, status, error) {
-                                       console.log(xhr);
-                                       console.log(status);
-                                       console.log(error);
-                                    }
-                                 });
-                              }
-                           },
-                           error: function (xhr, status, error) {
-                              console.log(xhr);
-                              console.log(status);
-                              console.log(error);
-                           }
-                        });
+                        if (seesummary == 1) {
+                            $.ajax({
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                                   type: 'POST',
+                                   datatype: 'html',
+                                   data: $('form').serializeArray(),
+                                   success: function (response) {
+                                      $('#ajax_loader').hide();
+                                      $('.md-wizard').append(response);
+                                   },
+                                   error: function (xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                   }
+                                });
+                        } else {
+                            $.ajax({
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                                   type: 'POST',
+                                   datatype: 'html',
+                                   data: $('form').serializeArray(),
+                                   success: function (response) {
+                                      $('#ajax_loader').hide();
+                                      if (response == 1) {
+                                         window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
+                                      } else {
+                                         $.ajax({
+                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                            type: 'POST',
+                                            data: arrayDatas,
+                                            success: function (response) {
+                                               window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
+                                            },
+                                            error: function (xhr, status, error) {
+                                               console.log(xhr);
+                                               console.log(status);
+                                               console.log(error);
+                                            }
+                                         });
+                                      }
+                                   },
+                                   error: function (xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                   }
+                                });
+                        }
+                        
                   
                         return false;
                      }
