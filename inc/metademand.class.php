@@ -1605,7 +1605,7 @@ JAVASCRIPT
             $forms[$step][$metademands_id]['tasks'] = [];
 
             if (count($form_data)) {
-//TODO add array options
+                //TODO add array options
                 foreach ($form_data as $idf => $form_data_fields) {
 
                     $fieldopt = new PluginMetademandsFieldOption();
@@ -3346,10 +3346,7 @@ JAVASCRIPT
             || $field['type'] == 'title'
             || $field['type'] == 'title-block'
             || $field['type'] == 'radio') {
-            //         if (isset($parent_fields[$parent_fields_id]['rank'])
-            //             && $field['rank'] != $parent_fields[$parent_fields_id]['rank']) {
-            //            $result['content'] .= "<tr>";
-            //         }
+
 
             //use plugin fields types
             if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -4105,12 +4102,13 @@ JAVASCRIPT
                                 $result[$field['rank']]['display'] = true;
                                 $content = self::displayPluginFieldItems($plug, $formatAsTable, $style_title, $label, $field);
                                 $result[$field['rank']]['content'] .= $content;
+
                             }
                         }
                     }
+
                     break;
             }
-            //         $result[$field['rank']]['content'] .= "<br>";
         }
         $parent_fields_id = $fields_id;
     }

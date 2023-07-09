@@ -258,7 +258,7 @@ $fields = new PluginMetademandsField();
                         $step = $_POST['step'];
                     } elseif (isset($_POST['create_metademands'])) {
 
-                        if (Plugin::isPluginActive('ordermaterial')) {
+                        if (Plugin::isPluginActive('ordermaterial') && isset($_POST['quantity'])) {
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['quantities'] = $_POST['quantity'];
                         }
                         $step = PluginMetademandsMetademand::STEP_CREATE;
