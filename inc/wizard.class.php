@@ -381,7 +381,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
 
                 echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
-                echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+                if (!empty($icon)) {
+                    echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+                }
                 if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
                     echo $meta->getName();
                 } else {
@@ -1228,7 +1230,10 @@ class PluginMetademandsWizard extends CommonDBTM
                         echo "<div class='card-header' $style_background>";
                     }
                     echo "<h2 class=\"card-title\"><span style='color:" . $line[$keys[0]]['color'] . ";font-weight: normal;'>";
-
+                    $icon = $line[$keys[0]]['icon'];
+                    if (!empty($icon)) {
+                        echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+                    }
                     if (empty($label = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'name'))) {
                         $label = $line[$keys[0]]['name'];
                     }
@@ -1428,7 +1433,10 @@ class PluginMetademandsWizard extends CommonDBTM
                             $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;'";
                             echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
                             echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
-
+                            $icon = $data['icon'];
+                            if (!empty($icon)) {
+                                echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+                            }
                             if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
                                 $label = $data['name'];
                             }

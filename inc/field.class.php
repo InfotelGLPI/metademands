@@ -434,7 +434,7 @@ class PluginMetademandsField extends CommonDBChild
 
         //Display to add a title
         echo "<span id='show_item_label_title' style='display:none'>";
-        echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
+
         echo "</span>";
         echo "</td>";
         echo "<td>";
@@ -467,11 +467,37 @@ class PluginMetademandsField extends CommonDBChild
         Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", PLUGIN_METADEMANDS_WEBDIR .
                                                                               "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
         echo "<span id='show_item_title' style='display:none'>";
-       //      echo Html::script('/lib/jqueryplugins/spectrum-colorpicker/spectrum.js');
-       //      echo Html::css('lib/jqueryplugins/spectrum-colorpicker/spectrum.min.css');
-       //      Html::requireJs('colorpicker');
-       //      $rand = mt_rand();
+
+        echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
+
         Html::showColorField('color', ['value' => $this->fields["color"]]);
+
+        echo "<br><br>";
+
+        echo __('Icon'). "&nbsp;";
+
+        $icon_selector_id = 'icon_' . mt_rand();
+        echo Html::select(
+            'icon',
+            [$this->fields['icon'] => $this->fields['icon']],
+            [
+                'id' => $icon_selector_id,
+                'selected' => $this->fields['icon'],
+                'style' => 'width:175px;'
+            ]
+        );
+
+        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::scriptBlock(
+            <<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+        );
         echo "</span>";
 
         $paramsItem = ['value'                   => '__VALUE__',

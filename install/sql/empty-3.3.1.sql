@@ -124,6 +124,7 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `additional_number_day`             int                                      DEFAULT 0,
     `informations_to_display`           varchar(255)                    NOT NULL DEFAULT '[]',
     `use_richtext`                      tinyint                         NOT NULL DEFAULT '1',
+    `icon`                              varchar(255)                             DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
@@ -153,6 +154,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
     `checkbox_value`               int unsigned NOT NULL DEFAULT '0',
     `checkbox_id`                  int unsigned NOT NULL DEFAULT '0',
     `parent_field_id`              int unsigned NOT NULL DEFAULT '0',
+    `hide_submit_button`           int unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`)

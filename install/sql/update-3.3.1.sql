@@ -17,3 +17,7 @@ CREATE TABLE `glpi_plugin_metademands_groupconfigs`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = DYNAMIC;
+
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `icon` varchar(255) DEFAULT NULL;
+
+ALTER TABLE `glpi_plugin_metademands_fieldoptions` ADD `hide_submit_button` int unsigned NOT NULL DEFAULT '0';
