@@ -1140,9 +1140,10 @@ JAVASCRIPT
             }
 
             if (isset($PLUGIN_HOOKS['metademands'])) {
+
                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                     if (Plugin::isPluginActive($plug)) {
-                        return self::showPluginCustomvalues($plug, $params);
+                         echo self::showPluginCustomvalues($plug, $params);
                     }
                 }
             }
@@ -1545,7 +1546,7 @@ JAVASCRIPT
                 $form[$pluginclass] = [];
                 $item               = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'showCustomvalues'])) {
-                    return $item->showCustomvalues($params);
+                     $item->showCustomvalues($params);
                 }
             }
         }
@@ -1600,7 +1601,7 @@ JAVASCRIPT
                 $form[$pluginclass] = [];
                 $item               = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'addFieldItems'])) {
-                    return $item->addFieldItems();
+                     return $item->addFieldItems();
                 }
             }
         }
