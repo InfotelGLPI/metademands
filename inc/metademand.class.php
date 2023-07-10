@@ -3365,7 +3365,7 @@ JAVASCRIPT
                 case 'title-block':
                     //               if ($field['is_basket'] == true) {
                     if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "<th colspan='2'>";
+                        $result[$field['rank']]['content'] .= "<th colspan='10'>";
                     }
                     $result[$field['rank']]['content'] .= $label;
                     if ($formatAsTable) {
