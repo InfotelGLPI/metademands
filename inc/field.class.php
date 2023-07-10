@@ -1556,11 +1556,12 @@ JAVASCRIPT
      *
      * @param $plug
      */
-    public static function showPluginFieldCase($plug,$metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0)
+    public static function showPluginFieldCase($plug, $metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0)
     {
         global $PLUGIN_HOOKS;
 
         $dbu = new DbUtils();
+
         if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
             $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
 
@@ -1568,10 +1569,11 @@ JAVASCRIPT
                 if (!class_exists($pluginclass)) {
                     continue;
                 }
-                $form[$pluginclass] = [];
+
                 $item               = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'showFieldCase'])) {
-                    return $item->showFieldCase($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
+
+                    $item->showFieldCase($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
                 }
             }
         }
@@ -3368,10 +3370,13 @@ JAVASCRIPT
             default:
                 //plugin case
                 if (isset($PLUGIN_HOOKS['metademands'])) {
-                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+
+                    $hooks_plugins = $PLUGIN_HOOKS['metademands'];
+                    foreach ($hooks_plugins as $plug => $pluginclass) {
                         if (Plugin::isPluginActive($plug)) {
-                            $case = self::showPluginFieldCase($plug, $metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
-                            return $case;
+//                                Toolbox::logInfo($plug);
+                            echo self::showPluginFieldCase($plug, $metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
+//                                return $case;
                         }
                     }
                 }

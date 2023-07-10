@@ -352,11 +352,11 @@ function plugin_metademands_install() {
             $query = "ALTER TABLE `glpi_plugin_metademands_drafts_values` ADD `value2` text NOT NULL;";
             $DB->query($query);
         }
+    }
 
-        //version 3.2.19
-        if (!$DB->tableExists("glpi_plugin_metademands_groupconfigs")) {
-            $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.1.sql");
-        }
+    //version 3.3.1
+    if (!$DB->tableExists("glpi_plugin_metademands_groupconfigs")) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.1.sql");
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";

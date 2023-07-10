@@ -1236,9 +1236,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             }
                                         }
                                         $script .= " }else{
-                                             $('div[bloc-id=\"bloc$v\"]').show();
+                                            // $('div[bloc-id=\"bloc$v\"]').show();
                                             }";
-//                                            $script .= "};";
+                                            $script .= "};";
 
                                             foreach ($childs_blocks as $childs) {
                                                 foreach ($childs as $k => $v) {
