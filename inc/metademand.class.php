@@ -4388,6 +4388,8 @@ JAVASCRIPT
         $task = new PluginMetademandsTask();
         $ticket = new Ticket();
         $KO = [];
+        $ticketParent = new Ticket();
+        $ticketParent->getFromDB($parent_tickets_id);
 
         foreach ($tickettasks_data as $son_ticket_data) {
             if ($son_ticket_data['level'] == $tasklevel) {
@@ -4399,6 +4401,11 @@ JAVASCRIPT
                 if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $ancestor_tickets_id)) {
                     continue;
                 }
+             
+                $tt = $ticket->getITILTemplateToUse(0, $ticketParent->fields['type'], $son_ticket_data['itilcategories_id'], $ticketParent->fields['entities_id']);
+                $predifined_fields = $tt->predefined;
+                $son_ticket_data = array_merge($son_ticket_data,$predifined_fields);
+             
                 // Field format for ticket
                 foreach ($son_ticket_data as $field => $value) {
                     if (strstr($field, 'groups_id_')
