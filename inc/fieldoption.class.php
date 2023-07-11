@@ -233,6 +233,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             echo "<th>" . __('Childs blocks', 'metademands') . "</th>";
             echo "<th>" . __('Link a validation', 'metademands') . "</th>";
             echo "<th>" . __('Bind to the value of this checkbox', 'metademands') . "</th>";
+//            echo "<th>" . __('Hide submit button', 'metademands') . "</th>";
             echo "</tr>";
 
             //
@@ -348,6 +349,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     echo $arrayValues[$data["checkbox_value"]];
                 }
 
+//                echo "<td $onhover>";
+//                if ($data['hide_submit_button'] > 0) {
+//                    echo Dropdown::getYesNo($data['hide_submit_button']);
+//                }
+//                echo "</td>";
+
                 echo "</td>";
                 echo "</tr>";
             }
@@ -430,6 +437,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
             'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
             'checkbox_value' => $this->fields['checkbox_value'] ?? 0,
+//            'hide_submit_button' => $this->fields['hide_submit_button'] ?? 0,
         ];
 
 
@@ -937,7 +945,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
             Dropdown::showFromArray('hidden_link', $data, ['value' => $params['hidden_link']]);
             echo "</td></tr>";
 
-            echo "<tr><td>";
+            echo "<tr>";
+            echo "<td>";
             echo __('Link a hidden block', 'metademands');
             echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the block becomes visible', 'metademands') . '</span>';
             echo "</td>";
@@ -1030,6 +1039,19 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                 echo "</td></tr>";
             }
+//            echo "<tr>";
+//            echo "<td>";
+//            echo __('Hide submit button', 'metademands');
+//            echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the submit button becomes hidden', 'metademands') . '</span>';
+//            echo "</td>";
+//            echo "<td>";
+//
+//            if (empty($params['hide_submit_button'])) {
+//                $params['hide_submit_button'] = 0;
+//            }
+//            Dropdown::showYesNo('hide_submit_button', $params['hide_submit_button']);
+//
+//            echo "</td></tr>";
         }
 
         //Hook to print new options from plugins
@@ -1129,6 +1151,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         if (isset($data['options'])) {
             $check_values = $data['options'];
 
+
             if (is_array($check_values)) {
                 if (count($check_values) > 0) {
                     foreach ($check_values as $idc => $check_value) {
@@ -1136,31 +1159,27 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         if (!empty($data['options'][$idc]['fields_link'])) {
                             $script = "";
                             $fields_link = $data['options'][$idc]['fields_link'];
-
-                            $fields_link2 = $fields_link;
                             $rand = mt_rand();
-//                        if (isset($check_value[$key])) {
-                            $script .= "var metademandWizard$rand = $(document).metademandWizard();";
-                            $script .= "metademandWizard$rand.metademand_setMandatoryField(
+
+                            if ($data['type'] == 'checkbox' || $data['type'] == 'radio') {
+
+                                $script .= "var metademandWizard$rand = $(document).metademandWizard();";
+                                $script .= "metademandWizard$rand.metademand_setMandatoryField(
+                                        'metademands_wizard_red" . $fields_link . "',
+                                        'field[" . $data['id'] . "][".$idc."]',[";
+                                $script .= $idc;
+
+                            } else {
+                                $script .= "var metademandWizard$rand = $(document).metademandWizard();";
+                                $script .= "metademandWizard$rand.metademand_setMandatoryField(
                                         'metademands_wizard_red" . $fields_link . "',
                                         'field[" . $data['id'] . "]',[";
-                            if ($data['type'] == 'checkbox' || $data['type'] == 'radio') {
-                                $script .= 1;
-                            } else if ($check_value > 0 && $data['type'] != 'checkbox' && $data['type'] != 'radio') {
-                                $script .= $idc;
+                                if ($check_value > 0) {
+                                    $script .= $idc;
+                                }
                             }
-//TODO used ?
-//                            foreach ($fields_link2 as $key2 => $fields2) {
-//                                if ($key != $key2) {
-//                                    if ($fields_link[$key] == $fields_link[$key2]) {
-//                                        $script .= "," . $check_value[$key2];
-//                                    }
-//                                }
-//                            }
-
-
                             $script .= "], '" . $data['item'] . "');";
-//                        }
+
 
                             echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
 
@@ -2138,6 +2157,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     $script = "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
                                     $script2 = "";
                                     $script .= "var tohide = {};";
+
                                     foreach ($check_values as $idc => $check_value) {
                                         $hidden_block = $check_value['hidden_block'];
                                         $script .= " if (this.checked){ ";

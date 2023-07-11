@@ -1655,12 +1655,15 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
                 $see_summary = 0;
+
+                $title = _sx('button', 'Save & Post', 'metademands');
                 if (Plugin::isPluginActive('ordermaterial')) {
-                    $title = _sx('button', 'See basket summary & send it', 'metademands');
-                    echo Html::hidden('see_basket_summary', ['value' => 1]);
-                    $see_summary = 1;
-                } else {
-                    $title = _sx('button', 'Save & Post', 'metademands');
+                    $ordermaterial = new PluginOrdermaterialMetademand();
+                    if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
+                        $title = _sx('button', 'See basket summary & send it', 'metademands');
+                        echo Html::hidden('see_basket_summary', ['value' => 1]);
+                        $see_summary = 1;
+                    }
                 }
 
                 $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
