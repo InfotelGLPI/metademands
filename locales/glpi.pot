@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-10 16:47+0000\n"
+"POT-Creation-Date: 2023-07-11 14:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -426,12 +426,12 @@ msgid "Form fields"
 msgstr ""
 
 #: inc/field.class.php:1219 inc/fieldoption.class.php:229
-#: inc/fieldoption.class.php:891
+#: inc/fieldoption.class.php:899
 msgid "Link a task to the field"
 msgstr ""
 
 #: inc/field.class.php:1220 inc/fieldoption.class.php:228
-#: inc/fieldoption.class.php:471 inc/fieldoption.class.php:489
+#: inc/fieldoption.class.php:479 inc/fieldoption.class.php:497
 msgid "Value to check"
 msgstr ""
 
@@ -586,76 +586,76 @@ msgstr ""
 msgid "List of options"
 msgstr ""
 
-#: inc/fieldoption.class.php:230 inc/fieldoption.class.php:901
+#: inc/fieldoption.class.php:230 inc/fieldoption.class.php:909
 msgid "Link a field to the field"
 msgstr ""
 
-#: inc/fieldoption.class.php:231 inc/fieldoption.class.php:923
+#: inc/fieldoption.class.php:231 inc/fieldoption.class.php:931
 msgid "Link a hidden field"
 msgstr ""
 
-#: inc/fieldoption.class.php:232 inc/fieldoption.class.php:941
+#: inc/fieldoption.class.php:232 inc/fieldoption.class.php:950
 msgid "Link a hidden block"
 msgstr ""
 
-#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:968
+#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:977
 msgid "Childs blocks"
 msgstr ""
 
-#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:977
+#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:986
 msgid "Link a validation"
 msgstr ""
 
-#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:996
+#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:1005
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
-#: inc/fieldoption.class.php:490
+#: inc/fieldoption.class.php:498
 msgid "Not null value"
 msgstr ""
 
-#: inc/fieldoption.class.php:513
+#: inc/fieldoption.class.php:521
 msgid "If field empty"
 msgstr ""
 
-#: inc/fieldoption.class.php:892
+#: inc/fieldoption.class.php:900
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: inc/fieldoption.class.php:902
+#: inc/fieldoption.class.php:910
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: inc/fieldoption.class.php:924
+#: inc/fieldoption.class.php:932
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:942
+#: inc/fieldoption.class.php:951
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:969
+#: inc/fieldoption.class.php:978
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
 msgstr ""
 
-#: inc/fieldoption.class.php:978
+#: inc/fieldoption.class.php:987
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
 msgstr ""
 
-#: inc/fieldoption.class.php:997
+#: inc/fieldoption.class.php:1006
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
 msgstr ""
 
-#: inc/fieldoption.class.php:1096 inc/step.class.php:247 inc/step.class.php:367
+#: inc/fieldoption.class.php:1118 inc/step.class.php:247 inc/step.class.php:367
 #: inc/step.class.php:387 inc/task.class.php:662 inc/task.class.php:1042
 #: inc/tickettask.class.php:166
 #, php-format
@@ -1447,53 +1447,53 @@ msgid "Previous"
 msgstr ""
 
 #: inc/wizard.class.php:1630 inc/wizard.class.php:1656
-#: inc/wizard.class.php:1668
+#: inc/wizard.class.php:1671
 msgid "Next"
 msgstr ""
 
 #: inc/wizard.class.php:1659
 msgctxt "button"
-msgid "See basket summary & send it"
+msgid "Save & Post"
 msgstr ""
 
 #: inc/wizard.class.php:1663
 msgctxt "button"
-msgid "Save & Post"
+msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:1669
+#: inc/wizard.class.php:1672
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1681
+#: inc/wizard.class.php:1684
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1736
+#: inc/wizard.class.php:1739
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:1746
+#: inc/wizard.class.php:1749
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:2787
+#: inc/wizard.class.php:2790
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2796
+#: inc/wizard.class.php:2799
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2843
+#: inc/wizard.class.php:2846
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2847
+#: inc/wizard.class.php:2850
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
