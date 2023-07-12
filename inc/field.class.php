@@ -2125,6 +2125,8 @@ JAVASCRIPT
                     if (!is_array($value)) {
                         $value = [];
                     }
+
+                    if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                     $name  = $namefield . "[" . $data['id'] . "][]";
                     $css   = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
                     $field = "$css
@@ -2234,6 +2236,18 @@ JAVASCRIPT
                                   });
                               });
                            </script>';
+                    } else {
+                        $field = Dropdown::showFromArray(
+                            $namefield . "[" . $data['id'] . "]",
+                            $data['custom_values'],
+                            ['values'   => $value,
+                                'width'    => '250px',
+                                'multiple' => true,
+                                'display'  => false,
+                                'required' => ($data['is_mandatory'] ? "required" : "")
+                            ]
+                        );
+                    }
                 } else {
                     if (!empty($data['custom_values'])) {
                         $data['custom_values'] = self::_unserialize($data['custom_values']);
@@ -2261,6 +2275,7 @@ JAVASCRIPT
                             $value = json_decode($value);
                         }
                         $value = is_array($value) ? $value : $default_values;
+
                         if ($data["display_type"] != self::CLASSIC_DISPLAY) {
                             $name  = $namefield . "[" . $data['id'] . "][]";
                             $css   = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
