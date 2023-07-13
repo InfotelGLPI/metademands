@@ -85,12 +85,12 @@ foreach ($cats as $item) {
 
 }
 
-$ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
-foreach ($ticketcats as $item) {
-    if ($item['itilcategories_id'] > 0) {
-        $used []= $item['itilcategories_id'];
-    }
-}
+//$ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
+//foreach ($ticketcats as $item) {
+//    if ($item['itilcategories_id'] > 0) {
+//        $used []= $item['itilcategories_id'];
+//    }
+//}
 $used = array_unique($used);
 
 $criteria += ['NOT' => [

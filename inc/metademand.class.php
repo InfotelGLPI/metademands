@@ -1017,12 +1017,12 @@ class PluginMetademandsMetademand extends CommonDBTM
                 }
             }
 
-            $ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
-            foreach ($ticketcats as $item) {
-                if ($item['itilcategories_id'] > 0) {
-                    $used [] = $item['itilcategories_id'];
-                }
-            }
+//            $ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
+//            foreach ($ticketcats as $item) {
+//                if ($item['itilcategories_id'] > 0) {
+//                    $used [] = $item['itilcategories_id'];
+//                }
+//            }
             $used = array_unique($used);
             if (count($used) > 0) {
                 $criteria += ['NOT' => [
