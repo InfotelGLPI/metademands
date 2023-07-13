@@ -349,12 +349,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     echo $arrayValues[$data["checkbox_value"]];
                 }
 
-//                echo "<td $onhover>";
-//                if ($data['hide_submit_button'] > 0) {
-//                    echo Dropdown::getYesNo($data['hide_submit_button']);
-//                }
-//                echo "</td>";
-
                 echo "</td>";
                 echo "</tr>";
             }
@@ -437,7 +431,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
             'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
             'checkbox_value' => $this->fields['checkbox_value'] ?? 0,
-//            'hide_submit_button' => $this->fields['hide_submit_button'] ?? 0,
         ];
 
 
@@ -1039,19 +1032,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                 echo "</td></tr>";
             }
-//            echo "<tr>";
-//            echo "<td>";
-//            echo __('Hide submit button', 'metademands');
-//            echo '</br><span class="metademands_wizard_comments">' . __('If the value selected equals the value to check, the submit button becomes hidden', 'metademands') . '</span>';
-//            echo "</td>";
-//            echo "<td>";
-//
-//            if (empty($params['hide_submit_button'])) {
-//                $params['hide_submit_button'] = 0;
-//            }
-//            Dropdown::showYesNo('hide_submit_button', $params['hide_submit_button']);
-//
-//            echo "</td></tr>";
         }
 
         //Hook to print new options from plugins
