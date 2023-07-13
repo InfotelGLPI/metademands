@@ -1,0 +1,1 @@
+ALTER TABLE `glpi_plugin_metademands_fields` ADD `readonly` tinyint DEFAULT 0;

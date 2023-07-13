@@ -2164,12 +2164,12 @@ class PluginMetademandsWizard extends CommonDBTM
                           var casesACocher = document.querySelectorAll('input[name*=\"' + newfieldname + '\"]');
 
                             // Parcourir les cases à cocher pour vérifier s'il y en a au moins une de cochée
-                                var check = false;
-                                for (var c = 0; c < casesACocher.length; c++) {
-                                  if (casesACocher[c].checked) {
-                                    check = true;
-                                    break;
-                                  }
+                            var check = false;
+                            for (var c = 0; c < casesACocher.length; c++) {
+                                if (casesACocher[c].checked) {
+                                check = true;
+                                break;
+                                }
                             }
                            if (check) {
                               $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
@@ -2213,8 +2213,9 @@ class PluginMetademandsWizard extends CommonDBTM
                            fieldmandatory = z[i].required;
                            // If a field is empty...
                            isnumber = z[i].getAttribute('isnumber');
+                           ismultiplenumber = z[i].getAttribute('ismultiplenumber');
 //                           console.log(isnumber);
-                           if (z[i].value == 0 && isnumber == null && fieldmandatory == true) {
+                           if (z[i].value == 0 && isnumber == null && ismultiplenumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
                               var fieldname = z[i].name;
                               var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
@@ -2228,6 +2229,33 @@ class PluginMetademandsWizard extends CommonDBTM
                                  $('[name=\"' + fieldname + '\"]').removeAttr('required');
 //                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                               }
+                  
+                           } else if (z[i].value == 0 && ismultiplenumber == 'ismultiplenumber' && fieldmandatory == true) {
+                              // add an 'invalid' class to the field:
+                              var fieldname = z[i].name;
+                              var newfieldname = fieldname.match(/^(.*?)\[\w+\]/)[0];
+                              
+                              var numbers = document.querySelectorAll('[name*=\"' + newfieldname + '\"]');
+                               var check = false;
+                                for (var n = 0; n < numbers.length; n++) {
+//                                console.log(numbers[n].name);
+                                var myval = $('[name*=\"' + numbers[n].name + '\"]').children('option:selected').val();
+                                if (myval > 0) {
+                                    check = true;
+                                    break;
+                                    }
+                                }
+
+                                  if (check) {
+                                      $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
+                                      $('[name*=\"' + newfieldname + '\"]').removeAttr('required');
+        //                              $('[for*=\"' + fieldname + '\"]').css('color', 'unset');
+                                    } else {
+                                       $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
+                                      $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
+        //                              $('[for*=\"' + fieldname + '\"]').css('color', 'red');
+                                      ko++;
+                                    }
                   
                            } else {
                               z[i].classList.remove('invalid');

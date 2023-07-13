@@ -309,7 +309,7 @@ class PluginMetademandsField extends CommonDBChild
         echo "<td>";
         Dropdown::showYesNo('hide_title', ($this->fields['hide_title']));
         echo "</td>";
-        echo "<td colspan='2'></td>";
+        echo "<td colspan='2'> </td>";
         echo "</tr>";
 
         // LABEL 2
@@ -379,8 +379,6 @@ class PluginMetademandsField extends CommonDBChild
         $paramsType = ['value' => '__VALUE__',
             'type' => '__VALUE__',
             'item' => $this->fields['item'],
-//            'plugin_metademands_tasks_id' => $this->fields['plugin_metademands_tasks_id'],
-//            'fields_link' => $this->fields['fields_link'],
             'max_upload' => $this->fields['max_upload'],
             'regex' => $this->fields['regex'],
             'use_future_date'            => $this->fields['use_future_date'],
@@ -388,17 +386,12 @@ class PluginMetademandsField extends CommonDBChild
             'additional_number_day' => $this->fields['additional_number_day'],
             'display_type' => $this->fields['display_type'],
             'informations_to_display' => $this->fields['informations_to_display'],
-            //                     'fields_display' => $this->fields['fields_display'],
-//            'hidden_link' => $this->fields['hidden_link'],
-//            'hidden_block' => $this->fields['hidden_block'],
-//            'childs_blocks' => $this->fields['childs_blocks'],
-//            'users_id_validate' => $this->fields['users_id_validate'],
             'custom_values' => $this->fields['custom_values'],
             'comment_values' => $this->fields['comment_values'],
             'default_values' => $this->fields['default_values'],
-//            'check_value' => $this->fields['check_value'],
             'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
             'link_to_user' => $this->fields["link_to_user"],
+            'readonly' => $this->fields["readonly"],
             'change_type' => 1];
         Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", PLUGIN_METADEMANDS_WEBDIR .
                                                                                 "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
@@ -444,25 +437,20 @@ class PluginMetademandsField extends CommonDBChild
         $paramsType = ['value'                   => '__VALUE__',
                      'type'                    => '__VALUE__',
                      'item'                    => $this->fields['item'],
-//                     'task_link'               => $this->fields['plugin_metademands_tasks_id'],
-//                     'fields_link'             => $this->fields['fields_link'],
                      'max_upload'              => $this->fields['max_upload'],
                      'regex'                   => $this->fields['regex'],
                      'use_date_now'            => $this->fields['use_date_now'],
                      'additional_number_day'   => $this->fields['additional_number_day'],
                      'display_type'            => $this->fields['display_type'],
                      'informations_to_display' => $this->fields['informations_to_display'],
-                     //                     'fields_display' => $this->fields['fields_display'],
-//                     'hidden_link'             => $this->fields['hidden_link'],
-//                     'hidden_block'            => $this->fields['hidden_block'],
                      'custom_values'           => $this->fields['custom_values'],
                      'comment_values'          => $this->fields['comment_values'],
                      'default_values'          => $this->fields['default_values'],
-//                     'check_value'             => $this->fields['check_value'],
                      'step'                    => 'object',
                      'rand'                    => $randItem,
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'link_to_user'            => $this->fields["link_to_user"],
+            'readonly' => $this->fields["readonly"],
                      'change_type'             => 1];
         Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", PLUGIN_METADEMANDS_WEBDIR .
                                                                               "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
@@ -503,25 +491,18 @@ JAVASCRIPT
         $paramsItem = ['value'                   => '__VALUE__',
                      'item'                    => '__VALUE__',
                      'type'                    => $this->fields['type'],
-//                     'task_link'               => $this->fields['plugin_metademands_tasks_id'],
-//                     'fields_link'             => $this->fields['fields_link'],
                      'max_upload'              => $this->fields['max_upload'],
                      'regex'                   => $this->fields['regex'],
                      'use_date_now'            => $this->fields['use_date_now'],
                      'additional_number_day'   => $this->fields['additional_number_day'],
                      'display_type'            => $this->fields['display_type'],
                      'informations_to_display' => $this->fields['informations_to_display'],
-                     //                     'fields_display' => $this->fields['fields_display'],
-//                     'hidden_link'             => $this->fields['hidden_link'],
-//                     'hidden_block'            => $this->fields['hidden_block'],
-//                     'childs_blocks'           => $this->fields['childs_blocks'],
-//                     'users_id_validate'       => $this->fields['users_id_validate'],
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'custom_values'           => $this->fields["custom_values"],
                      'comment_values'          => $this->fields["comment_values"],
                      'default_values'          => $this->fields["default_values"],
                      'link_to_user'            => $this->fields["link_to_user"],
-//                     'check_value'             => $this->fields['check_value']
+            'readonly' => $this->fields["readonly"],
         ];
         Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", PLUGIN_METADEMANDS_WEBDIR .
                                                                                 "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
@@ -803,6 +784,16 @@ JAVASCRIPT
             Dropdown::showYesNo('default_use_id_requester', $this->fields['default_use_id_requester']);
             echo "</td>";
             echo "</tr>";
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2'>";
+            echo "</td>";
+            echo "<td>";
+            echo __('Read-Only', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('readonly', ($this->fields['readonly']));
+            echo "</td>";
+            echo "</tr>";
         }
 
         if ($ID > 0 && (
@@ -887,16 +878,12 @@ JAVASCRIPT
         echo "<td colspan='4'>";
         echo "<div id='show_values'>";
         $this->fields["dropdown"] = false;
-       //      if ($this->fields['type'] == 'dropdown') {
-       //         $this->fields['type'] = $this->fields['item'];
-        //      }
+
         $paramTypeField = ['id' => $this->fields['id'],
             'value' => $this->fields['type'],
             'custom_values' => $this->fields['custom_values'],
             'comment_values' => $this->fields['comment_values'],
             'default_values' => $this->fields['default_values'],
-//                         'task_link'               => $this->fields['plugin_metademands_tasks_id'],
-//                         'fields_link'             => $this->fields['fields_link'],
             'max_upload' => $this->fields['max_upload'],
             'regex' => $this->fields['regex'],
             'use_future_date' => $this->fields['use_future_date'],
@@ -904,19 +891,12 @@ JAVASCRIPT
             'additional_number_day' => $this->fields['additional_number_day'],
             'display_type' => $this->fields['display_type'],
             'informations_to_display' => $this->fields['informations_to_display'],
-//                         'hidden_link'             => $this->fields['hidden_link'],
-//                         'hidden_block'            => $this->fields['hidden_block'],
-//                         'childs_blocks'           => $this->fields['childs_blocks'],
-//                         'users_id_validate'       => $this->fields['users_id_validate'],
-            //                         'fields_display' => $this->fields['fields_display'],
             'item' => $this->fields['item'],
             'type' => $this->fields['type'],
-//                         'check_value'             => $this->fields['check_value'],
             'drop' => $this->fields["dropdown"],
             'link_to_user' => $this->fields["link_to_user"],
+            'readonly' => $this->fields["readonly"],
             'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-//                         'checkbox_value'          => $this->fields["checkbox_value"],
-//                         'checkbox_id'             => $this->fields["checkbox_id"]
         ];
 
         $this->getEditValue(
@@ -2579,21 +2559,15 @@ JAVASCRIPT
                           'value'    => $value,
                           'display'  => false,
                           'toupdate' => $toupdate,
+                            'readonly' => $data['readonly'] ?? false,
                         ];
                         if ($data['is_mandatory'] == 1) {
                             $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                         }
+                        if ($data['readonly'] == 1) {
+                            $field .= Html::hidden($namefield . "[" . $data['id'] . "]", ['value' => $value]);
+                        }
                         echo User::dropdown($opt);
-                       //                  $config = PluginMetademandsConfig::getInstance();
-                       //                  if ($config['show_requester_informations'] && $on_basket == false) {
-                       //
-                       //                     echo "<div id='tooltip_user" . $data['id'] . "'>";
-                       //                     $_POST['value']        = $value;
-                       //                     $_POST['id_fielduser'] = $data['id'];
-                       //                     include(PLUGIN_METADEMANDS_DIR . "/ajax/utooltipUpdate.php");
-                       //                     echo "</div>";
-                       //                  }
-
                         break;
                     case 'Group':
                         $field = "";
