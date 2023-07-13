@@ -2239,23 +2239,23 @@ class PluginMetademandsWizard extends CommonDBTM
                                var check = false;
                                 for (var n = 0; n < numbers.length; n++) {
 //                                console.log(numbers[n].name);
-                                var myval = $('[name*=\"' + numbers[n].name + '\"]').children('option:selected').val();
-                                if (myval > 0) {
-                                    check = true;
-                                    break;
+                                    var myval = $('[name*=\"' + numbers[n].name + '\"]').children('option:selected').val();
+                                    if (myval > 0) {
+                                        check = true;
+                                        break;
                                     }
                                 }
 
-                                  if (check) {
-                                      $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
-                                      $('[name*=\"' + newfieldname + '\"]').removeAttr('required');
-        //                              $('[for*=\"' + fieldname + '\"]').css('color', 'unset');
-                                    } else {
-                                       $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
-                                      $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
-        //                              $('[for*=\"' + fieldname + '\"]').css('color', 'red');
-                                      ko++;
-                                    }
+                                if (check) {
+                                    $('[name*=\"' + newfieldname + '\"]').removeClass('invalid');
+                                    $('[name*=\"' + newfieldname + '\"]').removeAttr('required');
+                                    //                              $('[for*=\"' + fieldname + '\"]').css('color', 'unset');
+                                } else {
+                                    $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
+                                    $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
+                                    //                              $('[for*=\"' + fieldname + '\"]').css('color', 'red');
+                                    ko++;
+                                }
                   
                            } else {
                               z[i].classList.remove('invalid');
