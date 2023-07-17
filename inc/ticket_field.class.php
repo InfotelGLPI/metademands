@@ -260,7 +260,7 @@ class PluginMetademandsTicket_Field extends CommonDBTM
      * @param $type
      * @return bool
      */
-    static function isCheckValueOKFieldsLinks($value, $check_value, $type)
+    static function isCheckValueOKFieldsLinks($field_value, $check_value, $type)
     {
 
 
@@ -270,37 +270,37 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                 case 'dropdown':
                 case 'dropdown_object':
                 case 'dropdown_meta':
-                    if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
+                    if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($field_value)) {
                         return false;
-                    } else if ($check_value != $value
+                    } else if ($check_value != $field_value
                         && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
                         return false;
                     }
                     break;
                 case 'radio':
-                    if (is_null($value)) {
+                    if (is_null($field_value)) {
                         return false;
-                    } else if (strval($check_value) !== strval($value)) {
+                    } else if (strval($check_value) !== strval($field_value)) {
                         return false;
                     }
                     break;
 
                 case 'checkbox':
-                    if (!empty($value)) {
+                    if (!empty($field_value)) {
                         $ok = false;
                         if ($check_value == -1) {
                             $ok = true;
                         }
-                        if (is_array($value)) {
-                            foreach ($value as $key => $v) {
+                        if (is_array($field_value)) {
+                            foreach ($field_value as $key => $v) {
                                 //                     if ($key != 0) {
                                 if ($check_value == $key) {
                                     $ok = true;
                                 }
                                 //                     }
                             }
-                        } else if (is_array(json_decode($value, true))) {
-                            foreach (json_decode($value, true) as $key => $v) {
+                        } else if (is_array(json_decode($field_value, true))) {
+                            foreach (json_decode($field_value, true) as $key => $v) {
                                 //                     if ($key != 0) {
                                 if ($check_value == $key) {
                                     $ok = true;
@@ -316,33 +316,44 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                     }
                     break;
                 case 'link':
-                    if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value))) {
+                    if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($field_value))) {
                         return false;
                     }
                     break;
                 case 'text':
                 case 'textarea':
-                    if (($check_value == 2 && $value != "")) {
+                    if (($check_value == 2 && $field_value != "")) {
                         return false;
-                    } elseif ($check_value == 1 && $value == "") {
+                    } elseif ($check_value == 1 && $field_value == "") {
                         return false;
                     }
                     break;
                 case 'dropdown_multiple':
-                    if (empty($value)) {
-                        $value = [];
+                    if (empty($field_value)) {
+                        $field_value = [];
                     }
-                    if ($check_value == 0 && is_array($value) && count($value) == 0) {
+                    if ($check_value == 0 && is_array($field_value) && count($field_value) == 0) {
                         return false;
                     }
-                    if (is_array($value) && $check_value > 0 && !in_array($check_value, $value)) {
+                    if (is_array($field_value) && $check_value > 0 && !in_array($check_value, $field_value)) {
                         return false;
                     }
                     break;
 
                 default:
-                    if ($check_value == PluginMetademandsField::$not_null && empty($value)) {
+                    if (!is_array($field_value) && $check_value == PluginMetademandsField::$not_null && empty($field_value)) {
                         return false;
+                    }
+                    if (is_array($field_value)) {
+                        $ok = false;
+                        foreach ($field_value as $key => $v) {
+                            if ($check_value == $key) {
+                                $ok = true;
+                            }
+                        }
+                        if (!$ok) {
+                            return false;
+                        }
                     }
                     break;
             }

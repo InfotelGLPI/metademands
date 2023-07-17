@@ -1327,7 +1327,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                                 //dropdown_multiple
                                 $script .= "$.each( tohide, function( key, value ) {
-                                                console.log(hide-dropdown_multiple);
+                                                console.log('hide-dropdown_multiple');
                                                 if(value == true){
                                                   $('[id-field =\"field'+key+'\"]').hide();
                                                   $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1430,7 +1430,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                                 $script .= "});console.log('fieldshidden-dropdown_multiple-2');";
                                 $script .= "$.each( tohide, function( key, value ) {
-                                                    console.log(hide-dropdown_multiple-2);
+                                                    console.log('hide-dropdown_multiple-2');
                                                     if(value == true){
                                                       $('[id-field =\"field'+key+'\"]').hide();
                                                       $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1528,7 +1528,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     //checkbox
                                     $script .= "
                                     $.each( tohide, function( key, value ) {
-                                                       console.log(hide-checkbox);
+                                                       console.log('hide-checkbox');
                                                         if(value == true){
                                                            $('[id-field =\"field'+key+'\"]').hide();
                                                            $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1590,7 +1590,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
 
                                             $script .= "$.each( tohide, function( key, value ) {
-                                                            console.log(hide-checkbox2);
+                                                            console.log('hide-checkbox2');
                                                             if(value == true){
                                                                $('[id-field =\"field'+key+'\"]').hide();
                                                                $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1745,7 +1745,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             //radio
                             $script .= "
                                     $.each( tohide, function( key, value ) {
-                                            console.log(hide-radio);
+                                            console.log('hide-radio');
                                             if(value == true){
                                                  $('[id-field =\"field'+key+'\"]').hide();
                                                  $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -1856,7 +1856,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 }
                             }
                             $script .= "$.each( tohide, function( key, value ) {
-                                            console.log(hide-dropdown);
+                                            console.log('hide-dropdown');
                                             if(value == true){
                                                $('[id-field =\"field'+key+'\"]').hide();
                                                $('div[id-field =\"field'+key+'\"]').find(':input').each(function() {
@@ -2074,7 +2074,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
 
                                     $script .= "$.each( tohide, function( key, value ) {
-                                    console.log(hide-dropdown_multiple-3);
+                                    console.log('hide-dropdown_multiple-3');
                                     if(value == true){
                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                      $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2175,7 +2175,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         //                                        }
 
                                             $script .= "$.each( tohide, function( key, value ) {
-                                                    console.log(hide-checkbox-3);
+                                                    console.log('hide-checkbox-3');
                                                     if(value == true){
                                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                                      $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2238,7 +2238,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         }
 
                                         $script .= "$.each( tohide, function( key, value ) {
-                                                        console.log(hide-checkbox-4);
+                                                        console.log('hide-checkbox-4');
                                                         if(value == true){
                                                              $('[bloc-id =\"bloc'+key+'\"]').hide();
                                                              $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2469,7 +2469,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         }
                                     }
                                     $script .= "$.each( tohide, function( key, value ) {
-                                                        console.log(hide-radio-1);
+                                                        console.log('hide-radio-1');
                                                         if(value == true){
                                                          $('[bloc-id =\"bloc'+key+'\"]').hide();
                                                          $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
@@ -2595,7 +2595,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         }
                                     }
                                     $script .= "$.each( tohide, function( key, value ) {
-                                                    console.log(hide-dropdown-1);
+                                                    console.log('hide-dropdown-1');
                                                     if(value == true){
                                                      $('[bloc-id =\"bloc'+key+'\"]').hide();
                                                      $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {

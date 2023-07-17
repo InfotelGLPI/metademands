@@ -263,7 +263,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
         if ($maintenance_mode == 1 && !$parameters['preview']) {
             echo "<h3>";
-            echo "<div class='alert alert-important alert-warning center'>";
+            echo "<div class='alert alert-warning center'>";
             echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:orange'></i>&nbsp;";
             echo __('This form is in maintenance mode', 'metademands') . "<br>";
             echo __('Please come back later', 'metademands') . "</div></h3>";

@@ -2133,7 +2133,7 @@ JAVASCRIPT
                                 }
                             }
                         }
-                        if ($input['name'] === 0 || $input['name'] === "0" || empty($input['name'])) {
+                        if ($input['name'] == 0 || $input['name'] == "0" || empty($input['name'])) {
                             $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                         }
                         $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
@@ -2508,7 +2508,7 @@ JAVASCRIPT
                                         //replace #id# in content with the value
                                         do {
                                             $match = $this->getBetween($l['content'], '[', ']');
-                                            if (empty($match)) {
+                                            if (empty($match) && $l['content'] != null) {
                                                 $explodeContent = explode("#", $l['content']);
                                                 foreach ($explodeContent as $content) {
                                                     if (isset($values['fields'][$content])) {
@@ -2611,60 +2611,69 @@ JAVASCRIPT
                                                     $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", $str, $line['tasks'][$key]['content']);
                                                     $l['content'] = str_replace("[" . $match . "]", $str, $l['content']);
                                                 } else {
-                                                    $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['content']);
-                                                    $l['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
+                                                    if ($line['tasks'][$key]['content'] != null) {
+                                                        $line['tasks'][$key]['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $line['tasks'][$key]['content']);
+                                                    }
+                                                    if ($l['content'] != null) {
+                                                        $l['content'] = str_replace("[" . $match . "]", "<@" . $str . "@>", $l['content']);
+                                                    }
                                                 }
                                                 //                                    $value['value'] = str_replace("[".$match."]", $str,  $value['value']);
                                             }
                                         } while (!empty($match));
 
-                                        $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
-                                        $line['tasks'][$key]['content'] = str_replace("@>", "]", $line['tasks'][$key]['content']);
-                                        $l['content'] = str_replace("<@", "[", $l['content']);
-                                        $l['content'] = str_replace("@>", "]", $l['content']);
+                                        if ($line['tasks'][$key]['content'] != null) {
+                                            $line['tasks'][$key]['content'] = str_replace("<@", "[", $line['tasks'][$key]['content']);
+                                            $line['tasks'][$key]['content'] = str_replace("@>", "]", $line['tasks'][$key]['content']);
+                                        }
+                                        if ($l['content'] != null) {
+                                            $l['content'] = str_replace("<@", "[", $l['content']);
+                                            $l['content'] = str_replace("@>", "]", $l['content']);
+                                        }
+                                        if ($l['content'] != null) {
+                                            $explodeContent = explode("#", $l['content']);
+                                            foreach ($explodeContent as $content) {
+                                                if (isset($values['fields'][$content])) {
+                                                    $field = new PluginMetademandsField();
+                                                    $field->getFromDB($content);
+                                                    $fields = $field->fields;
+                                                    $fields['value'] = '';
 
-                                        $explodeContent = explode("#", $l['content']);
-                                        foreach ($explodeContent as $content) {
-                                            if (isset($values['fields'][$content])) {
-                                                $field = new PluginMetademandsField();
-                                                $field->getFromDB($content);
-                                                $fields = $field->fields;
-                                                $fields['value'] = '';
+                                                    $fields['value'] = $values['fields'][$content];
 
-                                                $fields['value'] = $values['fields'][$content];
-
-                                                $fields['value2'] = '';
-                                                if (($fields['type'] == 'date_interval'
-                                                        || $fields['type'] == 'datetime_interval')
-                                                    && isset($values['fields'][$content . '-2'])) {
-                                                    $fields['value2'] = $values['fields'][$content . '-2'];
-                                                }
-                                                $result = [];
-                                                $result['content'] = "";
-                                                $result[$fields['rank']]['content'] = "";
-                                                $result[$fields['rank']]['display'] = false;
-                                                $parent_fields_id = 0;
-                                                $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                                if ($fields['type'] == "textarea") {
-                                                    if ($line['tasks'][$key]["formatastable"] == 0) {
-                                                        $value = str_replace("\\n", '","', $value);
+                                                    $fields['value2'] = '';
+                                                    if (($fields['type'] == 'date_interval'
+                                                            || $fields['type'] == 'datetime_interval')
+                                                        && isset($values['fields'][$content . '-2'])) {
+                                                        $fields['value2'] = $values['fields'][$content . '-2'];
                                                     }
-                                                }
-                                                $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                            } else {
-                                                $explodeContent2 = explode(".", $content);
-
-                                                if (isset($values['fields'][$explodeContent2[0]])) {
-                                                    $field_object = new PluginMetademandsField();
-                                                    if ($field_object->getFromDB($explodeContent2[0])) {
-                                                        if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                            $users_id = $values['fields'][$explodeContent2[0]];
-                                                            $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                    $result = [];
+                                                    $result['content'] = "";
+                                                    $result[$fields['rank']]['content'] = "";
+                                                    $result[$fields['rank']]['display'] = false;
+                                                    $parent_fields_id = 0;
+                                                    $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                    if ($fields['type'] == "textarea") {
+                                                        if ($line['tasks'][$key]["formatastable"] == 0) {
+                                                            $value = str_replace("\\n", '","', $value);
                                                         }
                                                     }
+                                                    $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                } else {
+                                                    $explodeContent2 = explode(".", $content);
+
+                                                    if (isset($values['fields'][$explodeContent2[0]])) {
+                                                        $field_object = new PluginMetademandsField();
+                                                        if ($field_object->getFromDB($explodeContent2[0])) {
+                                                            if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                                                $users_id = $values['fields'][$explodeContent2[0]];
+                                                                $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                            }
+                                                        }
+                                                    }
+                                                    $users_id = $parent_fields['_users_id_requester'];
+                                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                                 }
-                                                $users_id = $parent_fields['_users_id_requester'];
-                                                $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                             }
                                         }
                                     }
@@ -4551,6 +4560,7 @@ JAVASCRIPT
                     $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
                 }
                 $son_ticket_data = $this->mergeFields($son_ticket_data, $inputFieldMain);
+
                 if ($son_tickets_id = $ticket->add(Toolbox::addslashes_deep($son_ticket_data))) {
                     if (Plugin::isPluginActive('fields')) {
                         foreach ($inputField as $containers_id => $vals) {
@@ -6571,7 +6581,7 @@ JAVASCRIPT
 
     public function getBetween($string, $start = "", $end = "")
     {
-        if (str_contains($string, $start)) { // required if $start not exist in $string
+        if ($string != null && str_contains($string, $start)) { // required if $start not exist in $string
             $startCharCount = strpos($string, $start) + strlen($start);
             $firstSubStr = substr($string, $startCharCount, strlen($string));
             $endCharCount = strpos($firstSubStr, $end);
