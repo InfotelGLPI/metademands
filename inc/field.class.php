@@ -2426,7 +2426,7 @@ JAVASCRIPT
                                 $namefield . "[" . $data['id'] . "]",
                                 $data['custom_values'],
                                 ['value'    => $value,
-                                'width'    => '200px',
+                                'width'    => '100%',
                                 'display'  => false,
                                 'required' => ($data['is_mandatory'] ? "required" : ""),
                                 ]

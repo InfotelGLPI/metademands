@@ -383,8 +383,9 @@ button.clear-basket {
     position: relative;
 }
 
-.select2-container {
-    max-width: 250px!important;
+.select2-selection.select2-selection--single, .select2-container .select2-selection.select2-selection--single, .select2-container .select2-selection.select2-selection--single {
+    width: 100% !important;
+    max-width:100%!important
 }
 
 .md-title {

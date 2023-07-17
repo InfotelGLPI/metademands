@@ -88,15 +88,6 @@ class PluginMetademandsWizard extends CommonDBTM
     }
 
     /**
-     * @return bool
-     */
-    public function canUpdateRequester()
-    {
-        return Session::haveRight('plugin_metademands_requester', 1);
-    }
-
-
-    /**
      *
      * @param CommonGLPI $item
      * @param int $withtemplate
