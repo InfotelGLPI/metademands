@@ -796,6 +796,20 @@ JAVASCRIPT
             echo "</tr>";
         }
 
+        if ($ID > 0 && ($this->fields['type'] == "dropdown_meta"
+                && $this->fields["item"] == "ITILCategory_Metademands")) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2'>";
+            echo "</td>";
+            echo "<td>";
+            echo __('Read-Only', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('readonly', ($this->fields['readonly']));
+            echo "</td>";
+            echo "</tr>";
+        }
+
         if ($ID > 0 && (
             ($this->fields['type'] == "dropdown_object"
                        && $this->fields["item"] == "Group")
@@ -2552,13 +2566,13 @@ JAVASCRIPT
                             }
                         }
 
-                        $opt = ['name'     => $namefield . "[" . $data['id'] . "]",
-                          'entity'   => $_SESSION['glpiactiveentities'],
-                          'right'    => $right,
-                          'rand'     => $userrand,
-                          'value'    => $value,
-                          'display'  => false,
-                          'toupdate' => $toupdate,
+                        $opt = ['name' => $namefield . "[" . $data['id'] . "]",
+                            'entity' => $_SESSION['glpiactiveentities'],
+                            'right' => $right,
+                            'rand' => $userrand,
+                            'value' => $value,
+                            'display' => false,
+                            'toupdate' => $toupdate,
                             'readonly' => $data['readonly'] ?? false,
                         ];
                         if ($data['is_mandatory'] == 1) {
@@ -2656,12 +2670,13 @@ JAVASCRIPT
                        //                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
                        //                     $field .= "<span>";
                        //                  } else {
-                        $opt = ['name'      => $nameitil . "_plugin_servicecatalog_itilcategories_id",
-                          'right'     => 'all',
-                          'value'     => $value,
-                          'condition' => ["id" => $values],
-                          'display'   => false,
-                            'class'   => 'form-select itilmeta'];
+                        $opt = ['name' => $nameitil . "_plugin_servicecatalog_itilcategories_id",
+                            'right' => 'all',
+                            'value' => $value,
+                            'condition' => ["id" => $values],
+                            'display' => false,
+                            'readonly' => $data['readonly'] ?? false,
+                            'class' => 'form-select itilmeta'];
                         if ($data['is_mandatory'] == 1) {
                             $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                         }
