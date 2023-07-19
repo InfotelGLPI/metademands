@@ -2604,9 +2604,9 @@ class PluginMetademandsWizard extends CommonDBTM
             } else {
                 $content[$id]['plugin_metademands_fields_id'] = $id;
                 if ($on_basket == false) {
-                    $content[$id]['value'] = $post['field_plugin_servicecatalog_itilcategories_id'];
+                    $content[$id]['value'] = $post['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                 } else {
-                    $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id'];
+                    $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id']?? 0;
                 }
 
                 $content[$id]['value2'] = "";

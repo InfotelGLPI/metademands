@@ -2683,7 +2683,9 @@ JAVASCRIPT
                         $field = "";
                         $field .= ITILCategory::dropdown($opt);
                         $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
-                       //                  }
+                        if ($data['readonly'] == 1) {
+                            $field .= Html::hidden($nameitil . "_plugin_servicecatalog_itilcategories_id", ['value' => $value]);
+                        }
                         break;
                     case 'mydevices':
                         if ($on_basket == false) {
