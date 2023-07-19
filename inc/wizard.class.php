@@ -1921,7 +1921,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         
                         if (seesummary == 1) {
                             $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2',
                                    type: 'POST',
                                    datatype: 'html',
                                    data: $('form').serializeArray(),

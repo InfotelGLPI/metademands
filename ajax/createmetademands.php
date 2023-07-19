@@ -49,6 +49,18 @@ $fields = new PluginMetademandsField();
 
 if (isset($_POST['see_basket_summary'])) {
 
+
+    if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
+        $_POST['current_ticket_id'] = $_GET['current_ticket_id'];
+    }
+    if (isset($_GET['meta_validated'])) {
+        if ($_GET['meta_validated'] > 0) {
+            $_POST['meta_validated'] = true;
+        } else {
+            $_POST['meta_validated'] = false;
+        }
+    }
+
     unset($_POST['see_basket_summary']);
     $post = $_POST;
 

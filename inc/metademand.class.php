@@ -2887,46 +2887,48 @@ JAVASCRIPT
                                         do {
                                             $match = $this->getBetween($l['content'], '[', ']');
                                             if (empty($match)) {
-                                                $explodeContent = explode("#", $l['content']);
-                                                foreach ($explodeContent as $content) {
-                                                    if (isset($values['fields'][$content])) {
-                                                        $field = new PluginMetademandsField();
-                                                        $field->getFromDB($content);
-                                                        $fields = $field->fields;
-                                                        $fields['value'] = '';
+                                                if ($l['content'] != null) {
+                                                    $explodeContent = explode("#", $l['content']);
+                                                    foreach ($explodeContent as $content) {
+                                                        if (isset($values['fields'][$content])) {
+                                                            $field = new PluginMetademandsField();
+                                                            $field->getFromDB($content);
+                                                            $fields = $field->fields;
+                                                            $fields['value'] = '';
 
-                                                        $fields['value'] = $values['fields'][$content];
+                                                            $fields['value'] = $values['fields'][$content];
 
-                                                        $fields['value2'] = '';
-                                                        if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
-                                                            $fields['value2'] = $values['fields'][$content . '-2'];
-                                                        }
-                                                        $result = [];
-                                                        $result['content'] = "";
-                                                        $result[$fields['rank']]['content'] = "";
-                                                        $result[$fields['rank']]['display'] = false;
-                                                        $parent_fields_id = 0;
-                                                        $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                                        if ($fields['type'] == "textarea") {
-                                                            if ($line['tasks'][$key]["formatastable"] == 0) {
-                                                                $value = str_replace("\\n", '","', $value);
+                                                            $fields['value2'] = '';
+                                                            if (($fields['type'] == 'date_interval' || $fields['type'] == 'datetime_interval') && isset($values['fields'][$content . '-2'])) {
+                                                                $fields['value2'] = $values['fields'][$content . '-2'];
                                                             }
-                                                        }
-                                                        $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
-                                                    } else {
-                                                        $explodeContent2 = explode(".", $content);
-
-                                                        if (isset($values['fields'][$explodeContent2[0]])) {
-                                                            $field_object = new PluginMetademandsField();
-                                                            if ($field_object->getFromDB($explodeContent2[0])) {
-                                                                if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
-                                                                    $users_id = $values['fields'][$explodeContent2[0]];
-                                                                    $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                            $result = [];
+                                                            $result['content'] = "";
+                                                            $result[$fields['rank']]['content'] = "";
+                                                            $result[$fields['rank']]['display'] = false;
+                                                            $parent_fields_id = 0;
+                                                            $value = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
+                                                            if ($fields['type'] == "textarea") {
+                                                                if ($line['tasks'][$key]["formatastable"] == 0) {
+                                                                    $value = str_replace("\\n", '","', $value);
                                                                 }
                                                             }
+                                                            $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                        } else {
+                                                            $explodeContent2 = explode(".", $content);
+
+                                                            if (isset($values['fields'][$explodeContent2[0]])) {
+                                                                $field_object = new PluginMetademandsField();
+                                                                if ($field_object->getFromDB($explodeContent2[0])) {
+                                                                    if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
+                                                                        $users_id = $values['fields'][$explodeContent2[0]];
+                                                                        $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                                    }
+                                                                }
+                                                            }
+                                                            $users_id = $parent_fields['_users_id_requester'];
+                                                            $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                                         }
-                                                        $users_id = $parent_fields['_users_id_requester'];
-                                                        $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
                                                     }
                                                 }
                                             } else {
