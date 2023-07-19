@@ -1148,7 +1148,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         'metademands_wizard_red" . $fields_link . "',
                                         'field[" . $data['id'] . "][".$idc."]',[";
                                 $script .= $idc;
-
+                                $script .= "], '" . $data['item'] . "');";
                             } else {
                                 $script .= "var metademandWizard$rand = $(document).metademandWizard();";
                                 $script .= "metademandWizard$rand.metademand_setMandatoryField(
@@ -1157,8 +1157,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 if ($check_value > 0) {
                                     $script .= $idc;
                                 }
+                                $script .= "], '" . $data['item'] . "');";
                             }
-                            $script .= "], '" . $data['item'] . "');";
+
 
 
                             echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
@@ -2097,6 +2098,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                case 'checkbox':
                                                case 'radio':
                                                    this.checked = false;
+                                                   this.required = false;
                                                    break;
                                            }
                                        });
@@ -2198,6 +2200,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                                case 'checkbox':
                                                                case 'radio':
                                                                    this.checked = false;
+                                                                   this.required = false;
                                                                    break;
                                                            }
                                                        });
@@ -2492,6 +2495,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                                    case 'checkbox':
                                                                    case 'radio':
                                                                        this.checked = false;
+                                                                       this.required = false;
                                                                        break;
                                                                }
                                                            });
@@ -2618,6 +2622,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                                      case 'checkbox':
                                                                      case 'radio':
                                                                          this.checked = false;
+                                                                         this.required = false;
                                                                          break;
                                                                  }
                                                              });

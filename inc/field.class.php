@@ -2670,12 +2670,17 @@ JAVASCRIPT
                        //                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
                        //                     $field .= "<span>";
                        //                  } else {
+                        $readonly = $data['readonly'];
+                        if ($data['readonly'] == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
+                            && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+                            $readonly = 0;
+                        }
                         $opt = ['name' => $nameitil . "_plugin_servicecatalog_itilcategories_id",
                             'right' => 'all',
                             'value' => $value,
                             'condition' => ["id" => $values],
                             'display' => false,
-                            'readonly' => $data['readonly'] ?? false,
+                            'readonly' => $readonly ?? false,
                             'class' => 'form-select itilmeta'];
                         if ($data['is_mandatory'] == 1) {
                             $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
@@ -2683,7 +2688,7 @@ JAVASCRIPT
                         $field = "";
                         $field .= ITILCategory::dropdown($opt);
                         $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
-                        if ($data['readonly'] == 1) {
+                        if ($readonly == 1) {
                             $field .= Html::hidden($nameitil . "_plugin_servicecatalog_itilcategories_id", ['value' => $value]);
                         }
                         break;
