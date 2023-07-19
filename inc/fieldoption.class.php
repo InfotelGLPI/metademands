@@ -1988,6 +1988,33 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     foreach ($check_values as $idc => $check_value) {
 
                                         $hidden_block = $check_value['hidden_block'];
+                                        if ($hidden_block > 0) {
+                                            $script2 .= "$('div[bloc-id=\"bloc'+$hidden_block+'\"]').find(':input').each(function() {
+                                                                  switch(this.type) {
+                                                                         case 'password':
+                                                                         case 'text':
+                                                                         case 'textarea':
+                                                                         case 'file':
+                                                                         case 'date':
+                                                                         case 'number':
+                                                                         case 'tel':
+                                                                         case 'email':
+                                                                             jQuery(this).val('');
+                                                                             break;
+                                                                         case 'select-one':
+                                                                         case 'select-multiple':
+                                                                             jQuery(this).val('0').trigger('change');
+                                                                             jQuery(this).val('0');
+                                                                             break;
+                                                                         case 'checkbox':
+                                                                         case 'radio':
+                                                                             this.checked = false;
+                                                                             var checkname = this.name;
+                                                                             $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                             break;
+                                                                     }
+                                                                 });";
+                                        }
                                         //include child blocks
                                         if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
                                             $childs_blocks = json_decode($check_value['childs_blocks'], true);
@@ -1997,7 +2024,32 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 foreach ($childs_blocks as $childs) {
                                                     if (is_array($childs)) {
                                                         foreach ($childs as $childs_block) {
-                                                            $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();";
+                                                            $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
+                                                            $('[bloc-id =\"bloc" . $childs_block . "\"]').find(':input').each(function() {
+                                                                    switch(this.type) {
+                                                                           case 'password':
+                                                                           case 'text':
+                                                                           case 'textarea':
+                                                                           case 'file':
+                                                                           case 'date':
+                                                                           case 'number':
+                                                                           case 'tel':
+                                                                           case 'email':
+                                                                               jQuery(this).val('');
+                                                                               break;
+                                                                           case 'select-one':
+                                                                           case 'select-multiple':
+                                                                               jQuery(this).val('0').trigger('change');
+                                                                               jQuery(this).val('0');
+                                                                               break;
+                                                                           case 'checkbox':
+                                                                           case 'radio':
+                                                                               this.checked = false;
+                                                                               var checkname = this.name;
+                                                                               $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                               break;
+                                                                       }
+                                                                   });";
                                                             $hiddenblocks[] = $childs_block;
                                                             $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
                                                         }
@@ -2098,7 +2150,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                case 'checkbox':
                                                case 'radio':
                                                    this.checked = false;
-                                                   this.required = false;
+                                                   var checkname = this.name;
+                                                   $(\"[name^='\"+checkname+\"']\").removeAttr('required');
                                                    break;
                                            }
                                        });
@@ -2122,7 +2175,32 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 foreach ($childs_blocks as $childs) {
                                                     if (is_array($childs)) {
                                                         foreach ($childs as $childs_block) {
-                                                            $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();";
+                                                            $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
+                                                            $('[bloc-id =\"bloc" . $childs_block . "\"]').find(':input').each(function() {
+                                                                    switch(this.type) {
+                                                                           case 'password':
+                                                                           case 'text':
+                                                                           case 'textarea':
+                                                                           case 'file':
+                                                                           case 'date':
+                                                                           case 'number':
+                                                                           case 'tel':
+                                                                           case 'email':
+                                                                               jQuery(this).val('');
+                                                                               break;
+                                                                           case 'select-one':
+                                                                           case 'select-multiple':
+                                                                               jQuery(this).val('0').trigger('change');
+                                                                               jQuery(this).val('0');
+                                                                               break;
+                                                                           case 'checkbox':
+                                                                           case 'radio':
+                                                                               this.checked = false;
+                                                                               var checkname = this.name;
+                                                                               $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                               break;
+                                                                       }
+                                                                   });";
                                                             $hiddenblocks[] = $childs_block;
                                                             $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
                                                         }
@@ -2200,7 +2278,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                                case 'checkbox':
                                                                case 'radio':
                                                                    this.checked = false;
-                                                                   this.required = false;
+                                                                   var checkname = this.name;
+                                                                   $(\"[name^='\"+checkname+\"']\").removeAttr('required');
                                                                    break;
                                                            }
                                                        });
@@ -2292,7 +2371,33 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 foreach ($childs_blocks as $childs) {
                                                     if (is_array($childs)) {
                                                         foreach ($childs as $childs_block) {
-                                                            $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();";
+                                                            $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
+                                                            
+                                                            $('[bloc-id =\"bloc" . $childs_block . "\"]').find(':input').each(function() {
+                                                                    switch(this.type) {
+                                                                           case 'password':
+                                                                           case 'text':
+                                                                           case 'textarea':
+                                                                           case 'file':
+                                                                           case 'date':
+                                                                           case 'number':
+                                                                           case 'tel':
+                                                                           case 'email':
+                                                                               jQuery(this).val('');
+                                                                               break;
+                                                                           case 'select-one':
+                                                                           case 'select-multiple':
+                                                                               jQuery(this).val('0').trigger('change');
+                                                                               jQuery(this).val('0');
+                                                                               break;
+                                                                           case 'checkbox':
+                                                                           case 'radio':
+                                                                               this.checked = false;
+                                                                               var checkname = this.name;
+                                                                               $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                               break;
+                                                                       }
+                                                                   });";
                                                             $hiddenblocks[] = $childs_block;
                                                             $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
                                                         }
@@ -2302,6 +2407,33 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                         }
 
                                         $hidden_block = $check_value['hidden_block'];
+                                        if ($hidden_block > 0) {
+                                            $script2 .= "$('div[bloc-id=\"bloc'+$hidden_block+'\"]').find(':input').each(function() {
+                                                                  switch(this.type) {
+                                                                         case 'password':
+                                                                         case 'text':
+                                                                         case 'textarea':
+                                                                         case 'file':
+                                                                         case 'date':
+                                                                         case 'number':
+                                                                         case 'tel':
+                                                                         case 'email':
+                                                                             jQuery(this).val('');
+                                                                             break;
+                                                                         case 'select-one':
+                                                                         case 'select-multiple':
+                                                                             jQuery(this).val('0').trigger('change');
+                                                                             jQuery(this).val('0');
+                                                                             break;
+                                                                         case 'checkbox':
+                                                                         case 'radio':
+                                                                             this.checked = false;
+                                                                             var checkname = this.name;
+                                                                             $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                             break;
+                                                                     }
+                                                                 });";
+                                        }
                                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                                             $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                                             foreach ($default_values as $k => $v) {
@@ -2458,22 +2590,49 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                                         if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
                                             $childs_blocks = json_decode($check_value['childs_blocks'], true);
+
                                             if (isset($childs_blocks)
                                                 && is_array($childs_blocks)
                                                 && count($childs_blocks) > 0) {
                                                 foreach ($childs_blocks as $childs) {
                                                     if (is_array($childs)) {
                                                         foreach ($childs as $childs_block) {
-                                                            $script .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();";
+                                                            $script .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
+                                                            $('[bloc-id =\"bloc" . $childs_block . "\"]').find(':input').each(function() {
+                                                                    switch(this.type) {
+                                                                           case 'password':
+                                                                           case 'text':
+                                                                           case 'textarea':
+                                                                           case 'file':
+                                                                           case 'date':
+                                                                           case 'number':
+                                                                           case 'tel':
+                                                                           case 'email':
+                                                                               jQuery(this).val('');
+                                                                               break;
+                                                                           case 'select-one':
+                                                                           case 'select-multiple':
+                                                                               jQuery(this).val('0').trigger('change');
+                                                                               jQuery(this).val('0');
+                                                                               break;
+                                                                           case 'checkbox':
+                                                                           case 'radio':
+                                                                               this.checked = false;
+                                                                               var checkname = this.name;
+                                                                               $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                               break;
+                                                                       }
+                                                                   });";
                                                         }
                                                     }
                                                 }
                                             }
                                         }
                                     }
-                                    $script .= "$.each( tohide, function( key, value ) {
-                                                        console.log('hide-radio-1');
+                                    $script .= "$.each(tohide, function( key, value ) {
+
                                                         if(value == true){
+                                                         console.log('hide-radio-1 bloc'+key);
                                                          $('[bloc-id =\"bloc'+key+'\"]').hide();
                                                          $('div[bloc-id=\"bloc'+key+'\"]').find(':input').each(function() {
                                                             switch(this.type) {
@@ -2495,12 +2654,13 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                                    case 'checkbox':
                                                                    case 'radio':
                                                                        this.checked = false;
-                                                                       this.required = false;
+                                                                       var checkname = this.name;
+                                                                       $(\"[name^='\"+checkname+\"']\").removeAttr('required');
                                                                        break;
                                                                }
                                                            });
                                                         } else {
-                                                        $('[bloc-id =\"bloc'+key+'\"]').show();
+                                                            $('[bloc-id =\"bloc'+key+'\"]').show();
                                                         }
                                                     ";
                                     $script .= "});";
@@ -2508,7 +2668,33 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     //Initialize id default value
                                     foreach ($check_values as $idc => $check_value) {
                                         $hidden_block = $check_value['hidden_block'];
-
+                                        if ($hidden_block > 0) {
+                                            $script2 .= "$('div[bloc-id=\"bloc'+$hidden_block+'\"]').find(':input').each(function() {
+                                                                  switch(this.type) {
+                                                                         case 'password':
+                                                                         case 'text':
+                                                                         case 'textarea':
+                                                                         case 'file':
+                                                                         case 'date':
+                                                                         case 'number':
+                                                                         case 'tel':
+                                                                         case 'email':
+                                                                             jQuery(this).val('');
+                                                                             break;
+                                                                         case 'select-one':
+                                                                         case 'select-multiple':
+                                                                             jQuery(this).val('0').trigger('change');
+                                                                             jQuery(this).val('0');
+                                                                             break;
+                                                                         case 'checkbox':
+                                                                         case 'radio':
+                                                                             this.checked = false;
+                                                                             var checkname = this.name;
+                                                                             $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                             break;
+                                                                     }
+                                                                 });";
+                                        }
                                         //include child blocks
                                         if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
                                             $childs_blocks = json_decode($check_value['childs_blocks'], true);
@@ -2591,7 +2777,32 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 foreach ($childs_blocks as $childs) {
                                                     if (is_array($childs)) {
                                                         foreach ($childs as $childs_block) {
-                                                            $script .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();";
+                                                            $script .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
+                                                            $('[bloc-id =\"bloc" . $childs_block . "\"]').find(':input').each(function() {
+                                                                    switch(this.type) {
+                                                                           case 'password':
+                                                                           case 'text':
+                                                                           case 'textarea':
+                                                                           case 'file':
+                                                                           case 'date':
+                                                                           case 'number':
+                                                                           case 'tel':
+                                                                           case 'email':
+                                                                               jQuery(this).val('');
+                                                                               break;
+                                                                           case 'select-one':
+                                                                           case 'select-multiple':
+                                                                               jQuery(this).val('0').trigger('change');
+                                                                               jQuery(this).val('0');
+                                                                               break;
+                                                                           case 'checkbox':
+                                                                           case 'radio':
+                                                                               this.checked = false;
+                                                                               var checkname = this.name;
+                                                                               $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                               break;
+                                                                       }
+                                                                   });";
                                                         }
                                                     }
                                                 }
@@ -2622,7 +2833,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                                      case 'checkbox':
                                                                      case 'radio':
                                                                          this.checked = false;
-                                                                         this.required = false;
+                                                                         var checkname = this.name;
+                                                                         $(\"[name^='\"+checkname+\"']\").removeAttr('required');
                                                                          break;
                                                                  }
                                                              });
@@ -2635,6 +2847,33 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                                     foreach ($check_values as $idc => $check_value) {
                                         $hidden_block = $check_value['hidden_block'];
+                                        if ($hidden_block > 0) {
+                                            $script2 .= "$('div[bloc-id=\"bloc'+$hidden_block+'\"]').find(':input').each(function() {
+                                                                  switch(this.type) {
+                                                                         case 'password':
+                                                                         case 'text':
+                                                                         case 'textarea':
+                                                                         case 'file':
+                                                                         case 'date':
+                                                                         case 'number':
+                                                                         case 'tel':
+                                                                         case 'email':
+                                                                             jQuery(this).val('');
+                                                                             break;
+                                                                         case 'select-one':
+                                                                         case 'select-multiple':
+                                                                             jQuery(this).val('0').trigger('change');
+                                                                             jQuery(this).val('0');
+                                                                             break;
+                                                                         case 'checkbox':
+                                                                         case 'radio':
+                                                                             this.checked = false;
+                                                                             var checkname = this.name;
+                                                                             $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                             break;
+                                                                     }
+                                                                 });";
+                                        }
                                         $childs_blocks = [];
                                         if (isset($data['options'])) {
                                             $opts = $data['options'];
@@ -2682,6 +2921,33 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     //Initialize id default value
                                     foreach ($check_values as $idc => $check_value) {
                                         $hidden_block = $check_value['hidden_block'];
+                                        if ($hidden_block > 0) {
+                                            $script2 .= "$('div[bloc-id=\"bloc'+$hidden_block+'\"]').find(':input').each(function() {
+                                                                  switch(this.type) {
+                                                                         case 'password':
+                                                                         case 'text':
+                                                                         case 'textarea':
+                                                                         case 'file':
+                                                                         case 'date':
+                                                                         case 'number':
+                                                                         case 'tel':
+                                                                         case 'email':
+                                                                             jQuery(this).val('');
+                                                                             break;
+                                                                         case 'select-one':
+                                                                         case 'select-multiple':
+                                                                             jQuery(this).val('0').trigger('change');
+                                                                             jQuery(this).val('0');
+                                                                             break;
+                                                                         case 'checkbox':
+                                                                         case 'radio':
+                                                                             this.checked = false;
+                                                                             var checkname = this.name;
+                                                                             $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                                             break;
+                                                                     }
+                                                                 });";
+                                        }
                                         if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                                             $default_values = PluginMetademandsField::_unserialize($data['default_values']);
 

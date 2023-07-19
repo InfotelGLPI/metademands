@@ -166,6 +166,10 @@
             $("input[name='" + toobserve + "']").change(function () {
                object.metademand_checkEmptyField(toupdate, toobserve, check_value, type);
             });
+         } else if (type == 'radio') {
+            $("[id='" + toobserve + "']").change(function () {
+               object.metademand_checkEmptyField(toupdate, toobserve, check_value, type);
+            });
          } else {
             $("[name='" + toobserve + "']").change(function () {
                object.metademand_checkEmptyField(toupdate, toobserve, check_value, type);
@@ -187,11 +191,14 @@
          if (type == 'checkbox') {
             obs = $("input[name='" + toobserve + "']:checked");
          } else if (type == 'radio') {
-            obs = $("[name='" + toobserve + "']:checked");
+            obs = $("[id='" + toobserve + "']:checked");
          } else {
             obs = $("[name='" + toobserve + "']");
          }
 
+
+         console.log(obs.val());
+         console.log(check_value);
          //check_value is not an array
          var op1 = (!Array.isArray(check_value) && check_value != 0 && obs.val() == check_value);
 
@@ -201,7 +208,7 @@
          var op3 = (Array.isArray(check_value) && obs.val() != 0 && (type == 'radio' || type == 'checkbox') && check_value.includes(parseInt(obs.val(), 10)));
 
          if (op1 || op2 || op3) {
-            // console.log("is_mandatory");
+
             $('#' + toupdate).html('*');
             id_field = toupdate.substring(22);
             // if ($("[name='field[" + id_field + "]']").length > 0) {
