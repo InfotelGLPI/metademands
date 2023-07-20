@@ -2205,8 +2205,23 @@ class PluginMetademandsWizard extends CommonDBTM
                            // If a field is empty...
                            isnumber = z[i].getAttribute('isnumber');
                            ismultiplenumber = z[i].getAttribute('ismultiplenumber');
-//                           console.log(isnumber);
+                           
                            if (z[i].value == 0 && isnumber == null && ismultiplenumber == null && fieldmandatory == true) {
+                              // add an 'invalid' class to the field:
+                              var fieldname = z[i].name;
+                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                              if (res != 'none') {
+                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+//                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                                 ko++;
+                              } else {
+                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
+//                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                              }
+                  
+                           } else if (z[i].value == 0 && isnumber == 'isnumber' && ismultiplenumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
                               var fieldname = z[i].name;
                               var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');

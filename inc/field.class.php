@@ -44,12 +44,6 @@ class PluginMetademandsField extends CommonDBChild
     // Request type
     const MAX_FIELDS = 40;
 
-    const CLASSIC_DISPLAY = 0;
-    const DOUBLE_COLUMN_DISPLAY = 1;
-
-    public static $dropdown_meta_items     = ['', 'other', 'ITILCategory_Metademands', 'urgency', 'impact', 'priority',
-                                              'mydevices'];
-    public static $dropdown_multiple_items = ['other', 'Appliance', 'User'];
 
     public static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text',
                                   'checkbox', 'textarea', 'date', 'datetime', 'informations', 'date_interval',
@@ -1068,8 +1062,8 @@ JAVASCRIPT
             }
             if ($params["type"] == 'dropdown_multiple') {
                 $disp                              = [];
-                $disp[self::CLASSIC_DISPLAY]       = __("Classic display", "metademands");
-                $disp[self::DOUBLE_COLUMN_DISPLAY] = __("Double column display", "metademands");
+                $disp[PluginMetademandsDropdownmultiple::CLASSIC_DISPLAY]       = __("Classic display", "metademands");
+                $disp[PluginMetademandsDropdownmultiple::DOUBLE_COLUMN_DISPLAY] = __("Double column display", "metademands");
                 echo "<tr><td>";
                 echo "<table class='metademands_show_custom_fields'>";
                 echo "<tr><td>";
@@ -1434,45 +1428,45 @@ JAVASCRIPT
 
         switch ($value) {
             case 'dropdown':
-                return __('Dropdown');
+                return PluginMetademandsDropdown::getTypeName();
             case 'dropdown_object':
-                return __('Glpi Object', 'metademands');
+                return PluginMetademandsDropdownobject::getTypeName();
             case 'dropdown_meta':
-                return __('Dropdown', 'metademands');
+                return PluginMetademandsDropdownmeta::getTypeName();
             case 'dropdown_multiple':
-                return __('Dropdown multiple', 'metademands');
+                return PluginMetademandsDropdownmultiple::getTypeName();
             case 'text':
-                return __('Text', 'metademands');
+                return PluginMetademandsText::getTypeName();
             case 'checkbox':
-                return __('Checkbox', 'metademands');
+                return PluginMetademandsCheckbox::getTypeName();
             case 'textarea':
-                return __('Textarea', 'metademands');
-            case 'date':
-                return __('Date', 'metademands');
-            case 'datetime':
-                return __('Date & Hour', 'metademands');
-            case 'date_interval':
-                return __('Date interval', 'metademands');
-            case 'datetime_interval':
-                return __('Date & Hour interval', 'metademands');
+                return PluginMetademandsTextarea::getTypeName();
             case 'yesno':
-                return __('Yes / No', 'metademands');
-            case 'upload':
-                return __('Add a document');
-            case 'title':
-                return __('Title');
-            case 'title-block':
-                return __('Block title', 'metademands');
+                return PluginMetademandsYesno::getTypeName();
             case 'radio':
-                return __('Radio button', 'metademands');
+                return PluginMetademandsRadio::getTypeName();
+            case 'link':
+                return PluginMetademandsLink::getTypeName();
+            case 'number':
+                return PluginMetademandsNumber::getTypeName();
+            case 'informations':
+                return PluginMetademandsInformation::getTypeName();
+            case 'date':
+                return PluginMetademandsDate::getTypeName();
+            case 'datetime':
+                return PluginMetademandsDatetime::getTypeName();
+            case 'date_interval':
+                return PluginMetademandsDateinterval::getTypeName();
+            case 'datetime_interval':
+                return PluginMetademandsDatetimeInterval::getTypeName();
+            case 'upload':
+                return PluginMetademandsUpload::getTypeName();
+            case 'title':
+                return PluginMetademandsTitle::getTypeName();
+            case 'title-block':
+                return PluginMetademandsTitleblock::getTypeName();
             case 'parent_field':
                 return __('Father\'s field', 'metademands');
-            case 'link':
-                return __('Link');
-            case 'number':
-                return __('Number', 'metademands');
-            case 'informations':
-                return __('Informations', 'metademands');
             default:
                 if (isset($PLUGIN_HOOKS['metademands'])) {
                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1810,8 +1804,8 @@ JAVASCRIPT
             $p[$key] = $val;
         }
 
-        $type_fields          = self::$dropdown_meta_items;
-        $type_fields_multiple = self::$dropdown_multiple_items;
+        $type_fields          = PluginMetademandsDropdownmeta::$dropdown_meta_items;
+        $type_fields_multiple = PluginMetademandsDropdownmultiple::$dropdown_multiple_items;
 
         switch ($typefield) {
             case "dropdown_multiple":
@@ -2089,1152 +2083,64 @@ JAVASCRIPT
             $namefield = 'field_basket_' . $idline;
         }
 
-        if (empty($comment = self::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
-
-        if (empty($label2 = self::displayField($data['id'], 'label2'))) {
-            $label2 = $data['label2'];
-        }
-
         switch ($data['type']) {
-            case 'dropdown_multiple':
-                if ($data['item'] == User::getType()) {
-                    $self                                                = new self();
-                    $data['custom_values']                               = [];
-                    $criteria                                            = $self->getDistinctUserCriteria() + $self->getProfileJoinCriteria();
-                    $criteria['FROM']                                    = User::getTable();
-                    $criteria['WHERE'][User::getTable() . '.is_deleted'] = 0;
-                    $criteria['WHERE'][User::getTable() . '.is_active']  = 1;
-                    $criteria['ORDER']                                   = ['NAME ASC'];
-                    $iterator                                            = $DB->request($criteria);
 
-                    foreach ($iterator as $datau) {
-                        $data['custom_values'][$datau['users_id']] = getUserName($datau['users_id']);
-                    }
-
-                    if (!empty($value) && !is_array($value)) {
-                        $value = json_decode($value);
-                    }
-                    if (!is_array($value)) {
-                        $value = [];
-                    }
-
-                    if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                    $name  = $namefield . "[" . $data['id'] . "][]";
-                    $css   = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
-                    $field = "$css
-                           <div class=\"row\">";
-                    $field .= "<div class=\"zone\">
-                                   <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-
-                    if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
-                        foreach ($data['custom_values'] as $k => $val) {
-                            if (!in_array($k, $value)) {
-                                $field .= "<option value=\"$k\" >$val</option>";
-                            }
-                        }
-                    }
-
-                    $field .= "</select></div>";
-
-                    $field .= " <div class=\"centralCol\" style='width: 3%;'>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn  buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
-                               </div>";
-
-                    $required = "";
-                  //               if ($data['is_mandatory'] == 1) {
-                  //                  $required = "required=required";
-                  //               }
-                    $field .= "<div class=\"zone\">
-                                   <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-                    if (is_array($value) && count($value) > 0) {
-                        foreach ($value as $k => $val) {
-                            $field .= "<option selected value=\"$val\" >" . getUserName($val) . "</option>";
-                        }
-                    }
-                    $field .= "</select></div>";
-
-                    $field .= "</div>";
-
-                    $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
-                           <script type="text/javascript">
-                           jQuery(document).ready(function($) {
-                                  $("#multiselect' . $namefield . $data["id"] . '").multiselect({
-                                      search: {
-                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                      },
-                                      keepRenderingSort: true,
-                                      fireSearch: function(value) {
-                                          return value.length > 2;
-                                      },
-                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
-                                        let self = Multiselect;
-                        
-                                        $options.each(function(index, option) {
-                                            let $option = $(option);
-                        
-                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
-                                                return true;
-                                            }
-                        
-                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
-                                                let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
-                                                let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
-                                                let $destinationGroup = $destination.find(optgroupSelector);
-                        
-                                                if (!$destinationGroup.length) {
-                                                    $destinationGroup = $sourceGroup.clone(true);
-                                                    $destinationGroup.empty();
-                        
-                                                    $destination.move($destinationGroup);
-                                                }
-                        
-                                                if ($option.is("optgroup")) {
-                                                    let disabledSelector = "";
-                        
-                                                    if (self.options.ignoreDisabled) {
-                                                        disabledSelector = ":not(:disabled)";
-                                                    }
-                        
-                                                    $destinationGroup.move($option.find("option" + disabledSelector));
-                                                } else {
-                                                    $destinationGroup.move($option);
-                                                }
-                        
-                                                $sourceGroup.removeIfEmpty();
-                                            } else {
-                                                $destination.move($option);
-                                                //Color change when multiselect value is switch
-                                                $destination[0].value = $options[index].value;
-                                                let selected = $destination[0].selectedIndex;
-                                                let destOption = $destination[0].options[selected];
-                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
-                                                    if($destination[0].name=="from"){
-                                                        destOption.style.color = "red";
-                                                    } else{
-                                                        destOption.style.color = "green";
-                                                    }
-                                                } else{
-                                                    destOption.style.color="#555555";
-                                                }
-                                            }
-                                        });                        
-                                        return self;
-                                          
-                                      }
-                                  });
-                              });
-                           </script>';
-                    } else {
-                        $field = Dropdown::showFromArray(
-                            $namefield . "[" . $data['id'] . "]",
-                            $data['custom_values'],
-                            ['values'   => $value,
-                                'width'    => '250px',
-                                'multiple' => true,
-                                'display'  => false,
-                                'required' => ($data['is_mandatory'] ? "required" : "")
-                            ]
-                        );
-                    }
-                } else {
-                    if (!empty($data['custom_values'])) {
-                        $data['custom_values'] = self::_unserialize($data['custom_values']);
-                        foreach ($data['custom_values'] as $k => $val) {
-                            if ($data['item'] != "other") {
-                                $data['custom_values'][$k] = $data["item"]::getFriendlyNameById($k);
-                            } else {
-                                if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
-                                    $data['custom_values'][$k] = $ret;
-                                }
-                            }
-                        }
-
-                        $defaults       = self::_unserialize($data['default_values']);
-                        $default_values = [];
-                        if ($defaults) {
-                            foreach ($defaults as $k => $v) {
-                                if ($v == 1) {
-                                    $default_values[] = $k;
-                                }
-                            }
-                        }
-                      //                  sort($data['custom_values']);
-                        if (!empty($value) && !is_array($value)) {
-                            $value = json_decode($value);
-                        }
-                        $value = is_array($value) ? $value : $default_values;
-
-                        if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                            $name  = $namefield . "[" . $data['id'] . "][]";
-                            $css   = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
-                            $field = "$css
-                           <div class=\"row\">";
-                            $field .= "<div class=\"zone\">
-                                   <select class='form-select' name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-
-                            foreach ($data['custom_values'] as $k => $val) {
-                                if (!in_array($k, $value)) {
-                                    $field .= "<option value=\"$k\" >$val</option>";
-                                }
-                            }
-
-                            $field .= "</select></div>";
-
-                            $field .= " <div class=\"centralCol\" style='width: 3%;'>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
-                               </div>";
-
-                            $required = "";
-                           //                     if ($data['is_mandatory'] == 1) {
-                           //                        $required = "required=required";
-                           //                     }
-                            $field .= "<div class=\"zone\">
-                                   <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-                            foreach ($data['custom_values'] as $k => $val) {
-                                if (in_array($k, $value)) {
-                                    $field .= "<option selected value=\"$k\" >$val</option>";
-                                }
-                            }
-
-                            $field .= "</select></div>";
-
-                            $field .= "</div>";
-
-                            $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
-                           <script type="text/javascript">
-                           jQuery(document).ready(function($) {
-                                  $("#multiselect' . $namefield . $data["id"] . '").multiselect({
-                                      search: {
-                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                      },
-                                      keepRenderingSort: true,
-                                      fireSearch: function(value) {
-                                          return value.length > 2;
-                                      },
-                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
-                                        let self = Multiselect;
-                        
-                                        $options.each(function(index, option) {
-                                            let $option = $(option);
-                        
-                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
-                                                return true;
-                                            }
-                        
-                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
-                                                let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
-                                                let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
-                                                let $destinationGroup = $destination.find(optgroupSelector);
-                        
-                                                if (!$destinationGroup.length) {
-                                                    $destinationGroup = $sourceGroup.clone(true);
-                                                    $destinationGroup.empty();
-                        
-                                                    $destination.move($destinationGroup);
-                                                }
-                        
-                                                if ($option.is("optgroup")) {
-                                                    let disabledSelector = "";
-                        
-                                                    if (self.options.ignoreDisabled) {
-                                                        disabledSelector = ":not(:disabled)";
-                                                    }
-                        
-                                                    $destinationGroup.move($option.find("option" + disabledSelector));
-                                                } else {
-                                                    $destinationGroup.move($option);
-                                                }
-                        
-                                                $sourceGroup.removeIfEmpty();
-                                            } else {
-                                                $destination.move($option);
-                                                //Color change when multiselect value is switch
-                                                $destination[0].value = $options[index].value;
-                                                let selected = $destination[0].selectedIndex;
-                                                let destOption = $destination[0].options[selected];
-                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
-                                                    if($destination[0].name=="from"){
-                                                        destOption.style.color = "red";
-                                                    } else{
-                                                        destOption.style.color = "green";
-                                                    }
-                                                } else{
-                                                    destOption.style.color="#555555";
-                                                }
-                                            }
-                                        });                        
-                                        return self;
-                                          
-                                      }
-                                  });
-                              });
-                           </script>';
-                         //
-                         //                     $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.min.js\" type=\"text/javascript\"></script>
-                         //                           <script type=\"text/javascript\">
-                         //                           jQuery(document).ready(function($) {
-                         //                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
-                         //                                      search: {
-                         //                                          left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
-                         //                                          right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
-                         //                                      },
-                         //                                      keepRenderingSort: true,
-                         //                                      fireSearch: function(value) {
-                         //                                          return value.length > 2;
-                         //                                      },
-                         //                                  });
-                         //                              });
-                         //                           </script>";
-                        } else {
-                            $field = Dropdown::showFromArray(
-                                $namefield . "[" . $data['id'] . "]",
-                                $data['custom_values'],
-                                ['values'   => $value,
-                                'width'    => '250px',
-                                'multiple' => true,
-                                'display'  => false,
-                                'required' => ($data['is_mandatory'] ? "required" : "")
-                                ]
-                            );
-                        }
-                    }
-                }
+            case 'title':
                 break;
-            case 'dropdown':
-            case 'dropdown_object':
-            case 'dropdown_meta':
-                switch ($data['item']) {
-                    case 'other':
-                        if (!empty($data['custom_values'])) {
-                            $data['custom_values'] = array_merge([0 => Dropdown::EMPTY_VALUE], self::_unserialize($data['custom_values']));
-                            foreach ($data['custom_values'] as $k => $val) {
-                                if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
-                                    $data['custom_values'][$k] = $ret;
-                                }
-                            }
-
-                            $defaults = self::_unserialize($data['default_values']);
-
-                            $default_values = "";
-                            if ($defaults) {
-                                foreach ($defaults as $k => $v) {
-                                    if ($v == 1) {
-                                        $default_values = $k;
-                                    }
-                                }
-                            }
-                            $value = !empty($value) ? $value : $default_values;
-                          //                     ksort($data['custom_values']);
-                            $field = "";
-                            $field .= Dropdown::showFromArray(
-                                $namefield . "[" . $data['id'] . "]",
-                                $data['custom_values'],
-                                ['value'    => $value,
-                                'width'    => '100%',
-                                'display'  => false,
-                                'required' => ($data['is_mandatory'] ? "required" : ""),
-                                ]
-                            );
-                        }
-                        break;
-                    case 'User':
-                        $userrand = mt_rand();
-                        $field    = "";
-
-                        if ($on_basket == false) {
-                            $paramstooltip
-                            = ['value'          => '__VALUE__',
-                            'id_fielduser'   => $data['id'],
-                            'metademands_id' => $data['plugin_metademands_metademands_id']];
-
-                            $toupdate[] = ['value_fieldname'
-                                                   => 'value',
-                                    'id_fielduser' => $data['id'],
-                                    'to_update'    => "tooltip_user" . $data['id'],
-                                    'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
-                                    'moreparams'   => $paramstooltip];
-
-                            $field .= "<script type='text/javascript'>";
-                            $field .= "$(function() {";
-                            Ajax::updateItemJsCode(
-                                "tooltip_user" . $data['id'],
-                                PLUGIN_METADEMANDS_WEBDIR . "/ajax/utooltipUpdate.php",
-                                $paramstooltip,
-                                $namefield . "[" . $data['id'] . "]",
-                                false
-                            );
-                            $field .= "});</script>";
-                        }
-                        $paramsloc
-                        = ['value'          => '__VALUE__',
-                        'id_fielduser'   => $data['id'],
-                        'metademands_id' => $data['plugin_metademands_metademands_id']];
-
-                        $toupdate[] = ['value_fieldname'
-                                                => 'value',
-                                 'id_fielduser' => $data['id'],
-                                 'to_update'    => "location_user" . $data['id'],
-                                 'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
-                                 'moreparams'   => $paramsloc];
-
-                        $field .= "<script type='text/javascript'>";
-                        $field .= "$(function() {";
-                        Ajax::updateItemJsCode(
-                            "location_user" . $data['id'],
-                            PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
-                            $paramsloc,
-                            $namefield . "[" . $data['id'] . "]",
-                            false
-                        );
-                        $field .= "});</script>";
-
-
-                        $paramsgroup
-                         = ['value'          => '__VALUE__',
-                         'id_fielduser'   => $data['id'],
-                         'metademands_id' => $data['plugin_metademands_metademands_id']];
-
-                        $toupdate[] = ['value_fieldname'
-                                                => 'value',
-                                 'id_fielduser' => $data['id'],
-                                 'to_update'    => "group_user" . $data['id'],
-                                 'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                                 'moreparams'   => $paramsgroup];
-
-                        $field .= "<script type='text/javascript'>";
-                        $field .= "$(function() {";
-                        Ajax::updateItemJsCode(
-                            "group_user" . $data['id'],
-                            PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                            $paramsgroup,
-                            $namefield . "[" . $data['id'] . "]",
-                            false
-                        );
-                        $field .= "});</script>";
-
-                        $paramsdev
-                         = ['value'          => '__VALUE__',
-                         'id_fielduser'   => $data['id'],
-                         'metademands_id' => $data['plugin_metademands_metademands_id']];
-
-                        $toupdate[] = ['value_fieldname'
-                                                => 'value',
-                                 'id_fielduser' => $data['id'],
-                                 'to_update'    => "mydevices_user" . $data['id'],
-                                 'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
-                                 'moreparams'   => $paramsdev];
-
-                        $field .= "<script type='text/javascript'>";
-                        $field .= "$(function() {";
-                        Ajax::updateItemJsCode(
-                            "mydevices_user" . $data['id'],
-                            PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
-                            $paramsdev,
-                            $namefield . "[" . $data['id'] . "]",
-                            false
-                        );
-                        $field .= "});</script>";
-
-                        if (empty($value)) {
-                            $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-                        }
-
-                        $right = "all";
-                        if (!empty($data['custom_values'])) {
-                            $options = PluginMetademandsField::_unserialize($data['custom_values']);
-                            if (isset($options['user_group']) && $options['user_group'] == 1) {
-                                $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
-                                $group_user_data = Group_User::getUserGroups(Session::getLoginUserID(), $condition);
-
-                                $requester_groups = [];
-                                foreach ($group_user_data as $groups) {
-                                    $requester_groups[] = $groups['id'];
-                                }
-                                if (count($requester_groups) > 0) {
-                                    $right = "groups";
-                                }
-                            }
-                        }
-
-                        $opt = ['name' => $namefield . "[" . $data['id'] . "]",
-                            'entity' => $_SESSION['glpiactiveentities'],
-                            'right' => $right,
-                            'rand' => $userrand,
-                            'value' => $value,
-                            'display' => false,
-                            'toupdate' => $toupdate,
-                            'readonly' => $data['readonly'] ?? false,
-                        ];
-                        if ($data['is_mandatory'] == 1) {
-                            $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
-                        }
-                        if ($data['readonly'] == 1) {
-                            $field .= Html::hidden($namefield . "[" . $data['id'] . "]", ['value' => $value]);
-                        }
-                        echo User::dropdown($opt);
-                        break;
-                    case 'Group':
-                        $field = "";
-                        $cond  = [];
-                        $_POST['field'] = $namefield . "[" . $data['id'] . "]";
-
-                        if ($data['link_to_user'] > 0) {
-                            echo "<div id='group_user" . $data['link_to_user'] . "' class=\"input-group\">";
-                            $_POST['groups_id'] = $value;
-                            $fieldUser          = new self();
-                            $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
-                                                  'type' => "dropdown_object",
-                                                  'item' => User::getType()]);
-
-                            $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
-                                               && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-                            $_POST['id_fielduser'] = $data['link_to_user'];
-                            $_POST['fields_id']    = $data['id'];
-                            $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
-                            $_POST['is_mandatory'] = $data['is_mandatory'] ?? 0;
-                            include(PLUGIN_METADEMANDS_DIR . "/ajax/ugroupUpdate.php");
-                            echo "</div>";
-                        } else {
-                            $name = $namefield . "[" . $data['id'] . "]";
-
-                            if (!empty($data['custom_values'])) {
-                                $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
-                                                   && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-
-                                $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
-                                $group_user_data = Group_User::getUserGroups($_POST['value'], $condition);
-
-                                $requester_groups = [];
-                                foreach ($group_user_data as $groups) {
-                                    $requester_groups[] = $groups['id'];
-                                }
-                                $options = PluginMetademandsField::_unserialize($data['custom_values']);
-
-                                foreach ($options as $type_group => $values) {
-                                    if ($type_group != 'user_group') {
-                                        $cond[$type_group] = $values;
-                                    } else {
-                                        $cond["glpi_groups.id"] = $requester_groups;
-                                    }
-                                }
-                                unset($cond['user_group']);
-                            }
-                            $val_group = (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])
-                                   && !is_array($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) ? $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] : 0;
-
-                            $opt = ['name'      => $name,
-                             'entity'    => $_SESSION['glpiactiveentities'],
-                             'value'     => $val_group,
-                             'condition' => $cond,
-                             'display'   => false];
-                            if ($data['is_mandatory'] == 1) {
-                                $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
-                            }
-
-                            $field .= Group::dropdown($opt);
-                        }
-
-
-                        break;
-                    case 'ITILCategory_Metademands':
-                        if ($on_basket == false) {
-                            $nameitil = 'field';
-                        } else {
-                            $nameitil = 'basket';
-                        }
-                        $values = json_decode($metademand->fields['itilcategories_id']);
-                        //from Service Catalog
-                        if ($itilcategories_id > 0) {
-                            $value = $itilcategories_id;
-                        }
-                       //                  if (!empty($values) && count($values) == 1) {
-                       //                     foreach ($values as $key => $val)
-                       //                        $itilcategories_id = $val;
-                       //                  }
-                       //                  if ($itilcategories_id > 0) {
-                       //                     // itilcat from service catalog
-                       //                     $itilCategory = new ITILCategory();
-                       //                     $itilCategory->getFromDB($itilcategories_id);
-                       //                     $field = "<span>" . $itilCategory->getField('name');
-                       //                     $field .= "<input type='hidden' name='" . $nameitil . "_type' value='" . $metademand->fields['type'] . "' >";
-                       //                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id' value='" . $itilcategories_id . "' >";
-                       //                     $field .= "<span>";
-                       //                  } else {
-                        $readonly = $data['readonly'];
-                        if ($data['readonly'] == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
-                            && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
-                            $readonly = 0;
-                        }
-                        $opt = ['name' => $nameitil . "_plugin_servicecatalog_itilcategories_id",
-                            'right' => 'all',
-                            'value' => $value,
-                            'condition' => ["id" => $values],
-                            'display' => false,
-                            'readonly' => $readonly ?? false,
-                            'class' => 'form-select itilmeta'];
-                        if ($data['is_mandatory'] == 1) {
-                            $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
-                        }
-                        $field = "";
-                        $field .= ITILCategory::dropdown($opt);
-                        $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
-                        if ($readonly == 1) {
-                            $field .= Html::hidden($nameitil . "_plugin_servicecatalog_itilcategories_id", ['value' => $value]);
-                        }
-                        break;
-                    case 'mydevices':
-                        if ($on_basket == false) {
-                            // My items
-                            //TODO : used_by_ticket -> link with item's ticket
-                            $field = "";
-
-                            $_POST['field'] = $namefield . "[" . $data['id'] . "]";
-                           //                     $users_id = 0;
-                            if ($data['link_to_user'] > 0) {
-                                echo "<div id='mydevices_user" . $data['link_to_user'] . "' class=\"input-group\">";
-                                $fieldUser = new self();
-                                $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
-                                                     'type' => "dropdown_object",
-                                                     'item' => User::getType()]);
-
-                                $_POST['value']        = ($fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-                                $_POST['id_fielduser'] = $data['link_to_user'];
-                                $_POST['fields_id']    = $data['id'];
-                                $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
-                                include(PLUGIN_METADEMANDS_DIR . "/ajax/umydevicesUpdate.php");
-                                echo "</div>";
-                            } else {
-                                $rand  = mt_rand();
-                                $p     = ['rand'  => $rand,
-                                  'name'  => $_POST["field"],
-                                  'value' => $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0];
-                                $field .= PluginMetademandsField::dropdownMyDevices(Session::getLoginUserID(), $_SESSION['glpiactiveentities'], 0, 0, $p, false);
-                            }
-                        } else {
-                            $dbu      = new DbUtils();
-                            $splitter = explode("_", $value);
-                            if (count($splitter) == 2) {
-                                $itemtype = $splitter[0];
-                                $items_id = $splitter[1];
-                            }
-                            $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "' >";
-                            if (isset($itemtype) && isset($items_id)) {
-                                $field .= Dropdown::getDropdownName(
-                                    $dbu->getTableForItemType($itemtype),
-                                    $items_id
-                                );
-                            }
-                        }
-                        break;
-                    case 'urgency':
-                        $field  = "";
-                        $ticket = new Ticket();
-                        if ($itilcategories_id == 0) {
-                            $itilcategories_id_array = json_decode($metademand->fields['itilcategories_id'], true);
-                            if (is_array($itilcategories_id_array) && count($itilcategories_id_array) == 1) {
-                                foreach ($itilcategories_id_array as $arr) {
-                                    $itilcategories_id = $arr;
-                                }
-                            }
-                        }
-                        if ($itilcategories_id > 0) {
-                            $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
-                            if (isset($meta_tt->predefined['urgency'])) {
-                                $default_value    = $meta_tt->predefined['urgency'];
-                                $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
-                            }
-                        }
-                        $options['name']     = $namefield . "[" . $data['id'] . "]";
-                        $options['display']  = false;
-                        $options['required'] = ($data['is_mandatory'] ? "required" : "");
-                        $field               .= Ticket::dropdownUrgency($options);
-                        break;
-                    case 'impact':
-                        $field  = "";
-                        $ticket = new Ticket();
-                        if ($itilcategories_id == 0) {
-                            $itilcategories_id_array = json_decode($metademand->fields['itilcategories_id'], true);
-                            if (is_array($itilcategories_id_array) && count($itilcategories_id_array) == 1) {
-                                foreach ($itilcategories_id_array as $arr) {
-                                    $itilcategories_id = $arr;
-                                }
-                            }
-                        }
-                        if ($itilcategories_id > 0) {
-                            $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
-                            if (isset($meta_tt->predefined['impact'])) {
-                                $default_value    = $meta_tt->predefined['impact'];
-                                $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
-                            }
-                        }
-                        $options['name']     = $namefield . "[" . $data['id'] . "]";
-                        $options['display']  = false;
-                        $options['required'] = ($data['is_mandatory'] ? "required" : "");
-                        $field               .= Ticket::dropdownImpact($options);
-                        break;
-                    case 'priority':
-                        $field  = "";
-                        $ticket = new Ticket();
-                        if ($itilcategories_id == 0) {
-                            $itilcategories_id_array = json_decode($metademand->fields['itilcategories_id'], true);
-                            if (is_array($itilcategories_id_array) && count($itilcategories_id_array) == 1) {
-                                foreach ($itilcategories_id_array as $arr) {
-                                    $itilcategories_id = $arr;
-                                }
-                            }
-                        }
-                        if ($itilcategories_id > 0) {
-                            $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
-                            if (isset($meta_tt->predefined['priority'])) {
-                                $default_value    = $meta_tt->predefined['priority'];
-                                $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
-                            }
-                        }
-                        $options['name']     = $namefield . "[" . $data['id'] . "]";
-                        $options['display']  = false;
-                        $options['required'] = ($data['is_mandatory'] ? "required" : "");
-                        $field               .= Ticket::dropdownPriority($options);
-                        break;
-                    default:
-                        $cond = [];
-
-                        if (!empty($data['custom_values']) && $data['item'] == 'Group') {
-                            $options = self::_unserialize($data['custom_values']);
-                            foreach ($options as $k => $val) {
-                                if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
-                                    $options[$k] = $ret;
-                                }
-                            }
-                            foreach ($options as $type_group => $val) {
-                                $cond[$type_group] = $val;
-                            }
-                        }
-                        $opt = ['value'     => $value,
-                          'entity'    => $_SESSION['glpiactiveentities'],
-                          'name'      => $namefield . "[" . $data['id'] . "]",
-                          //                          'readonly'  => true,
-                          'condition' => $cond,
-                          'display'   => false];
-                        if ($data['is_mandatory'] == 1) {
-                            $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
-                        }
-                        if (!($item = getItemForItemtype($data['item']))) {
-                            break;
-                        }
-                        if ($data['item'] == "Location") {
-                            if ($data['link_to_user'] > 0) {
-                                echo "<div id='location_user" . $data['link_to_user'] . "' class=\"input-group\">";
-                                $_POST['field']        = $namefield . "[" . $data['id'] . "]";
-                                $_POST['locations_id'] = $value;
-                                $fieldUser             = new self();
-                                $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
-                                                     'type' => "dropdown_object",
-                                                     'item' => User::getType()]);
-
-                                $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
-                                                  && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-                                $_POST['id_fielduser'] = $data['link_to_user'];
-                                $_POST['fields_id']    = $data['id'];
-                                $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
-                                include(PLUGIN_METADEMANDS_DIR . "/ajax/ulocationUpdate.php");
-                                echo "</div>";
-                            } else {
-                                $options['name']    = $namefield . "[" . $data['id'] . "]";
-                                $options['display'] = false;
-                                if ($data['is_mandatory'] == 1) {
-                                    $options['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
-                                }
-                                //TODO Error if mode basket : $value good value - not $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']]
-                                $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
-                                $field            .= Location::dropdown($options);
-                            }
-                        } else {
-                            if ($data['item'] == "PluginResourcesResource") {
-                                $opt['showHabilitations'] = true;
-                            }
-                            $container_class = new $data['item']();
-                            $field           = "";
-                            $field           .= $container_class::dropdown($opt);
-                        }
-                        break;
-                }
-                break;
-            case 'text':
-                $name = $namefield . "[" . $data['id'] . "]";
-                $opt  = ['value'       => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
-                     'placeholder' => (!$comment == null) ? Glpi\RichText\RichText::getTextFromHtml($comment) : "",
-                     'size'        => 35];
-                if ($data['is_mandatory'] == 1) {
-                    $opt['required'] = "required";
-                }
-                $field = Html::input($name, $opt);
+            case 'title-block':
                 break;
             case 'informations':
-                if ($on_basket == false && !empty($comment)) {
-                    $field = "<label class='col-form-label'>" . htmlspecialchars_decode(stripslashes($comment)) . "</label>";
-                }
+                PluginMetademandsInformation::showWizardField($data, $namefield, $value, $on_basket);
                 break;
-            case 'link':
-                if (!empty($data['custom_values'])) {
-                    $data['custom_values'] = self::_unserialize($data['custom_values']);
-                    foreach ($data['custom_values'] as $k => $val) {
-                        if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
-                            $data['custom_values'][$k] = $ret;
-                        }
-                    }
-                    switch ($data['custom_values'][0]) {
-                        case 'button':
-                            $btnLabel = __('Link');
-                            if (!empty($label2)) {
-                                $btnLabel = $label2;
-                            }
-
-                            $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags($btnLabel) . "' 
-                     target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
-
-                            break;
-                        case 'link_a':
-                            $field = Html::link($data['custom_values'][1], $data['custom_values'][1], ['target' => '_blank']);
-                            break;
-                    }
-                    $title = $namefield . "[" . $data['id'] . "]";
-                    $field .= Html::hidden($title, ['value' => $data['custom_values'][1]]);
-                }
-                break;
-            case 'checkbox':
-                if (!empty($data['custom_values'])) {
-                    $data['custom_values'] = self::_unserialize($data['custom_values']);
-                    foreach ($data['custom_values'] as $k => $val) {
-                        if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
-                            $data['custom_values'][$k] = $ret;
-                        }
-                    }
-                    $data['comment_values'] = self::_unserialize($data['comment_values']);
-                    $defaults               = self::_unserialize($data['default_values']);
-                    if (!empty($value)) {
-                        $value = self::_unserialize($value);
-                    }
-                    $nbr    = 0;
-                    $inline = "";
-                    if ($data['row_display'] == 1) {
-                        $inline = 'custom-control-inline';
-                    }
-                    $field = "";
-
-
-                    foreach ($data['custom_values'] as $key => $label) {
-                        $field   .= "<div class='custom-control custom-checkbox $inline'>";
-                        $checked = "";
-                        if (isset($value[$key])) {
-                            $checked = isset($value[$key]) ? 'checked' : '';
-                        } elseif (isset($defaults[$key]) && $on_basket == false) {
-                            $checked = ($defaults[$key] == 1) ? 'checked' : '';
-                        }
-                        $required = "";
-                        if ($data['is_mandatory'] == 1) {
-                            $required = "required=required";
-                        }
-                        $field .= "<input $required class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                        $nbr++;
-                        $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
-                        if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
-                            $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-                            $field .= Html::showToolTip(
-                                Glpi\RichText\RichText::getSafeHtml($data['comment_values'][$key]),
-                                ['awesome-class' => 'fa-info-circle',
-                                'display'       => false]
-                            );
-                            $field .= "</span>";
-                        }
-                        $field .= "</div>";
-
-                        $childs_blocks = [];
-                        $fieldopt = new PluginMetademandsFieldOption();
-                        if($opts = $fieldopt->find(["plugin_metademands_fields_id" => $data['id'], "check_value" => $key])) {
-                            foreach ($opts as $opt) {
-                                if (!empty($opt['childs_blocks'])) {
-                                    $childs_blocks[] = json_decode($opt['childs_blocks'], true);
-                                }
-                            }
-                        }
-
-                        if (isset($childs_blocks[$key])) {
-                            $id     = $data['id'];
-                            $script = "<script type='text/javascript'>";
-                            $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
-                            $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').not(':checked')) { ";
-
-                            foreach ($childs_blocks[$key] as $customvalue => $childs) {
-                                $script .= self::getJStorersetFields($childs);
-                                $script .= "$('div[bloc-id=\"bloc$childs\"]').hide();";
-                            }
-                            $script .= "}";
-                            $script .= "})";
-                            $script .= "</script>";
-
-                            $field .= $script;
-                        }
-                    }
-                } else {
-                    $checked = $value ? 'checked' : '';
-                    $field   = "<input class='form-check-input' type='checkbox' name='" . $namefield . "[" . $data['id'] . "]' value='checkbox' $checked>";
-                }
-                break;
-
-            case 'radio':
-                if (!empty($data['custom_values'])) {
-                    $data['custom_values'] = self::_unserialize($data['custom_values']);
-                    foreach ($data['custom_values'] as $k => $val) {
-                        if (!empty($ret = self::displayField($data["id"], "custom" . $k))) {
-                            $data['custom_values'][$k] = $ret;
-                        }
-                    }
-                    $data['comment_values'] = self::_unserialize($data['comment_values']);
-                    $defaults               = self::_unserialize($data['default_values']);
-                    if ($value != null) {
-                        $value = self::_unserialize($value);
-                    }
-                    $nbr    = 0;
-                    $inline = "";
-                    if ($data['row_display'] == 1) {
-                        $inline = 'custom-control-inline';
-                    }
-                    $field = "";
-
-                    foreach ($data['custom_values'] as $key => $label) {
-                        $field .= "<div class='custom-control custom-radio $inline'>";
-
-                        $checked = "";
-                        if ($value != null && $value == $key) {
-                            $checked = $value == $key ? 'checked' : '';
-                        } elseif ($value == null && isset($defaults[$key]) && $on_basket == false) {
-                            $checked = ($defaults[$key] == 1) ? 'checked' : '';
-                        }
-                        $required = "";
-                        if ($data['is_mandatory'] == 1) {
-                            $required = "required=required";
-                        }
-                        $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                        $nbr++;
-
-
-                        $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
-                        if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
-                            $field .= "&nbsp;<span style='vertical-align: bottom;'>";
-                            $field .= Html::showToolTip(
-                                Glpi\RichText\RichText::getSafeHtml($data['comment_values'][$key]),
-                                ['awesome-class' => 'fa-info-circle',
-                                'display'       => false]
-                            );
-                            $field .= "</span>";
-                        }
-
-                        $field .= "</div>";
-                        $childs_blocks = [];
-                        $fieldopt = new PluginMetademandsFieldOption();
-                        if($opts = $fieldopt->find(["plugin_metademands_fields_id" => $data['id'], "check_value" => $key])) {
-                            foreach ($opts as $opt) {
-                                if (!empty($opt['childs_blocks'])) {
-                                    $childs_blocks[] = json_decode($opt['childs_blocks'], true);
-                                }
-                            }
-                        }
-                        if (isset($childs_blocks[$key])) {
-                            $id     = $data['id'];
-                            $script = "<script type='text/javascript'>";
-                            $script .= "$('[id^=\"field[" . $id . "][" . $key . "]\"]').click(function() {";
-                            $script .= "if ($('[id^=\"field[" . $id . "][" . $key . "]\"]').is(':checked')) { ";
-
-                            foreach ($childs_blocks as $customvalue => $childs) {
-                                if ($customvalue != $key) {
-                                    foreach ($childs as $k => $v) {
-                                        $script .= self::getJStorersetFields($v);
-                                        $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
-                                    }
-                                }
-                            }
-                            $script .= "}";
-                            $script .= "})";
-                            $script .= "</script>";
-
-                            $field .= $script;
-                        }
-                    }
-                }
+            case 'text':
+                PluginMetademandsText::showWizardField($data, $namefield, $value, $on_basket);
                 break;
             case 'textarea':
-                $value    = Html::cleanPostForTextArea($value);
-                $required = "";
-                if ($data['is_mandatory'] == 1) {
-                    $required = "required='required'";
-                }
-                if ($data['use_richtext'] == 1) {
-                    $field = Html::textarea(['name'              => $namefield . "[" . $data['id'] . "]",
-                                        'value'             => $value,
-   //                                        'editor_id'         => $namefield . "[" . $data['id'] . "]",
-                                        'enable_richtext'   => true,
-                                        'enable_fileupload' => false,
-                                        //TODO add param
-                                        'enable_images'     => true,
-                                        'display'           => false,
-                                        'required'          => ($data['is_mandatory'] ? "required" : ""),
-                                        'cols'              => 80,
-                                        'rows'              => 3]);
-                } else {
-
-                    if (!empty($comment)) {
-                        $comment = Glpi\RichText\RichText::getTextFromHtml($comment);
-                    }
-                    $field = "<textarea $required class='form-control' rows='3' cols='80' 
-               placeholder=\"" . $comment . "\" 
-               name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
-                }
+                PluginMetademandsTextarea::showWizardField($data, $namefield, $value, $on_basket);
                 break;
-
-            case 'date':
-            case 'date_interval':
-                $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-                $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'    => $value,
-                                                                                 'display'  => false,
-                                                                                 'required' => ($data['is_mandatory'] ? "required" : ""),
-                                                                                 'size'     => 40
-                ]);
-                $field .= "</span>";
+            case 'dropdown_meta':
+                PluginMetademandsDropdownmeta::showWizardField($data, $namefield, $value, $on_basket, $itilcategories_id);
                 break;
-            case 'datetime_interval':
-            case 'datetime':
-                $field = "<span style='width: 50%!important;display: -webkit-box;'>";
-                $field .= Html::showDateTimeField($namefield . "[" . $data['id'] . "]", ['value'    => $value,
-                                                                                     'display'  => false,
-                                                                                     'required' => ($data['is_mandatory'] ? "required" : ""),
-                                                                                     'size'     => 40
-                ]);
-                $field .= "</span>";
+            case 'dropdown_object':
+                PluginMetademandsDropdownobject::showWizardField($data, $namefield, $value, $on_basket, $itilcategories_id);
                 break;
-            case 'number':
-                $data['custom_values'] = self::_unserialize($data['custom_values']);
-                $opt                   = ['value'         => $value,
-                                      'min'           => ((isset($data['custom_values'][0]) && $data['custom_values'][0] != "") ? $data['custom_values'][0] : 0),
-                                      'max'           => ((isset($data['custom_values'][1]) && $data['custom_values'][1] != "") ? $data['custom_values'][1] : 999999),
-                                      'step'          => ((isset($data['custom_values'][2]) && $data['custom_values'][2] != "") ? $data['custom_values'][2] : 1),
-                                      'display'       => false,
-                ];
-                if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
-                    $opt['specific_tags'] = ['required' => 'required', 'isnumber' => 'isnumber'];
-                }
-                $field = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
+            case 'dropdown':
+                PluginMetademandsDropdown::showWizardField($data, $namefield, $value, $on_basket, $itilcategories_id);
+                break;
+            case 'dropdown_multiple':
+                PluginMetademandsDropdownmultiple::showWizardField($data, $namefield, $value, $on_basket);
+                break;
+            case 'checkbox':
+                PluginMetademandsCheckbox::showWizardField($data, $namefield, $value, $on_basket);
+                break;
+            case 'radio':
+                PluginMetademandsRadio::showWizardField($data, $namefield, $value, $on_basket);
                 break;
             case 'yesno':
-
-                $options[1] = __('No');
-                $options[2] = __('Yes');
-
-                $defaults = self::_unserialize($data['custom_values']);
-
-                if ($value == "") {
-                    //warning : this is default value
-                    $value = $data['custom_values'];
-                }
-
-                $value = !empty($value) ? $value : $defaults;
-
-                if (is_array($value)) {
-                    $value = "";
-                }
-
-                $field = "";
-                $field .= Dropdown::showFromArray($namefield . "[" . $data['id'] . "]", $options, ['value' => $value,
-                    'display_emptychoice' => false,
-                    'class' => '',
-//                    'noselect2' => true,
-                    'width' => '70px',
-                    'required' => ($data['is_mandatory'] ? "required" : ""),
-                        'id' => $data['id'],
-                    'display' => false
-                    ]
-                );
-
-
+                PluginMetademandsYesno::showWizardField($data, $namefield, $value, $on_basket);
+                break;
+            case 'number':
+                PluginMetademandsNumber::showWizardField($data, $namefield, $value, $on_basket);
+                break;
+            case 'date':
+                PluginMetademandsDate::showWizardField($data, $namefield, $value, $on_basket);
+                break;
+            case 'date_interval':
+                PluginMetademandsDateinterval::showWizardField($data, $namefield, $value, $on_basket);
+                break;
+            case 'datetime':
+                PluginMetademandsDatetime::showWizardField($data, $namefield, $value, $on_basket);
+                break;
+            case 'datetime_interval':
+                PluginMetademandsDatetimeinterval::showWizardField($data, $namefield, $value, $on_basket);
                 break;
             case 'upload':
-                $arrayFiles = json_decode($value, true);
-                $field      = "";
-                $nb         = 0;
-                $container = 'fileupload_info_ticket'.$namefield . $data['id'];
-                if ($arrayFiles != "") {
-                    foreach ($arrayFiles as $k => $file) {
-                        $field .= str_replace($file['_prefix_filename'], "", $file['_filename']);
-                        $wiz   = new PluginMetademandsWizard();
-                        $field .= "&nbsp;";
-                        //own showSimpleForm for return (not echo)
-                        $field .= self::showSimpleForm(
-                            $wiz->getFormURL(),
-                            'delete_basket_file',
-                            _x('button', 'Delete permanently'),
-                            ['id'                           => $k,
-                            'metademands_id'               => $data['plugin_metademands_metademands_id'],
-                            'plugin_metademands_fields_id' => $data['id'],
-                            'idline'                       => $idline
-                            ],
-                            'fa-times-circle'
-                        );
-                        $field .= "<br>";
-                        $nb++;
-                    }
-                    if ($data["max_upload"] > $nb) {
-                        if ($data["max_upload"] > 1) {
-                            $field .= Html::file([
-                                'filecontainer' => $container,
-                                           'editor_id'     => '',
-                                           'showtitle'     => false,
-                                           'multiple'      => true,
-                                           'display'       => false,
-                                           'required' => ($data['is_mandatory'] ? true : false)]);
-                        } else {
-                            $field .= Html::file([
-                                'filecontainer' => $container,
-                                           'editor_id'     => '',
-                                           'showtitle'     => false,
-                                           'display'       => false,
-                                           'required' => ($data['is_mandatory'] ? true : false)
-                                          ]);
-                        }
-                    }
-                } else {
-                    if ($data["max_upload"] > 1) {
-                        $field .= Html::file([
-                            'filecontainer' => $container,
-                                        'editor_id'     => '',
-                                        'showtitle'     => false,
-                                        'multiple'      => true,
-                                        'display'       => false,
-                                        'required' => ($data['is_mandatory'] ? true : false)]);
-                    } else {
-                        $field .= Html::file([
-                            'filecontainer' => $container,
-                                        'editor_id'     => '',
-                                        'showtitle'     => false,
-                                        'display'       => false,
-                                        'required' => ($data['is_mandatory'] ? true : false)
-                                       ]);
-                    }
-                }
-
-                $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
+                PluginMetademandsUpload::showWizardField($data, $namefield, $value, $on_basket, $idline);
                 break;
-
+            case 'link':
+                PluginMetademandsLink::showWizardField($data, $namefield, $value, $on_basket);
+                break;
             case 'parent_field':
-
                 foreach ($metademands_data as $metademands_data_steps) {
                     foreach ($metademands_data_steps as $line_data) {
                         foreach ($line_data['form'] as $field_id => $field_value) {
@@ -3382,13 +2288,10 @@ JAVASCRIPT
             default:
                 //plugin case
                 if (isset($PLUGIN_HOOKS['metademands'])) {
-
                     $hooks_plugins = $PLUGIN_HOOKS['metademands'];
                     foreach ($hooks_plugins as $plug => $pluginclass) {
                         if (Plugin::isPluginActive($plug)) {
-//                                Toolbox::logInfo($plug);
                             echo self::showPluginFieldCase($plug, $metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
-//                                return $case;
                         }
                     }
                 }
@@ -3510,7 +2413,8 @@ JAVASCRIPT
         if (in_array($params['value'], $allowed_custom_types)
           || in_array($params['item'], $allowed_custom_items)) {
             echo "<table width='100%' class='metademands_show_values'>";
-            if ($params['value'] != "dropdown_multiple" && $params['item'] != 'User') {
+            if ($params['value'] != "dropdown_multiple"
+                && $params['item'] != 'User') {
                 echo "<tr><th colspan='4'>" . __('Custom values', 'metademands') . "</th></tr>";
             }
 
@@ -3529,338 +2433,58 @@ JAVASCRIPT
 
             switch ($params['item']) {
                 case 'other':
-                    echo "<tr>";
-                    echo "<td>";
-                    if (is_array($values) && !empty($values)) {
-                        echo "<div id='drag'>";
-                        echo "<table class='tab_cadre_fixe'>";
-                        foreach ($values as $key => $value) {
-                            echo "<tr>";
-
-                            echo '<td class="rowhandler control center">';
-                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                            echo "<p id='custom_values$key'>";
-                            echo __('Value') . " " . $key . " ";
-                            $name = "custom_values[$key]";
-                            echo Html::input($name, ['value' => $value, 'size' => 50]);
-                            echo '</p>';
-                            echo '</div>';
-                            echo '</td>';
-
-                            echo '<td class="rowhandler control center">';
-                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                          //                     echo "<p id='default_values$key'>";
-                            $display_default = false;
-                          //                     if ($params['value'] == 'dropdown_multiple') {
-                            $display_default = true;
-                          //                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                            $checked = "";
-                          //                        if (isset($default[$key])
-                          //                            && $default[$key] == 1) {
-                          //                           $checked = "checked";
-                          //                        }
-                          //                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
-                            echo "<p id='default_values$key'>";
-                            echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                            $name  = "default_values[" . $key . "]";
-                            $value = ($default[$key] ?? 0);
-                            Dropdown::showYesNo($name, $value);
-                            echo '</p>';
-                          //                     }
-                          //                     echo '</p>';
-                            echo '</div>';
-                            echo '</td>';
-
-                            echo '<td class="rowhandler control center">';
-                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                            echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
-                            if (isset($params['id'])) {
-                                echo self::showSimpleForm(
-                                    $this->getFormURL(),
-                                    'delete_field_custom_values',
-                                    _x('button', 'Delete permanently'),
-                                    ['id'                           => $key,
-                                    'plugin_metademands_fields_id' => $params['id'],
-                                    ],
-                                    'fa-times-circle'
-                                );
-                            }
-                            echo '</div>';
-                            echo '</td>';
-
-                            echo "</tr>";
-                        }
-                        if (isset($params['id'])) {
-                            echo Html::hidden('fields_id', ['value' => $params["id"], 'id' => 'fields_id']);
-                        }
-                        echo '</table>';
-                        echo '</div>';
-                        echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
-                        echo '</td>';
-
-                        echo "</tr>";
-                        echo "<tr>";
-                        echo "<td colspan='4' align='right' id='show_custom_fields'>";
-                        self::initCustomValue(max(array_keys($values)), false, $display_default);
-                        echo "</td>";
-                        echo "</tr>";
-                    } else {
-                       //                  echo "<tr>";
-                       //                  echo "<td>";
-                        echo __('Value') . " 1 ";
-                        echo Html::input('custom_values[1]', ['size' => 50]);
-                        echo "</td>";
-                        echo "<td>";
-                        $display_default = false;
-                       //                  if ($params['value'] == 'dropdown_multiple') {
-                        $display_default = true;
-                       //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                       //                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
-                        echo "<p id='default_values1'>";
-                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                        $name  = "default_values[1]";
-                        $value = 1;
-                        Dropdown::showYesNo($name, $value);
-                        echo '</p>';
-                        echo "</td>";
-                       //                  }
-                        echo "</tr>";
-
-                        echo "<tr>";
-                        echo "<td colspan='2' align='right' id='show_custom_fields'>";
-                        self::initCustomValue(1, false, $display_default);
-                        echo "</td>";
-                        echo "</tr>";
-                    }
+                    PluginMetademandsDropdownmeta::showFieldCustomValues($values, $key, $params);
                     break;
                 default:
                     break;
             }
 
             switch ($params['value']) {
+                case 'title':
+                    break;
+                case 'title-block':
+                    break;
+                case 'informations':
+                    break;
+                case 'text':
+                    break;
+                case 'textarea':
+                    break;
+                case 'dropdown_meta':
+                    break;
+                case 'dropdown_object':
+                    break;
+                case 'dropdown':
+                    break;
                 case 'dropdown_multiple':
-                    if ($params["item"] != "other"
-                    && !empty($params["item"])
-                    && $params["item"] != "User") {
-                        $item = new $params['item'];
-
-                        $items = $item->find([], ["name ASC"]);
-                        foreach ($items as $key => $v) {
-                            echo "<tr>";
-
-                            echo "<td>";
-                            echo "<p id='custom_values$key'>";
-
-                            echo $v["name"] . " ";
-                            echo '</p>';
-                            echo "</td>";
-
-                            echo "<td>";
-                         //                     echo "<p id='default_values$key'>";
-                         //
-                         //
-                         //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                         //                     $checked = "";
-                         //                     if (isset($default[$key])
-                         //                         && $default[$key] == 1) {
-                         //                        $checked = "checked";
-                         //                     }
-                         //                     echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
-                            echo "<p id='default_values$key'>";
-                            echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                            $name  = "default_values[" . $key . "]";
-                            $value = ($default[$key] ?? 0);
-                            Dropdown::showYesNo($name, $value);
-                            echo '</p>';
-
-                         //                     echo '</p>';
-                            echo "</td>";
-                            echo "<td>";
-                            echo "<p id='present_values$key'>";
-
-
-                            echo " " . __('Display value in the dropdown', 'metademands') . " ";
-                            $checked = "";
-                            if (isset($values[$key])
-                            && $values[$key] != 0) {
-                                $checked = "checked";
-                            }
-                            echo "<input type='checkbox' name='custom_values[$key]'  value='$key' $checked />";
-
-                            echo '</p>';
-                            echo "</td>";
-
-                            echo "</tr>";
-                        }
-                    }
+                    PluginMetademandsDropdownmultiple::showFieldCustomValues($values, $key, $params);
                     break;
                 case 'checkbox':
+                    PluginMetademandsCheckbox::showFieldCustomValues($values, $key, $params);
+                    break;
                 case 'radio':
-                    echo "<tr>";
-                    echo "<td>";
-                    if (is_array($values) && !empty($values)) {
-                        echo "<div id='drag'>";
-                        echo "<table class='tab_cadre_fixe'>";
-                        foreach ($values as $key => $value) {
-                            echo "<tr>";
-
-                            echo '<td class="rowhandler control center">';
-                            echo "<p id='custom_values$key'>";
-                            echo __('Value') . " " . $key . " ";
-                            $name = "custom_values[$key]";
-                            echo Html::input($name, ['value' => $value, 'size' => 30]);
-                            echo '</p>';
-                            echo "</td>";
-
-                            echo '<td class="rowhandler control center">';
-                            echo "<p id='comment_values$key'>";
-                            if ($params['value'] == 'checkbox' || $params['value'] == 'radio') {
-                                echo " " . __('Comment') . " ";
-                                $value_comment = "";
-                                if (isset($comment[$key])) {
-                                    $value_comment = $comment[$key];
-                                }
-                                $name = "comment_values[" . $key . "]";
-                                echo Html::input($name, ['value' => $value_comment, 'size' => 30]);
-                            }
-                            echo '</p>';
-                            echo "</td>";
-
-                            echo "<td>";
-                            echo "<p id='default_values$key'>";
-                            echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                            $name  = "default_values[" . $key . "]";
-                            $value = ($default[$key] ?? 0);
-                            Dropdown::showYesNo($name, $value);
-                            echo '</p>';
-                            echo "</td>";
-
-                            echo '<td class="rowhandler control center">';
-                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                            echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
-                            if (isset($params['id'])) {
-                                echo self::showSimpleForm(
-                                    $this->getFormURL(),
-                                    'delete_field_custom_values',
-                                    _x('button', 'Delete permanently'),
-                                    ['id'                           => $key,
-                                    'plugin_metademands_fields_id' => $params['id'],
-                                    ],
-                                    'fa-times-circle'
-                                );
-                            }
-                            echo '</div>';
-                            echo '</td>';
-
-                            echo "</tr>";
-                        }
-                        if (isset($params['id'])) {
-                            echo Html::hidden('fields_id', ['value' => $params["id"], 'id' => 'fields_id']);
-                        }
-                        echo '</table>';
-                        echo '</div>';
-                        echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
-
-                        echo "<tr>";
-                        echo "<td colspan='4' align='right' id='show_custom_fields'>";
-                        self::initCustomValue(max(array_keys($values)), true, true);
-                        echo "</td>";
-                        echo "</tr>";
-                    } else {
-                        echo __('Value') . " 0 ";
-                        echo Html::input('custom_values[0]', ['size' => 30]);
-                        echo "</td>";
-                        echo "<td>";
-                        echo " " . __('Comment') . " ";
-                        echo Html::input('comment_values[0]', ['size' => 30]);
-                        echo "</td>";
-                        echo "<td>";
-                       //                  echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                       //                  echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
-                        echo "<p id='default_values$key'>";
-                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                        $name  = "default_values[" . $key . "]";
-                        $value = ($default[$key] ?? 0);
-                        Dropdown::showYesNo($name, $value);
-                        echo '</p>';
-                        echo "</td>";
-                        echo "</tr>";
-
-                        echo "<tr>";
-                        echo "<td colspan='3' align='right'  id='show_custom_fields'>";
-                        self::initCustomValue(0, true, true);
-                        echo "</td>";
-                        echo "</tr>";
-                    }
-                    echo "</tr>";
+                    PluginMetademandsRadio::showFieldCustomValues($values, $key, $params);
                     break;
-                case 'yesno': // Show yes/no default value
-                    echo "<tr><td id='show_custom_fields'>";
-                    echo _n('Default value', 'Default values', 1, 'metademands') . "&nbsp;";
-                    $p= [];
-                    if (isset($params['custom_values'])) {
-                        $p['value'] = $params['custom_values'];
-                    }
-                    $data[1] = __('No');
-                    $data[2] = __('Yes');
-
-                    Dropdown::showFromArray("custom_values", $data, $p);
-                    echo "</td></tr>";
+                case 'yesno':
+                    PluginMetademandsYesno::showFieldCustomValues($values, $key, $params);
                     break;
-                case 'number': // Show number custom value
-                    echo "<tr><td id='show_custom_fields'>";
-                    $min = 0;
-                    $max  = 0;
-                    $step  = 0;
-                    if (isset($params['custom_values']) && !empty($params['custom_values'])) {
-                        $params['custom_values'] = self::_unserialize($params['custom_values']);
-                        $min                = $params['custom_values'][0] ?? "";
-                        $max                 = $params['custom_values'][1] ?? "";
-                        $step                 = $params['custom_values'][2] ?? "";
-                    }
-                    echo '<label>' . __("Minimal count") . '</label>&nbsp;';
-                    $opt                   = ['value'         => $min];
-                    Dropdown::showNumber("custom_values[0]", $opt);
-                    echo "</td>";
-
-                    echo "<td>";
-                    echo '<label>' . __("Maximal count") . '</label>&nbsp;';
-                    $opt                   = ['value'         => $max];
-                    Dropdown::showNumber("custom_values[1]", $opt);
-                    echo "</td>";
-
-                    echo "<td>";
-                    echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
-                    $opt                   = ['value'         => $step];
-                    Dropdown::showNumber("custom_values[2]", $opt);
-                    echo "</td>";
-                    echo "</tr>";
+                case 'number':
+                    PluginMetademandsNumber::showFieldCustomValues($values, $key, $params);
                     break;
-                case 'link': // Show yes/no default value
-                    echo "<tr><td id='show_custom_fields'>";
-                    $linkType = 0;
-                    $linkVal  = '';
-                    if (isset($params['custom_values']) && !empty($params['custom_values'])) {
-                        $params['custom_values'] = self::_unserialize($params['custom_values']);
-                        $linkType                = $params['custom_values'][0] ?? "";
-                        $linkVal                 = $params['custom_values'][1] ?? "";
-                    }
-                    echo '<label>' . __("Link") . '</label>';
-                    echo Html::input('custom_values[1]', ['value' => $linkVal, 'size' => 30]);
-                    echo "</td>";
-                    echo "<td>";
-
-                    echo '<label>' . __("Button Type", "metademands") . '</label>&nbsp;';
-                    Dropdown::showFromArray(
-                        "custom_values[0]",
-                        [
-                        'button' => __('button', "metademands"),
-                        'link_a' => __('Web link')
-                        ],
-                        ['value' => $linkType]
-                    );
-                    echo "<br /><i>" . __("*use field \"Additional label\" for the button title", "metademands") . "</i>";
-                    echo "</td></tr>";
+                case 'date':
+                    break;
+                case 'date_interval':
+                    break;
+                case 'datetime':
+                    break;
+                case 'datetime_interval':
+                    break;
+                case 'upload':
+                    break;
+                case 'link':
+                    PluginMetademandsLink::showFieldCustomValues($values, $key, $params);
+                    break;
+                case 'parent_field':
                     break;
             }
 
@@ -3935,10 +2559,6 @@ JAVASCRIPT
         echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer' 
             onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");' 
             title='" . _sx("button", "Add") . "'/></i>&nbsp;";
-
-       //      echo "&nbsp;<i class='fa-2x fas fa-trash-alt' style='cursor:pointer'
-       //            onclick='$script metademandWizard.metademands_delete_custom_values(\"custom_values\");'
-       //            title='" . _sx('button', 'Delete permanently') . "'/></i>";
     }
 
    /**
@@ -4025,57 +2645,6 @@ JAVASCRIPT
 
         return $input;
     }
-
-   //   /**
-   //
-   //    * @param $field
-   //    * @param $metademands_id
-   //    * @param $selected_value
-   //    */
-   //   static function showFieldsDropdown($metademands_id, $selected_value, $display = true, $idF) {
-   //
-   //      $fields      = new self();
-   //      $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-   //      $data        = [Dropdown::EMPTY_VALUE];
-   //      foreach ($fields_data as $id => $value) {
-   //         if ($idF != $id) {
-   //            $data[$id] = utf8_decode(urldecode(html_entity_decode($value['label'])));
-   ////            if (!empty($value['label2'])) {
-   ////               $data[$id] .= ' - ' . $value['label2'];
-   ////            }
-   //         }
-   //      }
-   //
-   //      return Dropdown::showFromArray('fields_link[]', $data, ['value' => $selected_value, 'display' => $display]);
-   //   }
-
-
-   /**
-    * @param $params
-    * @param $protocol
-    *
-    * @return array
-    */
-//   static function methodListMetademandsfields($params, $protocol) {
-//
-//      if (isset($params['help'])) {
-//         return ['help'           => 'bool,optional',
-//                 'metademands_id' => 'bool,mandatory'];
-//      }
-//
-//      if (!Session::getLoginUserID()) {
-//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTAUTHENTICATED);
-//      }
-//
-//      if (!isset($params['metademands_id'])) {
-//         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_MISSINGPARAMETER);
-//      }
-//
-//      $field  = new self();
-//      $result = $field->find(['plugin_metademands_metademands_id' => $params['metademands_id']]);
-//
-//      return $result;
-//   }
 
    /**
     * @param $metademands_id
@@ -5011,89 +3580,5 @@ JAVASCRIPT
                 $pluginField->add($input);
             }
         }
-    }
-
-    public static function getJStorersetFields($id)
-    {
-
-        return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                if(this.checked == true) {
-                                                        this.click();
-                                                        this.checked = false;
-                                                        break;
-                                                    }
-                                        }
-                                        jQuery(this).removeAttr('required');
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                                    fixButtonIndicator();
-                                    ";
-    }
-
-    public static function getJStorersetFieldsByField($id)
-    {
-
-        return "$('div[id-field =\"field$id\"]').find(':input').each(function() {
-     
-                                     switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                            if(this.checked == true) {
-                                                this.click();
-                                                this.checked = false;
-                                                break;
-                                            }   
-                                        }
-                                        jQuery(this).removeAttr('required');
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });";
     }
 }

@@ -1,0 +1,172 @@
+<?php
+
+/*
+ -------------------------------------------------------------------------
+ Metademands plugin for GLPI
+ Copyright (C) 2003-2019 by the Metademands Development Team.
+
+ -------------------------------------------------------------------------
+
+ LICENSE
+
+ This file is part of Metademands.
+
+ Metademands is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ Metademands is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with Metademands. If not, see <http://www.gnu.org/licenses/>.
+ --------------------------------------------------------------------------
+ */
+
+if (!defined('GLPI_ROOT')) {
+    die("Sorry. You can't access directly to this file");
+}
+
+
+/**
+ * PluginMetademandsLink Class
+ *
+ **/
+class PluginMetademandsLink extends CommonDBTM
+{
+
+    /**
+     * Return the localized name of the current Type
+     * Should be overloaded in each new class
+     *
+     * @param integer $nb Number of items
+     *
+     * @return string
+     **/
+    static function getTypeName($nb = 0)
+    {
+        return __('Link');
+    }
+
+    static function showWizardField($data, $namefield, $value, $on_basket)
+    {
+
+        if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
+            $comment = $data['comment'];
+        }
+
+        if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+            $label2 = $data['label2'];
+        }
+
+        if (!empty($data['custom_values'])) {
+            $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+            foreach ($data['custom_values'] as $k => $val) {
+                if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
+                    $data['custom_values'][$k] = $ret;
+                }
+            }
+            switch ($data['custom_values'][0]) {
+                case 'button':
+                    $btnLabel = __('Link');
+                    if (!empty($label2)) {
+                        $btnLabel = $label2;
+                    }
+
+                    $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags($btnLabel) . "' 
+                     target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
+
+                    break;
+                case 'link_a':
+                    $field = Html::link($data['custom_values'][1], $data['custom_values'][1], ['target' => '_blank']);
+                    break;
+            }
+            $title = $namefield . "[" . $data['id'] . "]";
+            $field .= Html::hidden($title, ['value' => $data['custom_values'][1]]);
+        }
+
+        if ($on_basket == false) {
+            echo $field;
+        } else {
+            return $field;
+        }
+    }
+
+    static function showFieldCustomValues($values, $key, $params)
+    {
+        // Show yes/no default value
+        echo "<tr><td id='show_custom_fields'>";
+        $linkType = 0;
+        $linkVal  = '';
+        if (isset($params['custom_values']) && !empty($params['custom_values'])) {
+            $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
+            $linkType                = $params['custom_values'][0] ?? "";
+            $linkVal                 = $params['custom_values'][1] ?? "";
+        }
+        echo '<label>' . __("Link") . '</label>';
+        echo Html::input('custom_values[1]', ['value' => $linkVal, 'size' => 30]);
+        echo "</td>";
+        echo "<td>";
+
+        echo '<label>' . __("Button Type", "metademands") . '</label>&nbsp;';
+        Dropdown::showFromArray(
+            "custom_values[0]",
+            [
+                'button' => __('button', "metademands"),
+                'link_a' => __('Web link')
+            ],
+            ['value' => $linkType]
+        );
+        echo "<br /><i>" . __("*use field \"Additional label\" for the button title", "metademands") . "</i>";
+        echo "</td></tr>";
+    }
+
+    static function fieldsLinkScript($data, $idc, $rand)
+    {
+
+    }
+
+    static function fieldsHiddenScript($data)
+    {
+
+    }
+
+    public static function blocksHiddenScript($data)
+    {
+        
+    }
+
+    public static function getFieldValue($field)
+    {
+        if (!str_starts_with($field['value'], 'http://') && !str_starts_with($field['value'], 'https://')) {
+            $field['value'] = "http://" . $field['value'];
+        }
+        return $field['value'];
+    }
+
+    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
+    {
+
+        if (!str_starts_with($field['value'], 'http://') && !str_starts_with($field['value'], 'https://')) {
+            $field['value'] = "http://" . $field['value'];
+        }
+        $result[$field['rank']]['display'] = true;
+        if ($formatAsTable) {
+            $result[$field['rank']]['content'] .= "<td $style_title>";
+        }
+        $result[$field['rank']]['content'] .= $label;
+        if ($formatAsTable) {
+            $result[$field['rank']]['content'] .= "</td><td>";
+        }
+        $result[$field['rank']]['content'] .= '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . self::getFieldValue($field) . '</a>';
+        if ($formatAsTable) {
+            $result[$field['rank']]['content'] .= '</td>';
+        }
+
+        return $result;
+    }
+
+}

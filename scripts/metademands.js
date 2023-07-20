@@ -197,11 +197,10 @@
          }
 
 
-         console.log(obs.val());
-         console.log(check_value);
+         // console.log(obs.val());
+         // console.log(check_value);
          //check_value is not an array
          var op1 = (!Array.isArray(check_value) && check_value != 0 && obs.val() == check_value);
-
          //check_value is an array
          var op2 = (Array.isArray(check_value) && obs.val() != 0 && type != 'radio' && type != 'checkbox'  && check_value.includes(parseInt(obs.val(), 10)));
 

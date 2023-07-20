@@ -3345,12 +3345,6 @@ JAVASCRIPT
         if (empty($label = PluginMetademandsField::displayField($field['id'], 'name', $lang))) {
             $label = Toolbox::stripslashes_deep($field['name']);
         }
-        if (empty($label2 = PluginMetademandsField::displayField($field['id'], 'label2', $lang))) {
-            $label2 = Toolbox::stripslashes_deep($field['label2']);
-            if ($field['label2'] != NULL) {
-                $label2 = Glpi\RichText\RichText::getTextFromHtml($field['label2']);
-            }
-        }
 
         if ((!empty($field['value']) || $field['value'] == "0")
             && $field['value'] != 'NULL'
@@ -3372,716 +3366,122 @@ JAVASCRIPT
             }
 
             switch ($field['type']) {
-                case 'title':
+
                 case 'title-block':
-                    //               if ($field['is_basket'] == true) {
-                    if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "<th colspan='10'>";
-                    }
-                    $result[$field['rank']]['content'] .= $label;
-                    if ($formatAsTable) {
-                        $result[$field['rank']]['content'] .= "</th>";
-                    }
-                    //               }
+                    PluginMetademandsTitleblock::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    break;
+                case 'title':
+                    PluginMetademandsTitle::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     break;
                 case 'dropdown':
-                case 'dropdown_object':
-                case 'dropdown_meta':
-                    if (!empty($field['custom_values'])
-                        && $field['item'] == 'other') {
-                        $custom_values = array_merge([0 => Dropdown::EMPTY_VALUE], PluginMetademandsField::_unserialize($field['custom_values']));
-                        foreach ($custom_values as $k => $val) {
-                            if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
-                                $custom_values[$k] = $ret;
-                            }
-                        }
-                        if (isset($custom_values[$field['value']])) {
-                            if ($return_value == true) {
-                                return $custom_values[$field['value']];
-                            } else {
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "<td $style_title>";
-                                }
-                                $result[$field['rank']]['content'] .= $label;
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "</td><td>";
-                                }
-                                $result[$field['rank']]['content'] .= $custom_values[$field['value']];
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "</td>";
-                                }
-
-                                $result[$field['rank']]['display'] = true;
-                            }
-                        }
+                    if ($field['value'] != 0) {
                         if ($return_value == true) {
-                            return "";
+                            return PluginMetademandsDropdown::getFieldValue($field);
+                        } else {
+                            PluginMetademandsDropdown::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                         }
+                    }
+                    break;
+                case 'dropdown_object':
+                    if ($field['value'] != 0) {
+                        if ($return_value == true) {
+                            return PluginMetademandsDropdownobject::getFieldValue($field);
+                        } else {
+                            PluginMetademandsDropdownobject::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                        }
+                    }
+                    break;
+                case 'dropdown_meta':
+                    if ($return_value == true) {
+                        return PluginMetademandsDropdownmeta::getFieldValue($field);
                     } else {
-                        if ($field['value'] != 0) {
-                            switch ($field['item']) {
-                                case 'User':
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>";
-                                    }
-                                    $result[$field['rank']]['content'] .= $label;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                    }
-
-                                    $result[$field['rank']]['display'] = true;
-                                    $item = new $field['item']();
-                                    $content = "";
-                                    $information = json_decode($field['informations_to_display']);
-                                    if ($item->getFromDB($field['value'])) {
-                                        if (in_array('full_name', $information)) {
-                                            $content .= "" . $field["item"]::getFriendlyNameById($field['value']) . " ";
-                                        }
-                                        if (in_array('realname', $information)) {
-                                            $content .= "" . $item->fields["realname"] . " ";
-                                        }
-                                        if (in_array('firstname', $information)) {
-                                            $content .= "" . $item->fields["firstname"] . " ";
-                                        }
-                                        if (in_array('name', $information)) {
-                                            $content .= "" . $item->fields["name"] . " ";
-                                        }
-                                        if (in_array('email', $information)) {
-                                            $content .= "" . $item->getDefaultEmail() . " ";
-                                        }
-                                    }
-                                    if (empty($content)) {
-                                        if ($formatAsTable) {
-                                            $result[$field['rank']]['content'] .= "<td>";
-                                        }
-                                        $result[$field['rank']]['content'] .= getUserName($field['value']);
-                                        if ($formatAsTable) {
-                                            $result[$field['rank']]['content'] .= "</td>";
-                                        }
-                                    } else {
-                                        if ($formatAsTable) {
-                                            $result[$field['rank']]['content'] .= "<td>";
-                                        }
-                                        $result[$field['rank']]['content'] .= $content;
-                                        if ($formatAsTable) {
-                                            $result[$field['rank']]['content'] .= "</td>";
-                                        }
-                                    }
-                                    if ($return_value == true) {
-                                        return getUserName($field['value']);
-                                    }
-
-
-                                    break;
-                                case 'ITILCategory_Metademands':
-                                    $dbu = new DbUtils();
-                                    $result[$field['rank']]['display'] = true;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>";
-                                    }
-                                    $result[$field['rank']]['content'] .= $label;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td><td>";
-                                    }
-
-                                    $result[$field['rank']]['content'] .= Dropdown::getDropdownName(
-                                        $dbu->getTableForItemType('ITILCategory'),
-                                        $field['value']
-                                    );
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                    }
-                                    if ($return_value == true) {
-                                        return Dropdown::getDropdownName(
-                                            $dbu->getTableForItemType('ITILCategory'),
-                                            $field['value']
-                                        );
-                                    }
-                                    break;
-                                case 'mydevices':
-                                    $dbu = new DbUtils();
-                                    $result[$field['rank']]['display'] = true;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>";
-                                    }
-                                    $result[$field['rank']]['content'] .= $label;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td><td>";
-                                    }
-
-                                    $splitter = explode("_", $field['value']);
-                                    if (count($splitter) == 2) {
-                                        $itemtype = $splitter[0];
-                                        $items_id = $splitter[1];
-                                    }
-                                    if ($itemtype && $items_id) {
-                                        $result[$field['rank']]['content'] .= Dropdown::getDropdownName(
-                                            $dbu->getTableForItemType($itemtype),
-                                            $items_id
-                                        );
-                                    }
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                    }
-                                    if ($return_value == true) {
-                                        if (isset($items_id)) {
-                                            return Dropdown::getDropdownName(
-                                                $dbu->getTableForItemType($itemtype),
-                                                $items_id
-                                            );
-                                        } else {
-                                            return "";
-                                        }
-                                    }
-                                    break;
-                                case 'urgency':
-                                    $result[$field['rank']]['display'] = true;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>";
-                                    }
-                                    $result[$field['rank']]['content'] .= $label;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                        $result[$field['rank']]['content'] .= "<td>";
-                                    }
-                                    $result[$field['rank']]['content'] .= Ticket::getUrgencyName($field['value']);
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                    }
-
-
-                                    if ($return_value == true) {
-                                        return Ticket::getUrgencyName($field['value']);
-                                    }
-                                    break;
-                                case 'impact':
-                                    $result[$field['rank']]['display'] = true;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>";
-                                    }
-                                    $result[$field['rank']]['content'] .= $label;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                        $result[$field['rank']]['content'] .= "<td>";
-                                    }
-                                    $result[$field['rank']]['content'] .= Ticket::getImpactName($field['value']);
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                    }
-
-
-                                    if ($return_value == true) {
-                                        return Ticket::getImpactName($field['value']);
-                                    }
-                                    break;
-                                case 'priority':
-                                    $result[$field['rank']]['display'] = true;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>";
-                                    }
-                                    $result[$field['rank']]['content'] .= $label;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                        $result[$field['rank']]['content'] .= "<td>";
-                                    }
-                                    $result[$field['rank']]['content'] .= Ticket::getPriorityName($field['value']);
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                    }
-
-
-                                    if ($return_value == true) {
-                                        return Ticket::getPriorityName($field['value']);
-                                    }
-                                    break;
-                                default:
-                                    $dbu = new DbUtils();
-                                    $result[$field['rank']]['display'] = true;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "<td $style_title>";
-                                    }
-                                    $result[$field['rank']]['content'] .= $label;
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td><td>";
-                                    }
-                                    $result[$field['rank']]['content'] .= Dropdown::getDropdownName(
-                                        $dbu->getTableForItemType($field['item']),
-                                        $field['value']
-                                    );
-                                    if ($formatAsTable) {
-                                        $result[$field['rank']]['content'] .= "</td>";
-                                    }
-
-
-                                    if ($return_value == true) {
-                                        return Dropdown::getDropdownName(
-                                            $dbu->getTableForItemType($field['item']),
-                                            $field['value']
-                                        );
-                                    }
-                                    break;
-                            }
-                        }
+                        PluginMetademandsDropdownmeta::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'dropdown_multiple':
-                    if (!empty($field['custom_values']) && $field['item'] != 'User') {
-                        if ($field['item'] != "other") {
-                            $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
-                            foreach ($custom_values as $k => $val) {
-                                $custom_values[$k] = $field["item"]::getFriendlyNameById($k);
-                            }
-                            $field['value'] = PluginMetademandsField::_unserialize($field['value']);
-                            $parseValue = [];
-                            foreach ($field['value'] as $value) {
-                                $parseValue[] = $custom_values[$value];
-                            }
-                            if ($return_value == true) {
-                                return implode(', ', $parseValue);
-                            } else {
-                                $result[$field['rank']]['display'] = true;
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "<td $style_title>";
-                                }
-                                $result[$field['rank']]['content'] .= $label;
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "</td><td>";
-                                }
-                                $result[$field['rank']]['content'] .= implode('<br>', $parseValue);
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "</td>";
-                                }
-                            }
-                        } else {
-                            $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
-
-                            foreach ($custom_values as $k => $val) {
-                                if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
-                                    $custom_values[$k] = $ret;
-                                }
-                            }
-                            $field['value'] = PluginMetademandsField::_unserialize($field['value']);
-                            $parseValue = [];
-                            foreach ($field['value'] as $k => $value) {
-                                $parseValue[] = $custom_values[$value];
-                            }
-                            if ($return_value) {
-                                return implode(', ', $parseValue);
-                            } else {
-                                $result[$field['rank']]['display'] = true;
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "<td $style_title>";
-                                }
-                                $result[$field['rank']]['content'] .= $label;
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "</td><td>";
-                                }
-                                $result[$field['rank']]['content'] .= implode('<br>', $parseValue);
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "</td>";
-                                }
-                            }
-                        }
-                    } elseif ($field['item'] == 'User') {
-                        $information = json_decode($field['informations_to_display']);
-                        $parseValue = [];
-                        if ($formatAsTable) {
-                            $dataItems = "<table>";
-                        }
-                        $item = new $field["item"]();
-                        foreach ($field['value'] as $value) {
-                            if ($item->getFromDB($value)) {
-                                if ($formatAsTable) {
-                                    $dataItems .= "<tr>";
-                                }
-
-                                if (in_array('full_name', $information)) {
-                                    if ($formatAsTable) {
-                                        $dataItems .= "<td>";
-                                    }
-                                    $dataItems .= $field["item"]::getFriendlyNameById($value);
-                                    if ($formatAsTable) {
-                                        $dataItems .= "</td>";
-                                    }
-                                }
-                                if (in_array('realname', $information)) {
-                                    if ($formatAsTable) {
-                                        $dataItems .= "<td>";
-                                    }
-                                    $dataItems .= $item->fields["realname"];
-                                    if ($formatAsTable) {
-                                        $dataItems .= "</td>";
-                                    }
-                                }
-                                if (in_array('firstname', $information)) {
-                                    if ($formatAsTable) {
-                                        $dataItems .= "<td>";
-                                    }
-                                    $dataItems .= $item->fields["firstname"];
-                                    if ($formatAsTable) {
-                                        $dataItems .= "</td>";
-                                    }
-                                }
-                                if (in_array('name', $information)) {
-                                    if ($formatAsTable) {
-                                        $dataItems .= "<td>";
-                                    }
-                                    $dataItems .= $item->fields["name"];
-                                    if ($formatAsTable) {
-                                        $dataItems .= "</td>";
-                                    }
-                                }
-                                if (in_array('email', $information)) {
-                                    if ($formatAsTable) {
-                                        $dataItems .= "<td>";
-                                    }
-                                    $dataItems .= $item->getDefaultEmail();
-                                    if ($formatAsTable) {
-                                        $dataItems .= "</td>";
-                                    }
-                                }
-                                if ($formatAsTable) {
-                                    $dataItems .= "</tr>";
-                                }
-                            }
-
-                            $parseValue[] = $field["item"]::getFriendlyNameById($value);
-                        }
-                        if ($formatAsTable) {
-                            $dataItems .= "</table>";
-                        }
-                        //TODO MAKE TABLE IN A TABLE
-                        if ($return_value == true) {
-                            return implode(',', $parseValue);
-                        } else {
-                            $result[$field['rank']]['display'] = true;
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "<td $style_title>";
-                            }
-                            $result[$field['rank']]['content'] .= $label;
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "</td><td>";
-                            }
-                            $result[$field['rank']]['content'] .= $dataItems;
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "</td>";
-                            }
-
-                            //                  $result[$field['rank']]['content'] .= "<td $style_title>" . $label . "</td><td>" . implode('<br>', $parseValue) . "</td>";
-                        }
+                    if ($return_value == true) {
+                        return PluginMetademandsDropdownmultiple::getFieldValue($field, $lang);
+                    } else {
+                        PluginMetademandsDropdownmultiple::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
-
                     break;
                 case 'link':
-                    if (!str_starts_with($field['value'], 'http://') && !str_starts_with($field['value'], 'https://')) {
-                        $field['value'] = "http://" . $field['value'];
-                    }
                     if ($return_value == true) {
-                        return $field['value'];
+                        return PluginMetademandsLink::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= '<a href="' . $field['value'] . '" data-mce-href="' . $field['value'] . '" > ' . $field['value'] . '</a>';
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= '</td>';
-                        }
+                        PluginMetademandsLink::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
+
                     break;
                 case 'textarea':
-                    $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
                     if ($return_value == true) {
-                        return $field['value'];
+                        return PluginMetademandsTextarea::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= ($field['value']);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        PluginMetademandsTextarea::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'text':
-                    $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
-                    $field['value'] = Glpi\RichText\RichText::getTextFromHtml($field['value']);
                     if ($return_value == true) {
-                        return $field['value'];
+                        return PluginMetademandsText::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= ($field['value']);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        PluginMetademandsText::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'checkbox':
-                    if (!empty($field['custom_values'])) {
-                        $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
-                        foreach ($custom_values as $k => $val) {
-                            if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
-                                $custom_values[$k] = $ret;
-                            }
-                        }
-                        if (!empty($field['value'])) {
-                            if (is_string($field['value'])) {
-                                $field['value'] = PluginMetademandsField::_unserialize($field['value']);
-                            } else {
-                                $field['value'] = json_decode(json_encode($field['value']), true);
-                            }
-                        }
-                        $custom_checkbox = [];
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
-
-                        foreach ($custom_values as $key => $val) {
-                            $checked = isset($field['value'][$key]) ? 1 : 0;
-                            if ($checked) {
-                                $custom_checkbox[] .= $val;
-                            }
-                        }
-                        if ($return_value == true) {
-                            return implode(',', $custom_checkbox);
-                        } else {
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "<td>";
-                            }
-                            $result[$field['rank']]['content'] .= implode('<br>', $custom_checkbox);
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "</td>";
-                            }
-                        }
+                    if ($return_value == true) {
+                        return PluginMetademandsCheckbox::getFieldValue($field, $lang);
                     } else {
-                        if ($field['value']) {
-                            if ($return_value == true) {
-                                return $field['value'];
-                            } else {
-                                $result[$field['rank']]['display'] = true;
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "<td>";
-                                }
-                                $result[$field['rank']]['content'] .= $field['value'];
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "</td>";
-                                }
-                            }
-                        }
+                        PluginMetademandsCheckbox::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
+
                     break;
                 case 'radio':
-                    if (!empty($field['custom_values'])) {
-                        $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
-                        foreach ($custom_values as $k => $val) {
-                            if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
-                                $custom_values[$k] = $ret;
-                            }
-                        }
-                        if ($field['value'] != "") {
-                            $field['value'] = PluginMetademandsField::_unserialize($field['value']);
-                        }
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
-
-                        $custom_radio = "";
-                        foreach ($custom_values as $key => $val) {
-                            if ($field['value'] == $key && $field['value'] !== "") {
-                                $custom_radio = $val;
-                            }
-                        }
-                        if ($return_value == true) {
-                            return $custom_radio;
-                        } else {
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "<td>";
-                            }
-                            $result[$field['rank']]['content'] .= $custom_radio;
-                            if ($formatAsTable) {
-                                $result[$field['rank']]['content'] .= "</td>";
-                            }
-                        }
-                    } else {
-                        if ($field['value']) {
-                            if ($return_value == true) {
-                                return $label;
-                            } else {
-                                $result[$field['rank']]['display'] = true;
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "<td>";
-                                }
-                                $result[$field['rank']]['content'] .= $label;
-                                if ($formatAsTable) {
-                                    $result[$field['rank']]['content'] .= "</td>";
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case 'textarea':
                     if ($return_value == true) {
-                        return $field['value'];
+                        return PluginMetademandsRadio::getFieldValue($field, $label, $lang);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        $result[$field['rank']]['content'] .= $label . ' : ' . $field['value'];
+                        PluginMetademandsRadio::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'date':
                     if ($return_value == true) {
-                        return Html::convDate($field['value']);
+                        return PluginMetademandsDate::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= Html::convDate($field['value']);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        PluginMetademandsDate::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'datetime':
                     if ($return_value == true) {
-                        return Html::convDateTime($field['value']);
+                        return PluginMetademandsDatetime::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= Html::convDateTime($field['value']);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        PluginMetademandsDatetime::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'date_interval':
                     if ($return_value == true) {
-                        return Html::convDate($field['value']) . " - " . Html::convDate($field['value2']);
+                        return PluginMetademandsDateinterval::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= Html::convDate($field['value']);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td></tr>";
-                            $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label2;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= Html::convDate($field['value2']);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        PluginMetademandsDateinterval::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'datetime_interval':
                     if ($return_value == true) {
-                        return Html::convDateTime($field['value']) . " - " . Html::convDateTime($field['value2']);
+                        return PluginMetademandsDatetimeinterval::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= Html::convDateTime($field['value']);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td></tr>";
-                            $result[$field['rank']]['content'] .= "<tr class='odd'><td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label2;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= Html::convDateTime($field['value2']);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        PluginMetademandsDatetimeinterval::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'number':
                     if ($return_value == true) {
-                        return $field['value'];
+                        return PluginMetademandsNumber::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= $field['value'];
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        PluginMetademandsNumber::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'yesno':
-                    if ($field['value'] == 2) {
-                        $val = __('Yes');
-                    } else {
-                        $val = __('No');
-                    }
                     if ($return_value == true) {
-                        return $val;
+                        return PluginMetademandsYesno::getFieldValue($field);
                     } else {
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= $val;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
-                        }
+                        PluginMetademandsYesno::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
 
@@ -4339,7 +3739,9 @@ JAVASCRIPT
                                 $result[$fields['rank']]['display'] = false;
                                 $parent_fields_id = 0;
                                 $v = self::getContentWithField([], 0, $fields, $result, $parent_fields_id, true);
-                                $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                if ($v != null) {
+                                    $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                }
                             } else {
                                 $users_id = $users_id_requester;
                                 switch ($title) {
