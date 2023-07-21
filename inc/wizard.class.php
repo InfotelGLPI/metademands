@@ -1496,7 +1496,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             $required = "";
                             $required_icon = "";
                             if ($data['is_mandatory']) {
-                                $required = "required style='color:red'";
+                                $required = "style='color:red'";
                                 $required_icon = " * ";
                             }
 
@@ -1520,7 +1520,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                     echo "</div>";
                                 }
                             } else {
-                                echo "<label $required for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) . $required_icon . "</label>";
+                                echo "<span for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) ."<span $required>". $required_icon . "</span></label>";
                             }
                             $value2 = '';
                             if (isset($data['value-2'])) {
@@ -2190,25 +2190,39 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                      //for textarea
                      if (w.length > 0) {
-                        for (i = 0; i < w.length; i++) {
-                           fieldmandatory = w[i].required;
-                           // If a field is empty...
-                           if (w[i].value == '' && fieldmandatory == true) {
-                              var fieldname = w[i].name;
-                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                              if (res != 'none') {
-                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-//                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                                 ko++;
-                              } else {
-                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
-//                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
-                              }
-                           } else {
-                              w[i].classList.remove('invalid');
-                           }
+                        for (var y = 0; y < w.length; y++) {
+                            fieldmandatory = w[y].required;
+                            var fieldname = w[y].name;
+                            var textarea = w[y];
+                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                            if (res != 'none' && fieldmandatory == true) {
+                                if (typeof tinymce !== 'undefined' && tinymce.get(textarea.id)) {
+                                    var contenu = tinymce.get(textarea.id).getContent();
+    
+                                    // Vérifier si le contenu est vide
+                                    if (contenu.trim() !== '') {
+                                       $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                       $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                                    } else {
+                                        $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                        $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                                        $('[name=\"' + fieldname + '\"]').next().css('border','solid 1px red');
+                                        ko++;
+                                    }
+                                } else {
+                                    var contenu = textarea.value.trim();
+                            
+                                    // Vérifier si le contenu est vide
+                                    if (contenu !== '') {
+                                       $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                       $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                                    } else {
+                                       $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                       $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                                       ko++;
+                                    }
+                                }
+                            }
                         }
                      }
                      //for select
@@ -2236,18 +2250,16 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                            } else if (z[i].value == 0 && isnumber == 'isnumber' && ismultiplenumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
-                              var fieldname = z[i].name;
-                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                              if (res != 'none') {
-                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-//                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                                 ko++;
-                              } else {
-                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
-//                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
-                              }
+//                              var fieldname = z[i].name;
+//                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+//                              if (res != 'none') {
+//                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
+//                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+//                                 ko++;
+//                              } else {
+//                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+//                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
+//                              }
                   
                            } else if (z[i].value == 0 && ismultiplenumber == 'ismultiplenumber' && fieldmandatory == true) {
                               // add an 'invalid' class to the field:

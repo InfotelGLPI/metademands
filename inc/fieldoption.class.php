@@ -1297,9 +1297,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $fields = new PluginMetademandsField();
         $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid,'rank' => $blockid, 'is_mandatory' => 1]);
         if (is_array($fields_data) && count($fields_data) > 0) {
-
             foreach ($fields_data as $data) {
-
                 $id = $data['id'];
                 $script .= "$(\"[name='field[$id]\").attr('required', 'required');";
             }

@@ -54,8 +54,9 @@ if (empty($_GET['resources_id'])) {
         && !empty($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'])) {
         $_GET['resources_id'] = $_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields']['resources_id'];
     } elseif (isset($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields'])) {
+
         foreach ($_SESSION['plugin_metademands'][$_GET['metademands_id']]['fields'] as $fieldKey => $field) {
-            if (!is_array($field)) {
+            if (!is_array($field) && is_int($field)) {
                 $metademandsField = new PluginMetademandsField();
                 $metademandsField->getFromDB($fieldKey);
                 if ($metademandsField->getField('item') == 'PluginResourcesResource') {

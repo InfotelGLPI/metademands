@@ -390,7 +390,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                         });";
 
             $script .= "} else {";
-
+            //not checked
             $script .= "if($(this).val() == $idc){
                             if ($hidden_link in tohide) {
                             } else {
@@ -460,7 +460,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
             $hidden_block = $check_value['hidden_block'];
 
-            $script .= " if (this.checked){ ";
+            $script .= " if (this.checked) {";
 
             $script .= "if ($(this).val() == $idc || $idc == -1 ) {
                             if ($hidden_block in tohide) {
@@ -470,8 +470,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             tohide[$hidden_block] = false;
                         }";
 
-            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
+            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+            $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
 
             if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
                 && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
@@ -501,24 +501,16 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 }
             }
 
-//            $script .= "$.each( tohide, function( key, value ) {
-//                if(value == true){
-//                    $('[bloc-id =\"bloc'+key+'\"]').hide();
-//                    " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block) . "
-//                } else {
-//                    $('[bloc-id =\"bloc'+key+'\"]').show();
-//                }
-//            });";
+
             $script .= "$.each(tohide, function( key, value ) {
                         if (value == true) {
                         } else {
                             $('[bloc-id =\"bloc'+key+'\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
+//                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
                         }
                     });";
 
             $script .= " } else { ";
-            //                                        foreach ($hidden_block as $key => $fields) {
             $script .= "if($(this).val() == $idc){
                             if ($hidden_block in tohide) {
                             } else {

@@ -5663,7 +5663,7 @@ JAVASCRIPT
                         break;
 
                     case UPLOAD_ERR_NO_FILE:
-                        Session::addMessageAfterRedirect(__('No file specified.'), false, ERROR);
+                        Session::addMessageAfterRedirect(__('No file specified', 'metademands'), false, ERROR);
                         return false;
                         break;
                 }
@@ -5678,7 +5678,7 @@ JAVASCRIPT
                     $file = $picture_path;
                 } else {
                     Session::addMessageAfterRedirect(
-                        __('The file is not an image file.'),
+                        __('The file is not an XML file', 'metademands'),
                         false,
                         ERROR
                     );
