@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-21 13:22+0000\n"
+"POT-Creation-Date: 2023-07-21 17:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Form name is required"
 msgstr ""
 
-#: ajax/createmetademands.php:113 front/wizard.form.php:146
+#: ajax/createmetademands.php:113 front/wizard.form.php:147
 msgid "There is no line on the basket"
 msgstr ""
 
@@ -147,13 +147,13 @@ msgstr ""
 msgid "Empty option has been deleted"
 msgstr ""
 
-#: front/wizard.form.php:270 front/wizard.form.php:273
-#: front/wizard.form.php:275 front/wizard.form.php:508
-#: front/wizard.form.php:511 front/wizard.form.php:513 inc/menu.class.php:62
+#: front/wizard.form.php:271 front/wizard.form.php:274
+#: front/wizard.form.php:276 front/wizard.form.php:509
+#: front/wizard.form.php:512 front/wizard.form.php:514 inc/menu.class.php:62
 msgid "Create a demand"
 msgstr ""
 
-#: front/wizard.form.php:436
+#: front/wizard.form.php:437
 msgid "There is a problem with the basket"
 msgstr ""
 
@@ -901,6 +901,14 @@ msgstr ""
 msgid "Configure demands"
 msgstr ""
 
+#: inc/metademand.class.php:5666
+msgid "No file specified"
+msgstr ""
+
+#: inc/metademand.class.php:5681
+msgid "The file is not an XML file"
+msgstr ""
+
 #: inc/metademand.class.php:5969
 msgid "Metademand file to import"
 msgstr ""
@@ -1484,22 +1492,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:2837
+#: inc/wizard.class.php:2849
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2846
+#: inc/wizard.class.php:2858
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2893
+#: inc/wizard.class.php:2905
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2897
+#: inc/wizard.class.php:2909
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
