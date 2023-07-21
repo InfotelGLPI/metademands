@@ -1213,7 +1213,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 if ($line[$keys[0]]['type'] == 'title-block') {
 
                     $color = self::hex2rgba($line[$keys[0]]['color'], "0.03");
-                    $style_background = "style='background-color: $color!important;border-color: " . $line[$keys[0]]['color'] . "!important;border-radius: 0;'";
+                    $style_background = "style='background-color: $color!important;border-color: " . $line[$keys[0]]['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
 
                     if ($preview) {
                         echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";
@@ -1421,7 +1421,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     if ($data['type'] == 'title') {
                         if ($data['hide_title'] == 0) {
                             $color = self::hex2rgba($data['color'], "0.03");
-                            $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;'";
+                            $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
                             echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
                             echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
                             $icon = $data['icon'];

@@ -543,7 +543,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                         }";
 
             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
             if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
                 && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc
                     || ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != 0 && $idc == 0))) {
@@ -571,8 +571,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                     }
                 }
             }
-        }
-        $script .= "$.each( tohide, function( key, value ) {
+            $script .= "$.each( tohide, function( key, value ) {
                         if(value == true){
                             $('[bloc-id =\"bloc'+key+'\"]').hide();
                             " .PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block)."
@@ -581,12 +580,11 @@ class PluginMetademandsDropdown extends CommonDBTM
                             " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
                         }
                     });";
+        }
+
 
         foreach ($check_values as $idc => $check_value) {
-            $hidden_block = $check_value['hidden_block'];
-            if ($hidden_block > 0) {
-                $script2 .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
-            }
+
             $childs_blocks = [];
             if (isset($data['options'])) {
                 $opts = $data['options'];

@@ -753,7 +753,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         }";
 
                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
 
                 if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
                     && $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc) {
@@ -846,7 +846,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
 
                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
 
                 if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
                     && $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc) {
