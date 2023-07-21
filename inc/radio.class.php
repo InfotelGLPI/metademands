@@ -448,6 +448,8 @@ class PluginMetademandsRadio extends CommonDBTM
             }
             $script .= "$.each(tohide, function( key, value ) {
                         if (value == true) {
+                        $('[bloc-id =\"bloc'+key+'\"]').hide();
+                            " .PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block)."
                         } else {
                             $('[bloc-id =\"bloc'+key+'\"]').show();
                             " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
