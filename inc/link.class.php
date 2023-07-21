@@ -124,6 +124,13 @@ class PluginMetademandsLink extends CommonDBTM
         echo "</td></tr>";
     }
 
+    static function isCheckValueOK($value, $check_value)
+    {
+        if ((($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value))) {
+            return false;
+        }
+    }
+
     static function fieldsLinkScript($data, $idc, $rand)
     {
 

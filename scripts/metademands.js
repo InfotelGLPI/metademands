@@ -196,7 +196,6 @@
             obs = $("[name='" + toobserve + "']");
          }
 
-
          // console.log(obs.val());
          // console.log(check_value);
          //check_value is not an array

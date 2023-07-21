@@ -221,7 +221,27 @@ if (isset($_POST["add"])) {
                      'custom_values' => PluginMetademandsField::_serialize($custom_values)
                   ]);
 
-   Html::back();
+    $default_values = PluginMetademandsField::_unserialize($field->fields["default_values"]);
+
+    unset($default_values[$_POST['id']]);
+    $default_values = array_combine(range(1, count($default_values)), array_values($default_values));
+    $field->update([
+        'id'            => $_POST['plugin_metademands_fields_id'],
+        'default_values' => PluginMetademandsField::_serialize($default_values)
+    ]);
+
+    $comment_values = PluginMetademandsField::_unserialize($field->fields["comment_values"]);
+
+    unset($comment_values[$_POST['id']]);
+    $comment_values = array_combine(range(1, count($comment_values)), array_values($comment_values));
+    $field->update([
+        'id'            => $_POST['plugin_metademands_fields_id'],
+        'comment_values' => PluginMetademandsField::_serialize($comment_values)
+    ]);
+
+
+
+    Html::back();
 
 } else {
    $field->checkGlobal(READ);

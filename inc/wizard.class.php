@@ -1576,10 +1576,14 @@ class PluginMetademandsWizard extends CommonDBTM
                 // Fields linked
 
                 foreach ($line as $data) {
+
+                    //Active champs obligatoires sur les fields_link
                     PluginMetademandsFieldOption::fieldsLinkScript($data);
 
+                    //Active champs obligatoires sur les hidden_link
                     PluginMetademandsFieldOption::fieldsHiddenScript($data);
 
+                    //cache ou affiche les hidden_block & child_blocks
                     PluginMetademandsFieldOption::blocksHiddenScript($data);
 
                     PluginMetademandsFieldOption::checkboxScript($data);
@@ -2092,26 +2096,35 @@ class PluginMetademandsWizard extends CommonDBTM
                            && fieldtype != 'file'
                             && fieldtype != 'informations'
                            //                                    && fieldtype != 'hidden'
-                           && fieldmandatory == true) {
-//                            console.log(fieldtype);
+                            && fieldmandatory == true) {
+
                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-                  
-                           if (res != 'none' && y[i].value == '') {
-                              $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                              $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-//                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                              //hack for date
-                              $('[name=\"' + fieldname + '\"]').next('input').addClass('invalid');
-                              $('[name=\"' + fieldname + '\"]').next('input').attr('required', 'required');
-                              ko++;
-                           } else {
-                              $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                              $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                              //hack for date
-                              $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
-                              $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
-//                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
-                           }
+
+                           if (res != 'none') {
+                              if (y[i].value == '') {
+                                  $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                  $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+    //                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                                  //hack for date
+                                  $('[name=\"' + fieldname + '\"]').next('input').addClass('invalid');
+                                  $('[name=\"' + fieldname + '\"]').next('input').attr('required', 'required');
+                                  ko++;
+                               } else {
+                                    $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                    $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                                    //hack for date
+                                    $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
+                                    $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
+                                  
+    //                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                               }
+                            } else {
+                                $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                $('[name=\"' + fieldname + '\"]').removeAttr('required');
+//                                hack for date
+                                $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
+                                $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
+                            }
                         }
                         if (y[i].type == 'file' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
                             var inputPieceJointe = document.getElementById(fieldid);
@@ -2903,7 +2916,9 @@ class PluginMetademandsWizard extends CommonDBTM
         if (isset($post[$id])
             && $check_value != null
             && in_array($plugin_metademands_tasks_id, $metademandtasks_tasks_id)) {
+
             if (!PluginMetademandsTicket_Field::isCheckValueOK($post[$id], $check_value, $value['type'])) {
+
                 $metademandToHide = array_keys($metademandtasks_tasks_id, $plugin_metademands_tasks_id);
                 $_SESSION['metademands_hide'][$metademandToHide[0]] = $metademandToHide[0];
                 unset($_SESSION['son_meta'][$metademandToHide[0]]);

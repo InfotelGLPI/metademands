@@ -377,6 +377,136 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     }
 
+    static function getParamsValueToCheck($fieldoption, $item, $params)
+    {
+        echo "<tr>";
+        echo "<td>";
+        echo __('Value to check', 'metademands');
+        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+        echo "</td>";
+        echo "<td>";
+        self::showValueToCheck($fieldoption, $params);
+        echo "</td>";
+
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 1, 1);
+    }
+
+    static function showValueToCheck($item, $params)
+    {
+        $field = new PluginMetademandsFieldOption();
+        $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
+        $already_used = [];
+        if ($item->getID() == 0) {
+            foreach ($existing_options as $existing_option) {
+                $already_used[$existing_option["check_value"]] = $existing_option["check_value"];
+            }
+        }
+        switch ($params["item"]) {
+            case 'ITILCategory_Metademands':
+                $metademand = new PluginMetademandsMetademand();
+                $metademand->getFromDB($params["plugin_metademands_metademands_id"]);
+                $values = json_decode($metademand->fields['itilcategories_id']);
+
+                $name = "check_value";
+                $opt = ['name' => $name,
+                    'right' => 'all',
+                    'value' => $params['check_value'],
+                    'condition' => ["id" => $values],
+                    'display' => true,
+                    'used' => $already_used];
+                ITILCategory::dropdown($opt);
+
+                break;
+            default:
+                $dbu = new DbUtils();
+                if ($item = $dbu->getItemForItemtype($params["item"])
+                    && $params['type'] != "dropdown_multiple") {
+                    //               if ($params['value'] == 'group') {
+                    //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
+                    //               } else {
+                    $name = "check_value";
+                    //               }
+                    $params['item']::Dropdown(["name" => $name,
+                        "value" => $params['check_value'], 'used' => $already_used]);
+                } else {
+                    if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
+                        $elements[0] = Dropdown::EMPTY_VALUE;
+                        if (is_array(json_decode($params['custom_values'], true))) {
+                            $elements += json_decode($params['custom_values'], true);
+                        }
+                        foreach ($elements as $key => $val) {
+                            if ($key != 0) {
+                                $elements[$key] = $params["item"]::getFriendlyNameById($key);
+                            }
+                        }
+                    } else {
+                        $elements[0] = Dropdown::EMPTY_VALUE;
+                        if (is_array(json_decode($params['custom_values'], true))) {
+                            $elements += json_decode($params['custom_values'], true);
+                        }
+                        foreach ($elements as $key => $val) {
+                            $elements[$key] = urldecode($val);
+                        }
+                    }
+                    Dropdown::showFromArray(
+                        "check_value",
+                        $elements,
+                        ['value' => $params['check_value'], 'used' => $already_used]
+                    );
+                }
+                break;
+        }
+    }
+
+
+    static function showParamsValueToCheck($params)
+    {
+        switch ($params["item"]) {
+            case 'ITILCategory_Metademands':
+                echo Dropdown::getDropdownName('glpi_itilcategories', $params['check_value']);
+                break;
+            default:
+                $dbu = new DbUtils();
+                if ($item = $dbu->getItemForItemtype($params["item"])
+                    && $params['type'] != "dropdown_multiple") {
+                    echo Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
+                } else {
+                    if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
+                        $elements = [];
+                        if (is_array(json_decode($params['custom_values'], true))) {
+                            $elements += json_decode($params['custom_values'], true);
+                        }
+                        foreach ($elements as $key => $val) {
+                            if ($key != 0) {
+                                $elements[$key] = $params["item"]::getFriendlyNameById($key);
+                            }
+                        }
+                        echo $elements[$params['check_value']];
+                    } else {
+                        $elements = [];
+                        if (is_array(json_decode($params['custom_values'], true))) {
+                            $elements += json_decode($params['custom_values'], true);
+                        }
+                        foreach ($elements as $key => $val) {
+                            $elements[$key] = urldecode($val);
+                        }
+                        echo $elements[$params['check_value']] ?? "";
+                    }
+                }
+                break;
+        }
+    }
+
+    static function isCheckValueOK($value, $check_value)
+    {
+        if (($check_value == PluginMetademandsField::$not_null || $check_value == 0) && empty($value)) {
+            return false;
+        } else if ($check_value != $value
+            && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
+            return false;
+        }
+    }
+
     static function fieldsLinkScript($data, $idc, $rand) {
 
     }
@@ -420,7 +550,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $script .= "$.each( tohide, function( key, value ) {           
                         if(value == true){
                             $('[id-field =\"field'+key+'\"]').hide();
-                            " .PluginMetademandsFieldoption::getJStorersetFieldsByField($hidden_link)."
+                            " .PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link)."
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                         }else{
                             $('[id-field =\"field'+key+'\"]').show();
@@ -448,6 +578,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     public static function blocksHiddenScript($data)
     {
+        $metaid = $data['plugin_metademands_metademands_id'];
         $check_values = $data['options'];
         $id = $data["id"];
 
@@ -468,7 +599,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             tohide[$hidden_block] = false;
                         }";
 
-            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+
             if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
                 && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc
                     || ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != 0 && $idc == 0))) {
@@ -490,7 +623,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         if (is_array($childs)) {
                             foreach ($childs as $childs_block) {
                                 $script .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
-                                                            " .PluginMetademandsFieldoption::getJStorersetBlockFields($childs_block);
+                                                            " .PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
                             }
                         }
                     }
@@ -500,16 +633,17 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $script .= "$.each( tohide, function( key, value ) {
                         if(value == true){
                             $('[bloc-id =\"bloc'+key+'\"]').hide();
-                            " .PluginMetademandsFieldoption::getJStorersetBlockFields($hidden_block)."
+                            " .PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block)."
                         } else {
                             $('[bloc-id =\"bloc'+key+'\"]').show();
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
                         }
                     });";
 
         foreach ($check_values as $idc => $check_value) {
             $hidden_block = $check_value['hidden_block'];
             if ($hidden_block > 0) {
-                $script2 .= PluginMetademandsFieldoption::getJStorersetBlockFields($hidden_block);
+                $script2 .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
             }
             $childs_blocks = [];
             if (isset($data['options'])) {
@@ -530,7 +664,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         if (is_array($childs)) {
                             foreach ($childs as $k => $v) {
                                 if (!is_array($v)) {
-                                    $script .= PluginMetademandsFieldoption::getJStorersetBlockFields($v);
+                                    $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($v);
                                 }
                             }
                         }
@@ -550,26 +684,22 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     }
                 }
             }
-        }
-        $script .= "fixButtonIndicator();});";
-        //Initialize id default value
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_block = $check_value['hidden_block'];
-            if ($hidden_block > 0) {
-                $script2 .= PluginMetademandsFieldoption::getJStorersetBlockFields($hidden_block);
-            }
+            //Initialize id default value
             if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                 $default_values = PluginMetademandsField::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
                         if ($idc == $k) {
-                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
                         }
                     }
                 }
             }
         }
+        $script .= "fixButtonIndicator();});";
+
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
     }
 

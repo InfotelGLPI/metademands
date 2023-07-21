@@ -462,40 +462,52 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
 
         switch ($params['type']) {
-            case 'yesno':
-                $data[1] = __('No');
-                $data[2] = __('Yes');
-
-                // Value to check
-                echo "<tr>";
-                echo "<td>";
-                echo __('Value to check', 'metademands');
-                echo "</td>";
-                echo "<td>";
-                self::showValueToCheck($this, $params);
-                echo "</td>";
-
-                echo self::showLinkHtml($item->getID(), $params, 1, 1, 1);
-
+            case 'title':
                 break;
-
-            case 'dropdown':
-            case 'dropdown_object':
+            case 'title-block':
+                break;
+            case 'informations':
+                break;
+            case 'text':
+                PluginMetademandsText::getParamsValueToCheck($this, $item, $params);
+                break;
+            case 'textarea':
+                PluginMetademandsTextarea::getParamsValueToCheck($this, $item, $params);
+                break;
             case 'dropdown_meta':
-            case 'radio':
-            case 'checkbox':
+                PluginMetademandsDropdownmeta::getParamsValueToCheck($this, $item, $params);
+                break;
+            case 'dropdown_object':
+                PluginMetademandsDropdownobject::getParamsValueToCheck($this, $item, $params);
+                break;
+            case 'dropdown':
+                PluginMetademandsDropdown::getParamsValueToCheck($this, $item, $params);
+                break;
             case 'dropdown_multiple':
-                echo "<tr>";
-                echo "<td>";
-                echo __('Value to check', 'metademands');
-                echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
-                echo "</td>";
-                echo "<td>";
-                self::showValueToCheck($this, $params);
-                echo "</td>";
-
-                echo self::showLinkHtml($item->getID(), $params, 1, 1, 1);
-
+                PluginMetademandsDropdownmultiple::getParamsValueToCheck($this, $item, $params);
+                break;
+            case 'checkbox':
+                PluginMetademandsCheckbox::getParamsValueToCheck($this, $item, $params);
+                break;
+            case 'radio':
+                PluginMetademandsRadio::getParamsValueToCheck($this, $item, $params);
+                break;
+            case 'yesno':
+                PluginMetademandsYesno::getParamsValueToCheck($this, $item, $params);
+                break;
+            case 'number':
+                break;
+            case 'date':
+                break;
+            case 'date_interval':
+                break;
+            case 'datetime':
+                break;
+            case 'datetime_interval':
+                break;
+            case 'upload':
+                break;
+            case 'link':
                 break;
             case 'parent_field':
                 echo "<tr>";
@@ -507,19 +519,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                 echo "</td></tr>";
                 break;
-            case 'text':
-            case 'textarea':
-                echo "<tr>";
-                echo "<td>";
-                echo __('If field empty', 'metademands');
-                echo "</td>";
-                echo "<td>";
-                self::showValueToCheck($this, $params);
-                echo "</td>";
-
-                echo self::showLinkHtml($item->getID(), $params, 1, 0, 1);
-                break;
-
             default:
                 if (isset($PLUGIN_HOOKS['metademands'])) {
                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -630,121 +629,54 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
 
         switch ($params['type']) {
-            case 'textarea':
-            case 'text':
-            case 'yesno':
-                $options[1] = __('No');
-                $options[2] = __('Yes');
-                Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value'], 'used' => $already_used]);
+            case 'title':
                 break;
-            case 'dropdown':
-            case 'dropdown_object':
+            case 'title-block':
+                break;
+            case 'informations':
+                break;
+            case 'text':
+                PluginMetademandsText::showValueToCheck($item, $params);
+                break;
+            case 'textarea':
+                PluginMetademandsTextarea::showValueToCheck($item, $params);
+                break;
             case 'dropdown_meta':
+                PluginMetademandsDropdownmeta::showValueToCheck($item, $params);
+                break;
+            case 'dropdown_object':
+                PluginMetademandsDropdownobject::showValueToCheck($item, $params);
+            break;
+            case 'dropdown':
+                PluginMetademandsDropdown::showValueToCheck($item, $params);
+                break;
             case 'dropdown_multiple':
-                switch ($params["item"]) {
-                    case 'ITILCategory_Metademands':
-                        $metademand = new PluginMetademandsMetademand();
-                        $metademand->getFromDB($params["plugin_metademands_metademands_id"]);
-                        $values = json_decode($metademand->fields['itilcategories_id']);
-
-                        $name = "check_value";
-                        $opt = ['name' => $name,
-                            'right' => 'all',
-                            'value' => $params['check_value'],
-                            'condition' => ["id" => $values],
-                            'display' => true,
-                            'used' => $already_used];
-                        ITILCategory::dropdown($opt);
-
-                        break;
-                    case 'User':
-                        $userrand = mt_rand();
-                        $name = "check_value";
-                        User::dropdown(['name' => $name,
-                            'entity' => $_SESSION['glpiactiveentities'],
-                            'right' => 'all',
-                            'rand' => $userrand,
-                            'value' => $params['check_value'],
-                            'display' => true,
-                            'used' => $already_used
-                        ]);
-                        break;
-                    case 'Group':
-                        $name = "check_value";
-                        $cond = [];
-                        if (!empty($params['custom_values'])) {
-                            $options = $params['custom_values'];
-                            foreach ($options as $type_group => $values) {
-                                $cond[$type_group] = $values;
-                            }
-                        }
-                        Group::dropdown(['name' => $name,
-                            'entity' => $_SESSION['glpiactiveentities'],
-                            'value' => $params['check_value'],
-                            //                                            'readonly'  => true,
-                            'condition' => $cond,
-                            'display' => true,
-                            'used' => $already_used
-                        ]);
-                        break;
-                    default:
-                        $dbu = new DbUtils();
-                        if ($item = $dbu->getItemForItemtype($params["item"])
-                            && $params['type'] != "dropdown_multiple") {
-                            //               if ($params['value'] == 'group') {
-                            //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
-                            //               } else {
-                            $name = "check_value";
-                            //               }
-                            $params['item']::Dropdown(["name" => $name,
-                                "value" => $params['check_value'], 'used' => $already_used]);
-                        } else {
-                            if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
-                                $elements[0] = Dropdown::EMPTY_VALUE;
-                                if (is_array(json_decode($params['custom_values'], true))) {
-                                    $elements += json_decode($params['custom_values'], true);
-                                }
-                                foreach ($elements as $key => $val) {
-                                    if ($key != 0) {
-                                        $elements[$key] = $params["item"]::getFriendlyNameById($key);
-                                    }
-                                }
-                            } else {
-                                $elements[0] = Dropdown::EMPTY_VALUE;
-                                if (is_array(json_decode($params['custom_values'], true))) {
-                                    $elements += json_decode($params['custom_values'], true);
-                                }
-                                foreach ($elements as $key => $val) {
-                                    $elements[$key] = urldecode($val);
-                                }
-                            }
-                            Dropdown::showFromArray(
-                                "check_value",
-                                $elements,
-                                ['value' => $params['check_value'], 'used' => $already_used]
-                            );
-                        }
-                        break;
-                }
+                PluginMetademandsDropdownmultiple::showValueToCheck($item, $params);
                 break;
             case 'checkbox':
-            case 'radio':
-                $elements[-1] = Dropdown::EMPTY_VALUE;
-                if (is_array(json_decode($params['custom_values'], true))) {
-                    $elements += json_decode($params['custom_values'], true);
-                }
-                foreach ($elements as $key => $val) {
-                    $elements[$key] = urldecode($val);
-                }
-                Dropdown::showFromArray(
-                    "check_value",
-                    $elements,
-                    ['value' => $params['check_value'], 'used' => $already_used]
-                );
+                PluginMetademandsCheckbox::showValueToCheck($item, $params);
                 break;
-
+            case 'radio':
+                PluginMetademandsRadio::showValueToCheck($item, $params);
+                break;
+            case 'yesno':
+                PluginMetademandsYesno::showValueToCheck($item, $params);
+                break;
+            case 'number':
+                break;
+            case 'date':
+                break;
+            case 'date_interval':
+                break;
+            case 'datetime':
+                break;
+            case 'datetime_interval':
+                break;
+            case 'upload':
+                break;
+            case 'link':
+                break;
             case 'parent_field':
-
                 //list of fields
                 $fields = [];
                 $metademand_parent = new PluginMetademandsMetademand();
@@ -775,73 +707,54 @@ class PluginMetademandsFieldOption extends CommonDBChild
         global $PLUGIN_HOOKS;
 
         switch ($params['type']) {
-            case 'textarea':
+            case 'title':
+                break;
+            case 'title-block':
+                break;
+            case 'informations':
+                break;
             case 'text':
-            case 'yesno':
-                $options[1] = __('No');
-                $options[2] = __('Yes');
-                echo $options[$params['check_value']] ?? "";
+                PluginMetademandsText::showParamsValueToCheck($params);
+                break;
+            case 'textarea':
+                PluginMetademandsTextarea::showParamsValueToCheck($params);
+                break;
+            case 'dropdown_meta':
+                PluginMetademandsDropdownmeta::showParamsValueToCheck($params);
+                break;
+            case 'dropdown_object':
+                PluginMetademandsDropdownobject::showParamsValueToCheck($params);
                 break;
             case 'dropdown':
-            case 'dropdown_object':
-            case 'dropdown_meta':
+                PluginMetademandsDropdown::showParamsValueToCheck($params);
+                break;
             case 'dropdown_multiple':
-                switch ($params["item"]) {
-                    case 'ITILCategory_Metademands':
-                        echo Dropdown::getDropdownName('glpi_itilcategories', $params['check_value']);
-                        break;
-                    case 'User':
-                        echo getUserName($params['check_value']);
-                        break;
-                    case 'Group':
-                        echo Dropdown::getDropdownName('glpi_groups', $params['check_value']);
-                        break;
-                    default:
-                        $dbu = new DbUtils();
-                        if ($item = $dbu->getItemForItemtype($params["item"])
-                            && $params['type'] != "dropdown_multiple") {
-                            echo Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
-                        } else {
-                            if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
-                                $elements = [];
-                                if (is_array(json_decode($params['custom_values'], true))) {
-                                    $elements += json_decode($params['custom_values'], true);
-                                }
-                                foreach ($elements as $key => $val) {
-                                    if ($key != 0) {
-                                        $elements[$key] = $params["item"]::getFriendlyNameById($key);
-                                    }
-                                }
-                                echo $elements[$params['check_value']];
-                            } else {
-                                $elements = [];
-                                if (is_array(json_decode($params['custom_values'], true))) {
-                                    $elements += json_decode($params['custom_values'], true);
-                                }
-                                foreach ($elements as $key => $val) {
-                                    $elements[$key] = urldecode($val);
-                                }
-                                echo $elements[$params['check_value']] ?? "";
-                            }
-                        }
-                        break;
-                }
+                PluginMetademandsDropdownmultiple::showParamsValueToCheck($params);
                 break;
             case 'checkbox':
-            case 'radio':
-                $elements = [];
-                if (is_array(json_decode($params['custom_values'], true))) {
-                    $elements += json_decode($params['custom_values'], true);
-                }
-                foreach ($elements as $key => $val) {
-                    $elements[$key] = urldecode($val);
-                }
-                echo $elements[$params['check_value']] ?? 0;
-
+                PluginMetademandsCheckbox::showParamsValueToCheck($params);
                 break;
-
+            case 'radio':
+                PluginMetademandsRadio::showParamsValueToCheck($params);
+                break;
+            case 'yesno':
+                PluginMetademandsYesno::showParamsValueToCheck($params);
+                break;
+            case 'number':
+                break;
+            case 'date':
+                break;
+            case 'date_interval':
+                break;
+            case 'datetime':
+                break;
+            case 'datetime_interval':
+                break;
+            case 'upload':
+                break;
+            case 'link':
+                break;
             case 'parent_field':
-
                 $field = new PluginMetademandsField();
                 if ($field->getFromDB($params['parent_field_id'])) {
                     if (empty(trim($field->fields['name']))) {
@@ -850,9 +763,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                         echo $field->fields['name'];
                     }
                 }
-
                 break;
-
             default:
                 if (isset($PLUGIN_HOOKS['metademands'])) {
                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1159,8 +1070,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 $script .= "], '" . $data['item'] . "');";
                             }
 
-
-
                             echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
 
                         }
@@ -1340,7 +1249,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
-    public static function getJStorersetBlockFields($id)
+    public static function resetMandatoryBlockFields($id)
     {
 
         return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
@@ -1381,7 +1290,25 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     ";
     }
 
-    public static function getJStorersetFieldsByField($id)
+    public static function setMandatoryBlockFields($metaid, $blockid)
+    {
+
+        $script = '';
+        $fields = new PluginMetademandsField();
+        $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid,'rank' => $blockid, 'is_mandatory' => 1]);
+        if (is_array($fields_data) && count($fields_data) > 0) {
+
+            foreach ($fields_data as $data) {
+
+                $id = $data['id'];
+                $script .= "$(\"[name='field[$id]\").attr('required', 'required');";
+            }
+            $script .= "fixButtonIndicator();";
+        }
+        return $script;
+    }
+
+    public static function resetMandatoryFieldsByField($id)
     {
 
         return "$('div[id-field =\"field$id\"]').find(':input').each(function() {

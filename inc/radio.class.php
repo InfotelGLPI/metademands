@@ -123,7 +123,7 @@ class PluginMetademandsRadio extends CommonDBTM
                     foreach ($childs_blocks as $customvalue => $childs) {
                         if ($customvalue != $key) {
                             foreach ($childs as $k => $v) {
-                                $script .= PluginMetademandsFieldoption::getJStorersetBlockFields($v);
+                                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($v);
                                 $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
                             }
                         }
@@ -146,6 +146,9 @@ class PluginMetademandsRadio extends CommonDBTM
 
     static function showFieldCustomValues($values, $key, $params) {
 
+        $default_values = PluginMetademandsField::_unserialize($params['default_values']);
+        $comment_values = PluginMetademandsField::_unserialize($params['comment_values']);
+
         echo "<tr>";
         echo "<td>";
         if (is_array($values) && !empty($values)) {
@@ -166,8 +169,8 @@ class PluginMetademandsRadio extends CommonDBTM
                 echo "<p id='comment_values$key'>";
                 echo " " . __('Comment') . " ";
                 $value_comment = "";
-                if (isset($comment[$key])) {
-                    $value_comment = $comment[$key];
+                if (isset($comment_values[$key])) {
+                    $value_comment = $comment_values[$key];
                 }
                 $name = "comment_values[" . $key . "]";
                 echo Html::input($name, ['value' => $value_comment, 'size' => 30]);
@@ -178,7 +181,7 @@ class PluginMetademandsRadio extends CommonDBTM
                 echo "<p id='default_values$key'>";
                 echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                 $name  = "default_values[" . $key . "]";
-                $value = ($default[$key] ?? 0);
+                $value = ($default_values[$key] ?? 0);
                 Dropdown::showYesNo($name, $value);
                 echo '</p>';
                 echo "</td>";
@@ -244,6 +247,66 @@ class PluginMetademandsRadio extends CommonDBTM
 
     }
 
+    static function getParamsValueToCheck($fieldoption, $item, $params)
+    {
+        echo "<tr>";
+        echo "<td>";
+        echo __('Value to check', 'metademands');
+        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+        echo "</td>";
+        echo "<td>";
+        self::showValueToCheck($fieldoption, $params);
+        echo "</td>";
+
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 1, 1);
+    }
+
+    static function showValueToCheck($item, $params)
+    {
+        $field = new PluginMetademandsFieldOption();
+        $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
+        $already_used = [];
+        if ($item->getID() == 0) {
+            foreach ($existing_options as $existing_option) {
+                $already_used[$existing_option["check_value"]] = $existing_option["check_value"];
+            }
+        }
+        $elements[-1] = Dropdown::EMPTY_VALUE;
+        if (is_array(json_decode($params['custom_values'], true))) {
+            $elements += json_decode($params['custom_values'], true);
+        }
+        foreach ($elements as $key => $val) {
+            $elements[$key] = urldecode($val);
+        }
+        Dropdown::showFromArray(
+            "check_value",
+            $elements,
+            ['value' => $params['check_value'], 'used' => $already_used]
+        );
+    }
+
+    static function showParamsValueToCheck($params)
+    {
+        $elements = [];
+        if (is_array(json_decode($params['custom_values'], true))) {
+            $elements += json_decode($params['custom_values'], true);
+        }
+        foreach ($elements as $key => $val) {
+            $elements[$key] = urldecode($val);
+        }
+        echo $elements[$params['check_value']] ?? 0;
+
+    }
+
+    static function isCheckValueOK($value, $check_value)
+    {
+        if (empty($value) && $value != 0) {
+            return false;
+        } else if ($check_value != $value) {
+            return false;
+        }
+    }
+
     static function fieldsLinkScript($data, $idc, $rand) {
 
         $fields_link = $data['options'][$idc]['fields_link'];
@@ -283,7 +346,7 @@ class PluginMetademandsRadio extends CommonDBTM
         $script .= "$.each( tohide, function( key, value ) {
                         if(value == true){
                             $('[id-field =\"field'+key+'\"]').hide();
-                            " . PluginMetademandsFieldoption::getJStorersetFieldsByField($hidden_link) . "
+                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                         
                             $('[name =\"field['+key+']\"]').removeAttr('required');
                         } else {
@@ -322,6 +385,7 @@ class PluginMetademandsRadio extends CommonDBTM
 
     public static function blocksHiddenScript($data)
     {
+        $metaid = $data['plugin_metademands_metademands_id'];
         $check_values = $data['options'];
         $id = $data["id"];
 
@@ -331,6 +395,7 @@ class PluginMetademandsRadio extends CommonDBTM
         $script .= "var tohide = {};";
 
         foreach ($check_values as $idc => $check_value) {
+
             $hidden_block = $check_value['hidden_block'];
 
             $script .= "if ($hidden_block in tohide) {
@@ -340,45 +405,15 @@ class PluginMetademandsRadio extends CommonDBTM
                         if ($(this).val() == $idc || $idc == -1) {
                             tohide[$hidden_block] = false;
                         }";
-            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+
+            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
+            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
 
             if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
                 && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc || $idc == -1)) {
                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
             }
 
-            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
-                $childs_blocks = json_decode($check_value['childs_blocks'], true);
-
-                if (isset($childs_blocks)
-                    && is_array($childs_blocks)
-                    && count($childs_blocks) > 0) {
-                    foreach ($childs_blocks as $childs) {
-                        if (is_array($childs)) {
-                            foreach ($childs as $childs_block) {
-                                $script .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
-                                                            " . PluginMetademandsFieldoption::getJStorersetBlockFields($childs_block);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        $script .= "$.each(tohide, function( key, value ) {
-                        if (value == true) {
-                         $('[bloc-id =\"bloc'+key+'\"]').hide();
-                         " . PluginMetademandsFieldoption::getJStorersetBlockFields($hidden_block) . "
-                        } else {
-                            $('[bloc-id =\"bloc'+key+'\"]').show();
-                        }
-                    });";
-        $script .= "fixButtonIndicator();});";
-        //Initialize id default value
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_block = $check_value['hidden_block'];
-            if ($hidden_block > 0) {
-                $script2 .= PluginMetademandsFieldoption::getJStorersetBlockFields($hidden_block);
-            }
             //include child blocks
             if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
                 $childs_blocks = json_decode($check_value['childs_blocks'], true);
@@ -388,7 +423,8 @@ class PluginMetademandsRadio extends CommonDBTM
                     foreach ($childs_blocks as $childs) {
                         if (is_array($childs)) {
                             foreach ($childs as $childs_block) {
-                                $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();";
+                                $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
+                                        " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
                                 $hiddenblocks[] = $childs_block;
                                 $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
                             }
@@ -397,19 +433,32 @@ class PluginMetademandsRadio extends CommonDBTM
                 }
             }
 
-
+            //Initialize id default value
             if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                 $default_values = PluginMetademandsField::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
                         if ($idc == $k) {
-                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
                         }
                     }
                 }
             }
+            $script .= "$.each(tohide, function( key, value ) {
+                        if (value == true) {
+                        } else {
+                            $('[bloc-id =\"bloc'+key+'\"]').show();
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
+                        }
+                    });";
         }
+
+
+        $script .= "fixButtonIndicator();
+        });";
+
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
     }
 
@@ -455,7 +504,7 @@ class PluginMetademandsRadio extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td>";
             }
-            $result[$field['rank']]['content'] .= self::getFieldValue($field);
+            $result[$field['rank']]['content'] .= self::getFieldValue($field, $label, $lang);
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }

@@ -2521,6 +2521,8 @@ JAVASCRIPT
         $itemMove->getFromDBByCrit($crit);
 
         $custom_values = self::_unserialize($itemMove->fields["custom_values"]);
+        $default_values = self::_unserialize($itemMove->fields["default_values"]);
+        $comment_values = self::_unserialize($itemMove->fields["comment_values"]);
 
         if (isset($params['old_order']) && isset($params['new_order'])) {
             $old_order = $params['old_order'];
@@ -2529,11 +2531,15 @@ JAVASCRIPT
             $old_order = $old_order + 1;
             $new_order = $new_order + 1;
 
-            $new_values = $this->reorderArray($custom_values, $old_order, $new_order);
+            $new_custom_values = $this->reorderArray($custom_values, $old_order, $new_order);
+            $new_default_values = $this->reorderArray($default_values, $old_order, $new_order);
+            $new_comment_values = $this->reorderArray($comment_values, $old_order, $new_order);
 
             $itemMove->update([
                               'id'            => $params['field_id'],
-                              'custom_values' => self::_serialize($new_values)
+                              'custom_values' => self::_serialize($new_custom_values),
+                                'default_values' => self::_serialize($new_default_values),
+                                'comment_values' => self::_serialize($new_comment_values)
                            ]);
         }
     }

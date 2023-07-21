@@ -61,7 +61,7 @@ class PluginMetademandsDateinterval extends CommonDBTM
         $field = "<span style='width: 50%!important;display: -webkit-box;'>";
         $field .= Html::showDateField($namefield . "[" . $data['id'] . "]", ['value'    => $value,
             'display'  => false,
-            'required' => ($data['is_mandatory'] ? "required" : ""),
+            'required' => (bool)$data['is_mandatory'],
             'size'     => 40
         ]);
         $field .= "</span>";

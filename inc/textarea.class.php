@@ -97,6 +97,51 @@ class PluginMetademandsTextarea extends CommonDBTM
 
     }
 
+    static function getParamsValueToCheck($fieldoption, $item, $params)
+    {
+        echo "<tr>";
+        echo "<td>";
+        echo __('If field empty', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        self::showValueToCheck($fieldoption, $params);
+        echo "</td>";
+
+        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 0, 1);
+    }
+
+    static function showValueToCheck($item, $params)
+    {
+        $field = new PluginMetademandsFieldOption();
+        $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
+        $already_used = [];
+        if ($item->getID() == 0) {
+            foreach ($existing_options as $existing_option) {
+                $already_used[$existing_option["check_value"]] = $existing_option["check_value"];
+            }
+        }
+        $options[1] = __('No');
+        $options[2] = __('Yes');
+        Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value'], 'used' => $already_used]);
+    }
+
+    static function showParamsValueToCheck($params)
+    {
+        $options[1] = __('No');
+        $options[2] = __('Yes');
+        echo $options[$params['check_value']] ?? "";
+
+    }
+
+    static function isCheckValueOK($value, $check_value)
+    {
+        if (($check_value == 2 && $value != "")) {
+            return false;
+        } elseif ($check_value == 1 && $value == "") {
+            return false;
+        }
+    }
+
     static function fieldsLinkScript($data, $idc, $rand)
     {
 
@@ -118,7 +163,7 @@ class PluginMetademandsTextarea extends CommonDBTM
             if (isset($idc) && $idc == 1) {
                 $script .= "if ($(this).val().trim().length < 1) {
                                  $('[id-field =\"field" . $hidden_link . "\"]').hide();
-                                  " . PluginMetademandsFieldoption::getJStorersetFieldsByField($hidden_link) . "
+                                  " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                               } else {
                                  $('[id-field =\"field" . $hidden_link . "\"]').show();
                               }
@@ -134,7 +179,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                                 $('[id-field =\"field" . $hidden_link . "\"]').show();
                              } else {
                                 $('[id-field =\"field" . $hidden_link . "\"]').hide();
-                                 " . PluginMetademandsFieldoption::getJStorersetFieldsByField($hidden_link) . "
+                                 " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                              }";
 
                 $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
@@ -178,7 +223,7 @@ class PluginMetademandsTextarea extends CommonDBTM
             if (isset($idc) && $idc == 1) {
                 $script .= "if ($(this).val().trim().length < 1) {
                                 $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-                $script .= PluginMetademandsFieldoption::getJStorersetBlockFields($hidden_block);
+                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
                 $script .= "} else {
                              $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                           }";
@@ -194,7 +239,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                             } else {
                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-                $script .= PluginMetademandsFieldoption::getJStorersetBlockFields($hidden_block);
+                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
                 $script .= " }";
 
                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
@@ -223,7 +268,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                             if (is_array($childs)) {
                                 foreach ($childs as $k => $v) {
                                     if (!is_array($v)) {
-                                        $script .= PluginMetademandsFieldoption::getJStorersetBlockFields($v);
+                                        $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($v);
                                     }
                                 }
                             }
@@ -236,7 +281,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                             if (is_array($childs)) {
                                 foreach ($childs as $k => $v) {
                                     if (!is_array($v)) {
-                                        $script .= PluginMetademandsFieldoption::getJStorersetBlockFields($v);
+                                        $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($v);
                                     }
                                 }
                             }
@@ -256,12 +301,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                     }
                 }
             }
-        }
-        $script .= "fixButtonIndicator();";
-        $script .= "});";
-        //Initialize id default value
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_block = $check_value['hidden_block'];
+            //Initialize id default value
             if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                 $default_values = PluginMetademandsField::_unserialize($data['default_values']);
 
@@ -274,6 +314,9 @@ class PluginMetademandsTextarea extends CommonDBTM
                 }
             }
         }
+        $script .= "fixButtonIndicator();";
+        $script .= "});";
+
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
     }
 
