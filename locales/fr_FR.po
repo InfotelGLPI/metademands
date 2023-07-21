@@ -949,7 +949,7 @@ msgstr "Configurer les demandes"
 
 #: inc/metademand.class.php:5666
 msgid "No file specified"
-msgstr "Pas de fichier founi"
+msgstr "Pas de fichier fourni"
 
 #: inc/metademand.class.php:5681
 msgid "The file is not an XML file"
