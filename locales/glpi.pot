@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-21 18:07+0000\n"
+"POT-Creation-Date: 2023-07-24 09:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,7 +55,7 @@ msgid "Running metademands with tickets of my groups"
 msgstr ""
 
 #: setup.php:170 inc/menu.class.php:42 inc/metademand.class.php:87
-#: inc/profile.class.php:129 inc/profile.class.php:172 inc/tools.class.php:132
+#: inc/profile.class.php:129 inc/profile.class.php:173 inc/tools.class.php:132
 #: inc/tools.class.php:202
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -139,7 +139,7 @@ msgstr ""
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
-#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:72
+#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:82
 msgid "Continue metademand"
 msgstr ""
 
@@ -149,7 +149,8 @@ msgstr ""
 
 #: front/wizard.form.php:271 front/wizard.form.php:274
 #: front/wizard.form.php:276 front/wizard.form.php:509
-#: front/wizard.form.php:512 front/wizard.form.php:514 inc/menu.class.php:62
+#: front/wizard.form.php:512 front/wizard.form.php:514 inc/menu.class.php:56
+#: inc/menu.class.php:61
 msgid "Create a demand"
 msgstr ""
 
@@ -197,7 +198,7 @@ msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/checkbox.class.php:253 inc/dropdown.class.php:345
+#: inc/checkbox.class.php:253 inc/dropdown.class.php:148
 #: inc/dropdownmeta.class.php:384 inc/dropdownmultiple.class.php:451
 #: inc/dropdownobject.class.php:344 inc/field.class.php:1208
 #: inc/fieldoption.class.php:228 inc/radio.class.php:254
@@ -205,7 +206,7 @@ msgstr[1] ""
 msgid "Value to check"
 msgstr ""
 
-#: inc/checkbox.class.php:254 inc/dropdown.class.php:346
+#: inc/checkbox.class.php:254 inc/dropdown.class.php:149
 #: inc/dropdownmeta.class.php:385 inc/dropdownmultiple.class.php:452
 #: inc/dropdownobject.class.php:345 inc/radio.class.php:255
 msgid "Not null value"
@@ -701,7 +702,7 @@ msgid "Informations"
 msgstr ""
 
 #: inc/interticketfollowup.class.php:48 inc/interticketfollowup.class.php:76
-#: inc/profile.class.php:178
+#: inc/profile.class.php:179
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] ""
@@ -727,7 +728,7 @@ msgstr ""
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
-#: inc/menu.class.php:67
+#: inc/menu.class.php:77
 msgid "Import metademands"
 msgstr ""
 
@@ -1120,11 +1121,11 @@ msgid_plural "Rights management"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/profile.class.php:134 inc/profile.class.php:184
-msgid "Right to update the requester of a meta-demand"
+#: inc/profile.class.php:135 inc/profile.class.php:185
+msgid "Create a meta-demand"
 msgstr ""
 
-#: inc/profile.class.php:141 inc/profile.class.php:188
+#: inc/profile.class.php:142 inc/profile.class.php:189
 msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
@@ -1492,22 +1493,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:2849
+#: inc/wizard.class.php:2914
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2858
+#: inc/wizard.class.php:2923
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2905
+#: inc/wizard.class.php:2970
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2909
+#: inc/wizard.class.php:2974
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
