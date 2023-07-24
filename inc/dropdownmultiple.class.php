@@ -66,16 +66,39 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
         if ($data['item'] == User::getType()) {
             $self = new PluginMetademandsField();
-            $data['custom_values'] = [];
+//            $data['custom_values'] = [];
             $criteria = $self->getDistinctUserCriteria() + $self->getProfileJoinCriteria();
             $criteria['FROM'] = User::getTable();
             $criteria['WHERE'][User::getTable() . '.is_deleted'] = 0;
             $criteria['WHERE'][User::getTable() . '.is_active'] = 1;
             $criteria['ORDER'] = ['NAME ASC'];
+
+            if (!empty($data['custom_values'])) {
+                $options = PluginMetademandsField::_unserialize($data['custom_values']);
+
+                if (isset($options['user_group']) && $options['user_group'] == 1) {
+                    $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
+                    $group_user_data = Group_User::getUserGroups(Session::getLoginUserID(), $condition);
+
+                    $requester_users = [];
+                    foreach ($group_user_data as $groups) {
+                        $requester_users = Group_User::getGroupUsers($groups['id']);
+                    }
+
+                    $users = [];
+                    foreach ($requester_users as $k => $v) {
+                        $users[] = $v['id'];
+                    }
+
+                    $criteria['WHERE'][User::getTable() . '.id'] = $users;
+                }
+            }
+
             $iterator = $DB->request($criteria);
 
+            $list = [];
             foreach ($iterator as $datau) {
-                $data['custom_values'][$datau['users_id']] = getUserName($datau['users_id']);
+                $list[$datau['users_id']] = getUserName($datau['users_id']);
             }
 
             if (!empty($value) && !is_array($value)) {
@@ -93,8 +116,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $field .= "<div class=\"zone\">
                                    <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
 
-                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
-                    foreach ($data['custom_values'] as $k => $val) {
+                if (is_array($list) && count($list) > 0) {
+                    foreach ($list as $k => $val) {
                         if (!in_array($k, $value)) {
                             $field .= "<option value=\"$k\" >$val</option>";
                         }
@@ -198,7 +221,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             } else {
                 $field = Dropdown::showFromArray(
                     $namefield . "[" . $data['id'] . "]",
-                    $data['custom_values'],
+                    $list,
                     ['values' => $value,
                         'width' => '250px',
                         'multiple' => true,

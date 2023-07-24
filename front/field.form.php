@@ -39,16 +39,16 @@ $field = new PluginMetademandsField();
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
     && isset($_POST['item']) && ($_POST['item'] == 'Group'
        || $_POST['item'] == 'User')) {
-   if (isset($_POST['is_assign']) && $_POST['is_assign'] > 0) {
+   if (isset($_POST['is_assign'])) {
       $custom_values['is_assign'] = $_POST['is_assign'];
    }
-   if (isset($_POST['is_watcher']) && $_POST['is_watcher'] > 0) {
+   if (isset($_POST['is_watcher'])) {
       $custom_values['is_watcher'] = $_POST['is_watcher'];
    }
-   if (isset($_POST['is_requester']) && $_POST['is_requester'] > 0) {
+   if (isset($_POST['is_requester'])) {
       $custom_values['is_requester'] = $_POST['is_requester'];
    }
-    if (isset($_POST['user_group']) && $_POST['user_group'] > 0) {
+    if (isset($_POST['user_group'])) {
         $custom_values['user_group'] = $_POST['user_group'];
     }
 }
@@ -154,6 +154,13 @@ if (isset($_POST["add"])) {
    if (!isset($_POST['item'])) {
       $_POST['item'] = "";
    }
+    if (isset($_POST['type']) && $_POST['type'] == 'dropdown_multiple'
+        && isset($_POST['item']) && $_POST['item'] == 'User') {
+        if (isset($_POST['user_group'])) {
+            $custom_values['user_group'] = $_POST['user_group'];
+            $_POST["custom_values"]  = PluginMetademandsField::_serialize($custom_values);
+        }
+    }
 
    //    Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
@@ -162,6 +169,7 @@ if (isset($_POST["add"])) {
    if ($_POST['type'] == 'yesno') {
        unset($_POST['default_values']);
    }
+
 
    if ($field->update($_POST)) {
       $field->recalculateOrder($_POST);

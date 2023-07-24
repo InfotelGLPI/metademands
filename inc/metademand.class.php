@@ -1942,9 +1942,9 @@ JAVASCRIPT
                         $parent_fields['_users_id_requester'] = Session::getLoginUserID();
                     }
 
-                    $default_use_notif = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
-                    $parent_fields['_users_id_requester_notif'] = ['use_notification' => $default_use_notif,
-                        'alternative_email' => ''];
+//                    $default_use_notif = Entity::getUsedConfig('is_notif_enable_default', $parent_fields['entities_id'], '', 1);
+//                    $parent_fields['_users_id_requester_notif'] = ['use_notification' => $default_use_notif,
+//                        'alternative_email' => ''];
 
 
                     // Get predefined ticket fields

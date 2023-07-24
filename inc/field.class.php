@@ -580,8 +580,10 @@ JAVASCRIPT
             // user_group
             Dropdown::showYesNo('user_group', $user_group);
             echo "</td>";
-        } elseif ($this->fields['type'] == "dropdown_object"
-                 && $this->fields["item"] == "User") {
+        } elseif (($this->fields['type'] == "dropdown_object"
+                 && $this->fields["item"] == "User")
+        || ($this->fields['type'] == "dropdown_multiple"
+                && $this->fields["item"] == "User")) {
             $custom_values = self::_unserialize($this->fields['custom_values']);
             $user_group  = $custom_values['user_group'] ?? 0;
             echo "<td></td>";
@@ -641,8 +643,10 @@ JAVASCRIPT
            //            'time_to_resolve',
            //         ];
             $granted_fields = [];
-            if ($this->fields['type'] == "dropdown_object"
-             && $this->fields["item"] == "User") {
+            if (($this->fields['type'] == "dropdown_object"
+             && $this->fields["item"] == "User")
+                || ($this->fields['type'] == "dropdown_multiple"
+                    && $this->fields["item"] == "User")) {
                 //Valideur
                 $allowed_fields[59] = __('Approver');
                 $granted_fields     = [
@@ -2066,7 +2070,7 @@ JAVASCRIPT
     */
     public static function getFieldInput($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0)
     {
-        global $DB, $PLUGIN_HOOKS;
+        global $PLUGIN_HOOKS;
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);

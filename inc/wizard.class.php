@@ -2223,12 +2223,19 @@ class PluginMetademandsWizard extends CommonDBTM
                             fieldmandatory = w[y].required;
                             var fieldname = w[y].name;
                             var fieldid = w[y].id;
+                            
                             var textarea = w[y];
                             var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                            //hack for tinymce
+                            if (document.querySelector('.tox-tinymce') !== null) {
+                               if(document.querySelector('.tox-tinymce').classList.contains('required')) {
+                                  fieldmandatory = true;
+                               }
+                                
+                            }
                             if (res != 'none' && fieldmandatory == true) {
                                 if (typeof tinymce !== 'undefined' && tinymce.get(textarea.id)) {
                                     var contenu = tinymce.get(textarea.id).getContent();
-    
                                     // Vérifier si le contenu est vide
                                     if (contenu.trim() !== '') {
                                        $('[name=\"' + fieldname + '\"]').removeClass('invalid');
@@ -2238,7 +2245,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                         $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                         $('[name=\"' + fieldname + '\"]').attr('required', 'required');
                                         $('[name=\"' + fieldname + '\"]').next().css('border','solid 1px red');
-                                        var newfieldname = fieldid.match(/\[(.*?)\]/);
+                                        var newfieldname = fieldname.match(/\[(.*?)\]/);
+                                        
                                         if (newfieldname) {
                                             mandatory.push(newfieldname[1]);
                                         }
