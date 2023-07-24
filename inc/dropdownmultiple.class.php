@@ -111,9 +111,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                </div>";
 
                 $required = "";
-                //               if ($data['is_mandatory'] == 1) {
-                //                  $required = "required=required";
-                //               }
+                if ($data['is_mandatory'] == 1) {
+                    $required = "required=required";
+                }
                 $field .= "<div class=\"zone\">
                                    <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                 if (is_array($value) && count($value) > 0) {
@@ -259,9 +259,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                </div>";
 
                     $required = "";
-                    //                     if ($data['is_mandatory'] == 1) {
-                    //                        $required = "required=required";
-                    //                     }
+                    if ($data['is_mandatory'] == 1) {
+                        $required = "required=required";
+                    }
                     $field .= "<div class=\"zone\">
                                    <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                     foreach ($data['custom_values'] as $k => $val) {
@@ -417,7 +417,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 //                     echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
                 echo "<p id='default_values$key'>";
                 echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                $name  = "default_values[" . $key . "]";
+                $name = "default_values[" . $key . "]";
                 $value = ($default_values[$key] ?? 0);
                 Dropdown::showYesNo($name, $value);
                 echo '</p>';
@@ -584,9 +584,14 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
         if ($data["display_type"] == self::CLASSIC_DISPLAY) {
 
-            $script = "console.log('fieldsHiddenScript-dropdownmultiple $id');
-                    $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $script = "";
             $script2 = "";
+            $debug = (isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+            if ($debug) {
+                $script = "console.log('fieldsHiddenScript-dropdownmultiple $id');";
+            }
+            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
             $script .= "var tohide = {};";
@@ -627,12 +632,13 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             $script .= "$.each( tohide, function( key, value ) {
-                            if(value == true){
+                            if (value == true) {
                                 $('[id-field =\"field'+key+'\"]').hide();
                                 " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                                 $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();
+                                " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
                             }
                         });";
 
@@ -655,10 +661,18 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
             echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
         } else {
-            $script = "console.log('fieldsHiddenScript-dropdownmultiple $id');
-                        $('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
-            $script .= "var tohide = {};";
+
+            $script = "";
             $script2 = "";
+            $debug = (isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+            if ($debug) {
+                $script = "console.log('fieldsHiddenScript-dropdownmultiple $id');";
+            }
+            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
+
+            $script .= "var tohide = {};";
+
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
 
@@ -688,14 +702,14 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
 
-
             $script .= "$.each( tohide, function( key, value ) {
-                            if(value == true){
+                            if (value == true) {
                                 $('[id-field =\"field'+key+'\"]').hide();
                                 " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                                 $('[name =\"field['+key+']\"]').removeAttr('required');
-                            }else{
+                            } else {
                                 $('[id-field =\"field'+key+'\"]').show();
+                                " . PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link) . "
                             }
                         });";
             $script .= "});";
@@ -728,9 +742,14 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
         if ($data["display_type"] == self::CLASSIC_DISPLAY) {
 
-            $script = "console.log('blocksHiddenScript-dropdownmultiple $id');
-                $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $script = "";
             $script2 = "";
+            $debug = (isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+            if ($debug) {
+                $script = "console.log('blocksHiddenScript-dropdownmultiple $id');";
+            }
+            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
             $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
             $script .= "var tohide = {};";
@@ -816,9 +835,14 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
         } else {
 
-            $script = "console.log('blocksHiddenScript-dropdownmultiple $id');
-                $('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
+            $script = "";
             $script2 = "";
+            $debug = (isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+            if ($debug) {
+                $script = "console.log('blocksHiddenScript-dropdownmultiple $id');";
+            }
+            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
 
             $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
             $script .= "var tohide = {};";
@@ -865,10 +889,10 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $script .= "$.each( tohide, function( key, value ) {
                         if(value == true){
                             $('[bloc-id =\"bloc'+key+'\"]').hide();
-                            " .PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block)."
+                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block) . "
                         } else {
                             $('[bloc-id =\"bloc'+key+'\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
                         }
                     });";
 
@@ -882,7 +906,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             if (is_array($childs)) {
                                 foreach ($childs as $childs_block) {
                                     $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
-                                                            " .PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
+                                                            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
                                     $hiddenblocks[] = $childs_block;
                                     $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
                                 }

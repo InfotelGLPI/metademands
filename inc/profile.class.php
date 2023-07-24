@@ -92,8 +92,8 @@ class PluginMetademandsProfile extends Profile
 
             $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
                        'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
-                       'plugin_metademands_requester'  => 1,
-                       'plugin_metademands_updatemeta' => 1];
+                       'plugin_metademands_updatemeta' => 1,
+                'plugin_metademands_createmeta' => 1];
 
             self::addDefaultProfileInfos($ID, $rights);
             $prof->showForm($ID);
@@ -129,12 +129,13 @@ class PluginMetademandsProfile extends Profile
                                                       'title'         => _n('Meta-Demand', 'Meta-Demands', 2, 'metademands')]);
 
         echo "<table class='tab_cadre_fixehov'>";
-        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_requester']);
+
+        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_createmeta']);
         echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>" . __('Right to update the requester of a meta-demand', 'metademands') . "</td>";
+        echo "<td width='20%'>" . __('Create a meta-demand', 'metademands') . "</td>";
         echo "<td colspan='5'>";
-        Html::showCheckbox(['name'    => '_plugin_metademands_requester[1_0]',
-                            'checked' => $effective_rights['plugin_metademands_requester']]);
+        Html::showCheckbox(['name'    => '_plugin_metademands_createmeta[1_0]',
+            'checked' => $effective_rights['plugin_metademands_createmeta']]);
         echo "</td></tr>\n";
 
         echo "<tr class='tab_bg_2'>";
@@ -181,8 +182,8 @@ class PluginMetademandsProfile extends Profile
 
         if ($all) {
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
-                         'label'    => __('Right to update the requester of a meta-demand', 'metademands'),
-                         'field'    => 'plugin_metademands_requester'
+                'label'    => __('Create a meta-demand', 'metademands'),
+                'field'    => 'plugin_metademands_createmeta'
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
                          'label'    => __('Right to update a meta-demand form from the ticket', 'metademands'),
@@ -260,8 +261,7 @@ class PluginMetademandsProfile extends Profile
         $datas = $dbu->getAllDataFromTable('glpi_plugin_metademands_profiles');
 
         foreach ($datas as $profile_data) {
-            $matching = ['metademands' => 'plugin_metademands',
-                         'requester'   => 'plugin_metademands_requester'];
+            $matching = ['metademands' => 'plugin_metademands'];
             // Search existing rights
             $used           = [];
             $existingRights = $dbu->getAllDataFromTable(
@@ -329,8 +329,8 @@ class PluginMetademandsProfile extends Profile
     {
         $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
                    'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
-                   'plugin_metademands_requester'  => 1,
-                   'plugin_metademands_updatemeta' => 1];
+                   'plugin_metademands_updatemeta' => 1,
+            'plugin_metademands_createmeta' => 1];
 
         self::addDefaultProfileInfos(
             $profiles_id,

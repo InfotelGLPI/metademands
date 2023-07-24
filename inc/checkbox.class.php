@@ -350,9 +350,16 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
         $check_values = $data['options'];
         $id = $data["id"];
-        $script = "console.log('fieldsHiddenScript-checkbox $id');
-                $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
+        $script = "";
         $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('fieldsHiddenScript-checkbox $id');";
+        }
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
         $script .= "var tohide = {};";
 
         foreach ($check_values as $idc => $check_value) {
@@ -386,6 +393,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                 $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                 $('[id-field =\"field'+key+'\"]').show();
+//                                " .PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link)."
                             }
                         });";
 
@@ -407,10 +415,10 @@ class PluginMetademandsCheckbox extends CommonDBTM
                             if (value == true) {
                                $('[id-field =\"field'+key+'\"]').hide();
                                " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
-                               
                                $('[name =\"field['+key+']\"]').removeAttr('required');
                             } else {
                                $('[id-field =\"field'+key+'\"]').show();
+//                               " .PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link)."
                             }
                          });";
             $script .= "}";
@@ -451,9 +459,16 @@ class PluginMetademandsCheckbox extends CommonDBTM
         $metaid = $data['plugin_metademands_metademands_id'];
         $check_values = $data['options'];
         $id = $data["id"];
-        $script = "console.log('blocksHiddenScript-checkbox $id');
-                    $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
+        $script = "";
         $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('blocksHiddenScript-checkbox $id');";
+        }
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
         $script .= "var tohide = {};";
 
         foreach ($check_values as $idc => $check_value) {
@@ -501,16 +516,16 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 }
             }
 
-
             $script .= "$.each(tohide, function( key, value ) {
                         if (value == true) {
                         } else {
                             $('[bloc-id =\"bloc'+key+'\"]').show();
-//                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
                         }
                     });";
 
             $script .= " } else { ";
+
             $script .= "if($(this).val() == $idc){
                             if ($hidden_block in tohide) {
                             } else {

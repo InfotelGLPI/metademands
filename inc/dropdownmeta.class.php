@@ -513,15 +513,21 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     static function fieldsHiddenScript($data) {
 
+        $metaid = $data['plugin_metademands_metademands_id'];
         $check_values = $data['options'];
         $id = $data["id"];
 
         $name = "field[" . $data["id"] . "]";
-        $script = "console.log('fieldsHiddenScript-dropdown $id');
-                $('[name=\"$name\"]').change(function() {";
 
-
+        $script = "";
         $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('fieldsHiddenScript-dropdown $id');";
+        }
+        $script .= "$('[name=\"$name\"]').change(function() {";
+
         $script .= "var tohide = {};";
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
@@ -539,21 +545,16 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc
                     || ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != 0 && $idc == 0))) {
                 $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-            } else {
-                if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
-                    if (Session::getLoginUserID() == $idc) {
-                        $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-                    }
-                }
             }
         }
         $script .= "$.each( tohide, function( key, value ) {           
-                        if(value == true){
+                        if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             " .PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link)."
                             $('[name =\"field['+key+']\"]').removeAttr('required');
-                        }else{
+                        } else {
                             $('[id-field =\"field'+key+'\"]').show();
+                            " .PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link)."
                         }
                     });
               });";
@@ -584,9 +585,15 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
         $name = "field[" . $data["id"] . "]";
 
-        $script = "console.log('blocksHiddenScript-dropdown $id');
-                    $('[name=\"$name\"]').change(function() { ";
+        $script = "";
         $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('blocksHiddenScript-dropdown $id');";
+        }
+        $script .= "$('[name=\"$name\"]').change(function() {";
+
         $script .= "var tohide = {};";
         foreach ($check_values as $idc => $check_value) {
             $hidden_block = $check_value['hidden_block'];
@@ -606,12 +613,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc
                     || ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != 0 && $idc == 0))) {
                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-            } else {
-                if ($data['type'] == "dropdown_object" && $data['item'] == 'User') {
-                    if (Session::getLoginUserID() == $idc) {
-                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                    }
-                }
             }
 
             if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {

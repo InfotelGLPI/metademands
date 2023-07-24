@@ -163,14 +163,22 @@ class PluginMetademandsYesno extends CommonDBTM
 
         $check_values = $data['options'];
         $id = $data["id"];
+
+        $script = "";
         $script2 = "";
-        $script = "console.log('fieldsHiddenScript-yesno $id');
-                $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('fieldsHiddenScript-yesno $id');";
+        }
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $data['options'][$idc]['hidden_link'];
             $val = Toolbox::addslashes_deep($idc);
             $script .= "if ($(this).val() == $val) {
                              $('[id-field =\"field" . $hidden_link . "\"]').show();
+                            " .PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link)."
                            } else {
                             $('[id-field =\"field" . $hidden_link . "\"]').hide();
                             " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
@@ -203,8 +211,7 @@ class PluginMetademandsYesno extends CommonDBTM
 
                 if (is_array($childs_blocks)) {
                     if (count($childs_blocks) > 0) {
-                        $script .= "
-                                            if($(this).val() != $idc){";
+                        $script .= "if ($(this).val() != $idc) {";
                         foreach ($childs_blocks as $childs) {
                             if (is_array($childs)) {
                                 foreach ($childs as $k => $v) {
@@ -259,8 +266,13 @@ class PluginMetademandsYesno extends CommonDBTM
         $id = $data["id"];
 
         $script2 = "";
-        $script = "console.log('blocksHiddenScript-yesno $id');
-                $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $script = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('blocksHiddenScript-yesno $id');";
+        }
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         foreach ($check_values as $idc => $check_value) {
             $hidden_block = $data['options'][$idc]['hidden_block'];

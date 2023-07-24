@@ -495,11 +495,16 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         $id = $data["id"];
 
         $name = "field[" . $data["id"] . "]";
-        $script = "console.log('fieldsHiddenScript-dropdown $id');
-                $('[name=\"$name\"]').change(function() {";
 
-
+        $script = "";
         $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('fieldsHiddenScript-dropdown $id');";
+        }
+        $script .= "$('[name=\"$name\"]').change(function() {";
+
         $script .= "var tohide = {};";
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
@@ -526,12 +531,13 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             }
         }
         $script .= "$.each( tohide, function( key, value ) {           
-                        if(value == true){
+                        if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             " .PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link)."
                             $('[name =\"field['+key+']\"]').removeAttr('required');
-                        }else{
+                        } else {
                             $('[id-field =\"field'+key+'\"]').show();
+                            " .PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link)."
                         }
                     });
               });";
@@ -562,9 +568,15 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
         $name = "field[" . $data["id"] . "]";
 
-        $script = "console.log('blocksHiddenScript-dropdown $id');
-                    $('[name=\"$name\"]').change(function() { ";
+        $script = "";
         $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('blocksHiddenScript-dropdown $id');";
+        }
+        $script .= "$('[name=\"$name\"]').change(function() {";
+
         $script .= "var tohide = {};";
         foreach ($check_values as $idc => $check_value) {
             $hidden_block = $check_value['hidden_block'];

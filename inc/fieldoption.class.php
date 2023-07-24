@@ -1249,6 +1249,25 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
+    public static function setMandatoryBlockFields($metaid, $blockid)
+    {
+
+        $script = '';
+        $fields = new PluginMetademandsField();
+        $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid,'rank' => $blockid, 'is_mandatory' => 1]);
+        if (is_array($fields_data) && count($fields_data) > 0) {
+            foreach ($fields_data as $data) {
+                $id = $data['id'];
+                $script .= "$(\"[name='field[$id]']\").attr('required', 'required');
+//                $(\"[name='field[$id]']\").css('border','solid 1px red');
+//                $(\"[name='field[$id]']\").next().css('border','solid 1px red');
+";
+            }
+            $script .= "fixButtonIndicator();";
+        }
+        return $script;
+    }
+
     public static function resetMandatoryBlockFields($id)
     {
 
@@ -1290,16 +1309,19 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     ";
     }
 
-    public static function setMandatoryBlockFields($metaid, $blockid)
+
+    public static function setMandatoryFieldsByField($field_id, $hidden_link)
     {
 
+        //cannot be used for multples valus like checkbox or radio
         $script = '';
-        $fields = new PluginMetademandsField();
-        $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid,'rank' => $blockid, 'is_mandatory' => 1]);
+        $fieldoptions = new PluginMetademandsFieldOption();
+        $fields_data = $fieldoptions->find(['plugin_metademands_fields_id' => $field_id,'hidden_link' => $hidden_link]);
         if (is_array($fields_data) && count($fields_data) > 0) {
             foreach ($fields_data as $data) {
-                $id = $data['id'];
-                $script .= "$(\"[name='field[$id]\").attr('required', 'required');";
+                if ($data['fields_link'] == $hidden_link) {
+                    $script .= "$(\"[name='field[$hidden_link]']\").attr('required', 'required');";
+                }
             }
             $script .= "fixButtonIndicator();";
         }

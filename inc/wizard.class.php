@@ -1580,7 +1580,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     //Active champs obligatoires sur les fields_link
                     PluginMetademandsFieldOption::fieldsLinkScript($data);
 
-                    //Active champs obligatoires sur les hidden_link
+                    //Affiche les hidden_link
                     PluginMetademandsFieldOption::fieldsHiddenScript($data);
 
                     //cache ou affiche les hidden_block & child_blocks
@@ -1789,6 +1789,18 @@ class PluginMetademandsWizard extends CommonDBTM
                         $updateStepform = 1;
                     }
                 }
+
+                //used for display mandatory fields on popup
+                $fields = new PluginMetademandsField();
+                $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+                $all_meta_fields = [];
+                if (is_array($fields_data) && count($fields_data) > 0) {
+                    foreach ($fields_data as $data) {
+                        $all_meta_fields[$data['id']] = $data['hide_title'] == 1 ? PluginMetademandsField::getFieldTypesName($data['type']) : $data['name'];
+                    }
+                }
+                $json_all_meta_fields = json_encode($all_meta_fields);
+
                 echo "<script>
                   var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
@@ -1800,6 +1812,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   var seesummary = '$see_summary';
                   var hiddenblocs = {$json_hidden_blocks};
                   var msg = '$alert';
+                  var all_meta_fields = {$json_all_meta_fields};
                   var firstnumTab = 0;
                   var currentTab = 0; // Current tab is set to be the first tab (0)
                   findFirstTab($block_id);
@@ -2081,7 +2094,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      y = x[currentTab].getElementsByTagName('input');
                      z = x[currentTab].getElementsByTagName('select');
                      w = x[currentTab].getElementsByTagName('textarea');
-                  
+                     var mandatory = [];
                      // A loop that checks every input field in the current tab:
                      for (i = 0; i < y.length; i++) {
                   
@@ -2108,6 +2121,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                   //hack for date
                                   $('[name=\"' + fieldname + '\"]').next('input').addClass('invalid');
                                   $('[name=\"' + fieldname + '\"]').next('input').attr('required', 'required');
+                                  var newfieldname = fieldname.match(/\[(.*?)\]/);
+                                  if (newfieldname) {
+                                     mandatory.push(newfieldname[1]);
+                                  }
                                   ko++;
                                } else {
                                     $('[name=\"' + fieldname + '\"]').removeClass('invalid');
@@ -2136,6 +2153,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                $('[name=\"' + fieldname + '\"]').attr('required', 'required');
 //                               $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                               var newfieldname = fieldid.match(/\[(.*?)\]/);
+                               if (newfieldname) {
+                                   mandatory.push(newfieldname[1]);
+                               }
                                ko++;
                             }
                         }
@@ -2159,6 +2180,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                $('[name=\"' + fieldname + '\"]').addClass('invalid');
                               $('[name=\"' + fieldname + '\"]').attr('required', 'required');
 //                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                               var newfieldname = fieldid.match(/\[(.*?)\]/);
+                               if (newfieldname) {
+                                   mandatory.push(newfieldname[1]);
+                               }
                               ko++;
                             }
 
@@ -2181,9 +2206,13 @@ class PluginMetademandsWizard extends CommonDBTM
 //                              $('[for*=\"' + newfieldname + '\"]').css('color', 'unset');
                             } else {
                                $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
-                              $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
+                               $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
 //                              $('[for*=\"' + newfieldname + '\"]').css('color', 'red');
-                              ko++;
+                               var newfieldname = fieldid.match(/\[(.*?)\]/);
+                               if (newfieldname) {
+                                   mandatory.push(newfieldname[1]);
+                               }
+                               ko++;
                             }
                         }
                      }
@@ -2193,6 +2222,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         for (var y = 0; y < w.length; y++) {
                             fieldmandatory = w[y].required;
                             var fieldname = w[y].name;
+                            var fieldid = w[y].id;
                             var textarea = w[y];
                             var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
                             if (res != 'none' && fieldmandatory == true) {
@@ -2203,10 +2233,15 @@ class PluginMetademandsWizard extends CommonDBTM
                                     if (contenu.trim() !== '') {
                                        $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                                        $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                                       $('[name=\"' + fieldname + '\"]').css('border','solid 1px red');
                                     } else {
                                         $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                         $('[name=\"' + fieldname + '\"]').attr('required', 'required');
                                         $('[name=\"' + fieldname + '\"]').next().css('border','solid 1px red');
+                                        var newfieldname = fieldid.match(/\[(.*?)\]/);
+                                        if (newfieldname) {
+                                            mandatory.push(newfieldname[1]);
+                                        }
                                         ko++;
                                     }
                                 } else {
@@ -2219,6 +2254,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                     } else {
                                        $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                        $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                                       var newfieldname = fieldid.match(/\[(.*?)\]/);
+                                       if (newfieldname) {
+                                           mandatory.push(newfieldname[1]);
+                                       }
                                        ko++;
                                     }
                                 }
@@ -2233,6 +2272,8 @@ class PluginMetademandsWizard extends CommonDBTM
                            isnumber = z[i].getAttribute('isnumber');
                            ismultiplenumber = z[i].getAttribute('ismultiplenumber');
                            
+                           var fieldname = z[i].name;
+
                            if (z[i].value == 0 && isnumber == null && ismultiplenumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
                               var fieldname = z[i].name;
@@ -2241,6 +2282,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                  $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                  $('[name=\"' + fieldname + '\"]').attr('required', 'required');
 //                                 $('[for=\"' + fieldname + '\"]').css('color', 'red');
+
+                                 var newfieldname = fieldname.match(/\[(.*?)\]/);
+                                 if (newfieldname) {
+                                    mandatory.push(newfieldname[1]);
+                                 }
                                  ko++;
                               } else {
                                  $('[name=\"' + fieldname + '\"]').removeClass('invalid');
@@ -2285,6 +2331,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                     $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
                                     $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
                                     //                              $('[for*=\"' + fieldname + '\"]').css('color', 'red');
+                                    var newfieldname = fieldname.match(/\[(.*?)\]/);
+                                    if (newfieldname) {
+                                        mandatory.push(newfieldname[1]);
+                                    }
                                     ko++;
                                 }
                   
@@ -2294,9 +2344,24 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                      }
                      if (ko > 0) {
-//                                       console.log(ko)
+//                        console.log(mandatory);
                         valid = false;
-                        alert(msg);
+                        
+                        const fields_mandatory = mandatory.filter(element => element !== '' && element !== null && element !== undefined);
+                        const fields_mandatory_unique = fields_mandatory.filter((element, index) => fields_mandatory.indexOf(element) === index);
+                        fields_mandatory_unique.sort((a, b) => a - b);
+                        //all_meta_fields
+                        var alert_mandatory_fields = [];
+                        $.each( fields_mandatory_unique, function( k, v ) {
+                            $.each( all_meta_fields, function( key, value ) {
+                                if (v == key) {
+                                   alert_mandatory_fields.push(value);
+                                }
+                            });
+                        });
+                        alert_mandatory_fields_list = alert_mandatory_fields.join('<br> ');
+                        alert_msg = msg + ': <br><br>' + alert_mandatory_fields_list;
+                        alert(alert_msg);
                      }
                   
                      return valid; // return the valid status

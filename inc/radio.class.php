@@ -327,9 +327,15 @@ class PluginMetademandsRadio extends CommonDBTM
         $check_values = $data['options'];
         $id = $data["id"];
 
+        $script = "";
         $script2 = "";
-        $script = "console.log('fieldsHiddenScript-radio $id');
-                    $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('fieldsHiddenScript-radio $id');";
+        }
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
         $script .= "var tohide = {};";
 
         foreach ($check_values as $idc => $check_value) {
@@ -341,23 +347,6 @@ class PluginMetademandsRadio extends CommonDBTM
                         if (parseInt($(this).val()) == $idc || $idc == -1) {
                             tohide[$hidden_link] = false;
                         }";
-        }
-
-        $script .= "$.each( tohide, function( key, value ) {
-                        if(value == true){
-                            $('[id-field =\"field'+key+'\"]').hide();
-                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
-                        
-                            $('[name =\"field['+key+']\"]').removeAttr('required');
-                        } else {
-                            $('[id-field =\"field'+key+'\"]').show();
-                        }
-                    });";
-
-        $script .= "});";
-
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_link = $check_value['hidden_link'];
 
             $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
             if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
@@ -378,7 +367,20 @@ class PluginMetademandsRadio extends CommonDBTM
                 }
             }
 
+            $script .= "$.each( tohide, function( key, value ) {
+                        if (value == true) {
+                            $('[id-field =\"field'+key+'\"]').hide();
+                            " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
+                            $('[name =\"field['+key+']\"]').removeAttr('required');
+                        } else {
+                            $('[id-field =\"field'+key+'\"]').show();
+//                            " .PluginMetademandsFieldoption::setMandatoryFieldsByField($id, $hidden_link)."
+                        }
+                    });";
         }
+        $script .= "});";
+
+
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
 
     }
@@ -389,9 +391,16 @@ class PluginMetademandsRadio extends CommonDBTM
         $check_values = $data['options'];
         $id = $data["id"];
 
-        $script = "console.log('blocksHiddenScript-radio $id');
-                    $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $script = "";
         $script2 = "";
+
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('blocksHiddenScript-radio $id');";
+        }
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
         $script .= "var tohide = {};";
 
         foreach ($check_values as $idc => $check_value) {

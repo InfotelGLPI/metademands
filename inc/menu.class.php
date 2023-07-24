@@ -49,8 +49,19 @@ class PluginMetademandsMenu extends CommonDBTM
     {
         $menu                    = [];
         $menu['title']           = self::getMenuName();
-        $menu['page']            = PluginMetademandsMetademand::getSearchURL(false);
-        $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
+
+        if (PluginMetademandsMetademand::canCreate()) {
+            $menu['page']            = PluginMetademandsMetademand::getSearchURL(false);
+            $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
+            $image                 = "<i class='ti ti-share' title='" . __('Create a demand', 'metademands') . "'></i>&nbsp;".__('Create a demand', 'metademands');
+            $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
+
+        } else if(Session::haveRight('plugin_metademands_createmeta', READ)) {
+            $menu['page']            = PluginMetademandsWizard::getFormURL(false);
+            $image                 = "<i class='ti ti-share' title='" . __('Create a demand', 'metademands') . "'></i>&nbsp;".__('Create a demand', 'metademands');
+            $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
+        }
+
         if (PluginMetademandsMetademand::canCreate()) {
             $menu['links']['add'] = PLUGIN_METADEMANDS_WEBDIR_NOFULL.'/front/setup.templates.php?add=1';
         }
@@ -59,8 +70,7 @@ class PluginMetademandsMenu extends CommonDBTM
             $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
         }
 
-        $image                 = "<i class='ti ti-share' title='" . __('Create a demand', 'metademands') . "'></i>&nbsp;".__('Create a demand', 'metademands');
-        $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
+
 
         if (PluginMetademandsMetademand::canCreate()) {
             $menu['links']['template'] = PLUGIN_METADEMANDS_WEBDIR_NOFULL.'/front/setup.templates.php?add=0';

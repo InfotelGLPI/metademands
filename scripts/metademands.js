@@ -203,7 +203,7 @@
          //check_value is an array
          var op2 = (Array.isArray(check_value) && obs.val() != 0 && type != 'radio' && type != 'checkbox'  && check_value.includes(parseInt(obs.val(), 10)));
 
-         var op3 = (Array.isArray(check_value) && obs.val() != 0 && (type == 'radio' || type == 'checkbox') && check_value.includes(parseInt(obs.val(), 10)));
+         var op3 = (Array.isArray(check_value)  && (type == 'radio' || type == 'checkbox') && check_value.includes(parseInt(obs.val(), 10)));
 
          if (op1 || op2 || op3) {
 
@@ -219,7 +219,6 @@
                   $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
                   $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');
                }
-               // $("[for^='field[" + id_field + "]']").css('color', 'red');
                //hack for date field..
                $("[name='field[" + id_field + "]']").next('input').attr('required', 'required');
             // }

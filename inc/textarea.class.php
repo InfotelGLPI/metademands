@@ -153,9 +153,14 @@ class PluginMetademandsTextarea extends CommonDBTM
         $check_values = $data['options'];
         $id = $data["id"];
 
-        $script = "console.log('fieldsHiddenScript-textarea $id');
-                 $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $script = "";
         $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('fieldsHiddenScript-textarea $id');";
+        }
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
@@ -214,9 +219,14 @@ class PluginMetademandsTextarea extends CommonDBTM
         $check_values = $data['options'];
         $id = $data["id"];
 
-        $script = "console.log('blocksHiddenScript-textarea $id');
-                    $('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $script = "";
         $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('blocksHiddenScript-textarea $id');";
+        }
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         foreach ($check_values as $idc => $check_value) {
             $hidden_block = $check_value['hidden_block'];
