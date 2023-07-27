@@ -816,6 +816,8 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                 }
                                 $label2 = (Toolbox::addslashes_deep($label2));
                                 $label2 = Html::cleanPostForTextArea($label2);
+
+                                $label2 = Glpi\RichText\RichText::getTextFromHtml($label2);
                             }
                             // Draw line
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
@@ -845,6 +847,8 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                 }
                                 $label2 = (Toolbox::addslashes_deep($label2));
                                 $label2 = Html::cleanPostForTextArea($label2);
+
+                                $label2 = Glpi\RichText\RichText::getTextFromHtml($label2);
                             }
                             // Draw line
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
