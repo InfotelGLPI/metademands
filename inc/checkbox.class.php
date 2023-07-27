@@ -661,7 +661,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "<td>";
                 }
-                $result[$field['rank']]['content'] .= self::getFieldValue($field);
+                $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</td>";
                 }
