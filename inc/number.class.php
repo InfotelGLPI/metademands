@@ -65,8 +65,9 @@ class PluginMetademandsNumber extends CommonDBTM
             'step'          => ((isset($data['custom_values'][2]) && $data['custom_values'][2] != "") ? $data['custom_values'][2] : 1),
             'display'       => false,
         ];
+        $minimal_mandatory = ((isset($data['custom_values'][3]) && $data['custom_values'][3] != "") ? $data['custom_values'][3] : 0);
         if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
-            $opt['specific_tags'] = ['required' => 'required', 'isnumber' => 'isnumber'];
+            $opt['specific_tags'] = ['required' => 'required', 'isnumber' => 'isnumber', 'minimal_mandatory' => $minimal_mandatory];
         }
         $field = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
 
@@ -105,6 +106,12 @@ class PluginMetademandsNumber extends CommonDBTM
         echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
         $opt                   = ['value'         => $step];
         Dropdown::showNumber("custom_values[2]", $opt);
+        echo "</td>";
+
+        echo "<td>";
+        echo '<label>' . __("Minimal mandatory", "metademands") . '</label>&nbsp;';
+        $opt                   = ['value'         => $step];
+        Dropdown::showNumber("custom_values[3]", $opt);
         echo "</td>";
         echo "</tr>";
     }

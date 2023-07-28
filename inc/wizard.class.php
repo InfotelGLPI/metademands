@@ -2279,7 +2279,7 @@ class PluginMetademandsWizard extends CommonDBTM
                            // If a field is empty...
                            isnumber = z[i].getAttribute('isnumber');
                            ismultiplenumber = z[i].getAttribute('ismultiplenumber');
-                           
+                           minimal_mandatory = z[i].getAttribute('minimal_mandatory');
                            var fieldname = z[i].name;
 
                            if (z[i].value == 0 && isnumber == null && ismultiplenumber == null && fieldmandatory == true) {
@@ -2302,18 +2302,22 @@ class PluginMetademandsWizard extends CommonDBTM
 //                                 $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                               }
                   
-                           } else if (z[i].value == 0 && isnumber == 'isnumber' && ismultiplenumber == null && fieldmandatory == true) {
+                           } else if (isnumber == 'isnumber' && ismultiplenumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
-//                              var fieldname = z[i].name;
-//                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
-//                              if (res != 'none') {
-//                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
-//                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-//                                 ko++;
-//                              } else {
-//                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-//                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
-//                              }
+                              var fieldname = z[i].name;
+                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                              if (res != 'none' && parseInt(z[i].value) < parseInt(minimal_mandatory) ) {
+                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                                 var newfieldname = fieldname.match(/\[(.*?)\]/);
+                                 if (newfieldname) {
+                                    mandatory.push(newfieldname[1]);
+                                 }
+                                 ko++;
+                              } else {
+                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                              }
                   
                            } else if (z[i].value == 0 && ismultiplenumber == 'ismultiplenumber' && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
