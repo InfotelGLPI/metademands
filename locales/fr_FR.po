@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-27 09:52+0000\n"
+"POT-Creation-Date: 2023-07-28 10:50+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -1158,9 +1158,13 @@ msgstr "Date du prochain rappel"
 msgid "Number"
 msgstr "Nombre"
 
-#: inc/number.class.php:105
+#: inc/number.class.php:106
 msgid "Step for number"
 msgstr "Pas pour les nombre"
+
+#: inc/number.class.php:112
+msgid "Minimal mandatory"
+msgstr "Minimum obligatoire"
 
 #: inc/profile.class.php:46
 msgid "Right management"
@@ -1554,22 +1558,22 @@ msgstr "Utilisateur précédent"
 msgid "Previous data edited"
 msgstr "Données précédentes complétées"
 
-#: inc/wizard.class.php:2922
+#: inc/wizard.class.php:2926
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
 
-#: inc/wizard.class.php:2931
+#: inc/wizard.class.php:2935
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr "La date %1$s ne peut être supérieure à la date %2$s"
 
-#: inc/wizard.class.php:2978
+#: inc/wizard.class.php:2982
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s"
 
-#: inc/wizard.class.php:2982
+#: inc/wizard.class.php:2986
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
