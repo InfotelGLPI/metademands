@@ -333,7 +333,6 @@ class PluginMetademandsTextarea extends CommonDBTM
     public static function getFieldValue($field)
     {
         $field['value'] = Glpi\RichText\RichText::getSafeHtml($field['value']);
-        $field['value'] = Glpi\RichText\RichText::getTextFromHtml($field['value']);
         return $field['value'];
     }
 
