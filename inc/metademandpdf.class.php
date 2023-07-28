@@ -660,7 +660,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                 }
                                 if (is_array($values) && count($values)) {
                                     foreach ($values as $k => $v) {
-                                        array_push($parseValue, $custom_values[$v]);
+                                        if (isset($custom_values[$v])) {
+                                            array_push($parseValue, $custom_values[$v]);
+                                        }
                                     }
                                 }
                                 $value = implode(', ', $parseValue);
