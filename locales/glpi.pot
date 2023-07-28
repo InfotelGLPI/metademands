@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-28 10:12+0000\n"
+"POT-Creation-Date: 2023-07-28 10:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1111,8 +1111,12 @@ msgstr ""
 msgid "Number"
 msgstr ""
 
-#: inc/number.class.php:105
+#: inc/number.class.php:106
 msgid "Step for number"
+msgstr ""
+
+#: inc/number.class.php:112
+msgid "Minimal mandatory"
 msgstr ""
 
 #: inc/profile.class.php:46
@@ -1493,22 +1497,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:2922
+#: inc/wizard.class.php:2926
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:2931
+#: inc/wizard.class.php:2935
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:2978
+#: inc/wizard.class.php:2982
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:2982
+#: inc/wizard.class.php:2986
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
