@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-30 09:51+0000\n"
+"POT-Creation-Date: 2023-07-30 10:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1077 inc/metademand.class.php:5246
+#: hook.php:1077 inc/metademand.class.php:5245
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1095 inc/metademand.class.php:5366
+#: hook.php:1095 inc/metademand.class.php:5365
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1112 inc/metademand.class.php:5423
+#: hook.php:1112 inc/metademand.class.php:5422
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1129 inc/metademand.class.php:5298
+#: hook.php:1129 inc/metademand.class.php:5297
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Form name is required"
 msgstr ""
 
-#: ajax/createmetademands.php:136 front/wizard.form.php:147
+#: ajax/createmetademands.php:135 front/wizard.form.php:153
 msgid "There is no line on the basket"
 msgstr ""
 
@@ -147,14 +147,14 @@ msgstr ""
 msgid "Empty option has been deleted"
 msgstr ""
 
-#: front/wizard.form.php:271 front/wizard.form.php:274
-#: front/wizard.form.php:276 front/wizard.form.php:511
-#: front/wizard.form.php:514 front/wizard.form.php:516 inc/menu.class.php:56
+#: front/wizard.form.php:277 front/wizard.form.php:280
+#: front/wizard.form.php:282 front/wizard.form.php:519
+#: front/wizard.form.php:522 front/wizard.form.php:524 inc/menu.class.php:56
 #: inc/menu.class.php:61
 msgid "Create a demand"
 msgstr ""
 
-#: front/wizard.form.php:437
+#: front/wizard.form.php:445
 msgid "There is a problem with the basket"
 msgstr ""
 
@@ -774,11 +774,11 @@ msgstr ""
 msgid "Object to create"
 msgstr ""
 
-#: inc/metademand.class.php:680 inc/metademand.class.php:1156
+#: inc/metademand.class.php:680 inc/metademand.class.php:1155
 msgid "Title color"
 msgstr ""
 
-#: inc/metademand.class.php:689 inc/metademand.class.php:1153
+#: inc/metademand.class.php:689 inc/metademand.class.php:1152
 msgid "Background color"
 msgstr ""
 
@@ -798,148 +798,148 @@ msgstr ""
 msgid "Step-by-step mode"
 msgstr ""
 
-#: inc/metademand.class.php:1132
+#: inc/metademand.class.php:1131
 msgid "You cannot use this parameter if there is more than one category"
 msgstr ""
 
-#: inc/metademand.class.php:1142
+#: inc/metademand.class.php:1141
 msgid "Need validation to create subticket"
 msgstr ""
 
-#: inc/metademand.class.php:1146
+#: inc/metademand.class.php:1145
 msgid "Hide the \"No\" and empty values of fields in the tickets"
 msgstr ""
 
-#: inc/metademand.class.php:1164
+#: inc/metademand.class.php:1163
 msgid "Create tasks (not child tickets)"
 msgstr ""
 
-#: inc/metademand.class.php:1175
+#: inc/metademand.class.php:1174
 msgid "Export"
 msgstr ""
 
-#: inc/metademand.class.php:1190
+#: inc/metademand.class.php:1189
 msgid ""
 "Tasks tree cannot be changed as unresolved related tickets exist or activate "
 "maintenance mode"
 msgstr ""
 
-#: inc/metademand.class.php:1338
+#: inc/metademand.class.php:1337
 msgid "field add on demand"
 msgstr ""
 
-#: inc/metademand.class.php:1340
+#: inc/metademand.class.php:1339
 msgid "field update on demand"
 msgstr ""
 
-#: inc/metademand.class.php:1342
+#: inc/metademand.class.php:1341
 msgid "field delete on demand"
 msgstr ""
 
-#: inc/metademand.class.php:3136
+#: inc/metademand.class.php:3135
 msgid "Demand add failed"
 msgstr ""
 
-#: inc/metademand.class.php:3143
+#: inc/metademand.class.php:3142
 #, php-format
 msgid "Demand \"%s\" added with success"
 msgstr ""
 
-#: inc/metademand.class.php:3147
+#: inc/metademand.class.php:3146
 #, php-format
 msgid "%s %d successfully updated"
 msgstr ""
 
-#: inc/metademand.class.php:3938
+#: inc/metademand.class.php:3937
 msgid "Child Ticket"
 msgstr ""
 
-#: inc/metademand.class.php:3954
+#: inc/metademand.class.php:3953
 msgid "Parent tickets"
 msgid_plural "Parent tickets"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/metademand.class.php:4428
+#: inc/metademand.class.php:4427
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:4430
+#: inc/metademand.class.php:4429
 msgid "Do you want to validate her?"
 msgstr ""
 
-#: inc/metademand.class.php:4435 inc/metademand.class.php:4440
+#: inc/metademand.class.php:4434 inc/metademand.class.php:4439
 #: inc/metademandvalidation.class.php:57 inc/metademandvalidation.class.php:322
 #: inc/metademandvalidation.class.php:327
 #: inc/metademandvalidation.class.php:349
 msgid "Metademand validation"
 msgstr ""
 
-#: inc/metademand.class.php:4454
+#: inc/metademand.class.php:4453
 msgid "List of tickets / tasks which be created after validation"
 msgstr ""
 
-#: inc/metademand.class.php:4534
+#: inc/metademand.class.php:4533
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:4548
+#: inc/metademand.class.php:4547
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:4555 inc/metademand.class.php:4682
+#: inc/metademand.class.php:4554 inc/metademand.class.php:4681
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:4675
+#: inc/metademand.class.php:4674
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:4753
+#: inc/metademand.class.php:4752
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:4772
+#: inc/metademand.class.php:4771
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5112
+#: inc/metademand.class.php:5111
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:5666
+#: inc/metademand.class.php:5665
 msgid "No file specified"
 msgstr ""
 
-#: inc/metademand.class.php:5681
+#: inc/metademand.class.php:5680
 msgid "The file is not an XML file"
 msgstr ""
 
-#: inc/metademand.class.php:5969
+#: inc/metademand.class.php:5968
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:5978
+#: inc/metademand.class.php:5977
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:6075
+#: inc/metademand.class.php:6074
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:6153
+#: inc/metademand.class.php:6152
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:6153
+#: inc/metademand.class.php:6152
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:6166
+#: inc/metademand.class.php:6165
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:6198 inc/wizard.class.php:741
+#: inc/metademand.class.php:6197 inc/wizard.class.php:741
 msgid "Find a form"
 msgstr ""
 
@@ -1467,7 +1467,7 @@ msgid "You do not have access to the form"
 msgstr ""
 
 #: inc/wizard.class.php:1182
-msgid "You have already items on your basket"
+msgid "You have items on your basket"
 msgstr ""
 
 #: inc/wizard.class.php:1660
