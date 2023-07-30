@@ -2301,11 +2301,11 @@ JAVASCRIPT
                 }
                 break;
         }
-        if ($on_basket == false) {
+//        if ($on_basket == false) {
             echo $field;
-        } else {
-            return $field;
-        }
+//        } else {
+//            return $field;
+//        }
     }
 
 

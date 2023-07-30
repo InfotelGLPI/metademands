@@ -130,11 +130,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                 break;
         }
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params) {
@@ -251,6 +247,26 @@ class PluginMetademandsDropdown extends CommonDBTM
             && ($check_value != PluginMetademandsField::$not_null && $check_value != 0)) {
             return false;
         }
+    }
+
+    /**
+     * @param array $value
+     * @param array $fields
+     * @return bool
+     */
+    public static function checkMandatoryFields($value = [], $fields = [])
+    {
+
+        $msg = "";
+        $checkKo = 0;
+        // Check fields empty
+        if ($value['is_mandatory']
+            && empty($fields['value'])) {
+            $msg = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     static function fieldsLinkScript($data, $idc, $rand) {
@@ -420,7 +436,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                             foreach ($childs as $k => $v) {
                                 if ($v > 0) {
                                     $hiddenblocks[] = $v;
-                                    $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                    $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
                                 }
                             }
                         }

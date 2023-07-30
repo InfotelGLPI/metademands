@@ -376,9 +376,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
         for ($i = 0; $i < $nb; $i++) {
             if ($with_basket == false) {
-                $fields = $field_forms[$i]['fields'];
+                $fields = $field_forms[$i]['fields']?? [];
             } else {
-                $fields = $field_forms[$i]['basket'];
+                $fields = $field_forms[$i]['basket'] ?? [];
             }
 
             $fielCount = 0;

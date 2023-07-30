@@ -66,16 +66,27 @@ class PluginMetademandsDateinterval extends CommonDBTM
         ]);
         $field .= "</span>";
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params)
     {
 
+    }
+
+    public static function checkMandatoryFields($value = [], $fields = [])
+    {
+
+        $msg = "";
+        $checkKo = 0;
+        // Check fields empty
+        if ($value['is_mandatory']
+            && ($fields['value'] == 'NULL' || empty($fields['value']))) {
+            $msg = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     static function fieldsLinkScript($data, $idc, $rand)

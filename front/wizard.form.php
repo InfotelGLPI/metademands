@@ -286,9 +286,6 @@ if (isset($_POST['next'])) {
         $itilcategories = $_SESSION['servicecatalog']['sc_itilcategories_id'] ?? 0;
     }
 
-    $metademands->getFromDB($_POST['form_metademands_id']);
-    $type = $metademands->fields['type'];
-
     // Resource previous wizard steps
     if ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW
         && !empty($_POST['resources_id'])
@@ -321,6 +318,9 @@ if (isset($_POST['next'])) {
         }
     // Else metademand wizard step
     } else {
+
+        $metademands->getFromDB($_POST['form_metademands_id']);
+        $type = $metademands->fields['type'];
 
         switch ($_POST['step']) {
             case 2:
@@ -437,14 +437,16 @@ if (isset($_POST['next'])) {
         Session::addMessageAfterRedirect(__("There is a problem with the basket", "metademands"), false, ERROR);
     }
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
+
 } elseif (isset($_POST['update_basket_line'])) {
+
     $line = $_POST['update_basket_line'];
     if (isset($_POST['field_basket_' . $line])) {
         $KO = false;
 
         $checks  = [];
         $content = [];
-        $data    = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
+        $data    = $fields->find(['plugin_metademands_metademands_id' => $_POST['metademands_id']]);
 
         foreach ($data as $id => $value) {
             if ($value['type'] == 'radio') {

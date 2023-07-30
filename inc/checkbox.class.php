@@ -136,11 +136,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
             $field = "<input class='form-check-input' type='checkbox' name='" . $namefield . "[" . $data['id'] . "]' value='checkbox' $checked>";
         }
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params)
@@ -295,6 +291,27 @@ class PluginMetademandsCheckbox extends CommonDBTM
         }
         echo $elements[$params['check_value']] ?? 0;
 
+    }
+
+    /**
+     * @param array $value
+     * @param array $fields
+     * @return bool
+     */
+    public static function checkMandatoryFields($value = [], $fields = [])
+    {
+
+        $msg = "";
+        $checkKo = 0;
+
+        // Check fields empty
+        if ($value['is_mandatory']
+            && $fields['value'] == null) {
+            $msg = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     static function isCheckValueOK($value, $check_value)
@@ -486,7 +503,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                         }";
 
             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-            $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
+            $script2 .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
 
             if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
                 && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
@@ -509,7 +526,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                 $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
                                              " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
                                 $hiddenblocks[] = $childs_block;
-                                $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
                             }
                         }
                     }
@@ -526,6 +543,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
             $script .= " } else { ";
 
+
             $script .= "if($(this).val() == $idc){
                             if ($hidden_block in tohide) {
                             } else {
@@ -536,14 +554,14 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                     tohide[$hidden_block] = false;
                                 }
                              });
-                        }
-                        fixButtonIndicator();";
-
-
-
-//            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-//            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
-
+                        }";
+//            $script .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+//            $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
+//
+//
+////            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
+////            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
+//
             if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
                 && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
                 foreach ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] as $fieldSession) {
@@ -565,7 +583,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                 $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
                                              " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
                                 $hiddenblocks[] = $childs_block;
-                                $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
                             }
                         }
                     }
@@ -575,15 +593,46 @@ class PluginMetademandsCheckbox extends CommonDBTM
             $script .= "$.each( tohide, function( key, value ) {
                             if (value == true) {
                                 $('[bloc-id =\"bloc'+key+'\"]').hide();
-                                " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block) . "
-                            } else {
-                                $('[bloc-id =\"bloc'+key+'\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
+                                $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
+                                     switch(this.type) {
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                 this.checked = false;
+                                                 var checkname = this.name;
+                                                 $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                        }
+                                        jQuery(this).removeAttr('required');
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
+                                    fixButtonIndicator();
                             }
                         });";
 
             $script .= " }";
-
+//
             if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                 $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                 foreach ($default_values as $k => $v) {

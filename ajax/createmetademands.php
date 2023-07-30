@@ -64,8 +64,31 @@ if (isset($_POST['see_basket_summary'])) {
     unset($_POST['see_basket_summary']);
     $post = $_POST;
 
-    echo PluginOrdermaterialMetademand::displayBasketSummary($post);
+    if (Plugin::isPluginActive('ordermaterial')) {
+        $ordermaterial = new PluginOrdermaterialMetademand();
+        if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']])) {
+            echo PluginOrdermaterialMetademand::displayBasketSummary($post);
+        }
+    }
 
+    $metademands->getFromDB($_POST['form_metademands_id']);
+    if ($metademands->fields['is_order'] == 1) {
+
+        $metademands_data = $metademands->constructMetademands($_POST['form_metademands_id']);
+        //Reorder array
+        $metademands_data = array_values($metademands_data);
+        array_unshift($metademands_data, "", "");
+        unset($metademands_data[0]);
+        unset($metademands_data[1]);
+
+        if (count($metademands_data)) {
+            foreach ($metademands_data as $form_step => $data) {
+                foreach ($data as $form_metademands_id => $line) {
+                    echo PluginMetademandsBasketline::displayBasketSummary($_POST['form_metademands_id'], $line['form'], $post);
+                }
+            }
+        }
+    }
 
 } else {
 

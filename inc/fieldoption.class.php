@@ -1041,7 +1041,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
         if (isset($data['options'])) {
             $check_values = $data['options'];
 
-
             if (is_array($check_values)) {
                 if (count($check_values) > 0) {
                     foreach ($check_values as $idc => $check_value) {
@@ -1067,7 +1066,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 if ($check_value > 0) {
                                     $script .= $idc;
                                 }
-                                $script .= "], '" . $data['item'] . "');";
+                                $script .= "], '" . $data['type'] . "');";
                             }
 
                             echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');

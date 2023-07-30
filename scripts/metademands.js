@@ -209,12 +209,18 @@
 
             $('#' + toupdate).html('*');
             id_field = toupdate.substring(22);
+
             // if ($("[name='field[" + id_field + "]']").length > 0) {
-               if (type == 'radio' || type == 'checkbox') {
+               if (type == 'checkbox') {
+                  $("[check^='field[" + id_field + "]']").attr('required', 'required');
+                  $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
+                  $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');
+               } else if (type == 'radio') {
                   $("[name^='field[" + id_field + "]']").attr('required', 'required');
                   $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
                   $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');
                } else {
+                  $("[check^='field[" + id_field + "]']").attr('required', 'required');
                   $("[name='field[" + id_field + "]']").attr('required', 'required');
                   $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
                   $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');

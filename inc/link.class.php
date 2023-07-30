@@ -88,11 +88,7 @@ class PluginMetademandsLink extends CommonDBTM
             $field .= Html::hidden($title, ['value' => $data['custom_values'][1]]);
         }
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params)

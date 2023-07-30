@@ -62,27 +62,47 @@ class PluginMetademandsUpload extends CommonDBTM
         $field      = "";
         $nb         = 0;
         $container = 'fileupload_info_ticket'.$namefield . $data['id'];
-        if ($arrayFiles != "") {
-            foreach ($arrayFiles as $k => $file) {
-                $field .= str_replace($file['_prefix_filename'], "", $file['_filename']);
-                $wiz   = new PluginMetademandsWizard();
-                $field .= "&nbsp;";
-                //own showSimpleForm for return (not echo)
-                $field .= PluginMetademandsField::showSimpleForm(
-                    $wiz->getFormURL(),
-                    'delete_basket_file',
-                    _x('button', 'Delete permanently'),
-                    ['id'                           => $k,
-                        'metademands_id'               => $data['plugin_metademands_metademands_id'],
-                        'plugin_metademands_fields_id' => $data['id'],
-                        'idline'                       => $idline
-                    ],
-                    'fa-times-circle'
-                );
-                $field .= "<br>";
-                $nb++;
-            }
-            if ($data["max_upload"] > $nb) {
+        if (is_array($arrayFiles)) {
+            if (count($arrayFiles) > 0) {
+                foreach ($arrayFiles as $k => $file) {
+                    $field .= str_replace($file['_prefix_filename'], "", $file['_filename']);
+                    $wiz = new PluginMetademandsWizard();
+                    $field .= "&nbsp;";
+                    //own showSimpleForm for return (not echo)
+                    $field .= PluginMetademandsField::showSimpleForm(
+                        $wiz->getFormURL(),
+                        'delete_basket_file',
+                        _x('button', 'Delete permanently'),
+                        ['id' => $k,
+                            'metademands_id' => $data['plugin_metademands_metademands_id'],
+                            'plugin_metademands_fields_id' => $data['id'],
+                            'idline' => $idline
+                        ],
+                        'fa-times-circle'
+                    );
+                    $field .= "<br>";
+                    $nb++;
+                }
+                if ($data["max_upload"] > $nb) {
+                    if ($data["max_upload"] > 1) {
+                        $field .= Html::file([
+                            'filecontainer' => $container,
+                            'editor_id' => '',
+                            'showtitle' => false,
+                            'multiple' => true,
+                            'display' => false,
+                            'required' => ($data['is_mandatory'] ? true : false)]);
+                    } else {
+                        $field .= Html::file([
+                            'filecontainer' => $container,
+                            'editor_id' => '',
+                            'showtitle' => false,
+                            'display' => false,
+                            'required' => ($data['is_mandatory'] ? true : false)
+                        ]);
+                    }
+                }
+            } else {
                 if ($data["max_upload"] > 1) {
                     $field .= Html::file([
                         'filecontainer' => $container,
@@ -122,16 +142,38 @@ class PluginMetademandsUpload extends CommonDBTM
         }
         $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params)
     {
 
+    }
+
+    /**
+     * @param array $value
+     * @param array $fields
+     * @return bool
+     */
+    public static function checkMandatoryFields($value = [], $post = [])
+    {
+
+        $msg = "";
+        $checkKo = 0;
+        // Check fields empty
+        if ($value['is_mandatory']) {
+            if (isset($post['_filename'])) {
+                if (empty($post['_filename'][0])) {
+                    $msg = $value['name'];
+                    $checkKo = 1;
+                }
+            } else {
+                $msg = $value['name'];
+                $checkKo = 1;
+            }
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     static function fieldsLinkScript($data, $idc, $rand)

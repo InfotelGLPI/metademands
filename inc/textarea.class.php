@@ -85,11 +85,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
         }
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params)
@@ -304,7 +300,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                             foreach ($childs as $k => $v) {
                                 if ($v > 0) {
                                     $hiddenblocks[] = $v;
-                                    $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                    $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
                                 }
                             }
                         }
@@ -328,6 +324,26 @@ class PluginMetademandsTextarea extends CommonDBTM
         $script .= "});";
 
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+    }
+
+    /**
+     * @param array $value
+     * @param array $fields
+     * @return bool
+     */
+    public static function checkMandatoryFields($value = [], $fields = [])
+    {
+
+        $msg = "";
+        $checkKo = 0;
+        // Check fields empty
+        if ($value['is_mandatory']
+            && empty($fields['value'])) {
+            $msg = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     public static function getFieldValue($field)

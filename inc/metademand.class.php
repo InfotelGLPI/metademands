@@ -2074,13 +2074,13 @@ JAVASCRIPT
                                 $input['_tag_filename'] = $values['fields']['files'][$form_metademands_id]['_tag_filename'];
                             }
                         } else {
-                            if (isset($values['fields']['_filename'])) {
+                            if (isset($values['fields']['files'][$form_metademands_id]['_filename'])) {
                                 $input['_filename'] = $values['fields']['_filename'];
                             }
-                            if (isset($values['fields']['_prefix_filename'])) {
+                            if (isset($values['fields']['files'][$form_metademands_id]['_prefix_filename'])) {
                                 $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
                             }
-                            if (isset($values['fields']['_tag_filename'])) {
+                            if (isset($values['fields']['files'][$form_metademands_id]['_tag_filename'])) {
                                 $input['_tag_filename'] = $values['fields']['_tag_filename'];
                             }
                         }

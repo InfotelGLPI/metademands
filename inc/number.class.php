@@ -71,11 +71,7 @@ class PluginMetademandsNumber extends CommonDBTM
         }
         $field = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params)
@@ -114,6 +110,26 @@ class PluginMetademandsNumber extends CommonDBTM
         Dropdown::showNumber("custom_values[3]", $opt);
         echo "</td>";
         echo "</tr>";
+    }
+
+    /**
+     * @param array $value
+     * @param array $fields
+     * @return bool
+     */
+    public static function checkMandatoryFields($value = [], $fields = [])
+    {
+
+        $msg = "";
+        $checkKo = 0;
+        // Check fields empty
+        if ($value['is_mandatory']
+            && $fields['value'] == null) {
+            $msg = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     static function fieldsLinkScript($data, $idc, $rand)

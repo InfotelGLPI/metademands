@@ -67,11 +67,7 @@ class PluginMetademandsText extends CommonDBTM
         }
         $field = Html::input($name, $opt);
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params)
@@ -105,6 +101,27 @@ class PluginMetademandsText extends CommonDBTM
         $options[1] = __('No');
         $options[2] = __('Yes');
         Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value'], 'used' => $already_used]);
+    }
+
+
+    /**
+     * @param array $value
+     * @param array $fields
+     * @return bool
+     */
+    public static function checkMandatoryFields($value = [], $fields = [])
+    {
+
+        $msg = "";
+        $checkKo = 0;
+        // Check fields empty
+        if ($value['is_mandatory']
+            && empty($fields['value'])) {
+            $msg = $value['name'];
+            $checkKo = 1;
+        }
+
+        return ['checkKo' => $checkKo, 'msg' => $msg];
     }
 
     static function isCheckValueOK($value, $check_value)
@@ -288,7 +305,7 @@ class PluginMetademandsText extends CommonDBTM
                             foreach ($childs as $k => $v) {
                                 if ($v > 0) {
                                     $hiddenblocks[] = $v;
-                                    $_SESSION['plugin_metademands']['hidden_blocks'] = $hiddenblocks;
+                                    $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
                                 }
                             }
                         }

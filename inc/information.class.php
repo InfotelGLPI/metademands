@@ -63,11 +63,7 @@ class PluginMetademandsInformation extends CommonDBTM
             $field = "<label class='col-form-label'>" . htmlspecialchars_decode(stripslashes($comment)) . "</label>";
         }
 
-        if ($on_basket == false) {
-            echo $field;
-        } else {
-            return $field;
-        }
+        echo $field;
     }
 
     static function showFieldCustomValues($values, $key, $params)

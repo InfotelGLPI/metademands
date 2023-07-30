@@ -256,8 +256,10 @@ class PluginMetademandsWizard extends CommonDBTM
 
         $meta = new PluginMetademandsMetademand();
         $maintenance_mode = 0;
+        $is_basket = 0;
         if ($meta->getFromDB($parameters['metademands_id'])) {
             $maintenance_mode = $meta->fields['maintenance_mode'];
+            $is_basket = $meta->fields['is_order'];
             $_SESSION['servicecatalog']['sc_itilcategories_id'] = $meta->fields['itilcategories_id'];
         }
 
@@ -270,7 +272,6 @@ class PluginMetademandsWizard extends CommonDBTM
         } else {
 
             echo "<div class='bt-container-fluid asset metademands_wizard_rank'> ";
-
             if ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
                 // Wizard title
                 if ($meta->getFromDB($parameters['metademands_id'])
@@ -844,6 +845,9 @@ class PluginMetademandsWizard extends CommonDBTM
         $metademands_data = $metademands->constructMetademands($metademands_id);
         $metademands->getFromDB($metademands_id);
 
+        echo "<div class='md-basket-wizard'>";
+        echo "</div>";
+
         echo "<div class='md-wizard'>";
 
         //Delete metademand wich need to be hide from $metademands_data
@@ -867,20 +871,12 @@ class PluginMetademandsWizard extends CommonDBTM
             if ($step - 1 > count($metademands_data) && !$preview) {
                 self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform, $current_ticket, $meta_validated);
             } else {
-                echo "</div>";
+//                echo "</div>";
 
                 foreach ($metademands_data as $form_step => $data) {
                     if ($form_step == $step) {
                         foreach ($data as $form_metademands_id => $line) {
-                            if ($metademands->fields['is_order'] == 1) {
-                                if (!$preview && countElementsInTable(
-                                        "glpi_plugin_metademands_basketlines",
-                                        ["plugin_metademands_metademands_id" => $metademands->fields['id'],
-                                            "users_id" => Session::getLoginUserID()]
-                                    )) {
-                                    echo "<div class='height-div left-div'>";
-                                }
-                            }
+
                             if (!isset($_POST['form_metademands_id']) ||
                                 (isset($_POST['form_metademands_id']) && $form_metademands_id != $_POST['form_metademands_id'])) {
                                 if (!isset($_SESSION['metademands_hide'])) {
@@ -899,19 +895,16 @@ class PluginMetademandsWizard extends CommonDBTM
                                             "users_id" => Session::getLoginUserID()]
                                     )) {
                                     echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
-
                                     $title = "<i class='fas fa-plus' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                                     $title .= _sx('button', 'Add to basket', 'metademands');
                                     echo Html::submit($title, ['name' => 'add_to_basket',
                                         'id' => 'add_to_basket',
-                                        'class' => 'btn btn-primary btn-sm']);
-
-                                    echo "</div>";
+                                        'class' => 'btn btn-primary']);
 
                                     echo "</div>";
                                 }
 
-                                PluginMetademandsBasketline::constructBasket($metademands_id, $line['form'], $preview);
+//                                PluginMetademandsBasketline::constructBasket($metademands_id, $line['form'], $preview);
                             }
                             echo Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
                         }
@@ -932,14 +925,14 @@ class PluginMetademandsWizard extends CommonDBTM
                             && Session::haveRight('plugin_metademands_updatemeta', READ)))
 
                 ) {
-                    echo "<div class=\"middle-div bt-container-fluid\">";
+                    echo "<div class=\"bt-container-fluid\">";
                     echo "<div class=\"bt-feature col-md-12 \">";
                     echo "</div>";
                     echo "</div>";
 
                     echo "<div class=\"row\" style='width: 100%;'>";
 
-                    echo "<div class=\"bt-feature col-md-12 \">";
+                    echo "<div class=\"bt-feature col-md-12\" style='margin-top: 20px' >";
                     if ($current_ticket > 0 && !$meta_validated) {
                         Html::hidden('current_ticket_id', ['value' => $current_ticket]);
                     }
@@ -962,47 +955,86 @@ class PluginMetademandsWizard extends CommonDBTM
                             )) {
                                 $title = "<i class='fas fa-plus'></i>&nbsp;";
                                 $title .= _sx('button', 'Add to basket', 'metademands');
+                                echo "<div style='text-align: center;margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
                                 echo Html::submit($title, ['name' => 'add_to_basket',
                                     'id' => 'add_to_basket',
                                     'class' => 'metademand_next_button btn btn-primary']);
+                                echo "</div>";
                             } else {
                                 echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
                                 echo "</div>";
                                 $title = "<i class='fas fa-save'></i>&nbsp;";
-                                $title .= _sx('button', 'Validate your basket', 'metademands');
+
+                                $title = _sx('button', 'See basket summary & send it', 'metademands');
+                                echo Html::hidden('see_basket_summary', ['value' => 1]);
+
+                                $see_summary = 1;
+
+//                                $title .= _sx('button', 'Validate your basket', 'metademands');
                                 echo Html::submit($title, ['name' => 'next_button',
                                     'form' => '',
                                     'id' => 'submitjob',
                                     'class' => 'metademand_next_button btn btn-success']);
                                 $ID = $metademands->fields['id'];
                                 echo "<script>
+                                      var seesummary = '$see_summary';
+                                      var meta_id = {$ID};
+//                                      if (seesummary == 1) {
+                                          
                                           $('#submitjob').click(function() {
-                                             var meta_id = {$ID};
-                                             if(typeof tinyMCE !== 'undefined'){
-                                                tinyMCE.triggerSave();
-                                             }
-                                             jQuery('.resume_builder_input').trigger('change');
-                                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                                             $('#ajax_loader').show();
-                                             $.ajax({
-                                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-                                                   type: 'POST',
-                                                   data: $('form').serializeArray(),
-                                                   success: function(response){
-                                                       $('#ajax_loader').hide();
-                                                       if (response == 1) {
-                                                          document.location.reload();
-                                                       } else {
-                                                          window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=create_metademands';
+                                              console.log('click');
+                                                 if(typeof tinyMCE !== 'undefined'){
+                                                    tinyMCE.triggerSave();
+                                                 }
+                                                 jQuery('.resume_builder_input').trigger('change');
+                                                 $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                                                 $('#ajax_loader').show();
+                                                 $.ajax({
+                                                       url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=3',
+                                                       type: 'POST',
+                                                       datatype: 'html',
+                                                       data: $('form').serializeArray(),
+                                                       success: function (response) {
+                                                          $('#ajax_loader').hide();
+                                                          $('.md-basket-wizard').append(response);
+                                                          $('.md-wizard').empty();
+                                                       },
+                                                       error: function (xhr, status, error) {
+                                                          console.log(xhr);
+                                                          console.log(status);
+                                                          console.log(error);
                                                        }
-                                                    },
-                                                   error: function(xhr, status, error) {
-                                                      console.log(xhr);
-                                                      console.log(status);
-                                                      console.log(error);
-                                                    } 
-                                                });
-                                          });
+                                                    });
+                                            });
+//                                        } else {
+//                        
+//                                              $('#submitjob').click(function() {
+//                                                 if(typeof tinyMCE !== 'undefined'){
+//                                                    tinyMCE.triggerSave();
+//                                                 }
+//                                                 jQuery('.resume_builder_input').trigger('change');
+//                                                 $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+//                                                 $('#ajax_loader').show();
+//                                                 $.ajax({
+//                                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+//                                                       type: 'POST',
+//                                                       data: $('form').serializeArray(),
+//                                                       success: function(response){
+//                                                           $('#ajax_loader').hide();
+//                                                           if (response == 1) {
+//                                                              document.location.reload();
+//                                                           } else {
+//                                                              window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=2';
+//                                                           }
+//                                                        },
+//                                                       error: function(xhr, status, error) {
+//                                                          console.log(xhr);
+//                                                          console.log(status);
+//                                                          console.log(error);
+//                                                        } 
+//                                                    });
+//                                              });
+//                                          }
                                 </script>";
                             }
                         }
@@ -1051,6 +1083,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</div>";
                     echo "</div>";
                 }
+                echo "</div>";
             }
         } else {
             echo "</div>";
@@ -1063,8 +1096,6 @@ class PluginMetademandsWizard extends CommonDBTM
             echo "<div class=\"bt-feature col-md-12 \">";
             echo Html::submit(__('Previous'), ['name' => 'previous', 'class' => 'btn btn-primary']);
             echo Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
-            echo "</td>";
-            echo "</tr>";
             echo "</div></div>";
         }
     }
@@ -1143,6 +1174,13 @@ class PluginMetademandsWizard extends CommonDBTM
         $count = 0;
         $columns = 2;
         $cpt = 0;
+
+        $basketline = new PluginMetademandsBasketline();
+        if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
+            'users_id' => Session::getLoginUserID()])) {
+            echo "<div class='alert alert-warning d-flex'>";
+            echo "<b>".__('You have already items on your basket', 'metademands')."</b></div>";
+        }
 
         if (count($line)) {
             if ($use_as_step == 0) {
@@ -1660,7 +1698,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         $see_summary = 1;
                     }
                 }
-
                 $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
                 $submitmsg = "";
                 $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
@@ -2208,9 +2245,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
                                $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
 //                              $('[for*=\"' + newfieldname + '\"]').css('color', 'red');
-                               var newfieldname = fieldid.match(/\[(.*?)\]/);
-                               if (newfieldname) {
-                                   mandatory.push(newfieldname[1]);
+                               var mandfieldname = fieldid.match(/\[(.*?)\]/);
+                               if (mandfieldname) {
+                                   mandatory.push(mandfieldname[1]);
                                }
                                ko++;
                             }
@@ -2343,9 +2380,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                     $('[name*=\"' + newfieldname + '\"]').addClass('invalid');
                                     $('[name*=\"' + newfieldname + '\"]').attr('required', 'required');
                                     //                              $('[for*=\"' + fieldname + '\"]').css('color', 'red');
-                                    var newfieldname = fieldname.match(/\[(.*?)\]/);
-                                    if (newfieldname) {
-                                        mandatory.push(newfieldname[1]);
+                                    var mandfieldname = fieldname.match(/\[(.*?)\]/);
+                                    if (mandfieldname) {
+                                        mandatory.push(mandfieldname[1]);
                                     }
                                     ko++;
                                 }
@@ -2686,13 +2723,15 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         if (isset($post[$fieldname][$id])
-            && $value['type'] != 'checkbox'
-            && $value['type'] != 'radio'
             && $value['type'] != 'title'
             && $value['type'] != 'title-block'
             && $value['type'] != 'informations'
+            && $value['type'] != 'checkbox'
+            && $value['type'] != 'radio'
             && $value['item'] != 'ITILCategory_Metademands'
-            && $value['type'] != 'upload') {
+            && $value['type'] != 'upload'
+            && $value['item'] != 'dropdown_multiple') {
+
             if (!self::checkMandatoryFields(
                 $fieldname,
                 $value,
@@ -2821,9 +2860,9 @@ class PluginMetademandsWizard extends CommonDBTM
     {
 
         //Don't check hidden fields of hidden blocks
-        $hidden_blocks = $_SESSION['plugin_metademands']['hidden_blocks'] ?? [];
+        $hidden_blocks = $_SESSION['plugin_metademands'][$post["metademands_id"]]['hidden_blocks'] ?? [];
         $dbu = new DbUtils();
-//        Toolbox::logInfo($hidden_blocks);
+
         foreach ($hidden_blocks as $hidden_block) {
             $crit["rank"] = $hidden_block;
             $crit["plugin_metademands_metademands_id"] = $post["metademands_id"];
@@ -2849,15 +2888,117 @@ class PluginMetademandsWizard extends CommonDBTM
 
         if ($value['type'] != 'parent_field') {
             // Check fields empty
-            if ($value['is_mandatory']
-                && empty($fields['value'])
-                && $value['type'] != 'radio'
-                && $value['type'] != 'checkbox'
-                && $value['type'] != 'number'
-                && $value['type'] != 'informations'
-                && $value['type'] != 'upload') {
-                $msg[] = $value['name'];
-                $checkKo[] = 1;
+
+            switch ($value['type']) {
+                case 'title':
+                    break;
+                case 'title-block':
+                    break;
+                case 'informations':
+                    break;
+                case 'text':
+                    $result = PluginMetademandsText::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'textarea':
+                     $result = PluginMetademandsTextarea::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'dropdown_meta':
+                    $result = PluginMetademandsDropdownmeta::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'dropdown_object':
+                    $result = PluginMetademandsDropdownobject::checkMandatoryFields($value, $fields);
+                    $checkKo[] = $result['checkKo'];
+                    $msg[] = $result['msg'];
+                    break;
+                case 'dropdown':
+                    $result = PluginMetademandsDropdown::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'dropdown_multiple':
+                    $result = PluginMetademandsDropdownmultiple::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'radio':
+                    $result = PluginMetademandsRadio::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'checkbox':
+                    $result = PluginMetademandsCheckbox::checkMandatoryFields($value, $fields);
+                    $checkKo[] = $result['checkKo'];
+                    $msg[] = $result['msg'];
+                    break;
+                case 'yesno':
+                    $result = PluginMetademandsYesno::checkMandatoryFields($value, $fields);
+                    $checkKo[] = $result['checkKo'];
+                    $msg[] = $result['msg'];
+                    break;
+                case 'number':
+                    $result = PluginMetademandsNumber::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'date':
+                    $result = PluginMetademandsDate::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'date_interval':
+                    $result = PluginMetademandsDateinterval::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'datetime':
+                    $result = PluginMetademandsDatetime::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'datetime_interval':
+                    $result = PluginMetademandsDatetimeinterval::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'upload':
+                    $result = PluginMetademandsUpload::checkMandatoryFields($value, $post);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'link':
+                    break;
+                default:
+                    break;
             }
 
             // Check linked field mandatory
@@ -2880,44 +3021,12 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
             }
-            //radio
-            if ($value['type'] == 'radio'
-                && $value['is_mandatory']) {
-                if ($fields['value'] == null) {
-                    $msg[] = $value['name'];
-                    $checkKo[] = 1;
-                }
-            }
-
-            //number
-            if ($value['type'] == 'number'
-                && $value['is_mandatory']) {
-                if ($fields['value'] == null) {
-                    $msg[] = $value['name'];
-                    $checkKo[] = 1;
-                }
-            }
-
-            //checkbox
-            if ($value['type'] == 'checkbox'
-                && $value['is_mandatory']) {
-                if ($fields['value'] == null) {
-                    $msg[] = $value['name'];
-                    $checkKo[] = 1;
-                }
-            }
 
             // Check date
             if ($value['type'] == "date"
                 || $value['type'] == "datetime"
                 || $value['type'] == "date_interval"
                 || $value['type'] == "datetime_interval") {
-                // date Null
-                if ($value['is_mandatory']
-                    && $fields['value'] == 'NULL') {
-                    $msg[] = $value['name'];
-                    $checkKo[] = 1;
-                }
                 // date not < today
                 if ($fields['value'] != 'NULL'
                     && !empty($fields['value'])
@@ -2937,20 +3046,6 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
 
-            // Check File upload field
-            if ($value['type'] == "upload"
-                && $value['is_mandatory']) {
-
-                if (isset($post['_filename'])) {
-                    if (empty($post['_filename'][0])) {
-                        $msg[] = $value['name'];
-                        $checkKo[] = 1;
-                    }
-                } else {
-                    $msg[] = $value['name'];
-                    $checkKo[] = 1;
-                }
-            }
             // Check File upload field
             if ($value['type'] == "upload"
                 && !empty($value["max_upload"])
