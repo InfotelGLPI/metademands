@@ -75,6 +75,10 @@ if (empty($_GET['resources_step'])) {
     $_GET['resources_step'] = '';
 }
 
+if (!empty($_POST['step'])) {
+    $_GET['step'] = $_POST['step'];
+}
+
 if (empty($_GET['step'])) {
     $_GET['step'] = PluginMetademandsMetademand::STEP_INIT;
 }
@@ -98,6 +102,8 @@ if (isset($_GET['id'])) {
     $_GET['step']           = PluginMetademandsMetademand::STEP_SHOW;
     $_GET['tickets_id']     = "0";
 }
+
+
 
 if (isset($_POST['next'])) {
 
@@ -382,6 +388,8 @@ if (isset($_POST['next'])) {
 
     Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
 } elseif (isset($_POST['add_to_basket'])) {
+
+    Toolbox::logInfo($_POST);
     $KO   = false;
     $step = PluginMetademandsMetademand::STEP_SHOW;
 

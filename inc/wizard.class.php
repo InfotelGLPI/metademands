@@ -990,7 +990,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                                  $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                                                  $('#ajax_loader').show();
                                                  $.ajax({
-                                                       url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=3',
+                                                       url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
                                                        type: 'POST',
                                                        datatype: 'html',
                                                        data: $('form').serializeArray(),
@@ -1179,7 +1179,7 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
             'users_id' => Session::getLoginUserID()])) {
             echo "<div class='alert alert-warning d-flex'>";
-            echo "<b>".__('You have already items on your basket', 'metademands')."</b></div>";
+            echo "<b>".__('You have items on your basket', 'metademands')."</b></div>";
         }
 
         if (count($line)) {

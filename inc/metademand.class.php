@@ -1127,8 +1127,7 @@ JAVASCRIPT
             echo "<td>" . __('Create one ticket for all lines of the basket', 'metademands') . "</td><td>";
             Dropdown::showYesNo("create_one_ticket", $this->fields['create_one_ticket']);
             echo "<br>";
-            echo "<span class='alert alert-important alert-warning d-flex'>";
-            echo "<i class='fas fa-exclamation-triangle'></i> ";
+            echo "<span class='alert alert-warning d-flex'>";
             echo __('You cannot use this parameter if there is more than one category', 'metademands');
             echo "</span>";
             echo "</td>";

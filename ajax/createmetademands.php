@@ -49,7 +49,6 @@ $fields = new PluginMetademandsField();
 
 if (isset($_POST['see_basket_summary'])) {
 
-
     if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
         $_POST['current_ticket_id'] = $_GET['current_ticket_id'];
     }
