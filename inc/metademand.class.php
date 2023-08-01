@@ -3392,7 +3392,7 @@ JAVASCRIPT
                     break;
                 case 'dropdown_meta':
                     if ($return_value == true) {
-                        return PluginMetademandsDropdownmeta::getFieldValue($field);
+                        return PluginMetademandsDropdownmeta::getFieldValue($field, $lang);
                     } else {
                         PluginMetademandsDropdownmeta::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }

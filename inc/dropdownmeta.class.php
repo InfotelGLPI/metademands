@@ -721,13 +721,21 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
     }
 
 
-    public static function getFieldValue($field)
+    public static function getFieldValue($field, $lang)
     {
 
         $dbu = new DbUtils();
         if (!empty($field['custom_values'])
             && $field['item'] == 'other') {
-            return "";
+            $custom_values = array_merge([0 => Dropdown::EMPTY_VALUE], PluginMetademandsField::_unserialize($field['custom_values']));
+            foreach ($custom_values as $k => $val) {
+                if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
+                    $custom_values[$k] = $ret;
+                }
+                if (isset($custom_values[$field['value']])) {
+                    return $custom_values[$field['value']];
+                }
+            }
         } else {
             if ($field['value'] != 0) {
                 switch ($field['item']) {
@@ -810,7 +818,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             $items_id = $splitter[1];
                         }
                         if ($itemtype && $items_id) {
-                            $result[$field['rank']]['content'] .= self::getFieldValue($field);
+                            $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
                         }
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td>";
@@ -828,7 +836,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             $result[$field['rank']]['content'] .= "</td>";
                             $result[$field['rank']]['content'] .= "<td>";
                         }
-                        $result[$field['rank']]['content'] .= self::getFieldValue($field);
+                        $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td>";
                         }
@@ -842,7 +850,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td><td>";
                         }
-                        $result[$field['rank']]['content'] .= self::getFieldValue($field);
+                        $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
                         if ($formatAsTable) {
                             $result[$field['rank']]['content'] .= "</td>";
                         }
