@@ -389,7 +389,6 @@ if (isset($_POST['next'])) {
     Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
 } elseif (isset($_POST['add_to_basket'])) {
 
-    Toolbox::logInfo($_POST);
     $KO   = false;
     $step = PluginMetademandsMetademand::STEP_SHOW;
 

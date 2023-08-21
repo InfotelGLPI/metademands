@@ -247,7 +247,9 @@ class PluginMetademandsMetademand extends CommonDBTM
         if (!isset($options['withtemplate']) || empty($options['withtemplate'])) {
             if ($this->getField('object_to_create') == 'Ticket') {
                 $this->addStandardTab('PluginMetademandsTicket_Metademand', $ong, $options);
-                $this->addStandardTab('PluginMetademandsStepform', $ong, $options);
+                if ($this->getField('step_by_step_mode') == 1) {
+                    $this->addStandardTab('PluginMetademandsStepform', $ong, $options);
+                }
             }
         }
         return $ong;
@@ -2228,7 +2230,7 @@ JAVASCRIPT
                             $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm);
                             if ($metademand->fields['is_order'] == 0) {
                                 $values_form['0'] = isset($values) ? $values : [];
-                                $docPdf->drawPdf($line['form'], $values_form, false);
+                                $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(),false);
                             } elseif ($metademand->fields['is_order'] == 1) {
                                 if ($metademand->fields['create_one_ticket'] == 0) {
                                     //create one ticket for each basket
@@ -2243,7 +2245,7 @@ JAVASCRIPT
 
                                     $values_form = $baskets;
                                 }
-                                $docPdf->drawPdf($line['form'], $values_form, true);
+                                $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), true);
                             }
                             $docPdf->Close();
                             //TODO TO Tranlate
@@ -3218,7 +3220,7 @@ JAVASCRIPT
                 $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
             }
             if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                $result['content'] .= "<table class='tab_cadre' style='width: 100%;background:none;'>"; // class='mticket'
+                $result['content'] .= "<table class='tab_cadre' style='width: 100%;background:none;word-break: unset;'>"; // class='mticket'
 //                 $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
             }
 
@@ -3337,7 +3339,9 @@ JAVASCRIPT
 
         $style_title = "class='title'";
         if ($color != "") {
-            $style_title .= " style='color:$color'";
+            $style_title .= " style='color:$color;width: 20%;'";
+        } else {
+            $style_title .= " style='width: 20%;'";
         }
         //      $style_title = "style='background-color: #cccccc;'";
 

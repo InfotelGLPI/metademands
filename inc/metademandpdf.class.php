@@ -368,7 +368,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
      * @param      $fields
      * @param bool $with_basket
      */
-    public function setFields($form, $field_forms, $with_basket = false)
+    public function setFields($form, $field_forms, $metademands_id, $with_basket = false)
     {
         global $PLUGIN_HOOKS;
 
@@ -426,6 +426,26 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
             }
 
             foreach ($newForm as $key => $elt) {
+
+                $meta = new PluginMetademandsMetademand();
+                $meta->getFromDB($metademands_id);
+                if ($meta->getField('hide_no_field') == 1) {
+                    if ($elt['type'] == 'radio' && $fields[$elt['id']] === "") {
+                        continue;
+                    }
+                    if ($elt['type'] == 'number' && $fields[$elt['id']] == "0") {
+                        continue;
+                    }
+                    if ($elt['type'] == 'checkbox' && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
+                        continue;
+                    }
+                    if ($elt['type'] == 'yesno' && $fields[$elt['id']] != "2") {
+                        continue;
+                    }
+                    if ($elt['type'] == 'dropdown_meta' && $fields[$elt['id']] == "0") {
+                        continue;
+                    }
+                }
 
                 if (isset($fields[$elt['id']])
                     || $elt['type'] == 'title'
@@ -909,12 +929,12 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
      * @param $form
      * @param $fields
      */
-    public function drawPdf($form, $fields, $with_basket = false)
+    public function drawPdf($form, $fields, $metademands_id, $with_basket = false)
     {
         $this->AliasNbPages();
         $this->AddPage();
         $this->SetAutoPageBreak(false);
-        $this->setFields($form, $fields, $with_basket);
+        $this->setFields($form, $fields, $metademands_id, $with_basket);
     }
 
     /**

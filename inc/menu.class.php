@@ -53,12 +53,12 @@ class PluginMetademandsMenu extends CommonDBTM
         if (PluginMetademandsMetademand::canCreate()) {
             $menu['page']            = PluginMetademandsMetademand::getSearchURL(false);
             $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
-            $image                 = "<i class='ti ti-share' title='" . __('Create a demand', 'metademands') . "'></i>&nbsp;".__('Create a demand', 'metademands');
+            $image                 = "<i class='ti ti-share' title='" . __('Create a metademand', 'metademands') . "'></i>&nbsp;".__('Create a metademand', 'metademands');
             $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
 
         } else if(Session::haveRight('plugin_metademands_createmeta', READ)) {
             $menu['page']            = PluginMetademandsWizard::getFormURL(false);
-            $image                 = "<i class='ti ti-share' title='" . __('Create a demand', 'metademands') . "'></i>&nbsp;".__('Create a demand', 'metademands');
+            $image                 = "<i class='ti ti-share' title='" . __('Create a metademand', 'metademands') . "'></i>&nbsp;".__('Create a metademand', 'metademands');
             $menu['links'][$image] = PluginMetademandsWizard::getFormURL(false);
         }
 

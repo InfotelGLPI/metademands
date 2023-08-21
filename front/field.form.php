@@ -107,7 +107,8 @@ if (isset($_POST["add"])) {
        || $_POST["type"] == 'radio') {
       $_POST["item"] = 0;
    }
-   if (isset($_POST["custom_values"]) && is_array($_POST["custom_values"])
+   if ((isset($_POST["custom_values"]) && is_array($_POST["custom_values"]) ||
+       isset($_POST["default_values"]) && is_array($_POST["default_values"]))
        && ((isset($_POST['item']) && $_POST["item"] == 'other')
            || $_POST["type"] == 'checkbox'
            || $_POST["type"] == 'radio'
