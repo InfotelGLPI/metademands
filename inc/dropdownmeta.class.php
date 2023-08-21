@@ -600,7 +600,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $id = $data["id"];
 
         $name = "field[" . $data["id"] . "]";
-
+        if ($data["item"] == "ITILCategory_Metademands") {
+            $name = "field_plugin_servicecatalog_itilcategories_id";
+        }
         $script = "";
         $script2 = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
@@ -714,6 +716,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     }
                 }
             }
+            if ($data["item"] == "ITILCategory_Metademands") {
+              if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
+                  $script .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                              " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+              }
+          }
         }
         $script .= "fixButtonIndicator();});";
 
