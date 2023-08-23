@@ -266,7 +266,7 @@ class PluginMetademandsCondition extends CommonDBChild
         $canedit = $item->can($item->fields['id'], UPDATE);
         if ($canedit) {
             if ($item->fields['show_rule'] == 1) {
-                echo "<br><div class='alert alert-important alert-info center'>";
+                echo "<br><div class='alert alert-info center'>";
                 echo __("Soumission button always displayed", 'metademands');
                 echo "</div>";
             }
@@ -314,15 +314,13 @@ class PluginMetademandsCondition extends CommonDBChild
                 echo "</th>";
                 echo "<th></th>";
 
-                $conditions = self::find(['plugin_metademands_metademands_id' => $item->fields['id']]);
+
                 $field = new PluginMetademandsField();
-                $params = [
-                    'plugin_metademands_metademands_id' => $item->fields['id'],
-                    'type' => self::$field_types_available
-                ];
+
                 $fields = $field->find(
                     [
-                        'type' => self::$field_types_available
+                        'type' => self::$field_types_available,
+                        'plugin_metademands_metademands_id' => $item->fields['id'],
                     ]
                 );
                 $dropdown_fields = [];
@@ -514,8 +512,8 @@ class PluginMetademandsCondition extends CommonDBChild
             }
 
         } else {
-            echo "<br><div class='alert alert-important alert-info center'>";
-            echo __("No conditions", 'metademands');
+            echo "<br><div class='alert alert-info center'>";
+            echo __("No conditions founded", 'metademands');
             echo "</div>";
         }
     }

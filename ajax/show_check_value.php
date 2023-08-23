@@ -53,8 +53,24 @@ if ($field->getFromDB($fields_id)) {
         'entity' => $_SESSION['glpiactive_entity'],
         'entity_sons' => $_SESSION['glpiactive_entity_recursive']
     ];
-    if ($item != '' && ($type == 'dropdown' || $type == 'dropdown_object' || $type == 'dropdown_multiple')) {
-        $item::dropdown($options);
+    if ($item != ''
+        && ($type == 'dropdown'
+            || $type == 'dropdown_object'
+            || $type == 'dropdown_multiple'
+            || $type == 'dropdown_meta')) {
+
+        if ($item != "other") {
+            $item::dropdown($options);
+        } else {
+            $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+            Dropdown::showFromArray(
+                $options['name'],
+                $choices,
+                ['width' => '100%',
+                ]
+            );
+        }
+
         echo Html::hidden('check_item', ['value' => 'check_item']);
     } else {
         switch ($type) {
