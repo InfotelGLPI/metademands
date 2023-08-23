@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-21 07:54+0000\n"
+"POT-Creation-Date: 2023-08-23 09:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +18,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:626
+#: hook.php:632
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:639
+#: hook.php:645
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:655
+#: hook.php:661
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:666
+#: hook.php:672
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:678
+#: hook.php:684
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1077 inc/metademand.class.php:5249
+#: hook.php:1083 inc/metademand.class.php:5249
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1095 inc/metademand.class.php:5369
+#: hook.php:1101 inc/metademand.class.php:5369
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1112 inc/metademand.class.php:5426
+#: hook.php:1118 inc/metademand.class.php:5426
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1129 inc/metademand.class.php:5301
+#: hook.php:1135 inc/metademand.class.php:5301
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: setup.php:170 inc/menu.class.php:42 inc/metademand.class.php:87
+#: setup.php:171 inc/menu.class.php:42 inc/metademand.class.php:87
 #: inc/profile.class.php:129 inc/profile.class.php:173 inc/tools.class.php:132
 #: inc/tools.class.php:202
 msgid "Meta-Demand"
@@ -113,6 +113,22 @@ msgstr ""
 msgid ""
 "Your form will be redirected to another group of people who will complete "
 "the following information."
+msgstr ""
+
+#: front/condition.form.php:47
+msgid "You have to select a field"
+msgstr ""
+
+#: front/condition.form.php:66
+msgid "You have to select an item"
+msgstr ""
+
+#: front/condition.form.php:84
+msgid "Condition not added"
+msgstr ""
+
+#: front/condition.form.php:89
+msgid "Condition"
 msgstr ""
 
 #: front/config.form.php:58 front/config.php:45 front/tools.php:41
@@ -202,7 +218,8 @@ msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/checkbox.class.php:249 inc/dropdown.class.php:144
+#: inc/checkbox.class.php:249 inc/condition.class.php:311
+#: inc/condition.class.php:439 inc/dropdown.class.php:144
 #: inc/dropdownmeta.class.php:380 inc/dropdownmultiple.class.php:470
 #: inc/dropdownobject.class.php:340 inc/field.class.php:1212
 #: inc/fieldoption.class.php:228 inc/radio.class.php:250
@@ -226,6 +243,87 @@ msgstr ""
 
 #: inc/checkschema.class.php:159
 msgid "The plugin schema is good"
+msgstr ""
+
+#: inc/condition.class.php:71
+msgid "Conditional display"
+msgid_plural "Conditional displays"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/condition.class.php:106 inc/condition.class.php:118
+#: inc/condition.class.php:138 inc/condition.class.php:177
+msgid "Is empty"
+msgstr ""
+
+#: inc/condition.class.php:117 inc/condition.class.php:137
+#: inc/field.class.php:1013
+msgid "Regex"
+msgstr ""
+
+#: inc/condition.class.php:231 inc/condition.class.php:249
+msgid "Always displayed"
+msgstr ""
+
+#: inc/condition.class.php:232 inc/condition.class.php:252
+msgid "Hidden unless"
+msgstr ""
+
+#: inc/condition.class.php:233 inc/condition.class.php:255
+msgid "Displayed unless"
+msgstr ""
+
+#: inc/condition.class.php:270
+msgid "Soumission button always displayed"
+msgstr ""
+
+#: inc/condition.class.php:277
+msgid "Rule"
+msgstr ""
+
+#: inc/condition.class.php:280
+msgid "Display rule"
+msgstr ""
+
+#: inc/condition.class.php:307 inc/condition.class.php:435
+msgid "Logical operator"
+msgstr ""
+
+#: inc/condition.class.php:308 inc/condition.class.php:436
+msgid "Field"
+msgstr ""
+
+#: inc/condition.class.php:309
+msgid "Field type"
+msgstr ""
+
+#: inc/condition.class.php:310 inc/condition.class.php:438
+msgid "Equality operator"
+msgstr ""
+
+#: inc/condition.class.php:312
+msgid "Pool"
+msgstr ""
+
+#: inc/condition.class.php:313
+msgid "Order of execution and grouping of conditions"
+msgstr ""
+
+#: inc/condition.class.php:428
+msgid "List of conditions"
+msgstr ""
+
+#: inc/condition.class.php:434
+msgid "ID"
+msgstr ""
+
+#: inc/condition.class.php:440 inc/field.class.php:1218
+#: inc/field.class.php:2846
+msgid "Order"
+msgstr ""
+
+#: inc/condition.class.php:518
+msgid "No conditions"
 msgstr ""
 
 #: inc/config.class.php:59
@@ -453,10 +551,6 @@ msgstr ""
 msgid "Number of documents allowed"
 msgstr ""
 
-#: inc/field.class.php:1013
-msgid "Regex"
-msgstr ""
-
 #: inc/field.class.php:1032
 msgid "Day greater or equal to now"
 msgstr ""
@@ -500,10 +594,6 @@ msgstr ""
 
 #: inc/field.class.php:1216
 msgid "Use this field as a ticket field"
-msgstr ""
-
-#: inc/field.class.php:1218 inc/field.class.php:2846
-msgid "Order"
 msgstr ""
 
 #: inc/field.class.php:1311
@@ -1504,22 +1594,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3035
+#: inc/wizard.class.php:3111
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3044
+#: inc/wizard.class.php:3120
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3077
+#: inc/wizard.class.php:3153
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3081
+#: inc/wizard.class.php:3157
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
