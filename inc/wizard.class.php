@@ -1837,6 +1837,17 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
                 $json_all_meta_fields = json_encode($all_meta_fields);
+                $use_condition = false;
+                $show_rule = $metademands->fields['show_rule'];
+                if($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS){
+                    $condition = new PluginMetademandsCondition();
+                    $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands_id]);
+                    if(count($conditions) > 0){
+                        $use_condition = true;
+                    }
+                }
+
+
 
                 echo "<script>
                   var nexttitle = '$nexttitle';
@@ -1852,10 +1863,75 @@ class PluginMetademandsWizard extends CommonDBTM
                   var all_meta_fields = {$json_all_meta_fields};
                   var firstnumTab = 0;
                   var currentTab = 0; // Current tab is set to be the first tab (0)
+                  var use_condition = '$use_condition';
+                  var show_button = 1;
+                  var show_rule = '$show_rule';
                   findFirstTab($block_id);
+                  if(use_condition == true) {
+                    if(show_rule == 2){
+                     show_button = 0;
+                     if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                        document.getElementById('nextBtn').style.display = 'none';
+                     }
+                     } else if (show_rule == 3){ 
+                           show_button = 1;
+                        }
+                    if(document.getElementById('nextBtn').innerHTML == nexttitle) {
+                        $('#nextBtn').on('click', checkConditions);
+                    }
+                    $('#wizard_form').on('change', 'input, select, textarea', checkConditions);
+                                                
+                    }
+                    
+                    function checkConditions() {
+                        var formDatas;
+                        formDatas = $('#wizard_form').serializeArray();
+//                        console.log('Form changed!');
+//                        console.log(formDatas);
+                        $.ajax({
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/condition.php',
+                                   type: 'POST',
+                                   datatype: 'JSON',
+                                   data: formDatas,
+                                   success: function (response) {
+                                      console.log(response);
+                                      eval('valid_condition=' + response );
+                                    
+                                      console.log(valid_condition);
+                                      
+                                      if(valid_condition) {
+                                          if(show_button == 1) {
+                                            if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                                               document.getElementById('nextBtn').style.display = 'none';
+                                            }
+                                          }  else {
+                                            if(document.getElementById('nextBtn').innerHTML == submittitle){
+                                                document.getElementById('nextBtn').style.display = 'inline';
+                                            }
+                                          }
+                                      } 
+                                      else {
+                                         if(show_button == 1 ){
+                                            if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                                                document.getElementById('nextBtn').style.display = 'inline';
+                                            }
+                                         } else {
+                                            if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                                                document.getElementById('nextBtn').style.display = 'none';
+                                            }
+                                         }
+                                      }
+                                   },
+                                   error: function (xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                   }
+                                });
+                    }               
                   showTab(currentTab, nexttitle, submittitle, submitmsg); // Display the current tab
                   
-                  function showTab(n,create = false, submittitle, submitmsg) {
+                    function showTab(n,create = false, submittitle, submitmsg) {
                      // This function will display the specified tab of the form...
                      //document.getElementById('nextMsg').style.display = 'none';
                      if (use_as_step == 1) {
