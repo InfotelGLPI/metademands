@@ -38,6 +38,12 @@ if (!isset($_GET["withtemplate"])) {
 
 $meta      = new PluginMetademandsMetademand();
 
+if(isset($_POST['apply_rule'])){
+    $meta->check($_POST['id'], UPDATE);
+    $meta->update($_POST);
+    Html::back();
+}
+
 if (isset($_POST["add"])) {
 
    $meta->check(-1, CREATE, $_POST);
