@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-23 09:39+0000\n"
+"POT-Creation-Date: 2023-08-23 10:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -219,7 +219,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: inc/checkbox.class.php:249 inc/condition.class.php:311
-#: inc/condition.class.php:439 inc/dropdown.class.php:144
+#: inc/condition.class.php:437 inc/dropdown.class.php:144
 #: inc/dropdownmeta.class.php:380 inc/dropdownmultiple.class.php:470
 #: inc/dropdownobject.class.php:340 inc/field.class.php:1212
 #: inc/fieldoption.class.php:228 inc/radio.class.php:250
@@ -285,11 +285,11 @@ msgstr ""
 msgid "Display rule"
 msgstr ""
 
-#: inc/condition.class.php:307 inc/condition.class.php:435
+#: inc/condition.class.php:307 inc/condition.class.php:433
 msgid "Logical operator"
 msgstr ""
 
-#: inc/condition.class.php:308 inc/condition.class.php:436
+#: inc/condition.class.php:308 inc/condition.class.php:434
 msgid "Field"
 msgstr ""
 
@@ -297,7 +297,7 @@ msgstr ""
 msgid "Field type"
 msgstr ""
 
-#: inc/condition.class.php:310 inc/condition.class.php:438
+#: inc/condition.class.php:310 inc/condition.class.php:436
 msgid "Equality operator"
 msgstr ""
 
@@ -309,21 +309,21 @@ msgstr ""
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: inc/condition.class.php:428
+#: inc/condition.class.php:426
 msgid "List of conditions"
 msgstr ""
 
-#: inc/condition.class.php:434
+#: inc/condition.class.php:432
 msgid "ID"
 msgstr ""
 
-#: inc/condition.class.php:440 inc/field.class.php:1218
+#: inc/condition.class.php:438 inc/field.class.php:1218
 #: inc/field.class.php:2846
 msgid "Order"
 msgstr ""
 
-#: inc/condition.class.php:518
-msgid "No conditions"
+#: inc/condition.class.php:516
+msgid "No conditions founded"
 msgstr ""
 
 #: inc/config.class.php:59
