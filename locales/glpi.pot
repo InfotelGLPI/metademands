@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-23 10:10+0000\n"
+"POT-Creation-Date: 2023-08-24 14:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -218,8 +218,8 @@ msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/checkbox.class.php:249 inc/condition.class.php:311
-#: inc/condition.class.php:437 inc/dropdown.class.php:144
+#: inc/checkbox.class.php:249 inc/condition.class.php:298
+#: inc/condition.class.php:424 inc/dropdown.class.php:144
 #: inc/dropdownmeta.class.php:380 inc/dropdownmultiple.class.php:470
 #: inc/dropdownobject.class.php:340 inc/field.class.php:1212
 #: inc/fieldoption.class.php:228 inc/radio.class.php:250
@@ -245,84 +245,87 @@ msgstr ""
 msgid "The plugin schema is good"
 msgstr ""
 
-#: inc/condition.class.php:71
+#: inc/condition.class.php:69
 msgid "Conditional display"
 msgid_plural "Conditional displays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/condition.class.php:106 inc/condition.class.php:118
-#: inc/condition.class.php:138 inc/condition.class.php:177
-msgid "Is empty"
-msgstr ""
-
-#: inc/condition.class.php:117 inc/condition.class.php:137
+#: inc/condition.class.php:114 inc/condition.class.php:133
 #: inc/field.class.php:1013
 msgid "Regex"
 msgstr ""
 
-#: inc/condition.class.php:231 inc/condition.class.php:249
+#: inc/condition.class.php:188
+msgid "AND"
+msgstr ""
+
+#: inc/condition.class.php:189
+msgid "OR"
+msgstr ""
+
+#: inc/condition.class.php:223 inc/condition.class.php:241
 msgid "Always displayed"
 msgstr ""
 
-#: inc/condition.class.php:232 inc/condition.class.php:252
+#: inc/condition.class.php:224 inc/condition.class.php:244
 msgid "Hidden unless"
 msgstr ""
 
-#: inc/condition.class.php:233 inc/condition.class.php:255
+#: inc/condition.class.php:225 inc/condition.class.php:247
 msgid "Displayed unless"
 msgstr ""
 
-#: inc/condition.class.php:270
-msgid "Soumission button always displayed"
-msgstr ""
-
-#: inc/condition.class.php:277
+#: inc/condition.class.php:264
 msgid "Rule"
 msgstr ""
 
-#: inc/condition.class.php:280
-msgid "Display rule"
+#: inc/condition.class.php:267
+msgid "Submit button display"
 msgstr ""
 
-#: inc/condition.class.php:307 inc/condition.class.php:433
+#: inc/condition.class.php:281
+msgid "Apply"
+msgstr ""
+
+#: inc/condition.class.php:294 inc/condition.class.php:420
 msgid "Logical operator"
 msgstr ""
 
-#: inc/condition.class.php:308 inc/condition.class.php:434
+#: inc/condition.class.php:295 inc/condition.class.php:421
 msgid "Field"
 msgstr ""
 
-#: inc/condition.class.php:309
+#: inc/condition.class.php:296
 msgid "Field type"
 msgstr ""
 
-#: inc/condition.class.php:310 inc/condition.class.php:436
+#: inc/condition.class.php:297 inc/condition.class.php:423
 msgid "Equality operator"
 msgstr ""
 
-#: inc/condition.class.php:312
+#: inc/condition.class.php:299
 msgid "Pool"
 msgstr ""
 
-#: inc/condition.class.php:313
+#: inc/condition.class.php:300
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: inc/condition.class.php:426
+#: inc/condition.class.php:413
 msgid "List of conditions"
 msgstr ""
 
-#: inc/condition.class.php:432
+#: inc/condition.class.php:419
 msgid "ID"
 msgstr ""
 
-#: inc/condition.class.php:438 inc/field.class.php:1218
+#: inc/condition.class.php:425 inc/field.class.php:1218
 #: inc/field.class.php:2846
 msgid "Order"
 msgstr ""
 
-#: inc/condition.class.php:516
+#: inc/condition.class.php:511
 msgid "No conditions founded"
 msgstr ""
 
@@ -617,19 +620,19 @@ msgstr ""
 msgid "Custom values"
 msgstr ""
 
-#: inc/field.class.php:3518
+#: inc/field.class.php:3813
 msgid "Requester login"
 msgstr ""
 
-#: inc/field.class.php:3522
+#: inc/field.class.php:3817
 msgid "Requester name"
 msgstr ""
 
-#: inc/field.class.php:3526
+#: inc/field.class.php:3821
 msgid "Requester firstname"
 msgstr ""
 
-#: inc/field.class.php:3530
+#: inc/field.class.php:3825
 msgid "Requester email"
 msgstr ""
 
@@ -1594,22 +1597,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3111
+#: inc/wizard.class.php:3115
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3120
+#: inc/wizard.class.php:3124
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3153
+#: inc/wizard.class.php:3157
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3157
+#: inc/wizard.class.php:3161
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
