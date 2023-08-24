@@ -38,58 +38,5 @@ Session::checkLoginUser();
 
 if (isset($_POST['fields_id'])) {
     $fields_id = $_POST['fields_id'];
-}
-$field = new PluginMetademandsField();
-
-if ($field->getFromDB($fields_id)) {
-
-    $type = $field->fields['type'];
-
-    switch ($type) {
-        case 'yesno' :
-            echo PluginMetademandsYesno::getTypeName();
-            break;
-        case 'text' :
-            echo PluginMetademandsText::getTypeName();
-            break;
-        case 'number':
-            echo PluginMetademandsNumber::getTypeName();
-            break;
-        case 'checkbox':
-            echo PluginMetademandsCheckbox::getTypeName();
-            break;
-        case 'radio' :
-            echo PluginMetademandsRadio::getTypeName();
-            break;
-        case 'dropdown' :
-            echo PluginMetademandsDropdown::getTypeName();
-            break;
-        case 'dropdown_meta' :
-            echo PluginMetademandsDropdownmeta::getTypeName();
-            break;
-
-        case 'dropdown_object' :
-            echo PluginMetademandsDropdownobject::getTypeName();
-            break;
-        case 'dropdown_multiple' :
-            echo PluginMetademandsDropdownmultiple::getTypeName();
-            break;
-        case 'textarea' :
-            echo PluginMetademandsTextarea::getTypeName();
-            break;
-        case 'date' :
-            echo PluginMetademandsDate::getTypeName();
-            break;
-        case 'datetime' :
-            echo PluginMetademandsDatetime::getTypeName();
-            break;
-        case 'date_interval' :
-            echo PluginMetademandsDateinterval::getTypeName();
-            break;
-
-        case 'datetime_interval' :
-            echo PluginMetademandsDatetimeinterval::getTypeName();
-            break;
-
-    }
+    PluginMetademandsCondition::getTypeField($fields_id);
 }

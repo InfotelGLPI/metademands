@@ -42,7 +42,9 @@ if (isset($_POST['fields_id'])) {
 
 
 $field = new PluginMetademandsField();
+$metademand = new PluginMetademandsMetademand();
 if ($field->getFromDB($fields_id)) {
+    $metademand->getFromDB($field->fields['plugin_metademands_metademands_id']);
     $name = 'check_value';
     $item = $field->fields['item'];
     $type = $field->fields['type'];
@@ -58,20 +60,57 @@ if ($field->getFromDB($fields_id)) {
             || $type == 'dropdown_object'
             || $type == 'dropdown_multiple'
             || $type == 'dropdown_meta')) {
+        if ($type == 'dropdown_meta') {
+            switch ($item) {
+                case 'other':
+                    $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                    Dropdown::showFromArray(
+                        $options['name'],
+                        $choices,
+                        ['width' => '100%',
+                        ]
+                    );
+                    break;
+                case 'ITILCategory_Metademands':
 
-        if ($item != "other") {
-            $item::dropdown($options);
+                    $values = json_decode($metademand->fields['itilcategories_id']);
+                    $params = [
+                        'name' => $name,
+                        'right' => 'all',
+                        'class' => 'form-select itilmeta',
+                        'condition' => ['id' => $values]
+                    ];
+                    ITILCategory::dropdown($params);
+                    break;
+                case 'mydevices':
+                    $params = [
+                        'name' => $name
+                    ];
+                    PluginMetademandsField::dropdownMyDevices(Session::getLoginUserID(), $_SESSION['glpiactiveentities'], 0, 0, $params);
+                    break;
+                case 'urgency':
+                    $params = [
+                        'name' => $name,
+                    ];
+                    Ticket::dropdownUrgency($params);
+                    break;
+                case 'impact':
+                    $params = [
+                        'name' => $name,
+                    ];
+                    Ticket::dropdownImpact($params);
+                    break;
+                case 'priority':
+                    $params = [
+                        'name' => $name,
+                    ];
+                    Ticket::dropdownPriority($params);
+                    break;
+            }
         } else {
-            $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
-            Dropdown::showFromArray(
-                $options['name'],
-                $choices,
-                ['width' => '100%',
-                ]
-            );
+            $item::dropdown($options);
+            echo Html::hidden('check_item', ['value' => 'check_item']);
         }
-
-        echo Html::hidden('check_item', ['value' => 'check_item']);
     } else {
         switch ($type) {
             default :
@@ -83,7 +122,6 @@ if ($field->getFromDB($fields_id)) {
                     ]
                 );
                 break;
-
             case 'number' :
                 echo Html::input(
                     "$name",
