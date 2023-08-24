@@ -416,7 +416,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
                 echo "</th>";
             }
-            echo "<th> " . __('ID', 'metademands') . " </th>";
+            echo "<th> " . __('ID') . " </th>";
             echo "<th> " . __('Logical operator', 'metademands') . " </th>";
             echo "<th>" . __('Field', 'metademands') . "</th>";
             echo "<th>" . __('Type') . "</th>";
