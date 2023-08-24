@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-24 14:22+0000\n"
+"POT-Creation-Date: 2023-08-24 14:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -314,10 +314,6 @@ msgstr ""
 
 #: inc/condition.class.php:413
 msgid "List of conditions"
-msgstr ""
-
-#: inc/condition.class.php:419
-msgid "ID"
 msgstr ""
 
 #: inc/condition.class.php:425 inc/field.class.php:1218
