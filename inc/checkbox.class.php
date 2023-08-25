@@ -488,6 +488,9 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
         $script .= "var tohide = {};";
 
+        //by default - hide all
+        $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+
         foreach ($check_values as $idc => $check_value) {
 
             $hidden_block = $check_value['hidden_block'];
@@ -604,7 +607,9 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                             case 'tel':
                                             case 'email':
                                                 jQuery(this).val('');
-                                                
+                                                if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+                                                    tinymce.get(this.id).setContent('');
+                                                }
                                                 break;
                                             case 'select-one':
                                             case 'select-multiple':

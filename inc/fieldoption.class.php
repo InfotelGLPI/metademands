@@ -391,7 +391,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
     }
 
     /**
-     * Display translation form
+     * Display field option form
      *
      * @param int $ID field (default -1)
      * @param     $options   array
@@ -1248,6 +1248,46 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
+    public static function hideAllblockbyDefault($check_values)
+    {
+
+        $script = '';
+        $hidden_blocks = [];
+        $childs = [];
+        foreach ($check_values as $idc => $check_value) {
+            $hidden_blocks[] = $check_value['hidden_block'];
+            $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
+        }
+        if (count($childs_blocks) > 0) {
+            foreach ($childs_blocks as $childs_block) {
+                if (is_array($childs_block)) {
+                    foreach ($childs_block as $childs_bloc) {
+                        if ($childs_bloc[0] > 0) {
+                            $childs[] =  $childs_bloc[0];
+                        }
+                    }
+                }
+            }
+        }
+
+        $json_hidden_blocks = json_encode($hidden_blocks);
+        $json_childs_blocks = json_encode($childs);
+        $script .= "var hidden_blocks = {$json_hidden_blocks};
+                    var child_blocks = {$json_childs_blocks};console.log(child_blocks);";
+        $script .= "if ($(this).val() >  0) {
+                            //by default - hide all
+                            $.each( hidden_blocks, function( key, value ) {
+                                tohide[value] = true;
+                            });
+                            $.each( child_blocks, function( key, value ) {
+                                tohide[value] = true;
+                            }); 
+                  }";
+
+        return $script;
+    }
+
+
     public static function setMandatoryBlockFields($metaid, $blockid)
     {
 
@@ -1281,7 +1321,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             case 'tel':
                                             case 'email':
                                                 jQuery(this).val('');
-                                                
+                                                if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+                                                    tinymce.get(this.id).setContent('');
+                                                }
                                                 break;
                                             case 'select-one':
                                             case 'select-multiple':
@@ -1357,6 +1399,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             }   
                                         }
                                         jQuery(this).removeAttr('required');
+                                        jQuery(this).removeClass('invalid');
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
                                         found = totest.match(regex);

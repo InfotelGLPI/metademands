@@ -401,12 +401,17 @@ class PluginMetademandsCondition extends CommonDBChild
         $field = new PluginMetademandsField();
         $rand = mt_rand();
         $canedit = $item->can($item->fields['id'], UPDATE);
+
+        if ($canedit) {
+            echo "<div id='viewcondition" . $item->getType() . $item->getID() . "$rand'></div>\n";
+        }
         $allConditions = [];
         $allConditions = $dbu->getAllDataFromTable('glpi_plugin_metademands_conditions', ['plugin_metademands_metademands_id' => $item->fields['id'], 'ORDER' => 'order ASC']);
         if (count($allConditions) > 0) {
             html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
             $params = ['container' => 'mass' . __CLASS__ . $rand];
             Html::showMassiveActions($params);
+
 
             echo "<div class ='left'>";
             echo "<table class='tab_cadre_fixehov'><tr class='tab_bg_2'>";
@@ -432,6 +437,7 @@ class PluginMetademandsCondition extends CommonDBChild
                         $onhover = "style='cursor:pointer'
                            onClick=\"viewEditcondition" . $item->getType() . $condition['id'] . "$rand();\"";
                     }
+
                     echo "<tr class = 'tab_bg_1'>";
                     if ($canedit) {
                         echo "<td class='center'>";
@@ -447,13 +453,12 @@ class PluginMetademandsCondition extends CommonDBChild
                             'parenttype' => get_class($item),
                             $item->getForeignKeyField() => $item->getID(),
                             'id' => $condition["id"]];
-                        Ajax::updateItemJsCode(
-                            "viewstepbybloc" . $item->getType() . $item->getID() . "$rand",
+                        Ajax::updateItemJsCode("viewcondition" . $item->getType() . $item->getID() . "$rand",
                             $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                            $params
-                        );
+                            $params);
                         echo "};";
                         echo "</script>\n";
+
                         echo($condition['id']);
                         echo "</td>";
                         echo "<td>";
@@ -470,20 +475,21 @@ class PluginMetademandsCondition extends CommonDBChild
                         }
                         echo "</td>";
                         echo "<td>";
-                        if ($condition['type'] == 'dropdown_meta') {
-                            echo PluginMetademandsField::getFieldItemsName($condition['item']);
-                        } else {
-                            if(!empty($condition['item'])){
-                                if (class_exists($condition['item'])) {
-                                    echo $condition['item']::getTypeName();
-                                } else {
-                                    echo $condition['item'];
-                                }
-                            } else {
-                               PluginMetademandsCondition::getTypeField($condition['plugin_metademands_fields_id']);
-                            }
-
-                        }
+//                        if ($condition['type'] == 'dropdown_meta') {
+//                            echo PluginMetademandsField::getFieldItemsName($condition['item']);
+//                        } else {
+//                            if(!empty($condition['item'])){
+//                                if (class_exists($condition['item'])) {
+//                                    echo $condition['item']::getTypeName();
+//                                } else {
+//                                    echo $condition['item'];
+//                                }
+//                            } else {
+//                               PluginMetademandsCondition::getTypeField($condition['plugin_metademands_fields_id']);
+//                            }
+//
+//                        }
+                        echo PluginMetademandsField::getFieldTypesName($condition['type']);
                         echo "</td>";
                         echo "<td>";
                         echo self::showCondition($condition['show_condition']);
@@ -805,6 +811,149 @@ class PluginMetademandsCondition extends CommonDBChild
                 break;
 
         }
+    }
+
+
+    /**
+     * Display field option form
+     *
+     * @param int $ID field (default -1)
+     * @param     $options   array
+     *
+     * @return bool
+     */
+    function showForm($ID = -1, $options = [])
+    {
+        global $PLUGIN_HOOKS;
+
+        if (isset($options['parent']) && !empty($options['parent'])) {
+            $item = $options['parent'];
+        }
+        if ($ID > 0) {
+            $this->check($ID, UPDATE);
+        } else {
+            $options['itemtype'] = get_class($item);
+            $options['items_id'] = $item->getID();
+
+            // Create item
+            $this->check(-1, CREATE, $options);
+        }
+
+        $this->showFormHeader($options);
+
+//        $params = [
+//            'item' => $item->fields['item'],
+//            'type' => $item->fields['type'],
+//            'plugin_metademands_metademands_id' => $item->fields['plugin_metademands_metademands_id'],
+//            'plugin_metademands_fields_id' => $item->getID(),
+//            'plugin_metademands_tasks_id' => $this->fields['plugin_metademands_tasks_id'] ?? 0,
+//            'fields_link' => $this->fields['fields_link'] ?? 0,
+//            'hidden_link' => $this->fields['hidden_link'] ?? 0,
+//            'hidden_block' => $this->fields['hidden_block'] ?? 0,
+//            'custom_values' => $item->fields['custom_values'] ?? 0,
+//            'check_value' => $this->fields['check_value'] ?? 0,
+//            'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
+//            'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
+//            'checkbox_value' => $this->fields['checkbox_value'] ?? 0,
+//        ];
+//
+//
+//        if ($this->fields['childs_blocks'] != null) {
+//            $params['childs_blocks'] = json_decode($this->fields['childs_blocks'], true);
+//        } else {
+//            $params['childs_blocks'] = [];
+//        }
+//
+//        //Hook to get values saves from plugin
+//        if (isset($PLUGIN_HOOKS['metademands'])) {
+//            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+//                $p = [];
+//                $p["plugin_metademands_fields_id"] = $item->getID();
+//                $p["plugin_metademands_metademands_id"] = $item->fields["plugin_metademands_metademands_id"];
+//                $p["nbOpt"] = $this->fields['id'];
+//
+//                $new_params = self::getPluginParamsOptions($plug, $p);
+//
+//                if (Plugin::isPluginActive($plug)
+//                    && is_array($new_params)) {
+//
+//                    $params = array_merge($params, $new_params);
+//                }
+//            }
+//        }
+//
+//        echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
+//
+//
+//        switch ($params['type']) {
+//            case 'title':
+//                break;
+//            case 'title-block':
+//                break;
+//            case 'informations':
+//                break;
+//            case 'text':
+//                PluginMetademandsText::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'textarea':
+//                PluginMetademandsTextarea::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'dropdown_meta':
+//                PluginMetademandsDropdownmeta::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'dropdown_object':
+//                PluginMetademandsDropdownobject::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'dropdown':
+//                PluginMetademandsDropdown::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'dropdown_multiple':
+//                PluginMetademandsDropdownmultiple::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'checkbox':
+//                PluginMetademandsCheckbox::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'radio':
+//                PluginMetademandsRadio::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'yesno':
+//                PluginMetademandsYesno::getParamsValueToCheck($this, $item, $params);
+//                break;
+//            case 'number':
+//                break;
+//            case 'date':
+//                break;
+//            case 'date_interval':
+//                break;
+//            case 'datetime':
+//                break;
+//            case 'datetime_interval':
+//                break;
+//            case 'upload':
+//                break;
+//            case 'link':
+//                break;
+//            case 'parent_field':
+//                echo "<tr>";
+//                echo "<td>";
+//                echo __('Field');
+//                echo "</td>";
+//                echo "<td>";
+//                self::showValueToCheck($this, $params);
+//
+//                echo "</td></tr>";
+//                break;
+//            default:
+//                if (isset($PLUGIN_HOOKS['metademands'])) {
+//                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+//                        self::getPluginParamsValueToCheck($plug, $this, $item->getID(), $params);
+//                    }
+//                }
+//                break;
+//        }
+
+        $this->showFormButtons($options);
+        return true;
     }
 
 }

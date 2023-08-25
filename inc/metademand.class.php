@@ -322,6 +322,8 @@ class PluginMetademandsMetademand extends CommonDBTM
     public function post_getEmpty()
     {
         $this->fields["background_color"] = '#ffffff';
+        $this->fields["hide_no_field"] = 1;
+        $this->fields["is_active"] = 1;
     }
 
     /**
