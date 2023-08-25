@@ -38,5 +38,7 @@ Session::checkLoginUser();
 
 if (isset($_POST['fields_id'])) {
     $fields_id = $_POST['fields_id'];
-    PluginMetademandsCondition::getTypeField($fields_id);
+    $field = new PluginMetademandsField();
+    $field->getFromDB($fields_id);
+    echo PluginMetademandsField::getFieldTypesName($field->fields['type']);
 }

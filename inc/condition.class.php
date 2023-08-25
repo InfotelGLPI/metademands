@@ -312,7 +312,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 );
                 $dropdown_fields = [];
                 foreach ($fields as $f) {
-                    $dropdown_fields[$f['id']] = $f['name'];
+                    $dropdown_fields[$f['id']] = $f['name'] . " (" . $f['id'] . ") ";
                 }
                 echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
                 echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
@@ -759,60 +759,6 @@ class PluginMetademandsCondition extends CommonDBChild
         return $return;
     }
 
-    static function getTypeField($fields_id){
-        $field = new PluginMetademandsField();
-        $field->getFromDB($fields_id);
-        $type = $field->fields['type'];
-
-        switch ($type) {
-            case 'yesno' :
-                echo PluginMetademandsYesno::getTypeName();
-                break;
-            case 'text' :
-                echo PluginMetademandsText::getTypeName();
-                break;
-            case 'number':
-                echo PluginMetademandsNumber::getTypeName();
-                break;
-            case 'checkbox':
-                echo PluginMetademandsCheckbox::getTypeName();
-                break;
-            case 'radio' :
-                echo PluginMetademandsRadio::getTypeName();
-                break;
-            case 'dropdown' :
-                echo PluginMetademandsDropdown::getTypeName();
-                break;
-            case 'dropdown_meta' :
-                echo PluginMetademandsDropdownmeta::getTypeName();
-                break;
-
-            case 'dropdown_object' :
-                echo PluginMetademandsDropdownobject::getTypeName();
-                break;
-            case 'dropdown_multiple' :
-                echo PluginMetademandsDropdownmultiple::getTypeName();
-                break;
-            case 'textarea' :
-                echo PluginMetademandsTextarea::getTypeName();
-                break;
-            case 'date' :
-                echo PluginMetademandsDate::getTypeName();
-                break;
-            case 'datetime' :
-                echo PluginMetademandsDatetime::getTypeName();
-                break;
-            case 'date_interval' :
-                echo PluginMetademandsDateinterval::getTypeName();
-                break;
-
-            case 'datetime_interval' :
-                echo PluginMetademandsDatetimeinterval::getTypeName();
-                break;
-
-        }
-    }
-
 
     /**
      * Display field option form
@@ -839,7 +785,6 @@ class PluginMetademandsCondition extends CommonDBChild
             $this->check(-1, CREATE, $options);
         }
 
-        $this->showFormHeader($options);
 
 //        $params = [
 //            'item' => $item->fields['item'],
@@ -952,7 +897,7 @@ class PluginMetademandsCondition extends CommonDBChild
 //                break;
 //        }
 
-        $this->showFormButtons($options);
+//        $this->showFormButtons($options);
         return true;
     }
 
