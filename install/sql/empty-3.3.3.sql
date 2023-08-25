@@ -146,7 +146,7 @@ CREATE TABLE `glpi_plugin_metademands_fieldoptions`
 (
     `id`                           int unsigned NOT NULL AUTO_INCREMENT,
     `plugin_metademands_fields_id` int unsigned NOT NULL DEFAULT '0',
-    `check_value`                  int unsigned NOT NULL DEFAULT '0',
+    `check_value`                  int NOT NULL DEFAULT '0',
     `plugin_metademands_tasks_id`  int unsigned NOT NULL DEFAULT '0',
     `fields_link`                  int unsigned NOT NULL DEFAULT '0',
     `hidden_link`                  int unsigned NOT NULL DEFAULT '0',

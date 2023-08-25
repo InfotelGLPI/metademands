@@ -247,7 +247,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
         echo "<tr>";
         echo "<td>";
         echo __('Value to check', 'metademands');
-        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+//        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
         echo "<td>";
         self::showValueToCheck($fieldoption, $params);
@@ -266,7 +266,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 $already_used[$existing_option["check_value"]] = $existing_option["check_value"];
             }
         }
-        $elements[-1] = Dropdown::EMPTY_VALUE;
+        $elements[-1] = __('Not null value', 'metademands');
         if (is_array(json_decode($params['custom_values'], true))) {
             $elements += json_decode($params['custom_values'], true);
         }
@@ -282,7 +282,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
     static function showParamsValueToCheck($params)
     {
-        $elements = [];
+        $elements[-1] = __('Not null value', 'metademands');
         if (is_array(json_decode($params['custom_values'], true))) {
             $elements += json_decode($params['custom_values'], true);
         }
@@ -594,10 +594,11 @@ class PluginMetademandsCheckbox extends CommonDBTM
             }
 
             $script .= "$.each( tohide, function( key, value ) {
-                            if (value == true) {
-                                $('[bloc-id =\"bloc'+key+'\"]').hide();
+                        if (value == true) {
+                            $('[bloc-id=\"bloc'+key+'\"]').hide();
+                            $.each(tohide, function( key, value ) {
                                 $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
-                                     switch(this.type) {
+                                         switch(this.type) {
                                             case 'password':
                                             case 'text':
                                             case 'textarea':
@@ -632,9 +633,12 @@ class PluginMetademandsCheckbox extends CommonDBTM
                                            $('#'+found[0]+'_leftAll').click();
                                         }
                                     });
-                                    fixButtonIndicator();
-                            }
-                        });";
+                            });
+                         } else {
+//                            $('[bloc-id =\"bloc'+key+'\"]').show();
+//                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
+                        }
+                    });";
 
             $script .= " }";
 //

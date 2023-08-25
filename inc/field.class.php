@@ -2424,26 +2424,28 @@ JAVASCRIPT
 
             echo "<tr><td>";
             echo '<table width=\'100%\' class="tab_cadre">';
-            if ($params["value"] == "dropdown_multiple" && empty($params["item"])) {
+            if ($params["type"] == "dropdown_multiple" && empty($params["item"])) {
                 $params["item"] = "other";
             }
 
-            if ($params["value"] == "radio") {
+            if ($params["type"] == "radio") {
                 $params["item"] = "radio";
             }
-            if ($params["value"] == "checkbox") {
+            if ($params["type"] == "checkbox") {
                 $params["item"] = "checkbox";
             }
 
-            switch ($params['item']) {
-                case 'other':
-                    PluginMetademandsDropdownmeta::showFieldCustomValues($values, $key, $params);
-                    break;
-                default:
-                    break;
+            if ($params["type"] != "dropdown_multiple") {
+                switch ($params['item']) {
+                    case 'other':
+                        PluginMetademandsDropdownmeta::showFieldCustomValues($values, $key, $params);
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            switch ($params['value']) {
+            switch ($params['type']) {
                 case 'title':
                     break;
                 case 'title-block':

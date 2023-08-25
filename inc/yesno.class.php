@@ -281,6 +281,7 @@ class PluginMetademandsYesno extends CommonDBTM
         $check_values = $data['options'];
         $id = $data["id"];
 
+        $name = "field[" . $data["id"] . "]";
         $script2 = "";
         $script = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
@@ -288,7 +289,7 @@ class PluginMetademandsYesno extends CommonDBTM
         if ($debug) {
             $script = "console.log('blocksHiddenScript-yesno $id');";
         }
-        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $script .= "$('[name=\"$name\"]').change(function() {";
 
         foreach ($check_values as $idc => $check_value) {
             $hidden_block = $data['options'][$idc]['hidden_block'];
@@ -328,7 +329,7 @@ class PluginMetademandsYesno extends CommonDBTM
                     foreach ($childs_blocks as $childs) {
                         if (is_array($childs)) {
                             foreach ($childs as $childs_block) {
-                                $script2 .= " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block) . ";
+                                $script2 .= PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
                                 $hiddenblocks[] = $childs_block;
                                 $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
                             }

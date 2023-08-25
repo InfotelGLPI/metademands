@@ -1,3 +1,4 @@
+ALTER TABLE `glpi_plugin_metademands_fieldoptions` CHANGE `check_value` `check_value` int NOT NULL DEFAULT '0';
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `show_rule` tinyint   NOT NULL  DEFAULT '1';
 
 CREATE TABLE `glpi_plugin_metademands_conditions`

@@ -1561,7 +1561,7 @@ JAVASCRIPT
                             "glpi_plugin_metademands_metademands_resources",
                             ["plugin_metademands_metademands_id" => $data['id']]
                         )) {
-                            if (empty($name = PluginMetademandsMetademand::displayField($data['id'], 'name'))) {
+                            if (empty($name = self::displayField($data['id'], 'name'))) {
                                 $name = $data['name'];
                             }
                             $meta_data[$data['id']] = $name . ' (' . $data['entities_name'] . ')';
@@ -1911,12 +1911,13 @@ JAVASCRIPT
                         }
                     }
 
-                    if (empty($n = PluginMetademandsMetademand::displayField($form_metademands_id, 'name'))) {
+                    if (empty($n = self::displayField($form_metademands_id, 'name'))) {
                         $n = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                     }
 
                     $parent_fields['name'] = self::$PARENT_PREFIX .
                         $n;
+
                     if ($object_class == 'Ticket') {
                         $parent_fields['type'] = $this->fields['type'];
                         // Existing tickets id field
@@ -2136,6 +2137,7 @@ JAVASCRIPT
                                 }
                             }
                         }
+
                         if ($input['name'] == 0 || $input['name'] == "0" || empty($input['name'])) {
                             $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                         }
@@ -2215,18 +2217,18 @@ JAVASCRIPT
                                 $p["values"] = $values;
                                 $p["line"] = $line;
 
-                                $new_res = PluginMetademandsMetademand::getPluginAfterCreateTicket($plug, $p);
+                                $new_res = self::getPluginAfterCreateTicket($plug, $p);
                             }
                         }
 
                         if ($docitem == null && $config['create_pdf']) {
                             //document PDF Generation
                             //TODO TO Tranlate
-                            if (empty($n = PluginMetademandsMetademand::displayField($this->getID(), 'name'))) {
+                            if (empty($n = self::displayField($this->getID(), 'name'))) {
                                 $n = $this->getName();
                             }
 
-                            if (empty($comm = PluginMetademandsMetademand::displayField($this->getID(), 'comment'))) {
+                            if (empty($comm = self::displayField($this->getID(), 'comment'))) {
                                 $comm = $this->getField("comment");
                             }
                             $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm);
@@ -3218,7 +3220,7 @@ JAVASCRIPT
                     }
                 }
             }
-            if (empty($name = PluginMetademandsMetademand::displayField($metademands_id, 'name', $langTech))) {
+            if (empty($name = self::displayField($metademands_id, 'name', $langTech))) {
                 $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
             }
             if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
@@ -3579,6 +3581,8 @@ JAVASCRIPT
                 if (isset($allowed_fields[$value['num']])
                     && (!in_array($allowed_fields[$value['num']], PluginMetademandsTicketField::$used_fields))) {
                     $value['item'] = $allowed_fields[$value['num']];
+
+                    //Title of father ticket
                     if ($value['item'] == 'name') {
                         do {
                             $match = $this->getBetween($value['value'], '[', ']');
@@ -3777,7 +3781,6 @@ JAVASCRIPT
                                 }
                             }
                         }
-
 
                         $inputs[$value['item']] = self::$PARENT_PREFIX . $value['value'];
                     } else {
@@ -5567,7 +5570,7 @@ JAVASCRIPT
         $fields = $this->fields;
         $metatranslation = new PluginMetademandsMetademandTranslation();
         $translations = $metatranslation->find(['items_id' => $this->getID(),
-            'itemtype' => PluginMetademandsMetademand::getType()]);
+            'itemtype' => self::getType()]);
         foreach ($translations as $id => $translation) {
             $fields['translations']['meta_translation' . $id] = $translation;
         }
@@ -5861,7 +5864,7 @@ JAVASCRIPT
 
         //Add new options & update fields
         $fieldMetaopt = new PluginMetademandsFieldOption();
-//        Toolbox::logInfo($fieldoptions);
+
         foreach ($fieldoptions as $new => $old) {
 
 //            $fieldMeta->getFromDBByCrit(["plugin_metademands_fileds_id" => $new]);
@@ -5914,7 +5917,7 @@ JAVASCRIPT
                 && isset($mapTableField[$plugin_metademands_fields_id])) {
                 $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
             }
-//            Toolbox::logInfo($toUpdate);
+
             $fieldMetaopt->add($toUpdate);
         }
 
@@ -6233,7 +6236,7 @@ HTML;
                         if (!empty($meta->fields['icon'])) {
                             $icon = $meta->fields['icon'];
                         }
-                        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
+                        if (empty($n = self::displayField($meta->getID(), 'name'))) {
                             $name = $meta->getName();
                         } else {
                             $name = $n;

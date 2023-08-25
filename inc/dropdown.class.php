@@ -142,7 +142,7 @@ class PluginMetademandsDropdown extends CommonDBTM
         echo "<tr>";
         echo "<td>";
         echo __('Value to check', 'metademands');
-        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+//        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
         echo "<td>";
         self::showValueToCheck($fieldoption, $params);
@@ -164,41 +164,45 @@ class PluginMetademandsDropdown extends CommonDBTM
         switch ($params["item"]) {
             default:
                 $dbu = new DbUtils();
-                if ($item = $dbu->getItemForItemtype($params["item"])
-                    && $params['type'] != "dropdown_multiple") {
+                if ($item = $dbu->getItemForItemtype($params["item"])) {
                     //               if ($params['value'] == 'group') {
                     //                  $name = "check_value";// TODO : HS POUR LES GROUPES CAR rajout un RAND dans le dropdownname
                     //               } else {
                     $name = "check_value";
                     //               }
+
                     $params['item']::Dropdown(["name" => $name,
-                        "value" => $params['check_value'], 'used' => $already_used]);
-                } else {
-                    if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
-                        $elements[0] = Dropdown::EMPTY_VALUE;
-                        if (is_array(json_decode($params['custom_values'], true))) {
-                            $elements += json_decode($params['custom_values'], true);
-                        }
-                        foreach ($elements as $key => $val) {
-                            if ($key != 0) {
-                                $elements[$key] = $params["item"]::getFriendlyNameById($key);
-                            }
-                        }
-                    } else {
-                        $elements[0] = Dropdown::EMPTY_VALUE;
-                        if (is_array(json_decode($params['custom_values'], true))) {
-                            $elements += json_decode($params['custom_values'], true);
-                        }
-                        foreach ($elements as $key => $val) {
-                            $elements[$key] = urldecode($val);
-                        }
-                    }
-                    Dropdown::showFromArray(
-                        "check_value",
-                        $elements,
-                        ['value' => $params['check_value'], 'used' => $already_used]
-                    );
+                        "value" => $params['check_value'],
+                        'used' => $already_used,
+                        'display_emptychoice' => false,
+                        'toadd' => [-1 => __('Not null value', 'metademands')]]);
                 }
+//                else {
+//                    if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
+//                        $elements[-1] = __('Not null value', 'metademands');
+//                        if (is_array(json_decode($params['custom_values'], true))) {
+//                            $elements += json_decode($params['custom_values'], true);
+//                        }
+//                        foreach ($elements as $key => $val) {
+//                            if ($key != 0) {
+//                                $elements[$key] = $params["item"]::getFriendlyNameById($key);
+//                            }
+//                        }
+//                    } else {
+//                        $elements[-1] = __('Not null value', 'metademands');
+//                        if (is_array(json_decode($params['custom_values'], true))) {
+//                            $elements += json_decode($params['custom_values'], true);
+//                        }
+//                        foreach ($elements as $key => $val) {
+//                            $elements[$key] = urldecode($val);
+//                        }
+//                    }
+//                    Dropdown::showFromArray(
+//                        "check_value",
+//                        $elements,
+//                        ['value' => $params['check_value'], 'used' => $already_used]
+//                    );
+//                }
                 break;
         }
     }
@@ -370,7 +374,14 @@ class PluginMetademandsDropdown extends CommonDBTM
                         }
                         if ($(this).val() == $idc || ($(this).val() != 0 &&  $idc == 0 )) {
                             tohide[$hidden_block] = false;
-                        }";
+                        }
+                        
+                        if ($(this).val() == 0 && $idc == -1) {
+                            tohide[$hidden_block] = true;
+                        } else if ($(this).val() > 0 && $idc == -1) {
+                            tohide[$hidden_block] = false;
+                        }
+                        ";
 
             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
                             " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
@@ -397,51 +408,49 @@ class PluginMetademandsDropdown extends CommonDBTM
             }
             $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
-                            $('[bloc-id =\"bloc'+key+'\"]').hide();
-                            $.each( tohide, function( key, value ) {
-                            if (value == true) {
-                                    $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
+                            $('[bloc-id=\"bloc'+key+'\"]').hide();
+                            $.each(tohide, function( key, value ) {
+                                $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
                                          switch(this.type) {
-                                                case 'password':
-                                                case 'text':
-                                                case 'textarea':
-                                                case 'file':
-                                                case 'date':
-                                                case 'number':
-                                                case 'tel':
-                                                case 'email':
-                                                    jQuery(this).val('');
-                                                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
-                                                        tinymce.get(this.id).setContent('');
-                                                    }
-                                                    break;
-                                                case 'select-one':
-                                                case 'select-multiple':
-                                                    jQuery(this).val('0').trigger('change');
-                                                    jQuery(this).val('0');
-                                                    break;
-                                                case 'checkbox':
-                                                case 'radio':
-                                                     this.checked = false;
-                                                     var checkname = this.name;
-                                                     $(\"[name^='\"+checkname+\"']\").removeAttr('required');
-                                            }
-                                            jQuery(this).removeAttr('required');
-                                            regex = /multiselectfield.*_to/g;
-                                            totest = this.id;
-                                            found = totest.match(regex);
-                                            if(found !== null) {
-                                              regex = /multiselectfield[0-9]*/;
-                                               found = totest.match(regex);
-                                               $('#'+found[0]+'_leftAll').click();
-                                            }
-                                        });
-                                    }
-                                 });
-                            } else {
-                                $('[bloc-id =\"bloc'+key+'\"]').show();
-                                " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
-                            }
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+                                                    tinymce.get(this.id).setContent('');
+                                                }
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                 this.checked = false;
+                                                 var checkname = this.name;
+                                                 $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                        }
+                                        jQuery(this).removeAttr('required');
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
+                            });
+                         } else {
+                            $('[bloc-id =\"bloc'+key+'\"]').show();
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
+                        }
                     });";
         }
 

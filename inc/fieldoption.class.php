@@ -1012,15 +1012,21 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         unset($blocks[$hidden_block]);
         $values = [];
-        foreach ($selected_values as $k => $v) {
-            if (is_array($v)) {
-                foreach ($v as $selected_value) {
-                    $values[] = $selected_value;
+        if (!is_array($selected_values)) {
+            $selected_values = [];
+        }
+        if (is_array($selected_values)) {
+            foreach ($selected_values as $k => $v) {
+                if (is_array($v)) {
+                    foreach ($v as $selected_value) {
+                        $values[] = $selected_value;
+                    }
+                } else {
+                    $values[] = $v;
                 }
-            } else {
-                $values[] = $v;
             }
         }
+
 
         $name = "childs_blocks[]";
         Dropdown::showFromArray(
@@ -1273,7 +1279,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $json_hidden_blocks = json_encode($hidden_blocks);
         $json_childs_blocks = json_encode($childs);
         $script .= "var hidden_blocks = {$json_hidden_blocks};
-                    var child_blocks = {$json_childs_blocks};console.log(child_blocks);";
+                    var child_blocks = {$json_childs_blocks};";
         $script .= "if ($(this).val() >  0) {
                             //by default - hide all
                             $.each( hidden_blocks, function( key, value ) {

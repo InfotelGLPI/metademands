@@ -357,7 +357,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             echo "<p id='default_values1'>";
             echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
             $name  = "default_values[1]";
-            $value = 1;
+            $value = 0;
             Dropdown::showYesNo($name, $value);
             echo '</p>';
             echo "</td>";
@@ -378,7 +378,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         echo "<tr>";
         echo "<td>";
         echo __('Value to check', 'metademands');
-        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
+//        echo " ( " . Dropdown::EMPTY_VALUE . " = " . __('Not null value', 'metademands') . ")";
         echo "</td>";
         echo "<td>";
         self::showValueToCheck($fieldoption, $params);
@@ -426,7 +426,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         "value" => $params['check_value'], 'used' => $already_used]);
                 } else {
                     if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
-                        $elements[0] = Dropdown::EMPTY_VALUE;
+                        $elements[-1] = __('Not null value', 'metademands');
                         if (is_array(json_decode($params['custom_values'], true))) {
                             $elements += json_decode($params['custom_values'], true);
                         }
@@ -436,7 +436,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             }
                         }
                     } else {
-                        $elements[0] = Dropdown::EMPTY_VALUE;
+                        $elements[-1] = __('Not null value', 'metademands');
                         if (is_array(json_decode($params['custom_values'], true))) {
                             $elements += json_decode($params['custom_values'], true);
                         }
@@ -627,6 +627,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         }
                         if ($(this).val() == $idc || ($(this).val() != 0 &&  $idc == 0 )) {
                             tohide[$hidden_block] = false;
+                        }
+                        
+                        if ($(this).val() == 0 && $idc == -1) {
+                            tohide[$hidden_block] = true;
+                        } else if ($(this).val() > 0 && $idc == -1) {
+                            tohide[$hidden_block] = false;
                         }";
 
             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
@@ -656,51 +662,49 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         }
         $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
-                            $('[bloc-id =\"bloc'+key+'\"]').hide();
-                            $.each( tohide, function( key, value ) {
-                            if (value == true) {
-                                    $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
+                            $('[bloc-id=\"bloc'+key+'\"]').hide();
+                            $.each(tohide, function( key, value ) {
+                                $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
                                          switch(this.type) {
-                                                case 'password':
-                                                case 'text':
-                                                case 'textarea':
-                                                case 'file':
-                                                case 'date':
-                                                case 'number':
-                                                case 'tel':
-                                                case 'email':
-                                                    jQuery(this).val('');
-                                                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
-                                                        tinymce.get(this.id).setContent('');
-                                                    }
-                                                    break;
-                                                case 'select-one':
-                                                case 'select-multiple':
-                                                    jQuery(this).val('0').trigger('change');
-                                                    jQuery(this).val('0');
-                                                    break;
-                                                case 'checkbox':
-                                                case 'radio':
-                                                     this.checked = false;
-                                                     var checkname = this.name;
-                                                     $(\"[name^='\"+checkname+\"']\").removeAttr('required');
-                                            }
-                                            jQuery(this).removeAttr('required');
-                                            regex = /multiselectfield.*_to/g;
-                                            totest = this.id;
-                                            found = totest.match(regex);
-                                            if(found !== null) {
-                                              regex = /multiselectfield[0-9]*/;
-                                               found = totest.match(regex);
-                                               $('#'+found[0]+'_leftAll').click();
-                                            }
-                                        });
-                                    }
-                                 });
-                            } else {
-                                $('[bloc-id =\"bloc'+key+'\"]').show();
-                                " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
-                            }
+                                            case 'password':
+                                            case 'text':
+                                            case 'textarea':
+                                            case 'file':
+                                            case 'date':
+                                            case 'number':
+                                            case 'tel':
+                                            case 'email':
+                                                jQuery(this).val('');
+                                                if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+                                                    tinymce.get(this.id).setContent('');
+                                                }
+                                                break;
+                                            case 'select-one':
+                                            case 'select-multiple':
+                                                jQuery(this).val('0').trigger('change');
+                                                jQuery(this).val('0');
+                                                break;
+                                            case 'checkbox':
+                                            case 'radio':
+                                                 this.checked = false;
+                                                 var checkname = this.name;
+                                                 $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                        }
+                                        jQuery(this).removeAttr('required');
+                                        regex = /multiselectfield.*_to/g;
+                                        totest = this.id;
+                                        found = totest.match(regex);
+                                        if(found !== null) {
+                                          regex = /multiselectfield[0-9]*/;
+                                           found = totest.match(regex);
+                                           $('#'+found[0]+'_leftAll').click();
+                                        }
+                                    });
+                            });
+                         } else {
+                            $('[bloc-id =\"bloc'+key+'\"]').show();
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
+                        }
                     });";
 
         foreach ($check_values as $idc => $check_value) {
