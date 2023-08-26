@@ -79,8 +79,32 @@ class PluginMetademandsCondition extends CommonDBChild
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        return self::createTabEntry(self::getTypeName());
+        if ($item->getType() == 'PluginMetademandsMetademand') {
+            if ($_SESSION['glpishow_count_on_tabs']) {
+                $dbu = new DbUtils();
+                return self::createTabEntry(
+                    self::getTypeName(),
+                    $dbu->countElementsInTable(
+                        $this->getTable(),
+                        ["plugin_metademands_metademands_id" => $item->getID()]
+                    )
+                );
+            }
+            return self::getTypeName();
+        }
+        return '';
 
+    }
+
+    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    {
+        $condition = new self();
+
+        if ($item->getType() == 'PluginMetademandsMetademand') {
+            $condition->showForMetademand($item);
+        }
+
+        return true;
     }
 
 
@@ -599,17 +623,6 @@ class PluginMetademandsCondition extends CommonDBChild
 
         }
 
-    }
-
-    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
-    {
-        $condition = new self();
-
-        if ($item->getType() == 'PluginMetademandsMetademand') {
-            $condition->showForMetademand($item);
-        }
-
-        return true;
     }
 
 

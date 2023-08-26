@@ -49,7 +49,7 @@ class PluginMetademandsMenu extends CommonDBTM
     {
         $menu                    = [];
         $menu['title']           = self::getMenuName();
-
+//        $menu['links']['lists']  = "";
         if (PluginMetademandsMetademand::canCreate()) {
             $menu['page']            = PluginMetademandsMetademand::getSearchURL(false);
             $menu['links']['search'] = PluginMetademandsMetademand::getSearchURL(false);
@@ -69,8 +69,6 @@ class PluginMetademandsMenu extends CommonDBTM
             //Entry icon in breadcrumb
             $menu['links']['config'] = PluginMetademandsConfig::getFormURL(false);
         }
-
-
 
         if (PluginMetademandsMetademand::canCreate()) {
             $menu['links']['template'] = PLUGIN_METADEMANDS_WEBDIR_NOFULL.'/front/setup.templates.php?add=0';
