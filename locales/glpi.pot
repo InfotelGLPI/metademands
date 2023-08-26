@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-26 09:57+0000\n"
+"POT-Creation-Date: 2023-08-26 11:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,7 +101,7 @@ msgid "Delete form"
 msgstr ""
 
 #: ajax/deleteform.php:71 inc/form.class.php:176 inc/stepform.class.php:186
-#: inc/stepform.class.php:605 inc/wizard.class.php:598 inc/wizard.class.php:719
+#: inc/stepform.class.php:605 inc/wizard.class.php:599 inc/wizard.class.php:720
 msgid "No existing forms founded"
 msgstr ""
 
@@ -165,8 +165,9 @@ msgstr ""
 
 #: front/wizard.form.php:277 front/wizard.form.php:280
 #: front/wizard.form.php:282 front/wizard.form.php:518
-#: front/wizard.form.php:521 front/wizard.form.php:523
-msgid "Create a demand"
+#: front/wizard.form.php:521 front/wizard.form.php:523 inc/menu.class.php:56
+#: inc/menu.class.php:61
+msgid "Create a metademand"
 msgstr ""
 
 #: front/wizard.form.php:444
@@ -212,7 +213,7 @@ msgstr ""
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
 #: inc/dropdownmeta.class.php:302 inc/dropdownmeta.class.php:358
 #: inc/dropdownmultiple.class.php:439 inc/dropdownmultiple.class.php:495
-#: inc/field.class.php:2607 inc/radio.class.php:178 inc/radio.class.php:228
+#: inc/field.class.php:2607 inc/radio.class.php:176 inc/radio.class.php:226
 #: inc/yesno.class.php:92
 msgid "Default value"
 msgid_plural "Default values"
@@ -223,7 +224,7 @@ msgstr[1] ""
 #: inc/condition.class.php:453 inc/dropdown.class.php:144
 #: inc/dropdownmeta.class.php:380 inc/dropdownmultiple.class.php:516
 #: inc/dropdownobject.class.php:340 inc/field.class.php:1212
-#: inc/fieldoption.class.php:228 inc/radio.class.php:250
+#: inc/fieldoption.class.php:228 inc/radio.class.php:248
 #: inc/yesno.class.php:113
 msgid "Value to check"
 msgstr ""
@@ -233,7 +234,7 @@ msgstr ""
 #: inc/dropdownmeta.class.php:429 inc/dropdownmeta.class.php:439
 #: inc/dropdownmeta.class.php:461 inc/dropdownobject.class.php:403
 #: inc/dropdownobject.class.php:413 inc/dropdownobject.class.php:435
-#: inc/radio.class.php:270 inc/radio.class.php:286
+#: inc/radio.class.php:268 inc/radio.class.php:284
 msgid "Not null value"
 msgstr ""
 
@@ -821,10 +822,6 @@ msgstr ""
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
-#: inc/menu.class.php:56 inc/menu.class.php:61
-msgid "Create a metademand"
-msgstr ""
-
 #: inc/menu.class.php:75
 msgid "Import metademands"
 msgstr ""
@@ -1031,7 +1028,7 @@ msgstr ""
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:6206 inc/wizard.class.php:741
+#: inc/metademand.class.php:6206 inc/wizard.class.php:742
 msgid "Find a form"
 msgstr ""
 
@@ -1521,94 +1518,94 @@ msgstr ""
 msgid "You don't have the right to create meta-demand"
 msgstr ""
 
-#: inc/wizard.class.php:685
+#: inc/wizard.class.php:686
 msgid "Report an incident"
 msgstr ""
 
-#: inc/wizard.class.php:690
+#: inc/wizard.class.php:691
 msgid "Make a request"
 msgstr ""
 
-#: inc/wizard.class.php:695
+#: inc/wizard.class.php:696
 msgid "Report a problem"
 msgstr ""
 
-#: inc/wizard.class.php:699
+#: inc/wizard.class.php:700
 msgid "Make a change request"
 msgstr ""
 
-#: inc/wizard.class.php:788
+#: inc/wizard.class.php:789
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/wizard.class.php:899 inc/wizard.class.php:957
+#: inc/wizard.class.php:903 inc/wizard.class.php:961
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:968 inc/wizard.class.php:1696
+#: inc/wizard.class.php:972 inc/wizard.class.php:1700
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:1131
+#: inc/wizard.class.php:1135
 msgid "You do not have access to the form"
 msgstr ""
 
-#: inc/wizard.class.php:1182
+#: inc/wizard.class.php:1186
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1660
+#: inc/wizard.class.php:1664
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:1663 inc/wizard.class.php:1689
-#: inc/wizard.class.php:1703
+#: inc/wizard.class.php:1667 inc/wizard.class.php:1693
+#: inc/wizard.class.php:1707
 msgid "Next"
 msgstr ""
 
-#: inc/wizard.class.php:1692
+#: inc/wizard.class.php:1696
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/wizard.class.php:1704
+#: inc/wizard.class.php:1708
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1716
+#: inc/wizard.class.php:1720
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1771
+#: inc/wizard.class.php:1775
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:1781
+#: inc/wizard.class.php:1785
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3115
+#: inc/wizard.class.php:3119
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3124
+#: inc/wizard.class.php:3128
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3157
+#: inc/wizard.class.php:3161
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3161
+#: inc/wizard.class.php:3165
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
