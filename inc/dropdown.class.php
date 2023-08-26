@@ -210,36 +210,40 @@ class PluginMetademandsDropdown extends CommonDBTM
 
     static function showParamsValueToCheck($params)
     {
-        switch ($params["item"]) {
-            default:
-                $dbu = new DbUtils();
-                if ($item = $dbu->getItemForItemtype($params["item"])
-                    && $params['type'] != "dropdown_multiple") {
-                    echo Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
-                } else {
-                    if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
-                        $elements = [];
-                        if (is_array(json_decode($params['custom_values'], true))) {
-                            $elements += json_decode($params['custom_values'], true);
-                        }
-                        foreach ($elements as $key => $val) {
-                            if ($key != 0) {
-                                $elements[$key] = $params["item"]::getFriendlyNameById($key);
-                            }
-                        }
-                        echo $elements[$params['check_value']];
+        if ($params['check_value'] == -1) {
+            echo __('Not null value', 'metademands');
+        } else {
+            switch ($params["item"]) {
+                default:
+                    $dbu = new DbUtils();
+                    if ($item = $dbu->getItemForItemtype($params["item"])
+                        && $params['type'] != "dropdown_multiple") {
+                        echo Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
                     } else {
-                        $elements = [];
-                        if (is_array(json_decode($params['custom_values'], true))) {
-                            $elements += json_decode($params['custom_values'], true);
+                        if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
+                            $elements = [];
+                            if (is_array(json_decode($params['custom_values'], true))) {
+                                $elements += json_decode($params['custom_values'], true);
+                            }
+                            foreach ($elements as $key => $val) {
+                                if ($key != 0) {
+                                    $elements[$key] = $params["item"]::getFriendlyNameById($key);
+                                }
+                            }
+                            echo $elements[$params['check_value']];
+                        } else {
+                            $elements = [];
+                            if (is_array(json_decode($params['custom_values'], true))) {
+                                $elements += json_decode($params['custom_values'], true);
+                            }
+                            foreach ($elements as $key => $val) {
+                                $elements[$key] = urldecode($val);
+                            }
+                            echo $elements[$params['check_value']] ?? "";
                         }
-                        foreach ($elements as $key => $val) {
-                            $elements[$key] = urldecode($val);
-                        }
-                        echo $elements[$params['check_value']] ?? "";
                     }
-                }
-                break;
+                    break;
+            }
         }
     }
 
