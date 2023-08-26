@@ -44,6 +44,7 @@ $form      = new PluginMetademandsForm();
 if ($form->getFromDB($_POST['plugin_metademands_forms_id'])) {
 //   unset($_SESSION['plugin_metademands']);
    $metademands->getFromDB($_POST['metademands_id']);
+
    PluginMetademandsForm_Value::loadFormValues($_POST['metademands_id'], $_POST['plugin_metademands_forms_id']);
    $form_name = $form->getField('name');
 

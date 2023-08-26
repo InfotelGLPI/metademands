@@ -572,6 +572,7 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function showWizardSteps($step, $metademands_id = 0, $preview = false, $options = [], $seeform = false, $current_ticket = 0, $meta_validated = 1)
     {
+
         if ($preview == false) {
             echo "<div id='ajax_loader' class=\"ajax_loader\">";
             echo "</div>";
@@ -887,7 +888,10 @@ class PluginMetademandsWizard extends CommonDBTM
                             } else {
                                 self::constructForm($metademands_id, $metademands_data, $step, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
                             }
-                            unset($_SESSION['plugin_metademands'][$metademands_id]['fields']);
+                            if ($seeform == 0) {
+                                unset($_SESSION['plugin_metademands'][$metademands_id]['fields']);
+                            }
+
                             if ($metademands->fields['is_order'] == 1) {
                                 if (!$preview && countElementsInTable(
                                         "glpi_plugin_metademands_basketlines",
@@ -1444,6 +1448,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         $count = 0;
                     }
 
+
                     // If values are saved in session we retrieve it
                     if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
                         foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
@@ -1612,7 +1617,6 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
 
                 // Fields linked
-
                 foreach ($line as $data) {
 
                     //Active champs obligatoires sur les fields_link

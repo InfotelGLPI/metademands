@@ -274,12 +274,12 @@ if (isset($_POST['next'])) {
         unset($_SESSION['metademands_hide']);
     }
     if (Session::getCurrentInterface() == 'central') {
-        Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu");
+        Html::header(__('Create a metademand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu");
     } else {
         if (Plugin::isPluginActive('servicecatalog')) {
-            PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a demand', 'metademands'));
+            PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a metademand', 'metademands'));
         } else {
-            Html::helpHeader(__('Create a demand', 'metademands'));
+            Html::helpHeader(__('Create a metademand', 'metademands'));
         }
     }
 
@@ -515,12 +515,12 @@ if (isset($_POST['next'])) {
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
 } else {
     if (Session::getCurrentInterface() == 'central') {
-        Html::header(__('Create a demand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu", "wizard");
+        Html::header(__('Create a metademand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu", "wizard");
     } else {
         if (Plugin::isPluginActive('servicecatalog')) {
-            PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a demand', 'metademands'));
+            PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a metademand', 'metademands'));
         } else {
-            Html::helpHeader(__('Create a demand', 'metademands'));
+            Html::helpHeader(__('Create a metademand', 'metademands'));
         }
     }
 

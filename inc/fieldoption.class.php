@@ -1318,6 +1318,22 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
                                      switch(this.type) {
+                                            case 'checkbox':
+                                            case 'radio':
+                                                var checkname = this.name;
+                                                $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                        }
+                                        jQuery(this).removeAttr('required');
+                                    });
+                                    fixButtonIndicator();
+                                    ";
+    }
+
+    public static function setEmptyBlockFields($id)
+    {
+
+        return "$('div[bloc-id=\"bloc$id\"]').find(':input').each(function() {
+                                     switch(this.type) {
                                             case 'password':
                                             case 'text':
                                             case 'textarea':
@@ -1339,10 +1355,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             case 'checkbox':
                                             case 'radio':
                                                  this.checked = false;
-                                                 var checkname = this.name;
-                                                 $(\"[name^='\"+checkname+\"']\").removeAttr('required');
                                         }
-                                        jQuery(this).removeAttr('required');
                                         regex = /multiselectfield.*_to/g;
                                         totest = this.id;
                                         found = totest.match(regex);

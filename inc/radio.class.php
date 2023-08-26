@@ -81,7 +81,7 @@ class PluginMetademandsRadio extends CommonDBTM
 
                 $checked = "";
                 if ($value != null && $value == $key) {
-                    $checked = $value == $key ? 'checked' : '';
+                    $checked = 'checked';
                 } elseif ($value == null && isset($defaults[$key]) && $on_basket == false) {
                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
                 }
@@ -90,8 +90,6 @@ class PluginMetademandsRadio extends CommonDBTM
                     $required = "required=required";
                 }
                 $field .= "<input $required class='form-check-input' type='radio' name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
-                $nbr++;
-
 
                 $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>$label</label>";
                 if (isset($data['comment_values'][$key]) && !empty($data['comment_values'][$key])) {
