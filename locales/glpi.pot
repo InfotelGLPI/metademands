@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-26 09:44+0000\n"
+"POT-Creation-Date: 2023-08-26 09:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -155,7 +155,7 @@ msgstr ""
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
-#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:82
+#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:80
 msgid "Continue metademand"
 msgstr ""
 
@@ -219,8 +219,8 @@ msgid_plural "Default values"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/checkbox.class.php:249 inc/condition.class.php:298
-#: inc/condition.class.php:429 inc/dropdown.class.php:144
+#: inc/checkbox.class.php:249 inc/condition.class.php:322
+#: inc/condition.class.php:453 inc/dropdown.class.php:144
 #: inc/dropdownmeta.class.php:380 inc/dropdownmultiple.class.php:516
 #: inc/dropdownobject.class.php:340 inc/field.class.php:1212
 #: inc/fieldoption.class.php:228 inc/radio.class.php:250
@@ -255,77 +255,77 @@ msgid_plural "Conditional displays"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/condition.class.php:114 inc/condition.class.php:133
+#: inc/condition.class.php:138 inc/condition.class.php:157
 #: inc/field.class.php:1013
 msgid "Regex"
 msgstr ""
 
-#: inc/condition.class.php:188
+#: inc/condition.class.php:212
 msgid "AND"
 msgstr ""
 
-#: inc/condition.class.php:189
+#: inc/condition.class.php:213
 msgid "OR"
 msgstr ""
 
-#: inc/condition.class.php:223 inc/condition.class.php:241
+#: inc/condition.class.php:247 inc/condition.class.php:265
 msgid "Always displayed"
 msgstr ""
 
-#: inc/condition.class.php:224 inc/condition.class.php:244
+#: inc/condition.class.php:248 inc/condition.class.php:268
 msgid "Hidden unless"
 msgstr ""
 
-#: inc/condition.class.php:225 inc/condition.class.php:247
+#: inc/condition.class.php:249 inc/condition.class.php:271
 msgid "Displayed unless"
 msgstr ""
 
-#: inc/condition.class.php:264
+#: inc/condition.class.php:288
 msgid "Rule"
 msgstr ""
 
-#: inc/condition.class.php:267
+#: inc/condition.class.php:291
 msgid "Submit button display"
 msgstr ""
 
-#: inc/condition.class.php:281
+#: inc/condition.class.php:305
 msgid "Apply"
 msgstr ""
 
-#: inc/condition.class.php:294 inc/condition.class.php:425
+#: inc/condition.class.php:318 inc/condition.class.php:449
 msgid "Logical operator"
 msgstr ""
 
-#: inc/condition.class.php:295 inc/condition.class.php:426
+#: inc/condition.class.php:319 inc/condition.class.php:450
 msgid "Field"
 msgstr ""
 
-#: inc/condition.class.php:296
+#: inc/condition.class.php:320
 msgid "Field type"
 msgstr ""
 
-#: inc/condition.class.php:297 inc/condition.class.php:428
+#: inc/condition.class.php:321 inc/condition.class.php:452
 msgid "Equality operator"
 msgstr ""
 
-#: inc/condition.class.php:299
+#: inc/condition.class.php:323
 msgid "Pool"
 msgstr ""
 
-#: inc/condition.class.php:300
+#: inc/condition.class.php:324
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: inc/condition.class.php:418
+#: inc/condition.class.php:442
 msgid "List of conditions"
 msgstr ""
 
-#: inc/condition.class.php:430 inc/field.class.php:1218
+#: inc/condition.class.php:454 inc/field.class.php:1218
 #: inc/field.class.php:2848
 msgid "Order"
 msgstr ""
 
-#: inc/condition.class.php:517
+#: inc/condition.class.php:541
 msgid "No conditions founded"
 msgstr ""
 
@@ -825,7 +825,7 @@ msgstr ""
 msgid "Create a metademand"
 msgstr ""
 
-#: inc/menu.class.php:77
+#: inc/menu.class.php:75
 msgid "Import metademands"
 msgstr ""
 
