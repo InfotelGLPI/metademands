@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-25 17:10+0000\n"
+"POT-Creation-Date: 2023-08-26 11:08+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Simon Thivet, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -107,8 +107,8 @@ msgid "Delete form"
 msgstr "Supprimer le formulaire"
 
 #: ajax/deleteform.php:71 inc/form.class.php:176 inc/stepform.class.php:186
-#: inc/stepform.class.php:605 inc/wizard.class.php:598
-#: inc/wizard.class.php:719
+#: inc/stepform.class.php:605 inc/wizard.class.php:599
+#: inc/wizard.class.php:720
 msgid "No existing forms founded"
 msgstr "Pas de formulaires existants trouvé"
 
@@ -167,7 +167,7 @@ msgstr "Destinataire suivant"
 msgid "A problem occurred, the form was not sent"
 msgstr "Un problème est survenu, le formulaire n'a pas été envoyé"
 
-#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:82
+#: front/stepform.php:38 front/stepform.php:40 inc/menu.class.php:80
 msgid "Continue metademand"
 msgstr "Continuer une métademande"
 
@@ -177,9 +177,10 @@ msgstr "L'option vide a été supprimée"
 
 #: front/wizard.form.php:277 front/wizard.form.php:280
 #: front/wizard.form.php:282 front/wizard.form.php:518
-#: front/wizard.form.php:521 front/wizard.form.php:523
-msgid "Create a demand"
-msgstr "Créer une demande"
+#: front/wizard.form.php:521 front/wizard.form.php:523 inc/menu.class.php:56
+#: inc/menu.class.php:61
+msgid "Create a metademand"
+msgstr "Créer une métademande"
 
 #: front/wizard.form.php:444
 msgid "There is a problem with the basket"
@@ -224,7 +225,7 @@ msgstr "Case à cocher"
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
 #: inc/dropdownmeta.class.php:302 inc/dropdownmeta.class.php:358
 #: inc/dropdownmultiple.class.php:439 inc/dropdownmultiple.class.php:495
-#: inc/field.class.php:2607 inc/radio.class.php:178 inc/radio.class.php:228
+#: inc/field.class.php:2607 inc/radio.class.php:176 inc/radio.class.php:226
 #: inc/yesno.class.php:92
 msgid "Default value"
 msgid_plural "Default values"
@@ -232,20 +233,21 @@ msgstr[0] "Valeur par défaut"
 msgstr[1] "Valeurs par défaut"
 msgstr[2] "Valeurs par défaut"
 
-#: inc/checkbox.class.php:249 inc/condition.class.php:298
-#: inc/condition.class.php:429 inc/dropdown.class.php:144
+#: inc/checkbox.class.php:249 inc/condition.class.php:322
+#: inc/condition.class.php:453 inc/dropdown.class.php:144
 #: inc/dropdownmeta.class.php:380 inc/dropdownmultiple.class.php:516
 #: inc/dropdownobject.class.php:340 inc/field.class.php:1212
-#: inc/fieldoption.class.php:228 inc/radio.class.php:250
+#: inc/fieldoption.class.php:228 inc/radio.class.php:248
 #: inc/yesno.class.php:113
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
 #: inc/checkbox.class.php:269 inc/checkbox.class.php:285
-#: inc/dropdown.class.php:178 inc/dropdownmeta.class.php:429
-#: inc/dropdownmeta.class.php:439 inc/dropdownobject.class.php:403
-#: inc/dropdownobject.class.php:413 inc/radio.class.php:270
-#: inc/radio.class.php:286
+#: inc/dropdown.class.php:178 inc/dropdown.class.php:214
+#: inc/dropdownmeta.class.php:429 inc/dropdownmeta.class.php:439
+#: inc/dropdownmeta.class.php:461 inc/dropdownobject.class.php:403
+#: inc/dropdownobject.class.php:413 inc/dropdownobject.class.php:435
+#: inc/radio.class.php:268 inc/radio.class.php:284
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
@@ -268,77 +270,77 @@ msgstr[0] "Affichage conditionnel"
 msgstr[1] "Affichages conditionnels"
 msgstr[2] "Affichages conditionnels"
 
-#: inc/condition.class.php:114 inc/condition.class.php:133
+#: inc/condition.class.php:138 inc/condition.class.php:157
 #: inc/field.class.php:1013
 msgid "Regex"
 msgstr "Expression régulière"
 
-#: inc/condition.class.php:188
+#: inc/condition.class.php:212
 msgid "AND"
 msgstr "ET"
 
-#: inc/condition.class.php:189
+#: inc/condition.class.php:213
 msgid "OR"
 msgstr "OU"
 
-#: inc/condition.class.php:223 inc/condition.class.php:241
+#: inc/condition.class.php:247 inc/condition.class.php:265
 msgid "Always displayed"
 msgstr "Toujours visible"
 
-#: inc/condition.class.php:224 inc/condition.class.php:244
+#: inc/condition.class.php:248 inc/condition.class.php:268
 msgid "Hidden unless"
 msgstr "Masqué sauf si"
 
-#: inc/condition.class.php:225 inc/condition.class.php:247
+#: inc/condition.class.php:249 inc/condition.class.php:271
 msgid "Displayed unless"
 msgstr "Affiché sauf si"
 
-#: inc/condition.class.php:264
+#: inc/condition.class.php:288
 msgid "Rule"
 msgstr "Règle"
 
-#: inc/condition.class.php:267
+#: inc/condition.class.php:291
 msgid "Submit button display"
 msgstr "Affichage du bouton de validation"
 
-#: inc/condition.class.php:281
+#: inc/condition.class.php:305
 msgid "Apply"
 msgstr "Appliquer"
 
-#: inc/condition.class.php:294 inc/condition.class.php:425
+#: inc/condition.class.php:318 inc/condition.class.php:449
 msgid "Logical operator"
 msgstr "Opérateur logique"
 
-#: inc/condition.class.php:295 inc/condition.class.php:426
+#: inc/condition.class.php:319 inc/condition.class.php:450
 msgid "Field"
 msgstr "Champ"
 
-#: inc/condition.class.php:296
+#: inc/condition.class.php:320
 msgid "Field type"
 msgstr "Type de champ"
 
-#: inc/condition.class.php:297 inc/condition.class.php:428
+#: inc/condition.class.php:321 inc/condition.class.php:452
 msgid "Equality operator"
 msgstr "Opérateur d'égalité"
 
-#: inc/condition.class.php:299
+#: inc/condition.class.php:323
 msgid "Pool"
 msgstr "Groupement"
 
-#: inc/condition.class.php:300
+#: inc/condition.class.php:324
 msgid "Order of execution and grouping of conditions"
 msgstr "Ordre d'exécution et regroupement des conditions"
 
-#: inc/condition.class.php:418
+#: inc/condition.class.php:442
 msgid "List of conditions"
 msgstr "Liste des conditions"
 
-#: inc/condition.class.php:430 inc/field.class.php:1218
+#: inc/condition.class.php:454 inc/field.class.php:1218
 #: inc/field.class.php:2848
 msgid "Order"
 msgstr "Ordre"
 
-#: inc/condition.class.php:517
+#: inc/condition.class.php:541
 msgid "No conditions founded"
 msgstr "Pas de conditions trouvées"
 
@@ -858,11 +860,7 @@ msgstr "Bouton"
 msgid "*use field \"Additional label\" for the button title"
 msgstr "* utilisez le champ \"Label supplémentaire\" pour le titre du bouton"
 
-#: inc/menu.class.php:56 inc/menu.class.php:61
-msgid "Create a metademand"
-msgstr "Créer une métademande"
-
-#: inc/menu.class.php:77
+#: inc/menu.class.php:75
 msgid "Import metademands"
 msgstr "Importer une métademande"
 
@@ -1077,7 +1075,7 @@ msgstr "En cours"
 msgid "Not yet completed"
 msgstr "Non finalisé"
 
-#: inc/metademand.class.php:6206 inc/wizard.class.php:741
+#: inc/metademand.class.php:6206 inc/wizard.class.php:742
 msgid "Find a form"
 msgstr "Trouver un formulaire"
 
@@ -1581,23 +1579,23 @@ msgstr "Vous n'avez pas le droit de mettre à jour les tickets"
 msgid "You don't have the right to create meta-demand"
 msgstr "Vous n'êtes pas habilité à créer ce type de demande"
 
-#: inc/wizard.class.php:685
+#: inc/wizard.class.php:686
 msgid "Report an incident"
 msgstr "Signaler un incident"
 
-#: inc/wizard.class.php:690
+#: inc/wizard.class.php:691
 msgid "Make a request"
 msgstr "Faire une demande"
 
-#: inc/wizard.class.php:695
+#: inc/wizard.class.php:696
 msgid "Report a problem"
 msgstr "Signaler un problème"
 
-#: inc/wizard.class.php:699
+#: inc/wizard.class.php:700
 msgid "Make a change request"
 msgstr "Faire une demande de changement"
 
-#: inc/wizard.class.php:788
+#: inc/wizard.class.php:789
 #, php-format
 msgid "You have %d draft"
 msgid_plural "You have %d drafts"
@@ -1605,71 +1603,71 @@ msgstr[0] "Vous avez %d brouillon"
 msgstr[1] "Vous avez %d brouillons"
 msgstr[2] "Vous avez %d brouillons"
 
-#: inc/wizard.class.php:899 inc/wizard.class.php:957
+#: inc/wizard.class.php:903 inc/wizard.class.php:961
 msgctxt "button"
 msgid "Add to basket"
 msgstr "Ajouter au panier"
 
-#: inc/wizard.class.php:968 inc/wizard.class.php:1696
+#: inc/wizard.class.php:972 inc/wizard.class.php:1700
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr "Voir le récapitulatif du panier et Envoyer"
 
-#: inc/wizard.class.php:1131
+#: inc/wizard.class.php:1135
 msgid "You do not have access to the form"
 msgstr "Vous n'avez pas accès au formulaire"
 
-#: inc/wizard.class.php:1182
+#: inc/wizard.class.php:1186
 msgid "You have items on your basket"
 msgstr "Vous avez des objets dans votre panier"
 
-#: inc/wizard.class.php:1660
+#: inc/wizard.class.php:1664
 msgid "Previous"
 msgstr "Précédent"
 
-#: inc/wizard.class.php:1663 inc/wizard.class.php:1689
-#: inc/wizard.class.php:1703
+#: inc/wizard.class.php:1667 inc/wizard.class.php:1693
+#: inc/wizard.class.php:1707
 msgid "Next"
 msgstr "Suivant"
 
-#: inc/wizard.class.php:1692
+#: inc/wizard.class.php:1696
 msgctxt "button"
 msgid "Save & Post"
 msgstr "Sauver et envoyer"
 
-#: inc/wizard.class.php:1704
+#: inc/wizard.class.php:1708
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr "Enregistrer et envoyer à un autre utilisateur/groupe"
 
-#: inc/wizard.class.php:1716
+#: inc/wizard.class.php:1720
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
-#: inc/wizard.class.php:1771
+#: inc/wizard.class.php:1775
 msgid "Previous user"
 msgstr "Utilisateur précédent"
 
-#: inc/wizard.class.php:1781
+#: inc/wizard.class.php:1785
 msgid "Previous data edited"
 msgstr "Données précédentes complétées"
 
-#: inc/wizard.class.php:3115
+#: inc/wizard.class.php:3119
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
 
-#: inc/wizard.class.php:3124
+#: inc/wizard.class.php:3128
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr "La date %1$s ne peut être supérieure à la date %2$s"
 
-#: inc/wizard.class.php:3157
+#: inc/wizard.class.php:3161
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s"
 
-#: inc/wizard.class.php:3161
+#: inc/wizard.class.php:3165
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
