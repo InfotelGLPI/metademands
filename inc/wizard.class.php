@@ -3102,6 +3102,8 @@ class PluginMetademandsWizard extends CommonDBTM
                     break;
                 case 'link':
                     break;
+                case 'basket':
+                    break;
                 default:
                     break;
             }

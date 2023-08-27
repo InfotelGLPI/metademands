@@ -56,6 +56,7 @@ if (isset($_POST['save_form'])) {
 
         for ($i = 0; $i < $nblines; $i++) {
             $_POST['field']   = $post;
+
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
@@ -92,6 +93,11 @@ if (isset($_POST['save_form'])) {
                             if ($value['item'] == 'ITILCategory_Metademands') {
                                 $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                             }
+
+                            if ($value['type'] == 'basket' && isset($_POST['quantity'])) {
+                                $_POST['field'][$id] = $_POST['quantity'][$id];
+                            }
+
                         }
                     }
                 }

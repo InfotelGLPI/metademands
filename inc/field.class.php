@@ -48,13 +48,13 @@ class PluginMetademandsField extends CommonDBChild
     public static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text',
                                   'checkbox', 'textarea', 'date', 'datetime', 'informations', 'date_interval',
                                   'datetime_interval', 'yesno','upload', 'title', 'title-block', 'radio', 'link',
-                                  'number', 'parent_field'];
+                                  'number', 'basket', 'parent_field'];
 
     public static $allowed_options_types = ['upload', 'text', 'date', 'datetime', 'date_interval', 'datetime_interval',
-        'dropdown_multiple', 'dropdown_object'];
+        'dropdown_multiple', 'dropdown_object', 'basket'];
     public static $allowed_options_items = ['User'];
 
-    public static $allowed_custom_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple', 'number'];
+    public static $allowed_custom_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple', 'number', 'basket'];
     public static $allowed_custom_items = ['other'];
 
     public static $not_null = 'NOT_NULL';
@@ -444,7 +444,7 @@ class PluginMetademandsField extends CommonDBChild
                      'rand'                    => $randItem,
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'link_to_user'            => $this->fields["link_to_user"],
-            'readonly' => $this->fields["readonly"],
+                     'readonly'                => $this->fields["readonly"],
                      'change_type'             => 1];
         Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", PLUGIN_METADEMANDS_WEBDIR .
                                                                               "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
@@ -510,6 +510,7 @@ JAVASCRIPT
                  'value2'             => 'dropdown_object',
                  'value3'             => 'dropdown_meta',
                  'value4'             => 'dropdown_multiple',
+                 'value5'             => 'basket',
                  'current_item'       => $this->fields['item'],
                  'current_type'       => $this->fields['type'],
                  'titleDisplay'       => 'show_item_object',
@@ -1431,30 +1432,32 @@ JAVASCRIPT
         global $PLUGIN_HOOKS;
 
         switch ($value) {
-            case 'dropdown':
-                return PluginMetademandsDropdown::getTypeName();
-            case 'dropdown_object':
-                return PluginMetademandsDropdownobject::getTypeName();
-            case 'dropdown_meta':
-                return PluginMetademandsDropdownmeta::getTypeName();
-            case 'dropdown_multiple':
-                return PluginMetademandsDropdownmultiple::getTypeName();
-            case 'text':
-                return PluginMetademandsText::getTypeName();
-            case 'checkbox':
-                return PluginMetademandsCheckbox::getTypeName();
-            case 'textarea':
-                return PluginMetademandsTextarea::getTypeName();
-            case 'yesno':
-                return PluginMetademandsYesno::getTypeName();
-            case 'radio':
-                return PluginMetademandsRadio::getTypeName();
-            case 'link':
-                return PluginMetademandsLink::getTypeName();
-            case 'number':
-                return PluginMetademandsNumber::getTypeName();
+            case 'title':
+                return PluginMetademandsTitle::getTypeName();
+            case 'title-block':
+                return PluginMetademandsTitleblock::getTypeName();
             case 'informations':
                 return PluginMetademandsInformation::getTypeName();
+            case 'text':
+                return PluginMetademandsText::getTypeName();
+            case 'textarea':
+                return PluginMetademandsTextarea::getTypeName();
+            case 'dropdown_meta':
+                return PluginMetademandsDropdownmeta::getTypeName();
+            case 'dropdown_object':
+                return PluginMetademandsDropdownobject::getTypeName();
+            case 'dropdown':
+                return PluginMetademandsDropdown::getTypeName();
+            case 'dropdown_multiple':
+                return PluginMetademandsDropdownmultiple::getTypeName();
+            case 'checkbox':
+                return PluginMetademandsCheckbox::getTypeName();
+            case 'radio':
+                return PluginMetademandsRadio::getTypeName();
+            case 'yesno':
+                return PluginMetademandsYesno::getTypeName();
+            case 'number':
+                return PluginMetademandsNumber::getTypeName();
             case 'date':
                 return PluginMetademandsDate::getTypeName();
             case 'datetime':
@@ -1465,10 +1468,10 @@ JAVASCRIPT
                 return PluginMetademandsDatetimeInterval::getTypeName();
             case 'upload':
                 return PluginMetademandsUpload::getTypeName();
-            case 'title':
-                return PluginMetademandsTitle::getTypeName();
-            case 'title-block':
-                return PluginMetademandsTitleblock::getTypeName();
+            case 'link':
+                return PluginMetademandsLink::getTypeName();
+            case 'basket':
+                return PluginMetademandsBasket::getTypeName();
             case 'parent_field':
                 return __('Father\'s field', 'metademands');
             default:
@@ -1856,6 +1859,10 @@ JAVASCRIPT
                 $options = self::getGlpiObject();
                 return Dropdown::showFromArray($name, $options, $p);
                 break;
+            case "basket":
+                $options = new PluginMetademandsBasketobjecttype();
+                return $options->Dropdown(["name" => $name, 'value' => $p['value']]);
+                break;
             default :
 
                 if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -2144,6 +2151,9 @@ JAVASCRIPT
             case 'link':
                 PluginMetademandsLink::showWizardField($data, $namefield, $value, $on_basket);
                 break;
+            case 'basket':
+                PluginMetademandsBasket::showWizardField($data, $on_basket, $itilcategories_id, $idline);
+                break;
             case 'parent_field':
                 foreach ($metademands_data as $metademands_data_steps) {
                     foreach ($metademands_data_steps as $line_data) {
@@ -2275,7 +2285,9 @@ JAVASCRIPT
                                                     $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
                                                     $value_parent_field .= Dropdown::getYesNo($value);
                                                     break;
+                                                case 'basket':
 
+                                                    break;
                                                 default:
                                                     $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
                                             }
@@ -2489,6 +2501,9 @@ JAVASCRIPT
                     break;
                 case 'link':
                     PluginMetademandsLink::showFieldCustomValues($values, $key, $params);
+                    break;
+                case 'basket':
+                    PluginMetademandsBasket::showFieldCustomValues($values, $key, $params);
                     break;
                 case 'parent_field':
                     break;

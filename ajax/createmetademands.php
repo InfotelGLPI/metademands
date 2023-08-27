@@ -70,6 +70,8 @@ if (isset($_POST['see_basket_summary'])) {
         }
     }
 
+//    echo PluginMetademandsBasket::displayBasketSummary($post);
+
     $metademands->getFromDB($_POST['form_metademands_id']);
     if ($metademands->fields['is_order'] == 1) {
 
@@ -305,7 +307,7 @@ if (isset($_POST['see_basket_summary'])) {
                         $step = $_POST['step'];
                     } elseif (isset($_POST['create_metademands'])) {
 
-                        if (Plugin::isPluginActive('ordermaterial') && isset($_POST['quantity'])) {
+                        if (isset($_POST['quantity'])) {//Plugin::isPluginActive('ordermaterial') &&
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['quantities'] = $_POST['quantity'];
                         }
                         $step = PluginMetademandsMetademand::STEP_CREATE;

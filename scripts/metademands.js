@@ -61,7 +61,7 @@
          var item = document.getElementById(params.id);
 
 
-         if (item.value == params.value || item.value == params.value2 || item.value == params.value3 || item.value == params.value4 || item.value == params.value_plugin) {
+         if (item.value == params.value || item.value == params.value2 || item.value == params.value3 || item.value == params.value4 || item.value == params.value5 || item.value == params.value_plugin) {
             document.getElementById(params.valueDisplay).style.display = "inline";
             if (params.titleDisplay != undefined) {
                document.getElementById(params.titleDisplay).style.display = "inline";

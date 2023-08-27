@@ -487,7 +487,9 @@ function plugin_metademands_uninstall() {
         "glpi_plugin_metademands_steps",
         "glpi_plugin_metademands_configsteps",
         "glpi_plugin_metademands_stepforms_actors",
-        "glpi_plugin_metademands_conditions"];
+        "glpi_plugin_metademands_conditions",
+        "glpi_plugin_metademands_basketobjecttypes",
+        "glpi_plugin_metademands_basketobjects"];
     foreach ($tables as $table) {
         $DB->query("DROP TABLE IF EXISTS `$table`;");
     }
@@ -517,6 +519,14 @@ function plugin_metademands_uninstall() {
 //         break;
 //   }
 //}
+
+function plugin_metademands_getDropdown()
+{
+
+    return [
+        "PluginMetademandsBasketobjecttype" => PluginMetademandsBasketobjecttype::getTypeName(2),
+    ];
+}
 
 // Define dropdown relations
 /**
