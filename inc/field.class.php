@@ -988,159 +988,67 @@ JAVASCRIPT
             echo "<div id='show_type_fields'>";
             echo "<table width='100%' class='metademands_show_values'>";
 
-            if ($params["value"] == 'upload') {
-                echo "<tr><td>";
-                echo "<table class='metademands_show_custom_fields'>";
-                echo "<tr><td>";
-                echo __('Number of documents allowed', 'metademands');
-                //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                echo '</td>';
-                echo "<td>";
-                $data[0] = Dropdown::EMPTY_VALUE;
-                for ($i = 1; $i <= 50; $i++) {
-                    $data[$i] = $i;
-                }
+            switch ($params["value"]) {
+                case 'title':
+                    break;
+                case 'title-block':
+                    break;
+                case 'informations':
+                    break;
+                case 'text':
+                    echo PluginMetademandsText::showFieldCustomFields($params);
+                    break;
+                case 'textarea':
+                    break;
+                case 'dropdown_meta':
+                    break;
+                case 'dropdown_object':
+                    echo PluginMetademandsDropdownobject::showFieldCustomFields($params);
+                    break;
+                case 'dropdown':
+                    break;
+                case 'dropdown_multiple':
+                    echo PluginMetademandsDropdownmultiple::showFieldCustomFields($params);
+                    break;
+                case 'checkbox':
+                    break;
+                case 'radio':
+                    break;
+                case 'yesno':
+                    break;
+                case 'number':
+                    break;
+                case 'date':
+                    echo PluginMetademandsDate::showFieldCustomFields($params);
+                    break;
+                case 'datetime':
+                    echo PluginMetademandsDatetime::showFieldCustomFields($params);
+                    break;
+                case 'date_interval':
+                    echo PluginMetademandsDateinterval::showFieldCustomFields($params);
+                    break;
+                case 'datetime_interval':
+                    echo PluginMetademandsDatetimeInterval::showFieldCustomFields($params);
+                    break;
+                case 'upload':
+                    echo PluginMetademandsUpload::showFieldCustomFields($params);
+                    break;
+                case 'link':
+                    break;
+                case 'parent_field':
+                    break;
+                default:
+                    if (isset($PLUGIN_HOOKS['metademands'])) {
 
-                echo Dropdown::showFromArray("max_upload", $data, ['value' => $params['max_upload'], 'display' => false]);
-                echo "</td></tr>";
-                echo "</table>";
-                echo "</td></tr>";
-            }
-            if ($params["value"] == 'text') {
-                echo "<tr><td>";
-                echo "<table class='metademands_show_custom_fields'>";
-                echo "<tr><td>";
-                echo __('Regex', 'metademands');
-                //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                echo '</td>';
-                echo "<td>";
-                echo Html::input('regex', ['value' => $params["regex"], 'size' => 50]);
-                echo "</td></tr>";
-                echo "</table>";
-                echo "</td></tr>";
-            }
-
-            if ($params["value"] == 'date' ||
-                $params["value"] == 'datetime' ||
-                $params["value"] == 'date_interval' ||
-                $params["value"] == 'datetime_interval'
-            ) {
-
-                echo "<tr><td>";
-                echo "<table class='metademands_show_custom_fields'>";
-                echo "<tr><td>";
-                echo __('Day greater or equal to now', 'metademands');
-                echo "</td><td>";
-                $use_future_date = $params['use_future_date'];
-                $checked = '';
-                if (isset($use_future_date) && !empty($use_future_date)) {
-                    $checked = 'checked';
-                }
-                echo "<input type='checkbox' name='use_future_date' value='1' $checked>";
-                echo "</td></tr>";
-                echo "<tr><td>";
-                echo __('Define the default date', 'metademands');
-                //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                echo '</td>';
-                echo "<td>";
-
-                Dropdown::showYesNo('use_date_now', $params['use_date_now']);
-                echo "</td></tr>";
-
-                echo "<tr><td>";
-                echo __('Additional number day to the default date', 'metademands');
-                //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                echo '</td>';
-                echo "<td>";
-                $optionNumber = [
-                    'value' => $params['additional_number_day'],
-                    'min'   => 0,
-                    'max'   => 500,
-                ];
-
-                Dropdown::showNumber('additional_number_day', $optionNumber);
-                echo "</td></tr>";
-
-                echo "</table>";
-                echo "</td></tr>";
-            }
-            if ($params["type"] == 'dropdown_multiple') {
-                $disp                              = [];
-                $disp[PluginMetademandsDropdownmultiple::CLASSIC_DISPLAY]       = __("Classic display", "metademands");
-                $disp[PluginMetademandsDropdownmultiple::DOUBLE_COLUMN_DISPLAY] = __("Double column display", "metademands");
-                echo "<tr><td>";
-                echo "<table class='metademands_show_custom_fields'>";
-                echo "<tr><td>";
-                echo __('Display type of the field', 'metademands');
-                //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-                echo '</td>';
-                echo "<td>";
-
-                echo Dropdown::showFromArray("display_type", $disp, ['value' => $params['display_type'], 'display' => false]);
-                echo "</td></tr>";
-
-                if ($params["item"] == 'User') {
-                    echo "<tr>";
-                    echo "<td colspan='2' class='center'>";
-                    echo __("Informations to display in ticket and PDF", "metademands");
-                    echo "</td>";
-                    echo "</tr>";
-                    echo "<tr>";
-                    echo "<td colspan='2' class='center'>";
-                    $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
-
-                    $informations["full_name"] = __('Complete name');
-                    $informations["realname"]  = __('Surname');
-                    $informations["firstname"] = __('First name');
-                    $informations["name"]      = __('Login');
-                    //                     $informations["group"]             = Group::getTypeName(1);
-                    $informations["email"] = _n('Email', 'Emails', 1);
-                    echo Dropdown::showFromArray('informations_to_display', $informations, ['values'   => $params['informations_to_display'],
-                        'display'  => false,
-                        'multiple' => true]);
-                    echo "</td>";
-                    echo "</tr>";
-                }
-                echo "</table>";
-                echo "</td></tr>";
-            }
-            if ($params['type'] == 'dropdown_object'
-                && $params['item'] == 'User') {
-                echo "<tr><td>";
-                echo "<table class='metademands_show_custom_fields'>";
-                echo "<tr>";
-                echo "<td colspan='2' class='center'>";
-                echo __("Informations to display in ticket and PDF", "metademands");
-                echo "</td>";
-                echo "</tr>";
-                echo "<tr>";
-                echo "<td colspan='2' class='center'>";
-                $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
-                $informations["full_name"]         = __('Complete name');
-                $informations["realname"]          = __('Surname');
-                $informations["firstname"]         = __('First name');
-                $informations["name"]              = __('Login');
-                //                  $informations["group"]             = Group::getTypeName(1);
-                $informations["email"] = _n('Email', 'Emails', 1);
-                echo Dropdown::showFromArray('informations_to_display', $informations, ['values'   => $params['informations_to_display'],
-                    'display'  => false,
-                    'multiple' => true]);
-                echo "</td>";
-                echo "</tr>";
-                echo "</table>";
-                echo "</td></tr>";
-            }
-
-            if (isset($PLUGIN_HOOKS['metademands'])) {
-
-                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                    if (Plugin::isPluginActive($plug)) {
-                         echo self::showPluginCustomvalues($plug, $params);
+                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                            if (Plugin::isPluginActive($plug)) {
+                                echo self::showPluginCustomvalues($plug, $params);
+                            }
+                        }
                     }
-                }
+                    break;
             }
-
-            echo "</tbody></table>";
+            echo "</table>";
             echo "</div>";
 
         }
@@ -1431,30 +1339,32 @@ JAVASCRIPT
         global $PLUGIN_HOOKS;
 
         switch ($value) {
-            case 'dropdown':
-                return PluginMetademandsDropdown::getTypeName();
-            case 'dropdown_object':
-                return PluginMetademandsDropdownobject::getTypeName();
-            case 'dropdown_meta':
-                return PluginMetademandsDropdownmeta::getTypeName();
-            case 'dropdown_multiple':
-                return PluginMetademandsDropdownmultiple::getTypeName();
-            case 'text':
-                return PluginMetademandsText::getTypeName();
-            case 'checkbox':
-                return PluginMetademandsCheckbox::getTypeName();
-            case 'textarea':
-                return PluginMetademandsTextarea::getTypeName();
-            case 'yesno':
-                return PluginMetademandsYesno::getTypeName();
-            case 'radio':
-                return PluginMetademandsRadio::getTypeName();
-            case 'link':
-                return PluginMetademandsLink::getTypeName();
-            case 'number':
-                return PluginMetademandsNumber::getTypeName();
+            case 'title':
+                return PluginMetademandsTitle::getTypeName();
+            case 'title-block':
+                return PluginMetademandsTitleblock::getTypeName();
             case 'informations':
                 return PluginMetademandsInformation::getTypeName();
+            case 'text':
+                return PluginMetademandsText::getTypeName();
+            case 'textarea':
+                return PluginMetademandsTextarea::getTypeName();
+            case 'dropdown_meta':
+                return PluginMetademandsDropdownmeta::getTypeName();
+            case 'dropdown_object':
+                return PluginMetademandsDropdownobject::getTypeName();
+            case 'dropdown':
+                return PluginMetademandsDropdown::getTypeName();
+            case 'dropdown_multiple':
+                return PluginMetademandsDropdownmultiple::getTypeName();
+            case 'checkbox':
+                return PluginMetademandsCheckbox::getTypeName();
+            case 'radio':
+                return PluginMetademandsRadio::getTypeName();
+            case 'yesno':
+                return PluginMetademandsYesno::getTypeName();
+            case 'number':
+                return PluginMetademandsNumber::getTypeName();
             case 'date':
                 return PluginMetademandsDate::getTypeName();
             case 'datetime':
@@ -1465,10 +1375,8 @@ JAVASCRIPT
                 return PluginMetademandsDatetimeInterval::getTypeName();
             case 'upload':
                 return PluginMetademandsUpload::getTypeName();
-            case 'title':
-                return PluginMetademandsTitle::getTypeName();
-            case 'title-block':
-                return PluginMetademandsTitleblock::getTypeName();
+            case 'link':
+                return PluginMetademandsLink::getTypeName();
             case 'parent_field':
                 return __('Father\'s field', 'metademands');
             default:
@@ -2475,7 +2383,7 @@ JAVASCRIPT
                     PluginMetademandsYesno::showFieldCustomValues($values, $key, $params);
                     break;
                 case 'number':
-                    PluginMetademandsNumber::showFieldCustomValues($values, $key, $params);
+//                    PluginMetademandsNumber::showFieldCustomValues($values, $key, $params);
                     break;
                 case 'date':
                     break;

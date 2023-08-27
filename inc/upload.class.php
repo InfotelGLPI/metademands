@@ -150,6 +150,29 @@ class PluginMetademandsUpload extends CommonDBTM
 
     }
 
+    static function showFieldCustomFields($params)
+    {
+
+        echo "<tr><td>";
+        echo "<table class='metademands_show_custom_fields'>";
+        echo "<tr><td>";
+        echo __('Number of documents allowed', 'metademands');
+        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+        echo '</td>';
+        echo "<td>";
+        $data[0] = Dropdown::EMPTY_VALUE;
+        for ($i = 1; $i <= 50; $i++) {
+            $data[$i] = $i;
+        }
+
+        echo Dropdown::showFromArray("max_upload", $data, ['value' => $params['max_upload'], 'display' => false]);
+        echo "</td></tr>";
+        echo "</table>";
+        echo "</td></tr>";
+
+    }
+
+
     /**
      * @param array $value
      * @param array $fields

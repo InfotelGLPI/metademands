@@ -333,6 +333,37 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
     }
 
+    static function showFieldCustomFields($params)
+    {
+
+        if ($params['item'] == 'User') {
+            echo "<tr><td>";
+            echo "<table class='metademands_show_custom_fields'>";
+            echo "<tr>";
+            echo "<td colspan='2' class='center'>";
+            echo __("Informations to display in ticket and PDF", "metademands");
+            echo "</td>";
+            echo "</tr>";
+            echo "<tr>";
+            echo "<td colspan='2' class='center'>";
+            $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
+            $informations["full_name"]         = __('Complete name');
+            $informations["realname"]          = __('Surname');
+            $informations["firstname"]         = __('First name');
+            $informations["name"]              = __('Login');
+            //                  $informations["group"]             = Group::getTypeName(1);
+            $informations["email"] = _n('Email', 'Emails', 1);
+            echo Dropdown::showFromArray('informations_to_display', $informations, ['values'   => $params['informations_to_display'],
+                'display'  => false,
+                'multiple' => true]);
+            echo "</td>";
+            echo "</tr>";
+            echo "</table>";
+            echo "</td></tr>";
+        }
+
+    }
+
     static function getParamsValueToCheck($fieldoption, $item, $params)
     {
         echo "<tr>";

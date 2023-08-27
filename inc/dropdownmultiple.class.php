@@ -509,6 +509,50 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         }
     }
 
+    static function showFieldCustomFields($params)
+    {
+
+        $disp                              = [];
+        $disp[self::CLASSIC_DISPLAY]       = __("Classic display", "metademands");
+        $disp[self::DOUBLE_COLUMN_DISPLAY] = __("Double column display", "metademands");
+        echo "<tr><td>";
+        echo "<table class='metademands_show_custom_fields'>";
+        echo "<tr><td>";
+        echo __('Display type of the field', 'metademands');
+        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+        echo '</td>';
+        echo "<td>";
+
+        echo Dropdown::showFromArray("display_type", $disp, ['value' => $params['display_type'], 'display' => false]);
+        echo "</td></tr>";
+
+        if ($params["item"] == 'User') {
+            echo "<tr>";
+            echo "<td colspan='2' class='center'>";
+            echo __("Informations to display in ticket and PDF", "metademands");
+            echo "</td>";
+            echo "</tr>";
+            echo "<tr>";
+            echo "<td colspan='2' class='center'>";
+            $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
+
+            $informations["full_name"] = __('Complete name');
+            $informations["realname"]  = __('Surname');
+            $informations["firstname"] = __('First name');
+            $informations["name"]      = __('Login');
+            //                     $informations["group"]             = Group::getTypeName(1);
+            $informations["email"] = _n('Email', 'Emails', 1);
+            echo Dropdown::showFromArray('informations_to_display', $informations, ['values'   => $params['informations_to_display'],
+                'display'  => false,
+                'multiple' => true]);
+            echo "</td>";
+            echo "</tr>";
+        }
+        echo "</table>";
+        echo "</td></tr>";
+
+    }
+
     static function getParamsValueToCheck($fieldoption, $item, $params)
     {
         echo "<tr>";

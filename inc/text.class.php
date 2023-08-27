@@ -75,6 +75,23 @@ class PluginMetademandsText extends CommonDBTM
 
     }
 
+    static function showFieldCustomFields($params)
+    {
+
+        echo "<tr><td>";
+        echo "<table class='metademands_show_custom_fields'>";
+        echo "<tr><td>";
+        echo __('Regex', 'metademands');
+        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+        echo '</td>';
+        echo "<td>";
+        echo Html::input('regex', ['value' => $params["regex"], 'size' => 50]);
+        echo "</td></tr>";
+        echo "</table>";
+        echo "</td></tr>";
+
+    }
+
     static function getParamsValueToCheck($fieldoption, $item, $params)
     {
         echo "<tr>";

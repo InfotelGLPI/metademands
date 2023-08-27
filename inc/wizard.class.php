@@ -1098,9 +1098,12 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
                 echo "</div>";
                 echo Html::hidden('create_metademands', ['value' => 1]);
-                echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
-                echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
-                echo "</a>";
+                if (!$preview) {
+                    echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
+                    echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
+                    echo "</a>";
+                }
+
             }
         } else {
             echo "</div>";
