@@ -3224,7 +3224,7 @@ JAVASCRIPT
                 $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
             }
             if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
-                $result['content'] .= "<table class='tab_cadre' style='width: 100%;background:none;word-break: unset;'>"; // class='mticket'
+                $result['content'] .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>"; // class='mticket'
 //                 $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
             }
 

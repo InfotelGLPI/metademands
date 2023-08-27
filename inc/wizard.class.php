@@ -929,26 +929,33 @@ class PluginMetademandsWizard extends CommonDBTM
                             && Session::haveRight('plugin_metademands_updatemeta', READ)))
 
                 ) {
-                    echo "<div class=\"bt-container-fluid\">";
-                    echo "<div class=\"bt-feature col-md-12 \">";
-                    echo "</div>";
-                    echo "</div>";
+//                    echo "<div class=\"bt-container-fluid\">";
+//                    echo "<div class=\"bt-feature col-md-12 \">";
+//                    echo "</div>";
+//                    echo "</div>";
 
+                    $see_summary = 0;
+                    if (Plugin::isPluginActive('ordermaterial')) {
+                        $ordermaterial = new PluginOrdermaterialMetademand();
+                        if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
+                            $see_summary = 1;
+                        }
+                    }
+                    $style = "";
+                    if ($see_summary == 0) {
+                        $style = "style='margin-top: 20px'";
+                    }
                     echo "<div class=\"row\" style='width: 100%;'>";
 
-                    echo "<div class=\"bt-feature col-md-12\" style='margin-top: 20px' >";
+                    echo "<div class=\"bt-feature col-md-12\" $style >";
                     if ($current_ticket > 0 && !$meta_validated) {
                         Html::hidden('current_ticket_id', ['value' => $current_ticket]);
                     }
                     echo Html::hidden('metademands_id', ['value' => $metademands_id]);
 
+
                     //verify if have sons metademand
                     if ($step - 1 >= count($metademands_data)) {
-
-                        echo Html::hidden('create_metademands', ['value' => 1]);
-                        echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
-                        echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
-                        echo "</a>";
 
                         if ($metademands->fields['is_order'] == 1) {
                             echo Html::hidden('update_fields', ['value' => 1]);
@@ -1042,8 +1049,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                 </script>";
                             }
                         }
+
+
                     } else {
-                        echo "<br>";
+//                        echo "<br>";
                         $title = "<i class='fas fa-chevron-right' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                         $title .= __('Next');
 
@@ -1088,6 +1097,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</div>";
                 }
                 echo "</div>";
+                echo Html::hidden('create_metademands', ['value' => 1]);
+                echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
+                echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
+                echo "</a>";
             }
         } else {
             echo "</div>";
@@ -1183,7 +1196,7 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
             'users_id' => Session::getLoginUserID()])) {
             echo "<div class='alert alert-warning d-flex'>";
-            echo "<b>".__('You have items on your basket', 'metademands')."</b></div>";
+            echo "<b>" . __('You have items on your basket', 'metademands') . "</b></div>";
         }
 
         if (count($line)) {
@@ -1563,7 +1576,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                     echo "</div>";
                                 }
                             } else {
-                                echo "<span for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) ."<span $required>". $required_icon . "</span></label>";
+                                echo "<span for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) . "<span $required>" . $required_icon . "</span></label>";
                             }
                             $value2 = '';
                             if (isset($data['value-2'])) {
@@ -1653,45 +1666,54 @@ class PluginMetademandsWizard extends CommonDBTM
                                 && $metademands->fields['can_clone'] == true))
                         && Session::haveRight('plugin_metademands_updatemeta', READ)))
                 && $step - 1 >= count($metademands_data)) {
-                echo "<br>";
-                echo "<div class=\"form-sc-group\">";
-                echo "<div class='center'>";
 
-                echo "<div style='overflow:auto;'>";
+                $see_summary = 0;
+                if (Plugin::isPluginActive('ordermaterial')) {
+                    $ordermaterial = new PluginOrdermaterialMetademand();
+                    if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
+                        $see_summary = 1;
+                    }
+                }
+                if ($see_summary == 0) {
+                    echo "<br>";
+                }
+                    echo "<div class=\"form-sc-group\">";
+                    echo "<div class='center'>";
 
+                    echo "<div style='overflow:auto;'>";
 
-                echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
-                echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
+                    echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
+                    echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
 
-                echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'  onclick='nextPrev(1)'>";
-                echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
+                    echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'  onclick='nextPrev(1)'>";
+                    echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
-                if ($use_as_step == 1) {
-                    echo "<div id='nextMsg' class='alert alert-info center'>";
+                    if ($use_as_step == 1) {
+                        echo "<div id='nextMsg' class='alert alert-info center'>";
+                        echo "</div>";
+                    }
+                    echo "</span>";
+                    echo "</div>";
+                    echo "</div>";
+                    echo "</div>";
+
+                    if ($see_summary == 0) {
+                    //Circles which indicates the steps of the form:
+                    echo "<div style='text-align:center;margin-top:20px;'>";
+
+                    if ($cpt > 1) {
+                        for ($j = 1; $j <= $cpt; $j++) {
+                            echo "<span class='step_wizard'></span>";
+                        }
+                    } else {
+                        echo "<span class='step_wizard' style='display: none'></span>";
+                    }
+
                     echo "</div>";
                 }
-                echo "</span>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-
-                //Circles which indicates the steps of the form:
-                echo "<div style='text-align:center;margin-top:20px;'>";
-
-                if ($cpt > 1) {
-                    for ($j = 1; $j <= $cpt; $j++) {
-                        echo "<span class='step_wizard'></span>";
-                    }
-                } else {
-                    echo "<span class='step_wizard' style='display: none'></span>";
-                }
-
-
-                echo "</div>";
-
 
                 $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-                $see_summary = 0;
+
 
                 $title = _sx('button', 'Save & Post', 'metademands');
                 if (Plugin::isPluginActive('ordermaterial')) {
@@ -1843,14 +1865,13 @@ class PluginMetademandsWizard extends CommonDBTM
                 $json_all_meta_fields = json_encode($all_meta_fields);
                 $use_condition = false;
                 $show_rule = $metademands->fields['show_rule'];
-                if($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS){
+                if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS) {
                     $condition = new PluginMetademandsCondition();
                     $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                    if(count($conditions) > 0){
+                    if (count($conditions) > 0) {
                         $use_condition = true;
                     }
                 }
-
 
 
                 echo "<script>
@@ -2846,7 +2867,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 if ($on_basket == false) {
                     $content[$id]['value'] = $post['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                 } else {
-                    $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id']?? 0;
+                    $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id'] ?? 0;
                 }
 
                 $content[$id]['value2'] = "";
@@ -2988,7 +3009,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                     break;
                 case 'textarea':
-                     $result = PluginMetademandsTextarea::checkMandatoryFields($value, $fields);
+                    $result = PluginMetademandsTextarea::checkMandatoryFields($value, $fields);
                     if ($result['checkKo'] == 1) {
                         $checkKo[] = $result['checkKo'];
                         $msg[] = $result['msg'];

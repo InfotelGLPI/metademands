@@ -1222,7 +1222,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $information = json_decode($field['informations_to_display']);
 
             if ($formatAsTable) {
-                $dataItems = "<table>";
+                $dataItems = "<table style='border:0;'>";
             }
             $item = new $field["item"]();
             foreach ($field['value'] as $value) {
