@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-26 11:08+0000\n"
+"POT-Creation-Date: 2023-08-27 10:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1541,71 +1541,71 @@ msgid_plural "You have %d drafts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/wizard.class.php:903 inc/wizard.class.php:961
+#: inc/wizard.class.php:903 inc/wizard.class.php:968
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:972 inc/wizard.class.php:1700
+#: inc/wizard.class.php:979 inc/wizard.class.php:1722
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:1135
+#: inc/wizard.class.php:1148
 msgid "You do not have access to the form"
 msgstr ""
 
-#: inc/wizard.class.php:1186
+#: inc/wizard.class.php:1199
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1664
+#: inc/wizard.class.php:1686
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:1667 inc/wizard.class.php:1693
-#: inc/wizard.class.php:1707
+#: inc/wizard.class.php:1689 inc/wizard.class.php:1715
+#: inc/wizard.class.php:1729
 msgid "Next"
 msgstr ""
 
-#: inc/wizard.class.php:1696
+#: inc/wizard.class.php:1718
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/wizard.class.php:1708
+#: inc/wizard.class.php:1730
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1720
+#: inc/wizard.class.php:1742
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1775
+#: inc/wizard.class.php:1797
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:1785
+#: inc/wizard.class.php:1807
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3119
+#: inc/wizard.class.php:3140
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3128
+#: inc/wizard.class.php:3149
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3161
+#: inc/wizard.class.php:3182
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3165
+#: inc/wizard.class.php:3186
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
