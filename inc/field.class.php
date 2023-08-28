@@ -2383,7 +2383,7 @@ JAVASCRIPT
                     PluginMetademandsYesno::showFieldCustomValues($values, $key, $params);
                     break;
                 case 'number':
-//                    PluginMetademandsNumber::showFieldCustomValues($values, $key, $params);
+                    PluginMetademandsNumber::showFieldCustomValues($values, $key, $params);
                     break;
                 case 'date':
                     break;
