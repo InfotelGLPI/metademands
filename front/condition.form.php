@@ -41,16 +41,16 @@ $dbu = new DbUtils();
 $criteria = [
     'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']
 ];
-if (isset($_POST['add_condition'])) {
-    if (isset($_POST['plugin_metademands_fields_id'])) {
-        if ($_POST['plugin_metademands_fields_id'] == 0) {
-            Session::addMessageAfterRedirect(__('You have to select a field', 'metademands'), false, ERROR);
-            Html::back();
-        }
-        $field->getFromDB($_POST['plugin_metademands_fields_id']);
-        $type = $field->fields['type'];
-        $item = $field->fields['item'];
+if (isset($_POST['plugin_metademands_fields_id'])) {
+    if ($_POST['plugin_metademands_fields_id'] == 0) {
+        Session::addMessageAfterRedirect(__('You have to select a field', 'metademands'), false, ERROR);
+        Html::back();
     }
+    $field->getFromDB($_POST['plugin_metademands_fields_id']);
+    $type = $field->fields['type'];
+    $item = $field->fields['item'];
+}
+if (isset($_POST['add_condition'])) {
     if (isset($_POST['check_item'])) {
         $input = [
             'plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id'],
@@ -85,7 +85,39 @@ if (isset($_POST['add_condition'])) {
     }
 
     Html::back();
-} else {
+} else if(isset($_POST['update'])){
+    if (isset($_POST['check_item'])) {
+        $input = [
+            'id' => $_POST['id'],
+            'plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id'],
+            'show_logic' => $_POST['show_logic'],
+            'show_condition' => $_POST['show_condition'],
+            'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
+            'items_id' => $_POST['check_value'],
+            'item' => $item,
+            'type' => $type,
+            'order' => $_POST['order']
+        ];
+        if(empty($_POST['check_value'])){
+            Session::addMessageAfterRedirect(__('You have to select an item', 'metademands'), false, ERROR);
+            Html::back();
+        }
+    } else {
+        $input = [
+            'id' => $_POST['id'],
+            'plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id'],
+            'show_logic' => $_POST['show_logic'],
+            'show_condition' => $_POST['show_condition'],
+            'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
+            'check_value' => $_POST['check_value'],
+            'item' => $item,
+            'type' => $type,
+            'order' => $_POST['order']
+        ];
+    }
+    $res = $condition->update($input);
+    Html::back();
+    } else {
     Html::header(__('Condition', 'metademands'), '', "helpdesk", "pluginmetademandscondition");
     $condition->display(['id' => $_GET["id"]]);
     Html::footer();
