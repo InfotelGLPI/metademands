@@ -50,9 +50,11 @@ if (isset($_POST['plugin_metademands_fields_id'])) {
     $type = $field->fields['type'];
     $item = $field->fields['item'];
 }
-if (isset($_POST['add_condition'])) {
+if (isset($_POST['add'])) {
     if (isset($_POST['check_item'])) {
         $input = [
+            '_no_message_link' => '',
+            'add'=> '',
             'plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id'],
             'show_logic' => $_POST['show_logic'],
             'show_condition' => $_POST['show_condition'],
@@ -68,6 +70,8 @@ if (isset($_POST['add_condition'])) {
         }
     } else {
         $input = [
+            '_no_message_link' => '',
+            'add' => '',
             'plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id'],
             'show_logic' => $_POST['show_logic'],
             'show_condition' => $_POST['show_condition'],
@@ -88,6 +92,8 @@ if (isset($_POST['add_condition'])) {
 } else if(isset($_POST['update'])){
     if (isset($_POST['check_item'])) {
         $input = [
+            '_no_message_link' => '',
+            'update' => '',
             'id' => $_POST['id'],
             'plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id'],
             'show_logic' => $_POST['show_logic'],
@@ -104,6 +110,8 @@ if (isset($_POST['add_condition'])) {
         }
     } else {
         $input = [
+            '_no_message_link' => '',
+            'update' => '',
             'id' => $_POST['id'],
             'plugin_metademands_fields_id' => $_POST['plugin_metademands_fields_id'],
             'show_logic' => $_POST['show_logic'],

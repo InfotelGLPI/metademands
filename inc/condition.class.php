@@ -319,7 +319,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 echo "<th>" . __('Field', 'metademands') . " <span style='color : red'> *</span></th>";
                 echo "<th>" . __('Field type', 'metademands') . "</th>";
                 echo "<th>" . __('Equality operator', 'metademands') . " <span style='color : red'> *</span></th>";
-                echo "<th>" . __('Value to check', 'metademands') . " <span style='color : red'> *</span></th>";
+                echo "<th>" . __('Value to check', 'metademands') . "</th>";
                 echo "<th>" . __('Pool', 'metademands') . " <span style='color : red'> *</span>";
                 echo "<h6 style='color: royalblue'>" . __('Order of execution and grouping of conditions', 'metademands') . "</h6>";
                 echo "</th>";
@@ -405,7 +405,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 Dropdown::showNumber('order');
                 echo "</td>";
                 echo "<td>";
-                echo Html::submit(_sx('button', 'Add'), ['name' => 'add_condition', 'class' => 'btn btn-primary']);
+                echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
                 echo "</td>";
                 echo "</tr>";
                 echo "</table>";
@@ -452,7 +452,7 @@ class PluginMetademandsCondition extends CommonDBChild
             echo "<th>" . __('Type') . "</th>";
             echo "<th>" . __('Equality operator', 'metademands') . "</th>";
             echo "<th>" . __('Value to check', 'metademands') . "</th>";
-            echo "<th>" . __('Order', 'metademands') . "</th>";
+            echo "<th>" . __('Pool', 'metademands') . "</th>";
 
             foreach ($allConditions as $condition) {
                 $cond->getFromDB($condition['id']);
@@ -810,7 +810,7 @@ class PluginMetademandsCondition extends CommonDBChild
         echo "<th>" . __('Field', 'metademands') . " <span style='color : red'> *</span></th>";
         echo "<th>" . __('Field type', 'metademands') . "</th>";
         echo "<th>" . __('Equality operator', 'metademands') . " <span style='color : red'> *</span></th>";
-        echo "<th>" . __('Value to check', 'metademands') . " <span style='color : red'> *</span></th>";
+        echo "<th>" . __('Value to check', 'metademands') . "</th>";
         echo "<th>" . __('Pool', 'metademands') . " <span style='color : red'> *</span>";
         echo "<h6 style='color: royalblue'>" . __('Order of execution and grouping of conditions', 'metademands') . "</h6>";
         echo "</th>";
@@ -923,7 +923,6 @@ class PluginMetademandsCondition extends CommonDBChild
             $type = $field->fields['type'];
             $options = [
                 'name' => $name,
-                'required' => true,
                 'right' => 'all',
                 'entity' => $_SESSION['glpiactive_entity'],
                 'entity_sons' => $_SESSION['glpiactive_entity_recursive']
@@ -1035,32 +1034,30 @@ class PluginMetademandsCondition extends CommonDBChild
                         );
                         break;
                     case 'date' :
-                        $options = [
-                            'required' => true,
-                            'size' => 40
+                        $option = [
+                            'size' => 60
                         ];
                         if($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
                         echo "<span style='width: 50%!important;display: -webkit-box;'>";
-                        echo Html::showDateField(
+                        Html::showDateField(
                             "$name",
-                            $options
+                            $option
                         );
                         echo "</span>";
                         break;
                     case 'datetime' :
-                        $options = [
-                            'required' => true,
-                            'size' => 40
+                        $option = [
+                            'size' => 60
                         ];
                         if($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
                         echo "<span style='width: 50%!important;display: -webkit-box;'>";
-                        echo Html::showDateTimeField(
+                        Html::showDateTimeField(
                             "$name",
-                            $options
+                            $option
                         );
                         echo "</span>";
                         break;
