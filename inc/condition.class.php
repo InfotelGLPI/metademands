@@ -486,7 +486,8 @@ class PluginMetademandsCondition extends CommonDBChild
 
                         echo($condition['id']);
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td $onhover>";
                         echo self::showLogic($condition['show_logic']);
                         echo "</td>";
                         echo "<td $onhover>";
@@ -499,16 +500,20 @@ class PluginMetademandsCondition extends CommonDBChild
                             echo "</a> ";
                         }
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td $onhover>";
                         echo PluginMetademandsField::getFieldTypesName($condition['type']);
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td  $onhover>";
                         echo self::showCondition($condition['show_condition']);
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td $onhover>";
                         self::displayCheckValue($condition['id']);
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td $onhover>";
                         echo $condition['order'];
                         echo "</td>";
                         echo "</tr>";
