@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-28 07:53+0000\n"
+"POT-Creation-Date: 2023-08-28 08:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,15 +119,15 @@ msgstr ""
 msgid "You have to select a field"
 msgstr ""
 
-#: front/condition.form.php:66 front/condition.form.php:102
+#: front/condition.form.php:68 front/condition.form.php:108
 msgid "You have to select an item"
 msgstr ""
 
-#: front/condition.form.php:84
+#: front/condition.form.php:88
 msgid "Condition not added"
 msgstr ""
 
-#: front/condition.form.php:121
+#: front/condition.form.php:129
 msgid "Condition"
 msgstr ""
 
@@ -312,7 +312,8 @@ msgstr ""
 msgid "Equality operator"
 msgstr ""
 
-#: inc/condition.class.php:323 inc/condition.class.php:814
+#: inc/condition.class.php:323 inc/condition.class.php:455
+#: inc/condition.class.php:814
 msgid "Pool"
 msgstr ""
 
@@ -322,11 +323,6 @@ msgstr ""
 
 #: inc/condition.class.php:443
 msgid "List of conditions"
-msgstr ""
-
-#: inc/condition.class.php:455 inc/field.class.php:1126
-#: inc/field.class.php:2756
-msgid "Order"
 msgstr ""
 
 #: inc/condition.class.php:533
@@ -596,6 +592,10 @@ msgstr ""
 
 #: inc/field.class.php:1124
 msgid "Use this field as a ticket field"
+msgstr ""
+
+#: inc/field.class.php:1126 inc/field.class.php:2756
+msgid "Order"
 msgstr ""
 
 #: inc/field.class.php:1219
