@@ -637,7 +637,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             tohide[$hidden_block] = true;
                         } else if ($(this).val() > 0 && $idc == -1) {
                             tohide[$hidden_block] = false;
-                        }";
+                        }
+                        ";
 
             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
                             " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
@@ -770,7 +771,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             }
             if ($data["item"] == "ITILCategory_Metademands") {
               if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
-                  $script .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                  $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
                               " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
               }
           }
