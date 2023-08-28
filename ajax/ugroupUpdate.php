@@ -39,7 +39,6 @@ Session::checkLoginUser();
 $fieldGroup = new PluginMetademandsField();
 $cond       = [];
 
-
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
         if ($fieldGroup->getFromDBByCrit(['link_to_user'                      => $_POST['id_fielduser'],
@@ -67,11 +66,14 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         }
 
         $options = PluginMetademandsField::_unserialize($fieldGroup->fields['custom_values']);
+
         foreach ($options as $type_group => $values) {
             if ($type_group != 'user_group') {
                 $cond[$type_group] = $values;
             } else {
-                $cond["glpi_groups.id"] = $requester_groups;
+                if (count($requester_groups) > 0) {
+                    $cond["`glpi_groups`.`id`"] = $requester_groups;
+                }
             }
         }
     }
