@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-28 14:21+0000\n"
+"POT-Creation-Date: 2023-09-05 08:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -211,7 +211,7 @@ msgid "Checkbox"
 msgstr ""
 
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
-#: inc/dropdownmeta.class.php:302 inc/dropdownmeta.class.php:358
+#: inc/dropdownmeta.class.php:306 inc/dropdownmeta.class.php:362
 #: inc/dropdownmultiple.class.php:439 inc/dropdownmultiple.class.php:495
 #: inc/field.class.php:2515 inc/radio.class.php:176 inc/radio.class.php:226
 #: inc/yesno.class.php:92
@@ -222,8 +222,8 @@ msgstr[1] ""
 
 #: inc/checkbox.class.php:249 inc/condition.class.php:322
 #: inc/condition.class.php:454 inc/condition.class.php:813
-#: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:380
-#: inc/dropdownmultiple.class.php:560 inc/dropdownobject.class.php:371
+#: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:384
+#: inc/dropdownmultiple.class.php:560 inc/dropdownobject.class.php:406
 #: inc/field.class.php:1120 inc/fieldoption.class.php:228
 #: inc/radio.class.php:248 inc/yesno.class.php:113
 msgid "Value to check"
@@ -231,9 +231,9 @@ msgstr ""
 
 #: inc/checkbox.class.php:269 inc/checkbox.class.php:285
 #: inc/dropdown.class.php:178 inc/dropdown.class.php:214
-#: inc/dropdownmeta.class.php:429 inc/dropdownmeta.class.php:439
-#: inc/dropdownmeta.class.php:461 inc/dropdownobject.class.php:434
-#: inc/dropdownobject.class.php:444 inc/dropdownobject.class.php:466
+#: inc/dropdownmeta.class.php:433 inc/dropdownmeta.class.php:443
+#: inc/dropdownmeta.class.php:465 inc/dropdownobject.class.php:469
+#: inc/dropdownobject.class.php:479 inc/dropdownobject.class.php:501
 #: inc/radio.class.php:268 inc/radio.class.php:284
 msgid "Not null value"
 msgstr ""
@@ -500,7 +500,7 @@ msgstr ""
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:532 inc/dropdownobject.class.php:344
+#: inc/dropdownmultiple.class.php:532 inc/dropdownobject.class.php:379
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
@@ -1392,12 +1392,16 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: inc/text.class.php:99 inc/textarea.class.php:100
+#: inc/text.class.php:99 inc/textarea.class.php:101
 msgid "If field empty"
 msgstr ""
 
 #: inc/textarea.class.php:51
 msgid "Textarea"
+msgstr ""
+
+#: inc/textarea.class.php:107
+msgid "Not available with Rich text option"
 msgstr ""
 
 #: inc/ticket.class.php:51
