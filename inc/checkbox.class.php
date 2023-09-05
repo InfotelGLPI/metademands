@@ -477,6 +477,23 @@ class PluginMetademandsCheckbox extends CommonDBTM
         $check_values = $data['options'];
         $id = $data["id"];
 
+        //add childs by idc
+        $childs_by_checkvalue = [];
+        foreach ($check_values as $idc => $check_value) {
+            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
+                $childs_blocks = json_decode($check_value['childs_blocks'], true);
+                if (isset($childs_blocks)
+                    && is_array($childs_blocks)
+                    && count($childs_blocks) > 0) {
+                    foreach ($childs_blocks as $childs) {
+                        if (is_array($childs)) {
+                            $childs_by_checkvalue[$idc] = $childs;
+                        }
+                    }
+                }
+            }
+        }
+
         $script = "";
         $script2 = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
@@ -486,173 +503,99 @@ class PluginMetademandsCheckbox extends CommonDBTM
         }
         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-        $script .= "var tohide = {};";
+        $script .= "var todisplay = {};tohide = {};";
 
         //by default - hide all
-        $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
 
+        //checkbox : one value at each time
         foreach ($check_values as $idc => $check_value) {
 
             $hidden_block = $check_value['hidden_block'];
 
-            $script .= " if (this.checked) {";
-
-            $script .= "if ($(this).val() == $idc || $idc == -1 ) {
-                            if ($hidden_block in tohide) {
-                            } else {
-                                tohide[$hidden_block] = true;
-                            }
-                            tohide[$hidden_block] = false;
-                        }";
-
-            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-            $script2 .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
-
-            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-                && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
-                foreach ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] as $fieldSession) {
-                    if ($fieldSession == $idc || $idc == -1) {
-                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                    }
-                }
-            }
-
-            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
-                $childs_blocks = json_decode($check_value['childs_blocks'], true);
-
-                if (isset($childs_blocks)
-                    && is_array($childs_blocks)
-                    && count($childs_blocks) > 0) {
-                    foreach ($childs_blocks as $childs) {
-                        if (is_array($childs)) {
-                            foreach ($childs as $childs_block) {
-                                $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
-                                             " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
-                                $hiddenblocks[] = $childs_block;
-                                $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
-                            }
-                        }
-                    }
-                }
-            }
-
-            $script .= "$.each(tohide, function( key, value ) {
-                        if (value == true) {
-                        } else {
-                            $('[bloc-id =\"bloc'+key+'\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
-                        }
-                    });";
-
-            $script .= " } else { ";
-
-
-            $script .= "if($(this).val() == $idc){
-                            if ($hidden_block in tohide) {
-                            } else {
-                                tohide[$hidden_block] = true;
-                            }
-                            $.each( $('[name^=\"field[" . $data["id"] . "]\"]:checked'),function( index, value ){
-                                if ($(value).val() == $idc || $idc == -1) {
-                                    tohide[$hidden_block] = false;
-                                }
-                             });
-                        }";
-//            $script .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-//            $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
-//
-//
-////            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();
-////            " . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
-//
-            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-                && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
-                foreach ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] as $fieldSession) {
-                    if ($fieldSession == $idc || $idc == -1) {
-                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                    }
-                }
-            }
-
-            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
-                $childs_blocks = json_decode($check_value['childs_blocks'], true);
-
-                if (isset($childs_blocks)
-                    && is_array($childs_blocks)
-                    && count($childs_blocks) > 0) {
-                    foreach ($childs_blocks as $childs) {
-                        if (is_array($childs)) {
-                            foreach ($childs as $childs_block) {
-                                $script2 .= "$('[bloc-id =\"bloc" . $childs_block . "\"]').hide();
-                                             " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs_block);
-                                $hiddenblocks[] = $childs_block;
-                                $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
-                            }
-                        }
-                    }
-                }
-            }
-
-            $script .= "$.each( tohide, function( key, value ) {
-                        if (value == true) {
-                            $('[bloc-id=\"bloc'+key+'\"]').hide();
-                            $.each(tohide, function( key, value ) {
-                                $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
-                                         switch(this.type) {
-                                            case 'password':
-                                            case 'text':
-                                            case 'textarea':
-                                            case 'file':
-                                            case 'date':
-                                            case 'number':
-                                            case 'tel':
-                                            case 'email':
-                                                jQuery(this).val('');
-                                                if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
-                                                    tinymce.get(this.id).setContent('');
-                                                }
-                                                break;
-                                            case 'select-one':
-                                            case 'select-multiple':
-                                                jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
-                                                break;
-                                            case 'checkbox':
-                                            case 'radio':
-                                                 this.checked = false;
-                                                 var checkname = this.name;
-                                                 $(\"[name^='\"+checkname+\"']\").removeAttr('required');
-                                        }
-                                        jQuery(this).removeAttr('required');
-                                        regex = /multiselectfield.*_to/g;
-                                        totest = this.id;
-                                        found = totest.match(regex);
-                                        if(found !== null) {
-                                          regex = /multiselectfield[0-9]*/;
-                                           found = totest.match(regex);
-                                           $('#'+found[0]+'_leftAll').click();
-                                        }
-                                    });
-                            });
-                         } else {
-//                            $('[bloc-id =\"bloc'+key+'\"]').show();
-//                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
-                        }
-                    });";
-
-            $script .= " }";
-//
+            //Default values
             if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
                 $default_values = PluginMetademandsField::_unserialize($data['default_values']);
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
                         if ($idc == $k) {
                             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+                                " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+
+                            if (is_array($childs_by_checkvalue)) {
+                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                    if ($idc == $k) {
+                                        foreach ($childs_blocks as $childs) {
+                                            $script2 .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                 " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $childs);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
+
+            //end Default values
+
+            $script .= " if (this.checked) {";
+
+                $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
+                $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
+                $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+
+                if (is_array($childs_by_checkvalue)) {
+                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                        if ($idc == $k) {
+                            foreach ($childs_blocks as $childs) {
+                                $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                     " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $childs);
+                            }
+                        }
+                    }
+                }
+
+                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
+                    && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
+                    foreach ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] as $fieldSession) {
+                        if ($fieldSession == $idc || $idc == -1) {
+                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                        }
+                    }
+                }
+
+                $script .= " }";
+
+            $script .= " } else { ";
+
+                $script .= "if($(this).val() == $idc){
+                            $('[bloc-id =\"bloc'+$hidden_block+'\"]').hide();";
+                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
+
+                if (is_array($childs_by_checkvalue)) {
+                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                        if ($idc == $k) {
+                            foreach ($childs_blocks as $childs) {
+                                $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                                                         " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs);
+                            }
+                        }
+                    }
+                }
+
+                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
+                    && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
+                    foreach ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] as $fieldSession) {
+                        if ($fieldSession == $idc || $idc == -1) {
+                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+                        }
+                    }
+                }
+
+                $script .= "}";
+
+            $script .= " }";
         }
 
 

@@ -993,7 +993,7 @@ class PluginMetademandsWizard extends CommonDBTM
 //                                      if (seesummary == 1) {
                                           
                                           $('#submitjob').click(function() {
-                                              console.log('click');
+//                                              console.log('click');
                                                  if(typeof tinyMCE !== 'undefined'){
                                                     tinyMCE.triggerSave();
                                                  }
@@ -1926,10 +1926,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                    datatype: 'JSON',
                                    data: formDatas,
                                    success: function (response) {
-                                      console.log(response);
+//                                      console.log(response);
                                       eval('valid_condition=' + response );
                                     
-                                      console.log(valid_condition);
+//                                      console.log(valid_condition);
                                       
                                       if(valid_condition) {
                                           if(show_button == 1) {
