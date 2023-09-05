@@ -331,8 +331,8 @@ class PluginMetademandsDropdown extends CommonDBTM
         //Initialize id default value
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']))) {
+                $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
@@ -501,8 +501,8 @@ class PluginMetademandsDropdown extends CommonDBTM
                 }
             }
             //Initialize id default value
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']))) {
+                $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {

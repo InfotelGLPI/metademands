@@ -195,8 +195,8 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             echo "</td><td $onhover>";
             $searchOption = $item->getSearchOptionByField('field', $data['field']);
             if (empty($searchOption)) {
-               if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
-                  $custom = PluginMetademandsField::_unserialize($item->fields["custom_values"]);
+               if (isset($item->fields["id"]) && !empty($item->fields["id"])) {
+                  $custom = PluginMetademandsCustomDropdown::getCustomValuesByField($item->fields["id"]);
 
                   foreach ($custom as $key => $val) {
                      if ("custom" . $key == $data["field"]) {
@@ -321,14 +321,14 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             $options[$field['field']] = $field['name'];
          }
       }
-      if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
-         $custom = PluginMetademandsField::_unserialize($item->fields["custom_values"]);
+//      if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
+         $custom = PluginMetademandsCustomDropdown::getCustomValuesByField($item->fields["id"]);
          if (is_array($custom)) {
             foreach ($custom as $key => $val) {
                $options["custom" . $key] = $val;
             }
          }
-      }
+//      }
 
       $used = [];
       if (!empty($options)) {

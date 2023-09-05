@@ -65,7 +65,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
             $requester_groups[] = $groups['id'];
         }
 
-        $options = PluginMetademandsField::_unserialize($fieldGroup->fields['custom_values']);
+        $options = PluginMetademandsCustomDropdown::getCustomValuesByField($fieldGroup->fields['id']);
 
         foreach ($options as $type_group => $values) {
             if ($type_group != 'user_group') {

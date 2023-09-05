@@ -74,7 +74,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $criteria['ORDER'] = ['NAME ASC'];
 
             if (!empty($data['custom_values'])) {
-                $options = PluginMetademandsField::_unserialize($data['custom_values']);
+                $options = PluginMetademandsCustomDropdown::getCustomValuesByField($data['id']);
 
                 if (isset($options['user_group']) && $options['user_group'] == 1) {
                     $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
@@ -232,7 +232,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
         } else {
             if (!empty($data['custom_values'])) {
-                $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+                $data['custom_values'] = PluginMetademandsCustomDropdown::getCustomValuesByField($data['id']);
                 foreach ($data['custom_values'] as $k => $val) {
                     if ($data['item'] != "other") {
                         $data['custom_values'][$k] = $data["item"]::getFriendlyNameById($k);
@@ -243,7 +243,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }
                 }
 
-                $defaults = PluginMetademandsField::_unserialize($data['default_values']);
+                $defaults = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
                 $default_values = [];
                 if ($defaults) {
                     foreach ($defaults as $k => $v) {
@@ -404,8 +404,12 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
     static function showFieldCustomValues($values, $key, $params)
     {
 
+        $default_values = PluginMetademandsCustomDropdown::getCustomValuesByField($ID);
+        $comment_values = PluginMetademandsCustomDropdown::getCustomCommentValuesByField($ID);
+        $values = PluginMetademandsCustomDropdown::getCustomValuesByField($ID);
         echo "<tr>";
         echo "<td>";
+        $count =1;
         if (is_array($values) && !empty($values)) {
             echo "<div id='drag'>";
             echo "<table class='tab_cadre_fixe'>";
@@ -415,7 +419,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 echo '<td class="rowhandler control center">';
                 echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                 echo "<p id='custom_values$key'>";
-                echo __('Value') . " " . $key . " ";
+                echo __('Value') . " " . $count++ . " ";
                 $name = "custom_values[$key]";
                 echo Html::input($name, ['value' => $value, 'size' => 50]);
                 echo '</p>';
@@ -722,7 +726,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-            $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+            $custom_value = PluginMetademandsCustomDropdown::getCustomValuesByField($data['id']);
             $script .= "var tohide = {};";
 //
             foreach ($check_values as $idc => $check_value) {
@@ -776,8 +780,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             //Initialize id default value
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
-                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                if (is_array(PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']))) {
+                    $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
 
                     foreach ($default_values as $k => $v) {
                         if ($v == 1) {
@@ -846,8 +850,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
                 //Initialize id default value
-                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                if (is_array(PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']))) {
+                    $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
 
                     foreach ($default_values as $k => $v) {
                         if ($v == 1) {
@@ -880,7 +884,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-            $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+            $custom_value = PluginMetademandsCustomDropdown::getCustomValuesByField($data['id']);
             $script .= "var tohide = {};";
 
             //by default - hide all
@@ -985,8 +989,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }
                 }
                 //Initialize id default value
-                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                if (is_array(PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']))) {
+                    $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
 
                     $hidden_block = $data['options'][$idc]['hidden_block'];
                     foreach ($default_values as $k => $v) {
@@ -1013,7 +1017,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
             $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
 
-            $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+            $custom_value = PluginMetademandsCustomDropdown::getCustomValuesByField($data['id']);
             $script .= "var tohide = {};";
 
             //by default - hide all
@@ -1124,8 +1128,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }
                 }
                 //Initialize id default value
-                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                if (is_array(PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']))) {
+                    $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
 
                     $hidden_block = $data['options'][$idc]['hidden_block'];
                     foreach ($default_values as $k => $v) {
@@ -1153,7 +1157,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $checkbox_id = $data['options'][$idc]['checkbox_id'];
             $checkbox_value = $data['options'][$idc]['checkbox_value'];
 
-            $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+            $custom_value = PluginMetademandsCustomDropdown::getCustomValuesByField($data['id']);
             $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
             if (isset($checkbox_id) && $checkbox_id > 0) {
@@ -1207,7 +1211,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         if (!empty($field['custom_values'])
             && $field['item'] != 'User') {
             if ($field['item'] != "other") {
-                $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                $custom_values = PluginMetademandsCustomDropdown::getCustomValuesByField($field['id']);
                 foreach ($custom_values as $k => $val) {
                     $custom_values[$k] = $field["item"]::getFriendlyNameById($k);
                 }
@@ -1218,7 +1222,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
                 return implode(', ', $parseValue);
             } else {
-                $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+                $custom_values = PluginMetademandsCustomDropdown::getCustomValuesByField($field['id']);
 
                 foreach ($custom_values as $k => $val) {
                     if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {

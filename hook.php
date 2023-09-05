@@ -368,6 +368,10 @@ function plugin_metademands_install() {
     if (!$DB->tableExists("glpi_plugin_metademands_conditions")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.3.sql");
     }
+    //version 3.3.3
+    if (!$DB->tableExists("glpi_plugin_metademands_customdropdowns")) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.4.sql");
+    }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {

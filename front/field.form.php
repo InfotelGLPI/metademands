@@ -131,6 +131,7 @@ if (isset($_POST["add"])) {
       }
 
       $_POST["custom_values"]  = PluginMetademandsField::_serialize($custom_values);
+
       $_POST["comment_values"] = PluginMetademandsField::_serialize($comment_values);
       $_POST["default_values"] = PluginMetademandsField::_serialize($default_values);
 
@@ -221,32 +222,8 @@ if (isset($_POST["add"])) {
    ];
    $field->getFromDBByCrit($crit);
 
-   $custom_values = PluginMetademandsField::_unserialize($field->fields["custom_values"]);
-
-   unset($custom_values[$_POST['id']]);
-   $custom_values = array_combine(range(1, count($custom_values)), array_values($custom_values));
-   $field->update([
-                     'id'            => $_POST['plugin_metademands_fields_id'],
-                     'custom_values' => PluginMetademandsField::_serialize($custom_values)
-                  ]);
-
-    $default_values = PluginMetademandsField::_unserialize($field->fields["default_values"]);
-
-    unset($default_values[$_POST['id']]);
-    $default_values = array_combine(range(1, count($default_values)), array_values($default_values));
-    $field->update([
-        'id'            => $_POST['plugin_metademands_fields_id'],
-        'default_values' => PluginMetademandsField::_serialize($default_values)
-    ]);
-
-    $comment_values = PluginMetademandsField::_unserialize($field->fields["comment_values"]);
-
-    unset($comment_values[$_POST['id']]);
-    $comment_values = array_combine(range(1, count($comment_values)), array_values($comment_values));
-    $field->update([
-        'id'            => $_POST['plugin_metademands_fields_id'],
-        'comment_values' => PluginMetademandsField::_serialize($comment_values)
-    ]);
+   $customDropdown = new PluginMetademandsCustomDropdown();
+   $customDropdown->deleteByCriteria(['id' => $_POST['id']]);
 
 
 

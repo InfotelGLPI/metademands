@@ -58,14 +58,14 @@ class PluginMetademandsRadio extends CommonDBTM
         }
 
         if (!empty($data['custom_values'])) {
-            $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+            $data['custom_values'] = PluginMetademandsCustomDropdown::getCustomValuesByField($data['id']);
             foreach ($data['custom_values'] as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
                     $data['custom_values'][$k] = $ret;
                 }
             }
-            $data['comment_values'] = PluginMetademandsField::_unserialize($data['comment_values']);
-            $defaults               = PluginMetademandsField::_unserialize($data['default_values']);
+            $data['comment_values'] = PluginMetademandsCustomDropdown::getCustomCommentValuesByField($data['id']);
+            $defaults               = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
             if ($value != null) {
                 $value = PluginMetademandsField::_unserialize($value);
             }
@@ -140,11 +140,13 @@ class PluginMetademandsRadio extends CommonDBTM
 
     static function showFieldCustomValues($values, $key, $params) {
 
-        $default_values = PluginMetademandsField::_unserialize($params['default_values']);
-        $comment_values = PluginMetademandsField::_unserialize($params['comment_values']);
+        $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($params['id']);
+        $comment_values = PluginMetademandsCustomDropdown::getCustomCommentValuesByField($params['id']);
+        $values = PluginMetademandsCustomDropdown::getCustomValuesByField($params['id']);
 
         echo "<tr>";
         echo "<td>";
+        $count =1;
         if (is_array($values) && !empty($values)) {
             echo "<div id='drag'>";
             echo "<table class='tab_cadre_fixe'>";
@@ -153,7 +155,7 @@ class PluginMetademandsRadio extends CommonDBTM
 
                 echo '<td class="rowhandler control center">';
                 echo "<p id='custom_values$key'>";
-                echo __('Value') . " " . $key . " ";
+                echo __('Value') . " " . $count++ . " ";
                 $name = "custom_values[$key]";
                 echo Html::input($name, ['value' => $value, 'size' => 30]);
                 echo '</p>';
@@ -369,8 +371,8 @@ class PluginMetademandsRadio extends CommonDBTM
             }
 
             //Initialize id default value
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']))) {
+                $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
@@ -460,8 +462,8 @@ class PluginMetademandsRadio extends CommonDBTM
             }
 
             //Initialize id default value
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']))) {
+                $default_values = PluginMetademandsCustomDropdown::getCustomDefaultValuesByField($data['id']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
@@ -530,7 +532,7 @@ class PluginMetademandsRadio extends CommonDBTM
     public static function getFieldValue($field, $label, $lang)
     {
         if (!empty($field['custom_values'])) {
-            $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+            $custom_values = PluginMetademandsCustomDropdown::getCustomValuesByField($field['id']);
             foreach ($custom_values as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                     $custom_values[$k] = $ret;

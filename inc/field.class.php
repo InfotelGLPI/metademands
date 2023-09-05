@@ -2346,7 +2346,7 @@ JAVASCRIPT
             if ($params["type"] != "dropdown_multiple") {
                 switch ($params['item']) {
                     case 'other':
-                        PluginMetademandsDropdownmeta::showFieldCustomValues($values, $key, $params);
+                        PluginMetademandsDropdownmeta::showFieldCustomValues($values, $key, $params,($this->fields['id']??0));
                         break;
                     default:
                         break;
@@ -2371,13 +2371,13 @@ JAVASCRIPT
                 case 'dropdown':
                     break;
                 case 'dropdown_multiple':
-                    PluginMetademandsDropdownmultiple::showFieldCustomValues($values, $key, $params);
+                    PluginMetademandsDropdownmultiple::showFieldCustomValues($values, $key, $params,($this->fields['id']??0));
                     break;
                 case 'checkbox':
-                    PluginMetademandsCheckbox::showFieldCustomValues($values, $key, $params);
+                    PluginMetademandsCheckbox::showFieldCustomValues($values, $key, $params,($this->fields['id']??0));
                     break;
                 case 'radio':
-                    PluginMetademandsRadio::showFieldCustomValues($values, $key, $params);
+                    PluginMetademandsRadio::showFieldCustomValues($values, $key, $params,($this->fields['id']??0));
                     break;
                 case 'yesno':
                     PluginMetademandsYesno::showFieldCustomValues($values, $key, $params);
@@ -2434,27 +2434,29 @@ JAVASCRIPT
         $itemMove = new self();
         $itemMove->getFromDBByCrit($crit);
 
-        $custom_values = self::_unserialize($itemMove->fields["custom_values"]);
-        $default_values = self::_unserialize($itemMove->fields["default_values"]);
-        $comment_values = self::_unserialize($itemMove->fields["comment_values"]);
+
 
         if (isset($params['old_order']) && isset($params['new_order'])) {
-            $old_order = $params['old_order'];
-            $new_order = $params['new_order'];
-
-            $old_order = $old_order + 1;
-            $new_order = $new_order + 1;
-
-            $new_custom_values = $this->reorderArray($custom_values, $old_order, $new_order);
-            $new_default_values = $this->reorderArray($default_values, $old_order, $new_order);
-            $new_comment_values = $this->reorderArray($comment_values, $old_order, $new_order);
-
-            $itemMove->update([
-                              'id'            => $params['field_id'],
-                              'custom_values' => self::_serialize($new_custom_values),
-                                'default_values' => self::_serialize($new_default_values),
-                                'comment_values' => self::_serialize($new_comment_values)
-                           ]);
+          $old = $params['old_order']+1;
+          $new = $params['new_order']+1;
+          $customdropdown = new PluginMetademandsCustomDropdown();
+          $element_to_move = new PluginMetademandsCustomDropdown();
+          $element_to_move->getFromDBByCrit(['plugin_metademands_fields_id' => $itemMove->getID(), 'order' => $old]);
+          $elements_to_move = $customdropdown->find(['plugin_metademands_fields_id' => $itemMove->getID()],['order']);
+          foreach ($elements_to_move as $elem){
+              if ($elem['order'] >= $new && $elem['order'] < $old && $element_to_move->getID() != $elem['id']) {
+                  $input = [
+                      'id' => $elem['id'],
+                      'order' => ($elem['order'] + 1),
+                  ];
+                  $customdropdown->update($input);
+              }
+          }
+          $input = [
+            'id' => $element_to_move->getID(),
+            'order' => $new,
+          ];
+            $element_to_move->update($input);
         }
     }
 
@@ -2494,7 +2496,7 @@ JAVASCRIPT
         echo "<td id='show_custom_fields'>";
         echo '<p id=\'custom_values' . $valueId . '\'>';
         echo __('Value') . ' ' . $valueId . ' ';
-        $name = "custom_values[$valueId]";
+        $name = "custom_values[new_$valueId]";
         echo Html::input($name, ['size' => 50]);
         echo "</td>";
         echo '</p>';
@@ -2503,7 +2505,7 @@ JAVASCRIPT
         echo '<p id=\'comment_values' . $valueId . '\'>';
         if ($display_comment) {
             echo " " . __('Comment') . " ";
-            $name = "comment_values[$valueId]";
+            $name = "comment_values[new_$valueId]";
             echo Html::input($name, ['size' => 30]);
         }
         echo '</p>';
@@ -2514,7 +2516,7 @@ JAVASCRIPT
         if ($display_default) {
             echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
            //         echo '<input type="checkbox" name="default_values[' . $valueId . ']"  value="1"/>';
-            $name  = "default_values[$valueId]";
+            $name  = "default_values[new_$valueId]";
             $value = 0;
             Dropdown::showYesNo($name, $value);
         }
@@ -3780,6 +3782,15 @@ JAVASCRIPT
     public function post_updateItem($history = 1)
     {
         $pluginField = new PluginMetademandsPluginfields();
+        if((isset($this->input['item']) && $this->input["item"] == 'other')
+            || $_POST["type"] == 'checkbox'
+            || $_POST["type"] == 'radio'
+            || $_POST["type"] == 'dropdown_multiple') {
+            $custom_values = self::_unserialize($this->input['custom_values']);
+            $default_values = self::_unserialize($this->input['default_values']);
+            $comment_values = self::_unserialize($this->input['comment_values']);
+            PluginMetademandsCustomDropdown::manageCustomValues($this->fields['id'],$custom_values,$default_values,$comment_values);
+        }
         if (isset($this->input['plugin_fields_fields_id'])) {
             if ($pluginField->getFromDBByCrit(['plugin_metademands_fields_id' => $this->fields['id']])) {
                 $input                                 = [];
