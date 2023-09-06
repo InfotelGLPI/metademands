@@ -444,7 +444,7 @@ class PluginMetademandsField extends CommonDBChild
                      'rand'                    => $randItem,
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'link_to_user'            => $this->fields["link_to_user"],
-            'readonly' => $this->fields["readonly"],
+                     'readonly' => $this->fields["readonly"],
                      'change_type'             => 1];
         Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", PLUGIN_METADEMANDS_WEBDIR .
                                                                               "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
@@ -496,7 +496,7 @@ JAVASCRIPT
                      'comment_values'          => $this->fields["comment_values"],
                      'default_values'          => $this->fields["default_values"],
                      'link_to_user'            => $this->fields["link_to_user"],
-            'readonly' => $this->fields["readonly"],
+                     'readonly' => $this->fields["readonly"],
         ];
         Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", PLUGIN_METADEMANDS_WEBDIR .
                                                                                 "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
@@ -622,6 +622,7 @@ JAVASCRIPT
 
             unset($allowed_fields[-2]);
 
+            $allowed_fields[80] = __('Entity');
            //      Array ( [1] => name [21] => content [12] => status [10] => urgency [11] => impact [3] => priority
            //      [15] => date [4] => _users_id_requester [71] => _groups_id_requester [5] => _users_id_assign
            //      [8] => _groups_id_assign [6] => _suppliers_id_assign [66] => _users_id_observer [65] => _groups_id_observer
@@ -660,6 +661,13 @@ JAVASCRIPT
                 $granted_fields = [
                 71,
                 65,
+                ];
+            }
+
+            if ($this->fields['type'] == "dropdown_object"
+                && $this->fields["item"] == "Entity") {
+                $granted_fields = [
+                    80,
                 ];
             }
 
@@ -794,6 +802,20 @@ JAVASCRIPT
             echo "</tr>";
         }
 
+        if ($ID > 0 && ($this->fields['type'] == "dropdown_object"
+                && $this->fields["item"] == "Entity")) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2'>";
+            echo "</td>";
+            echo "<td>";
+            echo __('Read-Only', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('readonly', ($this->fields['readonly']));
+            echo "</td>";
+            echo "</tr>";
+        }
+
         if ($ID > 0 && ($this->fields['type'] == "dropdown_meta"
                 && $this->fields["item"] == "ITILCategory_Metademands")) {
             echo "<tr class='tab_bg_1'>";
@@ -815,6 +837,8 @@ JAVASCRIPT
                           && $this->fields["item"] == "Location")
                       || ($this->fields['type'] == "dropdown_meta"
                           && $this->fields["item"] == "mydevices")
+                || ($this->fields['type'] == "dropdown_object"
+                && $this->fields["item"] == "Entity")
         )
         ) {
             echo "<tr class='tab_bg_1'>";

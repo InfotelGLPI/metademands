@@ -2007,6 +2007,10 @@ JAVASCRIPT
                                             }
                                         }
                                     }
+                                    if ($fields_values['used_by_ticket'] == 80) {
+                                        $parent_fields["entities_id"] = $v[$id];
+
+                                    }
                                 }
                             }
                         }
@@ -2157,6 +2161,7 @@ JAVASCRIPT
                             $object->getFromDB($inputUpdate['id']);
                             $ticket_exists_array[] = 1;
                         } else {
+//                            Toolbox::logInfo($input);
                             $parent_tickets_id = $object->add($input);
                         }
 
