@@ -307,6 +307,40 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</div>";
                     echo "</span>";
                     echo "</h5>";
+
+                    if (Plugin::isPluginActive('servicecatalog')) {
+                        $helpdesk_category = new PluginServicecatalogCategory();
+                        if ($helpdesk_category->getFromDBByCategory($parameters['itilcategories_id'])
+                            && !empty($helpdesk_category->fields['display_warning'])) {
+                            echo "<h5>";
+                            echo "<div class='alert alert-danger' role='alert'>";
+                            echo "<i class='fas fa-exclamation-circle fa-2x'></i>";
+                            echo "&nbsp;" . nl2br(PluginServicecatalogCategory::displayField($helpdesk_category, 'display_warning'));
+                            echo "</div>";
+                            echo "</h5>";
+                        }
+
+                        if ($helpdesk_category->getFromDBByCategory($parameters['itilcategories_id'])
+                            && !empty($helpdesk_category->fields['knowbaseitems_id'])
+                            && Session::haveRight('knowbase', KnowbaseItem::READFAQ)) {
+                            $know_id = $helpdesk_category->fields['knowbaseitems_id'];
+                            echo "<h5>";
+                            echo "<div class='alert alert-warning' role='alert'>";
+                            echo "<i class='fas fa-exclamation-triangle fa-2x'></i>";
+                            echo "&nbsp;";
+                            echo __('Did you know that there is an FAQ article that may be able to help you?', 'servicecatalog');
+                            echo "&nbsp;";
+                            echo "<a href='" . PLUGIN_SERVICECATALOG_WEBDIR . "/front/faq.php?from_ticket=1&itilcategories_id=" . $parameters['itilcategories_id'] . "&type=" . $meta->fields['type'] . "&id=" . $know_id . "'>";
+                            echo "<button form='' class='submit btn btn-info btn-sm'>
+<i class='fas fa-link' data-hasqtip='0' aria-hidden='true'></i>";
+                            echo "&nbsp;";
+                            echo __('Click here for more informations', 'servicecatalog');
+                            echo "</button>";
+                            echo "</a>";
+                            echo "</div>";
+                            echo "</h5>";
+                        }
+                    }
                 }
             }
 
@@ -391,6 +425,47 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                     }
                 }
+                if ($meta->getFromDB($parameters['metademands_id'])
+                    && Plugin::isPluginActive('servicecatalog')) {
+                    $configsc = new PluginServicecatalogConfig();
+                    $seedetail = 1;
+                    if (method_exists("PluginServicecatalogConfig", "getDetailBeforeFormRedirect")) {
+                        $seedetail = $configsc->getDetailBeforeFormRedirect();
+                    }
+                    if ($configsc->seeCategoryDetails() && $seedetail == 0) {
+                        $itilcategories_id = 0;
+                        $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                        if (is_array($cats) && count($cats) == 1) {
+                            foreach ($cats as $cat) {
+                                $itilcategories_id = $cat;
+                            }
+                        }
+                        $type = $meta->fields['type'];
+                        $helpdesk_category = new PluginServicecatalogCategory();
+                        if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
+                            && ($helpdesk_category->fields['comment'] != null
+                                || $helpdesk_category->fields['service_detail'] != null
+                                || $helpdesk_category->fields['service_users'] != null
+                                || $helpdesk_category->fields['service_ttr'] != null
+                                || $helpdesk_category->fields['service_use'] != null
+                                || $helpdesk_category->fields['service_supervision'] != null
+                                || $helpdesk_category->fields['service_rules'] != null)) {
+//                            echo "<div class='alert alert-light' style='margin-bottom: 10px;'>";
+                            echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __('More informations', 'servicecatalog') . "\"> ";
+//                            echo __('More informations of this category ? click here', 'servicecatalog');
+                            echo "</i>";
+//                            echo "</div>";
+                            echo Ajax::createIframeModalWindow(
+                                'categorydetails' . $itilcategories_id,
+                                PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $type . "&category_id=" . $itilcategories_id,
+                                ['title' => __('More informations', 'servicecatalog'),
+                                    'display' => false,
+                                    'width' => 1050,
+                                    'height' => 500]
+                            );
+                        }
+                    }
+                }
 
                 if (Session::getCurrentInterface() == 'central'
                     && Session::haveRight('plugin_metademands', UPDATE)
@@ -464,49 +539,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         $comment = $meta->fields['comment'];
                     }
                     echo "<div class='center' style='background: #EEE;padding: 10px;'><i>" . nl2br($comment) . "</i></div>";
-                }
-                if ($meta->getFromDB($parameters['metademands_id'])
-                    && Plugin::isPluginActive('servicecatalog')) {
-                    $configsc = new PluginServicecatalogConfig();
-
-                    $seedetail = 1;
-                    if (method_exists("PluginServicecatalogConfig", "getDetailBeforeFormRedirect")) {
-                        $seedetail = $configsc->getDetailBeforeFormRedirect();
-                    }
-
-                    if ($configsc->seeCategoryDetails() && $seedetail == 0) {
-                        $itilcategories_id = 0;
-                        $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
-                        if (is_array($cats) && count($cats) == 1) {
-                            foreach ($cats as $cat) {
-                                $itilcategories_id = $cat;
-                            }
-                        }
-                        $type = $meta->fields['type'];
-                        $helpdesk_category = new PluginServicecatalogCategory();
-                        if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
-                            && ($helpdesk_category->fields['comment'] != null
-                                || $helpdesk_category->fields['service_detail'] != null
-                                || $helpdesk_category->fields['service_users'] != null
-                                || $helpdesk_category->fields['service_ttr'] != null
-                                || $helpdesk_category->fields['service_use'] != null
-                                || $helpdesk_category->fields['service_supervision'] != null
-                                || $helpdesk_category->fields['service_rules'] != null)) {
-                            echo "<div class='alert alert-light' style='margin-bottom: 10px;'>";
-                            echo "<button form='' class='btn btn-primary' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __('More informations', 'servicecatalog') . "\"> ";
-                            echo __('More informations of this category ? click here', 'servicecatalog');
-                            echo "</button>";
-                            echo "</div>";
-                            echo Ajax::createIframeModalWindow(
-                                'categorydetails' . $itilcategories_id,
-                                PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $type . "&category_id=" . $itilcategories_id,
-                                ['title' => __('More informations', 'servicecatalog'),
-                                    'display' => false,
-                                    'width' => 1050,
-                                    'height' => 500]
-                            );
-                        }
-                    }
                 }
 
                 // Display user informations
