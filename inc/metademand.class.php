@@ -1006,6 +1006,7 @@ class PluginMetademandsMetademand extends CommonDBTM
 
             $crit["is_deleted"] = 0;
             $crit["is_template"] = 0;
+            $crit["type"] = $this->fields['type'];
             $crit += ['NOT' => [
                 'id' => $ID
             ]];

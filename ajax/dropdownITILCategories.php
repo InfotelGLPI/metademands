@@ -70,6 +70,8 @@ $dbu    = new DbUtils();
 
 $crit["is_deleted"] = 0;
 $crit["is_template"] = 0;
+$crit['type'] = $_POST['type'];
+
 $cats = $dbu->getAllDataFromTable(PluginMetademandsMetademand::getTable(), $crit);
 
 $used = [];
