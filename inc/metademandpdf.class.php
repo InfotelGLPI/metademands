@@ -424,7 +424,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
             if ($i > 0) {
                 $this->MultiCellValue($this->title_width, $this->linebreak_height, 'linebreak', '', '', 'TB', 'C', '', 0, '', 'black');
             }
-
+//            Toolbox::logInfo($newForm);
             foreach ($newForm as $key => $elt) {
 
                 $meta = new PluginMetademandsMetademand();
@@ -456,7 +456,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
                     $y = $this->GetY();
                     if (($y + $this->line_height) >= ($this->page_height - $this->header_height)) {
-                        $this->AddPage();
+                        $this->AddPage("P");
                     }
 
                     $label = "";
@@ -490,6 +490,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
                             }
+
                             // Draw line
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             break;
@@ -643,6 +644,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             if ($value != null) {
                                 $value = Toolbox::decodeFromUtf8($value);
                             }
+
                             // Draw line
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             break;
@@ -932,7 +934,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
     public function drawPdf($form, $fields, $metademands_id, $with_basket = false)
     {
         $this->AliasNbPages();
-        $this->AddPage();
+        $this->AddPage("P");
         $this->SetAutoPageBreak(false);
         $this->setFields($form, $fields, $metademands_id, $with_basket);
     }

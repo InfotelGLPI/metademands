@@ -84,10 +84,11 @@ if (isset($_POST['save_form'])) {
                                 }
                             }
                             if ($value['type'] == 'informations'
-                                || $value['type'] == 'title') {
-                                if (!isset($_POST['field'][$id])) {
-                                    $_POST['field'][$id] = 0;
-                                }
+                                || $value['type'] == 'title'
+                                || $value['type'] == 'title-block') {
+//                                if (!isset($_POST['field'][$id])) {
+                                    $_POST['field'][$id] = "";
+//                                }
                             }
                             if ($value['item'] == 'ITILCategory_Metademands') {
                                 $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
