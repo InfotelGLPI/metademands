@@ -423,7 +423,6 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 }
             }
 
-
             $script .= "$.each( tohide, function( key, value ) {                      
                             if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
@@ -604,6 +603,25 @@ class PluginMetademandsCheckbox extends CommonDBTM
             $script .= " } else { ";
 
             //if reload form
+
+
+                $script .= "if($(this).val() == $idc){
+                            $('[bloc-id =\"bloc'+$hidden_block+'\"]').hide();";
+                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block)
+                    . PluginMetademandsFieldoption::setEmptyBlockFields($hidden_block);
+
+                if (is_array($childs_by_checkvalue)) {
+                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                        if ($idc == $k) {
+                            foreach ($childs_blocks as $childs) {
+                                $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
+                                                         " . PluginMetademandsFieldoption::setEmptyBlockFields($childs)
+                                                            . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs);
+                            }
+                        }
+                    }
+                }
+
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
                 if (is_array($session_value)) {
@@ -623,22 +641,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                         }
                     }
                 }
-            } else {
-
-                $script .= "if($(this).val() == $idc){
-                            $('[bloc-id =\"bloc'+$hidden_block+'\"]').hide();";
-                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
-
-                if (is_array($childs_by_checkvalue)) {
-                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                        if ($idc == $k) {
-                            foreach ($childs_blocks as $childs) {
-                                $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();
-                                                         " . PluginMetademandsFieldoption::resetMandatoryBlockFields($childs);
-                            }
-                        }
-                    }
-                }
+            }
 
 //                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
 //                    && is_array($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])) {
@@ -649,19 +652,19 @@ class PluginMetademandsCheckbox extends CommonDBTM
 //                    }
 //                }
 
-                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                    if (is_array($session_value)) {
-                        foreach ($session_value as $k => $fieldSession) {
-                            if ($fieldSession == $idc && $hidden_block > 0) {
-                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-                            }
-                        }
-                    }
-                }
+//                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+//                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+//                    if (is_array($session_value)) {
+//                        foreach ($session_value as $k => $fieldSession) {
+//                            if ($fieldSession == $idc && $hidden_block > 0) {
+//                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+//                            }
+//                        }
+//                    }
+//                }
 
                 $script .= "}";
-            }
+
             $script .= " }";
         }
 

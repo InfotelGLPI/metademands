@@ -1262,9 +1262,12 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
                 $field['value'] = PluginMetademandsField::_unserialize($field['value']);
                 $parseValue = [];
-                foreach ($field['value'] as $k => $value) {
-                    $parseValue[] = $custom_values[$value];
+                if (is_array($field['value'])) {
+                    foreach ($field['value'] as $k => $value) {
+                        $parseValue[] = $custom_values[$value];
+                    }
                 }
+
                 return implode(', ', $parseValue);
             }
         } elseif ($field['item'] == 'User') {
