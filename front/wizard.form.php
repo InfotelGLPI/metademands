@@ -563,6 +563,8 @@ if (isset($_POST['next'])) {
         $options['step'] = PluginMetademandsMetademand::STEP_INIT;
     }
 
+    PluginMetademandsStepform::showWaitingWarning();
+
     $wizard->showWizard($options);
 
     if (Session::getCurrentInterface() != 'central'
