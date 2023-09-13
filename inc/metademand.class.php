@@ -979,20 +979,25 @@ class PluginMetademandsMetademand extends CommonDBTM
                 switch ($this->fields['type']) {
                     case Ticket::INCIDENT_TYPE:
                         $criteria['is_incident'] = 1;
+                        $crit['type'] = Ticket::INCIDENT_TYPE;
                         break;
 
                     case Ticket::DEMAND_TYPE:
                         $criteria['is_request'] = 1;
+                        $crit['type'] = Ticket::DEMAND_TYPE;
                         break;
                 }
             } else {
                 $criteria = ['is_incident' => 1];
+                $crit = ['type' => Ticket::INCIDENT_TYPE];
             }
 
             if ($this->fields['object_to_create'] == 'Problem') {
                 $criteria = ['is_problem' => 1];
+                $crit = ['object_to_create' => 'Problem'];
             } elseif ($this->fields['object_to_create'] == 'Change') {
                 $criteria = ['is_change' => 1];
+                $crit = ['object_to_create' => 'Change'];
             }
 
             $criteria += getEntitiesRestrictCriteria(
