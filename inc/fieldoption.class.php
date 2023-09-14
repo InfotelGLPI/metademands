@@ -1297,41 +1297,41 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     $('[bloc-id=\"bloc'+key+'\"]').hide();
                                     $.each(tohideblock, function( key, value ) {
                                         $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
-                                                 switch(this.type) {
-                                                    case 'password':
-                                                    case 'text':
-                                                    case 'textarea':
-                                                    case 'file':
-                                                    case 'date':
-                                                    case 'number':
-                                                    case 'tel':
-                                                    case 'email':
-                                                        jQuery(this).val('');
-                                                        if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
-                                                            tinymce.get(this.id).setContent('');
-                                                        }
-                                                        break;
-                                                    case 'select-one':
-                                                    case 'select-multiple':
-                                                        jQuery(this).val('0').trigger('change');
-                                                        jQuery(this).val('0');
-                                                        break;
-                                                    case 'checkbox':
-                                                    case 'radio':
-                                                         this.checked = false;
-                                                         var checkname = this.name;
-                                                         $(\"[name^='\"+checkname+\"']\").removeAttr('required');
-                                                }
-                                                jQuery(this).removeAttr('required');
-                                                regex = /multiselectfield.*_to/g;
-                                                totest = this.id;
-                                                found = totest.match(regex);
-                                                if(found !== null) {
-                                                  regex = /multiselectfield[0-9]*/;
-                                                   found = totest.match(regex);
-                                                   $('#'+found[0]+'_leftAll').click();
-                                                }
-                                            });
+                                             switch(this.type) {
+                                                case 'password':
+                                                case 'text':
+                                                case 'textarea':
+                                                case 'file':
+                                                case 'date':
+                                                case 'number':
+                                                case 'tel':
+                                                case 'email':
+//                                                    jQuery(this).val('');
+//                                                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+//                                                        tinymce.get(this.id).setContent('');
+//                                                    }
+                                                    break;
+                                                case 'select-one':
+                                                case 'select-multiple':
+//                                                    jQuery(this).val('0').trigger('change');
+//                                                    jQuery(this).val('0');
+                                                    break;
+                                                case 'checkbox':
+                                                case 'radio':
+//                                                     this.checked = false;
+                                                     var checkname = this.name;
+                                                     $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                            }
+                                            jQuery(this).removeAttr('required');
+//                                            regex = /multiselectfield.*_to/g;
+//                                            totest = this.id;
+//                                            found = totest.match(regex);
+//                                            if(found !== null) {
+//                                              regex = /multiselectfield[0-9]*/;
+//                                               found = totest.match(regex);
+//                                               $('#'+found[0]+'_leftAll').click();
+//                                            }
+                                        });
                                     });
                                 }
                             });";

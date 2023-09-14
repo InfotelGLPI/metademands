@@ -68,9 +68,9 @@ class PluginMetademandsTextarea extends CommonDBTM
                 'value' => $value,
                 'editor_id' => $namefield . $data['id'],
                 'enable_richtext' => true,
-                'enable_fileupload' => false,
+                'enable_fileupload' => true,
                 //TODO add param
-                'enable_images' => true,
+//                'enable_images' => true,
                 'display' => false,
                 'required' => ($data['is_mandatory'] ? "required" : ""),
                 'cols' => 80,

@@ -47,7 +47,26 @@ class PluginMetademandsForm_Value extends CommonDBTM {
             if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
                $field['value'] = $values[$fields_id];
             } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
-               $field['value'] = json_encode($values[$fields_id]);
+
+                $metafield = new PluginMetademandsField();
+                if ($metafield->getFromDB($fields_id)) {
+                    if ($metafield->fields["type"] == "ordermaterial_basket") {
+                        if (isset($_SESSION['plugin_metademands'][$field["plugin_metademands_metademands_id"]]['quantities'])) {
+                            $quantities = $_SESSION['plugin_metademands'][$field["plugin_metademands_metademands_id"]]['quantities'];
+                            if (isset($quantities[$fields_id])) {
+                                foreach ($quantities[$fields_id] as $k => $q) {
+                                    if ($q > 0) {
+                                        $field['value'] = json_encode($quantities[$fields_id]);
+                                    }
+                                }
+                            }
+                        } else {
+                            $field['value'] = json_encode($values[$fields_id]);
+                        }
+                    } else {
+                        $field['value'] = json_encode($values[$fields_id]);
+                    }
+                }
             }
             $field['value2'] = '';
             if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
