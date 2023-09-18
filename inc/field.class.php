@@ -238,6 +238,9 @@ class PluginMetademandsField extends CommonDBChild
             $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
         } else {
             // Create item
+            if (!isset($item)) {
+               return false;
+            }
             $options['itemtype'] = get_class($item);
             $options['items_id'] = $item->getID();
             $metademand->getFromDB($item->getID());

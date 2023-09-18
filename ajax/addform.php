@@ -168,6 +168,11 @@ if (isset($_POST['save_form'])) {
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
 
                 $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+
+                if (Plugin::isPluginActive('ordermaterial') && isset($_POST['quantity'])) {
+                    $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['quantities'] = $_POST['quantity'];
+                }
+
                 if (count($metademands_data) && $form_new_id > 0) {
                     foreach ($metademands_data as $form_step => $data) {
                         $docitem = null;

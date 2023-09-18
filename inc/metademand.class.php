@@ -3156,10 +3156,8 @@ JAVASCRIPT
                         "<a href='".Ticket::getFormURL()."?id=".$parent_tickets_id."'>".$parent_metademands_name."</a>");
                 } else {
                     $message = sprintf(
-                        __('%s %d successfully updated', 'metademands'),
-                        $object::getTypeName(1),
-                        $object->getID(),
-                    );
+                        __('Ticket "%s" successfully updated', 'metademands'),
+                        "<a href='".Ticket::getFormURL()."?id=".$object->getID()."'>".$object->getID()."</a>");
                 }
             } else {
                 $message = sprintf(
@@ -3230,7 +3228,9 @@ JAVASCRIPT
             if (empty($name = self::displayField($metademands_id, 'name', $langTech))) {
                 $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
             }
-            if (!isset($options['formatastable']) || (isset($options['formatastable']) && $options['formatastable'] == true)) {
+            if (!isset($options['formatastable'])
+                || (isset($options['formatastable'])
+                    && $options['formatastable'] == true)) {
                 $result['content'] .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>"; // class='mticket'
 //                 $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
             }
@@ -3242,6 +3242,7 @@ JAVASCRIPT
             //      $result['content'] .= "</table>";
             $resultTemp = [];
             $nb = 0;
+
             foreach ($parent_fields as $fields_id => $field) {
                 if (!isset($resultTemp[$field['rank']])) {
                     $resultTemp[$field['rank']]['content'] = "";
@@ -4853,10 +4854,15 @@ JAVASCRIPT
                                         $id = $values['id'];
                                         unset($values['id']);
                                         $values['plugin_metademands_metademands_id'] = $new_metademands_id;
-                                        $values['name'] = addslashes($values['name']);
-                                        $values['label2'] = addslashes($values['label2']);
-                                        $values['comment'] = addslashes($values['comment']);
-
+                                        if (!empty($values['name'])) {
+                                            $values['name'] = addslashes($values['name']);
+                                        }
+                                        if (!empty($values['label2'])) {
+                                            $values['label2'] = addslashes($values['label2']);
+                                        }
+                                        if (!empty($values['comment'])) {
+                                            $values['comment'] = addslashes($values['comment']);
+                                        }
                                         $newID = $fields->add($values);
                                         $associated_fields[$id] = $newID;
                                         $associated_fields[$newID] = $id;

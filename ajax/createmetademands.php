@@ -47,6 +47,7 @@ $wizard = new PluginMetademandsWizard();
 $fields = new PluginMetademandsField();
 
 
+
 if (isset($_POST['see_basket_summary'])) {
 
     if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
@@ -62,6 +63,20 @@ if (isset($_POST['see_basket_summary'])) {
 
     unset($_POST['see_basket_summary']);
     $post = $_POST;
+
+    //why i don't know
+    if (isset($post['quantity'])) {
+        foreach ($post['quantity'] as $k => $v) {
+            foreach ($v as $key => $q) {
+                if ($q > 0 && !isset($post['field'][$k])) {
+                    $post['field'][$k] = [$key => $key];
+                }
+                if ($q == 0) {
+                    unset($post['quantity'][$k]);
+                }
+            }
+        }
+    }
 
     if (Plugin::isPluginActive('ordermaterial')) {
         $ordermaterial = new PluginOrdermaterialMetademand();

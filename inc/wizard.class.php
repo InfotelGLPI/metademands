@@ -2320,7 +2320,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
                             }
                         }
-                        if (y[i].type == 'file' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
+                        if (y[i].type == 'file' && fieldname != '_uploader_filename[]' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
                             var inputPieceJointe = document.getElementById(fieldid);
                             if (inputPieceJointe.files.length > 0) {
                                $('[name=\"' + fieldname + '\"]').removeClass('invalid');

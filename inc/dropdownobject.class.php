@@ -32,7 +32,7 @@ if (!defined('GLPI_ROOT')) {
 
 
 /**
- * PluginMetademandsDropdownmeta Class
+ * PluginMetademandsDropdownobject Class
  *
  **/
 class PluginMetademandsDropdownobject extends CommonDBTM
@@ -90,54 +90,55 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     );
                     $field .= "});</script>";
                 }
-                $paramsloc
-                    = ['value'          => '__VALUE__',
-                    'id_fielduser'   => $data['id'],
-                    'metademands_id' => $data['plugin_metademands_metademands_id']];
+                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                    $paramsloc
+                        = ['value' => '__VALUE__',
+                        'id_fielduser' => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                $toupdate[] = ['value_fieldname'
-                => 'value',
-                    'id_fielduser' => $data['id'],
-                    'to_update'    => "location_user" . $data['id'],
-                    'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
-                    'moreparams'   => $paramsloc];
+                    $toupdate[] = ['value_fieldname'
+                    => 'value',
+                        'id_fielduser' => $data['id'],
+                        'to_update' => "location_user" . $data['id'],
+                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
+                        'moreparams' => $paramsloc];
 
-                $field .= "<script type='text/javascript'>";
-                $field .= "$(function() {";
-                Ajax::updateItemJsCode(
-                    "location_user" . $data['id'],
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
-                    $paramsloc,
-                    $namefield . "[" . $data['id'] . "]",
-                    false
-                );
-                $field .= "});</script>";
+                    $field .= "<script type='text/javascript'>";
+                    $field .= "$(function() {";
+                    Ajax::updateItemJsCode(
+                        "location_user" . $data['id'],
+                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/ulocationUpdate.php",
+                        $paramsloc,
+                        $namefield . "[" . $data['id'] . "]",
+                        false
+                    );
+                    $field .= "});</script>";
+                }
+                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                    $paramsgroup
+                        = ['value' => '__VALUE__',
+                        'id_fielduser' => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
 
+                    $toupdate[] = ['value_fieldname'
+                    => 'value',
+                        'id_fielduser' => $data['id'],
+                        'to_update' => "group_user" . $data['id'],
+                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
+                        'moreparams' => $paramsgroup];
 
-                $paramsgroup
-                    = ['value'          => '__VALUE__',
-                    'id_fielduser'   => $data['id'],
-                    'metademands_id' => $data['plugin_metademands_metademands_id']];
+                    $field .= "<script type='text/javascript'>";
+                    $field .= "$(function() {";
+                    Ajax::updateItemJsCode(
+                        "group_user" . $data['id'],
+                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
+                        $paramsgroup,
+                        $namefield . "[" . $data['id'] . "]",
+                        false
+                    );
+                    $field .= "});</script>";
 
-                $toupdate[] = ['value_fieldname'
-                => 'value',
-                    'id_fielduser' => $data['id'],
-                    'to_update'    => "group_user" . $data['id'],
-                    'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                    'moreparams'   => $paramsgroup];
-
-                $field .= "<script type='text/javascript'>";
-                $field .= "$(function() {";
-                Ajax::updateItemJsCode(
-                    "group_user" . $data['id'],
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/ugroupUpdate.php",
-                    $paramsgroup,
-                    $namefield . "[" . $data['id'] . "]",
-                    false
-                );
-                $field .= "});</script>";
-
-
+                }
                 $paramsentity
                     = ['value'          => '__VALUE__',
                     'id_fielduser'   => $data['id'],
@@ -162,30 +163,30 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 );
                 $field .= "});</script>";
 
+                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                    $paramsdev
+                        = ['value' => '__VALUE__',
+                        'id_fielduser' => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
 
-                $paramsdev
-                    = ['value'          => '__VALUE__',
-                    'id_fielduser'   => $data['id'],
-                    'metademands_id' => $data['plugin_metademands_metademands_id']];
+                    $toupdate[] = ['value_fieldname'
+                    => 'value',
+                        'id_fielduser' => $data['id'],
+                        'to_update' => "mydevices_user" . $data['id'],
+                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
+                        'moreparams' => $paramsdev];
 
-                $toupdate[] = ['value_fieldname'
-                => 'value',
-                    'id_fielduser' => $data['id'],
-                    'to_update'    => "mydevices_user" . $data['id'],
-                    'url'          => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
-                    'moreparams'   => $paramsdev];
-
-                $field .= "<script type='text/javascript'>";
-                $field .= "$(function() {";
-                Ajax::updateItemJsCode(
-                    "mydevices_user" . $data['id'],
-                    PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
-                    $paramsdev,
-                    $namefield . "[" . $data['id'] . "]",
-                    false
-                );
-                $field .= "});</script>";
-
+                    $field .= "<script type='text/javascript'>";
+                    $field .= "$(function() {";
+                    Ajax::updateItemJsCode(
+                        "mydevices_user" . $data['id'],
+                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/umydevicesUpdate.php",
+                        $paramsdev,
+                        $namefield . "[" . $data['id'] . "]",
+                        false
+                    );
+                    $field .= "});</script>";
+                }
                 if (empty($value)) {
                     $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                 }
@@ -265,7 +266,9 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                             if ($type_group != 'user_group') {
                                 $cond[$type_group] = $values;
                             } else {
-                                $cond["glpi_groups.id"] = $requester_groups;
+                                if (count($requester_groups) > 0) {
+                                    $cond["glpi_groups.id"] = $requester_groups;
+                                }
                             }
                         }
                         unset($cond['user_group']);

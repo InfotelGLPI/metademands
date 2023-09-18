@@ -32,7 +32,7 @@ if (!defined('GLPI_ROOT')) {
 
 
 /**
- * PluginMetademandsDropdownmeta Class
+ * PluginMetademandsDropdown Class 
  *
  **/
 class PluginMetademandsDropdown extends CommonDBTM
@@ -59,7 +59,6 @@ class PluginMetademandsDropdown extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
-
 
         switch ($data['item']) {
 
@@ -101,6 +100,7 @@ class PluginMetademandsDropdown extends CommonDBTM
 
                         $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
                             && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id']    = $data['id'];
                         $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];

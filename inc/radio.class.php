@@ -213,11 +213,11 @@ class PluginMetademandsRadio extends CommonDBTM
             echo "</tr>";
         } else {
             echo __('Value') . " 0 ";
-            echo Html::input('custom_values[0]', ['size' => 30]);
+            echo Html::input('custom_values[1]', ['size' => 30]);
             echo "</td>";
             echo "<td>";
             echo " " . __('Comment') . " ";
-            echo Html::input('comment_values[0]', ['size' => 30]);
+            echo Html::input('comment_values[1]', ['size' => 30]);
             echo "</td>";
             echo "<td>";
             //                  echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
@@ -349,6 +349,16 @@ class PluginMetademandsRadio extends CommonDBTM
         if ($debug) {
             $script = "console.log('fieldsHiddenScript-radio $id');";
         }
+
+        //if reload form on loading
+        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+
+            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+            if ($session_value > 0) {
+                $script2 .= "$('[id=\"field[" . $id . "][" . $session_value . "]\"]').prop('checked', true);";
+            }
+        }
+
         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         $script .= "var tohide = {};";
