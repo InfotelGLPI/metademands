@@ -41,7 +41,7 @@ include_once PLUGIN_METADEMANDS_DIR . "/vendor/autoload.php";
 // Init the hooks of the plugins -Needed
 function plugin_init_metademands()
 {
-    global $PLUGIN_HOOKS;
+    global $PLUGIN_HOOKS, $CFG_GLPI;
 
     $PLUGIN_HOOKS['csrf_compliant']['metademands'] = true;
     $PLUGIN_HOOKS['change_profile']['metademands'] = ['PluginMetademandsProfile', 'initProfile'];
@@ -53,7 +53,8 @@ function plugin_init_metademands()
     $PLUGIN_HOOKS['dashboard_cards']['metademands'] = 'plugin_metademands_hook_dashboard_cards';
 
     $PLUGIN_HOOKS['use_massive_action']['metademands'] = 1;
-
+    $_SESSION["glpi_plugin_metademands_loaded"] = 0;
+    $plugin = new Plugin();
     if (Session::getLoginUserID()) {
 
         $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuze.js';
@@ -123,10 +124,27 @@ function plugin_init_metademands()
         }
 
         if (Session::haveRight("plugin_metademands", READ)
-            && !Plugin::isPluginActive('servicecatalog')) {
+            && !Plugin::isPluginActive('servicecatalog') && Session::haveRight("plugin_metademands_in_menu",READ)) {
             $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = PLUGIN_METADEMANDS_DIR_NOFULL . '/front/wizard.form.php';
             $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['metademands'] = PluginMetademandsMetademand::getIcon();
         }
+        // TEST Redirect
+        if ($_SESSION["plugin_metademands_on_login_loaded"] == 0) {
+            if (Session::getCurrentInterface() == "helpdesk") {
+                if (Session::haveRight('plugin_metademands_on_login',READ)) {
+                    $_SESSION["plugin_metademands_on_login_loaded"] = 1;
+                    Html::redirect($CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php");
+                }
+            }
+
+        }
+
+        if ($_SESSION["plugin_metademands_on_login_loaded"] == 1) {
+            if(str_contains($_SERVER['REQUEST_URI'],"create_ticket")){
+                Html::redirect($CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php");
+            }
+        }
+        // END TEST Redirect
 
         if (Session::haveRight("config", UPDATE)) {
             $PLUGIN_HOOKS['config_page']['metademands'] = 'front/config.form.php';

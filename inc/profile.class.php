@@ -145,6 +145,20 @@ class PluginMetademandsProfile extends Profile
         Html::showCheckbox(['name'    => '_plugin_metademands_updatemeta[1_0]',
                             'checked' => $effective_rights['plugin_metademands_updatemeta']]);
         echo "</td></tr>\n";
+        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_on_login']);
+        echo "<tr class='tab_bg_2'>";
+        echo "<td width='20%'>".__('Show form selection on connexion and replace the create form', 'metademands')."</td>";
+        echo "<td colspan='5'>";
+        Html::showCheckbox(['name'    => '_plugin_metademands_on_login[1_0]',
+            'checked' => $effective_rights['plugin_metademands_on_login']]);
+        echo "</td></tr>\n";
+        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_in_menu']);
+        echo "<tr class='tab_bg_2'>";
+        echo "<td width='20%'>".__('Hide button in menu', 'metademands')."</td>";
+        echo "<td colspan='5'>";
+        Html::showCheckbox(['name'    => '_plugin_metademands_in_menu[1_0]',
+            'checked' => $effective_rights['plugin_metademands_in_menu']]);
+        echo "</td></tr>\n";
         echo "</table>";
 
         if ($canedit
@@ -188,6 +202,14 @@ class PluginMetademandsProfile extends Profile
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
                          'label'    => __('Right to update a meta-demand form from the ticket', 'metademands'),
                          'field'    => 'plugin_metademands_updatemeta'
+            ];
+            $rights[] = ['itemtype'  => 'PluginMetademandsMetademand',
+                'label'     => __('Show form selection on connexion and replace the create form', 'metademands'),
+                'field'     => 'plugin_metademands_on_login'
+            ];
+            $rights[] = ['itemtype'  => 'PluginMetademandsMetademand',
+                'label'     => __('Hide button in menu', 'metademands'),
+                'field'     => 'plugin_metademands_in_menu'
             ];
         }
 
@@ -320,6 +342,7 @@ class PluginMetademandsProfile extends Profile
                 $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
             }
         }
+        $_SESSION["plugin_metademands_on_login_loaded"] = 0;
     }
 
     /**

@@ -1759,7 +1759,7 @@ JAVASCRIPT
 
         $metademands_data = $this->constructMetademands($metademands_id);
         $this->getFromDB($metademands_id);
-
+        $metaCategories = new self();
         if (!$this->fields['object_to_create']
             || !getItemForItemtype($this->fields['object_to_create'])) {
             return false;
@@ -1784,6 +1784,7 @@ JAVASCRIPT
             foreach ($metademands_data as $form_step => $data) {
                 $docitem = null;
                 foreach ($data as $form_metademands_id => $line) {
+                    $metaCategories->getFromDB($form_metademands_id);
                     if ($object_class == 'Ticket') {
                         $noChild = false;
                         if ($ancestor_tickets_id > 0) {
@@ -2098,7 +2099,7 @@ JAVASCRIPT
                         if ($itilcategory > 0) {
                             $input['itilcategories_id'] = $itilcategory;
                         } else {
-                            $cats = json_decode($this->fields['itilcategories_id'], true);
+                            $cats = json_decode($metaCategories->fields['itilcategories_id'], true);
                             if (is_array($cats) && count($cats) == 1) {
                                 foreach ($cats as $cat) {
                                     $input['itilcategories_id'] = $cat;
@@ -3790,8 +3791,19 @@ JAVASCRIPT
 
                         $inputs[$value['item']] = self::$PARENT_PREFIX . $value['value'];
                     } else {
-                        $inputs[$value['item']] = json_decode($value['value'], true);
+                        if($value['item'] == '_tasktemplates_id') {
+                            $inputs[$value['item']] = array_merge($inputs[$value['item']]??[],[json_decode($value['value'], true)]);
+                        } else {
+                            $inputs[$value['item']] = json_decode($value['value'], true);
+                        }
                     }
+                }
+            }
+        }
+        if(isset($inputs['_tasktemplates_id']) && is_array($inputs['_tasktemplates_id'])) {
+            foreach ($inputs['_tasktemplates_id'] as $id => $valueTT) {
+                if(is_null($valueTT)) {
+                    unset($inputs['_tasktemplates_id'][$id]);
                 }
             }
         }

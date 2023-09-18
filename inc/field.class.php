@@ -663,6 +663,14 @@ JAVASCRIPT
                 ];
             }
 
+            if ($this->fields['type'] == "dropdown_object"
+                && $this->fields["item"] == "Entity") {
+                $allowed_fields[80] = 'entities_id';
+                $granted_fields = [
+                    80,
+                ];
+            }
+
             if ($this->fields['type'] == "dropdown"
              && $this->fields["item"] == "Location") {
                 $granted_fields = [
