@@ -1928,6 +1928,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   var show_rule = '$show_rule';
                   findFirstTab($block_id);
                   if(use_condition == true) {
+                     $('document').ready(checkConditions);          
                     if(show_rule == 2){
                      show_button = 0;
                      if(document.getElementById('nextBtn').innerHTML == submittitle) {
