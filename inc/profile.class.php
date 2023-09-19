@@ -93,6 +93,8 @@ class PluginMetademandsProfile extends Profile
             $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
                        'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
                        'plugin_metademands_updatemeta' => 1,
+                       'plugin_metademands_on_login' => 0,
+                       'plugin_metademands_in_menu' => 0,
                 'plugin_metademands_createmeta' => 1];
 
             self::addDefaultProfileInfos($ID, $rights);
@@ -147,7 +149,7 @@ class PluginMetademandsProfile extends Profile
         echo "</td></tr>\n";
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_on_login']);
         echo "<tr class='tab_bg_2'>";
-        echo "<td width='20%'>".__('Show form selection on connexion and replace the create form', 'metademands')."</td>";
+        echo "<td width='20%'>".__('Show form selection on connection and replace the create form', 'metademands')."</td>";
         echo "<td colspan='5'>";
         Html::showCheckbox(['name'    => '_plugin_metademands_on_login[1_0]',
             'checked' => $effective_rights['plugin_metademands_on_login']]);
@@ -204,7 +206,7 @@ class PluginMetademandsProfile extends Profile
                          'field'    => 'plugin_metademands_updatemeta'
             ];
             $rights[] = ['itemtype'  => 'PluginMetademandsMetademand',
-                'label'     => __('Show form selection on connexion and replace the create form', 'metademands'),
+                'label'     => __('Show form selection on connection and replace the create form', 'metademands'),
                 'field'     => 'plugin_metademands_on_login'
             ];
             $rights[] = ['itemtype'  => 'PluginMetademandsMetademand',
@@ -353,6 +355,8 @@ class PluginMetademandsProfile extends Profile
         $rights = ['plugin_metademands'            => ALLSTANDARDRIGHT,
                    'plugin_metademands_followup'   => ALLSTANDARDRIGHT,
                    'plugin_metademands_updatemeta' => 1,
+                   'plugin_metademands_on_login' => 0,
+                   'plugin_metademands_in_menu' => 0,
             'plugin_metademands_createmeta' => 1];
 
         self::addDefaultProfileInfos(
