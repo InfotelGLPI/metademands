@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-18 09:36+0000\n"
+"POT-Creation-Date: 2023-09-19 08:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,7 +55,7 @@ msgid "Running metademands with tickets of my groups"
 msgstr ""
 
 #: setup.php:189 inc/menu.class.php:42 inc/metademand.class.php:87
-#: inc/profile.class.php:129 inc/profile.class.php:187 inc/tools.class.php:132
+#: inc/profile.class.php:131 inc/profile.class.php:189 inc/tools.class.php:132
 #: inc/tools.class.php:202
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
@@ -798,7 +798,7 @@ msgid "Informations"
 msgstr ""
 
 #: inc/interticketfollowup.class.php:48 inc/interticketfollowup.class.php:76
-#: inc/profile.class.php:193
+#: inc/profile.class.php:195
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] ""
@@ -1221,19 +1221,19 @@ msgid_plural "Rights management"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/profile.class.php:135 inc/profile.class.php:199
+#: inc/profile.class.php:137 inc/profile.class.php:201
 msgid "Create a meta-demand"
 msgstr ""
 
-#: inc/profile.class.php:142 inc/profile.class.php:203
+#: inc/profile.class.php:144 inc/profile.class.php:205
 msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
-#: inc/profile.class.php:150 inc/profile.class.php:207
-msgid "Show form selection on connexion and replace the create form"
+#: inc/profile.class.php:152 inc/profile.class.php:209
+msgid "Show form selection on connection and replace the create form"
 msgstr ""
 
-#: inc/profile.class.php:157 inc/profile.class.php:211
+#: inc/profile.class.php:159 inc/profile.class.php:213
 msgid "Hide button in menu"
 msgstr ""
 
