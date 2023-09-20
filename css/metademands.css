@@ -7,6 +7,12 @@
     border-radius: 5px;
 }
 
+.informations a[target="_blank"]::before {
+    font-family: tabler-icons;
+    content: "";
+    padding-right: 4px;
+}
+
 .metademands_show_values {
     padding: 10px;
     margin: 0px 0px 10px 0px;

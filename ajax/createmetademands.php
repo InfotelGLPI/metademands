@@ -46,8 +46,6 @@ $metademands = new PluginMetademandsMetademand();
 $wizard = new PluginMetademandsWizard();
 $fields = new PluginMetademandsField();
 
-
-
 if (isset($_POST['see_basket_summary'])) {
 
     if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
@@ -152,6 +150,15 @@ if (isset($_POST['see_basket_summary'])) {
             }
             if ($nblines == 0) {
                 $post = $_POST['field'];
+
+                if (isset($_POST['_filename'])) {
+                    foreach ($_POST['_filename'] as $key => $filename) {
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $_POST['_prefix_filename'][$key];
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_tag_filename'][] = $_POST['_tag_filename'][$key];
+                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_filename'][] = $_POST['_filename'][$key];
+                    }
+                }
+
                 if (isset($_POST['field_plugin_servicecatalog_itilcategories_id_key'])
                     && isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
                     $post[$_POST['field_plugin_servicecatalog_itilcategories_id_key']] = $_POST['field_plugin_servicecatalog_itilcategories_id'];

@@ -367,6 +367,7 @@ class PluginMetademandsYesno extends CommonDBTM
             $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
             if (is_array($childs_by_checkvalue)) {
+
                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                     if ($idc == $k) {
                         foreach ($childs_blocks as $childs) {
@@ -395,7 +396,7 @@ class PluginMetademandsYesno extends CommonDBTM
             $script .= " } else {";
 
             //specific - one value
-            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+            $script .= PluginMetademandsFieldoption::setEmptyBlockFields($hidden_block);
 
             $script .= " }";
 //            $script .= "if ($(this).val() != $idc) {";

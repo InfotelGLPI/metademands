@@ -64,17 +64,29 @@ class PluginMetademandsTextarea extends CommonDBTM
             $required = "required='required'";
         }
         if ($data['use_richtext'] == 1) {
-            $field = Html::textarea(['name' => $namefield . "[" . $data['id'] . "]",
+            $rand = mt_rand();
+            $name = 'field['. $data['id'] .']';
+            $field = Html::textarea([
+                'name' => $name,
                 'value' => $value,
+                'rand' => $rand,
                 'editor_id' => $namefield . $data['id'],
                 'enable_richtext' => true,
                 'enable_fileupload' => true,
-                //TODO add param
-//                'enable_images' => true,
+                'enable_images' => true,
                 'display' => false,
                 'required' => ($data['is_mandatory'] ? "required" : ""),
                 'cols' => 80,
                 'rows' => 3]);
+
+            $field .="<style>
+                        .fileupload.only-uploaded-files {
+                            display: none;
+                        }
+
+                     </style>";
+
+
         } else {
 
             if (!empty($comment)) {

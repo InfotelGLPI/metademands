@@ -301,7 +301,12 @@ class PluginMetademandsWizard extends CommonDBTM
                         || $config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED_COLOR) {
                         $style = 'style="border: 1px solid transparent;border-radius: 1px;margin: 0px;"';
                     }
-                    echo "<div class='alert alert-secondary' role='alert' $style>";
+                    $important = "";
+                    $force  = $config->getforceBackgroundColor();
+                    if ($force == 1) {
+                        $important = "alert-important";
+                    }
+                    echo "<div class='alert alert-secondary $important' role='alert' $style>";
                     echo "<span id='title_cat'>";
                     echo "</span>";
                     echo "</div>";
@@ -616,6 +621,7 @@ class PluginMetademandsWizard extends CommonDBTM
             );
         }
         if ($step === PluginMetademandsMetademand::STEP_CREATE) {
+
             $values = isset($_SESSION['plugin_metademands'][$metademands_id]) ? $_SESSION['plugin_metademands'][$metademands_id] : [];
             self::createMetademands($metademands_id, $values, $options);
         } elseif ($step == 0) {
@@ -1564,7 +1570,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             $color = $data['color'];
                             $style = "";
                             //                  $class = "metademands_wizard_informations";
-                            $class = "alert alert-warning alert-dismissible fade show";  //alert-important alert-warning alert-dismissible
+                            $class = "alert alert-warning alert-dismissible fade show informations";  //alert-important alert-warning alert-dismissible
                         } else {
                             $class = "form-group ";
                         }
@@ -2939,9 +2945,9 @@ class PluginMetademandsWizard extends CommonDBTM
                 //not in basket mode
                 if (isset($post['_filename'])) {
                     foreach ($post['_filename'] as $key => $filename) {
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files'][$post['form_metademands_id']]['_prefix_filename'][] = $post['_prefix_filename'][$key];
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files'][$post['form_metademands_id']]['_tag_filename'][] = $post['_tag_filename'][$key];
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files'][$post['form_metademands_id']]['_filename'][] = $post['_filename'][$key];
+                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $post['_prefix_filename'][$key];
+                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_tag_filename'][] = $post['_tag_filename'][$key];
+                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_filename'][] = $post['_filename'][$key];
                     }
                 }
             }

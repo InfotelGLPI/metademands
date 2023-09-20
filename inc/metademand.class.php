@@ -2074,24 +2074,27 @@ JAVASCRIPT
                             $input = $parent_fields;
                         }
 
+                        $input['_filename'] = [];
+                        $input['_tag_filename'] = [];
+
                         if ($metademand->fields['is_order'] == 0) {
-                            if (isset($values['fields']['files'][$form_metademands_id]['_filename'])) {
-                                $input['_filename'] = $values['fields']['files'][$form_metademands_id]['_filename'];
+                            if (isset($values['fields']['files']['_filename'])) {
+                                $input['_filename'] = $values['fields']['files']['_filename'];
                             }
-                            if (isset($values['fields']['files'][$form_metademands_id]['_prefix_filename'])) {
-                                $input['_prefix_filename'] = $values['fields']['files'][$form_metademands_id]['_prefix_filename'];
+                            if (isset($values['fields']['files']['_prefix_filename'])) {
+                                $input['_prefix_filename'] = $values['fields']['files']['_prefix_filename'];
                             }
-                            if (isset($values['fields']['files'][$form_metademands_id]['_tag_filename'])) {
-                                $input['_tag_filename'] = $values['fields']['files'][$form_metademands_id]['_tag_filename'];
+                            if (isset($values['fields']['files']['_tag_filename'])) {
+                                $input['_tag_filename'] = $values['fields']['files']['_tag_filename'];
                             }
                         } else {
-                            if (isset($values['fields']['files'][$form_metademands_id]['_filename'])) {
+                            if (isset($values['fields']['files']['_filename'])) {
                                 $input['_filename'] = $values['fields']['_filename'];
                             }
-                            if (isset($values['fields']['files'][$form_metademands_id]['_prefix_filename'])) {
+                            if (isset($values['fields']['files']['_prefix_filename'])) {
                                 $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
                             }
-                            if (isset($values['fields']['files'][$form_metademands_id]['_tag_filename'])) {
+                            if (isset($values['fields']['files']['_tag_filename'])) {
                                 $input['_tag_filename'] = $values['fields']['_tag_filename'];
                             }
                         }
@@ -2151,7 +2154,6 @@ JAVASCRIPT
                         $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
                         $input = Toolbox::addslashes_deep($input);
 
-
                         //ADD TICKET
                         if (isset($options['current_ticket_id'])
                             && $options['current_ticket_id'] > 0
@@ -2166,7 +2168,6 @@ JAVASCRIPT
                         } else {
                             $parent_tickets_id = $object->add($input);
                         }
-
 
                         //delete drafts
                         if (isset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_drafts_id'])) {

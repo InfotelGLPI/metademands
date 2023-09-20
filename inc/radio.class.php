@@ -459,6 +459,15 @@ class PluginMetademandsRadio extends CommonDBTM
         if ($debug) {
             $script = "console.log('blocksHiddenScript-radio $id');";
         }
+
+        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+            if (isset($check_values[$session_value]['hidden_block'])
+                && $check_values[$session_value]['hidden_block'] > 0) {
+                $script .= "$('[bloc-id =\"bloc" . $check_values[$session_value]['hidden_block'] . "\"]').show();";
+            }
+        }
+
         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         $script .= "var tohide = {};";
@@ -496,7 +505,7 @@ class PluginMetademandsRadio extends CommonDBTM
 
             $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
-            if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+//            if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 foreach ($hiddenblocks_by_checkvalue as $id => $hideblock) {
                     if ($id != $idc) {
                         //specific for radio / dropdowns - one value
@@ -584,7 +593,7 @@ class PluginMetademandsRadio extends CommonDBTM
                         }
                     }
                 }
-            }
+//            }
 
             $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
             $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
