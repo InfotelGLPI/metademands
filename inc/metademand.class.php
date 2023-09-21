@@ -5990,14 +5990,6 @@ JAVASCRIPT
             }
         }
 
-        if(!empty($metaconditions)){
-            foreach ($metaconditions as $key => $metacondition){
-                $condition = new PluginMetademandsCondition();
-                $metac = [];
-                $metac['plugin_metademands_metademands_id'] = $newIDMeta;
-            }
-        }
-
 
         if (!empty($translations)) {
             foreach ($translations as $key => $trans) {
