@@ -5601,6 +5601,7 @@ JAVASCRIPT
         }
         $metafield = new PluginMetademandsField();
         $metafieldoption = new PluginMetademandsFieldOption();
+        $condition = new PluginMetademandsCondition();
         $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
         $fields['metafieldoptions'] = [];
@@ -5608,6 +5609,12 @@ JAVASCRIPT
             $fields['metafields']['field' . $id] = $metafield;
 
             $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+            $metaconditions = $condition->find(['plugin_metademands_fields_id' => $metafield['id']]);
+            if (!empty($metaconditions)) {
+                foreach ($metaconditions as $key => $value) {
+                    $fields['metafields']['field' . $id]['condition_' . $key] = $value;
+                }
+            }
 
             foreach ($metafieldoptions as $idoptions => $metafieldopt) {
                 $fields['metafieldoptions']['fieldoptions' . $idoptions] = $metafieldopt;
@@ -5780,9 +5787,9 @@ JAVASCRIPT
         $newIDMeta = $metademand->add($datas);
         //      $translations = [];
         foreach ($fields as $k => $field) {
+            $metaconditions = [];
             foreach ($field as $key => $f) {
                 $fields[$k][$key] = Html::entity_decode_deep($f);
-
                 if ($key == "custom_values") {
                     $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                     $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
@@ -5795,6 +5802,8 @@ JAVASCRIPT
                     if (is_null($fields[$k][$key])) {
                         $fields[$k][$key] = "[]";
                     }
+                }else if (str_contains($key, 'condition')){
+                    $metaconditions[]= $f;
                 } elseif ($key == "default_values") {
                     $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                     $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
@@ -5826,8 +5835,15 @@ JAVASCRIPT
 
             $metaField = new PluginMetademandsField();
             $newIDField = $metaField->add($fields[$k]);
-
-
+            $condition = new PluginMetademandsCondition();
+            if(count($metaconditions) > 0){
+                foreach ($metaconditions as $cond){
+                    unset($cond['id']);
+                    $cond['plugin_metademands_fields_id'] = $newIDField;
+                    $cond['plugin_metademands_metademands_id'] = $newIDMeta;
+                    $condition->add($cond);
+                }
+            }
             $mapTableField[$oldIDField] = $newIDField;
             $mapTableFieldReverse[$newIDField] = $oldIDField;
             if (isset($fieldstranslations)) {
@@ -5971,6 +5987,14 @@ JAVASCRIPT
                 $metat['plugin_metademands_metademands_id'] = $newIDMeta;
                 $metat['plugin_metademands_tasks_id'] = $mapTableTask[$metatask['plugin_metademands_tasks_id']];
                 $meta_metatask->add($metat);
+            }
+        }
+
+        if(!empty($metaconditions)){
+            foreach ($metaconditions as $key => $metacondition){
+                $condition = new PluginMetademandsCondition();
+                $metac = [];
+                $metac['plugin_metademands_metademands_id'] = $newIDMeta;
             }
         }
 
