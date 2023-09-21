@@ -11,7 +11,7 @@ CREATE TABLE `glpi_plugin_metademands_conditions`
     `check_value`                       varchar(255)     NULL DEFAULT NULL,
     `show_logic`                        int(11)      NOT NULL DEFAULT '1',
     `show_condition`                    int(11)      NOT NULL DEFAULT '0',
-    `order`                             int(11)      NOT NULL DEFAULT '1',
+    `order`                             int(11)      NOT NULL DEFAULT '0',
     `type`                              varchar(255)          DEFAULT NULL,
 
     PRIMARY KEY (`id`),
