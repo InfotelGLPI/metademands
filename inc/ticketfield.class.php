@@ -265,7 +265,8 @@ class PluginMetademandsTicketField extends CommonDBChild {
 
       $ticket = new Ticket();
 
-      $display_options = ['relative_dates' => true,
+      $display_options = [
+//          'relative_dates' => true,
                           'comments'       => true,
                           'html'           => true];
 

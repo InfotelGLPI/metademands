@@ -78,11 +78,22 @@ class PluginMetademandsTicket_Field extends CommonDBTM
     function setTicketFieldsValues($parent_fields, $values, $tickets_id)
     {
 
+        $input = [];
+
+        $ticket_field = new self();
         if (count($parent_fields)) {
             foreach ($parent_fields as $fields_id => $field) {
                 $field['value'] = '';
                 if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
-                    $field['value'] = $values[$fields_id];
+
+                    if ($field['type'] == "textarea") {
+                        $field['value'] = Toolbox::convertTagToImage($values[$fields_id], $ticket_field, $input, false);
+                        $field['value'] = Sanitizer::unsanitize($field['value']);
+                        $field['value'] = Toolbox::addslashes_deep($field['value']);
+                    } else {
+                        $field['value'] = $values[$fields_id];
+                    }
+
                 } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
                     $field['value'] = json_encode($values[$fields_id]);
                 }
