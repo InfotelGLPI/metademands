@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Toolbox\Sanitizer;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -2180,6 +2182,33 @@ JAVASCRIPT
                             $form->update(['id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id'],
                                 'items_id' => $parent_tickets_id,
                                 'itemtype' => $object_class]);
+
+                            $docItem = new Document_Item();
+                            $docItem_datas = $docItem->find(['itemtype' => 'Ticket', 'items_id' => $parent_tickets_id]);
+                            $linked_docs = [];
+                            foreach ($docItem_datas as $docItem_data) {
+                                $doc = new Document();
+                                if ($doc->getFromDB($docItem_data['documents_id'])) {
+                                    $linked_docs[$docItem_data['documents_id']]['tag'] = $doc->fields['tag'];
+                                    $linked_docs[$docItem_data['documents_id']]['filepath'] = $doc->fields['filepath'];
+                                }
+                            }
+
+                            $form_value = new PluginMetademandsForm_Value();
+                            $fields_form = $form_value->find(['plugin_metademands_forms_id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id']]);
+
+                            foreach ($fields_form as $k => $field_form) {
+                                $field = new PluginMetademandsField();
+                                $field->getFromDB($field_form['plugin_metademands_fields_id']);
+                                if ($field->fields['type'] == 'textarea' && $field->fields['use_richtext'] == 1) {
+                                    $form_value->getFromDB($field_form['plugin_metademands_forms_id']);
+                                    $value = Toolbox::convertTagToImage($field_form['value'], $form_value, $linked_docs, false);
+                                    $value = Sanitizer::unsanitize($value);
+                                    $value = Toolbox::addslashes_deep($value);
+                                    $form_value->update(['id' => $field_form['id'],
+                                        'value' => $value]);
+                                }
+                            }
                         }
                         $inputField = [];
                         if (Plugin::isPluginActive('fields')) {

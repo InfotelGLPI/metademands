@@ -27,63 +27,78 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Toolbox\Sanitizer;
+
 /**
  * Class PluginMetademandsDraft
  */
-class PluginMetademandsDraft_Value extends CommonDBTM {
+class PluginMetademandsDraft_Value extends CommonDBTM
+{
 
-   static $rightname = 'plugin_metademands';
+    static $rightname = 'plugin_metademands';
 
     /**
      * @param $parent_fields
      * @param $values
      * @param $draft_id
      */
-   static function setDraftValues($parent_fields, $values, $draft_id) {
+    static function setDraftValues($parent_fields, $values, $draft_id)
+    {
 
-      if (count($parent_fields)) {
-         foreach ($parent_fields as $fields_id => $field) {
-            $field['value'] = '';
-            if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
-               $field['value'] = $values[$fields_id];
-            } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
-               $field['value'] = json_encode($values[$fields_id]);
-            }
-            $field['value2'] = '';
-            if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
-               $field['value2'] = $values[$fields_id . "-2"];
-            } else if (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
-               $field['value2'] = json_encode($values[$fields_id . "-2"]);
-            }
-            $draft_value = new self();
-            //TODO CHANGE
-            $draft_value->add([
-                                 'value'                        => $field['value'],
-                                 'value2'                       => $field['value2'],
-                                 'plugin_metademands_drafts_id' => $draft_id,
-                                 'plugin_metademands_fields_id' => $fields_id]);
-         }
-      }
-   }
+        $draft_value = new self();
+        $input = [];
+        if (count($parent_fields)) {
+            foreach ($parent_fields as $fields_id => $field) {
+                $field['value'] = '';
+                if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
 
-   /**
-    * @param $plugin_metademands_drafts_id
-    * @param $plugin_metademands_metademands_id
-    */
-   static function loadDraftValues($plugin_metademands_metademands_id, $plugin_metademands_drafts_id) {
-      $draft_value   = new self();
-      $drafts_values = $draft_value->find(['plugin_metademands_drafts_id' => $plugin_metademands_drafts_id]);
-      foreach ($drafts_values as $values) {
-         if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']])) {
-            unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']]);
-         }
-         if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"])) {
-            unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"]);
-         }
-         $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'], true)) ?? Toolbox::addslashes_deep($values['value']);
-         if (!empty($values['value2'])) {
-            $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"] = Toolbox::addslashes_deep(json_decode($values['value2'], true)) ?? Toolbox::addslashes_deep($values['value2']);
-         }
-      }
-   }
+                    if ($field['type'] == "textarea") {
+                        $field['value'] = Toolbox::convertTagToImage($values[$fields_id], $draft_value, $input, false);
+                        $field['value'] = Sanitizer::unsanitize($field['value']);
+                        $field['value'] = Toolbox::addslashes_deep($field['value']);
+                    } else {
+                        $field['value'] = $values[$fields_id];
+                    }
+
+                } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
+                    $field['value'] = json_encode($values[$fields_id]);
+                }
+                $field['value2'] = '';
+                if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
+                    $field['value2'] = $values[$fields_id . "-2"];
+                } else if (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
+                    $field['value2'] = json_encode($values[$fields_id . "-2"]);
+                }
+                $draft_value = new self();
+                //TODO CHANGE
+                $draft_value->add([
+                    'value' => $field['value'],
+                    'value2' => $field['value2'],
+                    'plugin_metademands_drafts_id' => $draft_id,
+                    'plugin_metademands_fields_id' => $fields_id]);
+            }
+        }
+    }
+
+    /**
+     * @param $plugin_metademands_drafts_id
+     * @param $plugin_metademands_metademands_id
+     */
+    static function loadDraftValues($plugin_metademands_metademands_id, $plugin_metademands_drafts_id)
+    {
+        $draft_value = new self();
+        $drafts_values = $draft_value->find(['plugin_metademands_drafts_id' => $plugin_metademands_drafts_id]);
+        foreach ($drafts_values as $values) {
+            if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']])) {
+                unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']]);
+            }
+            if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"])) {
+                unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"]);
+            }
+            $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'], true)) ?? Toolbox::addslashes_deep($values['value']);
+            if (!empty($values['value2'])) {
+                $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"] = Toolbox::addslashes_deep(json_decode($values['value2'], true)) ?? Toolbox::addslashes_deep($values['value2']);
+            }
+        }
+    }
 }

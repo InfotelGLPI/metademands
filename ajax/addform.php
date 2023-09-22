@@ -164,6 +164,7 @@ if (isset($_POST['save_form'])) {
             }
 
             if ($form_new_id = $forms->add($inputs)) {
+
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id']   = $form_new_id;
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
 
@@ -177,10 +178,11 @@ if (isset($_POST['save_form'])) {
                     foreach ($metademands_data as $form_step => $data) {
                         $docitem = null;
                         foreach ($data as $form_metademands_id => $line) {
-                            PluginMetademandsForm_Value::setFormValues($line['form'], $_POST['field'], $form_new_id);
+                            PluginMetademandsForm_Value::setFormValues($_POST['metademands_id'], $line['form'], $_POST['field'], $form_new_id);
                         }
                     }
                 }
+
             } else {
                 $KO = false;
             }
