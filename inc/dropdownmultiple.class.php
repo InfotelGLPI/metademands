@@ -1307,59 +1307,61 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $dataItems = "<table style='border:0;'>";
             }
             $item = new $field["item"]();
-            foreach ($field['value'] as $value) {
-                if ($item->getFromDB($value)) {
-                    if ($formatAsTable) {
-                        $dataItems .= "<tr>";
-                    }
+            if (is_array($field['value'])) {
+                foreach ($field['value'] as $value) {
+                    if ($item->getFromDB($value)) {
+                        if ($formatAsTable) {
+                            $dataItems .= "<tr>";
+                        }
 
-                    if (in_array('full_name', $information)) {
-                        if ($formatAsTable) {
-                            $dataItems .= "<td>";
+                        if (in_array('full_name', $information)) {
+                            if ($formatAsTable) {
+                                $dataItems .= "<td>";
+                            }
+                            $dataItems .= $field["item"]::getFriendlyNameById($value);
+                            if ($formatAsTable) {
+                                $dataItems .= "</td>";
+                            }
                         }
-                        $dataItems .= $field["item"]::getFriendlyNameById($value);
-                        if ($formatAsTable) {
-                            $dataItems .= "</td>";
+                        if (in_array('realname', $information)) {
+                            if ($formatAsTable) {
+                                $dataItems .= "<td>";
+                            }
+                            $dataItems .= $item->fields["realname"];
+                            if ($formatAsTable) {
+                                $dataItems .= "</td>";
+                            }
                         }
-                    }
-                    if (in_array('realname', $information)) {
-                        if ($formatAsTable) {
-                            $dataItems .= "<td>";
+                        if (in_array('firstname', $information)) {
+                            if ($formatAsTable) {
+                                $dataItems .= "<td>";
+                            }
+                            $dataItems .= $item->fields["firstname"];
+                            if ($formatAsTable) {
+                                $dataItems .= "</td>";
+                            }
                         }
-                        $dataItems .= $item->fields["realname"];
-                        if ($formatAsTable) {
-                            $dataItems .= "</td>";
+                        if (in_array('name', $information)) {
+                            if ($formatAsTable) {
+                                $dataItems .= "<td>";
+                            }
+                            $dataItems .= $item->fields["name"];
+                            if ($formatAsTable) {
+                                $dataItems .= "</td>";
+                            }
                         }
-                    }
-                    if (in_array('firstname', $information)) {
-                        if ($formatAsTable) {
-                            $dataItems .= "<td>";
+                        if (in_array('email', $information)) {
+                            if ($formatAsTable) {
+                                $dataItems .= "<td>";
+                            }
+                            $dataItems .= $item->getDefaultEmail();
+                            if ($formatAsTable) {
+                                $dataItems .= "</td>";
+                            }
                         }
-                        $dataItems .= $item->fields["firstname"];
                         if ($formatAsTable) {
-                            $dataItems .= "</td>";
+                            $dataItems .= "</tr>";
                         }
-                    }
-                    if (in_array('name', $information)) {
-                        if ($formatAsTable) {
-                            $dataItems .= "<td>";
-                        }
-                        $dataItems .= $item->fields["name"];
-                        if ($formatAsTable) {
-                            $dataItems .= "</td>";
-                        }
-                    }
-                    if (in_array('email', $information)) {
-                        if ($formatAsTable) {
-                            $dataItems .= "<td>";
-                        }
-                        $dataItems .= $item->getDefaultEmail();
-                        if ($formatAsTable) {
-                            $dataItems .= "</td>";
-                        }
-                    }
-                    if ($formatAsTable) {
-                        $dataItems .= "</tr>";
                     }
                 }
             }

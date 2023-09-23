@@ -27,6 +27,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Toolbox\Sanitizer;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -75,19 +77,18 @@ class PluginMetademandsTicket_Field extends CommonDBTM
      * @param $values
      * @param $tickets_id
      */
-    function setTicketFieldsValues($parent_fields, $values, $tickets_id)
+    function setTicketFieldsValues($parent_fields, $values, $tickets_id, $linked_docs = [])
     {
 
-        $input = [];
-
-        $ticket_field = new self();
+        $ticket = new Ticket();
+        $ticket->getFromDB($tickets_id);
         if (count($parent_fields)) {
             foreach ($parent_fields as $fields_id => $field) {
                 $field['value'] = '';
                 if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
 
-                    if ($field['type'] == "textarea") {
-                        $field['value'] = Toolbox::convertTagToImage($values[$fields_id], $ticket_field, $input, false);
+                    if ($field['type'] == "textarea"  && $field['use_richtext'] == 1) {
+                        $field['value'] = Toolbox::convertTagToImage($values[$fields_id], $ticket, $linked_docs, false);
                         $field['value'] = Sanitizer::unsanitize($field['value']);
                         $field['value'] = Toolbox::addslashes_deep($field['value']);
                     } else {

@@ -26,6 +26,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Toolbox\Sanitizer;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -38,6 +40,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsTextarea extends CommonDBTM
 {
 
+    private $uploads = [];
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -57,8 +60,8 @@ class PluginMetademandsTextarea extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
-
         $value = Html::cleanPostForTextArea($value);
+        $self = new self();
         $required = "";
         if ($data['is_mandatory'] == 1) {
             $required = "required='required'";
@@ -72,13 +75,22 @@ class PluginMetademandsTextarea extends CommonDBTM
                 'rand' => $rand,
                 'editor_id' => $namefield . $data['id'],
                 'enable_richtext' => true,
-                'enable_fileupload' => true,
-                'enable_images' => true,
+                'enable_fileupload' => false,
+//                'enable_images' => true,
                 'display' => false,
                 'required' => ($data['is_mandatory'] ? "required" : ""),
                 'cols' => 80,
-                'rows' => 3]);
-
+                'rows' => 3,
+//                'uploads' => $self->uploads
+            ]);
+            $field .=  '<div style="display:none;">';
+            $field .= Html::file(['editor_id'    => $namefield . $data['id'],
+                'filecontainer' => "filecontainer$rand",
+                'onlyimages'    => true,
+                'showtitle'     => false,
+                'multiple'      => true,
+                'display'       => false]);
+            $field .=  '</div>';
             $field .="<style>
                         .fileupload.only-uploaded-files {
                             display: none;

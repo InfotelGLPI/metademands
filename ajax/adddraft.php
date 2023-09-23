@@ -58,6 +58,15 @@ if (isset($_POST['save_draft'])) {
       for ($i = 0; $i < $nblines; $i++) {
 
          $_POST['field']   = $post;
+
+          if (isset($_POST['_filename'])) {
+              foreach ($_POST['_filename'] as $key => $filename) {
+                  $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $_POST['_prefix_filename'][$key];
+                  $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_tag_filename'][] = $_POST['_tag_filename'][$key];
+                  $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_filename'][] = $_POST['_filename'][$key];
+              }
+          }
+
          $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
          if (count($metademands_data)) {
             foreach ($metademands_data as $form_step => $data) {
@@ -130,7 +139,7 @@ if (isset($_POST['save_draft'])) {
                foreach ($metademands_data as $form_step => $data) {
                   $docitem = null;
                   foreach ($data as $form_metademands_id => $line) {
-                     PluginMetademandsDraft_Value::setDraftValues($line['form'], $_POST['field'], $draft_id);
+                     PluginMetademandsDraft_Value::setDraftValues($_POST['metademands_id'], $line['form'], $_POST['field'], $draft_id);
                   }
                }
             }
@@ -155,7 +164,7 @@ if (isset($_POST['save_draft'])) {
                foreach ($metademands_data as $form_step => $data) {
                   $docitem = null;
                   foreach ($data as $form_metademands_id => $line) {
-                     PluginMetademandsDraft_Value::setDraftValues($line['form'], $_POST['field'], $draft_id);
+                     PluginMetademandsDraft_Value::setDraftValues($_POST['metademands_id'], $line['form'], $_POST['field'], $draft_id);
                   }
                }
             }

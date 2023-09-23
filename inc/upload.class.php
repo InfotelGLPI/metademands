@@ -38,6 +38,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsUpload extends CommonDBTM
 {
 
+    private $uploads = [];
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -57,7 +58,7 @@ class PluginMetademandsUpload extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
-
+        $self = new self();
         $arrayFiles = json_decode($value, true);
         $field      = "";
         $nb         = 0;
@@ -87,18 +88,20 @@ class PluginMetademandsUpload extends CommonDBTM
                     if ($data["max_upload"] > 1) {
                         $field .= Html::file([
                             'filecontainer' => $container,
-                            'editor_id' => '',
+                            'editor_id' => $namefield . $data['id'],
                             'showtitle' => false,
                             'multiple' => true,
                             'display' => false,
-                            'required' => ($data['is_mandatory'] ? true : false)]);
+                            'required' => ($data['is_mandatory'] ? true : false),
+                            'uploads' => $self->uploads]);
                     } else {
                         $field .= Html::file([
                             'filecontainer' => $container,
-                            'editor_id' => '',
+                            'editor_id' => $namefield . $data['id'],
                             'showtitle' => false,
                             'display' => false,
-                            'required' => ($data['is_mandatory'] ? true : false)
+                            'required' => ($data['is_mandatory'] ? true : false),
+                            'uploads' => $self->uploads
                         ]);
                     }
                 }
@@ -106,18 +109,20 @@ class PluginMetademandsUpload extends CommonDBTM
                 if ($data["max_upload"] > 1) {
                     $field .= Html::file([
                         'filecontainer' => $container,
-                        'editor_id'     => '',
+                        'editor_id'     => $namefield . $data['id'],
                         'showtitle'     => false,
                         'multiple'      => true,
                         'display'       => false,
-                        'required' => ($data['is_mandatory'] ? true : false)]);
+                        'required' => ($data['is_mandatory'] ? true : false),
+                        'uploads' => $self->uploads]);
                 } else {
                     $field .= Html::file([
                         'filecontainer' => $container,
-                        'editor_id'     => '',
+                        'editor_id'     => $namefield . $data['id'],
                         'showtitle'     => false,
                         'display'       => false,
-                        'required' => ($data['is_mandatory'] ? true : false)
+                        'required' => ($data['is_mandatory'] ? true : false),
+                        'uploads' => $self->uploads
                     ]);
                 }
             }
@@ -125,18 +130,20 @@ class PluginMetademandsUpload extends CommonDBTM
             if ($data["max_upload"] > 1) {
                 $field .= Html::file([
                     'filecontainer' => $container,
-                    'editor_id'     => '',
+                    'editor_id'     => $namefield . $data['id'],
                     'showtitle'     => false,
                     'multiple'      => true,
                     'display'       => false,
-                    'required' => ($data['is_mandatory'] ? true : false)]);
+                    'required' => ($data['is_mandatory'] ? true : false),
+                    'uploads' => $self->uploads]);
             } else {
                 $field .= Html::file([
                     'filecontainer' => $container,
-                    'editor_id'     => '',
+                    'editor_id'     => $namefield . $data['id'],
                     'showtitle'     => false,
                     'display'       => false,
-                    'required' => ($data['is_mandatory'] ? true : false)
+                    'required' => ($data['is_mandatory'] ? true : false),
+                    'uploads' => $self->uploads
                 ]);
             }
         }

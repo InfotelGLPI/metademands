@@ -906,6 +906,7 @@ class PluginMetademandsWizard extends CommonDBTM
             unset($metademands_data[1]);
         }
 
+
         if (count($metademands_data)) {
             if ($step - 1 > count($metademands_data) && !$preview) {
                 self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform, $current_ticket, $meta_validated);
@@ -924,6 +925,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                     $step++;
                                 }
                             } else {
+
                                 self::constructForm($metademands_id, $metademands_data, $step, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
                             }
                             if ($seeform == 0) {
@@ -2137,18 +2139,15 @@ class PluginMetademandsWizard extends CommonDBTM
                                    }
                                 });
                         } else {
-                            $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                        
+                                $.ajax({
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
                                    type: 'POST',
                                    datatype: 'html',
-                                   data: $('form').serializeArray(),
+                                   data: arrayDatas,
                                    success: function (response) {
-                                      $('#ajax_loader').hide();
-                                      if (response == 1) {
-                                         window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
-                                      } else {
-                                         $.ajax({
-                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                      $.ajax({
+                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
                                             type: 'POST',
                                             data: arrayDatas,
                                             success: function (response) {
@@ -2160,7 +2159,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                                console.log(error);
                                             }
                                          });
-                                      }
                                    },
                                    error: function (xhr, status, error) {
                                       console.log(xhr);
@@ -2168,6 +2166,38 @@ class PluginMetademandsWizard extends CommonDBTM
                                       console.log(error);
                                    }
                                 });
+                                
+//                            $.ajax({
+//                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+//                                   type: 'POST',
+//                                   datatype: 'html',
+//                                   data: $('form').serializeArray(),
+//                                   success: function (response) {
+//                                      $('#ajax_loader').hide();
+//                                      if (response == 1) {
+//                                         window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
+//                                      } else {
+//                                         $.ajax({
+//                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+//                                            type: 'POST',
+//                                            data: arrayDatas,
+//                                            success: function (response) {
+//                                               window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
+//                                            },
+//                                            error: function (xhr, status, error) {
+//                                               console.log(xhr);
+//                                               console.log(status);
+//                                               console.log(error);
+//                                            }
+//                                         });
+//                                      }
+//                                   },
+//                                   error: function (xhr, status, error) {
+//                                      console.log(xhr);
+//                                      console.log(status);
+//                                      console.log(error);
+//                                   }
+//                                });
                         }
                         
                   
@@ -2182,20 +2212,20 @@ class PluginMetademandsWizard extends CommonDBTM
                         if (typeof tinyMCE !== 'undefined') {
                            tinyMCE.triggerSave();
                         }
-                        var updatestepform = '$updateStepform';                       
+                        var updatestepform = '$updateStepform';
                         jQuery('.resume_builder_input').trigger('change');
                         $('select[id$=\"_to\"] option').each(function () {
                            $(this).prop('selected', true);
                         });
                         arrayDatas = $('form').serializeArray();
-                        arrayDatas.push({name: 'block_id', value: id_bloc});  
-                        arrayDatas.push({name: 'action', value: 'nextUser'});  
-                        arrayDatas.push({name: 'update_stepform', value: updatestepform});  
+                        arrayDatas.push({name: 'block_id', value: id_bloc});
+                        arrayDatas.push({name: 'action', value: 'nextUser'});
+                        arrayDatas.push({name: 'update_stepform', value: updatestepform});
                         if(modal == true) {
                             showModal(arrayDatas);
                         } else {
                             nextUser(arrayDatas);
-                        }                      
+                        }
 
                      } else {
                         showTab(currentTab,create, submittitle, submitmsg);
@@ -2943,13 +2973,13 @@ class PluginMetademandsWizard extends CommonDBTM
                 $KO = true;
             } else {
                 //not in basket mode
-                if (isset($post['_filename'])) {
-                    foreach ($post['_filename'] as $key => $filename) {
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $post['_prefix_filename'][$key];
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_tag_filename'][] = $post['_tag_filename'][$key];
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_filename'][] = $post['_filename'][$key];
-                    }
-                }
+//                if (isset($post['_filename'])) {
+//                    foreach ($post['_filename'] as $key => $filename) {
+//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $post['_prefix_filename'][$key];
+//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_tag_filename'][] = $post['_tag_filename'][$key];
+//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_filename'][] = $post['_filename'][$key];
+//                    }
+//                }
             }
         } elseif ($value['type'] == 'dropdown_multiple') {
             if (!isset($post[$fieldname][$id])) {

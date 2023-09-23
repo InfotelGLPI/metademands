@@ -44,23 +44,65 @@ class PluginMetademandsForm_Value extends CommonDBTM
      */
     static function setFormValues($metademands_id, $parent_fields, $values, $form_id)
     {
-
-        $input = [];
-
         $form_value = new self();
+
         if (count($parent_fields)) {
             foreach ($parent_fields as $fields_id => $field) {
 
                 $field['value'] = '';
                 if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
 
-                    if ($field['type'] == "textarea") {
-                        $field['value'] = Toolbox::convertTagToImage($values[$fields_id], $form_value, $input, false);
-                        $field['value'] = Sanitizer::unsanitize($field['value']);
-                        $field['value'] = Toolbox::addslashes_deep($field['value']);
+                    if ($field['type'] == "textarea" && $field['use_richtext'] == 1
+                    || $field['type'] == "upload"
+                    ) {
+                        $linked_docs = [];
+                        if ($field['type'] == "upload"
+                        ) {
+//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'])) {
+//                                $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'];
+//                            }
+//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'])) {
+//                                $linked_docs['_prefix_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'];
+//                            }
+//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'])) {
+//                                $linked_docs['_tag_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'];
+//                            }
+
+                            $field['value'] = 'filename';
+
+                        } else if ($field['type'] == "textarea" && $field['use_richtext'] == 1) {
+
+                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['files']['_filename'])) {
+                                $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['files']['_filename'];
+                            }
+                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['files']['_prefix_filename'])) {
+                                $linked_docs['_prefix_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['files']['_prefix_filename'];
+                            }
+                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['files']['_tag_filename'])) {
+                                $linked_docs['_tag_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['files']['_tag_filename'];
+                            }
+
+                            $fieldname = "field" . $fields_id;
+                            $linked_docs[$fieldname] = $values[$fields_id];
+
+                            $linked_docs = $form_value->addFiles(
+                                $linked_docs,
+                                [
+                                    'force_update' => false,
+                                    'content_field' => $fieldname,
+                                    '_add_link' => false
+                                ]
+                            );
+
+                            $field['value'] = $linked_docs[$fieldname];
+                            $field['value'] = Sanitizer::unsanitize($field['value']);
+                            $field['value'] = Toolbox::addslashes_deep($field['value']);
+                        }
+
                     } else {
                         $field['value'] = $values[$fields_id];
                     }
+                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $field['value'];
 
                 } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
 
@@ -73,14 +115,17 @@ class PluginMetademandsForm_Value extends CommonDBTM
                                     foreach ($quantities[$fields_id] as $k => $q) {
                                         if ($q > 0) {
                                             $field['value'] = json_encode($quantities[$fields_id]);
+                                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $quantities[$fields_id];
                                         }
                                     }
                                 }
                             } else {
                                 $field['value'] = json_encode($values[$fields_id]);
+                                $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                             }
                         } else {
                             $field['value'] = json_encode($values[$fields_id]);
+                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                         }
                     }
                 }

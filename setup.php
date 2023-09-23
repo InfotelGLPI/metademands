@@ -129,7 +129,8 @@ function plugin_init_metademands()
             $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['metademands'] = PluginMetademandsMetademand::getIcon();
         }
         // TEST Redirect
-        if ($_SESSION["plugin_metademands_on_login_loaded"] == 0) {
+        if (isset($_SESSION["plugin_metademands_on_login_loaded"])
+            && $_SESSION["plugin_metademands_on_login_loaded"] == 0) {
             if (Session::getCurrentInterface() == "helpdesk") {
                 if (Session::haveRight('plugin_metademands_on_login',READ)) {
                     $_SESSION["plugin_metademands_on_login_loaded"] = 1;
@@ -139,7 +140,8 @@ function plugin_init_metademands()
 
         }
 
-        if ($_SESSION["plugin_metademands_on_login_loaded"] == 1) {
+        if (isset($_SESSION["plugin_metademands_on_login_loaded"])
+            && $_SESSION["plugin_metademands_on_login_loaded"] == 1) {
             if(str_contains($_SERVER['REQUEST_URI'],"create_ticket")){
                 Html::redirect($CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php");
             }

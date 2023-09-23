@@ -2080,23 +2080,23 @@ JAVASCRIPT
                         $input['_tag_filename'] = [];
 
                         if ($metademand->fields['is_order'] == 0) {
-                            if (isset($values['fields']['files']['_filename'])) {
-                                $input['_filename'] = $values['fields']['files']['_filename'];
+                            if (isset($values['fields']['uploaded_files']['_filename'])) {
+                                $input['_filename'] = $values['fields']['uploaded_files']['_filename'];
                             }
-                            if (isset($values['fields']['files']['_prefix_filename'])) {
-                                $input['_prefix_filename'] = $values['fields']['files']['_prefix_filename'];
+                            if (isset($values['fields']['uploaded_files']['_prefix_filename'])) {
+                                $input['_prefix_filename'] = $values['fields']['uploaded_files']['_prefix_filename'];
                             }
-                            if (isset($values['fields']['files']['_tag_filename'])) {
-                                $input['_tag_filename'] = $values['fields']['files']['_tag_filename'];
+                            if (isset($values['fields']['uploaded_files']['_tag_filename'])) {
+                                $input['_tag_filename'] = $values['fields']['uploaded_files']['_tag_filename'];
                             }
                         } else {
-                            if (isset($values['fields']['files']['_filename'])) {
+                            if (isset($values['fields']['_filename'])) {
                                 $input['_filename'] = $values['fields']['_filename'];
                             }
-                            if (isset($values['fields']['files']['_prefix_filename'])) {
+                            if (isset($values['fields']['_prefix_filename'])) {
                                 $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
                             }
-                            if (isset($values['fields']['files']['_tag_filename'])) {
+                            if (isset($values['fields']['_tag_filename'])) {
                                 $input['_tag_filename'] = $values['fields']['_tag_filename'];
                             }
                         }
@@ -2168,6 +2168,7 @@ JAVASCRIPT
                             $object->getFromDB($inputUpdate['id']);
                             $ticket_exists_array[] = 1;
                         } else {
+
                             $parent_tickets_id = $object->add($input);
                         }
 
@@ -2182,33 +2183,7 @@ JAVASCRIPT
                             $form->update(['id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id'],
                                 'items_id' => $parent_tickets_id,
                                 'itemtype' => $object_class]);
-
-                            $docItem = new Document_Item();
-                            $docItem_datas = $docItem->find(['itemtype' => 'Ticket', 'items_id' => $parent_tickets_id]);
-                            $linked_docs = [];
-                            foreach ($docItem_datas as $docItem_data) {
-                                $doc = new Document();
-                                if ($doc->getFromDB($docItem_data['documents_id'])) {
-                                    $linked_docs[$docItem_data['documents_id']]['tag'] = $doc->fields['tag'];
-                                    $linked_docs[$docItem_data['documents_id']]['filepath'] = $doc->fields['filepath'];
-                                }
-                            }
-
-                            $form_value = new PluginMetademandsForm_Value();
-                            $fields_form = $form_value->find(['plugin_metademands_forms_id' => $_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id']]);
-
-                            foreach ($fields_form as $k => $field_form) {
-                                $field = new PluginMetademandsField();
-                                $field->getFromDB($field_form['plugin_metademands_fields_id']);
-                                if ($field->fields['type'] == 'textarea' && $field->fields['use_richtext'] == 1) {
-                                    $form_value->getFromDB($field_form['plugin_metademands_forms_id']);
-                                    $value = Toolbox::convertTagToImage($field_form['value'], $form_value, $linked_docs, false);
-                                    $value = Sanitizer::unsanitize($value);
-                                    $value = Toolbox::addslashes_deep($value);
-                                    $form_value->update(['id' => $field_form['id'],
-                                        'value' => $value]);
-                                }
-                            }
+                            unset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id']);
                         }
                         $inputField = [];
                         if (Plugin::isPluginActive('fields')) {
@@ -2352,7 +2327,7 @@ JAVASCRIPT
                             if (count($line['form']) && isset($values['fields'])) {
                                 //TODO Change / problem ?
                                 $ticket_field->deleteByCriteria(['tickets_id' => $parent_tickets_id]);
-                                $ticket_field->setTicketFieldsValues($line['form'], $values['fields'], $parent_tickets_id);
+                                $ticket_field->setTicketFieldsValues($line['form'], $values['fields'], $parent_tickets_id, $input);
                             }
 
                             if (!empty($ancestor_tickets_id) && $object_class == 'Ticket') {
@@ -3307,7 +3282,6 @@ JAVASCRIPT
                         continue;
                     }
                 }
-
                 if ($field['type'] == "dropdown_meta"
                     && $field['item'] == "PluginResourcesResource") {
                     $result['items_id'] = ['PluginResourcesResource' => [$field['value']]];
