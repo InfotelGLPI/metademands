@@ -126,6 +126,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 //                     $field .= "<span>";
                 //                  } else {
                 $readonly = $data['readonly'];
+                $hidden = $data['hidden'];
                 if ($data['readonly'] == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
                     && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
                     $readonly = 0;
@@ -141,9 +142,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                 }
                 $field = "";
-                $field .= ITILCategory::dropdown($opt);
-                $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
-                if ($readonly == 1) {
+                if ($hidden == 0) {
+                    $field .= ITILCategory::dropdown($opt);
+                    $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
+                }
+
+                if ($readonly == 1 || $hidden == 1) {
                     $field .= Html::hidden($nameitil . "_plugin_servicecatalog_itilcategories_id", ['value' => $value]);
                 }
                 break;
@@ -873,17 +877,20 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                         }
                         break;
                     default:
-                        $result[$field['rank']]['display'] = true;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "<td $style_title>";
-                        }
-                        $result[$field['rank']]['content'] .= $label;
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td><td>";
-                        }
-                        $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
-                        if ($formatAsTable) {
-                            $result[$field['rank']]['content'] .= "</td>";
+                        $hidden = $field['hidden'];
+                        if ($hidden == 0) {
+                            $result[$field['rank']]['display'] = true;
+                            if ($formatAsTable) {
+                                $result[$field['rank']]['content'] .= "<td $style_title>";
+                            }
+                            $result[$field['rank']]['content'] .= $label;
+                            if ($formatAsTable) {
+                                $result[$field['rank']]['content'] .= "</td><td>";
+                            }
+                            $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+                            if ($formatAsTable) {
+                                $result[$field['rank']]['content'] .= "</td>";
+                            }
                         }
                         break;
                 }

@@ -132,8 +132,10 @@ class PluginMetademandsForm_Value extends CommonDBTM
                 $field['value2'] = '';
                 if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
                     $field['value2'] = $values[$fields_id . "-2"];
+                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id . "-2"] = $field['value2'];
                 } else if (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
                     $field['value2'] = json_encode($values[$fields_id . "-2"]);
+                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id . "-2"] = $field['value2'];
                 }
 
                 $form_value->add([

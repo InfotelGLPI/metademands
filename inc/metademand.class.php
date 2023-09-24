@@ -3355,9 +3355,9 @@ JAVASCRIPT
 
         $style_title = "class='title'";
         if ($color != "") {
-            $style_title .= " style='color:$color;width: 20%;'";
+            $style_title .= " style='color:$color;width: 40%;'";
         } else {
-            $style_title .= " style='width: 20%;'";
+            $style_title .= " style='width: 40%;'";
         }
         //      $style_title = "style='background-color: #cccccc;'";
 

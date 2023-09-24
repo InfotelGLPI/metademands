@@ -127,6 +127,7 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `use_richtext`                      tinyint                         NOT NULL DEFAULT '1',
     `icon`                              varchar(255)                             DEFAULT NULL,
     `readonly`                          tinyint                                  DEFAULT 0,
+    `hidden`                            tinyint                                  DEFAULT 0,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)

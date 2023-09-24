@@ -389,6 +389,7 @@ class PluginMetademandsField extends CommonDBChild
             'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
             'link_to_user' => $this->fields["link_to_user"],
             'readonly' => $this->fields["readonly"],
+            'hidden' => $this->fields["hidden"],
             'change_type' => 1];
         Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", PLUGIN_METADEMANDS_WEBDIR .
                                                                                 "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
@@ -447,7 +448,8 @@ class PluginMetademandsField extends CommonDBChild
                      'rand'                    => $randItem,
                      'metademands_id'          => $this->fields["plugin_metademands_metademands_id"],
                      'link_to_user'            => $this->fields["link_to_user"],
-            'readonly' => $this->fields["readonly"],
+                     'readonly' => $this->fields["readonly"],
+                     'hidden' => $this->fields["hidden"],
                      'change_type'             => 1];
         Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_item", PLUGIN_METADEMANDS_WEBDIR .
                                                                               "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
@@ -499,7 +501,8 @@ JAVASCRIPT
                      'comment_values'          => $this->fields["comment_values"],
                      'default_values'          => $this->fields["default_values"],
                      'link_to_user'            => $this->fields["link_to_user"],
-            'readonly' => $this->fields["readonly"],
+                    'readonly' => $this->fields["readonly"],
+                    'hidden' => $this->fields["hidden"]
         ];
         Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", PLUGIN_METADEMANDS_WEBDIR .
                                                                                 "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsItem);
@@ -808,14 +811,21 @@ JAVASCRIPT
         if ($ID > 0 && ($this->fields['type'] == "dropdown_meta"
                 && $this->fields["item"] == "ITILCategory_Metademands")) {
             echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
-            echo "</td>";
+
             echo "<td>";
             echo __('Read-Only', 'metademands');
             echo "</td>";
             echo "<td>";
             Dropdown::showYesNo('readonly', ($this->fields['readonly']));
             echo "</td>";
+
+            echo "<td>";
+            echo __('Hidden field', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('hidden', ($this->fields['hidden']));
+            echo "</td>";
+
             echo "</tr>";
         }
 
@@ -919,6 +929,7 @@ JAVASCRIPT
             'drop' => $this->fields["dropdown"],
             'link_to_user' => $this->fields["link_to_user"],
             'readonly' => $this->fields["readonly"],
+            'hidden' => $this->fields["hidden"],
             'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
         ];
 
