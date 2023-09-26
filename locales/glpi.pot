@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-24 09:22+0000\n"
+"POT-Creation-Date: 2023-09-26 07:29+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -211,9 +211,9 @@ msgid "Checkbox"
 msgstr ""
 
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
-#: inc/dropdownmeta.class.php:310 inc/dropdownmeta.class.php:366
+#: inc/dropdownmeta.class.php:315 inc/dropdownmeta.class.php:371
 #: inc/dropdownmultiple.class.php:439 inc/dropdownmultiple.class.php:495
-#: inc/field.class.php:2537 inc/radio.class.php:176 inc/radio.class.php:226
+#: inc/field.class.php:2543 inc/radio.class.php:176 inc/radio.class.php:226
 #: inc/yesno.class.php:94
 msgid "Default value"
 msgid_plural "Default values"
@@ -222,7 +222,7 @@ msgstr[1] ""
 
 #: inc/checkbox.class.php:249 inc/condition.class.php:322
 #: inc/condition.class.php:454 inc/condition.class.php:813
-#: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:388
+#: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:393
 #: inc/dropdownmultiple.class.php:560 inc/dropdownobject.class.php:409
 #: inc/field.class.php:1142 inc/fieldoption.class.php:228
 #: inc/radio.class.php:248 inc/yesno.class.php:115
@@ -231,8 +231,8 @@ msgstr ""
 
 #: inc/checkbox.class.php:269 inc/checkbox.class.php:285
 #: inc/dropdown.class.php:178 inc/dropdown.class.php:214
-#: inc/dropdownmeta.class.php:437 inc/dropdownmeta.class.php:447
-#: inc/dropdownmeta.class.php:469 inc/dropdownobject.class.php:472
+#: inc/dropdownmeta.class.php:442 inc/dropdownmeta.class.php:452
+#: inc/dropdownmeta.class.php:474 inc/dropdownobject.class.php:472
 #: inc/dropdownobject.class.php:482 inc/dropdownobject.class.php:504
 #: inc/radio.class.php:268 inc/radio.class.php:284
 msgid "Not null value"
@@ -520,7 +520,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:315 inc/field.class.php:2704 inc/field.class.php:2787
+#: inc/field.class.php:315 inc/field.class.php:2710 inc/field.class.php:2793
 msgid "Additional label"
 msgstr ""
 
@@ -528,7 +528,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/field.class.php:355 inc/field.class.php:1147 inc/field.class.php:2769
+#: inc/field.class.php:355 inc/field.class.php:1147 inc/field.class.php:2775
 #: inc/step.class.php:273 inc/step.class.php:356
 msgid "Block"
 msgstr ""
@@ -537,11 +537,11 @@ msgstr ""
 msgid "Display field after"
 msgstr ""
 
-#: inc/field.class.php:423 inc/field.class.php:1139 inc/field.class.php:2706
+#: inc/field.class.php:423 inc/field.class.php:1139 inc/field.class.php:2712
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:543 inc/field.class.php:1144 inc/field.class.php:2811
+#: inc/field.class.php:543 inc/field.class.php:1144 inc/field.class.php:2817
 msgid "Display into the basket"
 msgstr ""
 
@@ -598,7 +598,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:1148 inc/field.class.php:2778
+#: inc/field.class.php:1148 inc/field.class.php:2784
 msgid "Order"
 msgstr ""
 
@@ -619,23 +619,23 @@ msgstr ""
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/field.class.php:2352
+#: inc/field.class.php:2358
 msgid "Custom values"
 msgstr ""
 
-#: inc/field.class.php:3745
+#: inc/field.class.php:3751
 msgid "Requester login"
 msgstr ""
 
-#: inc/field.class.php:3749
+#: inc/field.class.php:3755
 msgid "Requester name"
 msgstr ""
 
-#: inc/field.class.php:3753
+#: inc/field.class.php:3759
 msgid "Requester firstname"
 msgstr ""
 
-#: inc/field.class.php:3757
+#: inc/field.class.php:3763
 msgid "Requester email"
 msgstr ""
 
