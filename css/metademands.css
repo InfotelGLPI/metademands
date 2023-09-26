@@ -71,7 +71,7 @@
 }
 
 a.metademand_middle_button {
-    position: absolute;
+    position: relative;
     left: 50%;
 }
 
