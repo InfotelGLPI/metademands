@@ -127,6 +127,11 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 //                  } else {
                 $readonly = $data['readonly'];
                 $hidden = $data['hidden'];
+                if ($hidden == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
+                    && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+                    $hidden = 0;
+                }
+
                 if ($data['readonly'] == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
                     && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
                     $readonly = 0;

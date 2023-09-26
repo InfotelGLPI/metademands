@@ -1925,7 +1925,13 @@ JAVASCRIPT
                 $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
             }
         }
-        if ($data['hide_title'] == 0) {
+        $hidden = $data['hidden'];
+        if ($hidden == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
+            && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+            $hidden = 0;
+        }
+
+        if ($data['hide_title'] == 0 || $hidden == 0) {
             echo "<span $required class='col-form-label metademand-label'>";
             echo $label . " $upload";
             if ($preview) {

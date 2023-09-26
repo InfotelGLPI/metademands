@@ -370,7 +370,7 @@ function plugin_metademands_install() {
     }
 
     //version 3.3.4
-    if (!$DB->fieldExists("glpi_plugin_metademands_tickettasks", "entities_id")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.4.sql");
     }
 
