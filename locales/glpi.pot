@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-26 08:11+0000\n"
+"POT-Creation-Date: 2023-09-27 10:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -212,9 +212,9 @@ msgstr ""
 
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
 #: inc/dropdownmeta.class.php:315 inc/dropdownmeta.class.php:371
-#: inc/dropdownmultiple.class.php:439 inc/dropdownmultiple.class.php:495
-#: inc/field.class.php:2543 inc/radio.class.php:176 inc/radio.class.php:226
-#: inc/yesno.class.php:94
+#: inc/dropdownmultiple.class.php:429 inc/dropdownmultiple.class.php:481
+#: inc/dropdownmultiple.class.php:537 inc/field.class.php:2546
+#: inc/radio.class.php:176 inc/radio.class.php:226 inc/yesno.class.php:94
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
@@ -223,7 +223,7 @@ msgstr[1] ""
 #: inc/checkbox.class.php:249 inc/condition.class.php:322
 #: inc/condition.class.php:454 inc/condition.class.php:813
 #: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:393
-#: inc/dropdownmultiple.class.php:560 inc/dropdownobject.class.php:409
+#: inc/dropdownmultiple.class.php:603 inc/dropdownobject.class.php:409
 #: inc/field.class.php:1142 inc/fieldoption.class.php:228
 #: inc/radio.class.php:248 inc/yesno.class.php:115
 msgid "Value to check"
@@ -488,19 +488,23 @@ msgstr ""
 msgid "Dropdown multiple"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:516
+#: inc/dropdownmultiple.class.php:438
+msgid "Display value in the dropdown"
+msgstr ""
+
+#: inc/dropdownmultiple.class.php:559
 msgid "Classic display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:517
+#: inc/dropdownmultiple.class.php:560
 msgid "Double column display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:521
+#: inc/dropdownmultiple.class.php:564
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:532 inc/dropdownobject.class.php:382
+#: inc/dropdownmultiple.class.php:575 inc/dropdownobject.class.php:382
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
@@ -520,7 +524,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:315 inc/field.class.php:2710 inc/field.class.php:2793
+#: inc/field.class.php:315 inc/field.class.php:2713 inc/field.class.php:2796
 msgid "Additional label"
 msgstr ""
 
@@ -528,7 +532,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/field.class.php:355 inc/field.class.php:1147 inc/field.class.php:2775
+#: inc/field.class.php:355 inc/field.class.php:1147 inc/field.class.php:2778
 #: inc/step.class.php:273 inc/step.class.php:356
 msgid "Block"
 msgstr ""
@@ -537,11 +541,11 @@ msgstr ""
 msgid "Display field after"
 msgstr ""
 
-#: inc/field.class.php:423 inc/field.class.php:1139 inc/field.class.php:2712
+#: inc/field.class.php:423 inc/field.class.php:1139 inc/field.class.php:2715
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:543 inc/field.class.php:1144 inc/field.class.php:2817
+#: inc/field.class.php:543 inc/field.class.php:1144 inc/field.class.php:2820
 msgid "Display into the basket"
 msgstr ""
 
@@ -598,7 +602,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:1148 inc/field.class.php:2784
+#: inc/field.class.php:1148 inc/field.class.php:2787
 msgid "Order"
 msgstr ""
 
@@ -619,23 +623,23 @@ msgstr ""
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/field.class.php:2358
+#: inc/field.class.php:2361
 msgid "Custom values"
 msgstr ""
 
-#: inc/field.class.php:3751
+#: inc/field.class.php:3754
 msgid "Requester login"
 msgstr ""
 
-#: inc/field.class.php:3755
+#: inc/field.class.php:3758
 msgid "Requester name"
 msgstr ""
 
-#: inc/field.class.php:3759
+#: inc/field.class.php:3762
 msgid "Requester firstname"
 msgstr ""
 
-#: inc/field.class.php:3763
+#: inc/field.class.php:3766
 msgid "Requester email"
 msgstr ""
 
