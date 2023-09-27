@@ -1931,55 +1931,58 @@ JAVASCRIPT
             $hidden = 0;
         }
 
-        if ($data['hide_title'] == 0 || $hidden == 0) {
-            echo "<span $required class='col-form-label metademand-label'>";
-            echo $label . " $upload";
-            if ($preview) {
-                echo $config_link;
-            }
-            echo "</span>";
+        if ($data['hide_title'] == 0) {
 
-            if (empty($comment = self::displayField($data['id'], 'comment'))) {
-                $comment = $data['comment'];
-            }
-            if ($data['type'] != "title"
-             && $data['type'] != "informations"
-             && $data['type'] != "title-block"
-             && $data['type'] != "text"
-             && !empty($comment)) {
-                $display = true;
-                if ($data['use_richtext'] == 0) {
-                    $display = false;
+            if ($hidden == 0) {
+                echo "<span $required class='col-form-label metademand-label'>";
+                echo $label . " $upload";
+                if ($preview) {
+                    echo $config_link;
                 }
-                if ($display) {
-                    echo "&nbsp;";
-                    echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
+                echo "</span>";
+
+                if (empty($comment = self::displayField($data['id'], 'comment'))) {
+                    $comment = $data['comment'];
                 }
-            }
-            echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
-            if ($data['is_mandatory'] == 1
-             && $data['type'] != 'parent_field') {
-                echo "*";
-            }
-            echo "</span>";
+                if ($data['type'] != "title"
+                    && $data['type'] != "informations"
+                    && $data['type'] != "title-block"
+                    && $data['type'] != "text"
+                    && !empty($comment)) {
+                    $display = true;
+                    if ($data['use_richtext'] == 0) {
+                        $display = false;
+                    }
+                    if ($display) {
+                        echo "&nbsp;";
+                        echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
+                    }
+                }
+                echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
+                if ($data['is_mandatory'] == 1
+                    && $data['type'] != 'parent_field') {
+                    echo "*";
+                }
+                echo "</span>";
 
-            echo "&nbsp;";
+                echo "&nbsp;";
 
-            //use plugin fields types
-            if (isset($PLUGIN_HOOKS['metademands'])) {
-                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                    $new_fields = self::getPluginFieldItemsType($plug);
-                    if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
-                        if (in_array($data['type'], array_keys($new_fields))) {
-                            $data['type'] = $new_fields[$data['type']];
+                //use plugin fields types
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        $new_fields = self::getPluginFieldItemsType($plug);
+                        if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                            if (in_array($data['type'], array_keys($new_fields))) {
+                                $data['type'] = $new_fields[$data['type']];
+                            }
                         }
                     }
                 }
-            }
 
-            // Input
-            if ($data['type'] != 'link') {
-                echo "<br>";
+                // Input
+                if ($data['type'] != 'link') {
+                    echo "<br>";
+                }
             }
         } else {
             echo "<div style='margin-top: 10px;'>";
