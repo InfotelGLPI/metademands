@@ -2600,7 +2600,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         x[i].className = x[i].className.replace(' active', '');
                      }
                      //... and adds the 'active' class on the current step:
-                     x[n].className += ' active';
+
+                     if (x[n] != undefined && x[n].className) {
+                        x[n].className += ' active';
+                     }
+                     
                      
                      if (use_as_step == 1) {
                         var tabx = document.getElementsByClassName('tab-step');
