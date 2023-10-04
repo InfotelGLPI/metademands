@@ -444,7 +444,9 @@ class PluginMetademandsRadio extends CommonDBTM
                     && count($childs_blocks) > 0) {
                     foreach ($childs_blocks as $childs) {
                         if (is_array($childs)) {
-                            $childs_by_checkvalue[$idc] = $childs;
+                            foreach ($childs as $child) {
+                                $childs_by_checkvalue[$idc][] = $child;
+                            }
                         }
                     }
                 }
@@ -598,21 +600,21 @@ class PluginMetademandsRadio extends CommonDBTM
             $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
             $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
-            if (is_array($childs_by_checkvalue)) {
-                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                    if ($idc == $k) {
-                        foreach ($childs_blocks as $childs) {
-                            $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $childs);
-                        }
-                    }
-                }
-            }
-
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
                 if ($session_value == $idc && $hidden_block > 0) {
                     $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                }
+
+                if (is_array($childs_by_checkvalue)) {
+                    foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                        if ($idc == $session_value) {
+                            foreach ($childs_blocks as $childs) {
+                                $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                     " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $childs);
+                            }
+                        }
+                    }
                 }
             }
 

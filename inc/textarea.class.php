@@ -270,7 +270,9 @@ class PluginMetademandsTextarea extends CommonDBTM
                     && count($childs_blocks) > 0) {
                     foreach ($childs_blocks as $childs) {
                         if (is_array($childs)) {
-                            $childs_by_checkvalue[$idc] = $childs;
+                            foreach ($childs as $child) {
+                                $childs_by_checkvalue[$idc][] = $child;
+                            }
                         }
                     }
                 }
