@@ -354,8 +354,12 @@ class PluginMetademandsRadio extends CommonDBTM
         if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
 
             $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if ($session_value > 0) {
-                $script2 .= "$('[id=\"field[" . $id . "][" . $session_value . "]\"]').prop('checked', true);";
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    if ($fieldSession > 0) {
+                        $script2 .= "$('[id=\"field[" . $id . "][" . $fieldSession . "]\"]').prop('checked', true);";
+                    }
+                }
             }
         }
 
@@ -464,9 +468,13 @@ class PluginMetademandsRadio extends CommonDBTM
 
         if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
             $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if (isset($check_values[$session_value]['hidden_block'])
-                && $check_values[$session_value]['hidden_block'] > 0) {
-                $script .= "$('[bloc-id =\"bloc" . $check_values[$session_value]['hidden_block'] . "\"]').show();";
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    if (isset($check_values[$fieldSession]['hidden_block'])
+                        && $check_values[$fieldSession]['hidden_block'] > 0) {
+                        $script .= "$('[bloc-id =\"bloc" . $check_values[$fieldSession]['hidden_block'] . "\"]').show();";
+                    }
+                }
             }
         }
 

@@ -38,7 +38,7 @@ if (!isset($_GET["withtemplate"])) {
 
 $meta = new PluginMetademandsStep();
 
-if (isset($_POST["add"])) {
+if (isset($_POST["add"]) && $_POST["block_id"]) {
     $meta->check(-1, CREATE, $_POST);
     $blocks = $_POST["block_id"];
     if (count($blocks) > 0) {
