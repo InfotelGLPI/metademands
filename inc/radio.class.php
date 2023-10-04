@@ -381,8 +381,12 @@ class PluginMetademandsRadio extends CommonDBTM
 
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                if ($session_value == $idc && $hidden_link > 0) {
-                    $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                if (is_array($session_value)) {
+                    foreach ($session_value as $k => $fieldSession) {
+                        if ($fieldSession == $idc && $hidden_link > 0) {
+                            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                        }
+                    }
                 }
             }
 
