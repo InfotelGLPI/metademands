@@ -296,15 +296,19 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     echo "<span id='categories_title' style='display: none'>";
                     $style = "";
-                    $config = new PluginServicecatalogConfig();
-                    if ($config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED
-                        || $config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED_COLOR) {
-                        $style = 'style="border: 1px solid transparent;border-radius: 1px;margin: 0px;"';
-                    }
                     $important = "";
-                    $force  = $config->getforceBackgroundColor();
-                    if ($force == 1) {
-                        $important = "alert-important";
+                    $plugin = new Plugin();
+                    if (Plugin::isPluginActive('servicecatalog')
+                        && ($plugin->getInfo('servicecatalog')["version"] > "2.0.8")) {
+                        $config = new PluginServicecatalogConfig();
+                        if ($config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED
+                            || $config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED_COLOR) {
+                            $style = 'style="border: 1px solid transparent;border-radius: 1px;margin: 0px;"';
+                        }
+                        $force = $config->getforceBackgroundColor();
+                        if ($force == 1) {
+                            $important = "alert-important";
+                        }
                     }
                     echo "<div class='alert alert-secondary $important' role='alert' $style>";
                     echo "<span id='title_cat'>";
