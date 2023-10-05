@@ -563,8 +563,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         //if reload form on loading
         if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
             $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if ($session_value > 0) {
-                $script2 .= "$('[name=\"field[" . $id . "]\"]').val('$session_value').trigger('change');";
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    if ($fieldSession > 0) {
+                        $script2 .= "$('[name=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                    }
+                }
             }
         }
 
@@ -586,8 +590,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                if ($session_value == $idc && $hidden_link > 0) {
-                    $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                if (is_array($session_value)) {
+                    foreach ($session_value as $k => $fieldSession) {
+                        if ($fieldSession == $idc && $hidden_link > 0) {
+                            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                        }
+                    }
                 }
             }
 
@@ -724,8 +732,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                if ($session_value == $idc && $hidden_block > 0) {
-                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                if (is_array($session_value)) {
+                    foreach ($session_value as $k => $fieldSession) {
+                        if ($fieldSession == $idc && $hidden_block > 0) {
+                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                        }
+                    }
                 }
             }
 

@@ -191,8 +191,12 @@ class PluginMetademandsTextarea extends CommonDBTM
         //if reload form on loading
         if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
             $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if ($session_value != "") {
-                $script2 .= "$('[name=\"field[" . $id . "]\"]').val('$session_value').trigger('change');";
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    if ($fieldSession != "") {
+                        $script2 .= "$('[name=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                    }
+                }
             }
         }
 
@@ -213,8 +217,12 @@ class PluginMetademandsTextarea extends CommonDBTM
 
                 if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                     $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                    if ($session_value != "" && $hidden_link > 0) {
-                        $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                    if (is_array($session_value)) {
+                        foreach ($session_value as $k => $fieldSession) {
+                            if ($fieldSession != "" && $hidden_link > 0) {
+                                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                            }
+                        }
                     }
                 }
             } else {
@@ -229,8 +237,12 @@ class PluginMetademandsTextarea extends CommonDBTM
 
                 if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                     $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                    if ($session_value == "" && $hidden_link > 0) {
-                        $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                    if (is_array($session_value)) {
+                        foreach ($session_value as $k => $fieldSession) {
+                            if ($fieldSession == "" && $hidden_link > 0) {
+                                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                            }
+                        }
                     }
                 }
             }
@@ -334,8 +346,12 @@ class PluginMetademandsTextarea extends CommonDBTM
 
                     if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                         $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                        if ($session_value != "" && $hidden_block > 0) {
-                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                        if (is_array($session_value)) {
+                            foreach ($session_value as $k => $fieldSession) {
+                                if ($fieldSession != "" && $hidden_block > 0) {
+                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                                }
+                            }
                         }
                     }
 
