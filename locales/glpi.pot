@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-05 13:56+0000\n"
+"POT-Creation-Date: 2023-10-13 10:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -223,7 +223,7 @@ msgstr[1] ""
 #: inc/checkbox.class.php:249 inc/condition.class.php:322
 #: inc/condition.class.php:454 inc/condition.class.php:813
 #: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:393
-#: inc/dropdownmultiple.class.php:603 inc/dropdownobject.class.php:409
+#: inc/dropdownmultiple.class.php:604 inc/dropdownobject.class.php:409
 #: inc/field.class.php:1142 inc/fieldoption.class.php:228
 #: inc/radio.class.php:248 inc/yesno.class.php:115
 msgid "Value to check"
@@ -492,19 +492,19 @@ msgstr ""
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:559
+#: inc/dropdownmultiple.class.php:560
 msgid "Classic display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:560
+#: inc/dropdownmultiple.class.php:561
 msgid "Double column display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:564
+#: inc/dropdownmultiple.class.php:565
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:575 inc/dropdownobject.class.php:382
+#: inc/dropdownmultiple.class.php:576 inc/dropdownobject.class.php:382
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
