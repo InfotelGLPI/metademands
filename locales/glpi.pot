@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-19 07:23+0000\n"
+"POT-Creation-Date: 2023-10-19 11:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1088 inc/metademand.class.php:5288
+#: hook.php:1088 inc/metademand.class.php:5290
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1106 inc/metademand.class.php:5408
+#: hook.php:1106 inc/metademand.class.php:5410
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1123 inc/metademand.class.php:5465
+#: hook.php:1123 inc/metademand.class.php:5467
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1140 inc/metademand.class.php:5340
+#: hook.php:1140 inc/metademand.class.php:5342
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -967,86 +967,86 @@ msgid_plural "Parent tickets"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/metademand.class.php:4465
+#: inc/metademand.class.php:4467
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:4467
+#: inc/metademand.class.php:4469
 msgid "Do you want to validate her?"
 msgstr ""
 
-#: inc/metademand.class.php:4472 inc/metademand.class.php:4477
+#: inc/metademand.class.php:4474 inc/metademand.class.php:4479
 #: inc/metademandvalidation.class.php:57 inc/metademandvalidation.class.php:322
 #: inc/metademandvalidation.class.php:327
 #: inc/metademandvalidation.class.php:349
 msgid "Metademand validation"
 msgstr ""
 
-#: inc/metademand.class.php:4491
+#: inc/metademand.class.php:4493
 msgid "List of tickets / tasks which be created after validation"
 msgstr ""
 
-#: inc/metademand.class.php:4571
+#: inc/metademand.class.php:4573
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:4585
+#: inc/metademand.class.php:4587
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:4592 inc/metademand.class.php:4719
+#: inc/metademand.class.php:4594 inc/metademand.class.php:4721
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:4712
+#: inc/metademand.class.php:4714
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:4790
+#: inc/metademand.class.php:4792
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:4809
+#: inc/metademand.class.php:4811
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5154
+#: inc/metademand.class.php:5156
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:5715
+#: inc/metademand.class.php:5717
 msgid "No file specified"
 msgstr ""
 
-#: inc/metademand.class.php:5730
+#: inc/metademand.class.php:5732
 msgid "The file is not an XML file"
 msgstr ""
 
-#: inc/metademand.class.php:6027
+#: inc/metademand.class.php:6029
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:6036
+#: inc/metademand.class.php:6038
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:6133
+#: inc/metademand.class.php:6135
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:6211
+#: inc/metademand.class.php:6213
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:6211
+#: inc/metademand.class.php:6213
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:6224
+#: inc/metademand.class.php:6226
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:6256 inc/wizard.class.php:784
+#: inc/metademand.class.php:6258 inc/wizard.class.php:784
 msgid "Find a form"
 msgstr ""
 
