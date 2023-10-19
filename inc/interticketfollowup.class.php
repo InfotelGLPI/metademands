@@ -288,7 +288,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
         } else {
             // Create item
             $options['itemtype']   = $item->getType();
-            $options['tickets_id'] = $item->getField('id');
+            $options['id'] = $item->getField('id');
             $this->check(-1, CREATE, $options);
         }
 

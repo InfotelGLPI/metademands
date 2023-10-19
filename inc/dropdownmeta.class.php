@@ -681,6 +681,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         //by default - hide all
         $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
 
+        $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
+
         foreach ($check_values as $idc => $check_value) {
             $blocks_idc = [];
             $hidden_block = $check_value['hidden_block'];
@@ -738,6 +740,10 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                             $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
                         }
                     }
+                } else {
+                    if ($session_value == $idc && $hidden_block > 0) {
+                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                    }
                 }
             }
 
@@ -780,7 +786,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $dbu = new DbUtils();
         if (!empty($field['custom_values'])
             && $field['item'] == 'other') {
-            $custom_values = array_merge([0 => Dropdown::EMPTY_VALUE], PluginMetademandsField::_unserialize($field['custom_values']));
+            $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+            $custom_values[0] = Dropdown::EMPTY_VALUE;
             foreach ($custom_values as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                     $custom_values[$k] = $ret;
@@ -831,7 +838,10 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
         if (!empty($field['custom_values'])
             && $field['item'] == 'other') {
-            $custom_values = array_merge([0 => Dropdown::EMPTY_VALUE], PluginMetademandsField::_unserialize($field['custom_values']));
+
+            $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+            $custom_values[0] = Dropdown::EMPTY_VALUE;
+
             foreach ($custom_values as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                     $custom_values[$k] = $ret;

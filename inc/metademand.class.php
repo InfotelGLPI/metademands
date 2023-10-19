@@ -4002,7 +4002,9 @@ JAVASCRIPT
                 }
                 $son_ticket_data = $this->mergeFields($son_ticket_data, $inputFieldMain);
 
-                if ($son_tickets_id = $ticket->add(Toolbox::addslashes_deep($son_ticket_data))) {
+                $son_ticket_data['content'] = Toolbox::addslashes_deep($son_ticket_data['content']);
+
+                if ($son_tickets_id = $ticket->add($son_ticket_data)) {
                     if (Plugin::isPluginActive('fields')) {
                         foreach ($inputField as $containers_id => $vals) {
                             $container = new PluginFieldsContainer;

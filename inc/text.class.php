@@ -296,6 +296,8 @@ class PluginMetademandsText extends CommonDBTM
         //by default - hide all
         $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
 
+        $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
+
         foreach ($check_values as $idc => $check_value) {
             $blocks_idc = [];
             $hidden_block = $check_value['hidden_block'];
@@ -326,6 +328,10 @@ class PluginMetademandsText extends CommonDBTM
                             if ($fieldSession != "" && $hidden_block > 0) {
                                 $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
                             }
+                        }
+                    } else {
+                        if ($session_value == $idc && $hidden_block > 0) {
+                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
                         }
                     }
                 }
