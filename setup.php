@@ -134,7 +134,7 @@ function plugin_init_metademands()
             if (Session::getCurrentInterface() == "helpdesk") {
                 if (Session::haveRight('plugin_metademands_on_login',READ)) {
                     $_SESSION["plugin_metademands_on_login_loaded"] = 1;
-                    Html::redirect($CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php");
+                    Html::redirect(PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php');
                 }
             }
 
@@ -143,7 +143,7 @@ function plugin_init_metademands()
         if (isset($_SESSION["plugin_metademands_on_login_loaded"])
             && $_SESSION["plugin_metademands_on_login_loaded"] == 1) {
             if(str_contains($_SERVER['REQUEST_URI'],"create_ticket")){
-                Html::redirect($CFG_GLPI['root_doc'] . "/plugins/metademands/front/wizard.form.php");
+                Html::redirect(PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php');
             }
         }
         // END TEST Redirect
