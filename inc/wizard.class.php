@@ -2763,7 +2763,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         $datas['fields'] = $values['fields'];
 
                         $result = $metademands->addObjects($metademands_id, $datas, $options);
-                        Session::addMessageAfterRedirect($result['message']);
+                        if (is_array($result)) {
+                            Session::addMessageAfterRedirect($result['message']);
+                        }
                     }
                     $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
                         'users_id' => Session::getLoginUserID()]);
@@ -2811,7 +2813,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         'users_id' => Session::getLoginUserID()]);
 
                     $result = $metademands->addObjects($metademands_id, $values, $options);
-                    Session::addMessageAfterRedirect($result['message']);
+                    if (is_array($result)) {
+                        Session::addMessageAfterRedirect($result['message']);
+                    }
                 }
             } else {
                 //not in basket
@@ -2837,7 +2841,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     PluginMetademandsStepform::deleteAfterCreate($values['plugin_metademands_stepforms_id']);
                 }
 
-                Session::addMessageAfterRedirect($result['message']);
+                if (is_array($result)) {
+                    Session::addMessageAfterRedirect($result['message']);
+                }
+
             }
         }
         unset($_SESSION['plugin_metademands']);

@@ -2169,6 +2169,11 @@ JAVASCRIPT
                             $ticket_exists_array[] = 1;
                         } else {
 
+                            if (empty($input['content'])) {
+                                $message = __('There is a problem on ticket creation', 'metademands');
+                                Session::addMessageAfterRedirect($message, false, ERROR);
+                                return false;
+                            }
                             $parent_tickets_id = $object->add($input);
                         }
 
@@ -2186,89 +2191,90 @@ JAVASCRIPT
                             unset($_SESSION['plugin_metademands'][$form_metademands_id]['plugin_metademands_forms_id']);
                         }
                         $inputField = [];
-                        if (Plugin::isPluginActive('fields')) {
-                            $inputField = [];
-                            $pluginfield = new PluginMetademandsPluginfields();
-                            $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
-                            foreach ($pluginfields as $plfield) {
-                                $fields_field = new PluginFieldsField();
-                                $fields_container = new PluginFieldsContainer();
-                                if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
-                                    if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
-                                        if ($fields_container->fields['type'] == 'tab') {
-                                            if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
-                                                if ($fields_field->fields['type'] == 'dropdown') {
-                                                    if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
-                                                        $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                        if ($parent_tickets_id) {
+                            if (Plugin::isPluginActive('fields')) {
+                                $inputField = [];
+                                $pluginfield = new PluginMetademandsPluginfields();
+                                $pluginfields = $pluginfield->find(['plugin_metademands_metademands_id' => $form_metademands_id]);
+                                foreach ($pluginfields as $plfield) {
+                                    $fields_field = new PluginFieldsField();
+                                    $fields_container = new PluginFieldsContainer();
+                                    if ($fields_field->getFromDB($plfield['plugin_fields_fields_id'])) {
+                                        if ($fields_container->getFromDB($fields_field->fields['plugin_fields_containers_id'])) {
+                                            if ($fields_container->fields['type'] == 'tab') {
+                                                if (isset($values['fields'][$plfield['plugin_metademands_fields_id']])) {
+                                                    if ($fields_field->fields['type'] == 'dropdown') {
+                                                        if ($values['fields'][$plfield['plugin_metademands_fields_id']] > 0) {
+                                                            $inputField[$fields_field->fields['plugin_fields_containers_id']]["plugin_fields_" . $fields_field->fields['name'] . "dropdowns_id"] = $values['fields'][$plfield['plugin_metademands_fields_id']];
+                                                        }
+                                                    } elseif ($fields_field->fields['type'] == 'yesno') {
+                                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
+                                                    } else {
+                                                        $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                     }
-                                                } elseif ($fields_field->fields['type'] == 'yesno') {
-                                                    $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']] - 1;
-                                                } else {
-                                                    $inputField[$fields_field->fields['plugin_fields_containers_id']][$fields_field->fields['name']] = $values['fields'][$plfield['plugin_metademands_fields_id']];
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
 
-                            foreach ($inputField as $containers_id => $vals) {
-                                $container = new PluginFieldsContainer;
-                                $vals['plugin_fields_containers_id'] = $containers_id;
-                                $vals['itemtype'] = $object_class;
-                                $vals['items_id'] = $parent_tickets_id;
-                                $container->updateFieldsValues($vals, $object_class, false);
-                            }
-                        }
-                        //Hook to do action after ticket creation with metademands
-                        if (isset($PLUGIN_HOOKS['metademands'])) {
-                            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                                $p = [];
-                                $options["tickets_id"] = $parent_tickets_id;
-                                $p["options"] = $options;
-                                $p["values"] = $values;
-                                $p["line"] = $line;
-
-                                $new_res = self::getPluginAfterCreateTicket($plug, $p);
-                            }
-                        }
-
-                        if ($docitem == null && $config['create_pdf']) {
-                            //document PDF Generation
-                            //TODO TO Tranlate
-                            if (empty($n = self::displayField($this->getID(), 'name'))) {
-                                $n = $this->getName();
-                            }
-
-                            if (empty($comm = self::displayField($this->getID(), 'comment'))) {
-                                $comm = $this->getField("comment");
-                            }
-                            $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm);
-                            if ($metademand->fields['is_order'] == 0) {
-                                $values_form['0'] = isset($values) ? $values : [];
-                                $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(),false);
-                            } elseif ($metademand->fields['is_order'] == 1) {
-                                if ($metademand->fields['create_one_ticket'] == 0) {
-                                    //create one ticket for each basket
-                                    $values_form['0'] = isset($values) ? $values : [];
-                                } else {
-                                    //create one ticket for all basket
-                                    $baskets = [];
-                                    $values['basket'] = isset($values['basket']) ? $values['basket'] : [];
-                                    foreach ($values['basket'] as $k => $v) {
-                                        $baskets[$k]['basket'] = $v;
-                                    }
-
-                                    $values_form = $baskets;
+                                foreach ($inputField as $containers_id => $vals) {
+                                    $container = new PluginFieldsContainer;
+                                    $vals['plugin_fields_containers_id'] = $containers_id;
+                                    $vals['itemtype'] = $object_class;
+                                    $vals['items_id'] = $parent_tickets_id;
+                                    $container->updateFieldsValues($vals, $object_class, false);
                                 }
-                                $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), true);
                             }
-                            $docPdf->Close();
-                            //TODO TO Tranlate
-                            $name = PluginMetaDemandsMetaDemandPdf::cleanTitle($n);
-                            $docitem = $docPdf->addDocument($name, $object_class, $object->getID(), $_SESSION['glpiactive_entity']);
-                        }
+                            //Hook to do action after ticket creation with metademands
+                            if (isset($PLUGIN_HOOKS['metademands'])) {
+                                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                                    $p = [];
+                                    $options["tickets_id"] = $parent_tickets_id;
+                                    $p["options"] = $options;
+                                    $p["values"] = $values;
+                                    $p["line"] = $line;
 
+                                    $new_res = self::getPluginAfterCreateTicket($plug, $p);
+                                }
+                            }
+
+                            if ($docitem == null && $config['create_pdf']) {
+                                //document PDF Generation
+                                //TODO TO Tranlate
+                                if (empty($n = self::displayField($this->getID(), 'name'))) {
+                                    $n = $this->getName();
+                                }
+
+                                if (empty($comm = self::displayField($this->getID(), 'comment'))) {
+                                    $comm = $this->getField("comment");
+                                }
+                                $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm);
+                                if ($metademand->fields['is_order'] == 0) {
+                                    $values_form['0'] = isset($values) ? $values : [];
+                                    $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), false);
+                                } elseif ($metademand->fields['is_order'] == 1) {
+                                    if ($metademand->fields['create_one_ticket'] == 0) {
+                                        //create one ticket for each basket
+                                        $values_form['0'] = isset($values) ? $values : [];
+                                    } else {
+                                        //create one ticket for all basket
+                                        $baskets = [];
+                                        $values['basket'] = isset($values['basket']) ? $values['basket'] : [];
+                                        foreach ($values['basket'] as $k => $v) {
+                                            $baskets[$k]['basket'] = $v;
+                                        }
+
+                                        $values_form = $baskets;
+                                    }
+                                    $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), true);
+                                }
+                                $docPdf->Close();
+                                //TODO TO Tranlate
+                                $name = PluginMetaDemandsMetaDemandPdf::cleanTitle($n);
+                                $docitem = $docPdf->addDocument($name, $object_class, $object->getID(), $_SESSION['glpiactive_entity']);
+                            }
+                        }
                         // Ticket already exists
                     } else {
                         if ($object_class == 'Ticket') {
