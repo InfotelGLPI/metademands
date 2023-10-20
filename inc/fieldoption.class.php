@@ -1340,6 +1340,89 @@ class PluginMetademandsFieldOption extends CommonDBChild
     }
 
 
+    public static function emptyAllblockbyDefault($check_values)
+    {
+
+        $script = '';
+        $hidden_blocks = [];
+        $childs = [];
+        $childs_blocks = [];
+        foreach ($check_values as $idc => $check_value) {
+            if ($check_value['hidden_block'] > 0) {
+                $hidden_blocks[] = $check_value['hidden_block'];
+            }
+            $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
+        }
+
+        if (isset($childs_blocks) && count($childs_blocks) > 0) {
+            foreach ($childs_blocks as $k => $childs_block) {
+                if (is_array($childs_block)) {
+                    foreach ($childs_block as $childs_bloc) {
+                        $childs[] =  $childs_bloc;
+                    }
+                }
+            }
+        }
+
+        $json_hidden_blocks = json_encode($hidden_blocks);
+        $json_childs_blocks = json_encode($childs);
+
+        $script .= "var hidden_blocks = {$json_hidden_blocks};
+                    var child_blocks = {$json_childs_blocks};
+                    var tohideblock = {};";
+        $script .= "//by default - hide all
+                    $.each( hidden_blocks, function( key, value ) {
+                        tohideblock[value] = true;
+                    });
+                    $.each( child_blocks, function( key, value ) {
+                        tohideblock[value] = true;
+                    });
+                    $.each(tohideblock, function( key, value ) {
+                                if (value == true) {
+                                    $.each(tohideblock, function( key, value ) {
+                                        $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
+                                             switch(this.type) {
+                                                case 'password':
+                                                case 'text':
+                                                case 'textarea':
+                                                case 'file':
+                                                case 'date':
+                                                case 'number':
+                                                case 'tel':
+                                                case 'email':
+                                                    jQuery(this).val('');
+                                                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+                                                        tinymce.get(this.id).setContent('');
+                                                    }
+                                                    break;
+                                                case 'select-one':
+                                                case 'select-multiple':
+                                                    jQuery(this).val('0').trigger('change');
+                                                    jQuery(this).val('0');
+                                                    break;
+                                                case 'checkbox':
+                                                case 'radio':
+                                                     this.checked = false;
+                                                     var checkname = this.name;
+                                                     $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                            }
+                                            jQuery(this).removeAttr('required');
+                                            regex = /multiselectfield.*_to/g;
+                                            totest = this.id;
+                                            found = totest.match(regex);
+                                            if(found !== null) {
+                                              regex = /multiselectfield[0-9]*/;
+                                               found = totest.match(regex);
+                                               $('#'+found[0]+'_leftAll').click();
+                                            }
+                                        });
+                                    });
+                                }
+                            });";
+
+        return $script;
+    }
+
     public static function setMandatoryBlockFields($metaid, $blockid)
     {
 
