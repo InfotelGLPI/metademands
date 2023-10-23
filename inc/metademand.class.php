@@ -4003,7 +4003,7 @@ JAVASCRIPT
                 $son_ticket_data = $this->mergeFields($son_ticket_data, $inputFieldMain);
 
                 $son_ticket_data['content'] = Toolbox::addslashes_deep($son_ticket_data['content']);
-
+                $son_ticket_data['name'] = Toolbox::addslashes_deep($son_ticket_data['name']);
                 if ($son_tickets_id = $ticket->add($son_ticket_data)) {
                     if (Plugin::isPluginActive('fields')) {
                         foreach ($inputField as $containers_id => $vals) {
