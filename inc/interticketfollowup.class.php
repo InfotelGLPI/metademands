@@ -30,6 +30,8 @@
 /**
  * Class PluginMetademandsInterticketfollowup
  */
+use Glpi\Application\View\TemplateRenderer;
+
 class PluginMetademandsInterticketfollowup extends CommonITILObject
 {
     public static $rightname = 'plugin_metademands_followup';
@@ -133,7 +135,9 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
                 $ticket_metademand_data = reset($ticket_metademand_data);
                 $tickets_found          = PluginMetademandsTicket::getSonTickets(
                     $first_tickets_id,
-                    $ticket_metademand_data['plugin_metademands_metademands_id']
+                    $ticket_metademand_data['plugin_metademands_metademands_id'],
+                    [],
+                    true,
                 );
 
                 $ticket                 = new Ticket();
@@ -144,8 +148,14 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
                 }
                 foreach ($tickets_found as $ticket_found) {
                     if ($ticket_found['tickets_id'] != $items_id) {
-                        $ticket->getFromDB($ticket_found['tickets_id']);
-                        $targets[$ticket_found['tickets_id']] = $ticket->getFriendlyName();
+                        if ($ticket->getFromDB($ticket_found['tickets_id'])) {
+                            if ($ticket->fields['status'] != Ticket::SOLVED
+                                && $ticket->fields['status'] != Ticket::CLOSED) {
+                                $targets[$ticket_found['tickets_id']] = $ticket->getFriendlyName();
+                            }
+                        }
+
+
                     }
                 }
             }
@@ -269,101 +279,18 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
      **/
     public function showForm($ID, $options = [])
     {
-        global $CFG_GLPI;
-
         if ($this->isNewItem()) {
             $this->getEmpty();
         }
 
-        if (!isset($options['item']) && isset($options['parent'])) {
-            //when we came from aja/viewsubitem.php
-            $options['item'] = $options['parent'];
-        }
-        $options['formoptions'] = ($options['formoptions'] ?? '') . ' data-track-changes=true';
+        $item       = $options['parent'];
 
-        $item       = $options['item'];
-
-        if ($ID > 0) {
-            $this->check($ID, READ);
-        } else {
-            // Create item
-            $options['itemtype']   = $item->getType();
-            $options['id'] = $item->getField('id');
-            $this->check(-1, CREATE, $options);
-        }
-
-        $requester = ($item->isUser(CommonITILActor::REQUESTER, Session::getLoginUserID())
-                      || (isset($_SESSION["glpigroups"])
-                          && $item->haveAGroup(CommonITILActor::REQUESTER, $_SESSION['glpigroups'])));
-
-        $reopen_case = false;
-        if ($this->isNewID($ID)) {
-            if ($item->canReopen()) {
-                $reopen_case = true;
-                echo "<div class='center b'>" . __('If you want to reopen the ticket, you must specify a reason') . "</div>";
-            }
-
-            // the reqester triggers the reopening on close/solve/waiting status
-            if ($requester
-                && in_array($item->fields['status'], $item::getReopenableStatusArray())) {
-                $reopen_case = true;
-            }
-        }
-
-        $cols = 100;
-        $rows = 10;
-
-        $this->showFormHeader($options);
-
-        $rand       = mt_rand();
-        $content_id = "content$rand";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td rowspan='3'>";
-
-        Html::textarea(['name'              => 'content',
-                        'value'             => $this->fields["content"],
-                        'rand'              => $rand,
-                        'editor_id'         => $content_id,
-                        'enable_fileupload' => true,
-                        'enable_richtext'   => true,
-                        'cols'              => $cols,
-                        'rows'              => $rows]);
-
-        if ($this->fields["date"]) {
-            echo "</td><td>" . _n('Date', 'Dates', 1) . "</td>";
-            echo "<td>" . Html::convDateTime($this->fields["date"]);
-        } else {
-            echo "</td><td colspan='2'>&nbsp;";
-        }
-        echo Html::hidden('itemtype', ['value' => $item->getType()]);
-        echo Html::hidden('tickets_id', ['value' => $item->getID()]);
-        // Reopen case
-        if ($reopen_case) {
-            echo Html::hidden('add_reopen', ['value' => '1']);
-        }
-
-        echo "</td></tr>\n";
-
-        echo "<tr class='tab_bg_1'></tr>";
-        echo "<tr class='tab_bg_1' style='vertical-align: top'>";
-        echo "<td colspan='4'>";
-
-        echo "<div class='fa-label'>
-            <i class='fas fa-bullseye fa-fw'
-               title='" . __('Target followup', 'metademands') . "'></i>";
-        Dropdown::showFromArray('targets_id', self::getTargets($item->getField('id')), []);
-      //         RequestType::dropdown([
-      //                                  'value'     => $this->fields["requesttypes_id"],
-      //                                  'condition' => ['is_active' => 1, 'is_itilfollowup' => 1],
-      //                                  'rand'      => $rand,
-      //                               ]);
-        echo "</div>";
-
-
-        echo "</td></tr>";
-
-        $this->showFormButtons($options);
+        TemplateRenderer::getInstance()->display('@metademands/interticketfollowup_form.html.twig', [
+            'item'               => $options['parent'],
+            'subitem'            => $this,
+            'targets_list'    => self::getTargets($item->getField('id')),
+            'action'          => PLUGIN_METADEMANDS_WEBDIR . '/front/interticketfollowup.form.php',
+        ]);
     }
 
 

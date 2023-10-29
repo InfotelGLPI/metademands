@@ -94,6 +94,10 @@ function plugin_init_metademands()
                                                           'TicketTemplatePredefinedField' =>
                                                              ['PluginMetademandsTicketField', 'post_delete_predefinedField']];
 
+        $PLUGIN_HOOKS['pre_item_purge']['metademands']= [
+            'Ticket'       => 'plugin_metademands_item_purge',
+        ];
+
         $PLUGIN_HOOKS['item_update']['metademands'] = ['Ticket'       =>
                                                           ['PluginMetademandsTicket', 'post_update_ticket'],
                                                        'ITILCategory' =>

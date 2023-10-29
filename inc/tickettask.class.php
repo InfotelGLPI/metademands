@@ -35,7 +35,8 @@ if (!defined('GLPI_ROOT')) {
 /**
  * Class PluginMetademandsTicketTask
  */
-class PluginMetademandsTicketTask extends CommonDBChild {
+class PluginMetademandsTicketTask extends CommonDBChild
+{
 
     public static $rightname = 'plugin_metademands';
 
@@ -87,18 +88,19 @@ class PluginMetademandsTicketTask extends CommonDBChild {
 
         // Default values
         $values = [
-                   'tickettask_id'               => 0,
-                   'itilcategories_id'           => 0,
-                   'type'                        => Ticket::DEMAND_TYPE,
-                   'parent_tasks_id'             => 0,
-                   'plugin_metademands_tasks_id' => 0,
-                   'content'                     => '',
-                   'name'                        => '',
-                   'block_use'                   => 1,
-                   'useBlock'                    => 1,
-                   'formatastable'               => 1,
-                   'entities_id'                 => 0,
-            'is_recursive'                 => 0];
+            'tickettask_id' => 0,
+            'itilcategories_id' => 0,
+            'type' => Ticket::DEMAND_TYPE,
+            'parent_tasks_id' => 0,
+            'plugin_metademands_tasks_id' => 0,
+            'content' => '',
+            'name' => '',
+            'block_use' => 1,
+            'useBlock' => 1,
+            'block_parent_ticket_resolution' => 1,
+            'formatastable' => 1,
+            'entities_id' => 0,
+            'is_recursive' => 0];
 
         // Init values
         foreach ($input as $key => $val) {
@@ -106,7 +108,7 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         }
 
 
-      //      $values['block_use'] = json_decode($values['block_use']);
+        //      $values['block_use'] = json_decode($values['block_use']);
         $ticket = new Ticket();
 
         // Restore saved value or override with page parameter
@@ -126,9 +128,9 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         }
 
         // Clean text fields
-        $values['name']    = stripslashes($values['name']);
+        $values['name'] = stripslashes($values['name']);
         $values['content'] = Html::cleanPostForTextArea($values['content']);
-        $values['type']    = $metademands->getField("type");
+        $values['type'] = $metademands->getField("type");
 
         if ($tasktype == PluginMetademandsTask::TICKET_TYPE) {
             // Get Template
@@ -158,7 +160,7 @@ class PluginMetademandsTicketTask extends CommonDBChild {
             echo "<th>" . sprintf(__('%1$s'), __('Block to use', 'metademands')) . "</th>";
             echo "<td>";
 
-            $field  = new PluginMetademandsField();
+            $field = new PluginMetademandsField();
             $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
             $blocks = [];
             foreach ($fields as $f) {
@@ -173,10 +175,10 @@ class PluginMetademandsTicketTask extends CommonDBChild {
             Dropdown::showFromArray(
                 'block_use',
                 $blocks,
-                ['values'   => $values['block_use'],
-                 'width'    => '100%',
-                 'multiple' => true,
-                 'entity'   => $_SESSION['glpiactiveentities']]
+                ['values' => $values['block_use'],
+                    'width' => '100%',
+                    'multiple' => true,
+                    'entity' => $_SESSION['glpiactiveentities']]
             );
 
             echo "</td>";
@@ -193,13 +195,23 @@ class PluginMetademandsTicketTask extends CommonDBChild {
 
             echo "</tr>";
 
+            echo "<th>" . sprintf(__('%1$s'), __('Block parent ticket resolution', 'metademands')) . "</th>";
+            echo "<td>";
+
+            Dropdown::showYesNo('block_parent_ticket_resolution', $values['block_parent_ticket_resolution']);
+
+            echo "</td>";
+            echo "<td colspan='4'></td>";
+
+            echo "</tr>";
+
             echo "<tr class='tab_bg_1'>";
 
             echo "<th>" . sprintf(
-                __('%1$s%2$s'),
-                __('Category'),
-                $tt->getMandatoryMark('itilcategories_id')
-            ) . "</th>";
+                    __('%1$s%2$s'),
+                    __('Category'),
+                    $tt->getMandatoryMark('itilcategories_id')
+                ) . "</th>";
             echo "<td>";
 
             $condition = [];
@@ -211,9 +223,9 @@ class PluginMetademandsTicketTask extends CommonDBChild {
                 default: // Ticket::INCIDENT_TYPE :
                     $condition = ['is_incident' => 1];
             }
-            $opt = ['value'     => $values['itilcategories_id'],
-                    'condition' => $condition,
-                    'entity'    => $metademands->fields["entities_id"]];
+            $opt = ['value' => $values['itilcategories_id'],
+                'condition' => $condition,
+                'entity' => $metademands->fields["entities_id"]];
 
             if ($values['itilcategories_id'] && $tt->isMandatoryField("itilcategories_id")) {
                 $opt['display_emptychoice'] = false;
@@ -231,12 +243,12 @@ class PluginMetademandsTicketTask extends CommonDBChild {
                 echo "<td colspan='2'>";
                 Dropdown::show(
                     'PluginMetademandsTask',
-                    ['name'      => 'parent_tasks_id',
-                     'value'     => $values['parent_tasks_id'],
-                     'entity'    => $metademands->fields["entities_id"],
-                     'condition' => ['type'                              => PluginMetademandsTask::TICKET_TYPE,
-                                     'plugin_metademands_metademands_id' => $metademands->fields["id"],
-                                     'id'                                => ['<>', $values['plugin_metademands_tasks_id']]]]
+                    ['name' => 'parent_tasks_id',
+                        'value' => $values['parent_tasks_id'],
+                        'entity' => $metademands->fields["entities_id"],
+                        'condition' => ['type' => PluginMetademandsTask::TICKET_TYPE,
+                            'plugin_metademands_metademands_id' => $metademands->fields["id"],
+                            'id' => ['<>', $values['plugin_metademands_tasks_id']]]]
                 );
                 echo "<td>";
                 echo "</tr>";
@@ -269,12 +281,12 @@ class PluginMetademandsTicketTask extends CommonDBChild {
                 echo "<td>";
                 $ticket = new Ticket();
                 // Requester user
-            //         echo CommonITILObject::getActorIcon('user', CommonITILActor::REQUESTER) . '&nbsp;';
+                //         echo CommonITILObject::getActorIcon('user', CommonITILActor::REQUESTER) . '&nbsp;';
                 echo $tt->getMandatoryMark('_users_id_requester');
-                User::dropdown(['name'   => 'users_id_requester',
-                                'value'  => isset($values['users_id_requester']) ? $values['users_id_requester'] : 0,
-                                'entity' => $metademands->fields["entities_id"],
-                                'right'  => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)]);
+                User::dropdown(['name' => 'users_id_requester',
+                    'value' => isset($values['users_id_requester']) ? $values['users_id_requester'] : 0,
+                    'entity' => $metademands->fields["entities_id"],
+                    'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::REQUESTER)]);
                 echo "</td>";
             } else {
                 echo "<td>";
@@ -284,12 +296,12 @@ class PluginMetademandsTicketTask extends CommonDBChild {
                 echo "<td>";
                 $ticket = new Ticket();
                 // Observer user
-            //         echo CommonITILObject::getActorIcon('user', CommonITILActor::OBSERVER) . '&nbsp;';
+                //         echo CommonITILObject::getActorIcon('user', CommonITILActor::OBSERVER) . '&nbsp;';
                 echo $tt->getMandatoryMark('_users_id_observer');
-                User::dropdown(['name'   => 'users_id_observer',
-                                'value'  => isset($values['users_id_observer']) ? $values['users_id_observer'] : 0,
-                                'entity' => $metademands->fields["entities_id"],
-                                'right'  => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)]);
+                User::dropdown(['name' => 'users_id_observer',
+                    'value' => isset($values['users_id_observer']) ? $values['users_id_observer'] : 0,
+                    'entity' => $metademands->fields["entities_id"],
+                    'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::OBSERVER)]);
                 echo "</td>";
             } else {
                 echo "<td>";
@@ -298,14 +310,14 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         }
         echo "<td>";
         // Assign user
-      //      echo CommonITILObject::getActorIcon('user', CommonITILActor::ASSIGN) . '&nbsp;';
+        //      echo CommonITILObject::getActorIcon('user', CommonITILActor::ASSIGN) . '&nbsp;';
         if ($tasktype == PluginMetademandsTask::TICKET_TYPE) {
             echo $tt->getMandatoryMark('_users_id_assign');
         }
-        User::dropdown(['name'   => 'users_id_assign',
-                        'value'  => isset($values['users_id_assign']) ? $values['users_id_assign'] : 0,
-                        'entity' => $metademands->fields["entities_id"],
-                        'right'  => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)]);
+        User::dropdown(['name' => 'users_id_assign',
+            'value' => isset($values['users_id_assign']) ? $values['users_id_assign'] : 0,
+            'entity' => $metademands->fields["entities_id"],
+            'right' => $ticket->getDefaultActorRightSearch(CommonITILActor::ASSIGN)]);
         echo "</td>";
         echo "</tr>";
 
@@ -314,12 +326,12 @@ class PluginMetademandsTicketTask extends CommonDBChild {
             if ($tt->isMandatoryField('_groups_id_requester')) {
                 echo "<td>";
                 // Requester Group
-            //         echo CommonITILObject::getActorIcon('group', CommonITILActor::REQUESTER) . '&nbsp;';
+                //         echo CommonITILObject::getActorIcon('group', CommonITILActor::REQUESTER) . '&nbsp;';
                 echo $tt->getMandatoryMark('_groups_id_requester');
-                Dropdown::show('Group', ['name'      => 'groups_id_requester',
-                                         'value'     => isset($values['groups_id_requester']) ? $values['groups_id_requester'] : 0,
-                                         'entity'    => $metademands->fields["entities_id"],
-                                         'condition' => ['is_requester' => 1]]);
+                Dropdown::show('Group', ['name' => 'groups_id_requester',
+                    'value' => isset($values['groups_id_requester']) ? $values['groups_id_requester'] : 0,
+                    'entity' => $metademands->fields["entities_id"],
+                    'condition' => ['is_requester' => 1]]);
                 echo "</td>";
             } else {
                 echo "<td>";
@@ -329,12 +341,12 @@ class PluginMetademandsTicketTask extends CommonDBChild {
             if ($tt->isMandatoryField('_groups_id_observer')) {
                 echo "<td>";
                 // Observer Group
-            //         echo CommonITILObject::getActorIcon('group', CommonITILActor::OBSERVER) . '&nbsp;';
+                //         echo CommonITILObject::getActorIcon('group', CommonITILActor::OBSERVER) . '&nbsp;';
                 echo $tt->getMandatoryMark('_groups_id_observer');
-                Dropdown::show('Group', ['name'      => 'groups_id_observer',
-                                         'value'     => isset($values['groups_id_observer']) ? $values['groups_id_observer'] : 0,
-                                         'entity'    => $metademands->fields["entities_id"],
-                                         'condition' => ['is_watcher' => 1]]);
+                Dropdown::show('Group', ['name' => 'groups_id_observer',
+                    'value' => isset($values['groups_id_observer']) ? $values['groups_id_observer'] : 0,
+                    'entity' => $metademands->fields["entities_id"],
+                    'condition' => ['is_watcher' => 1]]);
                 echo "</td>";
             } else {
                 echo "<td>";
@@ -343,14 +355,14 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         }
         echo "<td>";
         // Assign Group
-      //      echo CommonITILObject::getActorIcon('group', CommonITILActor::ASSIGN) . '&nbsp;';
+        //      echo CommonITILObject::getActorIcon('group', CommonITILActor::ASSIGN) . '&nbsp;';
         if ($tasktype == PluginMetademandsTask::TICKET_TYPE) {
             echo $tt->getMandatoryMark('_groups_id_assign');
         }
-        Dropdown::show('Group', ['name'      => 'groups_id_assign',
-                                 'value'     => isset($values['groups_id_assign']) ? $values['groups_id_assign'] : 0,
-                                 'entity'    => $metademands->fields["entities_id"],
-                                 'condition' => ['is_assign' => 1]]);
+        Dropdown::show('Group', ['name' => 'groups_id_assign',
+            'value' => isset($values['groups_id_assign']) ? $values['groups_id_assign'] : 0,
+            'entity' => $metademands->fields["entities_id"],
+            'condition' => ['is_assign' => 1]]);
         echo "</td>";
         echo "</tr>";
         echo "</table>";
@@ -442,7 +454,7 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         echo "<th width='$colsize1%'>" . __('Description') . "</th>";
         echo "<td width='$colsize3%'>";
 
-        $rand      = mt_rand();
+        $rand = mt_rand();
         $rand_text = mt_rand();
         Html::initEditorSystem("content" . $rand, $rand, true);
         if (!isset($values['content'])) {
@@ -451,13 +463,13 @@ class PluginMetademandsTicketTask extends CommonDBChild {
             $content = $values['content'];
         }
         echo "<div id='content$rand_text'>";
-        Html::textarea(['name'              => 'content',
-                        'value'             => stripslashes($content),
-                        'id'                => 'content' . $rand,
-                        'rows'              => 3,
-                        'enable_richtext'   => true,
-                        'enable_fileupload' => false,
-                        'enable_images'     => false]);
+        Html::textarea(['name' => 'content',
+            'value' => stripslashes($content),
+            'id' => 'content' . $rand,
+            'rows' => 3,
+            'enable_richtext' => true,
+            'enable_fileupload' => false,
+            'enable_images' => false]);
         echo "</div>";
 
         if ($tasktype == PluginMetademandsTask::TICKET_TYPE
@@ -507,7 +519,7 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         $canedit = $metademands->can($metademands->getID(), UPDATE);
 
         // Check if metademand tasks has been already created
-        $solved                 = PluginMetademandsTicket::isTicketSolved($metademands->fields['id']);
+        $solved = PluginMetademandsTicket::isTicketSolved($metademands->fields['id']);
         if ($metademands->fields['maintenance_mode'] == 1) {
             $solved = true;
         }
@@ -519,13 +531,13 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         $tasks = new PluginMetademandsTask();
         $tasks->getFromDB($this->fields['plugin_metademands_tasks_id']);
 
-        $input                                = array_merge($tasks->fields, $this->fields);
+        $input = array_merge($tasks->fields, $this->fields);
         $input['plugin_metademands_tasks_id'] = $tasks->fields['id'];
-        $input['parent_tasks_id']             = $tasks->fields['plugin_metademands_tasks_id'];
+        $input['parent_tasks_id'] = $tasks->fields['plugin_metademands_tasks_id'];
 
         // Get Template
         $ticket = new Ticket();
-        $tt     = $ticket->getITILTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
+        $tt = $ticket->getITILTemplateToUse(false, $input['type'], $input['itilcategories_id'], $input['entities_id']);
 
         echo "<form name='form_ticket' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?_in_modal=1&id=$ID' enctype=\"multipart/form-data\">";
         PluginMetademandsTicketTask::showTicketTaskForm($metademands->fields['id'], $solved, $tasks->fields['type'], $input);
@@ -540,7 +552,7 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         echo "<div><table class='tab_cadre_fixe'>";
 
         $options['canedit'] = $canedit;
-        $options['candel']  = $solved;
+        $options['candel'] = $solved;
         $this->showFormButtons($options);
 
         return true;
@@ -548,8 +560,8 @@ class PluginMetademandsTicketTask extends CommonDBChild {
 
     /**
      * @param        $input
-     * @param bool   $showMessage
-     * @param bool   $webserviceMode
+     * @param bool $showMessage
+     * @param bool $webserviceMode
      * @param string $customMessage
      *
      * @return array|bool
@@ -564,7 +576,7 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         if (isset($input["plugin_metademands_metademands_id"])) {
             $meta->getFromDB($input["plugin_metademands_metademands_id"]);
 
-            $type    = $meta->getField("type");
+            $type = $meta->getField("type");
             $categid = 0;
             if (isset($input['itilcategories_id'])) {
                 $categid = $input['itilcategories_id'];
@@ -572,9 +584,9 @@ class PluginMetademandsTicketTask extends CommonDBChild {
 
             // Get Template
             $ticket = new Ticket();
-            $tt     = $ticket->getITILTemplateToUse(false, $type, $categid, $input['entities_id']);
+            $tt = $ticket->getITILTemplateToUse(false, $type, $categid, $input['entities_id']);
 
-            $message           = '';
+            $message = '';
             $mandatory_missing = [];
 
             if (count($tt->mandatory)) {
@@ -607,9 +619,9 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         if (!$webserviceMode) {
             return true;
         } else {
-            return ['ticket_template'  => $tt->fields['id'],
-                    'mandatory_fields' => $mandatory_missing,
-                    'message'          => $message];
+            return ['ticket_template' => $tt->fields['id'],
+                'mandatory_fields' => $mandatory_missing,
+                'message' => $message];
         }
     }
 
@@ -634,9 +646,9 @@ class PluginMetademandsTicketTask extends CommonDBChild {
                 $type = $input["type"];
             }
             if (!empty($input["itilcategories_id"])) {
-                $dbu   = new DbUtils();
+                $dbu = new DbUtils();
                 $metas = $dbu->getAllDataFromTable('glpi_plugin_metademands_metademands', ["`itilcategories_id`" => $input["itilcategories_id"],
-                                                                                           "`type`"              => $type]);
+                    "`type`" => $type]);
 
                 if (!empty($metas)) {
                     $input = [];
@@ -660,7 +672,7 @@ class PluginMetademandsTicketTask extends CommonDBChild {
         global $DB;
 
         if ($tasks_id > 0) {
-            $query  = "SELECT `glpi_plugin_metademands_metademands`.*
+            $query = "SELECT `glpi_plugin_metademands_metademands`.*
                   FROM `glpi_plugin_metademands_tickettasks`
                   LEFT JOIN `glpi_plugin_metademands_tasks`
                     ON (`glpi_plugin_metademands_tickettasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
