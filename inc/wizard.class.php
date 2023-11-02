@@ -2851,6 +2851,8 @@ class PluginMetademandsWizard extends CommonDBTM
 
         if (!empty($options['resources_id'])) {
             Html::redirect(PLUGIN_RESOURCES_WEBDIR . "/front/wizard.form.php");
+        } else if(isset($options['collect_metademands']) && $options['collect_metademands'] == true){
+            return true;
         } else {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
