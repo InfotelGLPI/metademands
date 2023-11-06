@@ -128,7 +128,8 @@ function plugin_init_metademands()
         }
 
         if (Session::haveRight("plugin_metademands", READ)
-            && !Plugin::isPluginActive('servicecatalog') && Session::haveRight("plugin_metademands_in_menu",READ)) {
+            && !Plugin::isPluginActive('servicecatalog')
+            && !Session::haveRight("plugin_metademands_in_menu",READ)) {
             $PLUGIN_HOOKS['helpdesk_menu_entry']['metademands'] = PLUGIN_METADEMANDS_DIR_NOFULL . '/front/wizard.form.php';
             $PLUGIN_HOOKS['helpdesk_menu_entry_icon']['metademands'] = PluginMetademandsMetademand::getIcon();
         }
