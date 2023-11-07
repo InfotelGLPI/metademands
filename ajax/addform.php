@@ -57,6 +57,14 @@ if (isset($_POST['save_form'])) {
         for ($i = 0; $i < $nblines; $i++) {
             $_POST['field']   = $post;
 
+            if (isset($_POST['_filename'])) {
+                foreach ($_POST['_filename'] as $key => $filename) {
+                    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['uploaded_files']['_prefix_filename'][] = $_POST['_prefix_filename'][$key];
+                    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['uploaded_files']['_tag_filename'][] = $_POST['_tag_filename'][$key];
+                    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']['uploaded_files']['_filename'][] = $_POST['_filename'][$key];
+                }
+            }
+
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {

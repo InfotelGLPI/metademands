@@ -59,7 +59,6 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $value = '';
         if (isset($data['value'])) {
-            Toolbox::logInfo($data['value']);
             $value = $data['value'];
         }
 
