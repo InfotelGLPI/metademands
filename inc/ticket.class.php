@@ -264,6 +264,7 @@ class PluginMetademandsTicket extends CommonDBTM
                 $ticket->fields['id'],
                 $ticket_metademand_data['plugin_metademands_metademands_id'],
                 [],
+                true,
                 true
             );
 
@@ -272,13 +273,25 @@ class PluginMetademandsTicket extends CommonDBTM
                 foreach ($tickets_found as $values) {
                     $job = new Ticket();
                     if (!empty($values['tickets_id'])) {
+                        $ko = 0;
+                        $ticket_tasks      = new PluginMetademandsTicket_Task();
+                        if ($ticket_tasks->getFromDBByCrit(['tickets_id' => $values['tickets_id']])) {
+                            $task = new PluginMetademandsTask();
+                            if ($task->getFromDB($ticket_tasks->fields['plugin_metademands_tasks_id'])) {
+//                                Toolbox::logInfo($task->fields['block_parent_ticket_resolution']);
+                                if ($task->fields['block_parent_ticket_resolution'] == 1) {
+                                    $ko = 1;
+                                }
+                            }
+                        }
+
                         $job->getFromDB($values['tickets_id']);
                         // No resolution or close if a son ticket is not solved or closed
                         if ((!isset($job->fields['status']))
                           || ($job->fields['status'] != Ticket::SOLVED
-                          && $job->fields['status'] != Ticket::CLOSED)) {
+                          && $job->fields['status'] != Ticket::CLOSED) && $ko == 1) {
                             if ($with_message) {
-                                Session::addMessageAfterRedirect(__('The demand cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
+                                Session::addMessageAfterRedirect(__('The ticket cannot be resolved or closed until all child tickets are not resolved', 'metademands'), false, ERROR);
                             }
                             $ticket->input = ['id' => $ticket->fields['id']];
                             return false;
@@ -301,7 +314,7 @@ class PluginMetademandsTicket extends CommonDBTM
     * @return array
     * @throws \GlpitestSQLError
     */
-    public static function getSonTickets($tickets_id, $metademands_id, $ticket_task_data = [], $recursive = false)
+    public static function getSonTickets($tickets_id, $metademands_id, $ticket_task_data = [], $recursive = false, $seesolved = false)
     {
         global $DB;
 
@@ -315,9 +328,12 @@ class PluginMetademandsTicket extends CommonDBTM
                  ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id`)
                LEFT JOIN `glpi_tickets` ON (`glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id`)
                WHERE `glpi_tickets`.`is_deleted` = 0 
-                 AND `glpi_tickets`.`status` NOT IN (".Ticket::SOLVED.", ".Ticket::CLOSED.") 
                  AND `glpi_plugin_metademands_tickets_metademands`.`parent_tickets_id` = " . $tickets_id . " 
                AND `glpi_plugin_metademands_tickets_metademands`.`tickets_id` != " . $tickets_id;
+
+            if ($seesolved == false) {
+                $query .= " AND `glpi_tickets`.`status` NOT IN (".Ticket::SOLVED.", ".Ticket::CLOSED.") ";
+            }
             $result = $DB->query($query);
 
             if ($DB->numrows($result)) {
@@ -340,7 +356,8 @@ class PluginMetademandsTicket extends CommonDBTM
                             $data['tickets_id'],
                             $data['metademands_id'],
                             $ticket_task_data,
-                            $recursive
+                            $recursive,
+                            $seesolved
                         );
                     }
                 }
@@ -354,15 +371,18 @@ class PluginMetademandsTicket extends CommonDBTM
                   FROM glpi_plugin_metademands_tickets_tasks
                   LEFT JOIN `glpi_tickets` ON (`glpi_tickets`.`id` =  `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id`)
                   WHERE `glpi_plugin_metademands_tickets_tasks`.`parent_tickets_id` = " . $tickets_id . " 
-                  AND `glpi_tickets`.`is_deleted` = 0
-                  AND `glpi_tickets`.`status` NOT IN (".Ticket::SOLVED.", ".Ticket::CLOSED.")";
+                  AND `glpi_tickets`.`is_deleted` = 0";
+
+            if ($seesolved == false) {
+                $query .= " AND `glpi_tickets`.`status` NOT IN (".Ticket::SOLVED.", ".Ticket::CLOSED.") ";
+            }
             $result = $DB->query($query);
 
             if ($DB->numrows($result)) {
                 while ($data = $DB->fetchAssoc($result)) {
                     $data['type']       = PluginMetademandsTask::TICKET_TYPE;
                     $ticket_task_data[] = $data;
-                    $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive);
+                    $ticket_task_data   = self::getSonTickets($data['tickets_id'], 0, $ticket_task_data, $recursive, $seesolved);
                 }
             }
 

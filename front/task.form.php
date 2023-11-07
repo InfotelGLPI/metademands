@@ -142,6 +142,7 @@ if (isset($_POST["add"])) {
         $input['name'] = $_POST['name'];
         $input['formatastable'] = $_POST['formatastable'];
         $input['useBlock'] = $_POST['useBlock'];
+        $input['block_parent_ticket_resolution'] = $_POST['block_parent_ticket_resolution'];
         $input['id'] = $tasks_id;
         $input['plugin_metademands_tasks_id'] = $parent_task;
         if (!empty($input)) {

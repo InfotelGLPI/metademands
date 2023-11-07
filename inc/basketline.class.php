@@ -111,28 +111,23 @@ class PluginMetademandsBasketline extends CommonDBTM
                           $('#submitOrder').click(function() {
                              var meta_id = $meta_id;
                              $.ajax({
-                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
                                type: 'POST',
                                data: $post,
                                success: function (response) {
-                                  $('#ajax_loader').hide();
-                                  if (response == 1) {
-                                     window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
-                                  } else {
-                                     $.ajax({
-                                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                                        type: 'POST',
-                                        data: $post,
-                                        success: function (response) {
-                                           window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
-                                        },
-                                        error: function (xhr, status, error) {
-                                           console.log(xhr);
-                                           console.log(status);
-                                           console.log(error);
-                                        }
-                                     });
-                                  }
+                                  $.ajax({
+                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                                            type: 'POST',
+                                            data: $post,
+                                            success: function (response) {
+                                               window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
+                                            },
+                                            error: function (xhr, status, error) {
+                                               console.log(xhr);
+                                               console.log(status);
+                                               console.log(error);
+                                            }
+                                         });
                                },
                                error: function (xhr, status, error) {
                                   console.log(xhr);

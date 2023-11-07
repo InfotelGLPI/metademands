@@ -74,6 +74,49 @@ class PluginMetademandsDateinterval extends CommonDBTM
 
     }
 
+    static function showFieldCustomFields($params)
+    {
+
+        echo "<tr><td>";
+        echo "<table class='metademands_show_custom_fields'>";
+        echo "<tr><td>";
+        echo __('Day greater or equal to now', 'metademands');
+        echo "</td><td>";
+        $use_future_date = $params['use_future_date'];
+        $checked = '';
+        if (isset($use_future_date) && !empty($use_future_date)) {
+            $checked = 'checked';
+        }
+        echo "<input type='checkbox' name='use_future_date' value='1' $checked>";
+        echo "</td></tr>";
+        echo "<tr><td>";
+        echo __('Define the default date', 'metademands');
+        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+        echo '</td>';
+        echo "<td>";
+
+        Dropdown::showYesNo('use_date_now', $params['use_date_now']);
+        echo "</td></tr>";
+
+        echo "<tr><td>";
+        echo __('Additional number day to the default date', 'metademands');
+        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
+        echo '</td>';
+        echo "<td>";
+        $optionNumber = [
+            'value' => $params['additional_number_day'],
+            'min'   => 0,
+            'max'   => 500,
+        ];
+
+        Dropdown::showNumber('additional_number_day', $optionNumber);
+        echo "</td></tr>";
+
+        echo "</table>";
+        echo "</td></tr>";
+
+    }
+
     public static function checkMandatoryFields($value = [], $fields = [])
     {
 

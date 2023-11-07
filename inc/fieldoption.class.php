@@ -1096,11 +1096,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
     {
         global $PLUGIN_HOOKS;
 
-        if (isset($data['options'])) {
-            $check_values = $data['options'];
+//        if (isset($data['options'])) {
+//            $check_values = $data['options'];
 
-            if (is_array($check_values)) {
-                if (count($check_values) > 0) {
+//            if (is_array($check_values)) {
+//                if (count($check_values) > 0) {
 
                     switch ($data['type']) {
                         case 'title':
@@ -1111,6 +1111,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             break;
                         case 'text':
                             PluginMetademandsText::fieldsHiddenScript($data);
+                            break;
                         case 'textarea':
                             PluginMetademandsTextarea::fieldsHiddenScript($data);
                             break;
@@ -1159,24 +1160,24 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             if (isset($PLUGIN_HOOKS['metademands'])) {
                                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                                     if (Plugin::isPluginActive($plug)) {
-                                        $case = self::addPluginFieldHiddenLink($plug, $data, $check_values);
+                                        $case = self::addPluginFieldHiddenLink($plug, $data);
                                         return $case;
                                     }
                                 }
                             }
                             break;
                     }
-                }
-            }
-        }
+//                }
+//            }
+//        }
     }
 
     public static function blocksHiddenScript($data)
     {
         global $PLUGIN_HOOKS;
 
-        if (isset($data['options'])) {
-            $check_values = $data['options'];
+//        if (isset($data['options'])) {
+//            $check_values = $data['options'];
             switch ($data['type']) {
                 case 'title':
                     break;
@@ -1235,14 +1236,14 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     if (isset($PLUGIN_HOOKS['metademands'])) {
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                             if (Plugin::isPluginActive($plug)) {
-                                $case = self::addPluginBlockHiddenLink($plug, $data, $check_values);
+                                $case = self::addPluginBlockHiddenLink($plug, $data);
                                 return $case;
                             }
                         }
                     }
                     break;
             }
-        }
+//        }
     }
 
     public static function checkboxScript($data)
@@ -1274,17 +1275,19 @@ class PluginMetademandsFieldOption extends CommonDBChild
         $script = '';
         $hidden_blocks = [];
         $childs = [];
+        $childs_blocks = [];
         foreach ($check_values as $idc => $check_value) {
-            $hidden_blocks[] = $check_value['hidden_block'];
+            if ($check_value['hidden_block'] > 0) {
+                $hidden_blocks[] = $check_value['hidden_block'];
+            }
             $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
         }
-        if (count($childs_blocks) > 0) {
-            foreach ($childs_blocks as $childs_block) {
+
+        if (isset($childs_blocks) && count($childs_blocks) > 0) {
+            foreach ($childs_blocks as $k => $childs_block) {
                 if (is_array($childs_block)) {
                     foreach ($childs_block as $childs_bloc) {
-                        if ($childs_bloc[0] > 0) {
-                            $childs[] =  $childs_bloc[0];
-                        }
+                        $childs[] =  $childs_bloc;
                     }
                 }
             }
@@ -1292,21 +1295,147 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         $json_hidden_blocks = json_encode($hidden_blocks);
         $json_childs_blocks = json_encode($childs);
+
         $script .= "var hidden_blocks = {$json_hidden_blocks};
-                    var child_blocks = {$json_childs_blocks};";
-        $script .= "if ($(this).val() >  0) {
-                            //by default - hide all
-                            $.each( hidden_blocks, function( key, value ) {
-                                tohide[value] = true;
-                            });
-                            $.each( child_blocks, function( key, value ) {
-                                tohide[value] = true;
-                            }); 
-                  }";
+                    var child_blocks = {$json_childs_blocks};
+                    var tohideblock = {};";
+        $script .= "//by default - hide all
+                    $.each( hidden_blocks, function( key, value ) {
+                        tohideblock[value] = true;
+                    });
+                    $.each( child_blocks, function( key, value ) {
+                        tohideblock[value] = true;
+                    });
+                    $.each(tohideblock, function( key, value ) {
+                                if (value == true) {
+                                    $('[bloc-id=\"bloc'+key+'\"]').hide();
+                                    $.each(tohideblock, function( key, value ) {
+                                        $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
+                                             switch(this.type) {
+                                                case 'password':
+                                                case 'text':
+                                                case 'textarea':
+                                                case 'file':
+                                                case 'date':
+                                                case 'number':
+                                                case 'tel':
+                                                case 'email':
+//                                                    jQuery(this).val('');
+//                                                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+//                                                        tinymce.get(this.id).setContent('');
+//                                                    }
+                                                    break;
+                                                case 'select-one':
+                                                case 'select-multiple':
+//                                                    jQuery(this).val('0').trigger('change');
+//                                                    jQuery(this).val('0');
+                                                    break;
+                                                case 'checkbox':
+                                                case 'radio':
+//                                                     this.checked = false;
+                                                     var checkname = this.name;
+                                                     $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                            }
+                                            jQuery(this).removeAttr('required');
+//                                            regex = /multiselectfield.*_to/g;
+//                                            totest = this.id;
+//                                            found = totest.match(regex);
+//                                            if(found !== null) {
+//                                              regex = /multiselectfield[0-9]*/;
+//                                               found = totest.match(regex);
+//                                               $('#'+found[0]+'_leftAll').click();
+//                                            }
+                                        });
+                                    });
+                                }
+                            });";
 
         return $script;
     }
 
+
+    public static function emptyAllblockbyDefault($check_values)
+    {
+
+        $script = '';
+        $hidden_blocks = [];
+        $childs = [];
+        $childs_blocks = [];
+        foreach ($check_values as $idc => $check_value) {
+            if ($check_value['hidden_block'] > 0) {
+                $hidden_blocks[] = $check_value['hidden_block'];
+            }
+            $childs_blocks[] = json_decode($check_value['childs_blocks'], true);
+        }
+
+        if (isset($childs_blocks) && count($childs_blocks) > 0) {
+            foreach ($childs_blocks as $k => $childs_block) {
+                if (is_array($childs_block)) {
+                    foreach ($childs_block as $childs_bloc) {
+                        $childs[] =  $childs_bloc;
+                    }
+                }
+            }
+        }
+
+        $json_hidden_blocks = json_encode($hidden_blocks);
+        $json_childs_blocks = json_encode($childs);
+
+        $script .= "var hidden_blocks = {$json_hidden_blocks};
+                    var child_blocks = {$json_childs_blocks};
+                    var tohideblock = {};";
+        $script .= "//by default - hide all
+                    $.each( hidden_blocks, function( key, value ) {
+                        tohideblock[value] = true;
+                    });
+                    $.each( child_blocks, function( key, value ) {
+                        tohideblock[value] = true;
+                    });
+                    $.each(tohideblock, function( key, value ) {
+                                if (value == true) {
+                                    $.each(tohideblock, function( key, value ) {
+                                        $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
+                                             switch(this.type) {
+                                                case 'password':
+                                                case 'text':
+                                                case 'textarea':
+                                                case 'file':
+                                                case 'date':
+                                                case 'number':
+                                                case 'tel':
+                                                case 'email':
+                                                    jQuery(this).val('');
+                                                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
+                                                        tinymce.get(this.id).setContent('');
+                                                    }
+                                                    break;
+                                                case 'select-one':
+                                                case 'select-multiple':
+                                                    jQuery(this).val('0').trigger('change');
+                                                    jQuery(this).val('0');
+                                                    break;
+                                                case 'checkbox':
+                                                case 'radio':
+                                                     this.checked = false;
+                                                     var checkname = this.name;
+                                                     $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                            }
+                                            jQuery(this).removeAttr('required');
+                                            regex = /multiselectfield.*_to/g;
+                                            totest = this.id;
+                                            found = totest.match(regex);
+                                            if(found !== null) {
+                                              regex = /multiselectfield[0-9]*/;
+                                               found = totest.match(regex);
+                                               $('#'+found[0]+'_leftAll').click();
+                                            }
+                                        });
+                                    });
+                                }
+                            });";
+
+        return $script;
+    }
 
     public static function setMandatoryBlockFields($metaid, $blockid)
     {
@@ -1595,12 +1724,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
     }
 
 
-//    /**
-//     * Load fields from plugins
-//     *
-//     * @param $plug
-//     */
-    public static function addPluginFieldHiddenLink($plug,$data, $check_values)
+    /**
+     * Load fields from plugins
+     *
+     * @param $plug
+     */
+    public static function addPluginFieldHiddenLink($plug, $data)
     {
         global $PLUGIN_HOOKS;
 
@@ -1612,6 +1741,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 if (!class_exists($pluginclass)) {
                     continue;
                 }
+                $check_values = $data['options'] ?? [];
                 $form[$pluginclass] = [];
                 $item = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'addFieldHiddenLink'])) {
@@ -1622,7 +1752,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     }
 
-    public static function addPluginBlockHiddenLink($plug,$data, $check_values)
+    public static function addPluginBlockHiddenLink($plug, $data)
     {
         global $PLUGIN_HOOKS;
 
@@ -1634,6 +1764,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 if (!class_exists($pluginclass)) {
                     continue;
                 }
+                $check_values = $data['options'] ?? [];
                 $form[$pluginclass] = [];
                 $item = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'addBlockHiddenLink'])) {

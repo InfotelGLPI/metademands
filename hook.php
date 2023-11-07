@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.3.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.7.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -369,6 +369,16 @@ function plugin_metademands_install() {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.3.sql");
     }
 
+    //version 3.3.4
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden")) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.4.sql");
+    }
+
+    //version 2.7.9
+    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "block_parent_ticket_resolution")) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.7.sql");
+    }
+
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {
         mkdir($rep_files_metademands);
@@ -520,12 +530,38 @@ function plugin_metademands_uninstall() {
 //   }
 //}
 
-function plugin_metademands_getDropdown()
-{
 
-    return [
-        "PluginMetademandsBasketobjecttype" => PluginMetademandsBasketobjecttype::getTypeName(2),
-    ];
+function plugin_metademands_item_purge($item) {
+
+    if ($item instanceof Ticket) {
+        $temp = new PluginMetademandsForm();
+        $temp->deleteByCriteria(['items_id' =>  $item->getID(), 'itemtype' => 'Ticket']);
+
+        $temp = new PluginMetademandsTicket_Task();
+        $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
+
+        $temp = new PluginMetademandsTicket_Task();
+        $temp->deleteByCriteria(['parent_tickets_id' =>  $item->getID()]);
+
+        $temp = new PluginMetademandsInterticketfollowup();
+        $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
+
+        $temp = new PluginMetademandsInterticketfollowup();
+        $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
+
+        $temp = new PluginMetademandsMetademandValidation();
+        $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
+
+        $temp = new PluginMetademandsTicket_Field();
+        $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
+
+        $temp = new PluginMetademandsTicket_Metademand();
+        $temp->deleteByCriteria(['tickets_id' =>  $item->getID()]);
+
+        $temp = new PluginMetademandsTicket_Metademand();
+        $temp->deleteByCriteria(['parent_tickets_id' =>  $item->getID()]);
+    }
+    return true;
 }
 
 // Define dropdown relations
@@ -553,10 +589,14 @@ function plugin_metademands_getDatabaseRelations() {
                                                           "glpi_plugin_metademands_drafts"                => "plugin_metademands_metademands_id",
                                                           "glpi_plugin_metademands_configsteps"           => "plugin_metademands_metademands_id"],
 
-                "glpi_tickets"                   => ["glpi_plugin_metademands_tickets_fields"        => "tickets_id",
-                                                     "glpi_plugin_metademands_metademandvalidations" => "tickets_id",
-                                                     "glpi_plugin_metademands_tickets_tasks"         => "tickets_id",
-                                                     "glpi_plugin_metademands_tickets_metademands"   => "tickets_id",
+                "glpi_tickets"                   => [
+//                    "glpi_plugin_metademands_tickets_fields"        => "tickets_id",
+//                                                     "glpi_plugin_metademands_metademandvalidations" => "tickets_id",
+//                                                     "glpi_plugin_metademands_tickets_tasks"         => "tickets_id",
+//                                                     "glpi_plugin_metademands_tickets_tasks"         => "parent_tickets_id",
+//                                                     "glpi_plugin_metademands_tickets_metademands"   => "tickets_id",
+//                                                     "glpi_plugin_metademands_tickets_metademands"   => "parent_tickets_id",
+//                                                     "glpi_plugin_metademands_interticketfollowups"   => "tickets_id",
                 ],
                 "glpi_users"                     => ["glpi_plugin_metademands_basketlines"           => "users_id",
                                                      "glpi_plugin_metademands_metademandvalidations" => "users_id",

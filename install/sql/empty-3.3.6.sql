@@ -127,6 +127,7 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `use_richtext`                      tinyint                         NOT NULL DEFAULT '1',
     `icon`                              varchar(255)                             DEFAULT NULL,
     `readonly`                          tinyint                                  DEFAULT 0,
+    `hidden`                            tinyint                                  DEFAULT 0,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`),
     KEY `plugin_metademands_fields_id` (`plugin_metademands_fields_id`)
@@ -218,6 +219,7 @@ DROP TABLE IF EXISTS `glpi_plugin_metademands_tickettasks`;
 CREATE TABLE `glpi_plugin_metademands_tickettasks`
 (
     `id`                          int unsigned NOT NULL AUTO_INCREMENT,
+    `entities_id`                 int unsigned NOT NULL           DEFAULT '0',
     `content`                     text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `itilcategories_id`           int unsigned                    DEFAULT '0',
     `type`                        int          NOT NULL           DEFAULT '0',

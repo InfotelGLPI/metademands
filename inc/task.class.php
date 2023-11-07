@@ -265,6 +265,7 @@ class PluginMetademandsTask extends CommonDBChild {
                         'name' => $this->fields['name'],
                         'block_use' => json_decode($this->fields['block_use'], true),
                         'useBlock' => $this->fields['useBlock'],
+                        'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
                         'formatastable' => $this->fields['formatastable'],
                         'entities_id' => $this->fields['entities_id'],
                         'is_recursive' => $this->fields['is_recursive'],
@@ -290,6 +291,7 @@ class PluginMetademandsTask extends CommonDBChild {
 //                        'name' => $this->fields['name'],
 //                        'block_use' => json_decode($this->fields['block_use'], true),
 //                        'useBlock' => $this->fields['useBlock'],
+//                        'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
 //                        'formatastable' => $this->fields['formatastable'],
 //                        'entities_id' => $this->fields['entities_id'],
 //                        'is_recursive' => $this->fields['is_recursive'],
@@ -486,6 +488,7 @@ class PluginMetademandsTask extends CommonDBChild {
             echo "<th class='center b'>" . __('Block to use', 'metademands') . "</th>";
             echo "<th class='center b'>" . __('Use block', 'metademands') . "</th>";
             echo "<th class='center b'>" . __('Format the description of the childs ticket as a table', 'metademands') . "</th>";
+            echo "<th class='center b'>" . __('Block parent ticket resolution', 'metademands') . "</th>";
             echo "</tr>";
 
 //            Toolbox::logInfo($tasks);
@@ -685,6 +688,13 @@ class PluginMetademandsTask extends CommonDBChild {
                     echo Dropdown::getYesNo($value['formatastable']);
                 }
                 echo "</td>";
+                echo "<td $color_class>";
+                if ($value['type'] == self::TASK_TYPE) {
+                    echo "---";
+                } else {
+                    echo Dropdown::getYesNo($value['block_parent_ticket_resolution']);
+                }
+                echo "</td>";
                 echo "</tr>";
             }
             echo "</table>";
@@ -735,6 +745,7 @@ class PluginMetademandsTask extends CommonDBChild {
                        `glpi_plugin_metademands_tasks`.`block_use`,
                        `glpi_plugin_metademands_tasks`.`formatastable`,
                        `glpi_plugin_metademands_tasks`.`useBlock`,
+                       `glpi_plugin_metademands_tasks`.`block_parent_ticket_resolution`,
                        `glpi_plugin_metademands_tickettasks`.`itilcategories_id`,
                        `glpi_plugin_metademands_tickettasks`.`content`,
                        `glpi_plugin_metademands_tickettasks`.`status`,

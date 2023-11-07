@@ -100,7 +100,7 @@ class PluginMetademandsNumber extends CommonDBTM
 
         echo "<td>";
         echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
-        $opt                   = ['value'         => $step];
+        $opt                   = ['value'         => $step, 'min' => 1];
         Dropdown::showNumber("custom_values[2]", $opt);
         echo "</td>";
 

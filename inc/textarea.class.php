@@ -26,6 +26,8 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Toolbox\Sanitizer;
+
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
@@ -38,6 +40,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsTextarea extends CommonDBTM
 {
 
+    private $uploads = [];
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -57,24 +60,45 @@ class PluginMetademandsTextarea extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
-
         $value = Html::cleanPostForTextArea($value);
+        $self = new self();
         $required = "";
         if ($data['is_mandatory'] == 1) {
             $required = "required='required'";
         }
         if ($data['use_richtext'] == 1) {
-            $field = Html::textarea(['name' => $namefield . "[" . $data['id'] . "]",
+            $rand = mt_rand();
+            $name = 'field['. $data['id'] .']';
+            $field = Html::textarea([
+                'name' => $name,
                 'value' => $value,
-                //                                        'editor_id'         => $namefield . "[" . $data['id'] . "]",
+                'rand' => $rand,
+                'editor_id' => $namefield . $data['id'],
                 'enable_richtext' => true,
                 'enable_fileupload' => false,
-                //TODO add param
-                'enable_images' => true,
+//                'enable_images' => true,
                 'display' => false,
                 'required' => ($data['is_mandatory'] ? "required" : ""),
                 'cols' => 80,
-                'rows' => 3]);
+                'rows' => 3,
+//                'uploads' => $self->uploads
+            ]);
+            $field .=  '<div style="display:none;">';
+            $field .= Html::file(['editor_id'    => $namefield . $data['id'],
+                'filecontainer' => "filecontainer$rand",
+                'onlyimages'    => true,
+                'showtitle'     => false,
+                'multiple'      => true,
+                'display'       => false]);
+            $field .=  '</div>';
+            $field .="<style>
+                        .fileupload.only-uploaded-files {
+                            display: none;
+                        }
+
+                     </style>";
+
+
         } else {
 
             if (!empty($comment)) {
@@ -95,15 +119,21 @@ class PluginMetademandsTextarea extends CommonDBTM
 
     static function getParamsValueToCheck($fieldoption, $item, $params)
     {
+
         echo "<tr>";
         echo "<td>";
         echo __('If field empty', 'metademands');
         echo "</td>";
         echo "<td>";
-        self::showValueToCheck($fieldoption, $params);
+        if ($item->fields['use_richtext'] == 0) {
+            self::showValueToCheck($fieldoption, $params);
+        } else {
+            echo __('Not available with Rich text option', 'metademands');
+        }
         echo "</td>";
-
-        echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 0, 1);
+        if ($item->fields['use_richtext'] == 0) {
+            echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 0, 1);
+        }
     }
 
     static function showValueToCheck($item, $params)
@@ -117,7 +147,8 @@ class PluginMetademandsTextarea extends CommonDBTM
             }
         }
         $options[1] = __('No');
-        $options[2] = __('Yes');
+        //cannot use it
+//        $options[2] = __('Yes');
         Dropdown::showFromArray("check_value", $options, ['value' => $params['check_value'], 'used' => $already_used]);
     }
 
@@ -145,8 +176,8 @@ class PluginMetademandsTextarea extends CommonDBTM
 
     static function fieldsHiddenScript($data)
     {
-
-        $check_values = $data['options'];
+        $metaid = $data['plugin_metademands_metademands_id'];
+        $check_values = $data['options'] ?? [];
         $id = $data["id"];
 
         $script = "";
@@ -156,6 +187,19 @@ class PluginMetademandsTextarea extends CommonDBTM
         if ($debug) {
             $script = "console.log('fieldsHiddenScript-textarea $id');";
         }
+
+        //if reload form on loading
+        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    if ($fieldSession != "") {
+                        $script2 .= "$('[name=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                    }
+                }
+            }
+        }
+
         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         foreach ($check_values as $idc => $check_value) {
@@ -171,9 +215,15 @@ class PluginMetademandsTextarea extends CommonDBTM
                                                     ";
                 $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
-                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-                    && $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != "") {
-                    $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                    if (is_array($session_value)) {
+                        foreach ($session_value as $k => $fieldSession) {
+                            if ($fieldSession != "" && $hidden_link > 0) {
+                                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                            }
+                        }
+                    }
                 }
             } else {
                 $script .= "if ($(this).val().trim().length < 1) {
@@ -185,13 +235,19 @@ class PluginMetademandsTextarea extends CommonDBTM
 
                 $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
-                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-                    && $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == "") {
-                    $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                    if (is_array($session_value)) {
+                        foreach ($session_value as $k => $fieldSession) {
+                            if ($fieldSession == "" && $hidden_link > 0) {
+                                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                            }
+                        }
+                    }
                 }
             }
-            $script .= "});";
         }
+        $script .= "});";
         //Initialize id default value
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
@@ -212,8 +268,28 @@ class PluginMetademandsTextarea extends CommonDBTM
 
     public static function blocksHiddenScript($data)
     {
-        $check_values = $data['options'];
+        $metaid = $data['plugin_metademands_metademands_id'];
+        $check_values = $data['options'] ?? [];
         $id = $data["id"];
+
+        //add childs by idc
+        $childs_by_checkvalue = [];
+        foreach ($check_values as $idc => $check_value) {
+            if (isset($check_value['childs_blocks']) && $check_value['childs_blocks'] != null) {
+                $childs_blocks = json_decode($check_value['childs_blocks'], true);
+                if (isset($childs_blocks)
+                    && is_array($childs_blocks)
+                    && count($childs_blocks) > 0) {
+                    foreach ($childs_blocks as $childs) {
+                        if (is_array($childs)) {
+                            foreach ($childs as $child) {
+                                $childs_by_checkvalue[$idc][] = $child;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         $script = "";
         $script2 = "";
@@ -222,108 +298,91 @@ class PluginMetademandsTextarea extends CommonDBTM
         if ($debug) {
             $script = "console.log('blocksHiddenScript-textarea $id');";
         }
-        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_block = $check_value['hidden_block'];
-            if (isset($idc) && $idc == 1) {
-                $script .= "if ($(this).val().trim().length < 1) {
-                                $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
-                $script .= "} else {
-                             $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
-                          }";
+        if ($data['use_richtext'] == 1) {
 
-                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+//            $script .= "if (typeof tinymce !== 'undefined') {
+//                            tinymce.init({
+//                                selector: '#field$id',
+//                                setup: function (editor) {
+//                                    editor.on('change', function () {
+//                                        // Handle the change event here
+//                                        console.log('Content has changed.');
+//                                    });
+//                                }
+//                            });
+//                        }";
+        } else {
+            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-                    && $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != "") {
-                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                }
-            } else {
-                $script .= "if($(this).val().trim().length < 1){
-                               $('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
-                            } else {
-                               $('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
-                $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
-                $script .= " }";
+            $script .= "var tohide = {};";
 
-                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+            //by default - hide all
+            $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
 
-                if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-                    && $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == "") {
-                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
-                }
-            }
-            //                                    }
-            $childs_blocks = [];
-            if (isset($data['options'])) {
-                $opts = $data['options'];
-                foreach ($opts as $optid => $opt) {
-                    if ($optid == $idc) {
-                        if (!empty($opt['childs_blocks'])) {
-                            $childs_blocks[] = json_decode($opt['childs_blocks'], true);
-                        }
-                    }
-                }
+            $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
 
-                if (is_array($childs_blocks) && count($childs_blocks) > 0) {
-                    if (isset($idc) && $idc == 1) {
-                        $script .= "if ($(this).val().trim().length < 1) {";
-                        foreach ($childs_blocks as $childs) {
-                            if (is_array($childs)) {
-                                foreach ($childs as $k => $v) {
-                                    if (!is_array($v)) {
-                                        $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($v);
-                                    }
-                                }
-                            }
-                        }
+            foreach ($check_values as $idc => $check_value) {
+                $blocks_idc = [];
+                $hidden_block = $check_value['hidden_block'];
 
-                        $script .= "}";
-                    } else {
-                        $script .= "if ($(this).val().trim().length >= 1) {";
-                        foreach ($childs_blocks as $childs) {
-                            if (is_array($childs)) {
-                                foreach ($childs as $k => $v) {
-                                    if (!is_array($v)) {
-                                        $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($v);
-                                    }
-                                }
-                            }
-                        }
-                        $script .= "}";
-                    }
+                if (isset($idc) && $idc == 1) {
 
-                    foreach ($childs_blocks as $childs) {
-                        if (is_array($childs)) {
-                            foreach ($childs as $k => $v) {
-                                if ($v > 0) {
-                                    $hiddenblocks[] = $v;
-                                    $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
+                    $script .= "if ($(this).val().trim().length > 0) {";
+                    $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+
+                    $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
+                    $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+
+                    if (is_array($childs_by_checkvalue)) {
+                        foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                            if ($idc == $k) {
+                                foreach ($childs_blocks as $childs) {
+                                    $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                     " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $childs);
                                 }
                             }
                         }
                     }
-                }
-            }
-            //Initialize id default value
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
 
-                foreach ($default_values as $k => $v) {
-                    if ($v == 1) {
-                        if ($idc == $k) {
-                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                    if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                        $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                        if (is_array($session_value)) {
+                            foreach ($session_value as $k => $fieldSession) {
+                                if ($fieldSession != "" && $hidden_block > 0) {
+                                    $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                                }
+                            }
+                        } else {
+                            if ($session_value == $idc && $hidden_block > 0) {
+                                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
+                            }
                         }
                     }
+
+                    $script .= " } else {";
+
+                    //specific - one value
+                    $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+
+                    $script .= " }";
+
+//                    $script .= " }";
+//
+//                    $script .= "if ($(this).val() != $idc) {";
+//                    if (is_array($blocks_idc) && count($blocks_idc) > 0) {
+//                        foreach ($blocks_idc as $k => $block_idc) {
+//                            $script .= "$('[bloc-id =\"bloc" . $block_idc . "\"]').hide();";
+//                        }
+//                    }
+//                    $script .= " }";
                 }
             }
+            $script .= "fixButtonIndicator();";
+            $script .= "});";
         }
-        $script .= "fixButtonIndicator();";
-        $script .= "});";
-
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+
     }
 
     /**

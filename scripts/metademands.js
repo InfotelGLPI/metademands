@@ -210,21 +210,22 @@
             $('#' + toupdate).html('*');
             id_field = toupdate.substring(22);
 
+            //Must use good type no observe field type but id_field type
             // if ($("[name='field[" + id_field + "]']").length > 0) {
-               if (type == 'checkbox') {
-                  $("[check^='field[" + id_field + "]']").attr('required', 'required');
-                  $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
-                  $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');
-               } else if (type == 'radio') {
-                  $("[name^='field[" + id_field + "]']").attr('required', 'required');
-                  $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
-                  $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');
-               } else {
+            //    if (type == 'checkbox') {
+            //       $("[check^='field[" + id_field + "]']").attr('required', 'required');
+            //       $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
+            //       $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');
+            //    } else if (type == 'radio') {
+            //       $("[name^='field[" + id_field + "]']").attr('required', 'required');
+            //       $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
+            //       $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');
+            //    } else {
                   $("[check^='field[" + id_field + "]']").attr('required', 'required');
                   $("[name='field[" + id_field + "]']").attr('required', 'required');
                   $("[name^='quantity[" + id_field + "]']").attr('required', 'required');
                   $("[name^='quantity[" + id_field + "]']").attr('ismultiplenumber', 'ismultiplenumber');
-               }
+               // }
                //hack for date field..
                $("[name='field[" + id_field + "]']").next('input').attr('required', 'required');
             // }

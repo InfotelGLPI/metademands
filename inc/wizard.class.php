@@ -296,17 +296,60 @@ class PluginMetademandsWizard extends CommonDBTM
 
                     echo "<span id='categories_title' style='display: none'>";
                     $style = "";
-                    $config = new PluginServicecatalogConfig();
-                    if ($config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED
-                        || $config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED_COLOR) {
-                        $style = 'style="border: 1px solid transparent;border-radius: 1px;margin: 0px;"';
+                    $important = "";
+                    $plugin = new Plugin();
+                    if (Plugin::isPluginActive('servicecatalog')
+                        && ($plugin->getInfo('servicecatalog')["version"] > "2.0.8")) {
+                        $config = new PluginServicecatalogConfig();
+                        if ($config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED
+                            || $config->getLayout() == PluginServicecatalogConfig::BOOTSTRAPPED_COLOR) {
+                            $style = 'style="border: 1px solid transparent;border-radius: 1px;margin: 0px;"';
+                        }
+                        $force = $config->getforceBackgroundColor();
+                        if ($force == 1) {
+                            $important = "alert-important";
+                        }
                     }
-                    echo "<div class='alert alert-secondary' role='alert' $style>";
+                    echo "<div class='alert alert-secondary $important' role='alert' $style>";
                     echo "<span id='title_cat'>";
                     echo "</span>";
                     echo "</div>";
                     echo "</span>";
                     echo "</h5>";
+
+                    if (Plugin::isPluginActive('servicecatalog')) {
+                        $helpdesk_category = new PluginServicecatalogCategory();
+                        if ($helpdesk_category->getFromDBByCategory($parameters['itilcategories_id'])
+                            && !empty($helpdesk_category->fields['display_warning'])) {
+                            echo "<h5>";
+                            echo "<div class='alert alert-danger' role='alert'>";
+                            echo "<i class='fas fa-exclamation-circle fa-2x'></i>";
+                            echo "&nbsp;" . nl2br(PluginServicecatalogCategory::displayField($helpdesk_category, 'display_warning'));
+                            echo "</div>";
+                            echo "</h5>";
+                        }
+
+                        if ($helpdesk_category->getFromDBByCategory($parameters['itilcategories_id'])
+                            && !empty($helpdesk_category->fields['knowbaseitems_id'])
+                            && Session::haveRight('knowbase', KnowbaseItem::READFAQ)) {
+                            $know_id = $helpdesk_category->fields['knowbaseitems_id'];
+                            echo "<h5>";
+                            echo "<div class='alert alert-warning' role='alert'>";
+                            echo "<i class='fas fa-exclamation-triangle fa-2x'></i>";
+                            echo "&nbsp;";
+                            echo __('Did you know that there is an FAQ article that may be able to help you?', 'servicecatalog');
+                            echo "&nbsp;";
+                            echo "<a href='" . PLUGIN_SERVICECATALOG_WEBDIR . "/front/faq.php?from_ticket=1&itilcategories_id=" . $parameters['itilcategories_id'] . "&type=" . $meta->fields['type'] . "&id=" . $know_id . "'>";
+                            echo "<button form='' class='submit btn btn-info btn-sm'>
+<i class='fas fa-link' data-hasqtip='0' aria-hidden='true'></i>";
+                            echo "&nbsp;";
+                            echo __('Click here for more informations', 'servicecatalog');
+                            echo "</button>";
+                            echo "</a>";
+                            echo "</div>";
+                            echo "</h5>";
+                        }
+                    }
                 }
             }
 
@@ -391,6 +434,47 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                     }
                 }
+                if ($meta->getFromDB($parameters['metademands_id'])
+                    && Plugin::isPluginActive('servicecatalog')) {
+                    $configsc = new PluginServicecatalogConfig();
+                    $seedetail = 1;
+                    if (method_exists("PluginServicecatalogConfig", "getDetailBeforeFormRedirect")) {
+                        $seedetail = $configsc->getDetailBeforeFormRedirect();
+                    }
+                    if ($configsc->seeCategoryDetails() && $seedetail == 0) {
+                        $itilcategories_id = 0;
+                        $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
+                        if (is_array($cats) && count($cats) == 1) {
+                            foreach ($cats as $cat) {
+                                $itilcategories_id = $cat;
+                            }
+                        }
+                        $type = $meta->fields['type'];
+                        $helpdesk_category = new PluginServicecatalogCategory();
+                        if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
+                            && ($helpdesk_category->fields['comment'] != null
+                                || $helpdesk_category->fields['service_detail'] != null
+                                || $helpdesk_category->fields['service_users'] != null
+                                || $helpdesk_category->fields['service_ttr'] != null
+                                || $helpdesk_category->fields['service_use'] != null
+                                || $helpdesk_category->fields['service_supervision'] != null
+                                || $helpdesk_category->fields['service_rules'] != null)) {
+//                            echo "<div class='alert alert-light' style='margin-bottom: 10px;'>";
+                            echo "&nbsp;<i class='fas fa-question-circle pointer' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __('More informations', 'servicecatalog') . "\"> ";
+//                            echo __('More informations of this category ? click here', 'servicecatalog');
+                            echo "</i>";
+//                            echo "</div>";
+                            echo Ajax::createIframeModalWindow(
+                                'categorydetails' . $itilcategories_id,
+                                PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $type . "&category_id=" . $itilcategories_id,
+                                ['title' => __('More informations', 'servicecatalog'),
+                                    'display' => false,
+                                    'width' => 1050,
+                                    'height' => 500]
+                            );
+                        }
+                    }
+                }
 
                 if (Session::getCurrentInterface() == 'central'
                     && Session::haveRight('plugin_metademands', UPDATE)
@@ -464,49 +548,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         $comment = $meta->fields['comment'];
                     }
                     echo "<div class='center' style='background: #EEE;padding: 10px;'><i>" . nl2br($comment) . "</i></div>";
-                }
-                if ($meta->getFromDB($parameters['metademands_id'])
-                    && Plugin::isPluginActive('servicecatalog')) {
-                    $configsc = new PluginServicecatalogConfig();
-
-                    $seedetail = 1;
-                    if (method_exists("PluginServicecatalogConfig", "getDetailBeforeFormRedirect")) {
-                        $seedetail = $configsc->getDetailBeforeFormRedirect();
-                    }
-
-                    if ($configsc->seeCategoryDetails() && $seedetail == 0) {
-                        $itilcategories_id = 0;
-                        $cats = json_decode($_SESSION['servicecatalog']['sc_itilcategories_id'], true);
-                        if (is_array($cats) && count($cats) == 1) {
-                            foreach ($cats as $cat) {
-                                $itilcategories_id = $cat;
-                            }
-                        }
-                        $type = $meta->fields['type'];
-                        $helpdesk_category = new PluginServicecatalogCategory();
-                        if ($itilcategories_id > 0 && $helpdesk_category->getFromDBByCategory($itilcategories_id)
-                            && ($helpdesk_category->fields['comment'] != null
-                                || $helpdesk_category->fields['service_detail'] != null
-                                || $helpdesk_category->fields['service_users'] != null
-                                || $helpdesk_category->fields['service_ttr'] != null
-                                || $helpdesk_category->fields['service_use'] != null
-                                || $helpdesk_category->fields['service_supervision'] != null
-                                || $helpdesk_category->fields['service_rules'] != null)) {
-                            echo "<div class='alert alert-light' style='margin-bottom: 10px;'>";
-                            echo "<button form='' class='btn btn-primary' href='#' data-bs-toggle='modal' data-bs-target='#categorydetails$itilcategories_id' title=\"" . __('More informations', 'servicecatalog') . "\"> ";
-                            echo __('More informations of this category ? click here', 'servicecatalog');
-                            echo "</button>";
-                            echo "</div>";
-                            echo Ajax::createIframeModalWindow(
-                                'categorydetails' . $itilcategories_id,
-                                PLUGIN_SERVICECATALOG_WEBDIR . "/front/categorydetail.form.php?type=" . $type . "&category_id=" . $itilcategories_id,
-                                ['title' => __('More informations', 'servicecatalog'),
-                                    'display' => false,
-                                    'width' => 1050,
-                                    'height' => 500]
-                            );
-                        }
-                    }
                 }
 
                 // Display user informations
@@ -584,6 +625,7 @@ class PluginMetademandsWizard extends CommonDBTM
             );
         }
         if ($step === PluginMetademandsMetademand::STEP_CREATE) {
+
             $values = isset($_SESSION['plugin_metademands'][$metademands_id]) ? $_SESSION['plugin_metademands'][$metademands_id] : [];
             self::createMetademands($metademands_id, $values, $options);
         } elseif ($step == 0) {
@@ -868,6 +910,7 @@ class PluginMetademandsWizard extends CommonDBTM
             unset($metademands_data[1]);
         }
 
+
         if (count($metademands_data)) {
             if ($step - 1 > count($metademands_data) && !$preview) {
                 self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform, $current_ticket, $meta_validated);
@@ -886,6 +929,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                     $step++;
                                 }
                             } else {
+
                                 self::constructForm($metademands_id, $metademands_data, $step, $line['form'], $preview, $parameters['itilcategories_id'], $seeform, $current_ticket, $meta_validated);
                             }
                             if ($seeform == 0) {
@@ -993,7 +1037,7 @@ class PluginMetademandsWizard extends CommonDBTM
 //                                      if (seesummary == 1) {
                                           
                                           $('#submitjob').click(function() {
-                                              console.log('click');
+//                                              console.log('click');
                                                  if(typeof tinyMCE !== 'undefined'){
                                                     tinyMCE.triggerSave();
                                                  }
@@ -1098,9 +1142,12 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
                 echo "</div>";
                 echo Html::hidden('create_metademands', ['value' => 1]);
-                echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
-                echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
-                echo "</a>";
+                if (!$preview) {
+                    echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
+                    echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
+                    echo "</a>";
+                }
+
             }
         } else {
             echo "</div>";
@@ -1529,7 +1576,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             $color = $data['color'];
                             $style = "";
                             //                  $class = "metademands_wizard_informations";
-                            $class = "alert alert-warning alert-dismissible fade show";  //alert-important alert-warning alert-dismissible
+                            $class = "alert alert-warning alert-dismissible fade show informations";  //alert-important alert-warning alert-dismissible
                         } else {
                             $class = "form-group ";
                         }
@@ -1893,6 +1940,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   var show_rule = '$show_rule';
                   findFirstTab($block_id);
                   if(use_condition == true) {
+                     $('document').ready(checkConditions);          
                     if(show_rule == 2){
                      show_button = 0;
                      if(document.getElementById('nextBtn').innerHTML == submittitle) {
@@ -1923,10 +1971,10 @@ class PluginMetademandsWizard extends CommonDBTM
                                    datatype: 'JSON',
                                    data: formDatas,
                                    success: function (response) {
-                                      console.log(response);
+//                                      console.log(response);
                                       eval('valid_condition=' + response );
                                     
-                                      console.log(valid_condition);
+//                                      console.log(valid_condition);
                                       
                                       if(valid_condition) {
                                           if(show_button == 1) {
@@ -2095,18 +2143,15 @@ class PluginMetademandsWizard extends CommonDBTM
                                    }
                                 });
                         } else {
-                            $.ajax({
-                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                        
+                                $.ajax({
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
                                    type: 'POST',
                                    datatype: 'html',
-                                   data: $('form').serializeArray(),
+                                   data: arrayDatas,
                                    success: function (response) {
-                                      $('#ajax_loader').hide();
-                                      if (response == 1) {
-                                         window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
-                                      } else {
-                                         $.ajax({
-                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                      $.ajax({
+                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
                                             type: 'POST',
                                             data: arrayDatas,
                                             success: function (response) {
@@ -2118,7 +2163,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                                console.log(error);
                                             }
                                          });
-                                      }
                                    },
                                    error: function (xhr, status, error) {
                                       console.log(xhr);
@@ -2126,6 +2170,38 @@ class PluginMetademandsWizard extends CommonDBTM
                                       console.log(error);
                                    }
                                 });
+                                
+//                            $.ajax({
+//                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+//                                   type: 'POST',
+//                                   datatype: 'html',
+//                                   data: $('form').serializeArray(),
+//                                   success: function (response) {
+//                                      $('#ajax_loader').hide();
+//                                      if (response == 1) {
+//                                         window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
+//                                      } else {
+//                                         $.ajax({
+//                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+//                                            type: 'POST',
+//                                            data: arrayDatas,
+//                                            success: function (response) {
+//                                               window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
+//                                            },
+//                                            error: function (xhr, status, error) {
+//                                               console.log(xhr);
+//                                               console.log(status);
+//                                               console.log(error);
+//                                            }
+//                                         });
+//                                      }
+//                                   },
+//                                   error: function (xhr, status, error) {
+//                                      console.log(xhr);
+//                                      console.log(status);
+//                                      console.log(error);
+//                                   }
+//                                });
                         }
                         
                   
@@ -2140,20 +2216,20 @@ class PluginMetademandsWizard extends CommonDBTM
                         if (typeof tinyMCE !== 'undefined') {
                            tinyMCE.triggerSave();
                         }
-                        var updatestepform = '$updateStepform';                       
+                        var updatestepform = '$updateStepform';
                         jQuery('.resume_builder_input').trigger('change');
                         $('select[id$=\"_to\"] option').each(function () {
                            $(this).prop('selected', true);
                         });
                         arrayDatas = $('form').serializeArray();
-                        arrayDatas.push({name: 'block_id', value: id_bloc});  
-                        arrayDatas.push({name: 'action', value: 'nextUser'});  
-                        arrayDatas.push({name: 'update_stepform', value: updatestepform});  
+                        arrayDatas.push({name: 'block_id', value: id_bloc});
+                        arrayDatas.push({name: 'action', value: 'nextUser'});
+                        arrayDatas.push({name: 'update_stepform', value: updatestepform});
                         if(modal == true) {
                             showModal(arrayDatas);
                         } else {
                             nextUser(arrayDatas);
-                        }                      
+                        }
 
                      } else {
                         showTab(currentTab,create, submittitle, submitmsg);
@@ -2285,7 +2361,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
                             }
                         }
-                        if (y[i].type == 'file' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
+                        if (y[i].type == 'file' && fieldname != '_uploader_filename[]' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
                             var inputPieceJointe = document.getElementById(fieldid);
                             if (inputPieceJointe.files.length > 0) {
                                $('[name=\"' + fieldname + '\"]').removeClass('invalid');
@@ -2528,7 +2604,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         x[i].className = x[i].className.replace(' active', '');
                      }
                      //... and adds the 'active' class on the current step:
-                     x[n].className += ' active';
+
+                     if (x[n] != undefined && x[n].className) {
+                        x[n].className += ' active';
+                     }
+                     
                      
                      if (use_as_step == 1) {
                         var tabx = document.getElementsByClassName('tab-step');
@@ -2683,7 +2763,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         $datas['fields'] = $values['fields'];
 
                         $result = $metademands->addObjects($metademands_id, $datas, $options);
-                        Session::addMessageAfterRedirect($result['message']);
+                        if (is_array($result)) {
+                            Session::addMessageAfterRedirect($result['message']);
+                        }
                     }
                     $basketclass->deleteByCriteria(['plugin_metademands_metademands_id' => $metademands_id,
                         'users_id' => Session::getLoginUserID()]);
@@ -2731,7 +2813,9 @@ class PluginMetademandsWizard extends CommonDBTM
                         'users_id' => Session::getLoginUserID()]);
 
                     $result = $metademands->addObjects($metademands_id, $values, $options);
-                    Session::addMessageAfterRedirect($result['message']);
+                    if (is_array($result)) {
+                        Session::addMessageAfterRedirect($result['message']);
+                    }
                 }
             } else {
                 //not in basket
@@ -2757,13 +2841,18 @@ class PluginMetademandsWizard extends CommonDBTM
                     PluginMetademandsStepform::deleteAfterCreate($values['plugin_metademands_stepforms_id']);
                 }
 
-                Session::addMessageAfterRedirect($result['message']);
+                if (is_array($result)) {
+                    Session::addMessageAfterRedirect($result['message']);
+                }
+
             }
         }
         unset($_SESSION['plugin_metademands']);
 
         if (!empty($options['resources_id'])) {
             Html::redirect(PLUGIN_RESOURCES_WEBDIR . "/front/wizard.form.php");
+        } else if(isset($options['collect_metademands']) && $options['collect_metademands'] == true){
+            return true;
         } else {
             if (Plugin::isPluginActive('servicecatalog')
                 && Session::haveRight("plugin_servicecatalog", READ)) {
@@ -2901,13 +2990,13 @@ class PluginMetademandsWizard extends CommonDBTM
                 $KO = true;
             } else {
                 //not in basket mode
-                if (isset($post['_filename'])) {
-                    foreach ($post['_filename'] as $key => $filename) {
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files'][$post['form_metademands_id']]['_prefix_filename'][] = $post['_prefix_filename'][$key];
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files'][$post['form_metademands_id']]['_tag_filename'][] = $post['_tag_filename'][$key];
-                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files'][$post['form_metademands_id']]['_filename'][] = $post['_filename'][$key];
-                    }
-                }
+//                if (isset($post['_filename'])) {
+//                    foreach ($post['_filename'] as $key => $filename) {
+//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $post['_prefix_filename'][$key];
+//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_tag_filename'][] = $post['_tag_filename'][$key];
+//                        $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields']['files']['_filename'][] = $post['_filename'][$key];
+//                    }
+//                }
             }
         } elseif ($value['type'] == 'dropdown_multiple') {
             if (!isset($post[$fieldname][$id])) {

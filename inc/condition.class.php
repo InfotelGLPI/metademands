@@ -319,7 +319,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 echo "<th>" . __('Field', 'metademands') . " <span style='color : red'> *</span></th>";
                 echo "<th>" . __('Field type', 'metademands') . "</th>";
                 echo "<th>" . __('Equality operator', 'metademands') . " <span style='color : red'> *</span></th>";
-                echo "<th>" . __('Value to check', 'metademands') . " <span style='color : red'> *</span></th>";
+                echo "<th>" . __('Value to check', 'metademands') . "</th>";
                 echo "<th>" . __('Pool', 'metademands') . " <span style='color : red'> *</span>";
                 echo "<h6 style='color: royalblue'>" . __('Order of execution and grouping of conditions', 'metademands') . "</h6>";
                 echo "</th>";
@@ -405,7 +405,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 Dropdown::showNumber('order');
                 echo "</td>";
                 echo "<td>";
-                echo Html::submit(_sx('button', 'Add'), ['name' => 'add_condition', 'class' => 'btn btn-primary']);
+                echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
                 echo "</td>";
                 echo "</tr>";
                 echo "</table>";
@@ -416,6 +416,7 @@ class PluginMetademandsCondition extends CommonDBChild
         }
 
     }
+
 
     static function listConditions($item)
     {
@@ -451,7 +452,7 @@ class PluginMetademandsCondition extends CommonDBChild
             echo "<th>" . __('Type') . "</th>";
             echo "<th>" . __('Equality operator', 'metademands') . "</th>";
             echo "<th>" . __('Value to check', 'metademands') . "</th>";
-            echo "<th>" . __('Order', 'metademands') . "</th>";
+            echo "<th>" . __('Pool', 'metademands') . "</th>";
 
             foreach ($allConditions as $condition) {
                 $cond->getFromDB($condition['id']);
@@ -485,7 +486,8 @@ class PluginMetademandsCondition extends CommonDBChild
 
                         echo($condition['id']);
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td $onhover>";
                         echo self::showLogic($condition['show_logic']);
                         echo "</td>";
                         echo "<td $onhover>";
@@ -498,30 +500,20 @@ class PluginMetademandsCondition extends CommonDBChild
                             echo "</a> ";
                         }
                         echo "</td>";
-                        echo "<td>";
-//                        if ($condition['type'] == 'dropdown_meta') {
-//                            echo PluginMetademandsField::getFieldItemsName($condition['item']);
-//                        } else {
-//                            if(!empty($condition['item'])){
-//                                if (class_exists($condition['item'])) {
-//                                    echo $condition['item']::getTypeName();
-//                                } else {
-//                                    echo $condition['item'];
-//                                }
-//                            } else {
-//                               PluginMetademandsCondition::getTypeField($condition['plugin_metademands_fields_id']);
-//                            }
-//
-//                        }
+
+                        echo "<td $onhover>";
                         echo PluginMetademandsField::getFieldTypesName($condition['type']);
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td  $onhover>";
                         echo self::showCondition($condition['show_condition']);
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td $onhover>";
                         self::displayCheckValue($condition['id']);
                         echo "</td>";
-                        echo "<td>";
+
+                        echo "<td $onhover>";
                         echo $condition['order'];
                         echo "</td>";
                         echo "</tr>";
@@ -797,121 +789,296 @@ class PluginMetademandsCondition extends CommonDBChild
             // Create item
             $this->check(-1, CREATE, $options);
         }
+        $this->initForm($ID, $options);
+        $rand = mt_rand();
+        $field = new PluginMetademandsField();
 
+        $fields = $field->find(
+            [
+                'type' => self::$field_types_available,
+                'plugin_metademands_metademands_id' => $item->fields['id'],
+            ]
+        );
+        $dropdown_fields = [];
+        foreach ($fields as $f) {
+            $dropdown_fields[$f['id']] = $f['name'] . " (" . $f['id'] . ") ";
+        }
+        echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL('PluginMetademandsCondition') . "'>";
+        echo "<table class='tab_cadre_fixe'>";
+        echo "<tr>";
+        echo "<th> " . __('Logical operator', 'metademands') . " </th>";
+        echo "<th>" . __('Field', 'metademands') . " <span style='color : red'> *</span></th>";
+        echo "<th>" . __('Field type', 'metademands') . "</th>";
+        echo "<th>" . __('Equality operator', 'metademands') . " <span style='color : red'> *</span></th>";
+        echo "<th>" . __('Value to check', 'metademands') . "</th>";
+        echo "<th>" . __('Pool', 'metademands') . " <span style='color : red'> *</span>";
+        echo "<h6 style='color: royalblue'>" . __('Order of execution and grouping of conditions', 'metademands') . "</h6>";
+        echo "</th>";
+        echo "<th></th>";
+        echo "</tr>";
+        echo Html::hidden('_glpi_csrf_token', ['value' => Session::getNewCSRFToken()]);
+        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
+        echo Html::hidden('id', ['value' => $ID]);
+        echo "<tr>";
+        echo "<td>";
+        Dropdown::showFromArray(
+            'show_logic',
+            self::getEnumShowLogic(),
+            ['value' => $this->fields['show_logic']]
+        );
+        echo "</td>";
 
-//        $params = [
-//            'item' => $item->fields['item'],
-//            'type' => $item->fields['type'],
-//            'plugin_metademands_metademands_id' => $item->fields['plugin_metademands_metademands_id'],
-//            'plugin_metademands_fields_id' => $item->getID(),
-//            'plugin_metademands_tasks_id' => $this->fields['plugin_metademands_tasks_id'] ?? 0,
-//            'fields_link' => $this->fields['fields_link'] ?? 0,
-//            'hidden_link' => $this->fields['hidden_link'] ?? 0,
-//            'hidden_block' => $this->fields['hidden_block'] ?? 0,
-//            'custom_values' => $item->fields['custom_values'] ?? 0,
-//            'check_value' => $this->fields['check_value'] ?? 0,
-//            'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
-//            'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
-//            'checkbox_value' => $this->fields['checkbox_value'] ?? 0,
-//        ];
-//
-//
-//        if ($this->fields['childs_blocks'] != null) {
-//            $params['childs_blocks'] = json_decode($this->fields['childs_blocks'], true);
-//        } else {
-//            $params['childs_blocks'] = [];
-//        }
-//
-//        //Hook to get values saves from plugin
-//        if (isset($PLUGIN_HOOKS['metademands'])) {
-//            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-//                $p = [];
-//                $p["plugin_metademands_fields_id"] = $item->getID();
-//                $p["plugin_metademands_metademands_id"] = $item->fields["plugin_metademands_metademands_id"];
-//                $p["nbOpt"] = $this->fields['id'];
-//
-//                $new_params = self::getPluginParamsOptions($plug, $p);
-//
-//                if (Plugin::isPluginActive($plug)
-//                    && is_array($new_params)) {
-//
-//                    $params = array_merge($params, $new_params);
-//                }
-//            }
-//        }
-//
-//        echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
-//
-//
-//        switch ($params['type']) {
-//            case 'title':
-//                break;
-//            case 'title-block':
-//                break;
-//            case 'informations':
-//                break;
-//            case 'text':
-//                PluginMetademandsText::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'textarea':
-//                PluginMetademandsTextarea::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'dropdown_meta':
-//                PluginMetademandsDropdownmeta::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'dropdown_object':
-//                PluginMetademandsDropdownobject::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'dropdown':
-//                PluginMetademandsDropdown::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'dropdown_multiple':
-//                PluginMetademandsDropdownmultiple::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'checkbox':
-//                PluginMetademandsCheckbox::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'radio':
-//                PluginMetademandsRadio::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'yesno':
-//                PluginMetademandsYesno::getParamsValueToCheck($this, $item, $params);
-//                break;
-//            case 'number':
-//                break;
-//            case 'date':
-//                break;
-//            case 'date_interval':
-//                break;
-//            case 'datetime':
-//                break;
-//            case 'datetime_interval':
-//                break;
-//            case 'upload':
-//                break;
-//            case 'link':
-//                break;
-//            case 'parent_field':
-//                echo "<tr>";
-//                echo "<td>";
-//                echo __('Field');
-//                echo "</td>";
-//                echo "<td>";
-//                self::showValueToCheck($this, $params);
-//
-//                echo "</td></tr>";
-//                break;
-//            default:
-//                if (isset($PLUGIN_HOOKS['metademands'])) {
-//                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-//                        self::getPluginParamsValueToCheck($plug, $this, $item->getID(), $params);
-//                    }
-//                }
-//                break;
-//        }
+        echo "<td>";
 
-//        $this->showFormButtons($options);
+        Dropdown::showFromArray(
+            'plugin_metademands_fields_id',
+            $dropdown_fields,
+            [
+                'rand' => $rand,
+                'display_emptychoice' => true,
+                'value' => $this->fields['plugin_metademands_fields_id']
+            ]
+        );
+        echo "</td>";
+        echo "<td>";
+        Ajax::updateItemOnSelectEvent(
+            "dropdown_plugin_metademands_fields_id$rand",
+            "show_type_field$rand",
+            PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_type_field.php",
+            [
+                'fields_id' => '__VALUE__',
+                'rand' => $rand
+            ]
+        );
+        echo "<span id = 'show_type_field$rand'>";
+        echo PluginMetademandsField::getFieldTypesName($this->fields['type']);
+        echo "</span>";
+        echo "</td>";
+
+        echo "<td>";
+        Ajax::updateItemOnSelectEvent(
+            "dropdown_plugin_metademands_fields_id$rand",
+            "show_dropdown_condition_$rand",
+            PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_conditions.php",
+            [
+                'fields_id' => '__VALUE__',
+                'rand' => $rand
+            ]
+        );
+        echo "<span id = 'show_dropdown_condition_$rand'>";
+        $options = [
+            'display_emptychoice' => false,
+            'value' => $this->fields['show_condition'],
+            'rand' => $rand,
+        ];
+
+        Dropdown::showFromArray(
+            'show_condition',
+            PluginMetademandsCondition::getEnumShowCondition($this->fields['type']),
+            $options
+        );
+        echo "</span>";
+        echo "</td>";
+        echo "<td>";
+        Ajax::updateItemOnSelectEvent(
+            "dropdown_plugin_metademands_fields_id$rand",
+            "show_value_to_check_$rand",
+            PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_check_value.php",
+            [
+                'fields_id' => '__VALUE__',
+                'rand' => $rand
+            ]
+        );
+
+        echo "<span id = 'show_value_to_check_$rand'>";
+        self::showCheckValue($this->fields['plugin_metademands_fields_id'], $ID);
+        echo "</span>";
+        echo "</td>";
+        echo "<td>";
+        $option = [
+            'value' => $this->fields['order']
+        ];
+        Dropdown::showNumber('order', $option);
+        echo "</td>";
+        echo "<td>";
+        echo Html::submit(_sx('button', __('Update')), ['name' => 'update', 'class' => 'btn btn-primary']);
+        echo "</td>";
+        echo "</tr>";
+        echo "</table>";
+        Html::closeForm();
         return true;
+    }
+
+    static function showCheckValue($fields_id, $ID = -1){
+        $field = new PluginMetademandsField();
+        if($ID > 0){
+            $condition = new self();
+            $condition->getFromDB($ID);
+        }
+        $metademand = new PluginMetademandsMetademand();
+        if ($field->getFromDB($fields_id)) {
+            $metademand->getFromDB($field->fields['plugin_metademands_metademands_id']);
+            $name = 'check_value';
+            $item = $field->fields['item'];
+            $type = $field->fields['type'];
+            $options = [
+                'name' => $name,
+                'right' => 'all',
+                'entity' => $_SESSION['glpiactive_entity'],
+                'entity_sons' => $_SESSION['glpiactive_entity_recursive']
+            ];
+
+            if ($item != ''
+                && ($type == 'dropdown'
+                    || $type == 'dropdown_object'
+                    || $type == 'dropdown_multiple'
+                    || $type == 'dropdown_meta')) {
+                if ($type == 'dropdown_meta') {
+                    switch ($item) {
+                        case 'other':
+                            $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                            Dropdown::showFromArray(
+                                $options['name'],
+                                $choices,
+                                ['width' => '100%',
+                                  'value' => $condition->fields['check_value'] ?? 0
+                                ]
+                            );
+                            break;
+                        case 'ITILCategory_Metademands':
+
+                            $values = json_decode($metademand->fields['itilcategories_id']);
+                            $params = [
+                                'name' => $name,
+                                'right' => 'all',
+                                'class' => 'form-select itilmeta',
+                                'condition' => ['id' => $values],
+                                'value' => $condition->fields['check_value'] ?? 0
+                            ];
+                            ITILCategory::dropdown($params);
+                            break;
+                        case 'mydevices':
+                            $params = [
+                                'name' => $name,
+                                'value' => $condition->fields['check_value'] ?? 0
+                            ];
+                            PluginMetademandsField::dropdownMyDevices(Session::getLoginUserID(), $_SESSION['glpiactiveentities'], 0, 0, $params);
+                            break;
+                        case 'urgency':
+                            $params = [
+                                'name' => $name,
+                                'value' => $condition->fields['check_value'] ?? 0
+                            ];
+                            Ticket::dropdownUrgency($params);
+                            break;
+                        case 'impact':
+                            $params = [
+                                'name' => $name,
+                                'value' => $condition->fields['check_value'] ?? 0
+                            ];
+                            Ticket::dropdownImpact($params);
+                            break;
+                        case 'priority':
+                            $params = [
+                                'name' => $name,
+                                'value' => $condition->fields['check_value'] ?? 0
+                            ];
+                            Ticket::dropdownPriority($params);
+                            break;
+                    }
+                } else {
+                    if ($ID > 0){
+                        $options['value'] = $condition->fields['items_id'];
+                    }
+                    $item::dropdown($options);
+                    echo Html::hidden('check_item', ['value' => 'check_item']);
+                }
+            } else {
+                switch ($type) {
+                    default :
+                        $option = [];
+                        if($ID > 0 ){
+                            $option['value'] = $condition->fields['check_value'];
+                        }
+                        echo Html::input(
+                            "$name",
+                            $option
+                        );
+                        break;
+                    case 'number' :
+                        $option = [
+                            'type' => 'number',
+                            'required' => true,
+                        ];
+                        if($ID > 0 ){
+                            $option['value'] = $condition->fields['check_value'];
+                        }
+                        echo Html::input(
+                            "$name",
+                            $option
+                        );
+                        break;
+                    case 'radio':
+                    case 'checkbox' :
+                        $options = [
+                            'display_emptychoice' => false,
+                        ];
+                        if ($ID > 0) {
+                            $option['value'] = $condition->fields['check_value'];
+                        }
+                        $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                        Dropdown::showFromArray(
+                            "$name",
+                            $choices,
+                            $options
+                        );
+                        break;
+                    case 'date' :
+                        $option = [
+                            'size' => 60
+                        ];
+                        if($ID > 0) {
+                            $option['value'] = $condition->fields['check_value'];
+                        }
+                        echo "<span style='width: 50%!important;display: -webkit-box;'>";
+                        Html::showDateField(
+                            "$name",
+                            $option
+                        );
+                        echo "</span>";
+                        break;
+                    case 'datetime' :
+                        $option = [
+                            'size' => 60
+                        ];
+                        if($ID > 0) {
+                            $option['value'] = $condition->fields['check_value'];
+                        }
+                        echo "<span style='width: 50%!important;display: -webkit-box;'>";
+                        Html::showDateTimeField(
+                            "$name",
+                            $option
+                        );
+                        echo "</span>";
+                        break;
+
+                    case 'yesno' :
+                        $option = [
+                            'display_emptychoice' => false,
+                            'width' => '70px',
+                        ];
+                        if($ID > 0) {
+                            $option['value'] = $condition->fields['check_value'];
+                        }
+                        $choice[1] = __('No');
+                        $choice[2] = __('Yes');
+                        Dropdown::showFromArray($name, $choice, $option
+                        );
+                        break;
+                }
+
+            }
+        }
     }
 
 }
