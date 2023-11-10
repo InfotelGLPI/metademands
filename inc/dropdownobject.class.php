@@ -505,7 +505,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         } else {
             switch ($params["item"]) {
                 case 'User':
-                    echo getUserName($params['check_value']);
+                    echo getUserName($params['check_value'], 0, true);
                     break;
                 case 'Group':
                     echo Dropdown::getDropdownName('glpi_groups', $params['check_value']);
@@ -798,7 +798,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         $dbu = new DbUtils();
         switch ($field['item']) {
             case 'User':
-                return getUserName($field['value']);
+                return getUserName($field['value'], 0, true);
             default:
                 return Dropdown::getDropdownName(
                     $dbu->getTableForItemType($field['item']),

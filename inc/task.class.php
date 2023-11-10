@@ -621,7 +621,7 @@ class PluginMetademandsTask extends CommonDBChild {
                 if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
                     if (isset($value['users_id_assign'])
                         && $value['users_id_assign'] > 0) {
-                        $techdata .= getUserName($value['users_id_assign']);
+                        $techdata .= getUserName($value['users_id_assign'], 0, true);
                         $techdata .= "<br>";
                     }
                     if (isset($value['groups_id_assign'])

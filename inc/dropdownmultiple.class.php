@@ -98,7 +98,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
             $list = [];
             foreach ($iterator as $datau) {
-                $list[$datau['users_id']] = getUserName($datau['users_id']);
+                $list[$datau['users_id']] = getUserName($datau['users_id'], 0, true);
             }
 
             if (!empty($value) && !is_array($value)) {
@@ -141,7 +141,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                    <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                 if (is_array($value) && count($value) > 0) {
                     foreach ($value as $k => $val) {
-                        $field .= "<option selected value=\"$val\" >" . getUserName($val) . "</option>";
+                        $field .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
                     }
                 }
                 $field .= "</select></div>";
@@ -680,7 +680,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
     {
         switch ($params["item"]) {
             case 'User':
-                echo getUserName($params['check_value']);
+                echo getUserName($params['check_value'], 0, true);
                 break;
             default:
                 $dbu = new DbUtils();

@@ -901,7 +901,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
     global $CFG_GLPI;
     switch ($field) {
         case 9499 :
-            $out = getUserName($data['raw']["ITEM_" . $num]);
+            $out = getUserName($data['raw']["ITEM_" . $num], 0, true);
             return $out;
             break;
         case 9500 :
@@ -985,7 +985,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                         if ($i != 0) {
                             $result .= "\n";
                         }
-                        $result .= getUserName($data["Ticket_9504"][$i]["name"]);
+                        $result .= getUserName($data["Ticket_9504"][$i]["name"], 0, true);
 
 
                     }

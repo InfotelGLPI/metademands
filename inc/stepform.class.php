@@ -395,10 +395,10 @@ class PluginMetademandsStepform extends CommonDBTM
                 echo $id;
                 echo "</td>";
                 echo "<td>";
-                echo getUserName($form['users_id']);
+                echo getUserName($form['users_id'], 0, true);
                 echo "</td>";
                 echo "<td>";
-                echo getUserName($form['users_id_dest']);
+                echo getUserName($form['users_id_dest'], 0, true);
                 echo "</td>";
                 echo "<td>";
                 echo Html::convDateTime($form['date']);

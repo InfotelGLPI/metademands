@@ -634,7 +634,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                 ) {
                     $tmp['##followup.author##'] = __("Helpdesk");
                 } else {
-                    $tmp['##followup.author##'] = getUserName($followup['users_id']);
+                    $tmp['##followup.author##'] = getUserName($followup['users_id'], 0, true);
                 }
 
                 $tmp['##followup.requesttype##'] = Dropdown::getDropdownName(
@@ -719,7 +719,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                     ) {
                         $tmp['##followup_intern.author##'] = __("Helpdesk");
                     } else {
-                        $tmp['##followup_intern.author##'] = getUserName($followup_intern['users_id']);
+                        $tmp['##followup_intern.author##'] = getUserName($followup_intern['users_id'], 0, true);
                     }
 
                     $tmp['##followup_intern.requesttype##'] = Dropdown::getDropdownName(
@@ -891,7 +891,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                 if ($taskobj->maybePrivate()) {
                     $tmp['##task.isprivate##'] = Dropdown::getYesNo($task['is_private']);
                 }
-                $tmp['##task.author##'] = getUserName($task['users_id']);
+                $tmp['##task.author##'] = getUserName($task['users_id'], 0, true);
 
                 $tmp_taskcatinfo                 = Dropdown::getDropdownName(
                     'glpi_taskcategories',
@@ -909,7 +909,7 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                 $tmp['##task.time##']        = Ticket::getActionTime($task['actiontime']);
                 $tmp['##task.status##']      = Planning::getState($task['state']);
 
-                $tmp['##task.user##']  = getUserName($task['users_id_tech']);
+                $tmp['##task.user##']  = getUserName($task['users_id_tech'], 0, true);
                 $tmp['##task.group##'] = Dropdown::getDropdownName("glpi_groups", $task['groups_id_tech']);
                 $tmp['##task.begin##'] = "";
                 $tmp['##task.end##']   = "";

@@ -136,9 +136,9 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
         $objettype = strtolower($this->obj->getType());
 
         $data["##$objettypeMeta.title##"] = $meta->getField('name');
-        $data["##$objettype.user_editor##"] = getUserName($item->getField('users_id'));
+        $data["##$objettype.user_editor##"] = getUserName($item->getField('users_id'), 0, true);
         $data["##$objettype.nextgroup##"] = Dropdown::getDropdownName(Group::getTable(), $item->getField('groups_id_dest'));
-        $data["##$objettype.users_id_dest##"] = getUserName($item->getField('users_id_dest'));
+        $data["##$objettype.users_id_dest##"] = getUserName($item->getField('users_id_dest'), 0, true);
         $data["##$objettype.date##"] = Html::convDateTime($item->getField('date'));
         $data["##$objettype.reminder_date##"] = Html::convDateTime($item->getField('reminder_date'));
 

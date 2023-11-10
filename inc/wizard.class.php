@@ -187,7 +187,7 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function showUserInformations(User $user)
     {
-        $infos = getUserName($user->getID(), 2);
+        $infos = getUserName($user->getID(), 2,  true);
         echo $infos['comment'];
 
         $cond['is_requester'] = 1;

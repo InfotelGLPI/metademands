@@ -595,7 +595,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
                                     }
                                     if (empty($dataItems)) {
-                                        $value = $dbu->getUserName($fields[$elt['id']]);
+                                        $value = $dbu->getUserName($fields[$elt['id']], 0, true);
                                     } else {
                                         $value = $dataItems;
                                     }

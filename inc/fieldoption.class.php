@@ -337,7 +337,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 echo "</td>";
 
                 echo "<td $onhover>";
-                echo getUserName($data["users_id_validate"]);
+                echo getUserName($data["users_id_validate"], 0, true);
                 echo "</td>";
 
                 echo "<td $onhover>";

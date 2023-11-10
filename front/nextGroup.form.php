@@ -59,7 +59,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'nextUser') {
     }
     if (isset($_POST['next_users_id']) && $_POST['next_users_id'] != 0) {
         $_SESSION ['plugin_metademands'][$user_id]['users_id_dest'] = $_POST['next_users_id'];
-        $userName = getUserName($_POST['next_users_id']);
+        $userName = getUserName($_POST['next_users_id'], 0, true);
         $msg = sprintf(__('The form has been sent to user %s from group %s, you can close the window', 'metademands'), $userName, $groupName);
     } else {
         $msg = sprintf(__('The form has been sent to the group %s, you can close the window', 'metademands'), $groupName);

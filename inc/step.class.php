@@ -659,7 +659,7 @@ class PluginMetademandsStep extends CommonDBChild
             foreach ($groupUsers as $grpUsr) {
                 $res = $user->getFromDBByCrit(['id' => $grpUsr['users_id']]);
                 if ($res) {
-                    $users[$grpUsr['users_id']] = getUserName($grpUsr['users_id']);
+                    $users[$grpUsr['users_id']] = getUserName($grpUsr['users_id'], 0, true);
                 }
             }
             $return .= "<tr class='tab_bg_1'>";

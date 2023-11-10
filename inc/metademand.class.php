@@ -209,6 +209,7 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $metademands->showPluginForTicket($item);
                     $metademands->showProgressionForm($item);
                 } else {
+                    $metademands->showPluginForTicket($item);
                     $metademands->showProgressionForm($item);
                 }
                 break;
@@ -4558,7 +4559,7 @@ JAVASCRIPT
                         if ($son['type'] == PluginMetademandsTask::TICKET_TYPE || $son['type'] == PluginMetademandsTask::TASK_TYPE) {
                             if (isset($son['users_id_assign'])
                                 && $son['users_id_assign'] > 0) {
-                                $techdata .= getUserName($son['users_id_assign']);
+                                $techdata .= getUserName($son['users_id_assign'], 0, true);
                                 $techdata .= "<br>";
                             }
                             if (isset($son['groups_id_assign'])
@@ -4611,7 +4612,7 @@ JAVASCRIPT
                     if (!empty($tickets['tickets_id'])) {
                         $tickets_list[] = $tickets;
                     } else {
-                        if (isset($tickets['parent_tickets_id']) && $tickets['parent_tickets_id'] == 0) {
+                        if (isset($tickets['tickets_id']) && $tickets['tickets_id'] == 0) {
                             $tickets_next[] = $tickets;
                         }
                     }
@@ -4625,11 +4626,15 @@ JAVASCRIPT
                     echo "<tr>";
                     echo "<th>" . __('Ticket') . "</th>";
                     echo "<th>" . __('Opening date') . "</th>";
-                    echo "<th>" . __('Assigned to') . "</th>";
+                    if (Session::getCurrentInterface() == 'central') {
+                        echo "<th>" . __('Assigned to') . "</th>";
+                    }
                     echo "<th>" . __('Status') . "</th>";
-                    echo "<th>" . __('Due date', 'metademands') . "</th>";
-                    echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
-
+                    if (Session::getCurrentInterface() == 'central') {
+                        echo "<th>" . __('Due date', 'metademands') . "</th>";
+                        echo "<th>" . __('Status') . " " . __('SLA') . "</th>";
+                    }
+                    echo "</tr>";
                     $status = [Ticket::SOLVED, Ticket::CLOSED];
 
                     foreach ($tickets_list as $values) {
@@ -4684,37 +4689,38 @@ JAVASCRIPT
                         echo "</td>";
 
                         //group
-                        $techdata = '';
-                        if ($childticket->countUsers(CommonITILActor::ASSIGN)) {
-                            foreach ($childticket->getUsers(CommonITILActor::ASSIGN) as $u) {
-                                $k = $u['users_id'];
-                                if ($k) {
-                                    $techdata .= getUserName($k);
-                                }
+                        if (Session::getCurrentInterface() == 'central') {
+                            $techdata = '';
+                            if ($childticket->countUsers(CommonITILActor::ASSIGN)) {
+                                foreach ($childticket->getUsers(CommonITILActor::ASSIGN) as $u) {
+                                    $k = $u['users_id'];
+                                    if ($k) {
+                                        $techdata .= getUserName($k);
+                                    }
 
-                                if ($childticket->countUsers(CommonITILActor::ASSIGN) > 1) {
-                                    $techdata .= "<br>";
+                                    if ($childticket->countUsers(CommonITILActor::ASSIGN) > 1) {
+                                        $techdata .= "<br>";
+                                    }
+                                }
+                                $techdata .= "<br>";
+                            }
+
+                            if ($childticket->countGroups(CommonITILActor::ASSIGN)) {
+                                foreach ($childticket->getGroups(CommonITILActor::ASSIGN) as $u) {
+                                    $k = $u['groups_id'];
+                                    if ($k) {
+                                        $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
+                                    }
+
+                                    if ($childticket->countGroups(CommonITILActor::ASSIGN) > 1) {
+                                        $techdata .= "<br>";
+                                    }
                                 }
                             }
-                            $techdata .= "<br>";
+                            echo "<td>";
+                            echo $techdata;
+                            echo "</td>";
                         }
-
-                        if ($childticket->countGroups(CommonITILActor::ASSIGN)) {
-                            foreach ($childticket->getGroups(CommonITILActor::ASSIGN) as $u) {
-                                $k = $u['groups_id'];
-                                if ($k) {
-                                    $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
-                                }
-
-                                if ($childticket->countGroups(CommonITILActor::ASSIGN) > 1) {
-                                    $techdata .= "<br>";
-                                }
-                            }
-                        }
-                        echo "<td>";
-                        echo $techdata;
-                        echo "</td>";
-
                         //status
                         echo "<td class='center'>";
                         if (in_array($childticket->fields['status'], $status)) {
@@ -4728,23 +4734,25 @@ JAVASCRIPT
                         echo "</td>";
 
                         //due date
-                        echo "<td class='$color_class'>";
-                        if ($is_late && !in_array($childticket->fields['status'], $status)) {
-                            echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:darkred'></i> ";
-                        }
-                        echo Html::convDateTime($childticket->fields['time_to_resolve']);
-                        echo "</td>";
+                        if (Session::getCurrentInterface() == 'central') {
+                            echo "<td class='$color_class'>";
+                            if ($is_late && !in_array($childticket->fields['status'], $status)) {
+                                echo "<i class='fas fa-exclamation-triangle fa-2x' style='color:darkred'></i> ";
+                            }
+                            echo Html::convDateTime($childticket->fields['time_to_resolve']);
+                            echo "</td>";
 
-                        //sla state
-                        echo "<td>";
-                        echo $sla_state;
-                        echo "</td>";
+                            //sla state
+                            echo "<td>";
+                            echo $sla_state;
+                            echo "</td>";
+                        }
                         echo "</tr>";
                     }
                     echo "</table></div>";
                 }
 
-                if (count($tickets_next)) {
+                if (count($tickets_next) && Session::getCurrentInterface() == 'central') {
                     $color_class = "metademand_metademandfollowup_grey";
                     echo "<div align='center'><table class='tab_cadre_fixe'>";
                     echo "<tr class='center'>";
@@ -4753,13 +4761,18 @@ JAVASCRIPT
                     echo "<tr>";
                     echo "<th>" . __('Ticket') . "</th>";
                     echo "<th>" . __('Opening date') . "</th>";
-                    echo "<th>" . __('Assigned to') . "</th>";
+                    if (Session::getCurrentInterface() == 'central') {
+                        echo "<th>" . __('Assigned to') . "</th>";
+                    }
                     echo "<th>" . __('Status') . "</th>";
-                    echo "<th>" . __('Due date', 'metademands') . "</th>";
-                    echo "<th>" . __('Status') . " " . __('SLA') . "</th></tr>";
+                    if (Session::getCurrentInterface() == 'central') {
+                        echo "<th>" . __('Due date', 'metademands') . "</th>";
+                        echo "<th>" . __('Status') . " " . __('SLA') . "</th>";
+                    }
+                    echo "</tr>";
 
                     foreach ($tickets_next as $values) {
-                        if (isset($values['parent_tickets_id']) && $values['parent_tickets_id'] > 0) {
+                        if (isset($values['tickets_id']) && $values['tickets_id'] > 0) {
                             continue;
                         }
 
@@ -4782,7 +4795,9 @@ JAVASCRIPT
                             echo "<a href='" . Toolbox::getItemTypeFormURL('Ticket') .
                                 "?id=" . $childticket->fields['id'] . "'>" . $childticket->fields['name'] . "</a>";
                         } else {
-                            echo self::$SON_PREFIX . $values['tasks_name'];
+                            $task = new PluginMetademandsTask();
+                            $task->getFromDB($values['tasks_id']);
+                            echo self::$SON_PREFIX .$task-> getName() ;
                         }
 
                         echo "</td>";
@@ -4793,36 +4808,37 @@ JAVASCRIPT
                         echo "</td>";
 
                         //group
-                        $techdata = '';
-                        if ($childticket->countUsers(CommonITILActor::ASSIGN)) {
-                            foreach ($childticket->getUsers(CommonITILActor::ASSIGN) as $u) {
-                                $k = $u['users_id'];
-                                if ($k) {
-                                    $techdata .= getUserName($k);
-                                }
+                        if (Session::getCurrentInterface() == 'central') {
+                            $techdata = '';
+                            if ($childticket->countUsers(CommonITILActor::ASSIGN)) {
+                                foreach ($childticket->getUsers(CommonITILActor::ASSIGN) as $u) {
+                                    $k = $u['users_id'];
+                                    if ($k) {
+                                        $techdata .= getUserName($k);
+                                    }
 
-                                if ($childticket->countUsers(CommonITILActor::ASSIGN) > 1) {
-                                    $techdata .= "<br>";
+                                    if ($childticket->countUsers(CommonITILActor::ASSIGN) > 1) {
+                                        $techdata .= "<br>";
+                                    }
+                                }
+                                $techdata .= "<br>";
+                            }
+
+                            if ($childticket->countGroups(CommonITILActor::ASSIGN)) {
+                                foreach ($childticket->getGroups(CommonITILActor::ASSIGN) as $u) {
+                                    $k = $u['groups_id'];
+                                    if ($k) {
+                                        $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
+                                    }
+
+                                    if ($childticket->countGroups(CommonITILActor::ASSIGN) > 1) {
+                                        $techdata .= "<br>";
+                                    }
                                 }
                             }
-                            $techdata .= "<br>";
+                            echo "<td class='$color_class'>";
+                            echo "</td>";
                         }
-
-                        if ($childticket->countGroups(CommonITILActor::ASSIGN)) {
-                            foreach ($childticket->getGroups(CommonITILActor::ASSIGN) as $u) {
-                                $k = $u['groups_id'];
-                                if ($k) {
-                                    $techdata .= Dropdown::getDropdownName("glpi_groups", $k);
-                                }
-
-                                if ($childticket->countGroups(CommonITILActor::ASSIGN) > 1) {
-                                    $techdata .= "<br>";
-                                }
-                            }
-                        }
-                        echo "<td class='$color_class'>";
-                        echo "</td>";
-
                         //status
                         echo "<td class='$color_class center'>";
                         echo "<i class='fas fa-hourglass-half fa-2x'></i> ";
@@ -4830,15 +4846,17 @@ JAVASCRIPT
 
                         echo "</td>";
 
-                        //due date
-                        echo "<td class='$color_class'>";
-                        echo Html::convDateTime($childticket->fields['time_to_resolve']);
-                        echo "</td>";
+                        if (Session::getCurrentInterface() == 'central') {
+                            //due date
+                            echo "<td class='$color_class'>";
+                            echo Html::convDateTime($childticket->fields['time_to_resolve']);
+                            echo "</td>";
 
-                        //sla state
-                        echo "<td class='$color_class'>";
-                        echo $sla_state;
-                        echo "</td>";
+                            //sla state
+                            echo "<td class='$color_class'>";
+                            echo $sla_state;
+                            echo "</td>";
+                        }
                         echo "</tr>";
                     }
                     echo "</table></div>";
@@ -6240,7 +6258,8 @@ JAVASCRIPT
                     $class = "";
                     $fa = "fa-tasks";
                     $state = self::TODO;
-                    if (in_array($ticket->fields['status'], $ticket->getSolvedStatusArray())) {
+                    if (in_array($ticket->fields['status'], $ticket->getSolvedStatusArray())
+                    || in_array($ticket->fields['status'], $ticket->getClosedStatusArray())) {
                         $state = self::DONE;
                     }
                     $class_state = "";
