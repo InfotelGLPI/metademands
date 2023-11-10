@@ -715,7 +715,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             //specific for radio / dropdowns - one value
             $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
-
+            $script .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
             $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
             $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
