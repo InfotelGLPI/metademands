@@ -120,6 +120,71 @@ class PluginMetademandsTicketField extends CommonDBChild {
       return true;
    }
 
+    /**
+     * @param $id
+     **/
+    public static function showAvailableTags($id)
+    {
+        $self = new self();
+        $tags = $self->getTags($id);
+
+        echo "<div class='center'>";
+        echo "<table class='tab_cadre_fixe'>";
+        echo "<tr><th>" . __('Tag') . "</th>
+                <th>" . __('Label') . "</th>
+            </tr>";
+        echo "<tr>
+                  <td>#requester.login#</td>
+                  <td>" . __('Requester login', 'metademands') . "</td>
+               </tr>";
+        echo "<tr>
+                  <td>#requester.name#</td>
+                  <td>" . __('Requester name', 'metademands') . "</td>
+               </tr>";
+        echo "<tr>
+                  <td>#requester.firstname#</td>
+                  <td>" . __('Requester firstname', 'metademands') . "</td>
+               </tr>";
+        echo "<tr>
+                  <td>#requester.email#</td>
+                  <td>" . __('Requester email', 'metademands') . "</td>
+               </tr>";
+        echo "<tr>
+                  <td>#entity#</td>
+                  <td>" . __('Entity') . "</td>
+               </tr>";
+        foreach ($tags as $tag => $values) {
+            echo "<tr>
+                  <td>#" . $tag . "#</td>
+                  <td>" . $values . "</td>
+               </tr>";
+        }
+        echo "</table></div>";
+    }
+
+
+    /** Display fields Tags available for the metademand $id
+     *
+     * @param $id
+     **/
+    public function getTags($id)
+    {
+        $metafield = new PluginMetademandsField();
+        $fields = $metafield->find(['plugin_metademands_metademands_id' => $id]);
+        $res    = [];
+        foreach ($fields as $field) {
+            $res[$field['id']] = $field['name'];
+            if ($field['type'] == 'dropdown_object' && $field['item'] == User::getType()) {
+                $res[$field['id'] . ".login"]     = $field['name'] . " : " . __('Login');
+                $res[$field['id'] . ".name"]      = $field['name'] . " : " . __('Name');
+                $res[$field['id'] . ".firstname"] = $field['name'] . " : " . __('First name');
+                $res[$field['id'] . ".email"]     = $field['name'] . " : " . _n('Email', 'Emails', 1);
+            }
+        }
+
+        return $res;
+    }
+
    /**
     * Print the field form
     *

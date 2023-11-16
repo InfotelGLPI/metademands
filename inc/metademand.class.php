@@ -1973,7 +1973,7 @@ JAVASCRIPT
                     $parent_ticketfields = [];
                     if ($object_class == 'Ticket') {
                         //TODO Change / problem ?
-                        $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester']);
+                        $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester'], $parent_fields['entities_id']);
                     }
 
                     $list_fields = $line['form'];
@@ -3591,7 +3591,7 @@ JAVASCRIPT
      *
      * @return array
      */
-    public function formatTicketFields($metademands_id, $itilcategory, $values, $users_id_requester)
+    public function formatTicketFields($metademands_id, $itilcategory, $values, $users_id_requester, $entities_id)
     {
         $inputs = [];
         $ticket_field = new PluginMetademandsTicketField();
@@ -3677,6 +3677,10 @@ JAVASCRIPT
                                                 $v = $user->fields['email'];
                                                 $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                                 break;
+                                            case "entity":
+                                                $v = Dropdown::getDropdownName("glpi_entities", $entities_id);
+                                                $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                                break;
                                         }
                                     }
                                 }
@@ -3736,6 +3740,10 @@ JAVASCRIPT
                                                     $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
                                                     $v = $user->fields['email'];
                                                     $str = str_replace("#" . $title . "#", $v, $str);
+                                                    break;
+                                                case "entity":
+                                                    $v = Dropdown::getDropdownName("glpi_entities", $entities_id);
+                                                    $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                                     break;
                                             }
                                         }
@@ -3803,6 +3811,10 @@ JAVASCRIPT
                                         $user = new UserEmail();
                                         $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
                                         $v = $user->fields['email'];
+                                        $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
+                                        break;
+                                    case "entity":
+                                        $v = Dropdown::getDropdownName("glpi_entities", $entities_id);
                                         $value['value'] = str_replace("#" . $title . "#", $v, $value['value']);
                                         break;
                                 }

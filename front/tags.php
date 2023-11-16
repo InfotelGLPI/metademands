@@ -29,7 +29,7 @@ Html::popHeader(__('List of available tags'), $_SERVER['PHP_SELF']);
 
 if (isset($_GET["metademands_id"])) {
    Session::checkCentralAccess();
-   PluginMetademandsField::showAvailableTags($_GET["metademands_id"]);
+    PluginMetademandsTicketField::showAvailableTags($_GET["metademands_id"]);
    Html::ajaxFooter();
 } else {
    Html::displayErrorAndDie("lost");
