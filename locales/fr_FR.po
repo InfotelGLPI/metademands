@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-20 11:22+0000\n"
+"POT-Creation-Date: 2023-11-20 11:30+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -125,8 +125,8 @@ msgstr ""
 "complétera les informations suivantes."
 
 #: front/basketobject.form.php:72 inc/basketobject.class.php:79
-msgid "Basket objects"
-msgstr "Objets du panier"
+msgid "Reference catalog"
+msgstr "Catalogue de références"
 
 #: front/condition.form.php:46
 msgid "You have to select a field"
