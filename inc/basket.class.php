@@ -73,7 +73,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $field = "<table class='tab_cadre_fixehov'>";
         $field .= "<tr class='tab_bg_1'>";
-        $field .= "<th>" . __('Material', 'metademands') . "</th>";
+        $field .= "<th>" . __('Object', 'metademands') . "</th>";
 //        $field .= "<th>" . __('Estimated unit price', 'metademands') . "</th>";
         if ($data['custom_values'] == 1) {
             $field .= "<th>" . __('Quantity', 'metademands') . "</th>";
@@ -747,7 +747,7 @@ class PluginMetademandsBasket extends CommonDBTM
             $content .= "<tr class='tab_bg_1'>";
             $content .= "</tr>";
             $content .= "<tr class='tab_bg_1'>";
-            $content .= "<th>" . __('Material', 'metademands') . "</th>";
+            $content .= "<th>" . __('Object', 'metademands') . "</th>";
 //            $content .= "<th>" . __('Estimated unit price', 'ordermaterial') . "</th>";
             $content .= "<th>" . __('Quantity', 'metademands') . "</th>";
             $content .= "<th style='text-align: right;'>" . __('Total', 'metademands') . "</th>";
@@ -912,7 +912,7 @@ class PluginMetademandsBasket extends CommonDBTM
             if ($formatAsTable) {
 //                $result .= "<table $style_td>";
                 $result[$field['rank']]['content'] .= "<tr>";
-                $result[$field['rank']]['content'] .= "<th $style_td>".__('Material', '_metademands')."</th>";
+                $result[$field['rank']]['content'] .= "<th $style_td>".__('Object', '_metademands')."</th>";
                 $result[$field['rank']]['content'] .= "<th $style_td>".__('Quantity', '_metademands')."</th>";
 //                $result[$field['rank']]['content'] .= "<th $style_td>".__('Order type', '_metademands')."</th>";
                 $result[$field['rank']]['content'] .= "<th $style_td>".__('Chargeback reference', '_metademands')."</th>";
