@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.7.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.8.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -374,9 +374,14 @@ function plugin_metademands_install() {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.4.sql");
     }
 
-    //version 2.7.9
+    //version 3.3.7
     if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "block_parent_ticket_resolution")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.7.sql");
+    }
+
+    //version 3.3.8
+    if (!$DB->tableExists("glpi_plugin_metademands_basketobjecttypes")) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.8.sql");
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
@@ -497,7 +502,9 @@ function plugin_metademands_uninstall() {
         "glpi_plugin_metademands_steps",
         "glpi_plugin_metademands_configsteps",
         "glpi_plugin_metademands_stepforms_actors",
-        "glpi_plugin_metademands_conditions"];
+        "glpi_plugin_metademands_conditions",
+        "glpi_plugin_metademands_basketobjecttypes",
+        "glpi_plugin_metademands_basketobjects"];
     foreach ($tables as $table) {
         $DB->query("DROP TABLE IF EXISTS `$table`;");
     }

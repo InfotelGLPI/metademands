@@ -3384,7 +3384,8 @@ JAVASCRIPT
             && $field['value'] != 'NULL'
             || $field['type'] == 'title'
             || $field['type'] == 'title-block'
-            || $field['type'] == 'radio') {
+            || $field['type'] == 'radio'
+            || $field['type'] == 'basket') {
 
 
             //use plugin fields types
@@ -3518,7 +3519,13 @@ JAVASCRIPT
                         PluginMetademandsYesno::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
-
+                case 'basket':
+                    if ($return_value == true) {
+                        return PluginMetademandsBasket::getFieldValue($field);
+                    } else {
+                        PluginMetademandsBasket::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    }
+                    break;
                 case 'parent_field':
                     $metademand_field = new PluginMetademandsField();
                     if (isset($field['parent_field_id']) && $metademand_field->getFromDB($field['parent_field_id'])) {

@@ -124,7 +124,7 @@ function plugin_init_metademands()
 
         if (Session::haveRight("plugin_metademands", READ)
             || Session::haveRight('plugin_metademands_createmeta', READ)) {
-            $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMenu'];
+            $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMenu', 'management' => 'PluginMetademandsBasketobject'];
         }
 
         if (Session::haveRight("plugin_metademands", READ)

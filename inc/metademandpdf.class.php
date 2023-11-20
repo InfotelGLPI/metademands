@@ -886,6 +886,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label2, $value2, 'LRBT', 'L', '', 0, '', 'black');
                             break;
+                        case 'basket':
+                            $value = PluginMetademandsBasket::displayFieldPDF($elt,$fields, $label);
+                            $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                            break;
                         default:
 
                             if (isset($PLUGIN_HOOKS['metademands'])) {

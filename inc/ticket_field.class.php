@@ -227,6 +227,8 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                 case 'link':
                     PluginMetademandsLink::isCheckValueOK($value, $check_value);
                     break;
+                case 'basket':
+                    break;
                 default:
                     if ($check_value == PluginMetademandsField::$not_null && empty($value)) {
                         return false;

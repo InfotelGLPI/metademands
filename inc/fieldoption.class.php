@@ -46,7 +46,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     public static $allowed_options_types = ['yesno',
         'checkbox', 'radio', 'dropdown_multiple', 'dropdown', 'dropdown_object',
-        'parent_field', 'text', 'textarea'];
+        'parent_field', 'text', 'textarea', 'basket'];
     public static $allowed_options_items = ['other', 'ITILCategory_Metademands'];
 
     /**
@@ -509,6 +509,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'link':
                 break;
+            case 'basket':
+                PluginMetademandsBasket::getParamsValueToCheck($this, $item, $params);
+                break;
             case 'parent_field':
                 echo "<tr>";
                 echo "<td>";
@@ -676,6 +679,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'link':
                 break;
+            case 'basket':
+                break;
             case 'parent_field':
                 //list of fields
                 $fields = [];
@@ -753,6 +758,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
             case 'upload':
                 break;
             case 'link':
+                break;
+            case 'basket':
+                PluginMetademandsBasket::showParamsValueToCheck($params);
                 break;
             case 'parent_field':
                 $field = new PluginMetademandsField();
@@ -1142,6 +1150,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             break;
                         case 'link':
                             break;
+                        case 'basket':
+                            PluginMetademandsBasket::fieldsHiddenScript($data);
+                            break;
                         case 'parent_field':
                             break;
                         default:
@@ -1214,6 +1225,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 case 'upload':
                     break;
                 case 'link':
+                    break;
+                case 'basket':
+                    PluginMetademandsBasket::blocksHiddenScript($data);
                     break;
                 case 'parent_field':
                     break;
