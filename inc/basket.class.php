@@ -735,7 +735,7 @@ class PluginMetademandsBasket extends CommonDBTM
             echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
 
             echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
-            echo __('Basket summary', 'ordermaterial');
+            echo __('Basket summary', 'metademands');
             echo "</h2>";
 
             echo "</div>";
@@ -748,7 +748,7 @@ class PluginMetademandsBasket extends CommonDBTM
             $content .= "</tr>";
             $content .= "<tr class='tab_bg_1'>";
             $content .= "<th>" . __('Object', 'metademands') . "</th>";
-//            $content .= "<th>" . __('Estimated unit price', 'ordermaterial') . "</th>";
+//            $content .= "<th>" . __('Estimated unit price', 'metademands') . "</th>";
             $content .= "<th>" . __('Quantity', 'metademands') . "</th>";
             $content .= "<th style='text-align: right;'>" . __('Total', 'metademands') . "</th>";
             $content .= "</tr>";
@@ -789,7 +789,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
 //                            if ($material->fields['is_specific'] == 1) {
 //                                $content .= "<td>";
-//                                $content .= __('On quotation', 'ordermaterial');
+//                                $content .= __('On quotation', 'metademands');
 //                                $content .= "</td>";
 //                            } else {
 //                                $content .= "<td>";
@@ -803,7 +803,7 @@ class PluginMetademandsBasket extends CommonDBTM
                             $content .= "<td style='text-align: right;'>";
                             $totalrow = $quantity;// * $material->fields['estimated_price']
 //                            if ($material->fields['is_specific'] == 1) {
-//                                $content .= __('On quotation', 'ordermaterial');
+//                                $content .= __('On quotation', 'metademands');
 //                            } else {
                                 $content .= Html::formatNumber($totalrow, false, 0);
 //                            }
@@ -912,10 +912,10 @@ class PluginMetademandsBasket extends CommonDBTM
             if ($formatAsTable) {
 //                $result .= "<table $style_td>";
                 $result[$field['rank']]['content'] .= "<tr>";
-                $result[$field['rank']]['content'] .= "<th $style_td>".__('Object', '_metademands')."</th>";
-                $result[$field['rank']]['content'] .= "<th $style_td>".__('Quantity', '_metademands')."</th>";
+                $result[$field['rank']]['content'] .= "<th $style_td>".__('Object', 'metademands')."</th>";
+                $result[$field['rank']]['content'] .= "<th $style_td>".__('Quantity', 'metademands')."</th>";
 //                $result[$field['rank']]['content'] .= "<th $style_td>".__('Order type', '_metademands')."</th>";
-                $result[$field['rank']]['content'] .= "<th $style_td>".__('Chargeback reference', '_metademands')."</th>";
+                $result[$field['rank']]['content'] .= "<th $style_td>".__('Chargeback reference', 'metademands')."</th>";
 //                $result[$field['rank']]['content'] .= "<th $style_td>".__('Estimated unit price', '_metademands')."</th>";
                 $result[$field['rank']]['content'] .= "</tr>";
             }

@@ -641,7 +641,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             'id' => '5',
             'table' => $this->getTable(),
             'field' => 'is_order',
-            'name' => __('Use as basket', 'metademands'),
+            'name' => __('Permit multiple form', 'metademands'),
             'datatype' => 'bool'
         ];
 
@@ -713,6 +713,14 @@ class PluginMetademandsMetademand extends CommonDBTM
             'field' => 'can_clone',
             'name' => __('Allow form modification after validation', 'metademands'),
             'datatype' => 'bool',
+        ];
+
+        $tab[] = [
+            'id' => '14',
+            'table' => $this->getTable(),
+            'field' => 'is_basket',
+            'name' => __('Use as basket', 'metademands'),
+            'datatype' => 'bool'
         ];
 
         $tab[] = [
@@ -1133,7 +1141,7 @@ JAVASCRIPT
 
         echo "<tr class='tab_bg_1'>";
 
-        echo "<td>" . __('Use as basket', 'metademands') . "</td><td>";
+        echo "<td>" . __('Permit multiple form', 'metademands') . "</td><td>";
         Dropdown::showYesNo("is_order", $this->fields['is_order']);
         echo "</td>";
 
@@ -1148,6 +1156,16 @@ JAVASCRIPT
         } else {
             echo "<td colspan='2'></td>";
         }
+        echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
+
+        echo "<td>" . __('Use as basket', 'metademands') . "</td><td>";
+        Dropdown::showYesNo("is_basket", $this->fields['is_basket']);
+        echo "</td>";
+
+        echo "<td colspan='2'></td>";
+        echo "</tr>";
 
         if ($this->fields['object_to_create'] != 'Change') {
             echo "</tr>";

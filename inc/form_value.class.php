@@ -108,7 +108,7 @@ class PluginMetademandsForm_Value extends CommonDBTM
 
                     $metafield = new PluginMetademandsField();
                     if ($metafield->getFromDB($fields_id)) {
-                        if ($metafield->fields["type"] == "ordermaterial_basket") {
+                        if ($metafield->fields["type"] == "basket") {
                             if (isset($_SESSION['plugin_metademands'][$field["plugin_metademands_metademands_id"]]['quantities'])) {
                                 $quantities = $_SESSION['plugin_metademands'][$field["plugin_metademands_metademands_id"]]['quantities'];
                                 if (isset($quantities[$fields_id])) {

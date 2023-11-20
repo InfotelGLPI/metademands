@@ -984,6 +984,8 @@ class PluginMetademandsWizard extends CommonDBTM
                         if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
                             $see_summary = 1;
                         }
+                    } else if ($metademands->fields['is_basket'] == 1) {
+                        $see_summary = 1;
                     }
                     $style = "";
                     if ($see_summary == 0) {
@@ -1720,6 +1722,8 @@ class PluginMetademandsWizard extends CommonDBTM
                     if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
                         $see_summary = 1;
                     }
+                } else if ($metademands->fields['is_basket'] == 1) {
+                    $see_summary = 1;
                 }
                 if ($see_summary == 0) {
                     echo "<br>";
@@ -1770,6 +1774,10 @@ class PluginMetademandsWizard extends CommonDBTM
                         echo Html::hidden('see_basket_summary', ['value' => 1]);
                         $see_summary = 1;
                     }
+                } else if ($metademands->fields['is_basket'] == 1) {
+                    $title = _sx('button', 'See basket summary & send it', 'metademands');
+                    echo Html::hidden('see_basket_summary', ['value' => 1]);
+                    $see_summary = 1;
                 }
                 $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
                 $submitmsg = "";
