@@ -531,7 +531,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
     public static function blocksHiddenScript($data)
     {
-        $check_values = $data['options'];
+        $check_values = $data['options'] ?? [];
         $id = $data["id"];
 
         $withquantity = false;
