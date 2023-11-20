@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-20 11:16+0000\n"
+"POT-Creation-Date: 2023-11-20 11:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,7 +187,8 @@ msgid "Basket"
 msgstr ""
 
 #: inc/basket.class.php:76 inc/basket.class.php:750 inc/basket.class.php:915
-msgid "Material"
+#: inc/field.class.php:423 inc/field.class.php:1140 inc/field.class.php:2730
+msgid "Object"
 msgstr ""
 
 #: inc/basket.class.php:79 inc/basket.class.php:752 inc/basket.class.php:916
@@ -611,10 +612,6 @@ msgstr ""
 
 #: inc/field.class.php:402
 msgid "Display field after"
-msgstr ""
-
-#: inc/field.class.php:423 inc/field.class.php:1140 inc/field.class.php:2730
-msgid "Object"
 msgstr ""
 
 #: inc/field.class.php:544 inc/field.class.php:1145 inc/field.class.php:2835
