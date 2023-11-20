@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-20 11:16+0000\n"
+"POT-Creation-Date: 2023-11-20 11:22+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -199,8 +199,9 @@ msgid "Basket"
 msgstr "Panier"
 
 #: inc/basket.class.php:76 inc/basket.class.php:750 inc/basket.class.php:915
-msgid "Material"
-msgstr "Matériel"
+#: inc/field.class.php:423 inc/field.class.php:1140 inc/field.class.php:2730
+msgid "Object"
+msgstr "Objet"
 
 #: inc/basket.class.php:79 inc/basket.class.php:752 inc/basket.class.php:916
 #: inc/basket.class.php:1057
@@ -631,10 +632,6 @@ msgstr "Bloc"
 #: inc/field.class.php:402
 msgid "Display field after"
 msgstr "Afficher le champ après"
-
-#: inc/field.class.php:423 inc/field.class.php:1140 inc/field.class.php:2730
-msgid "Object"
-msgstr "Objet"
 
 #: inc/field.class.php:544 inc/field.class.php:1145 inc/field.class.php:2835
 msgid "Display into the basket"
