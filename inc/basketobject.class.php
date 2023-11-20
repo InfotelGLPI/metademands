@@ -76,7 +76,7 @@ class PluginMetademandsBasketobject extends CommonDBTM
      */
     static function getTypeName($nb = 0)
     {
-        return __('Basket objects', 'metademands');
+        return __('Reference catalog', 'metademands');
     }
 
 

@@ -69,7 +69,7 @@ if (isset($_POST["add"])) {
     Html::back();
 
 } else {
-    Html::header(__('Basket objects', 'metademands'), '', "management", "pluginmetademandsbasketobject");
+    Html::header(__('Reference catalog', 'metademands'), '', "management", "pluginmetademandsbasketobject");
     $material->display(['id' => $_GET["id"]]);
     Html::footer();
 }
