@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-20 11:22+0000\n"
+"POT-Creation-Date: 2023-11-20 11:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,7 +116,7 @@ msgid ""
 msgstr ""
 
 #: front/basketobject.form.php:72 inc/basketobject.class.php:79
-msgid "Basket objects"
+msgid "Reference catalog"
 msgstr ""
 
 #: front/condition.form.php:46
