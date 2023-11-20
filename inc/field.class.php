@@ -371,6 +371,7 @@ class PluginMetademandsField extends CommonDBChild
         // TYPE
         echo "<td>" . __('Type') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
         echo "<td>";
+
         $randType   = self::dropdownFieldTypes("type", ['value'          => $this->fields["type"],
                                                       'metademands_id' => $this->fields["plugin_metademands_metademands_id"]]);
         $paramsType = ['value' => '__VALUE__',
@@ -394,7 +395,12 @@ class PluginMetademandsField extends CommonDBChild
         Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_values", PLUGIN_METADEMANDS_WEBDIR .
                                                                                 "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
 
-
+        if ($metademand->fields['is_basket'] == 0
+            && $this->fields['type'] == 'basket') {
+            echo "<span class='alert alert-warning d-flex'>";
+            echo __('Remember to activate basket mode on your metademand !', 'metademands');
+            echo "</span>";
+        }
         echo "</td>";
 
         // ORDER
