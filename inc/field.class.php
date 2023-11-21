@@ -1208,7 +1208,7 @@ JAVASCRIPT
                     }
                 }
                 echo "</td>";
-                echo "<td>" . self::getFieldItemsName($value['item']) . "</td>";
+                echo "<td>" . self::getFieldItemsName($value['type'], $value['item']) . "</td>";
                 echo "<td>";
                 if ($value['is_mandatory'] == 1) {
                     echo "<span class='red'>";
@@ -1818,9 +1818,19 @@ JAVASCRIPT
     *
     * @return string item
     */
-    public static function getFieldItemsName($value = '')
+    public static function getFieldItemsName($type = '', $value = '')
     {
         global $PLUGIN_HOOKS;
+
+        switch ($type) {
+            case 'basket':
+                $basketobject = new PluginMetademandsBasketobjecttype();
+                $name = Dropdown::EMPTY_VALUE;
+                if ($basketobject->getFromDB($value)) {
+                    $name = $basketobject->getName();
+                }
+                return $name;
+        }
 
         switch ($value) {
             case 'other':
@@ -1858,7 +1868,7 @@ JAVASCRIPT
                         }
                     }
                 }
-                return Dropdown::EMPTY_VALUE;
+                return $value;
         }
     }
 
