@@ -170,6 +170,8 @@ function plugin_init_metademands()
         if (Plugin::isPluginActive('servicecatalog')) {
             $PLUGIN_HOOKS['servicecatalog']['metademands'] = ['PluginMetademandsServicecatalog'];
         }
+
+        $PLUGIN_HOOKS['plugin_datainjection_populate']['metademands'] = 'plugin_datainjection_populate_basketobjects';
     }
 
     // Import webservice
@@ -182,7 +184,6 @@ function plugin_init_metademands()
                                                                   'addToTimeline'];
     $PLUGIN_HOOKS['show_in_timeline']['metademands'] = ['PluginMetademandsInterticketfollowup',
                                                            'getlistItems'];
-    $PLUGIN_HOOKS['plugin_datainjection_populate']['metademands'] = 'plugin_datainjection_populate_metademands';
 }
 
 /**

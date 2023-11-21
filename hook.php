@@ -1202,3 +1202,8 @@ function plugin_metademands_hook_dashboard_cards($cards)
 
     return $cards;
 }
+
+function plugin_datainjection_populate_basketobjects() {
+    global $INJECTABLE_TYPES;
+    $INJECTABLE_TYPES['PluginMetademandsBasketobjectInjection'] = 'metademands';
+}
