@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-21 08:09+0000\n"
+"POT-Creation-Date: 2023-11-21 10:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,7 +70,7 @@ msgstr ""
 msgid "Form name is required"
 msgstr ""
 
-#: ajax/createmetademands.php:154 front/wizard.form.php:168
+#: ajax/createmetademands.php:147 front/wizard.form.php:168
 msgid "There is no line on the basket"
 msgstr ""
 
@@ -186,29 +186,38 @@ msgstr ""
 msgid "Basket"
 msgstr ""
 
-#: inc/basket.class.php:76 inc/basket.class.php:750 inc/basket.class.php:915
+#: inc/basket.class.php:76 inc/basket.class.php:776 inc/basket.class.php:969
 #: inc/field.class.php:429 inc/field.class.php:1146 inc/field.class.php:2746
 msgid "Object"
 msgstr ""
 
-#: inc/basket.class.php:79 inc/basket.class.php:752 inc/basket.class.php:916
-#: inc/basket.class.php:1057
+#: inc/basket.class.php:81 inc/basket.class.php:983
+msgid "Estimated unit price"
+msgstr ""
+
+#: inc/basket.class.php:86 inc/basket.class.php:778 inc/basket.class.php:970
+#: inc/basket.class.php:1141
 msgid "Quantity"
 msgstr ""
 
-#: inc/basket.class.php:82
+#: inc/basket.class.php:89
 msgid "Select"
 msgstr ""
 
-#: inc/basket.class.php:85 inc/basket.class.php:753 inc/basket.class.php:1022
+#: inc/basket.class.php:92 inc/basket.class.php:779 inc/basket.class.php:1106
 msgid "Total"
 msgstr ""
 
-#: inc/basket.class.php:228
+#: inc/basket.class.php:117 inc/basket.class.php:170 inc/basket.class.php:824
+#: inc/basket.class.php:848 inc/basket.class.php:1052
+msgid "On quotation"
+msgstr ""
+
+#: inc/basket.class.php:254
 msgid "With quantity"
 msgstr ""
 
-#: inc/basket.class.php:241 inc/checkbox.class.php:249
+#: inc/basket.class.php:267 inc/checkbox.class.php:249
 #: inc/condition.class.php:322 inc/condition.class.php:454
 #: inc/condition.class.php:813 inc/dropdown.class.php:144
 #: inc/dropdownmeta.class.php:393 inc/dropdownmultiple.class.php:604
@@ -218,7 +227,7 @@ msgstr ""
 msgid "Value to check"
 msgstr ""
 
-#: inc/basket.class.php:242 inc/checkbox.class.php:269
+#: inc/basket.class.php:268 inc/checkbox.class.php:269
 #: inc/checkbox.class.php:285 inc/dropdown.class.php:178
 #: inc/dropdown.class.php:214 inc/dropdownmeta.class.php:442
 #: inc/dropdownmeta.class.php:452 inc/dropdownmeta.class.php:474
@@ -228,22 +237,30 @@ msgstr ""
 msgid "Not null value"
 msgstr ""
 
-#: inc/basket.class.php:738
+#: inc/basket.class.php:764
 msgid "Basket summary"
 msgstr ""
 
-#: inc/basket.class.php:822 inc/basketline.class.php:94
+#: inc/basket.class.php:869 inc/basketline.class.php:94
 msgctxt "button"
 msgid "Send order"
 msgstr ""
 
-#: inc/basket.class.php:879
+#: inc/basket.class.php:926
 msgid "No items on basket"
 msgstr ""
 
-#: inc/basket.class.php:918 inc/basketobject.class.php:115
-#: inc/basketobject.class.php:240
+#: inc/basket.class.php:975
+msgid "Order type"
+msgstr ""
+
+#: inc/basket.class.php:978 inc/basketobject.class.php:115
+#: inc/basketobject.class.php:215
 msgid "Chargeback reference"
+msgstr ""
+
+#: inc/basket.class.php:1060
+msgid "On catalog"
 msgstr ""
 
 #: inc/basketline.class.php:65
@@ -289,7 +306,7 @@ msgstr ""
 msgid "The object type is mandatory"
 msgstr ""
 
-#: inc/basketobject.class.php:216
+#: inc/basketobject.class.php:191
 msgid "Object name"
 msgstr ""
 
@@ -1656,72 +1673,71 @@ msgid_plural "You have %d drafts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/wizard.class.php:947 inc/wizard.class.php:1014
+#: inc/wizard.class.php:947 inc/wizard.class.php:1009
 msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:1025 inc/wizard.class.php:1773
-#: inc/wizard.class.php:1778
+#: inc/wizard.class.php:1020 inc/wizard.class.php:1761
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:1197
+#: inc/wizard.class.php:1192
 msgid "You do not have access to the form"
 msgstr ""
 
-#: inc/wizard.class.php:1248
+#: inc/wizard.class.php:1243
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1737
+#: inc/wizard.class.php:1727
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:1740 inc/wizard.class.php:1766
-#: inc/wizard.class.php:1784
+#: inc/wizard.class.php:1730 inc/wizard.class.php:1756
+#: inc/wizard.class.php:1767
 msgid "Next"
 msgstr ""
 
-#: inc/wizard.class.php:1769
+#: inc/wizard.class.php:1759
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/wizard.class.php:1785
+#: inc/wizard.class.php:1768
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1797
+#: inc/wizard.class.php:1780
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1852
+#: inc/wizard.class.php:1835
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:1862
+#: inc/wizard.class.php:1845
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3239
+#: inc/wizard.class.php:3222
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3248
+#: inc/wizard.class.php:3231
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3281
+#: inc/wizard.class.php:3264
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3285
+#: inc/wizard.class.php:3268
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
