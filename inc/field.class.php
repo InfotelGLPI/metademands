@@ -1488,7 +1488,7 @@ JAVASCRIPT
      *
      * @param $plug
      */
-    public static function showPluginFieldCase($plug, $metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0)
+    public static function showPluginFieldCase($plug, $metademands_data, $data, $on_order = false, $itilcategories_id = 0, $idline = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -1505,7 +1505,7 @@ JAVASCRIPT
                 $item               = $dbu->getItemForItemtype($pluginclass);
                 if ($item && is_callable([$item, 'showFieldCase'])) {
 
-                    $item->showFieldCase($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
+                    $item->showFieldCase($metademands_data, $data, $on_order = false, $itilcategories_id = 0, $idline = 0);
                 }
             }
         }
@@ -2023,14 +2023,14 @@ JAVASCRIPT
    /**
     * @param      $metademands_data
     * @param      $data
-    * @param bool $on_basket
+    * @param bool $on_order
     * @param int  $itilcategories_id
     *
     * @param int  $idline
     *
     * @return int|mixed|String
     */
-    public static function getFieldInput($metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0)
+    public static function getFieldInput($metademands_data, $data, $on_order = false, $itilcategories_id = 0, $idline = 0)
     {
         global $PLUGIN_HOOKS;
 
@@ -2043,7 +2043,7 @@ JAVASCRIPT
             $value = $data['value'];
         }
 
-        if ($on_basket == false) {
+        if ($on_order == false) {
             $namefield = 'field';
         } else {
             $namefield = 'field_basket_' . $idline;
@@ -2056,58 +2056,58 @@ JAVASCRIPT
             case 'title-block':
                 break;
             case 'informations':
-                PluginMetademandsInformation::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsInformation::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'text':
-                PluginMetademandsText::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsText::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'textarea':
-                PluginMetademandsTextarea::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsTextarea::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'dropdown_meta':
-                PluginMetademandsDropdownmeta::showWizardField($data, $namefield, $value, $on_basket, $itilcategories_id);
+                PluginMetademandsDropdownmeta::showWizardField($data, $namefield, $value, $on_order, $itilcategories_id);
                 break;
             case 'dropdown_object':
-                PluginMetademandsDropdownobject::showWizardField($data, $namefield, $value, $on_basket, $itilcategories_id);
+                PluginMetademandsDropdownobject::showWizardField($data, $namefield, $value, $on_order, $itilcategories_id);
                 break;
             case 'dropdown':
-                PluginMetademandsDropdown::showWizardField($data, $namefield, $value, $on_basket, $itilcategories_id);
+                PluginMetademandsDropdown::showWizardField($data, $namefield, $value, $on_order, $itilcategories_id);
                 break;
             case 'dropdown_multiple':
-                PluginMetademandsDropdownmultiple::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsDropdownmultiple::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'checkbox':
-                PluginMetademandsCheckbox::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsCheckbox::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'radio':
-                PluginMetademandsRadio::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsRadio::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'yesno':
-                PluginMetademandsYesno::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsYesno::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'number':
-                PluginMetademandsNumber::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsNumber::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'date':
-                PluginMetademandsDate::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsDate::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'date_interval':
-                PluginMetademandsDateinterval::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsDateinterval::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'datetime':
-                PluginMetademandsDatetime::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsDatetime::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'datetime_interval':
-                PluginMetademandsDatetimeinterval::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsDatetimeinterval::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'upload':
-                PluginMetademandsUpload::showWizardField($data, $namefield, $value, $on_basket, $idline);
+                PluginMetademandsUpload::showWizardField($data, $namefield, $value, $on_order, $idline);
                 break;
             case 'link':
-                PluginMetademandsLink::showWizardField($data, $namefield, $value, $on_basket);
+                PluginMetademandsLink::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'basket':
-                PluginMetademandsBasket::showWizardField($data, $on_basket, $itilcategories_id, $idline);
+                PluginMetademandsBasket::showWizardField($data, $on_order, $itilcategories_id, $idline);
                 break;
             case 'parent_field':
                 foreach ($metademands_data as $metademands_data_steps) {
@@ -2262,13 +2262,13 @@ JAVASCRIPT
                     $hooks_plugins = $PLUGIN_HOOKS['metademands'];
                     foreach ($hooks_plugins as $plug => $pluginclass) {
                         if (Plugin::isPluginActive($plug)) {
-                            echo self::showPluginFieldCase($plug, $metademands_data, $data, $on_basket = false, $itilcategories_id = 0, $idline = 0);
+                            echo self::showPluginFieldCase($plug, $metademands_data, $data, $on_order = false, $itilcategories_id = 0, $idline = 0);
                         }
                     }
                 }
                 break;
         }
-//        if ($on_basket == false) {
+//        if ($on_order == false) {
             echo $field;
 //        } else {
 //            return $field;

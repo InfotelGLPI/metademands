@@ -979,12 +979,7 @@ class PluginMetademandsWizard extends CommonDBTM
 //                    echo "</div>";
 
                     $see_summary = 0;
-                    if (Plugin::isPluginActive('ordermaterial')) {
-                        $ordermaterial = new PluginOrdermaterialMetademand();
-                        if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
-                            $see_summary = 1;
-                        }
-                    } else if ($metademands->fields['is_basket'] == 1) {
+                    if ($metademands->fields['is_basket'] == 1) {
                         $see_summary = 1;
                     }
                     $style = "";
@@ -1717,12 +1712,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 && $step - 1 >= count($metademands_data)) {
 
                 $see_summary = 0;
-                if (Plugin::isPluginActive('ordermaterial')) {
-                    $ordermaterial = new PluginOrdermaterialMetademand();
-                    if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
-                        $see_summary = 1;
-                    }
-                } else if ($metademands->fields['is_basket'] == 1) {
+                if ($metademands->fields['is_basket'] == 1) {
                     $see_summary = 1;
                 }
                 if ($see_summary == 0) {
@@ -1767,14 +1757,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
 
                 $title = _sx('button', 'Save & Post', 'metademands');
-                if (Plugin::isPluginActive('ordermaterial')) {
-                    $ordermaterial = new PluginOrdermaterialMetademand();
-                    if ($ordermaterial->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id])) {
-                        $title = _sx('button', 'See basket summary & send it', 'metademands');
-                        echo Html::hidden('see_basket_summary', ['value' => 1]);
-                        $see_summary = 1;
-                    }
-                } else if ($metademands->fields['is_basket'] == 1) {
+                if ($metademands->fields['is_basket'] == 1) {
                     $title = _sx('button', 'See basket summary & send it', 'metademands');
                     echo Html::hidden('see_basket_summary', ['value' => 1]);
                     $see_summary = 1;
@@ -2908,11 +2891,11 @@ class PluginMetademandsWizard extends CommonDBTM
      * @param       $id
      * @param       $post
      * @param       $fieldname
-     * @param false $on_basket
+     * @param false $on_order
      *
      * @return array
      */
-    public static function checkvalues($value, $id, $post, $fieldname, $on_basket = false)
+    public static function checkvalues($value, $id, $post, $fieldname, $on_order = false)
     {
         $KO = false;
         $content = [];
@@ -2961,7 +2944,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $KO = true;
             } else {
                 $content[$id]['plugin_metademands_fields_id'] = $id;
-                if ($on_basket == false) {
+                if ($on_order == false) {
                     $content[$id]['value'] = $post['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                 } else {
                     $content[$id]['value'] = $post['basket_plugin_servicecatalog_itilcategories_id'] ?? 0;

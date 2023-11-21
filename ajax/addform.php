@@ -184,7 +184,7 @@ if (isset($_POST['save_form'])) {
 
                 $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
 
-                if ((Plugin::isPluginActive('ordermaterial') || $metademands->fields['is_basket'] == 1)
+                if ($metademands->fields['is_basket'] == 1
                     && isset($_POST['quantity'])) {
                     $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['quantities'] = $_POST['quantity'];
                 }

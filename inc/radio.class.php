@@ -51,7 +51,7 @@ class PluginMetademandsRadio extends CommonDBTM
         return __('Radio button', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value,  $on_basket) {
+    static function showWizardField($data, $namefield, $value,  $on_order) {
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
@@ -82,7 +82,7 @@ class PluginMetademandsRadio extends CommonDBTM
                 $checked = "";
                 if ($value != null && $value == $key) {
                     $checked = 'checked';
-                } elseif ($value == null && isset($defaults[$key]) && $on_basket == false) {
+                } elseif ($value == null && isset($defaults[$key]) && $on_order == false) {
                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
                 }
                 $required = "";

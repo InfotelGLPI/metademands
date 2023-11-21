@@ -51,7 +51,7 @@ class PluginMetademandsDate extends CommonDBTM
         return __('Date', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket)
+    static function showWizardField($data, $namefield, $value, $on_order)
     {
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {

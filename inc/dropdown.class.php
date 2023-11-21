@@ -51,7 +51,7 @@ class PluginMetademandsDropdown extends CommonDBTM
         return __('Dropdown');
     }
 
-    static function showWizardField($data, $namefield, $value,  $on_basket, $itilcategories_id) {
+    static function showWizardField($data, $namefield, $value,  $on_order, $itilcategories_id) {
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);

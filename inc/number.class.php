@@ -51,7 +51,7 @@ class PluginMetademandsNumber extends CommonDBTM
         return __('Number', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket)
+    static function showWizardField($data, $namefield, $value, $on_order)
     {
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {

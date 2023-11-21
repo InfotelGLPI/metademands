@@ -54,7 +54,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         return __('Dropdown', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value,  $on_basket, $itilcategories_id) {
+    static function showWizardField($data, $namefield, $value,  $on_order, $itilcategories_id) {
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
@@ -102,7 +102,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 break;
 
             case 'ITILCategory_Metademands':
-                if ($on_basket == false) {
+                if ($on_order == false) {
                     $nameitil = 'field';
                 } else {
                     $nameitil = 'basket';
@@ -158,7 +158,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 break;
             case 'mydevices':
                 $field  = "";
-                if ($on_basket == false) {
+                if ($on_order == false) {
                     // My items
                     //TODO : used_by_ticket -> link with item's ticket
                     $field = "";

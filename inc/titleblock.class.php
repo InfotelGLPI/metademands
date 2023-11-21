@@ -51,7 +51,7 @@ class PluginMetademandsTitleblock extends CommonDBTM
         return __('Block title', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket)
+    static function showWizardField($data, $namefield, $value, $on_order)
     {
 
     }

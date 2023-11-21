@@ -115,23 +115,6 @@ class PluginMetademandsBasketobject extends CommonDBTM
             'name' => __('Chargeback reference', 'metademands'),
             'datatype' => 'text',
         ];
-//
-//
-//        $tab[] = [
-//            'id' => 5,
-//            'table' => $this->getTable(),
-//            'field' => 'estimated_price',
-//            'name' => __('Estimated price', 'metademands'),
-//            'datatype' => 'decimal'
-//        ];
-//
-//        $tab[] = [
-//            'id' => 6,
-//            'table' => $this->getTable(),
-//            'field' => 'is_specific',
-//            'name' => __('On quotation', 'metademands'),
-//            'datatype' => 'bool'
-//        ];
 
 
         $tab[] = [
@@ -142,14 +125,6 @@ class PluginMetademandsBasketobject extends CommonDBTM
             'massiveaction' => false,
             'datatype' => 'dropdown'
         ];
-
-//        $tab[] = [
-//            'id' => 8,
-//            'table' => $this->getTable(),
-//            'field' => 'is_accessory',
-//            'name' => __('Accessory', 'metademands'),
-//            'datatype' => 'bool'
-//        ];
 
         return $tab;
     }
@@ -262,22 +237,9 @@ class PluginMetademandsBasketobject extends CommonDBTM
         Dropdown::show('PluginMetademandsBasketobjecttype', $options);
         echo "</td>";
 
-//        echo "<td colspan='2'>" . __('Accessory', 'metademands') . "</td>";
-//        echo "<td colspan='2'>";
-//        Dropdown::showYesNo('is_accessory', $this->fields['is_accessory']);
-//        echo "</td>";
         echo "</tr>";
 
-//        echo "<tr class = 'tab_bg_1'>";
-//        echo "<td colspan='2'>" . __('On quotation', 'metademands') . "</td>";
-//        echo "<td colspan='2'>";
-//        Dropdown::showYesNo('is_specific', $this->fields['is_specific']);
-//        echo "</td>";
-//        echo "</tr>";
-
-//        if (Session::haveRight('plugin_ordermaterial_materials', CREATE)) {
-            $this->showFormButtons($options);
-//        }
+        $this->showFormButtons($options);
 
 
         return true;

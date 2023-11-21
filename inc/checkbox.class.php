@@ -51,7 +51,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
         return __('Checkbox', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket)
+    static function showWizardField($data, $namefield, $value, $on_order)
     {
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
@@ -83,7 +83,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 $checked = "";
                 if (isset($value[$key])) {
                     $checked = isset($value[$key]) ? 'checked' : '';
-                } elseif (isset($defaults[$key]) && $on_basket == false) {
+                } elseif (isset($defaults[$key]) && $on_order == false) {
                     $checked = ($defaults[$key] == 1) ? 'checked' : '';
                 }
                 $required = "";

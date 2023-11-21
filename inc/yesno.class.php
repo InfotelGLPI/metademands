@@ -51,7 +51,7 @@ class PluginMetademandsYesno extends CommonDBTM
         return __('Yes / No', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket)
+    static function showWizardField($data, $namefield, $value, $on_order)
     {
 
         $options[1] = __('No');

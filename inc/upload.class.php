@@ -52,7 +52,7 @@ class PluginMetademandsUpload extends CommonDBTM
         return __('Add a document');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket, $idline)
+    static function showWizardField($data, $namefield, $value, $on_order, $idline)
     {
 
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {

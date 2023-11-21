@@ -56,7 +56,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         return __('Dropdown multiple', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket)
+    static function showWizardField($data, $namefield, $value, $on_order)
     {
         global $DB;
 

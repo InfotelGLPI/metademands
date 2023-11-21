@@ -51,7 +51,7 @@ class PluginMetademandsInformation extends CommonDBTM
         return __('Informations', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket)
+    static function showWizardField($data, $namefield, $value, $on_order)
     {
 
         $field = '';
@@ -59,7 +59,7 @@ class PluginMetademandsInformation extends CommonDBTM
             $comment = $data['comment'];
         }
 
-        if ($on_basket == false && !empty($comment)) {
+        if ($on_order == false && !empty($comment)) {
             $field = "<label class='col-form-label'>" . htmlspecialchars_decode(stripslashes($comment)) . "</label>";
         }
 

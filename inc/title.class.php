@@ -51,7 +51,7 @@ class PluginMetademandsTitle extends CommonDBTM
         return __('Title');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_basket)
+    static function showWizardField($data, $namefield, $value, $on_order)
     {
 
     }

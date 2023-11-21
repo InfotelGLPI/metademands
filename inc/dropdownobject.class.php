@@ -51,7 +51,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         return __('Glpi Object', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value,  $on_basket, $itilcategories_id) {
+    static function showWizardField($data, $namefield, $value,  $on_order, $itilcategories_id) {
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
@@ -66,7 +66,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 $userrand = mt_rand();
                 $field    = "";
 
-                if ($on_basket == false) {
+                if ($on_order == false) {
                     $paramstooltip
                         = ['value'          => '__VALUE__',
                         'id_fielduser'   => $data['id'],
