@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-21 10:24+0000\n"
+"POT-Creation-Date: 2023-11-22 07:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1297,11 +1297,11 @@ msgstr ""
 msgid "Number"
 msgstr ""
 
-#: inc/number.class.php:102
+#: inc/number.class.php:104
 msgid "Step for number"
 msgstr ""
 
-#: inc/number.class.php:108
+#: inc/number.class.php:110
 msgid "Minimal mandatory"
 msgstr ""
 
