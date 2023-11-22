@@ -81,11 +81,13 @@ class PluginMetademandsNumber extends CommonDBTM
         $min = 0;
         $max  = 0;
         $step  = 0;
+        $minimal  = 0;
         if (isset($params['custom_values']) && !empty($params['custom_values'])) {
             $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
-            $min                = $params['custom_values'][0] ?? "";
-            $max                 = $params['custom_values'][1] ?? "";
-            $step                 = $params['custom_values'][2] ?? "";
+            $min = $params['custom_values'][0] ?? "";
+            $max = $params['custom_values'][1] ?? "";
+            $step = $params['custom_values'][2] ?? "";
+            $minimal = $params['custom_values'][3] ?? "";
         }
         echo '<label>' . __("Minimal count") . '</label>&nbsp;';
         $opt                   = ['value'         => $min];
@@ -94,7 +96,7 @@ class PluginMetademandsNumber extends CommonDBTM
 
         echo "<td>";
         echo '<label>' . __("Maximal count") . '</label>&nbsp;';
-        $opt                   = ['value'         => $max];
+        $opt                   = ['value'         => $max, 'max' => 999999];
         Dropdown::showNumber("custom_values[1]", $opt);
         echo "</td>";
 
@@ -106,7 +108,7 @@ class PluginMetademandsNumber extends CommonDBTM
 
         echo "<td>";
         echo '<label>' . __("Minimal mandatory", "metademands") . '</label>&nbsp;';
-        $opt                   = ['value'         => $step];
+        $opt                   = ['value'         => $minimal];
         Dropdown::showNumber("custom_values[3]", $opt);
         echo "</td>";
         echo "</tr>";
