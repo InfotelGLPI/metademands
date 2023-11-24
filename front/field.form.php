@@ -58,17 +58,6 @@ if (isset($_POST['item']) && isset($_POST['type'])
    $_POST['item'] = $_POST['type'];
 }
 
-if (isset($_POST['type']) && $_POST['type'] == 'number') {
-   if (isset($_POST['min'])) {
-      $custom_values['min']   = $_POST['min'];
-   }
-   if (isset($_POST['max'])) {
-      $custom_values['max']   = $_POST['max'];
-   }
-   if (isset($_POST['step'])) {
-      $custom_values['step']   = $_POST['step'];
-   }
-}
 if (isset($custom_values)) {
     $_POST['custom_values'] = $custom_values;
 }
@@ -107,6 +96,7 @@ if (isset($_POST["add"])) {
        || $_POST["type"] == 'radio') {
       $_POST["item"] = 0;
    }
+
    if ((isset($_POST["custom_values"]) && is_array($_POST["custom_values"]) ||
        isset($_POST["default_values"]) && is_array($_POST["default_values"]))
        && ((isset($_POST['item']) && $_POST["item"] == 'other')

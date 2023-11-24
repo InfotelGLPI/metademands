@@ -31,16 +31,23 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-
 if (isset($_POST['action'])) {
 
     switch ($_POST['action']) {
         case "loadTotalrow" :
 
             if (isset($_POST['quantity'])
-            && $_POST['quantity'] > 0) {// && isset($_POST['estimated_price'])
-//                if ($_POST['estimated_price'] > 0) {
-                    $totalrow = $_POST['quantity'];//*$_POST['estimated_price']
+            && $_POST['quantity'] > 0) {
+                $totalrow = $_POST['quantity'];
+                if (Plugin::isPluginActive('ordermaterial')) {
+                    $ordermaterialmeta = new PluginOrdermaterialMetademand();
+                    if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])
+                        && $_POST['estimated_price'] > 0) {
+                        $totalrow = $_POST['quantity']*$_POST['estimated_price'];
+                        $totalrow .= " €";
+                     }
+                }
+
                     echo $totalrow;
 //                }
 

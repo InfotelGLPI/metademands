@@ -2438,12 +2438,12 @@ JAVASCRIPT
                                                             if ($field_object->getFromDB($explodeTitle2[0])) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                     $users_id = $values['fields'][$explodeTitle2[0]];
-                                                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name']);
                                                                 }
                                                             }
                                                         }
                                                         $users_id = $parent_fields['_users_id_requester'];
-                                                        $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
+                                                        $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name'], true);
                                                     }
                                                 }
                                             } else {
@@ -2484,12 +2484,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeTitle2[0]];
-                                                                        $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                                        $str = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $str);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $str = self::getContentForUser($title, $users_id, $title, $str, true);
+                                                            $str = self::getContentForUser($title, $users_id, $_SESSION['glpiactive_entity'], $title, $str, true);
                                                         }
                                                     }
                                                     if ($find == true) {
@@ -2544,12 +2544,12 @@ JAVASCRIPT
                                                     if ($field_object->getFromDB($explodeTitle2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                             $users_id = $values['fields'][$explodeTitle2[0]];
-                                                            $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                                            $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name']);
                                                         }
                                                     }
                                                 }
                                                 $users_id = $parent_fields['_users_id_requester'];
-                                                $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
+                                                $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name'], true);
                                             }
                                         }
 
@@ -2592,12 +2592,12 @@ JAVASCRIPT
                                                             if ($field_object->getFromDB($explodeContent2[0])) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                     $users_id = $values['fields'][$explodeContent2[0]];
-                                                                    $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                                    $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content']);
                                                                 }
                                                             }
                                                         }
                                                         $users_id = $parent_fields['_users_id_requester'];
-                                                        $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
+                                                        $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content'], true);
                                                     }
                                                 }
                                             } else {
@@ -2643,12 +2643,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeContent2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
-                                                                        $str = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
+                                                                        $str = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $str);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $str = self::getContentForUser($content, $users_id, $content, $str, true);
+                                                            $str = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $str, true);
                                                         }
                                                     }
                                                     if ($find == true) {
@@ -2716,12 +2716,12 @@ JAVASCRIPT
                                                         if ($field_object->getFromDB($explodeContent2[0])) {
                                                             if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                 $users_id = $values['fields'][$explodeContent2[0]];
-                                                                $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                                $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content']);
                                                             }
                                                         }
                                                     }
                                                     $users_id = $parent_fields['_users_id_requester'];
-                                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
+                                                    $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content'], true);
                                                 }
                                             }
                                         }
@@ -2814,12 +2814,12 @@ JAVASCRIPT
                                                             if ($field_object->getFromDB($explodeTitle2[0])) {
                                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                     $users_id = $values['fields'][$explodeTitle2[0]];
-                                                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                                                    $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name']);
                                                                 }
                                                             }
                                                         }
                                                         $users_id = $parent_fields['_users_id_requester'];
-                                                        $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
+                                                        $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name'], true);
                                                     }
                                                 }
                                             } else {
@@ -2860,12 +2860,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeTitle2[0]];
-                                                                        $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                                        $str = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $str);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $str = self::getContentForUser($title, $users_id, $title, $str, true);
+                                                            $str = self::getContentForUser($title, $users_id, $_SESSION['glpiactive_entity'], $title, $str, true);
                                                         }
                                                     }
                                                     if ($find == true) {
@@ -2923,13 +2923,13 @@ JAVASCRIPT
                                                     if ($field_object->getFromDB($explodeTitle2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                             $users_id = $values['fields'][$explodeTitle2[0]];
-                                                            $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $line['tasks'][$key]['tickettasks_name']);
+                                                            $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name']);
                                                         }
                                                     }
                                                 }
 
                                                 $users_id = $parent_fields['_users_id_requester'];
-                                                $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $line['tasks'][$key]['tickettasks_name'], true);
+                                                $line['tasks'][$key]['tickettasks_name'] = self::getContentForUser($title, $users_id, $_SESSION['glpiactive_entity'], $title, $line['tasks'][$key]['tickettasks_name'], true);
                                             }
                                         }
 
@@ -2972,12 +2972,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeContent2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
-                                                                        $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                                        $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content']);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
+                                                            $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content'], true);
                                                         }
                                                     }
                                                 }
@@ -3025,12 +3025,12 @@ JAVASCRIPT
                                                                 if ($field_object->getFromDB($explodeContent2[0])) {
                                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                                         $users_id = $values['fields'][$explodeContent2[0]];
-                                                                        $str = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
+                                                                        $str = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $str);
                                                                     }
                                                                 }
                                                             }
                                                             $users_id = $parent_fields['_users_id_requester'];
-                                                            $str = self::getContentForUser($content, $users_id, $content, $str, true);
+                                                            $str = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $str, true);
                                                         }
                                                     }
                                                     if ($find == true) {
@@ -3090,12 +3090,12 @@ JAVASCRIPT
                                                     if ($field_object->getFromDB($explodeContent2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                             $users_id = $values['fields'][$explodeContent2[0]];
-                                                            $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $line['tasks'][$key]['content']);
+                                                            $line['tasks'][$key]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content']);
                                                         }
                                                     }
                                                 }
                                                 $users_id = $parent_fields['_users_id_requester'];
-                                                $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $content, $line['tasks'][$key]['content'], true);
+                                                $line['tasks'][$key]['content'] = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $line['tasks'][$key]['content'], true);
                                             }
                                         }
                                     }
@@ -3671,7 +3671,7 @@ JAVASCRIPT
                                             if ($field_object->getFromDB($explodeTitle2[0])) {
                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                     $users_id = $values['fields'][$explodeTitle2[0]];
-                                                    $value['value'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $value['value']);
+                                                    $value['value'] = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $value['value']);
                                                 }
                                             }
                                         }
@@ -4229,13 +4229,13 @@ JAVASCRIPT
                                                 if ($field_object->getFromDB($explodeTitle2[0])) {
                                                     if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                         $users_id = $values['fields'][$explodeTitle2[0]];
-                                                        $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                                        $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                                     }
                                                 }
                                             }
                                             $users_id = $parent_fields['_users_id_requester']; // TODO
                                             //                                 $users_id = Session::getLoginUserID(); // TODO
-                                            $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
+                                            $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $_SESSION['glpiactive_entity'], $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
                                         }
                                     }
                                 } else {
@@ -4276,12 +4276,12 @@ JAVASCRIPT
                                                     if ($field_object->getFromDB($explodeTitle2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                             $users_id = $values['fields'][$explodeTitle2[0]];
-                                                            $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                            $str = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $str);
                                                         }
                                                     }
                                                 }
                                                 $users_id = $parent_fields['_users_id_requester'];
-                                                $str = self::getContentForUser($explodeTitle2[1], $users_id, $title, $str);
+                                                $str = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $str);
                                             }
                                         }
                                         if ($find == true) {
@@ -4336,12 +4336,12 @@ JAVASCRIPT
                                         if ($field_object->getFromDB($explodeTitle2[0])) {
                                             if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                 $users_id = $values['fields'][$explodeTitle2[0]];
-                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
+                                                $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $tasks_data[$child_tasks_id]['tickettasks_name']);
                                             }
                                         }
                                     }
                                     $users_id = $parent_fields['_users_id_requester'];
-                                    $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
+                                    $tasks_data[$child_tasks_id]['tickettasks_name'] = self::getContentForUser($title, $users_id, $_SESSION['glpiactive_entity'], $title, $tasks_data[$child_tasks_id]['tickettasks_name'], true);
                                 }
                             }
 
@@ -4379,12 +4379,12 @@ JAVASCRIPT
                                                     if ($field_object->getFromDB($explodeContent2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                             $users_id = $values['fields'][$explodeContent2[0]];
-                                                            $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $tasks_data[$child_tasks_id]['content']);
+                                                            $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $tasks_data[$child_tasks_id]['content']);
                                                         }
                                                     }
                                                 }
                                                 $users_id = $parent_fields['_users_id_requester'];
-                                                $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
+                                                $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $tasks_data[$child_tasks_id]['content'], true);
                                             }
                                         }
                                     }
@@ -4426,12 +4426,12 @@ JAVASCRIPT
                                                     if ($field_object->getFromDB($explodeContent2[0])) {
                                                         if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                             $users_id = $values['fields'][$explodeContent2[0]];
-                                                            $str = self::getContentForUser($explodeContent2[1], $users_id, $content, $str);
+                                                            $str = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $str);
                                                         }
                                                     }
                                                 }
                                                 $users_id = $parent_fields['_users_id_requester'];
-                                                $str = self::getContentForUser($content, $users_id, $content, $str, true);
+                                                $str = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $str, true);
                                             }
                                         }
                                         if ($find == true) {
@@ -4489,12 +4489,12 @@ JAVASCRIPT
                                             if ($field_object->getFromDB($explodeContent2[0])) {
                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                     $users_id = $values['fields'][$explodeContent2[0]];
-                                                    $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $content, $tasks_data[$child_tasks_id]['content']);
+                                                    $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($explodeContent2[1], $users_id, $_SESSION['glpiactive_entity'], $content, $tasks_data[$child_tasks_id]['content']);
                                                 }
                                             }
                                         }
                                         $users_id = $parent_fields['_users_id_requester'];
-                                        $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $content, $tasks_data[$child_tasks_id]['content'], true);
+                                        $tasks_data[$child_tasks_id]['content'] = self::getContentForUser($content, $users_id, $_SESSION['glpiactive_entity'], $content, $tasks_data[$child_tasks_id]['content'], true);
                                     }
                                 }
                             }
@@ -6159,7 +6159,7 @@ JAVASCRIPT
      *
      * @return array|string|string[]
      */
-    public static function getContentForUser($field, $users_id, $title, $line, $bypass = false)
+    public static function getContentForUser($field, $users_id, $entities_id, $title, $line, $bypass = false)
     {
         if ($bypass === true && is_numeric($title)) {
             return str_replace("#" . $title . "#", "", $line);
@@ -6197,6 +6197,12 @@ JAVASCRIPT
                 $user = new UserEmail();
                 $user->getFromDBByCrit(['users_id' => $users_id, 'is_default' => 1]);
                 $value = $user->fields['email'];
+                if ($value != null) {
+                    return str_replace("#" . $title . "#", $value, $line);
+                }
+                break;
+            case "entity":
+                $value = Dropdown::getDropdownName("glpi_entities", $entities_id);
                 if ($value != null) {
                     return str_replace("#" . $title . "#", $value, $line);
                 }

@@ -75,6 +75,8 @@ class PluginMetademandsBasket extends CommonDBTM
         $field .= "<tr class='tab_bg_1'>";
         $field .= "<th>" . __('Object', 'metademands') . "</th>";
 
+        $field .= "<th>" . __('Description') . "</th>";
+
         if (Plugin::isPluginActive('ordermaterial')) {
             $ordermaterialmeta = new PluginOrdermaterialMetademand();
             if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
@@ -102,9 +104,13 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= "<tr class='tab_bg_1'>";
                 $field .= "<td>";
                 $field .= $material['name'] . "&nbsp;";
-                if (!empty($material['description'])) {
-                    $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($material['description']), ['display' => false]);
-                }
+//                if (!empty($material['description'])) {
+//                    $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($material['description']), ['display' => false]);
+//                }
+                $field .= "</td>";
+
+                $field .= "<td>";
+                $field .= Glpi\RichText\RichText::getSafeHtml($material['description']);
                 $field .= "</td>";
 
                 if (Plugin::isPluginActive('ordermaterial')) {
@@ -154,10 +160,14 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= "<tr class='tab_bg_1'>";
                 $field .= "<td>";
                 $field .= $material['name'] . "&nbsp;";
-                if (!empty($material['description'])) {
-                    $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($material['description']), ['display' => false]);
-                }
+//                if (!empty($material['description'])) {
+//                    $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($material['description']), ['display' => false]);
+//                }
 
+                $field .= "</td>";
+
+                $field .= "<td>";
+                $field .= Glpi\RichText\RichText::getSafeHtml($material['description']);
                 $field .= "</td>";
 
                 if (Plugin::isPluginActive('ordermaterial')) {
@@ -212,12 +222,17 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= "function plugin_metademands_load_totalrow$key(){";
                 $params = ['action' => 'loadTotalrow',
                     'quantity' => '__VALUE__',
-//                    'estimated_price' => $material['estimated_price'],
+                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
                     'check' => $check_hidden,
                     'name' => $name_hidden,
                     'key' => $key
                 ];
-
+                if (Plugin::isPluginActive('ordermaterial')) {
+                    $ordermaterialmeta = new PluginOrdermaterialMetademand();
+                    if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
+                        $params['estimated_price'] = $ordermaterial->fields['estimated_price'];
+                    }
+                }
                 $rand_totalrow = mt_rand();
                 $field .= Ajax::updateItemJsCode('plugin_metademands_totalrow' . $rand_totalrow,
                     PLUGIN_METADEMANDS_WEBDIR . '/ajax/totalrow.php',
@@ -237,8 +252,6 @@ class PluginMetademandsBasket extends CommonDBTM
 
                 $field .= "</tr>";
             }
-
-
         }
 
         $field .= "</table>";
@@ -837,8 +850,17 @@ class PluginMetademandsBasket extends CommonDBTM
                             $content .= "</td>";
 
                             $content .= "<td style='text-align: right;'>";
-                            $totalrow = $quantity;
 
+                            $totalrow = $quantity;
+                            if (Plugin::isPluginActive('ordermaterial')) {
+                                $ordermaterialmeta = new PluginOrdermaterialMetademand();
+                                if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $fields['metademands_id']])) {
+                                    $ordermaterial = new PluginOrdermaterialMaterial();
+                                    if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $mat_id])) {
+                                        $totalrow = $quantity * $ordermaterial->fields['estimated_price'];
+                                    }
+                                }
+                            }
                             if (Plugin::isPluginActive('ordermaterial')) {
                                 $ordermaterialmeta = new PluginOrdermaterialMetademand();
                                 if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $fields['metademands_id']])) {
@@ -848,6 +870,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                             $content .= __('On quotation', 'ordermaterial');
                                         }  else {
                                             $content .= Html::formatNumber($totalrow, false, 0);
+                                            $content .= " €";
                                         }
                                     }
                                 }
@@ -855,12 +878,25 @@ class PluginMetademandsBasket extends CommonDBTM
                                 $content .= Html::formatNumber($totalrow, false, 0);
                             }
 
-//                            $grandtotal += $totalrow;
+                            $grandtotal += $totalrow;
                             $content .= "</td>";
 
                             $content .= "</tr>";
                         }
                     }
+                }
+            }
+            if (Plugin::isPluginActive('ordermaterial')) {
+                $ordermaterialmeta = new PluginOrdermaterialMetademand();
+                if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $fields['metademands_id']])) {
+                    $content .= "<tr class='tab_bg_1'>";
+                    $content .= "<th colspan='3'>" . __('Grand total', 'ordermaterial') . "</th>";
+                    $content .= "<th style='text-align: right;'>" . Html::formatNumber($grandtotal, false, 2) . " €</th>";
+                    $content .= "</tr>";
+                    $content .= "<tr class='tab_bg_1'>";
+                    $content .= "<td colspan='4'></td>";
+//                    $content .= "<td colspan='4'>" . __('* The prices are estimates and do not act as an estimate', 'ordermaterial') . "</td>";
+                    $content .= "</tr>";
                 }
             }
             $content .= "</table>";
@@ -1097,7 +1133,16 @@ class PluginMetademandsBasket extends CommonDBTM
                 if ($formatAsTable) {
                     $result[$field['rank']]['content'] .= "</tr>";
                 }
-                $totalrow = $quantity;//*$material->fields['estimated_price']
+                $totalrow = $quantity;
+                if (Plugin::isPluginActive('ordermaterial')) {
+                    $ordermaterialmeta = new PluginOrdermaterialMetademand();
+                    if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id])) {
+                        $ordermaterial = new PluginOrdermaterialMaterial();
+                        if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $mat_id])) {
+                            $totalrow = $quantity * $ordermaterial->fields['estimated_price'];
+                        }
+                    }
+                }
                 $total+= $totalrow;
             }
             if ($formatAsTable) {
@@ -1108,8 +1153,14 @@ class PluginMetademandsBasket extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_td>";
             }
-
-            $result[$field['rank']]['content'] .= Html::formatNumber($total, false, 0);
+            $total_final = Html::formatNumber($total, false, 2);
+            if (Plugin::isPluginActive('ordermaterial')) {
+                $ordermaterialmeta = new PluginOrdermaterialMetademand();
+                if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id])) {
+                    $total_final .= " €";
+                }
+            }
+            $result[$field['rank']]['content'] .= $total_final;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
                 $result[$field['rank']]['content'] .= "</tr>";
