@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-22 07:20+0000\n"
+"POT-Creation-Date: 2023-11-24 09:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,7 +54,7 @@ msgstr ""
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: setup.php:197 inc/menu.class.php:42 inc/metademand.class.php:89
+#: setup.php:199 inc/menu.class.php:42 inc/metademand.class.php:89
 #: inc/profile.class.php:131 inc/profile.class.php:189 inc/tools.class.php:132
 #: inc/tools.class.php:202
 msgid "Meta-Demand"
@@ -308,6 +308,11 @@ msgstr ""
 
 #: inc/basketobject.class.php:191
 msgid "Object name"
+msgstr ""
+
+#: inc/basketobjecttranslation.class.php:292
+#: inc/basketobjecttypetranslation.class.php:270
+msgid "Translation"
 msgstr ""
 
 #: inc/basketobjecttype.class.php:47
