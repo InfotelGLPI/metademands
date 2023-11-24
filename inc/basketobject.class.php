@@ -244,4 +244,65 @@ class PluginMetademandsBasketobject extends CommonDBTM
 
         return true;
     }
+    static function dropdownByType($name)
+    {
+        $self = new self();
+        $objectType = new PluginMetademandsBasketobjecttype();
+        $objects = [];
+        $types = [];
+        $elements = [];
+        $types = $objectType->find();
+        foreach ($types as $type) {
+            $materialsByType = [];
+            $objects = $self->find(['plugin_orderfollowup_materialtypes_id' => $type['id']]);
+            foreach ($objects as $id => $item) {
+                $materialsByType[$id] = $item['name'] . " (" . $item['id'] . ")";
+            }
+            $elements[$type['name']] = $materialsByType;
+        }
+        $return = Dropdown::showFromArray($name, $elements, ['display' => false]);
+        return $return;
+    }
+
+    public function post_updateItem($history = 1)
+    {
+        if (Plugin::isPluginActive("ordermaterial")) {
+            $ordermaterial = new PluginOrdermaterialMaterial();
+            if (isset($this->input['is_accessory'])) {
+                if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $this->fields['id']])) {
+                    $input = [
+                        'estimated_price' => $this->input['estimated_price'],
+                        'is_accessory' => $this->input['is_accessory'],
+                        'is_specific' => $this->input['is_specific'],
+                        'id' => $ordermaterial->fields['id']
+                    ];
+                    $ordermaterial->update($input);
+                } else {
+                    $input = [
+                        'estimated_price' => $this->input['estimated_price'],
+                        'is_accessory' => $this->input['is_accessory'],
+                        'is_specific' => $this->input['is_specific'],
+                        'plugin_metademands_basketobjects_id' => $this->fields['id']
+                    ];
+                    $ordermaterial->add($input);
+                }
+            }
+        }
+    }
+
+    public function post_addItem()
+    {
+        if (Plugin::isPluginActive("ordermaterial")) {
+            $ordermaterial = new PluginOrdermaterialMaterial();
+            if (isset($this->input['is_accessory'])) {
+                $input = [
+                    'estimated_price' => $this->input['estimated_price'],
+                    'is_accessory' => $this->input['is_accessory'],
+                    'is_specific' => $this->input['is_specific'],
+                    'plugin_metademands_basketobjects_id' => $this->fields['id']
+                ];
+                $ordermaterial->add($input);
+            }
+        }
+    }
 }
