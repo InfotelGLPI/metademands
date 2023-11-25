@@ -48,7 +48,7 @@ if (isset($_POST['action'])) {
                      }
                 }
 
-                    echo $totalrow;
+                    echo Html::formatNumber($totalrow, false, 2);
 //                }
 
                 echo "<input class='form-check-input' type='hidden' check='".$_POST['check']."' name='".$_POST['name']."' key='".$_POST['key']."' id='".$_POST['name']."' value='".$_POST['key']."'>";
