@@ -1868,7 +1868,7 @@ JAVASCRIPT
                         }
                     }
                 }
-                return $value;
+                return "";
         }
     }
 
@@ -2550,6 +2550,7 @@ JAVASCRIPT
     */
     public static function addNewValue($valueId, $display_comment, $display_default)
     {
+        $valueId = $valueId + 1;
         echo '<table width=\'100%\' class="tab_cadre">';
         echo "<tr>";
 

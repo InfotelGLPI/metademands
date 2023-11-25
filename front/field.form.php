@@ -79,7 +79,6 @@ if (isset($_POST["add"])) {
       }
    }
 
-
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
    if ($_POST['id'] = $field->add($_POST)) {
@@ -105,7 +104,8 @@ if (isset($_POST["add"])) {
            || $_POST["type"] == 'dropdown_multiple'
            || (isset($_POST['item']) && ($_POST['item'] == 'Group'
                                          || $_POST['item'] == 'User'))
-           || $_POST['type'] == 'number')) {
+           || $_POST['type'] == 'number'
+           || $_POST['type'] == 'basket')) {
       $comment_values = "";
       $custom_values  = [];
       $default_values = [];

@@ -212,7 +212,7 @@ class PluginMetademandsRadio extends CommonDBTM
             echo "</td>";
             echo "</tr>";
         } else {
-            echo __('Value') . " 0 ";
+            echo __('Value') . " 1 ";
             echo Html::input('custom_values[1]', ['size' => 30]);
             echo "</td>";
             echo "<td>";

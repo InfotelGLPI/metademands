@@ -56,7 +56,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
-
+        $custom_values = PluginMetademandsField::_unserialize($data['custom_values']);
         $value = '';
         if (isset($data['value'])) {
             $value = $data['value'];
@@ -77,26 +77,26 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $field .= "<th>" . __('Description') . "</th>";
 
-        if (Plugin::isPluginActive('ordermaterial')) {
+        if (Plugin::isPluginActive('ordermaterial') && $custom_values[1] == 1) {
             $ordermaterialmeta = new PluginOrdermaterialMetademand();
             if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
                 $field .= "<th>" . __('Estimated unit price', 'ordermaterial') . "</th>";
             }
         }
 
-        if ($data['custom_values'] == 1) {
+        if ($custom_values[0] == 1) {
             $field .= "<th>" . __('Quantity', 'metademands') . "</th>";
         }
-        if ($data['custom_values'] == 0) {
+        if ($custom_values[0] == 0) {
             $field .= "<th>" . __('Select', 'metademands') . "</th>";
         }
-        if ($data['custom_values'] == 1) {
+        if ($custom_values[0] == 1) {
             $field .= "<th style='text-align: right;'>" . __('Total', 'metademands') . "</th>";
         }
 
         $field .= "</tr>";
 
-        if ($data['custom_values'] == 0) {
+        if ($custom_values[0] == 0) {
 
             foreach ($materials as $material) {
                 $key = $material['id'];
@@ -113,7 +113,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= Glpi\RichText\RichText::getSafeHtml($material['description']);
                 $field .= "</td>";
 
-                if (Plugin::isPluginActive('ordermaterial')) {
+                if (Plugin::isPluginActive('ordermaterial') && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
                     if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
                         $ordermaterial = new PluginOrdermaterialMaterial();
@@ -170,7 +170,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= Glpi\RichText\RichText::getSafeHtml($material['description']);
                 $field .= "</td>";
 
-                if (Plugin::isPluginActive('ordermaterial')) {
+                if (Plugin::isPluginActive('ordermaterial') && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
                     if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
                         $ordermaterial = new PluginOrdermaterialMaterial();
@@ -230,7 +230,10 @@ class PluginMetademandsBasket extends CommonDBTM
                 if (Plugin::isPluginActive('ordermaterial')) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
                     if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
-                        $params['estimated_price'] = $ordermaterial->fields['estimated_price'];
+                        $ordermaterial = new PluginOrdermaterialMaterial();
+                        if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $key])) {
+                            $params['estimated_price'] = $ordermaterial->fields['estimated_price'];
+                        }
                     }
                 }
                 $rand_totalrow = mt_rand();
@@ -261,14 +264,27 @@ class PluginMetademandsBasket extends CommonDBTM
 
     static function showFieldCustomValues($values, $key, $params)
     {
+
+        $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
+        $quantity = $params['custom_values'][0] ?? 0;
+        $price = $params['custom_values'][1] ?? 0;
+
         echo "<tr><td>";
         echo "<table class='metademands_show_custom_fields'>";
         echo "<tr><td>";
         echo __('With quantity', 'metademands');
         echo '</td>';
         echo "<td>";
-        Dropdown::showYesNo('custom_values', $params["custom_values"]);
+        Dropdown::showYesNo('custom_values[0]', $quantity);
         echo "</td></tr>";
+        if (Plugin::isPluginActive('ordermaterial')) {
+            echo "<tr><td>";
+            echo __('With estimated unit price', 'ordermaterial');
+            echo '</td>';
+            echo "<td>";
+            Dropdown::showYesNo('custom_values[1]', $price);
+            echo "</td></tr>";
+        }
         echo "</table>";
         echo "</td></tr>";
     }
@@ -381,7 +397,8 @@ class PluginMetademandsBasket extends CommonDBTM
         $id = $data["id"];
 
         $withquantity = false;
-        if ($data['custom_values'] == 1) {
+        $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+        if ($data['custom_values'][0] == 1) {
             $withquantity = true;
         }
 
@@ -574,7 +591,8 @@ class PluginMetademandsBasket extends CommonDBTM
         $id = $data["id"];
 
         $withquantity = false;
-        if ($data['custom_values'] == 1) {
+        $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+        if ($data['custom_values'][0] == 1) {
             $withquantity = true;
         }
 
@@ -797,7 +815,8 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field = new PluginMetademandsField();
                 $field->getFromDB($id);
                 $withquantity = false;
-                if ($field->fields['custom_values'] == 1) {
+                $custom_values = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                if (isset($custom_values[0]) && $custom_values[0] == 1) {
                     $withquantity = true;
                 }
                 if (is_array($material)) {
@@ -901,24 +920,25 @@ class PluginMetademandsBasket extends CommonDBTM
             }
             $content .= "</table>";
 
-            $content .= "<br><span style='float:right'>";
-            $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
+            if ($grandtotal > 0) {
+                $content .= "<br><span style='float:right'>";
+                $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
 
-            $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
-            $content .= Html::submit($title, ['name' => 'send_order',
-                'form' => '',
-                'id' => 'submitOrder',
-                'class' => 'btn btn-success right']);
-            $content .= "</span>";
+                $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
+                $content .= Html::submit($title, ['name' => 'send_order',
+                    'form' => '',
+                    'id' => 'submitOrder',
+                    'class' => 'btn btn-success right']);
+                $content .= "</span>";
 
-            $paramUrl = "";
-            $meta_validated = false;
-            if ($current_ticket > 0 && !$meta_validated) {
-                $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
-            }
-            $post = json_encode($fields);
-            $meta_id = $fields['metademands_id'];
-            $content .= "<script>
+                $paramUrl = "";
+                $meta_validated = false;
+                if ($current_ticket > 0 && !$meta_validated) {
+                    $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+                }
+                $post = json_encode($fields);
+                $meta_id = $fields['metademands_id'];
+                $content .= "<script>
                           $('#submitOrder').click(function() {
                              var meta_id = $meta_id;
                              $.ajax({
@@ -956,6 +976,8 @@ class PluginMetademandsBasket extends CommonDBTM
                           $('.step_wizard').hide();
                           
                         </script>";
+            }
+
         } else {
             $content .= "<table>";
             $content .= "<tr class='tab_bg_1'>";
@@ -1033,7 +1055,8 @@ class PluginMetademandsBasket extends CommonDBTM
                 $fieldmeta = new PluginMetademandsField();
                 $fieldmeta->getFromDB($field['id']);
                 $withquantity = false;
-                if ($fieldmeta->fields['custom_values'] == 1) {
+                $custom_values = PluginMetademandsField::_unserialize($fieldmeta->fields['custom_values']);
+                if ($custom_values[0] == 1) {
                     $withquantity = true;
                 }
 
