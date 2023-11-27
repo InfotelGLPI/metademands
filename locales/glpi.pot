@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-27 10:09+0000\n"
+"POT-Creation-Date: 2023-11-27 16:51+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -186,17 +186,17 @@ msgstr ""
 msgid "Basket"
 msgstr ""
 
-#: inc/basket.class.php:107 inc/basket.class.php:993 inc/basket.class.php:1228
-#: inc/field.class.php:429 inc/field.class.php:1146 inc/field.class.php:2747
+#: inc/basket.class.php:107 inc/basket.class.php:991 inc/basket.class.php:1227
+#: inc/field.class.php:429 inc/field.class.php:1146 inc/field.class.php:2751
 msgid "Object"
 msgstr ""
 
-#: inc/basket.class.php:114 inc/basket.class.php:997 inc/basket.class.php:1242
+#: inc/basket.class.php:114 inc/basket.class.php:995 inc/basket.class.php:1241
 msgid "Estimated unit price"
 msgstr ""
 
-#: inc/basket.class.php:119 inc/basket.class.php:1001 inc/basket.class.php:1229
-#: inc/basket.class.php:1416
+#: inc/basket.class.php:119 inc/basket.class.php:999 inc/basket.class.php:1228
+#: inc/basket.class.php:1415
 msgid "Quantity"
 msgstr ""
 
@@ -204,7 +204,7 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: inc/basket.class.php:125 inc/basket.class.php:1002 inc/basket.class.php:1375
+#: inc/basket.class.php:125 inc/basket.class.php:1000 inc/basket.class.php:1374
 msgid "Total"
 msgstr ""
 
@@ -216,8 +216,8 @@ msgstr ""
 msgid "Search for description.."
 msgstr ""
 
-#: inc/basket.class.php:166 inc/basket.class.php:220 inc/basket.class.php:1052
-#: inc/basket.class.php:1090 inc/basket.class.php:1312
+#: inc/basket.class.php:166 inc/basket.class.php:220 inc/basket.class.php:1051
+#: inc/basket.class.php:1089 inc/basket.class.php:1311
 msgid "On quotation"
 msgstr ""
 
@@ -232,7 +232,7 @@ msgstr ""
 #: inc/basket.class.php:339 inc/checkbox.class.php:249
 #: inc/condition.class.php:322 inc/condition.class.php:454
 #: inc/condition.class.php:813 inc/dropdown.class.php:144
-#: inc/dropdownmeta.class.php:393 inc/dropdownmultiple.class.php:604
+#: inc/dropdownmeta.class.php:393 inc/dropdownmultiple.class.php:605
 #: inc/dropdownobject.class.php:409 inc/field.class.php:1149
 #: inc/fieldoption.class.php:228 inc/radio.class.php:248
 #: inc/yesno.class.php:115
@@ -249,37 +249,33 @@ msgstr ""
 msgid "Not null value"
 msgstr ""
 
-#: inc/basket.class.php:950
-msgid "Demand details"
-msgstr ""
-
-#: inc/basket.class.php:983
+#: inc/basket.class.php:981
 msgid "Basket summary"
 msgstr ""
 
-#: inc/basket.class.php:1113
+#: inc/basket.class.php:1112
 msgid "Grand total"
 msgstr ""
 
-#: inc/basket.class.php:1126 inc/basketline.class.php:94
+#: inc/basket.class.php:1125 inc/basketline.class.php:94
 msgctxt "button"
 msgid "Send order"
 msgstr ""
 
-#: inc/basket.class.php:1185
+#: inc/basket.class.php:1184
 msgid "No items on basket"
 msgstr ""
 
-#: inc/basket.class.php:1234
+#: inc/basket.class.php:1233
 msgid "Order type"
 msgstr ""
 
-#: inc/basket.class.php:1237 inc/basketobject.class.php:115
-#: inc/basketobject.class.php:218
+#: inc/basket.class.php:1236 inc/basketobject.class.php:115
+#: inc/basketobject.class.php:217
 msgid "Chargeback reference"
 msgstr ""
 
-#: inc/basket.class.php:1320
+#: inc/basket.class.php:1319
 msgid "On catalog"
 msgstr ""
 
@@ -326,7 +322,7 @@ msgstr ""
 msgid "The object type is mandatory"
 msgstr ""
 
-#: inc/basketobject.class.php:194
+#: inc/basketobject.class.php:193
 msgid "Object name"
 msgstr ""
 
@@ -337,7 +333,9 @@ msgstr ""
 
 #: inc/basketobjecttype.class.php:47
 msgid "Object type"
-msgstr ""
+msgid_plural "Object types"
+msgstr[0] ""
+msgstr[1] ""
 
 #: inc/checkbox.class.php:51
 msgid "Checkbox"
@@ -345,8 +343,8 @@ msgstr ""
 
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
 #: inc/dropdownmeta.class.php:315 inc/dropdownmeta.class.php:371
-#: inc/dropdownmultiple.class.php:429 inc/dropdownmultiple.class.php:481
-#: inc/dropdownmultiple.class.php:537 inc/field.class.php:2578
+#: inc/dropdownmultiple.class.php:430 inc/dropdownmultiple.class.php:482
+#: inc/dropdownmultiple.class.php:538 inc/field.class.php:2582
 #: inc/radio.class.php:176 inc/radio.class.php:226 inc/yesno.class.php:94
 msgid "Default value"
 msgid_plural "Default values"
@@ -603,23 +601,23 @@ msgstr ""
 msgid "Dropdown multiple"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:438
+#: inc/dropdownmultiple.class.php:439
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:560
+#: inc/dropdownmultiple.class.php:561
 msgid "Classic display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:561
+#: inc/dropdownmultiple.class.php:562
 msgid "Double column display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:565
+#: inc/dropdownmultiple.class.php:566
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:576 inc/dropdownobject.class.php:382
+#: inc/dropdownmultiple.class.php:577 inc/dropdownobject.class.php:382
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
@@ -639,7 +637,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:315 inc/field.class.php:2745 inc/field.class.php:2828
+#: inc/field.class.php:315 inc/field.class.php:2749 inc/field.class.php:2832
 msgid "Additional label"
 msgstr ""
 
@@ -647,7 +645,7 @@ msgstr ""
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/field.class.php:355 inc/field.class.php:1154 inc/field.class.php:2810
+#: inc/field.class.php:355 inc/field.class.php:1154 inc/field.class.php:2814
 #: inc/step.class.php:273 inc/step.class.php:356
 msgid "Block"
 msgstr ""
@@ -660,7 +658,7 @@ msgstr ""
 msgid "Display field after"
 msgstr ""
 
-#: inc/field.class.php:550 inc/field.class.php:1151 inc/field.class.php:2852
+#: inc/field.class.php:550 inc/field.class.php:1151 inc/field.class.php:2856
 msgid "Display into the basket"
 msgstr ""
 
@@ -717,7 +715,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:1155 inc/field.class.php:2819
+#: inc/field.class.php:1155 inc/field.class.php:2823
 msgid "Order"
 msgstr ""
 
@@ -733,12 +731,12 @@ msgstr ""
 msgid "Category of the metademand"
 msgstr ""
 
-#: inc/field.class.php:1923
+#: inc/field.class.php:1927
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr ""
 
-#: inc/field.class.php:2389
+#: inc/field.class.php:2393
 msgid "Custom values"
 msgstr ""
 
