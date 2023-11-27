@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-27 16:51+0000\n"
+"POT-Creation-Date: 2023-11-27 17:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -819,9 +819,9 @@ msgid ""
 "set"
 msgstr ""
 
-#: inc/fieldoption.class.php:1016 inc/step.class.php:247 inc/step.class.php:367
-#: inc/step.class.php:387 inc/task.class.php:665 inc/task.class.php:1053
-#: inc/tickettask.class.php:168
+#: inc/fieldoption.class.php:1016 inc/mailtask.class.php:150
+#: inc/step.class.php:247 inc/step.class.php:367 inc/step.class.php:387
+#: inc/task.class.php:701 inc/task.class.php:1093 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
 msgstr ""
@@ -925,6 +925,43 @@ msgstr ""
 msgid "*use field \"Additional label\" for the button title"
 msgstr ""
 
+#: inc/mailtask.class.php:54 inc/metademandtask.class.php:54
+#: inc/task.class.php:66 inc/ticket_metademand.class.php:53
+#: inc/ticket_task.class.php:50 inc/tickettask.class.php:56
+msgid "Task creation"
+msgstr ""
+
+#: inc/mailtask.class.php:131 inc/task.class.php:514
+#: inc/tickettask.class.php:149
+msgid "Use block"
+msgstr ""
+
+#: inc/mailtask.class.php:142 inc/task.class.php:513
+#: inc/tickettask.class.php:160
+msgid "Block to use"
+msgstr ""
+
+#: inc/mailtask.class.php:170 inc/task.class.php:515
+#: inc/tickettask.class.php:190
+msgid "Format the description of the childs ticket as a table"
+msgstr ""
+
+#: inc/mailtask.class.php:192 inc/tickettask.class.php:260
+msgid "Actors"
+msgstr ""
+
+#: inc/mailtask.class.php:193 inc/task.class.php:663
+msgid "Recipients"
+msgstr ""
+
+#: inc/mailtask.class.php:292
+msgid "Failed to send email"
+msgstr ""
+
+#: inc/mailtask.class.php:297
+msgid "Email sent"
+msgstr ""
+
 #: inc/menu.class.php:75
 msgid "Import metademands"
 msgstr ""
@@ -940,7 +977,7 @@ msgid "Demand Progression"
 msgstr ""
 
 #: inc/metademand.class.php:354 inc/metademand.class.php:447
-#: inc/task.class.php:895 inc/tickettask.class.php:655
+#: inc/task.class.php:935 inc/tickettask.class.php:655
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -1191,12 +1228,6 @@ msgstr ""
 
 #: inc/metademandpdf.class.php:227
 msgid "Created on"
-msgstr ""
-
-#: inc/metademandtask.class.php:54 inc/task.class.php:64
-#: inc/ticket_metademand.class.php:53 inc/ticket_task.class.php:50
-#: inc/tickettask.class.php:56
-msgid "Task creation"
 msgstr ""
 
 #: inc/metademandtask.class.php:93
@@ -1464,51 +1495,39 @@ msgstr ""
 msgid "Step"
 msgstr ""
 
-#: inc/task.class.php:225
+#: inc/task.class.php:227
 msgid "Task type"
 msgstr ""
 
-#: inc/task.class.php:325
+#: inc/task.class.php:350
 msgid "You don't have the ticket creation right"
 msgstr ""
 
-#: inc/task.class.php:347
+#: inc/task.class.php:372
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: inc/task.class.php:438
+#: inc/task.class.php:463
 msgid "Add a task"
 msgstr ""
 
-#: inc/task.class.php:472
+#: inc/task.class.php:497
 msgid "Tasks"
 msgstr ""
 
-#: inc/task.class.php:487
+#: inc/task.class.php:512
 msgid "Level"
 msgstr ""
 
-#: inc/task.class.php:488 inc/tickettask.class.php:160
-msgid "Block to use"
-msgstr ""
-
-#: inc/task.class.php:489 inc/tickettask.class.php:149
-msgid "Use block"
-msgstr ""
-
-#: inc/task.class.php:490 inc/tickettask.class.php:190
-msgid "Format the description of the childs ticket as a table"
-msgstr ""
-
-#: inc/task.class.php:491 inc/tickettask.class.php:198
+#: inc/task.class.php:516 inc/tickettask.class.php:198
 msgid "Block parent ticket resolution"
 msgstr ""
 
-#: inc/task.class.php:644 inc/task.class.php:653
+#: inc/task.class.php:680 inc/task.class.php:689
 msgid "Root"
 msgstr ""
 
-#: inc/task.class.php:1030
+#: inc/task.class.php:1070
 msgctxt "button"
 msgid "Update block to use"
 msgstr ""
@@ -1586,10 +1605,6 @@ msgstr ""
 
 #: inc/tickettask.class.php:242
 msgid "Create after the task"
-msgstr ""
-
-#: inc/tickettask.class.php:260
-msgid "Actors"
 msgstr ""
 
 #: inc/titleblock.class.php:51
