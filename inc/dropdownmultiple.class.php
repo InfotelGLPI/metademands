@@ -407,10 +407,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $default_values = PluginMetademandsField::_unserialize($params['default_values']);
         echo "<tr>";
         echo "<td>";
-
+        $dbu = new DbUtils();
         if ($params["item"] != "User") {
             if ($params["item"] != "other"
                 && !empty($params["item"])
+                && $dbu->getItemForItemtype($params["item"])
             ) {
                 $item = new $params['item'];
 

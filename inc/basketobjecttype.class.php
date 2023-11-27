@@ -44,6 +44,6 @@ class PluginMetademandsBasketobjecttype extends CommonDropdown {
     * @return translated
     */
    static function getTypeName($nb = 0) {
-      return __('Object type', 'metademands');
+      return _n('Object type','Object types', $nb,'metademands');
    }
 }

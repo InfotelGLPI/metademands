@@ -78,7 +78,7 @@ class PluginMetademandsBasket extends CommonDBTM
         $criteria['WHERE'] = ['plugin_metademands_basketobjecttypes_id' => $data['item']];
 
         $where = [];
-        if (Plugin::isPluginActive('ordermaterial') && $custom_values[1] == 1) {
+        if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
             $where = [
                 'OR' => [
                     'estimated_price' => ['>', 0],
@@ -108,20 +108,20 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $field .= "<th>" . __('Description') . "</th>";
 
-        if (Plugin::isPluginActive('ordermaterial') && $custom_values[1] == 1) {
+        if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
             $ordermaterialmeta = new PluginOrdermaterialMetademand();
             if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
                 $field .= "<th>" . __('Estimated unit price', 'ordermaterial') . "</th>";
             }
         }
 
-        if ($custom_values[0] == 1) {
+        if (isset($custom_values[0]) && $custom_values[0] == 1) {
             $field .= "<th>" . __('Quantity', 'metademands') . "</th>";
         }
-        if ($custom_values[0] == 0) {
+        if (isset($custom_values[0]) && $custom_values[0] == 0) {
             $field .= "<th>" . __('Select', 'metademands') . "</th>";
         }
-        if ($custom_values[0] == 1) {
+        if (isset($custom_values[0]) && $custom_values[0] == 1) {
             $field .= "<th style='text-align: right;'>" . __('Total', 'metademands') . "</th>";
         }
 
@@ -142,7 +142,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $field .= "<tbody id='tablesearch'>";
 
-        if ($custom_values[0] == 0) {
+        if (isset($custom_values[0]) && $custom_values[0] == 0) {
 
             foreach ($materials as $material) {
                 $key = $material['id'];
@@ -156,7 +156,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= Glpi\RichText\RichText::getSafeHtml($material['description']);
                 $field .= "</td>";
 
-                if (Plugin::isPluginActive('ordermaterial') && $custom_values[1] == 1) {
+                if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) &&  $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
                     if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
                         $ordermaterial = new PluginOrdermaterialMaterial();
@@ -210,7 +210,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= Glpi\RichText\RichText::getSafeHtml($material['description']);
                 $field .= "</td>";
 
-                if (Plugin::isPluginActive('ordermaterial') && $custom_values[1] == 1) {
+                if (Plugin::isPluginActive('ordermaterial') && isset($custom_values[1]) && $custom_values[1] == 1) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
                     if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id']])) {
                         $ordermaterial = new PluginOrdermaterialMaterial();
@@ -322,7 +322,7 @@ class PluginMetademandsBasket extends CommonDBTM
         echo "</td></tr>";
         if (Plugin::isPluginActive('ordermaterial')) {
             echo "<tr><td>";
-            echo __('With estimated unit price', 'ordermaterial');
+            echo __('With estimated unit price', 'metademands');
             echo '</td>';
             echo "<td>";
             Dropdown::showYesNo('custom_values[1]', $price);
@@ -441,7 +441,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $withquantity = false;
         $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
-        if ($data['custom_values'][0] == 1) {
+        if (isset($data['custom_values'][0]) &&  $data['custom_values'][0] == 1) {
             $withquantity = true;
         }
 
@@ -635,7 +635,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $withquantity = false;
         $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
-        if ($data['custom_values'][0] == 1) {
+        if (isset($data['custom_values'][0]) && $data['custom_values'][0] == 1) {
             $withquantity = true;
         }
 
@@ -928,30 +928,28 @@ class PluginMetademandsBasket extends CommonDBTM
         $quantities = $fields["quantity"] ?? [];
         $content = "";
 
-
-
         $count = 0;
         $columns = 2;
 
         if (is_array($materials) && count($materials) > 0) {
 
-            $meta = new PluginMetademandsMetademand();
-            if ($meta->getFromDB($fields['metademands_id'])) {
-                $title_color = "#000";
-                if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
-                    $title_color = $meta->fields['title_color'];
-                }
-
-                $color = PluginMetademandsWizard::hex2rgba($title_color, "0.03");
-                $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 15px;'";
-                echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
-
-                echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
-                echo __('Demand details', 'metademands');
-                echo "</h2>";
-
-                echo "</div>";
-            }
+//            $meta = new PluginMetademandsMetademand();
+//            if ($meta->getFromDB($fields['metademands_id'])) {
+//                $title_color = "#000";
+//                if (isset($meta->fields['title_color']) && !empty($meta->fields['title_color'])) {
+//                    $title_color = $meta->fields['title_color'];
+//                }
+//
+//                $color = PluginMetademandsWizard::hex2rgba($title_color, "0.03");
+//                $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 15px;'";
+//                echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
+//
+//                echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
+//                echo __('Demand details', 'metademands');
+//                echo "</h2>";
+//
+//                echo "</div>";
+//            }
 
             echo "<table class='tab_cadre_fixe'>";
             foreach ($materials as $idline => $fieldlines) {
@@ -1001,6 +999,7 @@ class PluginMetademandsBasket extends CommonDBTM
             $content .= "<th style='border: 1px solid black;'>" . __('Quantity', 'metademands') . "</th>";
             $content .= "<th style='border: 1px solid black;text-align: right;'>" . __('Total', 'metademands') . "</th>";
             $content .= "</tr>";
+
             $grandtotal = 0;
             foreach ($materials as $id => $material) {
 

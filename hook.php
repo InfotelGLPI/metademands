@@ -1207,3 +1207,14 @@ function plugin_datainjection_populate_basketobjects() {
     global $INJECTABLE_TYPES;
     $INJECTABLE_TYPES['PluginMetademandsBasketobjectInjection'] = 'metademands';
 }
+
+function plugin_metademands_getDropdown()
+{
+    if (Plugin::isPluginActive("metademands")) {
+        return [
+            "PluginMetademandsBasketobjecttype"  => PluginMetademandsBasketobjecttype::getTypeName(2),
+        ];
+    } else {
+        return [];
+    }
+}

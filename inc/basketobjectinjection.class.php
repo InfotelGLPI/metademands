@@ -64,9 +64,9 @@ class PluginMetademandsBasketobjectInjection extends PluginMetademandsBasketobje
 
         $options['ignore_fields'] = [];
         $options['displaytype'] = [
-            "text" => [4],
+            "text" => [3, 4],
             "dropdown" => [7],
-            "decimal" => [5],
+//            "decimal" => [5],
         ];
         return PluginDatainjectionCommonInjectionLib::addToSearchOptions($tab, $options, $this);
     }

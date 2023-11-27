@@ -1754,9 +1754,9 @@ JAVASCRIPT
             case "dropdown_multiple":
                 foreach ($type_fields_multiple as $key => $items) {
                     if (empty($items)) {
-                        $options[$key] = self::getFieldItemsName($items);
+                        $options[$key] = self::getFieldItemsName("dropdown_multiple", $items);
                     } else {
-                        $options[$items] = self::getFieldItemsName($items);
+                        $options[$items] = self::getFieldItemsName("dropdown_multiple",$items);
                     }
                 }
                 if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -1776,9 +1776,9 @@ JAVASCRIPT
             case "dropdown_meta":
                 foreach ($type_fields as $key => $items) {
                     if (empty($items)) {
-                        $options[$key] = self::getFieldItemsName($items);
+                        $options[$key] = self::getFieldItemsName("dropdown_meta", $items);
                     } else {
-                        $options[$items] = self::getFieldItemsName($items);
+                        $options[$items] = self::getFieldItemsName("dropdown_meta", $items);
                     }
                 }
                 if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -1845,6 +1845,10 @@ JAVASCRIPT
                 return __('Impact');
             case 'priority':
                 return __('Priority');
+            case 'user':
+                return __('User');
+            case 'appliance':
+                return __('Appliance');
             default:
                 if (isset($PLUGIN_HOOKS['metademands'])) {
                     foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1868,7 +1872,7 @@ JAVASCRIPT
                         }
                     }
                 }
-                return "";
+                return Dropdown::EMPTY_VALUE;
         }
     }
 

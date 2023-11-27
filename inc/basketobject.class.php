@@ -122,7 +122,6 @@ class PluginMetademandsBasketobject extends CommonDBTM
             'table' => PluginMetademandsBasketobjecttype::getTable(),
             'field' => 'name',
             'name' => PluginMetademandsBasketobjecttype::getTypeName(),
-            'massiveaction' => false,
             'datatype' => 'dropdown'
         ];
 
