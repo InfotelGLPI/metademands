@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-25 17:14+0000\n"
+"POT-Creation-Date: 2023-11-27 09:17+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -198,42 +198,50 @@ msgstr "Il y a un problème avec le panier"
 msgid "Basket"
 msgstr "Panier"
 
-#: inc/basket.class.php:76 inc/basket.class.php:951 inc/basket.class.php:1183
+#: inc/basket.class.php:75 inc/basket.class.php:967 inc/basket.class.php:1202
 #: inc/field.class.php:429 inc/field.class.php:1146 inc/field.class.php:2747
 msgid "Object"
 msgstr "Objet"
 
-#: inc/basket.class.php:83 inc/basket.class.php:955 inc/basket.class.php:1197
+#: inc/basket.class.php:82 inc/basket.class.php:971 inc/basket.class.php:1216
 msgid "Estimated unit price"
 msgstr "Prix unitaire estimé"
 
-#: inc/basket.class.php:88 inc/basket.class.php:959 inc/basket.class.php:1184
-#: inc/basket.class.php:1371
+#: inc/basket.class.php:87 inc/basket.class.php:975 inc/basket.class.php:1203
+#: inc/basket.class.php:1390
 msgid "Quantity"
 msgstr "Quantité"
 
-#: inc/basket.class.php:91
+#: inc/basket.class.php:90
 msgid "Select"
 msgstr "Sélectionner"
 
-#: inc/basket.class.php:94 inc/basket.class.php:960 inc/basket.class.php:1330
+#: inc/basket.class.php:93 inc/basket.class.php:976 inc/basket.class.php:1349
 msgid "Total"
 msgstr "Total"
 
-#: inc/basket.class.php:124 inc/basket.class.php:181 inc/basket.class.php:1010
-#: inc/basket.class.php:1045 inc/basket.class.php:1267
+#: inc/basket.class.php:101
+msgid "Search for names.."
+msgstr "Chercher un nom.."
+
+#: inc/basket.class.php:104
+msgid "Search for description.."
+msgstr "Chercher une description.."
+
+#: inc/basket.class.php:137 inc/basket.class.php:194 inc/basket.class.php:1026
+#: inc/basket.class.php:1064 inc/basket.class.php:1286
 msgid "On quotation"
 msgstr "Sur catalogue"
 
-#: inc/basket.class.php:276
+#: inc/basket.class.php:292
 msgid "With quantity"
 msgstr "Avec la quantité"
 
-#: inc/basket.class.php:283
+#: inc/basket.class.php:299
 msgid "With estimated unit price"
 msgstr "Avec prix unitaire estimé"
 
-#: inc/basket.class.php:297 inc/checkbox.class.php:249
+#: inc/basket.class.php:313 inc/checkbox.class.php:249
 #: inc/condition.class.php:322 inc/condition.class.php:454
 #: inc/condition.class.php:813 inc/dropdown.class.php:144
 #: inc/dropdownmeta.class.php:393 inc/dropdownmultiple.class.php:604
@@ -243,7 +251,7 @@ msgstr "Avec prix unitaire estimé"
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
-#: inc/basket.class.php:298 inc/checkbox.class.php:269
+#: inc/basket.class.php:314 inc/checkbox.class.php:269
 #: inc/checkbox.class.php:285 inc/dropdown.class.php:178
 #: inc/dropdown.class.php:214 inc/dropdownmeta.class.php:442
 #: inc/dropdownmeta.class.php:452 inc/dropdownmeta.class.php:474
@@ -253,37 +261,37 @@ msgstr "Valeur à vérifier"
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
-#: inc/basket.class.php:908
+#: inc/basket.class.php:924
 msgid "Demand details"
 msgstr "Détails de la demande"
 
-#: inc/basket.class.php:941
+#: inc/basket.class.php:957
 msgid "Basket summary"
 msgstr "Récapitulatif du panier"
 
-#: inc/basket.class.php:1068
+#: inc/basket.class.php:1087
 msgid "Grand total"
 msgstr "Total général"
 
-#: inc/basket.class.php:1081 inc/basketline.class.php:94
+#: inc/basket.class.php:1100 inc/basketline.class.php:94
 msgctxt "button"
 msgid "Send order"
 msgstr "Envoyer la commande"
 
-#: inc/basket.class.php:1140
+#: inc/basket.class.php:1159
 msgid "No items on basket"
 msgstr "Pas d'éléments dans le panier"
 
-#: inc/basket.class.php:1189
+#: inc/basket.class.php:1208
 msgid "Order type"
 msgstr "Type de commande"
 
-#: inc/basket.class.php:1192 inc/basketobject.class.php:115
-#: inc/basketobject.class.php:215
+#: inc/basket.class.php:1211 inc/basketobject.class.php:115
+#: inc/basketobject.class.php:218
 msgid "Chargeback reference"
 msgstr "Référence de refacturation"
 
-#: inc/basket.class.php:1275
+#: inc/basket.class.php:1294
 msgid "On catalog"
 msgstr "Sur catalogue"
 
@@ -330,7 +338,7 @@ msgstr "La référence de refacturation est obligatoire"
 msgid "The object type is mandatory"
 msgstr "Le nom de l'objet est obligatoire"
 
-#: inc/basketobject.class.php:191
+#: inc/basketobject.class.php:194
 msgid "Object name"
 msgstr "Nom de l'objet"
 
