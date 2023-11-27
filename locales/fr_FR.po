@@ -5,17 +5,17 @@
 # 
 # Translators:
 # Kevin HAINRY <kevin.hainry@infotel.com>, 2021
-# Simon Thivet, 2023
 # Xavier CAILLAUD <thetsmr@gmail.com>, 2023
+# Simon Thivet, 2023
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-27 09:17+0000\n"
+"POT-Creation-Date: 2023-11-27 17:14+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
-"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2023\n"
+"Last-Translator: Simon Thivet, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -198,60 +198,61 @@ msgstr "Il y a un problème avec le panier"
 msgid "Basket"
 msgstr "Panier"
 
-#: inc/basket.class.php:75 inc/basket.class.php:967 inc/basket.class.php:1202
-#: inc/field.class.php:429 inc/field.class.php:1146 inc/field.class.php:2747
+#: inc/basket.class.php:107 inc/basket.class.php:991 inc/basket.class.php:1227
+#: inc/field.class.php:429 inc/field.class.php:1146 inc/field.class.php:2751
 msgid "Object"
 msgstr "Objet"
 
-#: inc/basket.class.php:82 inc/basket.class.php:971 inc/basket.class.php:1216
+#: inc/basket.class.php:114 inc/basket.class.php:995 inc/basket.class.php:1241
 msgid "Estimated unit price"
 msgstr "Prix unitaire estimé"
 
-#: inc/basket.class.php:87 inc/basket.class.php:975 inc/basket.class.php:1203
-#: inc/basket.class.php:1390
+#: inc/basket.class.php:119 inc/basket.class.php:999 inc/basket.class.php:1228
+#: inc/basket.class.php:1415
 msgid "Quantity"
 msgstr "Quantité"
 
-#: inc/basket.class.php:90
+#: inc/basket.class.php:122
 msgid "Select"
 msgstr "Sélectionner"
 
-#: inc/basket.class.php:93 inc/basket.class.php:976 inc/basket.class.php:1349
+#: inc/basket.class.php:125 inc/basket.class.php:1000
+#: inc/basket.class.php:1374
 msgid "Total"
 msgstr "Total"
 
-#: inc/basket.class.php:101
+#: inc/basket.class.php:133
 msgid "Search for names.."
 msgstr "Chercher un nom.."
 
-#: inc/basket.class.php:104
+#: inc/basket.class.php:136
 msgid "Search for description.."
 msgstr "Chercher une description.."
 
-#: inc/basket.class.php:137 inc/basket.class.php:194 inc/basket.class.php:1026
-#: inc/basket.class.php:1064 inc/basket.class.php:1286
+#: inc/basket.class.php:166 inc/basket.class.php:220 inc/basket.class.php:1051
+#: inc/basket.class.php:1089 inc/basket.class.php:1311
 msgid "On quotation"
 msgstr "Sur catalogue"
 
-#: inc/basket.class.php:292
+#: inc/basket.class.php:318
 msgid "With quantity"
 msgstr "Avec la quantité"
 
-#: inc/basket.class.php:299
+#: inc/basket.class.php:325
 msgid "With estimated unit price"
 msgstr "Avec prix unitaire estimé"
 
-#: inc/basket.class.php:313 inc/checkbox.class.php:249
+#: inc/basket.class.php:339 inc/checkbox.class.php:249
 #: inc/condition.class.php:322 inc/condition.class.php:454
 #: inc/condition.class.php:813 inc/dropdown.class.php:144
-#: inc/dropdownmeta.class.php:393 inc/dropdownmultiple.class.php:604
+#: inc/dropdownmeta.class.php:393 inc/dropdownmultiple.class.php:605
 #: inc/dropdownobject.class.php:409 inc/field.class.php:1149
 #: inc/fieldoption.class.php:228 inc/radio.class.php:248
 #: inc/yesno.class.php:115
 msgid "Value to check"
 msgstr "Valeur à vérifier"
 
-#: inc/basket.class.php:314 inc/checkbox.class.php:269
+#: inc/basket.class.php:340 inc/checkbox.class.php:269
 #: inc/checkbox.class.php:285 inc/dropdown.class.php:178
 #: inc/dropdown.class.php:214 inc/dropdownmeta.class.php:442
 #: inc/dropdownmeta.class.php:452 inc/dropdownmeta.class.php:474
@@ -261,37 +262,33 @@ msgstr "Valeur à vérifier"
 msgid "Not null value"
 msgstr "Valeur non nulle"
 
-#: inc/basket.class.php:924
-msgid "Demand details"
-msgstr "Détails de la demande"
-
-#: inc/basket.class.php:957
+#: inc/basket.class.php:981
 msgid "Basket summary"
 msgstr "Récapitulatif du panier"
 
-#: inc/basket.class.php:1087
+#: inc/basket.class.php:1112
 msgid "Grand total"
 msgstr "Total général"
 
-#: inc/basket.class.php:1100 inc/basketline.class.php:94
+#: inc/basket.class.php:1125 inc/basketline.class.php:94
 msgctxt "button"
 msgid "Send order"
 msgstr "Envoyer la commande"
 
-#: inc/basket.class.php:1159
+#: inc/basket.class.php:1184
 msgid "No items on basket"
 msgstr "Pas d'éléments dans le panier"
 
-#: inc/basket.class.php:1208
+#: inc/basket.class.php:1233
 msgid "Order type"
 msgstr "Type de commande"
 
-#: inc/basket.class.php:1211 inc/basketobject.class.php:115
-#: inc/basketobject.class.php:218
+#: inc/basket.class.php:1236 inc/basketobject.class.php:115
+#: inc/basketobject.class.php:217
 msgid "Chargeback reference"
 msgstr "Référence de refacturation"
 
-#: inc/basket.class.php:1294
+#: inc/basket.class.php:1319
 msgid "On catalog"
 msgstr "Sur catalogue"
 
@@ -338,7 +335,7 @@ msgstr "La référence de refacturation est obligatoire"
 msgid "The object type is mandatory"
 msgstr "Le nom de l'objet est obligatoire"
 
-#: inc/basketobject.class.php:194
+#: inc/basketobject.class.php:193
 msgid "Object name"
 msgstr "Nom de l'objet"
 
@@ -349,7 +346,10 @@ msgstr "Traduction"
 
 #: inc/basketobjecttype.class.php:47
 msgid "Object type"
-msgstr "Type d'objet"
+msgid_plural "Object types"
+msgstr[0] "Type d'objet"
+msgstr[1] "Types d'objet"
+msgstr[2] "Types d'objet"
 
 #: inc/checkbox.class.php:51
 msgid "Checkbox"
@@ -357,8 +357,8 @@ msgstr "Case à cocher"
 
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
 #: inc/dropdownmeta.class.php:315 inc/dropdownmeta.class.php:371
-#: inc/dropdownmultiple.class.php:429 inc/dropdownmultiple.class.php:481
-#: inc/dropdownmultiple.class.php:537 inc/field.class.php:2578
+#: inc/dropdownmultiple.class.php:430 inc/dropdownmultiple.class.php:482
+#: inc/dropdownmultiple.class.php:538 inc/field.class.php:2582
 #: inc/radio.class.php:176 inc/radio.class.php:226 inc/yesno.class.php:94
 msgid "Default value"
 msgid_plural "Default values"
@@ -622,23 +622,23 @@ msgstr "Liste déroulante"
 msgid "Dropdown multiple"
 msgstr "Liste déroulante multiple"
 
-#: inc/dropdownmultiple.class.php:438
+#: inc/dropdownmultiple.class.php:439
 msgid "Display value in the dropdown"
 msgstr "Afficher la valeur dans la liste déroulante"
 
-#: inc/dropdownmultiple.class.php:560
+#: inc/dropdownmultiple.class.php:561
 msgid "Classic display"
 msgstr "Affichage classique"
 
-#: inc/dropdownmultiple.class.php:561
+#: inc/dropdownmultiple.class.php:562
 msgid "Double column display"
 msgstr "Affichage en double colonnes"
 
-#: inc/dropdownmultiple.class.php:565
+#: inc/dropdownmultiple.class.php:566
 msgid "Display type of the field"
 msgstr "Type d'affichage du champ"
 
-#: inc/dropdownmultiple.class.php:576 inc/dropdownobject.class.php:382
+#: inc/dropdownmultiple.class.php:577 inc/dropdownobject.class.php:382
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
 
@@ -658,7 +658,7 @@ msgstr "Merci d'ajouter le champ : Catégorie de la métademande"
 msgid "Hide title"
 msgstr "Cacher le titre"
 
-#: inc/field.class.php:315 inc/field.class.php:2745 inc/field.class.php:2828
+#: inc/field.class.php:315 inc/field.class.php:2749 inc/field.class.php:2832
 msgid "Additional label"
 msgstr "Label supplémentaire"
 
@@ -666,7 +666,7 @@ msgstr "Label supplémentaire"
 msgid "Takes the whole row"
 msgstr "Prend toute la ligne"
 
-#: inc/field.class.php:355 inc/field.class.php:1154 inc/field.class.php:2810
+#: inc/field.class.php:355 inc/field.class.php:1154 inc/field.class.php:2814
 #: inc/step.class.php:273 inc/step.class.php:356
 msgid "Block"
 msgstr "Bloc"
@@ -679,7 +679,7 @@ msgstr "Pensez à activer le mode panier sur votre métademande !"
 msgid "Display field after"
 msgstr "Afficher le champ après"
 
-#: inc/field.class.php:550 inc/field.class.php:1151 inc/field.class.php:2852
+#: inc/field.class.php:550 inc/field.class.php:1151 inc/field.class.php:2856
 msgid "Display into the basket"
 msgstr "Afficher dans le panier"
 
@@ -737,7 +737,7 @@ msgstr "Lier le champ à une sous demande"
 msgid "Use this field as a ticket field"
 msgstr "Utiliser ce champ comme champ du ticket"
 
-#: inc/field.class.php:1155 inc/field.class.php:2819
+#: inc/field.class.php:1155 inc/field.class.php:2823
 msgid "Order"
 msgstr "Ordre"
 
@@ -753,12 +753,12 @@ msgstr "Champ père"
 msgid "Category of the metademand"
 msgstr "Catégorie de la métademande"
 
-#: inc/field.class.php:1923
+#: inc/field.class.php:1927
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr "Nombre maximum de documents : %s "
 
-#: inc/field.class.php:2389
+#: inc/field.class.php:2393
 msgid "Custom values"
 msgstr "Valeurs personnalisées"
 
@@ -856,9 +856,9 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la valeur de la "
 "case à cocher est définie"
 
-#: inc/fieldoption.class.php:1016 inc/step.class.php:247
-#: inc/step.class.php:367 inc/step.class.php:387 inc/task.class.php:665
-#: inc/task.class.php:1053 inc/tickettask.class.php:168
+#: inc/fieldoption.class.php:1016 inc/mailtask.class.php:150
+#: inc/step.class.php:247 inc/step.class.php:367 inc/step.class.php:387
+#: inc/task.class.php:701 inc/task.class.php:1093 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
 msgstr "Bloc %s"
@@ -965,6 +965,43 @@ msgstr "Bouton"
 msgid "*use field \"Additional label\" for the button title"
 msgstr "* utilisez le champ \"Label supplémentaire\" pour le titre du bouton"
 
+#: inc/mailtask.class.php:54 inc/metademandtask.class.php:54
+#: inc/task.class.php:66 inc/ticket_metademand.class.php:53
+#: inc/ticket_task.class.php:50 inc/tickettask.class.php:56
+msgid "Task creation"
+msgstr "Création des sous-demandes"
+
+#: inc/mailtask.class.php:131 inc/task.class.php:514
+#: inc/tickettask.class.php:149
+msgid "Use block"
+msgstr "Utiliser les blocs"
+
+#: inc/mailtask.class.php:142 inc/task.class.php:513
+#: inc/tickettask.class.php:160
+msgid "Block to use"
+msgstr "Bloc à utiliser"
+
+#: inc/mailtask.class.php:170 inc/task.class.php:515
+#: inc/tickettask.class.php:190
+msgid "Format the description of the childs ticket as a table"
+msgstr "Formatter la description du ticket enfant sous forme de tableau"
+
+#: inc/mailtask.class.php:192 inc/tickettask.class.php:260
+msgid "Actors"
+msgstr "Acteurs"
+
+#: inc/mailtask.class.php:193 inc/task.class.php:663
+msgid "Recipients"
+msgstr "Destinataires"
+
+#: inc/mailtask.class.php:292
+msgid "Fail to send email"
+msgstr "Echec de l'envoie du mail"
+
+#: inc/mailtask.class.php:297
+msgid "Email sent"
+msgstr "Email envoyé"
+
 #: inc/menu.class.php:75
 msgid "Import metademands"
 msgstr "Importer une métademande"
@@ -981,7 +1018,7 @@ msgid "Demand Progression"
 msgstr "Progression de votre demande"
 
 #: inc/metademand.class.php:354 inc/metademand.class.php:447
-#: inc/task.class.php:895 inc/tickettask.class.php:655
+#: inc/task.class.php:935 inc/tickettask.class.php:655
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 "La catégorie est liée à une méta-demande. Merci d'en sélectionner une autre"
@@ -1242,12 +1279,6 @@ msgstr "Responsable de la ressource"
 #: inc/metademandpdf.class.php:227
 msgid "Created on"
 msgstr "Créé le"
-
-#: inc/metademandtask.class.php:54 inc/task.class.php:64
-#: inc/ticket_metademand.class.php:53 inc/ticket_task.class.php:50
-#: inc/tickettask.class.php:56
-msgid "Task creation"
-msgstr "Création des sous-demandes"
 
 #: inc/metademandtask.class.php:93
 msgid "This demand is already used in"
@@ -1524,53 +1555,41 @@ msgstr "Publié par"
 msgid "Step"
 msgstr "Etape"
 
-#: inc/task.class.php:225
+#: inc/task.class.php:227
 msgid "Task type"
 msgstr "Type de sous-demande"
 
-#: inc/task.class.php:325
+#: inc/task.class.php:350
 msgid "You don't have the ticket creation right"
 msgstr "Vous n'avez pas le droit de créer des tickets"
 
-#: inc/task.class.php:347
+#: inc/task.class.php:372
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 "Vous ne pouvez pas ajouter de nouvelles tâches tant que les tickets liés ne "
 "sont pas résolus"
 
-#: inc/task.class.php:438
+#: inc/task.class.php:463
 msgid "Add a task"
 msgstr "Ajouter une sous-demande"
 
-#: inc/task.class.php:472
+#: inc/task.class.php:497
 msgid "Tasks"
 msgstr "Sous-demandes"
 
-#: inc/task.class.php:487
+#: inc/task.class.php:512
 msgid "Level"
 msgstr "Ordre"
 
-#: inc/task.class.php:488 inc/tickettask.class.php:160
-msgid "Block to use"
-msgstr "Bloc à utiliser"
-
-#: inc/task.class.php:489 inc/tickettask.class.php:149
-msgid "Use block"
-msgstr "Utiliser les blocs"
-
-#: inc/task.class.php:490 inc/tickettask.class.php:190
-msgid "Format the description of the childs ticket as a table"
-msgstr "Formatter la description du ticket enfant sous forme de tableau"
-
-#: inc/task.class.php:491 inc/tickettask.class.php:198
+#: inc/task.class.php:516 inc/tickettask.class.php:198
 msgid "Block parent ticket resolution"
 msgstr "Bloquer la résolution du ticket parent"
 
-#: inc/task.class.php:644 inc/task.class.php:653
+#: inc/task.class.php:680 inc/task.class.php:689
 msgid "Root"
 msgstr "Racine"
 
-#: inc/task.class.php:1030
+#: inc/task.class.php:1070
 msgctxt "button"
 msgid "Update block to use"
 msgstr "Mettre à jour le bloc à utiliser"
@@ -1652,10 +1671,6 @@ msgstr "Synchroniser avec le gabarit"
 #: inc/tickettask.class.php:242
 msgid "Create after the task"
 msgstr "Créer après la sous-demande"
-
-#: inc/tickettask.class.php:260
-msgid "Actors"
-msgstr "Acteurs"
 
 #: inc/titleblock.class.php:51
 msgid "Block title"
