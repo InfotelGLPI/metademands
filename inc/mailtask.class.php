@@ -289,7 +289,7 @@ class PluginMetademandsMailTask extends CommonDBChild
         $mmail->Body = $body;
 
         if (!$mmail->Send()) {
-            Session::addMessageAfterRedirect(__('Failed to send email', 'metademands'), false,
+            Session::addMessageAfterRedirect(__('Fail to send email', 'metademands'), false,
                 ERROR);
             GLPINetwork::addErrorMessageAfterRedirect();
             return false;
