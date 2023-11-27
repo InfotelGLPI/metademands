@@ -14,7 +14,7 @@ function filterTable() {
    var filterDesc = filterDescriptionInput.value.toUpperCase();
 
    // Loop through all table rows, hide those that don't match the filter criteria
-   for (var i = 1; i < rows.length; i++) {
+   for (var i = 0; i < rows.length; i++) {
       var name = rows[i].getElementsByTagName('td')[0].textContent.toUpperCase();
       var desc = rows[i].getElementsByTagName('td')[1].textContent.toUpperCase();
 

@@ -52,6 +52,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
     static function showWizardField($data, $on_order = false, $itilcategories_id = 0, $idline = 0)
     {
+        global $DB;
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
@@ -67,8 +68,39 @@ class PluginMetademandsBasket extends CommonDBTM
             $namefield = 'field_basket_' . $idline;
         }
 
-        $materialclass = new PluginMetademandsBasketobject();
-        $materials = $materialclass->find(['plugin_metademands_basketobjecttypes_id' => $data['item']], ["name", "description"]);
+        $criteria = [
+            'FROM' => [PluginMetademandsBasketobject::getTable()],
+            'FIELDS' => [PluginMetademandsBasketobject::getTable() => '*'],
+            'WHERE' => [],
+            'ORDER' => ['name', 'description'],
+        ];
+
+        $criteria['WHERE'] = ['plugin_metademands_basketobjecttypes_id' => $data['item']];
+
+        $where = [];
+        if (Plugin::isPluginActive('ordermaterial') && $custom_values[1] == 1) {
+            $where = [
+                'OR' => [
+                    'estimated_price' => ['>', 0],
+                    'is_specific' => 1,
+                ]
+            ];
+            if (count($where)) {
+                $criteria['LEFT JOIN'][PluginOrdermaterialMaterial::getTable()] = [
+                    'ON' => [
+                        PluginOrdermaterialMaterial::getTable() => 'plugin_metademands_basketobjects_id',
+                        PluginMetademandsBasketobject::getTable() => 'id'
+                    ]
+                ];
+            }
+        }
+
+        if (count($where)) {
+            $criteria['WHERE'] = array_merge($criteria['WHERE'], $where);
+        }
+
+        $materials = $DB->request($criteria);
+        $nb = count($materials);
 
         $field = "<table class='tab_cadre_fixehov'>";
         $field .= "<tr class='tab_bg_1'>";
@@ -95,7 +127,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $field .= "</tr>";
 
-        if (count($materials) > 10) {
+        if ($nb > 10) {
             $field .= "<tr class='tab_bg_1'>";
             $field .= "<th>";
             $field .= "<input type='text' id='searchname' placeholder='" . __('Search for names..', 'metademands') . "'>";
@@ -117,10 +149,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
                 $field .= "<tr class='tab_bg_1'>";
                 $field .= "<td>";
-                $field .= $material['name'] . "&nbsp;";
-//                if (!empty($material['description'])) {
-//                    $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($material['description']), ['display' => false]);
-//                }
+                $field .= $material['name'];
                 $field .= "</td>";
 
                 $field .= "<td>";
@@ -159,8 +188,8 @@ class PluginMetademandsBasket extends CommonDBTM
                         }
                     }
                 }
-                $field .= "<input $required class='form-check-input' type='checkbox' 
-                check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' 
+                $field .= "<input $required class='form-check-input' type='checkbox'
+                check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]'
                 key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$value_check' $checked>";
 
                 $field .= "</td>";
@@ -170,14 +199,11 @@ class PluginMetademandsBasket extends CommonDBTM
         } else {
 
             foreach ($materials as $material) {
+
                 $key = $material['id'];
                 $field .= "<tr class='tab_bg_1'>";
                 $field .= "<td>";
-                $field .= $material['name'];// . "&nbsp;"
-//                if (!empty($material['description'])) {
-//                    $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($material['description']), ['display' => false]);
-//                }
-
+                $field .= $material['name'];
                 $field .= "</td>";
 
                 $field .= "<td>";
