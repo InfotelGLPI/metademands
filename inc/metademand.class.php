@@ -3671,7 +3671,7 @@ JAVASCRIPT
                                             if ($field_object->getFromDB($explodeTitle2[0])) {
                                                 if ($field_object->fields['type'] == "dropdown_object" && $field_object->fields['item'] == User::getType()) {
                                                     $users_id = $values['fields'][$explodeTitle2[0]];
-                                                    $value['value'] = self::getContentForUser($explodeTitle2[1], $users_id, $_SESSION['glpiactive_entity'], $title, $value['value']);
+                                                    $value['value'] = self::getContentForUser($explodeTitle2[1], $users_id, $title, $value['value']);
                                                 }
                                             }
                                         }

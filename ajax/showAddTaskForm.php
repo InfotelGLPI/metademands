@@ -35,6 +35,9 @@ Session::checkLoginUser();
 
 if (isset($_POST["taskType"])) {
    switch ($_POST["taskType"]) {
+       case PluginMetademandsTask::MAIL_TYPE:
+           PluginMetademandsMailTask::showMailTaskForm($_POST["plugin_metademands_metademands_id"], $_POST["taskType"]);
+           break;
       case PluginMetademandsTask::TICKET_TYPE:
       case PluginMetademandsTask::TASK_TYPE:
          PluginMetademandsTicketTask::showTicketTaskForm($_POST["plugin_metademands_metademands_id"], true, $_POST["taskType"]);

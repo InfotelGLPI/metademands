@@ -36,7 +36,7 @@ if (empty($_GET["id"])) {
 $task           = new PluginMetademandsTask();
 $tickettask     = new PluginMetademandsTicketTask();
 $metademandtask = new PluginMetademandsMetademandTask();
-
+$mailtask = new PluginMetademandsMailTask();
 if (isset($_POST["add"])) {
 
    if (isset($_POST['taskType'])) {
@@ -64,11 +64,15 @@ if (isset($_POST["add"])) {
             $_POST['plugin_metademands_tasks_id'] = $tasks_id;
             $_POST['type']                        = Ticket::DEMAND_TYPE;
             $tickettask->add($_POST);
-         } else {
+         } else if($_POST['taskType'] == PluginMetademandsTask::METADEMAND_TYPE){
             if ($_POST['link_metademands_id']) {
                $metademandtask->add(['plugin_metademands_tasks_id'       => $tasks_id,
                                      'plugin_metademands_metademands_id' => $_POST['link_metademands_id']]);
             }
+         } else if ($_POST['taskType'] == PluginMetademandsTask::MAIL_TYPE){
+             $_POST['plugin_metademands_tasks_id'] = $tasks_id;
+             $_POST['type']                        = Ticket::DEMAND_TYPE;
+             $mailtask->add($_POST);
          }
       }
    }
@@ -116,37 +120,50 @@ if (isset($_POST["add"])) {
 
     $input = $_POST;
     $input['type'] = $_POST['taskType'];
-    $input['id'] = $_POST['tickettask_id'];
     $input['content'] = $_POST['content'];
-
-    if ($tickettask->isMandatoryField($input) && $tickettask->update($input)) {
-
-        $tasks_id    = $_POST['id'];
-        $parent_task = $_POST['parent_tasks_id'] ?? 0;
-        unset($input['content']);
-        if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
-            $input['block_use'] = json_encode([]);
-        } else {
-            $input['block_use'] = json_encode($_POST['block_use']);
-        }
-
-        if ($parent_task > 0) {
-            $parenttask = new PluginMetademandsTask();
-            $parenttask->getFromDB($parent_task);
-            $input['level'] = $parenttask->fields['level'] + 1;
-        } else {
-            $input['plugin_metademands_tasks_id'] = 0;
-            $input['level'] = 1;
-        }
-
-        $input['name'] = $_POST['name'];
-        $input['formatastable'] = $_POST['formatastable'];
-        $input['useBlock'] = $_POST['useBlock'];
-        $input['block_parent_ticket_resolution'] = $_POST['block_parent_ticket_resolution'];
-        $input['id'] = $tasks_id;
-        $input['plugin_metademands_tasks_id'] = $parent_task;
-        if (!empty($input)) {
+    if ($input['type'] == PluginMetademandsTask::MAIL_TYPE) {
+        $input['id'] = $_POST['mailtask_id'];
+        if($mailtask->update($input)){
+            if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
+                $input['block_use'] = json_encode([]);
+            } else {
+                $input['block_use'] = json_encode($_POST['block_use']);
+            }
+            $input['id'] = $_POST['id'];
+            $input['_no_message_link'] = 0;
             $task->update($input);
+        }
+    } else {
+        $input['id'] = $_POST['tickettask_id'];
+        if ($tickettask->isMandatoryField($input) && $tickettask->update($input)) {
+
+            $tasks_id = $_POST['id'];
+            $parent_task = $_POST['parent_tasks_id'] ?? 0;
+            unset($input['content']);
+            if (!isset($_POST['block_use']) || $_POST['block_use'] == '') {
+                $input['block_use'] = json_encode([]);
+            } else {
+                $input['block_use'] = json_encode($_POST['block_use']);
+            }
+
+            if ($parent_task > 0) {
+                $parenttask = new PluginMetademandsTask();
+                $parenttask->getFromDB($parent_task);
+                $input['level'] = $parenttask->fields['level'] + 1;
+            } else {
+                $input['plugin_metademands_tasks_id'] = 0;
+                $input['level'] = 1;
+            }
+
+            $input['name'] = $_POST['name'];
+            $input['formatastable'] = $_POST['formatastable'];
+            $input['useBlock'] = $_POST['useBlock'];
+            $input['block_parent_ticket_resolution'] = $_POST['block_parent_ticket_resolution'];
+            $input['id'] = $tasks_id;
+            $input['plugin_metademands_tasks_id'] = $parent_task;
+            if (!empty($input)) {
+                $task->update($input);
+            }
         }
     }
 

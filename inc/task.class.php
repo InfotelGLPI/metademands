@@ -45,6 +45,8 @@ class PluginMetademandsTask extends CommonDBChild {
     const METADEMAND_TYPE = 1;
     const TASK_TYPE       = 2;
 
+    const MAIL_TYPE = 3;
+
     public function canCreateItem()
     {
 
@@ -232,8 +234,12 @@ class PluginMetademandsTask extends CommonDBChild {
             if (count($metademand_tasks)) {
                 unset($task_types[self::METADEMAND_TYPE]);
             }
-
-            $rand   = Dropdown::showFromArray('taskType', $task_types);
+            if($ID > 0){
+                $valType = $this->fields['type'];
+            } else {
+                $valType = 0;
+            }
+            $rand   = Dropdown::showFromArray('taskType', $task_types, ['value' => $valType]);
             $params = ['taskType'                          => '__VALUE__',
                 'plugin_metademands_metademands_id' => $item->getID()];
             Ajax::updateItemOnSelectEvent(
@@ -280,6 +286,26 @@ class PluginMetademandsTask extends CommonDBChild {
 //                    'actiontime' => $tickettask->fields['actiontime'],
 //                    'itemtype' => $tickettask->fields['itemtype']
                     ];
+                } else if ($this->fields['type'] == self::MAIL_TYPE){
+                    $mailtask = new PluginMetademandsMailTask();
+                    $mailtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $ID]);
+                    $values = [
+                        'mailtask_id' => $mailtask->getID(),
+                        'type' => $type,
+                        'itilcategories_id' => $mailtask->fields['itilcategories_id'],
+                        'plugin_metademands_tasks_id' => $ID,
+                        'content' => $mailtask->fields['content'],
+                        'name' => $this->fields['name'],
+                        'block_use' => json_decode($this->fields['block_use'], true),
+                        'useBlock' => $this->fields['useBlock'],
+                        'block_parent_ticket_resolution' => $this->fields['block_parent_ticket_resolution'],
+                        'formatastable' => $this->fields['formatastable'],
+                        'entities_id' => $this->fields['entities_id'],
+                        'is_recursive' => $this->fields['is_recursive'],
+                        'users_id_recipient' => $mailtask->fields['users_id_recipient'],
+                        'groups_id_recipient' => $mailtask->fields['groups_id_recipient'],
+                    ];
+                    PluginMetademandsMailTask::showMailTaskForm($item->getID(), $type, $values);
                 } else {
                     $values = [
                         'tickettask_id' => $tickettask->getID(),
@@ -307,10 +333,9 @@ class PluginMetademandsTask extends CommonDBChild {
 //                    'itemtype' => $tickettask->fields['itemtype']
                     ];
                 }
-
-
-
-                PluginMetademandsTicketTask::showTicketTaskForm($item->getID(), $solved, $type, $values);
+                if($type != PluginMetademandsTask::MAIL_TYPE){
+                    PluginMetademandsTicketTask::showTicketTaskForm($item->getID(), $solved, $type, $values);
+                }
             } else {
                 $type = "-1";
                 if (Session::haveRight('ticket', CREATE)) {
@@ -493,16 +518,20 @@ class PluginMetademandsTask extends CommonDBChild {
 
 //            Toolbox::logInfo($tasks);
             foreach ($tasks as $id => $value) {
+                if($value['type'] == PluginMetademandsTask::MAIL_TYPE){
+                    $mailtask = new PluginMetademandsMailTask();
+                    $mailtask->getFromDBByCrit(['plugin_metademands_tasks_id' => $id]);
+                }
                 echo "<tr class='tab_bg_1'>";
 
-                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
+                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
                     $color_class = '';
                 } else {
                     $color_class = "class='metademand_metademandtasks'";
                 }
 
                 $onhover = '';
-                if ($canedit && ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE)) {
+                if ($canedit && ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE)) {
                     $onhover = "style='cursor:pointer'
                            onClick=\"viewEditchild" . $item->getType() . $id . "$rand();\"";
                 }
@@ -574,7 +603,7 @@ class PluginMetademandsTask extends CommonDBChild {
 
                 // Name
 
-                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
+                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
 
 //                    $width = 0;
 //                    $name  = "#metademandTicketTask" . $value['tickettasks_id'];
@@ -604,10 +633,12 @@ class PluginMetademandsTask extends CommonDBChild {
                 echo "<td $onhover $color_class>" . self::getTaskTypeName($value['type']) . "</td>";
 
                 $cat = "";
-                if ($value['type'] == self::TICKET_TYPE
-                    && isset($value['itilcategories_id'])
-                    && $value['itilcategories_id'] > 0) {
-                    $cat = Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
+                if ($value['type'] == self::TICKET_TYPE) {
+                    if (isset($value['itilcategories_id']) && $value['itilcategories_id'] > 0) {
+                        $cat = Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
+                    }
+                } else if ($value['type'] == self::MAIL_TYPE) {
+                    $cat = Dropdown::getDropdownName("glpi_itilcategories", $mailtask->fields['itilcategories_id']);
                 }
                 if ($value['type'] == self::TASK_TYPE) {
                     $cat = "---";
@@ -618,7 +649,7 @@ class PluginMetademandsTask extends CommonDBChild {
 
                 //assign
                 $techdata = "";
-                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE) {
+                if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE ) {
                     if (isset($value['users_id_assign'])
                         && $value['users_id_assign'] > 0) {
                         $techdata .= getUserName($value['users_id_assign'], 0, true);
@@ -627,6 +658,11 @@ class PluginMetademandsTask extends CommonDBChild {
                     if (isset($value['groups_id_assign'])
                         && $value['groups_id_assign'] > 0) {
                         $techdata .= Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
+                    }
+                    if ($value['type'] == self::MAIL_TYPE) {
+                        $techdata .= __('Recipients', 'metademands') . " : <br>";
+                        $techdata .= getUserName($mailtask->fields['users_id_recipient'], 0, true);
+                        $techdata .= Dropdown::getDropdownName("glpi_groups", $mailtask->fields['groups_id_recipient']);
                     }
                 }
                 echo "<td $onhover $color_class>";
@@ -689,7 +725,7 @@ class PluginMetademandsTask extends CommonDBChild {
                 }
                 echo "</td>";
                 echo "<td $color_class>";
-                if ($value['type'] == self::TASK_TYPE) {
+                if ($value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
                     echo "---";
                 } else {
                     echo Dropdown::getYesNo($value['block_parent_ticket_resolution']);
@@ -801,6 +837,7 @@ class PluginMetademandsTask extends CommonDBChild {
                        && isset($metademands->fields['force_create_tasks'])
                        && $metademands->fields['force_create_tasks'] == 0) {
                 $options[self::TICKET_TYPE] = __('Ticket');
+                $options[self::MAIL_TYPE] = __('Mail');
             }
         }
         if ($metademands_id > 0 &&
@@ -808,6 +845,7 @@ class PluginMetademandsTask extends CommonDBChild {
             && isset($metademands->fields['force_create_tasks'])
             && $metademands->fields['force_create_tasks'] == 1) {
             $options[self::TASK_TYPE] = __('Task');
+            $options[self::MAIL_TYPE] = __('Mail');
         }
         if ($metademands->fields['object_to_create'] == 'Ticket' || $metademands_id == 0) {
             $options[self::METADEMAND_TYPE] = PluginMetademandsMetademand::getTypeName(1);
@@ -833,6 +871,8 @@ class PluginMetademandsTask extends CommonDBChild {
                 return __('Task');
             case self::METADEMAND_TYPE:
                 return PluginMetademandsMetademand::getTypeName(1);
+            case self::MAIL_TYPE:
+                return __('Mail');
         }
     }
 
