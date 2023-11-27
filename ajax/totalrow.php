@@ -25,7 +25,7 @@
  --------------------------------------------------------------------------
  */
 
-include ('../../../inc/includes.php');
+include('../../../inc/includes.php');
 header("Content-Type: text/html; charset=UTF-8");
 Html::header_nocache();
 
@@ -37,21 +37,26 @@ if (isset($_POST['action'])) {
         case "loadTotalrow" :
 
             if (isset($_POST['quantity'])
-            && $_POST['quantity'] > 0) {
+                && $_POST['quantity'] > 0) {
                 $totalrow = $_POST['quantity'];
                 if (Plugin::isPluginActive('ordermaterial')) {
                     $ordermaterialmeta = new PluginOrdermaterialMetademand();
                     if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])
-                        && $_POST['estimated_price'] > 0) {
-                        $totalrow = $_POST['quantity']*$_POST['estimated_price'];
-                        $totalrow .= " €";
-                     }
+                        && isset($_POST['estimated_price']) && $_POST['estimated_price'] > 0) {
+                        $totalrow = $_POST['quantity'] * $_POST['estimated_price'];
+
+                    }
+                }
+                if (isset($_POST['estimated_price']) && $_POST['estimated_price'] > 0) {
+                    echo Html::formatNumber($totalrow, false, 2);
+                    echo " €";
+                } else {
+                    echo $totalrow;
                 }
 
-                    echo Html::formatNumber($totalrow, false, 2);
 //                }
 
-                echo "<input class='form-check-input' type='hidden' check='".$_POST['check']."' name='".$_POST['name']."' key='".$_POST['key']."' id='".$_POST['name']."' value='".$_POST['key']."'>";
+                echo "<input class='form-check-input' type='hidden' check='" . $_POST['check'] . "' name='" . $_POST['name'] . "' key='" . $_POST['key'] . "' id='" . $_POST['name'] . "' value='" . $_POST['key'] . "'>";
 //                if (!isset($_SESSION['plugin_metademands']['total_order'])) {
 //                    $_SESSION['plugin_metademands']['total_order'] = $totalrow;
 //                } else {

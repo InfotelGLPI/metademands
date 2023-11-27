@@ -53,7 +53,6 @@ class PluginMetademandsBasket extends CommonDBTM
     static function showWizardField($data, $on_order = false, $itilcategories_id = 0, $idline = 0)
     {
 
-        Toolbox::logInfo($data);
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
         $custom_values = PluginMetademandsField::_unserialize($data['custom_values']);
@@ -69,7 +68,7 @@ class PluginMetademandsBasket extends CommonDBTM
         }
 
         $materialclass = new PluginMetademandsBasketobject();
-        $materials = $materialclass->find(['plugin_metademands_basketobjecttypes_id' => $data['item']]);
+        $materials = $materialclass->find(['plugin_metademands_basketobjecttypes_id' => $data['item']], ["name", "description"]);
 
         $field = "<table class='tab_cadre_fixehov'>";
         $field .= "<tr class='tab_bg_1'>";
@@ -96,7 +95,21 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $field .= "</tr>";
 
-        Toolbox::logInfo($custom_values);
+        if (count($materials) > 10) {
+            $field .= "<tr class='tab_bg_1'>";
+            $field .= "<th>";
+            $field .= "<input type='text' id='searchname' placeholder='" . __('Search for names..', 'metademands') . "'>";
+            $field .= "</th>";
+            $field .= "<th>";
+            $field .= "<input type='text' id='searchdescription' placeholder='" . __('Search for description..', 'metademands') . "'>";
+            $field .= "</th>";
+            $field .= "<th colspan='4'>";
+            $field .= "</th>";
+            $field .= "</tr>";
+        }
+
+        $field .= "<table class='tab_cadre_fixehov' id='tablesearch'>";
+
         if ($custom_values[0] == 0) {
 
             foreach ($materials as $material) {
@@ -160,7 +173,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $key = $material['id'];
                 $field .= "<tr class='tab_bg_1'>";
                 $field .= "<td>";
-                $field .= $material['name'] . "&nbsp;";
+                $field .= $material['name'];// . "&nbsp;"
 //                if (!empty($material['description'])) {
 //                    $field .= Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($material['description']), ['display' => false]);
 //                }
@@ -185,6 +198,9 @@ class PluginMetademandsBasket extends CommonDBTM
                                 $field .= Html::formatNumber($ordermaterial->fields['estimated_price'], false, 2) . " €";
                                 $field .= "</td>";
                             }
+                        } else {
+                            $field .= "<td>";
+                            $field .= "</td>";
                         }
                     }
                 }
@@ -257,7 +273,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= "</tr>";
             }
         }
-
+        $field .= "</table>";
         $field .= "</table>";
 
         echo $field;
@@ -1016,6 +1032,9 @@ class PluginMetademandsBasket extends CommonDBTM
                                             }
                                             $content .= "</td>";
                                         }
+                                    } else {
+                                        $content .= "<td style='border: 1px solid black;'>";
+                                        $content .= "</td>";
                                     }
                                 }
                             }
@@ -1068,10 +1087,10 @@ class PluginMetademandsBasket extends CommonDBTM
                     $content .= "<th style='border: 1px solid black;' colspan='3'>" . __('Grand total', 'ordermaterial') . "</th>";
                     $content .= "<th style='border: 1px solid black;text-align: right;'>" . Html::formatNumber($grandtotal, false, 2) . " €</th>";
                     $content .= "</tr>";
-                    $content .= "<tr class='tab_bg_1'>";
-                    $content .= "<td colspan='4' style='border: 1px solid black;'></td>";
+//                    $content .= "<tr class='tab_bg_1'>";
+//                    $content .= "<td colspan='4' style='border: 1px solid black;'></td>";
 //                    $content .= "<td colspan='4'>" . __('* The prices are estimates and do not act as an estimate', 'ordermaterial') . "</td>";
-                    $content .= "</tr>";
+//                    $content .= "</tr>";
                 }
             }
             $content .= "</table>";

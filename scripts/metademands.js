@@ -1,3 +1,30 @@
+
+// Get input elements and table
+var filterNameInput = document.getElementById('searchname');
+var filterDescriptionInput = document.getElementById('searchdescription');
+var table = document.getElementById('tablesearch');
+var rows = table.getElementsByTagName('tr');
+
+// Add event listeners to the input elements
+filterNameInput.addEventListener('input', filterTable);
+filterDescriptionInput.addEventListener('input', filterTable);
+
+function filterTable() {
+   var filterName = filterNameInput.value.toUpperCase();
+   var filterDesc = filterDescriptionInput.value.toUpperCase();
+
+   // Loop through all table rows, hide those that don't match the filter criteria
+   for (var i = 1; i < rows.length; i++) {
+      var name = rows[i].getElementsByTagName('td')[0].textContent.toUpperCase();
+      var desc = rows[i].getElementsByTagName('td')[1].textContent.toUpperCase();
+
+      if (name.includes(filterName) && desc.includes(filterDesc)) {
+         rows[i].style.display = '';
+      } else {
+         rows[i].style.display = 'none';
+      }
+   }
+}
 /**
  * metademandWizard
  *
