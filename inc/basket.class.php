@@ -108,7 +108,7 @@ class PluginMetademandsBasket extends CommonDBTM
             $field .= "</tr>";
         }
 
-        $field .= "<table class='tab_cadre_fixehov' id='tablesearch'>";
+        $field .= "<tbody id='tablesearch'>";
 
         if ($custom_values[0] == 0) {
 
@@ -273,7 +273,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field .= "</tr>";
             }
         }
-        $field .= "</table>";
+        $field .= "</tbody>";
         $field .= "</table>";
 
         echo $field;
