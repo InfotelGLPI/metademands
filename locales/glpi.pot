@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-27 17:14+0000\n"
+"POT-Creation-Date: 2023-11-28 12:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1633,6 +1633,10 @@ msgstr ""
 
 #: inc/tools.class.php:229
 msgid "No empty field options founded"
+msgstr ""
+
+#: inc/upload.class.php:52
+msgid "Add attachment"
 msgstr ""
 
 #: inc/upload.class.php:166
