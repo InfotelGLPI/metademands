@@ -190,7 +190,7 @@ class PluginMetademandsMailTask extends CommonDBChild
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr class='tab_bg_1'>";
         echo "<th rowspan='3' width='$colsize1%'>" . __('Actors', 'metademands') . "</th>";
-        echo "<th>" . __('Recipients', 'metademands') . "</th>";
+        echo "<th>" . __('Recipient') . "</th>";
         echo "</tr>";
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
