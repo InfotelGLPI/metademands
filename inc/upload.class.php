@@ -49,7 +49,7 @@ class PluginMetademandsUpload extends CommonDBTM
      **/
     static function getTypeName($nb = 0)
     {
-        return __('Add a document');
+        return __('Add attachment', 'metademands');
     }
 
     static function showWizardField($data, $namefield, $value, $on_order, $idline)

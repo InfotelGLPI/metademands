@@ -845,11 +845,21 @@ class PluginMetademandsStep extends CommonDBChild
                         if(isset($inputs['users_id_dest'])){
                             $inputsUpdate['users_id_dest'] = $inputs['users_id_dest'];
                         }
+
+
                         $forms->update($inputsUpdate);
                         $actor->add([
                             'plugin_metademands_stepforms_id' => $form_new_id,
                             'users_id' => $user_id
                         ]);
+
+                        if(isset($inputs['users_id_dest'])) {
+                            $actor->add([
+                                'plugin_metademands_stepforms_id' => $form_new_id,
+                                'users_id' => $inputsUpdate['users_id_dest']
+                            ]);
+                        }
+
                         $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
                         if (count($metademands_data) && $form_new_id > 0) {
                             foreach ($metademands_data as $form_step => $data) {
@@ -865,6 +875,12 @@ class PluginMetademandsStep extends CommonDBChild
                                 'plugin_metademands_stepforms_id' => $form_new_id,
                                 'users_id' => $inputs['users_id']
                             ]);
+                            if(isset($inputs['users_id_dest'])) {
+                                $actor->add([
+                                    'plugin_metademands_stepforms_id' => $form_new_id,
+                                    'users_id' => $inputs['users_id_dest']
+                                ]);
+                            }
                             unset($_SESSION['plugin_metademands'][$user_id]);
 
                             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);

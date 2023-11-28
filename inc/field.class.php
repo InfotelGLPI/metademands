@@ -435,7 +435,7 @@ class PluginMetademandsField extends CommonDBChild
         echo "</span>";
         echo "</td>";
         echo "<td>";
-        echo "<span id='show_item' style='display:none'>";
+        echo "<span id='show_item' >";
         $randItem = self::dropdownFieldItems("item", $this->fields["type"], ['value' => $this->fields["item"]]);
         echo "</span>";
         $paramsType = ['value'                   => '__VALUE__',
