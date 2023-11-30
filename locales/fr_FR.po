@@ -325,7 +325,7 @@ msgstr "La référence de refacturation existe déjà"
 
 #: inc/basketobject.class.php:55
 msgid "The object name is mandatory"
-msgstr "Le nom de l'objet existe déjà"
+msgstr "Le nom de l'objet est obligatoire"
 
 #: inc/basketobject.class.php:60
 msgid "Chargeback reference is mandatory"
