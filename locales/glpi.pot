@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-28 16:16+0000\n"
+"POT-Creation-Date: 2023-11-30 06:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1720,7 +1720,7 @@ msgctxt "button"
 msgid "Add to basket"
 msgstr ""
 
-#: inc/wizard.class.php:1020 inc/wizard.class.php:1761
+#: inc/wizard.class.php:1020 inc/wizard.class.php:1762
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
@@ -1733,34 +1733,34 @@ msgstr ""
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1727
+#: inc/wizard.class.php:1731
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:1730 inc/wizard.class.php:1756
-#: inc/wizard.class.php:1767
+#: inc/wizard.class.php:1734 inc/wizard.class.php:1757
+#: inc/wizard.class.php:1768
 msgid "Next"
 msgstr ""
 
-#: inc/wizard.class.php:1759
+#: inc/wizard.class.php:1760
 msgctxt "button"
 msgid "Save & Post"
 msgstr ""
 
-#: inc/wizard.class.php:1768
+#: inc/wizard.class.php:1769
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1780
+#: inc/wizard.class.php:1781
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1835
+#: inc/wizard.class.php:1836
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:1845
+#: inc/wizard.class.php:1846
 msgid "Previous data edited"
 msgstr ""
 
