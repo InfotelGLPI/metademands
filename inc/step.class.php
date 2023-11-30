@@ -277,7 +277,7 @@ class PluginMetademandsStep extends CommonDBChild
                 $onhover = '';
                 if ($canedit) {
                     $onhover = "style='cursor:pointer'
-                           onClick=\"viewEditstepbybloc" . $item->getType() . $data['id'] . "$rand();\"";
+                           onClick=\"viewEditstepbyblock" . $item->getType() . $data['id'] . "$rand();\"";
                 }
                 echo "<tr class='tab_bg_1'>";
                 if ($canedit) {
@@ -289,7 +289,7 @@ class PluginMetademandsStep extends CommonDBChild
                 echo "<td $onhover>";
                 if ($canedit) {
                     echo "\n<script type='text/javascript' >\n";
-                    echo "function viewEditstepbybloc" . $item->getType() . $data['id'] . "$rand() {\n";
+                    echo "function viewEditstepbyblock" . $item->getType() . $data['id'] . "$rand() {\n";
                     $params = ['type'                      => __CLASS__,
                                'parenttype'                => get_class($item),
                                $item->getForeignKeyField() => $item->getID(),

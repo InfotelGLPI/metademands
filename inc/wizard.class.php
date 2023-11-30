@@ -1722,6 +1722,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "<div class='center'>";
 
                     echo "<div style='overflow:auto;'>";
+                    if ($use_as_step == 1) {
+                        echo "<div id='nextMsg' class='alert alert-info center'>";
+                        echo "</div>";
+                    }
 
                     echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
                     echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
@@ -1729,10 +1733,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'  onclick='nextPrev(1)'>";
                     echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
-                    if ($use_as_step == 1) {
-                        echo "<div id='nextMsg' class='alert alert-info center'>";
-                        echo "</div>";
-                    }
+
                     echo "</span>";
                     echo "</div>";
                     echo "</div>";
@@ -2440,7 +2441,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                if(document.querySelector('.tox-tinymce').classList.contains('required')) {
                                   fieldmandatory = true;
                                }
-                                
                             }
                             if (res != 'none' && fieldmandatory == true) {
                                 if (typeof tinymce !== 'undefined' && tinymce.get(textarea.id)) {
