@@ -60,7 +60,12 @@ class PluginMetademandsInformation extends CommonDBTM
         }
 
         if ($on_order == false && !empty($comment)) {
-            $field = "<label class='col-form-label'>" . htmlspecialchars_decode(stripslashes($comment)) . "</label>";
+            $icon = $data['icon'];
+            $color = $data['color'];
+            if ($icon) {
+                $field = "<i class='fas fa-2x $icon' style='color: $color;'></i>&nbsp;";
+            }
+            $field .= "<label class='col-form-label' style='color: $color;'>" . htmlspecialchars_decode(stripslashes($comment)) . "</label>";
         }
 
         echo $field;
