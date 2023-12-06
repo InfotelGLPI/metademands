@@ -719,13 +719,13 @@ CREATE TABLE `glpi_plugin_metademands_mailtasks`
     `users_id_recipient`                int unsigned NOT NULL DEFAULT '0',
     `groups_id_recipient`               int unsigned NOT NULL DEFAULT '0',
     `plugin_metademands_tasks_id`       int unsigned NOT NULL DEFAULT '0',
-    `itilcategories_id`                 int unsigned          DEFAULT '0',
+    `itilcategories_id`                 int unsigned NOT NULL DEFAULT '0',
     `email`                             varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
     KEY `users_id_recipient` (`users_id_recipient`),
     KEY `groups_id_recipient` (`groups_id_recipient`),
-    KEY `itilcategories_id` (`itilcategories_id`)
+    KEY `itilcategories_id` (`itilcategories_id`)git
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
