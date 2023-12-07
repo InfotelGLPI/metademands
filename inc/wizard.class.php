@@ -627,7 +627,9 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($step === PluginMetademandsMetademand::STEP_CREATE) {
 
             $values = isset($_SESSION['plugin_metademands'][$metademands_id]) ? $_SESSION['plugin_metademands'][$metademands_id] : [];
-            self::createMetademands($metademands_id, $values, $options);
+            if (count($values) > 0) {
+                self::createMetademands($metademands_id, $values, $options);
+            }
         } elseif ($step == 0) {
             self::listMetademandTypes();
         } else {
