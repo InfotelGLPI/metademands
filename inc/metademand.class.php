@@ -4259,8 +4259,10 @@ JAVASCRIPT
                 }
              
                 $tt = $ticket->getITILTemplateToUse(0, $ticketParent->fields['type'], $son_ticket_data['itilcategories_id'], $ticketParent->fields['entities_id']);
-                $predifined_fields = $tt->predefined;
-                $son_ticket_data = array_merge($son_ticket_data,$predifined_fields);
+                $predefined_fields = $tt->predefined;
+                
+                unset($predefined_fields['content']);
+                $son_ticket_data = array_merge($son_ticket_data,$predefined_fields);
              
                 // Field format for ticket
                 foreach ($son_ticket_data as $field => $value) {
