@@ -2001,7 +2001,7 @@ JAVASCRIPT
                             foreach ($values_form as $k => $v) {
                                 if (isset($v[$id])) {
                                     $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
-                                    if ($fields_values['used_by_ticket'] == 4) {
+                                    if ($v[$id] > 0 && $fields_values['used_by_ticket'] == 4) {
                                         $name = "_users_id_requester";
                                     }
                                     if ($fields_values['used_by_ticket'] == 71) {
