@@ -47,7 +47,7 @@ class PluginMetademandsBasketobject extends CommonDBTM
     {
         $material = new PluginMetademandsBasketobject();
         if($material->getFromDBByCrit(['reference' => $input['reference']])){
-            Session::addMessageAfterRedirect(__('This chargeback reference already exists', 'metademands'), false, ERROR);
+            Session::addMessageAfterRedirect(__('This reference already exists', 'metademands'), false, ERROR);
             return false;
         }
 
@@ -57,11 +57,12 @@ class PluginMetademandsBasketobject extends CommonDBTM
         }
 
         if (empty($input['reference'])) {
-            Session::addMessageAfterRedirect(__("Chargeback reference is mandatory", "metademands"), false, ERROR);
+            Session::addMessageAfterRedirect(__("Reference is mandatory", "metademands"), false, ERROR);
             return false;
         }
 
-        if ($input['plugin_metademands_basketobjecttypes_id'] == 0) {
+        if (!isset($input['plugin_metademands_basketobjecttypes_id'])
+            || $input['plugin_metademands_basketobjecttypes_id'] == 0) {
             Session::addMessageAfterRedirect(__("The object type is mandatory", "metademands"), false, ERROR);
             return false;
         }
@@ -112,7 +113,7 @@ class PluginMetademandsBasketobject extends CommonDBTM
             'id' => 4,
             'table' => $this->getTable(),
             'field' => 'reference',
-            'name' => __('Chargeback reference', 'metademands'),
+            'name' => __('Reference', 'metademands'),
             'datatype' => 'text',
         ];
 
@@ -127,6 +128,9 @@ class PluginMetademandsBasketobject extends CommonDBTM
 
         if (Plugin::isPluginActive("ordermaterial")) {
             $tab = array_merge($tab, PluginOrdermaterialMaterial::rawSearchOptionsToAdd());
+        }
+        if (Plugin::isPluginActive("orderfollowup")) {
+            $tab = array_merge($tab, PluginOrderfollowupMaterial::rawSearchOptionsToAdd());
         }
         return $tab;
     }
@@ -214,7 +218,7 @@ class PluginMetademandsBasketobject extends CommonDBTM
         echo "</tr>";
 
         echo "<tr class = 'tab_bg_1'>";
-        echo "<td colspan='2'>" . __('Chargeback reference', 'metademands') . " <span style='color : red'> *</span></td>";
+        echo "<td colspan='2'>" . __('Reference', 'metademands') . " <span style='color : red'> *</span></td>";
         echo "<td colspan='2'>";
         $options = [
             'value' => $this->fields['reference']

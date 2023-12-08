@@ -68,6 +68,7 @@ if (isset($_POST["add"])) {
          $_POST['item'] = 'other';
       }
       $_POST["custom_values"] = PluginMetademandsField::_serialize($_POST["custom_values"]);
+
       if (isset($_POST["comment_values"])) {
          $_POST["comment_values"] = PluginMetademandsField::_serialize($_POST["comment_values"]);
       }
@@ -78,9 +79,13 @@ if (isset($_POST["add"])) {
          $_POST["informations_to_display"] = PluginMetademandsField::_serialize($_POST["informations_to_display"]);
       }
    }
+    if ((!isset($_POST["custom_values"]) || empty($_POST["custom_values"])) && $_POST['type'] == 'yesno') {
+        $_POST["custom_values"] = 1;
+    }
 
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);
+
    if ($_POST['id'] = $field->add($_POST)) {
       $field->recalculateOrder($_POST);
       PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_ADD);

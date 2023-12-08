@@ -687,7 +687,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
     public static function getFieldValue($field, $lang)
     {
-        if (!empty($field['custom_values'])) {
+        if (isset($field['custom_values']) && !empty($field['custom_values'])) {
             $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
             foreach ($custom_values as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {

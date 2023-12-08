@@ -45,10 +45,11 @@ class PluginMetademandsField extends CommonDBChild
     const MAX_FIELDS = 40;
 
 
-    public static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text',
-                                  'checkbox', 'textarea', 'date', 'datetime', 'informations', 'date_interval',
-                                  'datetime_interval', 'yesno','upload', 'title', 'title-block', 'radio', 'link',
-                                  'number', 'basket', 'parent_field'];
+    public static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple',
+                                  'title', 'title-block', 'informations', 'text', 'textarea', 'yesno',
+                                  'checkbox', 'radio', 'number', 'basket', 'date', 'datetime', 'date_interval',
+                                  'datetime_interval','upload', 'link',
+                                   'parent_field'];
 
     public static $allowed_options_types = ['upload', 'text', 'date', 'datetime', 'date_interval', 'datetime_interval',
         'dropdown_multiple', 'dropdown_object', 'basket'];

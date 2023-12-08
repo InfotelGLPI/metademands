@@ -47,11 +47,29 @@ if (isset($_POST['action'])) {
 
                     }
                 }
-                if (isset($_POST['estimated_price']) && $_POST['estimated_price'] > 0) {
-                    echo Html::formatNumber($totalrow, false, 2);
-                    echo " €";
-                } else {
-                    echo $totalrow;
+                if (Plugin::isPluginActive('orderfollowup')) {
+                    $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                    if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']])
+                        && isset($_POST['unit_price']) && $_POST['unit_price'] > 0) {
+                        $totalrow = $_POST['quantity'] * $_POST['unit_price'];
+
+                    }
+                }
+                if (Plugin::isPluginActive('ordermaterial')) {
+                    if (isset($_POST['estimated_price']) && $_POST['estimated_price'] > 0) {
+                        echo Html::formatNumber($totalrow, false, 2);
+                        echo " €";
+                    } else {
+                        echo $totalrow;
+                    }
+                }
+                if (Plugin::isPluginActive('orderfollowup')) {
+                    if (isset($_POST['unit_price']) && $_POST['unit_price'] > 0) {
+                        echo Html::formatNumber($totalrow, false, 2);
+                        echo " €";
+                    } else {
+                        echo $totalrow;
+                    }
                 }
 
 //                }
