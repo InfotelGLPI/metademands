@@ -5618,7 +5618,7 @@ JAVASCRIPT
                     $form[$pluginclass] = [];
                     $item = $dbu->getItemForItemtype($pluginclass);
                     if ($item && is_callable([$item, 'afterCreateTicket'])) {
-                        return $item->afterCreateTicket($params);
+                        $item->afterCreateTicket($params);
                     }
                 }
             }

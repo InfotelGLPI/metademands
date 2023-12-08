@@ -63,7 +63,7 @@ if (isset($_POST['see_basket_summary'])) {
     $post = $_POST;
 
     //why i don't know
-    if (isset($post['quantity'])) {
+    if (isset($post['quantity']) && is_array($post['quantity'])) {
         foreach ($post['quantity'] as $k => $v) {
             foreach ($v as $key => $q) {
                 if ($q > 0 && !isset($post['field'][$k])) {
@@ -76,6 +76,14 @@ if (isset($_POST['see_basket_summary'])) {
             }
         }
     }
+
+    if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+        $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+        foreach ($freeinputs as $freeinput) {
+            $post['freeinputs'][] = $freeinput;
+        }
+    }
+
     $metademands->getFromDB($_POST['form_metademands_id']);
 
     if ($metademands->fields['is_basket'] == 1) {

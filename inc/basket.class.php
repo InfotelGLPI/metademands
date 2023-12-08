@@ -910,36 +910,36 @@ class PluginMetademandsBasket extends CommonDBTM
 //        foreach ($fields as $k => $v) {
 
         $field = new PluginMetademandsField();
-        $field->getFromDB($id);
+        if ($field->getFromDB($id)) {
             //hide blocks
 //            if ($field->fields['type'] == 'informations' || $field->fields['type'] == 'title-block' || $field->fields['type'] == 'title') {
 //                continue;
 //            }
 
-        if (!empty($value) && $field->fields['type'] != "basket") {
+            if (!empty($value) && isset($field->fields['type']) && $field->fields['type'] != "basket") {
 //            echo "<tr class='tab_bg_1'>";
 
-            echo "<td>";
+                echo "<td>";
 
-            if (empty($label = PluginMetademandsField::displayField($field->fields['id'], 'name'))) {
-                $label = $field->fields['name'];
-                echo $label;
-            }
-
-            if ($field->fields['type'] == "date_interval") {
-                if (empty($label2 = PluginMetademandsField::displayField($field->fields['id'], 'label2'))) {
-                    $label2 = $field->fields['label2'];
+                if (empty($label = PluginMetademandsField::displayField($field->fields['id'], 'name'))) {
+                    $label = $field->fields['name'];
+                    echo $label;
                 }
-                echo "<br><br><br>" . Toolbox::stripTags($label2);
-            }
 
-            echo "</td>";
+                if ($field->fields['type'] == "date_interval") {
+                    if (empty($label2 = PluginMetademandsField::displayField($field->fields['id'], 'label2'))) {
+                        $label2 = $field->fields['label2'];
+                    }
+                    echo "<br><br><br>" . Toolbox::stripTags($label2);
+                }
 
-            echo "<td>";
-            $lang = $_SESSION['glpilanguage'];
+                echo "</td>";
 
-            $values['value'] = $value;
-            $values['item'] = $field->fields['item'];
+                echo "<td>";
+                $lang = $_SESSION['glpilanguage'];
+
+                $values['value'] = $value;
+                $values['item'] = $field->fields['item'];
 
 //            if ($field->fields['type'] == "date_interval" || $field->fields['type'] == "datetime_interval") {
 //                if (isset($value['value2'])) {
@@ -948,69 +948,70 @@ class PluginMetademandsBasket extends CommonDBTM
 //
 //            }
 
-            switch ($field->fields['type']) {
-                case 'dropdown':
-                    echo PluginMetademandsDropdown::getFieldValue($values);
-                    break;
-                case 'dropdown_object':
-                    echo PluginMetademandsDropdownobject::getFieldValue($values);
-                    break;
-                case 'dropdown_meta':
-                    echo PluginMetademandsDropdownmeta::getFieldValue($values, $lang);
-                    break;
-                case 'dropdown_multiple':
-                    echo PluginMetademandsDropdownmultiple::getFieldValue($values, $lang);
-                    break;
-                case 'link':
-                    echo PluginMetademandsLink::getFieldValue($values);
-                    break;
-                case 'textarea':
-                    echo PluginMetademandsTextarea::getFieldValue($values);
-                    break;
-                case 'text':
-                    echo PluginMetademandsText::getFieldValue($values);
-                    break;
-                case 'checkbox':
-                    $values['custom_values'] = $field->fields['custom_values'];
-                    $values['id'] = $id;
-                    echo PluginMetademandsCheckbox::getFieldValue($values, $lang);
-                    break;
-                case 'radio':
-                    $values['custom_values'] = $field->fields['custom_values'];
-                    $values['id'] = $id;
-                    echo PluginMetademandsRadio::getFieldValue($values,$label, $lang);
-                    break;
-                case 'date':
-                    echo PluginMetademandsDate::getFieldValue($values);
-                    break;
-                case 'datetime':
-                    echo PluginMetademandsDatetime::getFieldValue($values);
-                    break;
-                case 'date_interval':
-                    echo PluginMetademandsDateinterval::getFieldValue($values);
-                    break;
-                case 'datetime_interval':
-                    echo PluginMetademandsDatetimeinterval::getFieldValue($values);
-                    break;
-                case 'number':
-                    echo PluginMetademandsNumber::getFieldValue($values);
-                    break;
-                case 'yesno':
-                    echo PluginMetademandsYesno::getFieldValue($values);
-                    break;
-                default:
-                    echo $value;
-                    break;
+                switch ($field->fields['type']) {
+                    case 'dropdown':
+                        echo PluginMetademandsDropdown::getFieldValue($values);
+                        break;
+                    case 'dropdown_object':
+                        echo PluginMetademandsDropdownobject::getFieldValue($values);
+                        break;
+                    case 'dropdown_meta':
+                        echo PluginMetademandsDropdownmeta::getFieldValue($values, $lang);
+                        break;
+                    case 'dropdown_multiple':
+                        echo PluginMetademandsDropdownmultiple::getFieldValue($values, $lang);
+                        break;
+                    case 'link':
+                        echo PluginMetademandsLink::getFieldValue($values);
+                        break;
+                    case 'textarea':
+                        echo PluginMetademandsTextarea::getFieldValue($values);
+                        break;
+                    case 'text':
+                        echo PluginMetademandsText::getFieldValue($values);
+                        break;
+                    case 'checkbox':
+                        $values['custom_values'] = $field->fields['custom_values'];
+                        $values['id'] = $id;
+                        echo PluginMetademandsCheckbox::getFieldValue($values, $lang);
+                        break;
+                    case 'radio':
+                        $values['custom_values'] = $field->fields['custom_values'];
+                        $values['id'] = $id;
+                        echo PluginMetademandsRadio::getFieldValue($values, $label, $lang);
+                        break;
+                    case 'date':
+                        echo PluginMetademandsDate::getFieldValue($values);
+                        break;
+                    case 'datetime':
+                        echo PluginMetademandsDatetime::getFieldValue($values);
+                        break;
+                    case 'date_interval':
+                        echo PluginMetademandsDateinterval::getFieldValue($values);
+                        break;
+                    case 'datetime_interval':
+                        echo PluginMetademandsDatetimeinterval::getFieldValue($values);
+                        break;
+                    case 'number':
+                        echo PluginMetademandsNumber::getFieldValue($values);
+                        break;
+                    case 'yesno':
+                        echo PluginMetademandsYesno::getFieldValue($values);
+                        break;
+                    default:
+                        echo $value;
+                        break;
+                }
+                echo "</td>";
             }
-            echo "</td>";
         }
     }
 
     static function displayBasketSummary($fields)
     {
 
-        $materials = $fields["field"];
-
+        $materials = $fields["field"] ?? [];
+        $freeinputs = $fields["freeinputs"] ?? [];
         $quantities = $fields["quantity"] ?? [];
         $content = "";
 
@@ -1093,18 +1094,23 @@ class PluginMetademandsBasket extends CommonDBTM
             $content .= "</tr>";
 
             $grandtotal = 0;
+            $withprice = false;
+            $withquantity = false;
+
             foreach ($materials as $id => $material) {
 
                 $field = new PluginMetademandsField();
                 $field->getFromDB($id);
-                $withquantity = false;
-                $custom_values = PluginMetademandsField::_unserialize($field->fields['custom_values']);
-                if (isset($custom_values[0]) && $custom_values[0] == 1) {
-                    $withquantity = true;
-                }
-                $withprice = false;
-                if (isset($custom_values[1]) && $custom_values[1] == 1) {
-                    $withprice = true;
+
+                if (isset($field->fields['custom_values'])) {
+                    $custom_values = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                    if (isset($custom_values[0]) && $custom_values[0] == 1) {
+                        $withquantity = true;
+                    }
+
+                    if (isset($custom_values[1]) && $custom_values[1] == 1) {
+                        $withprice = true;
+                    }
                 }
                 if (is_array($material)) {
                     foreach ($material as $mat_id) {
@@ -1206,13 +1212,13 @@ class PluginMetademandsBasket extends CommonDBTM
                                     if ($ordermaterial->getFromDBByCrit(['plugin_metademands_basketobjects_id' => $mat_id])) {
                                         if ($ordermaterial->fields['is_specific'] == 1) {
                                             $content .= __('On quotation', 'ordermaterial');
-                                        }  else {
+                                        } else {
                                             $content .= Html::formatNumber($totalrow, false, 2);
                                             $content .= " €";
                                         }
                                     }
                                 }
-                            }else if (Plugin::isPluginActive('orderfollowup') && $withprice) {
+                            } else if (Plugin::isPluginActive('orderfollowup') && $withprice) {
                                 $ordermaterialmeta = new PluginOrderfollowupMetademand();
                                 if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $fields['metademands_id']])) {
                                     $ordermaterial = new PluginOrderfollowupMaterial();
@@ -1240,10 +1246,10 @@ class PluginMetademandsBasket extends CommonDBTM
                     $content .= "<th style='border: 1px solid black;' colspan='3'>" . __('Grand total', 'ordermaterial') . "</th>";
                     $content .= "<th style='border: 1px solid black;text-align: right;'>" . Html::formatNumber($grandtotal, false, 2) . " €</th>";
                     $content .= "</tr>";
-//                    $content .= "<tr class='tab_bg_1'>";
-//                    $content .= "<td colspan='4' style='border: 1px solid black;'></td>";
-//                    $content .= "<td colspan='4'>" . __('* The prices are estimates and do not act as an estimate', 'ordermaterial') . "</td>";
-//                    $content .= "</tr>";
+                    $content .= "<tr class='tab_bg_1'>";
+                    $content .= "<td colspan='4' style='border: 1px solid black;'></td>";
+                    $content .= "<td colspan='4'>" . __('* The prices are estimates and do not act as an estimate', 'ordermaterial') . "</td>";
+                    $content .= "</tr>";
                 }
             }
             if (Plugin::isPluginActive('orderfollowup')) {
@@ -1253,33 +1259,104 @@ class PluginMetademandsBasket extends CommonDBTM
                     $content .= "<th style='border: 1px solid black;' colspan='3'>" . __('Grand total', 'orderfollowup') . "</th>";
                     $content .= "<th style='border: 1px solid black;text-align: right;'>" . Html::formatNumber($grandtotal, false, 2) . " €</th>";
                     $content .= "</tr>";
-//                    $content .= "<tr class='tab_bg_1'>";
-//                    $content .= "<td colspan='4' style='border: 1px solid black;'></td>";
-//                    $content .= "<td colspan='4'>" . __('* The prices are estimates and do not act as an estimate', 'ordermaterial') . "</td>";
-//                    $content .= "</tr>";
                 }
             }
             $content .= "</table>";
 
 //            if ($grandtotal > 0) {
-                $content .= "<br><span style='float:right'>";
-                $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
+            $content .= "<br><span style='float:right'>";
+            $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
 
-                $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
-                $content .= Html::submit($title, ['name' => 'send_order',
-                    'form' => '',
-                    'id' => 'submitOrder',
-                    'class' => 'btn btn-success right']);
-                $content .= "</span>";
+            $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
+            $content .= Html::submit($title, ['name' => 'send_order',
+                'form' => '',
+                'id' => 'submitOrder',
+                'class' => 'btn btn-success right']);
+            $content .= "</span>";
 
-                $paramUrl = "";
-                $meta_validated = false;
-                if ($current_ticket > 0 && !$meta_validated) {
-                    $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+            $paramUrl = "";
+            $meta_validated = false;
+            if ($current_ticket > 0 && !$meta_validated) {
+                $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+            }
+            $post = json_encode($fields);
+            $meta_id = $fields['metademands_id'];
+            $content .= "<script>
+                          $('#submitOrder').click(function() {
+                             var meta_id = $meta_id;
+                             $.ajax({
+                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                               type: 'POST',
+                               data: $post,
+                               success: function (response) {
+                                  $('#ajax_loader').hide();
+                                  if (response == 1) {
+                                     window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
+                                  } else {
+                                     $.ajax({
+                                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                        type: 'POST',
+                                        data: $post,
+                                        success: function (response) {
+                                           window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
+                                        },
+                                        error: function (xhr, status, error) {
+                                           console.log(xhr);
+                                           console.log(status);
+                                           console.log(error);
+                                        }
+                                     });
+                                  }
+                               },
+                               error: function (xhr, status, error) {
+                                  console.log(xhr);
+                                  console.log(status);
+                                  console.log(error);
+                               }
+                            });
+                          });
+                          $('#prevBtn').hide();
+                          $('.step_wizard').hide();
+                          
+                        </script>";
+//            }
+
+        } else if (is_array($freeinputs) && count($freeinputs) > 0) {
+
+            $content .= "<table class='tab_cadre_fixe'>";
+            var_dump($freeinputs);
+
+            var_dump($fields);
+
+            if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+                $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+                foreach ($freeinputs as $freeinput) {
+                    $fields['field'][] = $freeinput;
                 }
-                $post = json_encode($fields);
-                $meta_id = $fields['metademands_id'];
-                $content .= "<script>
+            }
+
+
+            $content .= "</table>";
+
+//            if ($grandtotal > 0) {
+            $content .= "<br><span style='float:right'>";
+            $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
+
+            $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
+            $content .= Html::submit($title, ['name' => 'send_order',
+                'form' => '',
+                'id' => 'submitOrder',
+                'class' => 'btn btn-success right']);
+            $content .= "</span>";
+
+            $paramUrl = "";
+            $meta_validated = false;
+            if ($current_ticket > 0 && !$meta_validated) {
+                $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
+            }
+            $post = json_encode($fields);
+            $meta_id = $fields['metademands_id'];
+            $content .= "<script>
                           $('#submitOrder').click(function() {
                              var meta_id = $meta_id;
                              $.ajax({
