@@ -4334,7 +4334,7 @@ JAVASCRIPT
                                     if ($fields_values['used_by_ticket'] > 0 && $fields_values['used_by_child'] == 1) {
                                         if (isset($values_form[$id])) {
                                             $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
-                                            if ($fields_values['used_by_ticket'] == 4) {
+                                            if ($values_form[$id] > 0 && $fields_values['used_by_ticket'] == 4) {
                                                 $name = "_users_id_requester";
                                             }
                                             if ($fields_values['used_by_ticket'] == 71) {
