@@ -41,7 +41,7 @@ $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
 $fields      = new PluginMetademandsField();
 
-if (isset($_POST['save_form'])) {
+if (isset($_POST['save_form']) && isset($_POST['field'])) {
     $nblines = 0;
     $KO      = false;
 

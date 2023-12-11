@@ -97,8 +97,6 @@ class PluginMetademandsBasket extends CommonDBTM
 
         if (Plugin::isPluginActive('orderfollowup')) {
 
-            $fields = [PluginOrderfollowupMaterial::getTable() => 'unit'];
-
             if (isset($custom_values[1]) && $custom_values[1] == 1) {
                 $where = ['unit_price' => ['>', 0]];
             }
@@ -1010,6 +1008,15 @@ class PluginMetademandsBasket extends CommonDBTM
     static function displayBasketSummary($fields)
     {
 
+        if (Plugin::isPluginActive('orderfollowup')) {
+            if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+                $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+                foreach ($freeinputs as $freeinput) {
+                    $fields['freeinputs'][] = $freeinput;
+                }
+            }
+        }
+
         $materials = $fields["field"] ?? [];
         $freeinputs = $fields["freeinputs"] ?? [];
         $quantities = $fields["quantity"] ?? [];
@@ -1323,22 +1330,10 @@ class PluginMetademandsBasket extends CommonDBTM
 
         } else if (is_array($freeinputs) && count($freeinputs) > 0) {
 
-            $content .= "<table class='tab_cadre_fixe'>";
-            var_dump($freeinputs);
-
-            var_dump($fields);
-
-            if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-                $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-                foreach ($freeinputs as $freeinput) {
-                    $fields['field'][] = $freeinput;
-                }
+            if (Plugin::isPluginActive('orderfollowup')) {
+                $content .= PluginOrderfollowupFreeinput::displayBasketSummary($fields);
             }
-
-
-            $content .= "</table>";
-
-//            if ($grandtotal > 0) {
+            //            if ($grandtotal > 0) {
             $content .= "<br><span style='float:right'>";
             $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
 
@@ -1394,7 +1389,6 @@ class PluginMetademandsBasket extends CommonDBTM
                           $('.step_wizard').hide();
                           
                         </script>";
-//            }
 
         } else {
             $content .= "<table>";
@@ -1632,7 +1626,7 @@ class PluginMetademandsBasket extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<tr>";
                 $colspan = $nb - 1;
-                $result[$field['rank']]['content'] .= "<td $style_td colspan='$colspan'>" . __('Total', 'metademands') . "</td>";
+                $result[$field['rank']]['content'] .= "<th $style_td colspan='$colspan'>" . __('Total', 'metademands') . "</th>";
             }
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_td>";

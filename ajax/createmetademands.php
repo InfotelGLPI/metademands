@@ -77,13 +77,6 @@ if (isset($_POST['see_basket_summary'])) {
         }
     }
 
-    if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-        $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
-        foreach ($freeinputs as $freeinput) {
-            $post['freeinputs'][] = $freeinput;
-        }
-    }
-
     $metademands->getFromDB($_POST['form_metademands_id']);
 
     if ($metademands->fields['is_basket'] == 1) {
@@ -122,6 +115,8 @@ if (isset($_POST['see_basket_summary'])) {
             $orderprojects = new PluginOrderprojectsMetademand();
             $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
         }
+
+
 
         if (count($meta) == 1) {
             $orderprojects->createFromMetademands($_POST);

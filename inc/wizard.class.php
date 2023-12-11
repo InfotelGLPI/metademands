@@ -1590,7 +1590,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-5 $bottomclass $class\">";
                         }
                         //see fields
-                        PluginMetademandsField::getFieldType($metademands_data, $data, $preview, $config_link, $itilcategories_id);
+                        PluginMetademandsField::displayFieldByType($metademands_data, $data, $preview, $config_link, $itilcategories_id);
 
                         // Label 2 (date interval)
                         if (!empty($data['label2'])

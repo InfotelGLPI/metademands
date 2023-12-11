@@ -1912,7 +1912,7 @@ JAVASCRIPT
     * @param string $config_link
     * @param int    $itilcategories_id
     */
-    public static function getFieldType($metademands_data, $data, $preview = false, $config_link = "", $itilcategories_id = 0)
+    public static function displayFieldByType($metademands_data, $data, $preview = false, $config_link = "", $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
 

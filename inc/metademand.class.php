@@ -2179,7 +2179,8 @@ JAVASCRIPT
                         if ($input['name'] == 0 || $input['name'] == "0" || empty($input['name'])) {
                             $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
                         }
-                        $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
+
+//                        $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
                         $input = Toolbox::addslashes_deep($input);
 
                         //ADD TICKET
@@ -3599,7 +3600,6 @@ JAVASCRIPT
         $parent_fields_id = 0;
         $colors = [];
 
-
         foreach ($values_form as $k => $values) {
             if (is_array($values) && $config_data['show_form_changes']) {
                 foreach ($values as $key => $val) {
@@ -3733,6 +3733,7 @@ JAVASCRIPT
     {
         global $PLUGIN_HOOKS;
 
+
         $style_title = "class='title'";
         if ($color != "") {
             $style_title .= " style='color:$color;width: 40%;'";
@@ -3745,25 +3746,26 @@ JAVASCRIPT
             $label = Toolbox::stripslashes_deep($field['name']);
         }
 
+        //use plugin fields types
+        $types = [];
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $new_fields = PluginMetademandsField::getPluginFieldItemsType($plug);
+                if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                    if (in_array($field['type'], array_keys($new_fields))) {
+                        $types[] = $new_fields[$field['type']];
+                    }
+                }
+            }
+        }
+
         if ((!empty($field['value']) || $field['value'] == "0")
             && $field['value'] != 'NULL'
             || $field['type'] == 'title'
             || $field['type'] == 'title-block'
             || $field['type'] == 'radio'
-            || $field['type'] == 'basket') {
-
-
-            //use plugin fields types
-            if (isset($PLUGIN_HOOKS['metademands'])) {
-                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                    $new_fields = PluginMetademandsField::getPluginFieldItemsType($plug);
-                    if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
-                        if (in_array($field['type'], array_keys($new_fields))) {
-                            $field['type'] = $new_fields[$field['type']];
-                        }
-                    }
-                }
-            }
+            || $field['type'] == 'basket'
+            || in_array($field['type'],$types)) {
 
             switch ($field['type']) {
 
