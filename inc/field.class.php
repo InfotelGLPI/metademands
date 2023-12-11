@@ -397,7 +397,7 @@ class PluginMetademandsField extends CommonDBChild
                                                                                 "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
 
         if ($metademand->fields['is_basket'] == 0
-            && $this->fields['type'] == 'basket') {
+            && ($this->fields['type'] == 'basket' || $this->fields['type'] == 'free_input')) {
             echo "<span class='alert alert-warning d-flex'>";
             echo __('Remember to activate basket mode on your metademand !', 'metademands');
             echo "</span>";

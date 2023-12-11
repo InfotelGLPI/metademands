@@ -117,6 +117,14 @@ if (isset($_POST['see_basket_summary'])) {
         }
 
 
+        if (Plugin::isPluginActive('orderfollowup') && (!isset($_POST['field']) || empty($_POST['field']))) {
+            if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+                $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+                foreach ($freeinputs as $freeinput) {
+                    $_POST['field'][] = $freeinput;
+                }
+            }
+        }
 
         if (count($meta) == 1) {
             $orderprojects->createFromMetademands($_POST);
