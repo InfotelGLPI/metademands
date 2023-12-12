@@ -51,12 +51,23 @@ class PluginMetademandsInformation extends CommonDBTM
         return __('Informations', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
 
         $field = '';
+        $class = "class='alert alert-warning alert-dismissible fade show informations'";
+        $field .= "<div $class>";
+
+
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
+        }
+
+        if (empty($comment) && !empty($data['label2'])) {
+            $comment = $data['label2'];
+            if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                $comment = htmlspecialchars_decode(stripslashes($data['label2']));
+            }
         }
 
         if ($on_order == false && !empty($comment)) {
@@ -67,6 +78,10 @@ class PluginMetademandsInformation extends CommonDBTM
             }
             $field .= "<label class='col-form-label' style='color: $color;'>" . htmlspecialchars_decode(stripslashes($comment)) . "</label>";
         }
+        if ($preview) {
+            $field .= $config_link;
+        }
+        $field .= "</div>";
 
         echo $field;
     }

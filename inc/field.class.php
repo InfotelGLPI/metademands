@@ -209,6 +209,118 @@ class PluginMetademandsField extends CommonDBChild
     }
 
 
+    public function showExistingForm($ID, $options = [])
+    {
+        global $PLUGIN_HOOKS;
+
+        if (!$this->canview()) {
+            return false;
+        }
+
+        if (!$this->cancreate()) {
+            return false;
+        }
+
+        $metademand = new PluginMetademandsMetademand();
+
+        if (isset($options['parent']) && !empty($options['parent'])) {
+            $item = $options['parent'];
+        }
+
+        if ($ID > 0) {
+            $this->check($ID, READ);
+            $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
+        } else {
+            // Create item
+            if (!isset($item)) {
+                return false;
+            }
+            $options['itemtype'] = get_class($item);
+            $options['items_id'] = $item->getID();
+            $metademand->getFromDB($item->getID());
+            // Create item
+            $this->check(-1, CREATE, $options);
+            $this->getEmpty();
+            $this->fields["plugin_metademands_metademands_id"] = $item->fields['id'];
+            $this->fields['color']                             = '#000';
+        }
+
+        // Data saved in session
+        if (isset($_SESSION['glpi_plugin_metademands_fields'])) {
+            foreach ($_SESSION['glpi_plugin_metademands_fields'] as $key => $value) {
+                $this->fields[$key] = $value;
+            }
+            unset($_SESSION['glpi_plugin_metademands_fields']);
+        }
+
+        $this->showFormHeader($options);
+
+        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $this->fields["plugin_metademands_metademands_id"]]);
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Field', 'metademands') . "</td>";
+        echo "<td>";
+
+        $randType   = self::dropdownFieldTypes("type", ['metademands_id' => $this->fields["plugin_metademands_metademands_id"]]);
+        $paramsType = ['value' => '__VALUE__',
+            'step' => 'listfieldbytype'];
+        Ajax::updateItemOnSelectEvent('dropdown_type' . $randType, "show_listfields_by_type", PLUGIN_METADEMANDS_WEBDIR .
+            "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsType);
+
+        echo "<div id='show_listfields_by_type'>";
+        echo "</div>";
+//        $rand = self::dropdown(['name'  => "existing_field_id"]);
+//        $params = ['fields_id'               => '__VALUE__'];
+//        Ajax::updateItemOnSelectEvent('dropdown_existing_field_id' . $rand, "show_fields_infos", PLUGIN_METADEMANDS_WEBDIR .
+//            "/ajax/viewfieldinfos.php?id=" . $this->fields['id'], $params);
+//
+        echo "<div id='show_fields_infos'>";
+        echo "</div>";
+
+        echo "</td>";
+        echo "</tr>";
+
+
+        // BLOCK
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . __('Block', 'metademands') . "</td>";
+        echo "<td>";
+        $randRank   = Dropdown::showNumber('rank', ['value' => $this->fields["rank"],
+            'min'   => 1,
+            'max'   => self::MAX_FIELDS]);
+        $paramsRank = ['rank'               => '__VALUE__',
+            'step'               => 'order',
+            'fields_id'          => $this->fields['id'],
+            'metademands_id'     => $this->fields['plugin_metademands_metademands_id'],
+            'previous_fields_id' => $this->fields['plugin_metademands_fields_id']];
+        Ajax::updateItemOnSelectEvent('dropdown_rank' . $randRank, "show_order", PLUGIN_METADEMANDS_WEBDIR .
+            "/ajax/viewtypefields.php?id=" . $this->fields['id'], $paramsRank);
+        echo "</td>";
+        echo "</tr>";
+
+        // ORDER
+        echo "<tr class='tab_bg_1'>";
+        if ($this->fields['type'] != "title-block") {
+            echo "<td>" . __('Display field after', 'metademands') . "</td>";
+            echo "<td>";
+            echo "<span id='show_order'>";
+            $this->showOrderDropdown(
+                $this->fields['rank'],
+                $this->fields['id'],
+                $this->fields['plugin_metademands_fields_id'],
+                $this->fields["plugin_metademands_metademands_id"]
+            );
+            echo "</span>";
+            echo "</td>";
+        } else {
+            echo "<td colspan='2'></td>";
+        }
+        echo "</tr>";
+
+        $this->showFormButtons(['colspan' => 2]);
+        return true;
+
+    }
    /**
     * @param       $ID
     * @param array $options
@@ -1114,7 +1226,26 @@ JAVASCRIPT
             echo "<div class='center'>" .
                 "<a class='submit btn btn-primary' href='javascript:addField" .
                 $item->getType() . $item->getID() . "$rand();'>" . __('Add a new field', 'metademands') .
+                "</a>&nbsp;";
+
+            echo "<a class='submit btn btn-primary' href='javascript:addExistingField" .
+                $item->getType() . $item->getID() . "$rand();'>" . __('Add a existing field', 'metademands') .
                 "</a></div><br>";
+
+            echo "<div id='viewexistingfield" . $item->getType() . $item->getID() . "$rand'></div>\n";
+
+            echo "<script type='text/javascript' >\n";
+            echo "function addExistingField" . $item->getType() . $item->getID() . "$rand() {\n";
+            $params = ['type' => __CLASS__,
+                'parenttype' => get_class($item),
+                $item->getForeignKeyField() => $item->getID(),
+                'id' => -1];
+            Ajax::updateItemJsCode("viewexistingfield" . $item->getType() . $item->getID() . "$rand",
+                PLUGIN_METADEMANDS_WEBDIR. "/ajax/viewexistingsubitem.php",
+                $params);
+            echo "};";
+            echo "</script>\n";
+
         }
 
         $self = new self();
@@ -1912,9 +2043,15 @@ JAVASCRIPT
     * @param string $config_link
     * @param int    $itilcategories_id
     */
-    public static function displayFieldByType($metademands_data, $data, $preview = false, $config_link = "", $itilcategories_id = 0)
+    public static function displayFieldByType($metademands_data, $data, $preview = false, $itilcategories_id = 0)
     {
         global $PLUGIN_HOOKS;
+
+        $config_link = "";
+        if (Session::getCurrentInterface() == 'central' && $preview) {
+            $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
+            $config_link .= "<i class='fas fa-wrench'></i></a>";
+        }
 
         $required = "";
 //        if ($data['is_mandatory'] == 1 && $data['type'] != 'parent_field') {
@@ -1958,67 +2095,65 @@ JAVASCRIPT
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $hidden = 0;
         }
+        if ($data['type'] != "title" && $data['type'] != "title-block"  && $data['type'] != "informations" ) {
+            if ($data['hide_title'] == 0) {
 
-        if ($data['hide_title'] == 0) {
-
-            if ($hidden == 0) {
-                echo "<span $required class='col-form-label metademand-label'>";
-                echo $label . " $upload";
-                if ($preview) {
-                    echo $config_link;
-                }
-                echo "</span>";
-
-                if (empty($comment = self::displayField($data['id'], 'comment'))) {
-                    $comment = $data['comment'];
-                }
-                if ($data['type'] != "title"
-                    && $data['type'] != "informations"
-                    && $data['type'] != "title-block"
-                    && $data['type'] != "text"
-                    && !empty($comment)) {
-                    $display = true;
-                    if ($data['use_richtext'] == 0) {
-                        $display = false;
+                if ($hidden == 0) {
+                    echo "<span $required class='col-form-label metademand-label'>";
+                    echo $label . " $upload";
+                    if ($preview) {
+                        echo $config_link;
                     }
-                    if ($display) {
-                        echo "&nbsp;";
-                        echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
+                    echo "</span>";
+
+                    if (empty($comment = self::displayField($data['id'], 'comment'))) {
+                        $comment = $data['comment'];
                     }
-                }
-                echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
-                if ($data['is_mandatory'] == 1
-                    && $data['type'] != 'parent_field') {
-                    echo "*";
-                }
-                echo "</span>";
+                    if ($data['type'] != "text"
+                        && !empty($comment)) {
+                        $display = true;
+                        if ($data['use_richtext'] == 0) {
+                            $display = false;
+                        }
+                        if ($display) {
+                            echo "&nbsp;";
+                            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
+                        }
+                    }
+                    echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
+                    if ($data['is_mandatory'] == 1
+                        && $data['type'] != 'parent_field') {
+                        echo "*";
+                    }
+                    echo "</span>";
 
-                echo "&nbsp;";
+                    echo "&nbsp;";
 
-                //use plugin fields types
-                if (isset($PLUGIN_HOOKS['metademands'])) {
-                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                        $new_fields = self::getPluginFieldItemsType($plug);
-                        if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
-                            if (in_array($data['type'], array_keys($new_fields))) {
-                                $data['type'] = $new_fields[$data['type']];
+                    //use plugin fields types
+                    if (isset($PLUGIN_HOOKS['metademands'])) {
+                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                            $new_fields = self::getPluginFieldItemsType($plug);
+                            if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                                if (in_array($data['type'], array_keys($new_fields))) {
+                                    $data['type'] = $new_fields[$data['type']];
+                                }
                             }
                         }
                     }
-                }
 
-                // Input
-                if ($data['type'] != 'link') {
-                    echo "<br>";
+                    // Input
+                    if ($data['type'] != 'link') {
+                        echo "<br>";
+                    }
                 }
-            }
-        } else {
-            echo "<div style='margin-top: 10px;'>";
-            if ($preview) {
-                echo $config_link;
+            } else {
+                echo "<div style='margin-top: 10px;'>";
+                if ($preview) {
+                    echo $config_link;
+                }
             }
         }
-        echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0);
+        echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
         if ($data['hide_title'] == 1) {
             echo "</div>";
         }
@@ -2035,7 +2170,7 @@ JAVASCRIPT
     *
     * @return int|mixed|String
     */
-    public static function getFieldInput($metademands_data, $data, $on_order = false, $itilcategories_id = 0, $idline = 0)
+    public static function getFieldInput($metademands_data, $data, $on_order = false, $itilcategories_id = 0, $idline = 0, $preview = false, $config_link = '')
     {
         global $PLUGIN_HOOKS;
 
@@ -2057,11 +2192,13 @@ JAVASCRIPT
         switch ($data['type']) {
 
             case 'title':
+                PluginMetademandsTitle::showWizardField($data, $namefield, $value, $on_order, $preview, $config_link);
                 break;
             case 'title-block':
+                PluginMetademandsTitleblock::showWizardField($data, $namefield, $value, $on_order, $preview, $config_link);
                 break;
             case 'informations':
-                PluginMetademandsInformation::showWizardField($data, $namefield, $value, $on_order);
+                PluginMetademandsInformation::showWizardField($data, $namefield, $value, $on_order, $preview, $config_link);
                 break;
             case 'text':
                 PluginMetademandsText::showWizardField($data, $namefield, $value, $on_order);

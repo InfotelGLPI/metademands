@@ -394,6 +394,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo __('Form choice', 'metademands');
                 echo "</div></h4></div></div>";
             } elseif ($parameters['step'] > PluginMetademandsMetademand::STEP_LIST) {
+
                 // Wizard title
                 echo "<div class=\"row\">";
 
@@ -542,6 +543,10 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";
+
+                // End Wizard title
+
+
                 if ($meta->getFromDB($parameters['metademands_id'])
                     && !empty($meta->fields['comment'])) {
                     if (empty($comment = PluginMetademandsMetademand::displayField($meta->getID(), 'comment'))) {
@@ -1313,63 +1318,8 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 if ($line[$keys[0]]['type'] == 'title-block') {
 
-                    $color = self::hex2rgba($line[$keys[0]]['color'], "0.03");
-                    $style_background = "style='background-color: $color!important;border-color: " . $line[$keys[0]]['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
+                    PluginMetademandsField::displayFieldByType($metademands_data, $line[$keys[0]], $preview, $itilcategories_id);
 
-                    if ($preview) {
-                        echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";
-                    } else {
-                        echo "<div class='card-header' $style_background>";
-                    }
-                    echo "<h2 class=\"card-title\"><span style='color:" . $line[$keys[0]]['color'] . ";font-weight: normal;'>";
-                    $icon = $line[$keys[0]]['icon'];
-                    if (!empty($icon)) {
-                        echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
-                    }
-                    if (empty($label = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'name'))) {
-                        $label = $line[$keys[0]]['name'];
-                    }
-
-                    echo $label;
-                    $config_link = "";
-                    if (Session::getCurrentInterface() == 'central' && $preview) {
-                        $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $line[$keys[0]]['id'] . "'>";
-                        $config_link .= "<i class='fas fa-wrench'></i></a>";
-                    }
-                    echo $config_link;
-                    if (isset($line[$keys[0]]['label2']) && !empty($line[$keys[0]]['label2'])) {
-                        echo "&nbsp;";
-                        if (empty($label2 = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'label2'))) {
-                            $label2 = $line[$keys[0]]['label2'];
-                        }
-                        Html::showToolTip(
-                            Glpi\RichText\RichText::getSafeHtml($label2),
-                            ['awesome-class' => 'fa-info-circle']
-                        );
-                    }
-                    echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right:40px;position: absolute;color:" . $line[$keys[0]]['color'] . ";'></i>";
-                    $rand = mt_rand();
-                    echo Html::scriptBlock("
-                     var myelement$rand = '#up" . $rank . "';
-                     var bloc$rand = 'bloc" . $rank . "';
-                     $(myelement$rand).click(function() {     
-                         if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
-                             $('[bloc-hideid =' + bloc$rand + ']').hide();
-                             $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
-                         } else {
-                             $('[bloc-hideid =' + bloc$rand + ']').show();
-                             $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
-                         }
-                     });");
-                    echo "</span></h2>";
-                    echo "</div>";
-                    if (!empty($line[$keys[0]]['comment'])) {
-                        if (empty($comment = PluginMetademandsField::displayField($line[$keys[0]]['id'], 'comment'))) {
-                            $comment = $line[$keys[0]]['comment'];
-                        }
-                        $comment = htmlspecialchars_decode(stripslashes($comment));
-                        echo "<div class='card-body'><i>" . $comment . "</i></div>";
-                    }
                 }
                 if ($preview) {
                     echo "<div class='card-body' bloc-hideid='bloc" . $rank . "'>";
@@ -1520,46 +1470,12 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
 
                     // Title field
-                    if ($data['type'] == 'title') {
-                        if ($data['hide_title'] == 0) {
-                            $color = self::hex2rgba($data['color'], "0.03");
-                            $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
-                            echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
-                            echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
-                            $icon = $data['icon'];
-                            if (!empty($icon)) {
-                                echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
-                            }
-                            if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
-                                $label = $data['name'];
-                            }
+                    if ($data['type'] != 'title-block') {
 
-                            echo $label;
-                            echo $config_link;
-                            if (isset($data['label2']) && !empty($data['label2'])) {
-                                echo "&nbsp;";
-                                if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                                    $label2 = $data['label2'];
-                                }
-                                Html::showToolTip(
-                                    Glpi\RichText\RichText::getSafeHtml($label2),
-                                    ['awesome-class' => 'fa-info-circle']
-                                );
-                            }
-                            echo "</span></h2>";
-                            echo "</div>";
-                            if (!empty($data['comment'])) {
-                                if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
-                                    $comment = $data['comment'];
-                                }
-                                $comment = htmlspecialchars_decode(stripslashes($comment));
-                                echo "<div class='card-body'><i>" . $comment . "</i></div>";
-                            }
+                        if ($data['type'] == 'title') {
+                            $data['row_display'] = 1;
+                            $data['is_mandatory'] = 0;
                         }
-                        $count = $count + $columns;
-
-                        // Other fields
-                    } elseif ($data['type'] != 'title-block') {
                         $style = "";
                         $class = "";
                         if ($data['row_display'] == 1 && $data['type'] == "link") {
@@ -1571,12 +1487,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             && Session::getCurrentInterface() != 'central') {
                             $class .= " itilmeta";
                         }
-                        if ($data['type'] == 'informations') {
-                            $color = $data['color'];
-                            $style = "";
-                            //                  $class = "metademands_wizard_informations";
-                            $class = "alert alert-warning alert-dismissible fade show informations";  //alert-important alert-warning alert-dismissible
-                        } else {
+                        if ($data['type'] != 'informations') {
                             $class = "form-group ";
                         }
                         $bottomclass = "";
@@ -1590,7 +1501,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-5 $bottomclass $class\">";
                         }
                         //see fields
-                        PluginMetademandsField::displayFieldByType($metademands_data, $data, $preview, $config_link, $itilcategories_id);
+                        PluginMetademandsField::displayFieldByType($metademands_data, $data, $preview, $itilcategories_id);
 
                         // Label 2 (date interval)
                         if (!empty($data['label2'])
@@ -1613,16 +1524,14 @@ class PluginMetademandsWizard extends CommonDBTM
                                 $style = "style='padding: 10px;margin-top:10px'";
                             }
 
-                            if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                                if ($data['type'] != 'informations') {
+                            if ($data['type'] != 'informations') {
+                                if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
                                     echo "<div class='alert alert-secondary' $style>";
-                                }
-                                echo Glpi\RichText\RichText::getSafeHtml($label2);
-                                if ($data['type'] != 'informations') {
+                                    echo Glpi\RichText\RichText::getSafeHtml($label2);
                                     echo "</div>";
+                                } else {
+                                    echo "<span for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) . "<span $required>" . $required_icon . "</span></label>";
                                 }
-                            } else {
-                                echo "<span for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) . "<span $required>" . $required_icon . "</span></label>";
                             }
                             $value2 = '';
                             if (isset($data['value-2'])) {

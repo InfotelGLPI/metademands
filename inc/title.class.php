@@ -51,8 +51,46 @@ class PluginMetademandsTitle extends CommonDBTM
         return __('Title');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
+
+        $color = PluginMetademandsWizard::hex2rgba($data['color'], "0.03");
+        $style_background = "style='background-color: $color!important;border-color:" . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
+
+        echo "<div id-field='field" . $data["id"] . "' class='card-header' $style_background>";
+        echo "<br><h2 class='card-title'><span style='color:" . $data['color'] . ";font-weight: normal;'>";
+        $icon = $data['icon'];
+        if (!empty($icon)) {
+            echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+        }
+        if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
+            $label = $data['name'];
+        }
+
+        echo $label;
+
+        if (isset($data['label2']) && !empty($data['label2'])) {
+            echo "&nbsp;";
+            if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                $label2 = $data['label2'];
+            }
+            Html::showToolTip(
+                Glpi\RichText\RichText::getSafeHtml($label2),
+                ['awesome-class' => 'fa-info-circle']
+            );
+        }
+        if ($preview) {
+            echo $config_link;
+        }
+        echo "</span></h2>";
+        echo "</div>";
+        if (!empty($data['comment'])) {
+            if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
+                $comment = $data['comment'];
+            }
+            $comment = htmlspecialchars_decode(stripslashes($comment));
+            echo "<div class='card-body'><i>" . $comment . "</i></div>";
+        }
 
     }
 

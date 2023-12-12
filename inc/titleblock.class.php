@@ -51,9 +51,63 @@ class PluginMetademandsTitleblock extends CommonDBTM
         return __('Block title', 'metademands');
     }
 
-    static function showWizardField($data, $namefield, $value, $on_order)
+    static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
 
+        $color = PluginMetademandsWizard::hex2rgba($data['color'], "0.03");
+        $rank = $data['rank'];
+        $style_background = "style='background-color: $color!important;border-color: " . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
+
+        if ($preview) {
+            echo "<div class=\"card-header preview-md preview-md-$rank\" $style_background data-title='" . $rank . "' >";
+        } else {
+            echo "<div class='card-header' $style_background>";
+        }
+
+        echo "<h2 class=\"card-title\"><span style='color:" . $data['color'] . ";font-weight: normal;'>";
+        $icon = $data['icon'];
+        if (!empty($icon)) {
+            echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
+        }
+        if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
+            $label = $data['name'];
+        }
+
+        echo $label;
+        echo $config_link;
+        if (isset($data['label2']) && !empty($data['label2'])) {
+            echo "&nbsp;";
+            if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                $label2 = $data['label2'];
+            }
+            Html::showToolTip(
+                Glpi\RichText\RichText::getSafeHtml($label2),
+                ['awesome-class' => 'fa-info-circle']
+            );
+        }
+        echo "<i id='up" . $rank . "' class='fa-1x fas fa-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
+        $rand = mt_rand();
+        echo Html::scriptBlock("
+                     var myelement$rand = '#up" . $rank . "';
+                     var bloc$rand = 'bloc" . $rank . "';
+                     $(myelement$rand).click(function() {     
+                         if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
+                             $('[bloc-hideid =' + bloc$rand + ']').hide();
+                             $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
+                         } else {
+                             $('[bloc-hideid =' + bloc$rand + ']').show();
+                             $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
+                         }
+                     });");
+        echo "</span></h2>";
+        echo "</div>";
+        if (!empty($data['comment'])) {
+            if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
+                $comment = $data['comment'];
+            }
+            $comment = htmlspecialchars_decode(stripslashes($comment));
+            echo "<div class='card-body'><i>" . $comment . "</i></div>";
+        }
     }
 
     static function showFieldCustomValues($values, $key, $params)

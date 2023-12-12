@@ -70,6 +70,14 @@ switch ($_POST['step']) {
 //      }
 
       break;
+    case 'listfieldbytype':
+        $fields = new PluginMetademandsField();
+        $crit = ["type" => $_POST['value']];
+        $rand = PluginMetademandsField::dropdown(['name'  => "existing_field_id", "condition" => $crit]);
+        $params = ['fields_id'               => '__VALUE__'];
+        Ajax::updateItemOnSelectEvent('dropdown_existing_field_id' . $rand, "show_fields_infos", PLUGIN_METADEMANDS_WEBDIR .
+            "/ajax/viewfieldinfos.php", $params);
+        break;
    default:
       $fields = new PluginMetademandsField();
       $fields->getEditValue(PluginMetademandsField::_unserialize(stripslashes($_POST['custom_values'])),

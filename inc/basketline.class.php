@@ -198,13 +198,13 @@ class PluginMetademandsBasketline extends CommonDBTM
                         $v['value'] = $value['value'];
                     }
 
-                    echo PluginMetademandsField::getFieldInput([], $v, true, 0, $idline);
+                    echo PluginMetademandsField::getFieldInput([], $v, true, 0, $idline, false, "");
                     if ($v['type'] == "date_interval" || $v['type'] == "datetime_interval") {
                         if (isset($value['value2'])) {
                             $v['value'] = $value['value2'];
                         }
                         $v['id'] = $v['id'] . "-2";
-                        echo PluginMetademandsField::getFieldInput([], $v, true, 0, $idline);
+                        echo PluginMetademandsField::getFieldInput([], $v, true, 0, $idline, false, "");
                     }
                 }
             }

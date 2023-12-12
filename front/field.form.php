@@ -36,6 +36,21 @@ if (empty($_GET["id"])) {
 
 $field = new PluginMetademandsField();
 
+if (isset($_POST['existing_field_id'])) {
+    if ($field->getFromDB($_POST['existing_field_id'])) {
+        $input = $field->fields;
+        unset($input['id']);
+        unset($input['entities_id']);
+        unset($input['is_recursive']);
+        unset($input['rank']);
+        unset($input['order']);
+        unset($input['plugin_metademands_fields_id']);
+        unset($input['plugin_metademands_metademands_id']);
+        unset($input['link_to_user']);
+        $_POST = array_merge($_POST, $input);
+    }
+}
+
 if (isset($_POST['type']) && $_POST['type'] == 'dropdown_object'
     && isset($_POST['item']) && ($_POST['item'] == 'Group'
        || $_POST['item'] == 'User')) {
