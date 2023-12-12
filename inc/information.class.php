@@ -58,25 +58,31 @@ class PluginMetademandsInformation extends CommonDBTM
         $class = "class='alert alert-warning alert-dismissible fade show informations'";
         $field .= "<div $class>";
 
-
-        if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
-
-        if (empty($comment) && !empty($data['label2'])) {
-            $comment = $data['label2'];
-            if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                $comment = htmlspecialchars_decode(stripslashes($data['label2']));
+        $todisplay = "";
+        if ($data['hide_title'] == 0) {
+            if (empty($todisplay = PluginMetademandsField::displayField($data['id'], 'name'))) {
+                $todisplay = $data['name'];
             }
         }
 
-        if ($on_order == false && !empty($comment)) {
+        if (empty($todisplay) && empty($todisplay = PluginMetademandsField::displayField($data['id'], 'comment'))) {
+            $todisplay = $data['comment'];
+        }
+
+        if (empty($todisplay) && !empty($data['label2'])) {
+            $todisplay = $data['label2'];
+            if (empty($todisplay = PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                $todisplay = htmlspecialchars_decode(stripslashes($data['label2']));
+            }
+        }
+
+        if ($on_order == false && !empty($todisplay)) {
             $icon = $data['icon'];
             $color = $data['color'];
             if ($icon) {
                 $field = "<i class='fas fa-2x $icon' style='color: $color;'></i>&nbsp;";
             }
-            $field .= "<label class='col-form-label' style='color: $color;'>" . htmlspecialchars_decode(stripslashes($comment)) . "</label>";
+            $field .= "<label class='col-form-label' style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</label>";
         }
         if ($preview) {
             $field .= $config_link;
