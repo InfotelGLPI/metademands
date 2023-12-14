@@ -725,7 +725,7 @@ CREATE TABLE `glpi_plugin_metademands_mailtasks`
     KEY `plugin_metademands_tasks_id` (`plugin_metademands_tasks_id`),
     KEY `users_id_recipient` (`users_id_recipient`),
     KEY `groups_id_recipient` (`groups_id_recipient`),
-    KEY `itilcategories_id` (`itilcategories_id`)git
+    KEY `itilcategories_id` (`itilcategories_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci

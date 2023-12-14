@@ -63,6 +63,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
+        $field = "";
 
         if ($data['item'] == User::getType()) {
             $self = new PluginMetademandsField();
