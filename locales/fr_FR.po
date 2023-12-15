@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-12 10:06+0000\n"
+"POT-Creation-Date: 2023-12-15 07:22+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2023\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -260,7 +260,7 @@ msgstr "Avec prix unitaire estimé"
 #: inc/basket.class.php:421 inc/checkbox.class.php:249
 #: inc/condition.class.php:322 inc/condition.class.php:454
 #: inc/condition.class.php:813 inc/dropdown.class.php:144
-#: inc/dropdownmeta.class.php:393 inc/dropdownmultiple.class.php:605
+#: inc/dropdownmeta.class.php:393 inc/dropdownmultiple.class.php:606
 #: inc/dropdownobject.class.php:409 inc/field.class.php:1281
 #: inc/fieldoption.class.php:228 inc/radio.class.php:248
 #: inc/yesno.class.php:115
@@ -377,8 +377,8 @@ msgstr "Case à cocher"
 
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
 #: inc/dropdownmeta.class.php:315 inc/dropdownmeta.class.php:371
-#: inc/dropdownmultiple.class.php:430 inc/dropdownmultiple.class.php:482
-#: inc/dropdownmultiple.class.php:538 inc/field.class.php:2720
+#: inc/dropdownmultiple.class.php:431 inc/dropdownmultiple.class.php:483
+#: inc/dropdownmultiple.class.php:539 inc/field.class.php:2720
 #: inc/radio.class.php:176 inc/radio.class.php:226 inc/yesno.class.php:94
 msgid "Default value"
 msgid_plural "Default values"
@@ -642,23 +642,23 @@ msgstr "Liste déroulante"
 msgid "Dropdown multiple"
 msgstr "Liste déroulante multiple"
 
-#: inc/dropdownmultiple.class.php:439
+#: inc/dropdownmultiple.class.php:440
 msgid "Display value in the dropdown"
 msgstr "Afficher la valeur dans la liste déroulante"
 
-#: inc/dropdownmultiple.class.php:561
+#: inc/dropdownmultiple.class.php:562
 msgid "Classic display"
 msgstr "Affichage classique"
 
-#: inc/dropdownmultiple.class.php:562
+#: inc/dropdownmultiple.class.php:563
 msgid "Double column display"
 msgstr "Affichage en double colonnes"
 
-#: inc/dropdownmultiple.class.php:566
+#: inc/dropdownmultiple.class.php:567
 msgid "Display type of the field"
 msgstr "Type d'affichage du champ"
 
-#: inc/dropdownmultiple.class.php:577 inc/dropdownobject.class.php:382
+#: inc/dropdownmultiple.class.php:578 inc/dropdownobject.class.php:382
 msgid "Informations to display in ticket and PDF"
 msgstr "Informations à afficher dans les tickets et dans le PDF"
 
@@ -976,6 +976,10 @@ msgstr[2] "Suivi inter tickets"
 #: inc/interticketfollowup.class.php:144
 msgid "All tickets"
 msgstr "Tous les tickets"
+
+#: inc/interticketfollowup.class.php:292
+msgid "Target followup"
+msgstr "Cible du suivi"
 
 #: inc/link.class.php:110
 msgid "Button Type"
