@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-14 13:03+0000\n"
+"POT-Creation-Date: 2023-12-15 07:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -934,6 +934,10 @@ msgstr[1] ""
 
 #: inc/interticketfollowup.class.php:144
 msgid "All tickets"
+msgstr ""
+
+#: inc/interticketfollowup.class.php:292
+msgid "Target followup"
 msgstr ""
 
 #: inc/link.class.php:110
