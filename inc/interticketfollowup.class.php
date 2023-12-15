@@ -289,6 +289,7 @@ class PluginMetademandsInterticketfollowup extends CommonITILObject
             'item'               => $options['parent'],
             'subitem'            => $this,
             'targets_list'    => self::getTargets($item->getField('id')),
+            'targets_name'    => __('Target followup', 'metademands'),
             'action'          => PLUGIN_METADEMANDS_WEBDIR . '/front/interticketfollowup.form.php',
         ]);
     }
