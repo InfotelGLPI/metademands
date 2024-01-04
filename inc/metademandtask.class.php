@@ -121,31 +121,68 @@ class PluginMetademandsMetademandTask extends CommonDBChild {
       }
    }
 
+
+    static function getChildMetademandsToCreate($ID)
+    {
+        $tasks = new PluginMetademandsTask();
+        $existing_tasks = $tasks->find(["plugin_metademands_metademands_id" => $ID, "type" =>  PluginMetademandsTask::METADEMAND_TYPE]);
+
+        $childs = [];
+        foreach ($existing_tasks as $k => $existing_task) {
+            $mtasks = new self();
+            if ($mtasks->getFromDBByCrit(['plugin_metademands_tasks_id' => $k])) {
+                $_SESSION['metademands_child_meta'][$mtasks->fields["plugin_metademands_metademands_id"]] = $mtasks->fields["plugin_metademands_metademands_id"];
+                $childs[] = $mtasks->fields["plugin_metademands_metademands_id"];
+            }
+        }
+        return $childs;
+    }
+
+    static function setUsedTask($tasks_id, $used)
+    {
+        $tasks = new PluginMetademandsTask();
+        if ($tasks->getFromDB($tasks_id)) {
+            if ($tasks->fields['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
+                $metaTask = new PluginMetademandsMetademandTask();
+                if ($metaTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $tasks_id])) {
+                    $idChild = $metaTask->getField('plugin_metademands_metademands_id');
+                    if ($used == 0) {
+                        $_SESSION['metademands_hide'][$idChild] = $idChild;
+                        return false;
+                    } else {
+                        unset($_SESSION['metademands_hide'][$idChild]);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
    /**
     * @param $metademands_id
     *
     * @return mixed
     * @throws \GlpitestSQLError
     */
-   static function getSonMetademandTaskId($metademands_id) {
-      global $DB;
-
-      $res    = [];
-      $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id,
-                       `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id
-               FROM `glpi_plugin_metademands_metademandtasks`
-               LEFT JOIN `glpi_plugin_metademands_tasks`
-                  ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id`)
-               WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-      $result = $DB->query($query);
-
-      if ($DB->numrows($result)) {
-         while ($data = $DB->fetchAssoc($result)) {
-            $res[$data['metademands_id']] = $data['tasks_id'];
-         }
-         return $res;
-      }
-   }
+//   static function getSonMetademandTaskId($metademands_id) {
+//      global $DB;
+//
+//      $res    = [];
+//      $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id,
+//                       `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` as metademands_id
+//               FROM `glpi_plugin_metademands_metademandtasks`
+//               LEFT JOIN `glpi_plugin_metademands_tasks`
+//                  ON (`glpi_plugin_metademands_tasks`.`id` = `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id`)
+//               WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
+//      $result = $DB->query($query);
+//
+//      if ($DB->numrows($result)) {
+//         while ($data = $DB->fetchAssoc($result)) {
+//            $res[$data['metademands_id']] = $data['tasks_id'];
+//         }
+//         return $res;
+//      }
+//   }
 
    /**
     * @param $metademands_id

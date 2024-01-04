@@ -751,6 +751,281 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
     }
 
+    static function taskScript($data)
+    {
+
+        $check_values = $data['options'] ?? [];
+        $metaid = $data['plugin_metademands_metademands_id'];
+        $id = $data["id"];
+
+        if ($data["display_type"] == self::CLASSIC_DISPLAY) {
+            $script = "";
+            $script2 = "";
+            $debug = (isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+            if ($debug) {
+                $script = "console.log('taskScript-dropdownmultiple $id');";
+            }
+
+            //if reload form on loading
+            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                if (is_array($session_value)) {
+                    foreach ($session_value as $k => $fieldSession) {
+                        if ($fieldSession > 0) {
+                            $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                        }
+                    }
+                }
+            }
+
+            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
+            foreach ($check_values as $idc => $check_value) {
+                $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+                if ($tasks_id) {
+                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                        $script .= "});";
+                    }
+                }
+            }
+
+            $custom_value = PluginMetademandsField::_unserialize($data['custom_values']);
+            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+            $script .= "var tohide = {};";
+            foreach ($check_values as $idc => $check_value) {
+                $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+
+                $script .= "if ($tasks_id in tohide) {
+                             } else {
+                                tohide[$tasks_id] = true;
+                             }";
+                $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
+
+                if ($data["item"] == "other") {
+                    $val = Toolbox::addslashes_deep($custom_value[$idc]);
+                    $script .= "if ($(value).attr('title') == '$val') {
+                                    tohide[" . $tasks_id . "] = false;
+                                }";
+                } else {
+                    $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($tasks_id) . "') {
+                                    tohide[" . $tasks_id . "] = false;
+                                }";
+                }
+//
+//                $script .= "if ($tasks_id in tohide) {
+//                        } else {
+//                            tohide[$tasks_id] = true;
+//                        }
+//                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+//                            tohide[$tasks_id] = false;
+//                        }";
+
+//            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').hide();";
+//
+//            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+//                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+//                if (is_array($session_value)) {
+//                    foreach ($session_value as $k => $fieldSession) {
+//                        if ($fieldSession == $idc && $tasks_id > 0) {
+//                            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').show();";
+//                        }
+//                    }
+//                }
+//            }
+                $script .= "});";
+                $script .= "$.each( tohide, function( key, value ) {
+                        if (value == true) {
+                            $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 0 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$title'
+                                       }
+                                    },
+                                });
+
+                        } else {
+                             $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 1 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                       }
+                                    },
+                                });
+
+                        }
+                    });
+              ";
+
+            }
+            $script .= "});";
+
+            foreach ($check_values as $idc => $check_value) {
+                $tasks_id = $check_value['plugin_metademands_tasks_id'];
+                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+
+                    foreach ($default_values as $k => $v) {
+                        if ($v == 1) {
+                            if ($idc == $k) {
+                                PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1);
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                $script .= "});";
+                            } else {
+                                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                    $script .= "});";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+        } else {
+
+            $script = "";
+            $script2 = "";
+            $debug = (isset($_SESSION['glpi_use_mode'])
+            && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+            if ($debug) {
+                $script = "console.log('taskScript-dropdownmultiple $id');";
+            }
+
+            //if reload form on loading
+            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+                if (is_array($session_value)) {
+                    foreach ($session_value as $k => $fieldSession) {
+                        if ($fieldSession > 0) {
+                            $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                        }
+                    }
+                }
+            }
+
+            $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+            $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
+            foreach ($check_values as $idc => $check_value) {
+                $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+                if ($tasks_id) {
+                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                        $script .= "});";
+                    }
+                }
+            }
+
+            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').on('DOMSubtreeModified',function() {";
+            $script .= "var tohide = {};";
+            foreach ($check_values as $idc => $check_value) {
+                $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+
+                $script .= "if ($tasks_id in tohide) {
+                            } else {
+                                tohide[$tasks_id] = true;
+                            }";
+//
+                $script .= "$.each($('#multiselectfield" . $data["id"] . "_to').children(), function( key, value ) {";
+                $script .= "if ($(value).attr('value') == '$idc') {
+                               tohide[" . $tasks_id . "] = false;
+                            }";
+//
+//                $script .= "if ($tasks_id in tohide) {
+//                        } else {
+//                            tohide[$tasks_id] = true;
+//                        }
+//                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+//                            tohide[$tasks_id] = false;
+//                        }";
+
+//            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').hide();";
+//
+//            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+//                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+//                if (is_array($session_value)) {
+//                    foreach ($session_value as $k => $fieldSession) {
+//                        if ($fieldSession == $idc && $tasks_id > 0) {
+//                            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').show();";
+//                        }
+//                    }
+//                }
+//            }
+                $script .= "});";
+                $script .= "$.each( tohide, function( key, value ) {
+                        if (value == true) {
+                            $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 0 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$title'
+                                       }
+                                    },
+                                });
+
+                        } else {
+                             $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 1 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                       }
+                                    },
+                                });
+
+                        }
+                    });";
+
+            }
+            $script .= "});";
+
+            foreach ($check_values as $idc => $check_value) {
+                $tasks_id = $check_value['plugin_metademands_tasks_id'];
+                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+
+                    foreach ($default_values as $k => $v) {
+                        if ($v == 1) {
+                            if ($idc == $k) {
+                                PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1);
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                $script .= "});";
+                            } else {
+                                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                    $script .= "});";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+        }
+    }
+
     static function fieldsHiddenScript($data)
     {
 

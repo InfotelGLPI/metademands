@@ -178,6 +178,141 @@ class PluginMetademandsYesno extends CommonDBTM
 
     }
 
+    static function taskScript($data)
+    {
+
+        $check_values = $data['options'] ?? [];
+        $metaid = $data['plugin_metademands_metademands_id'];
+        $id = $data["id"];
+
+        $script = "";
+        $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('taskScript-yesno $id');";
+        }
+
+        //if reload form on loading
+        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    if ($fieldSession > 0) {
+                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                    }
+                }
+            }
+        }
+
+        $title = "<i class=\"fas fa-save\"></i>&nbsp;"._sx('button', 'Save & Post', 'metademands');
+        $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;".__('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
+        foreach ($check_values as $idc => $check_value) {
+            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+            if ($tasks_id) {
+                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                    $script .= "});";
+                }
+            }
+        }
+
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
+        foreach ($check_values as $idc => $check_value) {
+            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+
+            $val = Toolbox::addslashes_deep($idc);
+
+            $script .= "if ($(this).val() == $val) {
+                                 $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 1 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                       }
+                                    },
+                                });
+                                 ";
+
+            $script .= "      } else {
+                                 $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 0 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$title'
+                                       }
+                                    },
+                                });
+                                 ";
+            $script .= "}";
+
+//            if ($idc == $data["custom_values"]) {
+//                $script2 .= "console.log('custom $tasks_id ');";
+//
+//                //if reload form
+//                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+//                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+//                    if (is_array($session_value)) {
+//                        foreach ($session_value as $k => $fieldSession) {
+//                            if ($fieldSession != $idc && $tasks_id > 0) {
+//                                $script2 .= "console.log('notused');";
+//                            }
+//                        }
+//                    }
+//                }
+//
+//            } else {
+////                $script2 .= "$('[id-field =\"field" . $task_id . "\"]').hide();";
+////
+////                //if reload form
+////                if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+////                    $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+////                    if (is_array($session_value)) {
+////                        foreach ($session_value as $k => $fieldSession) {
+////                            if ($fieldSession == $idc && $task_id > 0) {
+////                                $script2 .= "$('[id-field =\"field" . $task_id . "\"]').show();";
+////                            }
+////                        }
+////                    }
+////                }
+//            }
+        }
+        $script .= "});";
+
+        //Initialize id default value
+        foreach ($check_values as $idc => $check_value) {
+
+            $tasks_id = $check_value['plugin_metademands_tasks_id'];
+            if (isset($data['custom_values'])) {
+                $custom_values = PluginMetademandsField::_unserialize($data['custom_values']);
+
+                if ($idc == $custom_values) {
+                    PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1);
+                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                    $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                    $script .= "});";
+                } else {
+                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                        $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                        $script .= "});";
+                    }
+                }
+            }
+        }
+        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+
+    }
+
+
     static function fieldsHiddenScript($data)
     {
 

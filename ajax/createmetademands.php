@@ -40,6 +40,8 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
+//unset($_SESSION['metademands_hide']);
+
 $KO = false;
 $step = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
@@ -270,15 +272,15 @@ if (isset($_POST['see_basket_summary'])) {
 //                                $checkchild = $key;
 //                                if (is_array($checkchild)) {
 //                             Check if no form values block the creation of meta
-                                $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
+//                                $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
 
-                                if (!is_null($metademandtasks_tasks_id)) {
-                                    $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-                                    if (!isset($post)) {
-                                        $post[$id] = 0;
-                                    }
-                                    $wizard->checkValueOk($key, $check['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value, $post);
-                                }
+//                                if (!is_null($metademandtasks_tasks_id)) {
+//                                    $_SESSION['son_meta'] = $metademandtasks_tasks_id;
+//                                    if (!isset($post)) {
+//                                        $post[$id] = 0;
+//                                    }
+//                                    $wizard->checkValueOk($key, $check['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value, $post);
+//                                }
 
 //                                    foreach ($checkchild as $keyId => $check_value) {
                                 $value['check_value'] = $key;
@@ -339,9 +341,9 @@ if (isset($_POST['see_basket_summary'])) {
                     }
 
                     if ($KO) {
-                        if (isset($_SESSION['metademands_hide'])) {
-                            unset($_SESSION['metademands_hide']);
-                        }
+//                        if (isset($_SESSION['metademands_hide'])) {
+//                            unset($_SESSION['metademands_hide']);
+//                        }
                         $step = $_POST['step'];
                     } elseif (isset($_POST['create_metademands'])) {
 

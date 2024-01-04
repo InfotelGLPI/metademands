@@ -82,11 +82,12 @@ class PluginMetademandsForm extends CommonDBTM {
                                                  'size'        => 20,
                                                  'class'       => ' ',
                                                  'placeholder' => __('Form name', 'metademands')]);
-            $self->getFromDB($form_id);
-            if ($self->fields['is_model'] == true) {
-               $title .= _sx('button', 'Save model', 'metademands');
-            } else {
-               $title .= _sx('button', 'Save as model', 'metademands');
+            if($self->getFromDB($form_id)) {
+                if ($self->fields['is_model'] == true) {
+                    $title .= _sx('button', 'Save model', 'metademands');
+                } else {
+                    $title .= _sx('button', 'Save as model', 'metademands');
+                }
             }
 
             $return .= "&nbsp;";

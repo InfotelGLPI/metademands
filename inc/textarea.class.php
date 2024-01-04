@@ -80,7 +80,7 @@ class PluginMetademandsTextarea extends CommonDBTM
                 'display' => false,
                 'required' => ($data['is_mandatory'] ? "required" : ""),
                 'cols' => 80,
-                'rows' => 3,
+                'rows' => 6,
 //                'uploads' => $self->uploads
             ]);
             $field .=  '<div style="display:none;">';
@@ -104,7 +104,7 @@ class PluginMetademandsTextarea extends CommonDBTM
             if (!empty($comment)) {
                 $comment = Glpi\RichText\RichText::getTextFromHtml($comment);
             }
-            $field = "<textarea $required class='form-control' rows='3' cols='80' 
+            $field = "<textarea $required class='form-control' rows='6' cols='80' 
                placeholder=\"" . $comment . "\" 
                name='" . $namefield . "[" . $data['id'] . "]' id='" . $namefield . "[" . $data['id'] . "]'>" . $value . "</textarea>";
         }
@@ -171,6 +171,90 @@ class PluginMetademandsTextarea extends CommonDBTM
 
     static function fieldsLinkScript($data, $idc, $rand)
     {
+
+    }
+
+    static function taskScript($data)
+    {
+
+        $check_values = $data['options'] ?? [];
+        $metaid = $data['plugin_metademands_metademands_id'];
+        $id = $data["id"];
+
+        $script = "";
+        $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('taskScript-textarea $id');";
+        }
+
+        //if reload form on loading
+        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    if ($fieldSession > 0) {
+                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                    }
+                }
+            }
+        }
+
+        $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+        $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
+        foreach ($check_values as $idc => $check_value) {
+            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+            if ($tasks_id) {
+                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                    $script .= "});";
+                }
+            }
+        }
+
+        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+
+        foreach ($check_values as $idc => $check_value) {
+            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+
+            $script .= "if ($(this).val().trim().length < 1) {
+                                 $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 0 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$title'
+                                       }
+                                    },
+                                });
+
+                                 ";
+
+            $script .= "      } else {
+                                 $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 1 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                       }
+                                    },
+                                });
+
+                                 
+                                 ";
+            $script .= "}";
+
+        }
+        $script .= "});";
+
+        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
 
     }
 

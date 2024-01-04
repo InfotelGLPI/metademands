@@ -215,10 +215,20 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 if ($itilcategories_id > 0) {
                     $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                     if (isset($meta_tt->predefined['urgency'])) {
-                        $default_value    = $meta_tt->predefined['urgency'];
-                        $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
+                        $options['value'] = $meta_tt->predefined['urgency'];
+                        if (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) {
+                            $session_value = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']];
+                            if (is_array($session_value)) {
+                                foreach ($session_value as $k => $fieldSession) {
+                                    if ($fieldSession > 0) {
+                                        $options['value'] = $fieldSession;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+
                 $options['name']     = $namefield . "[" . $data['id'] . "]";
                 $options['display']  = false;
                 $options['required'] = ($data['is_mandatory'] ? "required" : "");
@@ -238,8 +248,17 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 if ($itilcategories_id > 0) {
                     $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                     if (isset($meta_tt->predefined['impact'])) {
-                        $default_value    = $meta_tt->predefined['impact'];
-                        $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
+                        $options['value'] = $meta_tt->predefined['impact'];
+                        if (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) {
+                            $session_value = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']];
+                            if (is_array($session_value)) {
+                                foreach ($session_value as $k => $fieldSession) {
+                                    if ($fieldSession > 0) {
+                                        $options['value'] = $fieldSession;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 $options['name']     = $namefield . "[" . $data['id'] . "]";
@@ -261,8 +280,17 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 if ($itilcategories_id > 0) {
                     $meta_tt = $ticket->getITILTemplateToUse(0, $metademand->fields['type'], $itilcategories_id, $metademand->fields['entities_id']);
                     if (isset($meta_tt->predefined['priority'])) {
-                        $default_value    = $meta_tt->predefined['priority'];
-                        $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? $default_value;
+                        $options['value'] = $meta_tt->predefined['priority'];
+                        if (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) {
+                            $session_value = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']];
+                            if (is_array($session_value)) {
+                                foreach ($session_value as $k => $fieldSession) {
+                                    if ($fieldSession > 0) {
+                                        $options['value'] = $fieldSession;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 $options['name']     = $namefield . "[" . $data['id'] . "]";
@@ -544,6 +572,136 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     }
 
+    static function taskScript($data)
+    {
+
+        $check_values = $data['options'] ?? [];
+        $metaid = $data['plugin_metademands_metademands_id'];
+        $id = $data["id"];
+
+        $script = "";
+        $script2 = "";
+        $debug = (isset($_SESSION['glpi_use_mode'])
+        && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
+        if ($debug) {
+            $script = "console.log('taskScript-dropdownmeta $id');";
+        }
+
+        //if reload form on loading
+        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    if ($fieldSession > 0) {
+                        $script2 .= "$('[name^=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                    }
+                }
+            }
+        }
+
+        $title = "<i class=\"fas fa-save\"></i>&nbsp;" . _sx('button', 'Save & Post', 'metademands');
+        $nextsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
+        foreach ($check_values as $idc => $check_value) {
+            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+            if ($tasks_id) {
+                if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                    $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                    $script .= "});";
+                }
+            }
+        }
+
+        $name = "field[" . $data["id"] . "]";
+        $script .= "$('[name=\"$name\"]').change(function() {";
+        $script .= "var tohide = {};";
+        foreach ($check_values as $idc => $check_value) {
+            $tasks_id = $data['options'][$idc]['plugin_metademands_tasks_id'];
+
+
+            $script .= "if ($tasks_id in tohide) {
+                        } else {
+                            tohide[$tasks_id] = true;
+                        }
+                        if ($(this).val() != 0 && ($(this).val() == $idc || $idc == 0 )) {
+                            tohide[$tasks_id] = false;
+                        }";
+
+//            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').hide();";
+//
+//            if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+//                $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+//                if (is_array($session_value)) {
+//                    foreach ($session_value as $k => $fieldSession) {
+//                        if ($fieldSession == $idc && $tasks_id > 0) {
+//                            $script2 .= "$('[id-field =\"field" . $tasks_id . "\"]').show();";
+//                        }
+//                    }
+//                }
+//            }
+
+            $script .= "$.each( tohide, function( key, value ) {           
+                        if (value == true) {
+                            $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 0 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$title'
+                                       }
+                                    },
+                                });
+
+                        } else {
+                             $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/set_session.php',
+                                     data: { tasks_id: $tasks_id,
+                                  used: 1 },
+                                  success: function(response){
+                                       if (response != 1) {
+                                           document.getElementById('nextBtn').innerHTML = '$nextsteptitle'
+                                       }
+                                    },
+                                });
+
+                        }
+                    });
+              ";
+
+        }
+        $script .= "});";
+
+        foreach ($check_values as $idc => $check_value) {
+            $tasks_id = $check_value['plugin_metademands_tasks_id'];
+            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+
+                foreach ($default_values as $k => $v) {
+                    if ($v == 1) {
+                        if ($idc == $k) {
+                            PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1);
+                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                            $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                            $script .= "});";
+                        } else {
+                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                $script .= "});";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+
+    }
+
     static function fieldsHiddenScript($data) {
 
         $metaid = $data['plugin_metademands_metademands_id'];
@@ -557,7 +715,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $script = "console.log('fieldsHiddenScript-dropdown $id');";
+            $script = "console.log('fieldsHiddenScript-dropdownmeta $id');";
         }
 
         //if reload form on loading
@@ -672,7 +830,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $script = "console.log('blocksHiddenScript-dropdown $id');";
+            $script = "console.log('blocksHiddenScript-dropdownmeta $id');";
         }
         $script .= "$('[name=\"$name\"]').change(function() {";
 
@@ -752,20 +910,21 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 //                $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();";
 //            }
 
-            $script .= " }";
+            $script .= " } else {";
 
-            $script .= "if ($(this).val() != $idc) {";
-//            if (is_array($blocks_idc) && count($blocks_idc) > 0) {
-//                foreach ($blocks_idc as $k => $block_idc) {
-//                    $script .= "$('[bloc-id =\"bloc" . $block_idc . "\"]').hide();";
-//                }
-//            }
-            $script .= " }";
-
-            $script .= "if ($(this).val() == 0) {";
+//            $script .= "if ($(this).val() != $idc) {";
+////            if (is_array($blocks_idc) && count($blocks_idc) > 0) {
+////                foreach ($blocks_idc as $k => $block_idc) {
+////                    $script .= "$('[bloc-id =\"bloc" . $block_idc . "\"]').hide();";
+////                }
+////            }
+//
+//            $script .= " }";
+//
+//            $script .= "if ($(this).val() == 0) {";
             $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+//            $script .= " }";
             $script .= " }";
-
             if ($data["item"] == "ITILCategory_Metademands") {
                 if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {
                     $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();

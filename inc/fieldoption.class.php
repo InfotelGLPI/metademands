@@ -286,7 +286,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     } else {
                         echo $tasks->getName();
                     }
-
                 }
 
                 echo "</td>";
@@ -1048,6 +1047,78 @@ class PluginMetademandsFieldOption extends CommonDBChild
         );
     }
 
+    public static function taskScript($data)
+    {
+        global $PLUGIN_HOOKS;
+
+
+        switch ($data['type']) {
+            case 'title':
+                break;
+            case 'title-block':
+                break;
+            case 'informations':
+                break;
+            case 'text':
+                PluginMetademandsText::taskScript($data);
+                break;
+            case 'textarea':
+                PluginMetademandsTextarea::taskScript($data);
+                break;
+            case 'dropdown_meta':
+                PluginMetademandsDropdownmeta::taskScript($data);
+                break;
+            case 'dropdown_object':
+                PluginMetademandsDropdownobject::taskScript($data);
+                break;
+            case 'dropdown':
+                PluginMetademandsDropdown::taskScript($data);
+                break;
+            case 'dropdown_multiple':
+                PluginMetademandsDropdownmultiple::taskScript($data);
+                break;
+            case 'checkbox':
+                PluginMetademandsCheckbox::taskScript($data);
+                break;
+            case 'radio':
+                PluginMetademandsRadio::taskScript($data);
+                break;
+            case 'yesno':
+                PluginMetademandsYesno::taskScript($data);
+                break;
+            case 'number':
+                break;
+            case 'date':
+                break;
+            case 'date_interval':
+                break;
+            case 'datetime':
+                break;
+            case 'datetime_interval':
+                break;
+            case 'upload':
+                break;
+            case 'link':
+                break;
+            case 'basket':
+                PluginMetademandsBasket::taskScript($data);
+                break;
+//            case 'parent_field':
+//                break;
+//            default:
+//                //plugin case
+//                if (isset($PLUGIN_HOOKS['metademands'])) {
+//                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+//                        if (Plugin::isPluginActive($plug)) {
+//                            $case = self::addPluginFieldHiddenLink($plug, $data);
+//                            return $case;
+//                        }
+//                    }
+//                }
+//                break;
+        }
+
+    }
 
     public static function fieldsLinkScript($data)
     {
@@ -1608,7 +1679,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
     /**
      * Unset values in data & post for hiddens fields
-     * Add metademands_hide in Session for hidden fields
      *
      * @param $data
      * @param $post
@@ -1626,9 +1696,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                         $hidden_link = $check_value['hidden_link'];
                         $hidden_block = $check_value['hidden_block'];
-                        $taskChild = $check_value['plugin_metademands_tasks_id'];
+//                        $taskChild = $check_value['plugin_metademands_tasks_id'];
                         $toKeep = [];
-
                         //for hidden fields
                         if (!isset($toKeep[$hidden_link])) {
                             $toKeep[$hidden_link] = false;
@@ -1641,19 +1710,19 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                         if ($test == true) {
                             $toKeep[$hidden_link] = true;
-                            if ($taskChild != 0) {
-                                $metaTask = new PluginMetademandsMetademandTask();
-                                $metaTask->getFromDB($taskChild);
-                                $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                                unset($_SESSION['metademands_hide'][$idChild]);
-                            }
+//                            if ($taskChild != 0) {
+//                                $metaTask = new PluginMetademandsMetademandTask();
+//                                $metaTask->getFromDB($taskChild);
+//                                $idChild = $metaTask->getField('plugin_metademands_metademands_id');
+//                                unset($_SESSION['metademands_hide'][$idChild]);
+//                            }
                         } else {
-                            if ($taskChild != 0) {
-                                $metaTask = new PluginMetademandsMetademandTask();
-                                $metaTask->getFromDB($taskChild);
-                                $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                                $_SESSION['metademands_hide'][$idChild] = $idChild;
-                            }
+//                            if ($taskChild != 0) {
+//                                $metaTask = new PluginMetademandsMetademandTask();
+//                                $metaTask->getFromDB($taskChild);
+//                                $idChild = $metaTask->getField('plugin_metademands_metademands_id');
+//                                $_SESSION['metademands_hide'][$idChild] = $idChild;
+//                            }
                         }
                         $hidden_blocks = [$hidden_block];
                         //include child blocks
@@ -1691,19 +1760,19 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                             if ($test == true) {
                                 $toKeep[$metademandField['id']] = true;
-                                if ($taskChild != 0) {
-                                    $metaTask = new PluginMetademandsMetademandTask();
-                                    $metaTask->getFromDB($taskChild);
-                                    $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                                    unset($_SESSION['metademands_hide'][$idChild]);
-                                }
+//                                if ($taskChild != 0) {
+//                                    $metaTask = new PluginMetademandsMetademandTask();
+//                                    $metaTask->getFromDB($taskChild);
+//                                    $idChild = $metaTask->getField('plugin_metademands_metademands_id');
+//                                    unset($_SESSION['metademands_hide'][$idChild]);
+//                                }
                             } else {
-                                if ($taskChild != 0) {
-                                    $metaTask = new PluginMetademandsMetademandTask();
-                                    $metaTask->getFromDB($taskChild);
-                                    $idChild = $metaTask->getField('plugin_metademands_metademands_id');
-                                    $_SESSION['metademands_hide'][$idChild] = $idChild;
-                                }
+//                                if ($taskChild != 0) {
+//                                    $metaTask = new PluginMetademandsMetademandTask();
+//                                    $metaTask->getFromDB($taskChild);
+//                                    $idChild = $metaTask->getField('plugin_metademands_metademands_id');
+//                                    $_SESSION['metademands_hide'][$idChild] = $idChild;
+//                                }
                             }
                         }
 

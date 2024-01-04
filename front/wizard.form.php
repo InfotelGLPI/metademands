@@ -200,15 +200,15 @@ if (isset($_POST['next'])) {
 //                                $checkchild = $key;
 //                                if (is_array($checkchild)) {
 //                             Check if no form values block the creation of meta
-                                    $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-
-                                    if (!is_null($metademandtasks_tasks_id)) {
-                                        $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-                                        if (!isset($post)) {
-                                            $post[$id] = 0;
-                                        }
-                                        $wizard->checkValueOk($key, $check['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value, $post);
-                                    }
+//                                    $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
+//
+//                                    if (!is_null($metademandtasks_tasks_id)) {
+//                                        $_SESSION['son_meta'] = $metademandtasks_tasks_id;
+//                                        if (!isset($post)) {
+//                                            $post[$id] = 0;
+//                                        }
+//                                        $wizard->checkValueOk($key, $check['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value, $post);
+//                                    }
 
 //                                    foreach ($checkchild as $keyId => $check_value) {
                                     $value['check_value'] = $key;
@@ -269,9 +269,9 @@ if (isset($_POST['next'])) {
                         }
 
                         if ($KO) {
-                            if (isset($_SESSION['metademands_hide'])) {
-                                unset($_SESSION['metademands_hide']);
-                            }
+//                            if (isset($_SESSION['metademands_hide'])) {
+//                                unset($_SESSION['metademands_hide']);
+//                            }
                             $step = $_POST['step'];
                         } elseif (isset($_POST['create_metademands'])) {
                             $step = PluginMetademandsMetademand::STEP_CREATE;
@@ -287,6 +287,9 @@ if (isset($_POST['next'])) {
 
     if (isset($_SESSION['metademands_hide'])) {
         unset($_SESSION['metademands_hide']);
+    }
+    if (isset($_SESSION['metademands_child_meta'])) {
+        unset($_SESSION['metademands_child_meta']);
     }
     if (Session::getCurrentInterface() == 'central') {
         Html::header(__('Create a metademand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu");
@@ -373,8 +376,8 @@ if (isset($_POST['next'])) {
             if (isset($_SESSION['metademands_hide'])) {
                 unset($_SESSION['metademands_hide']);
             }
-            if (isset($_SESSION['son_meta'])) {
-                unset($_SESSION['son_meta']);
+            if (isset($_SESSION['metademands_child_meta'])) {
+                unset($_SESSION['metademands_child_meta']);
             }
         }
 
@@ -399,6 +402,9 @@ if (isset($_POST['next'])) {
 } elseif (isset($_POST['return'])) {
     if (isset($_SESSION['metademands_hide'])) {
         unset($_SESSION['metademands_hide']);
+    }
+    if (isset($_SESSION['metademands_child_meta'])) {
+        unset($_SESSION['metademands_child_meta']);
     }
 
     Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
@@ -529,6 +535,8 @@ if (isset($_POST['next'])) {
     unset($_SESSION['plugin_metademands']);
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
 } else {
+
+    //Default wizard
     if (Session::getCurrentInterface() == 'central') {
         Html::header(__('Create a metademand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu", "wizard");
     } else {
@@ -541,6 +549,9 @@ if (isset($_POST['next'])) {
 
     if (isset($_SESSION['metademands_hide'])) {
         unset($_SESSION['metademands_hide']);
+    }
+    if (isset($_SESSION['metademands_child_meta'])) {
+        unset($_SESSION['metademands_child_meta']);
     }
     $itilcategories_id = 0;
     if (isset($_GET['itilcategories_id']) && $_GET['itilcategories_id'] > 0) {

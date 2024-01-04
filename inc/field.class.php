@@ -1355,15 +1355,27 @@ JAVASCRIPT
 
                 $fieldopt = new PluginMetademandsFieldOption();
                 if($opts = $fieldopt->find(["plugin_metademands_fields_id" => $value['id']])) {
+
                     foreach ($opts as $opt) {
                         $tasks = [];
                         if (!empty($opt['plugin_metademands_tasks_id'])) {
                             $tasks[] = $opt['plugin_metademands_tasks_id'];
                         }
                         if (is_array($tasks)) {
+
                             foreach ($tasks as $k => $task) {
-                                echo Dropdown::getDropdownName('glpi_plugin_metademands_tasks', $task);
-                                echo "<br>";
+
+                                $metatask = new PluginMetademandsTask();
+                                if ($metatask->getFromDB($task)) {
+                                    if ($metatask->fields['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
+                                        $metachildtask = new PluginMetademandsMetademandTask();
+                                        if ($metachildtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $task])) {
+                                            echo Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metachildtask->fields['plugin_metademands_metademands_id']);
+                                        }
+                                    } else {
+                                        echo $metatask->getName();
+                                    }
+                                }
                             }
                         }
                     }
@@ -2154,8 +2166,10 @@ JAVASCRIPT
             }
         }
         echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
-        if ($data['hide_title'] == 1) {
-            echo "</div>";
+        if ($data['type'] != "title" && $data['type'] != "title-block"  && $data['type'] != "informations" ) {
+            if ($data['hide_title'] == 1) {
+                echo "</div>";
+            }
         }
     }
 

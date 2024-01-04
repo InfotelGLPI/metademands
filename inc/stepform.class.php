@@ -503,7 +503,7 @@ class PluginMetademandsStepform extends CommonDBTM
         $stepforms = self::getWaitingForms();
         if (count($stepforms) > 0) {
             echo "<div class='center alert alert-warning alert-dismissible fade show' role='alert'>";
-            echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close'>&times;</a>";
+            echo "<a href='#' class='close' data-bs-dismiss='alert' aria-label='close' style='float: right;'>&times;</a>";
             echo "<i class='fas fa-exclamation-triangle fa-2x'></i>";
             echo "<br>";
             $warnings = sprintf(__('You have %s', 'metademands'), count($stepforms));

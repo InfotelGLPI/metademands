@@ -1692,20 +1692,20 @@ JAVASCRIPT
             }
 
             // Check if task are metademands, if some found : recursive call
-            if (isset($metademands->fields['type'])) {
-                $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` AS link_metademands_id
-                        FROM `glpi_plugin_metademands_tasks`
-                        RIGHT JOIN `glpi_plugin_metademands_metademandtasks`
-                          ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
-                        WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-                $result = $DB->query($query);
-                if ($DB->numrows($result)) {
-                    while ($data = $DB->fetchAssoc($result)) {
-                        $step++;
-                        $forms = $this->constructMetademands($data['link_metademands_id'], $forms, $step);
-                    }
-                }
-            }
+//            if (isset($metademands->fields['type'])) {
+//                $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` AS link_metademands_id
+//                        FROM `glpi_plugin_metademands_tasks`
+//                        RIGHT JOIN `glpi_plugin_metademands_metademandtasks`
+//                          ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
+//                        WHERE `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
+//                $result = $DB->query($query);
+//                if ($DB->numrows($result)) {
+//                    while ($data = $DB->fetchAssoc($result)) {
+//                        $step++;
+//                        $forms = $this->constructMetademands($data['link_metademands_id'], $forms, $step);
+//                    }
+//                }
+//            }
         }
         return $forms;
     }
@@ -1786,6 +1786,7 @@ JAVASCRIPT
         $tasklevel = 1;
 
         $metademands_data = $this->constructMetademands($metademands_id);
+
         $this->getFromDB($metademands_id);
         $metaCategories = new self();
         if (!$this->fields['object_to_create']
@@ -2318,24 +2319,24 @@ JAVASCRIPT
                     }
 
                     //Prevent create subtickets
-                    //               $tasks = [];
-                    //               foreach ($values['fields'] as $key => $field) {
-                    //                  $fieldDbtm = new PluginMetademandsField();
-                    //                  if ($fieldDbtm->getFromDB($key)) {
-                    //
-                    //                     $check_value = $fieldDbtm->fields['check_value'];
-                    //                     $type        = $fieldDbtm->fields['type'];
-                    //                     $test    = PluginMetademandsTicket_Field::isCheckValueOK($field, $check_value, $type);
-                    //                     $check[] = ($test == false) ? 0 : 1;
-                    //                     if (in_array(0, $check)) {
-                    //                        $tasks[] .= $fieldDbtm->fields['plugin_metademands_tasks_id'];
-                    //                     }
-                    //                  }
-                    //               }
-                    //
-                    //               foreach ($tasks as $k => $task) {
-                    //                  unset($line['tasks'][$task]);
-                    //               }
+//                    $tasks = [];
+//                    foreach ($values['fields'] as $key => $field) {
+//                        $fieldDbtm = new PluginMetademandsField();
+//                        if ($fieldDbtm->getFromDB($key)) {
+//
+//                            $check_value = $fieldDbtm->fields['check_value'];
+//                            $type = $fieldDbtm->fields['type'];
+//                            $test = PluginMetademandsTicket_Field::isCheckValueOK($field, $check_value, $type);
+//                            $check[] = ($test == false) ? 0 : 1;
+//                            if (in_array(0, $check)) {
+//                                $tasks[] .= $fieldDbtm->fields['plugin_metademands_tasks_id'];
+//                            }
+//                        }
+//                    }
+
+//                    foreach ($tasks as $k => $task) {
+//                        unset($line['tasks'][$task]);
+//                    }
 
                     if ($parent_tickets_id) {
                         // Create link for metademand task with ancestor metademand
@@ -3533,9 +3534,7 @@ JAVASCRIPT
         if (count($KO)) {
             $message = __('Demand add failed', 'metademands');
         } else {
-            if (isset($_SESSION['plugin_metademands'])) {
-                unset($_SESSION['plugin_metademands']);
-            }
+
             if ($object_class == 'Ticket') {
                 if (!in_array(1, $ticket_exists_array)) {
                     $message = sprintf(__('Demand "%s" added with success', 'metademands'),
@@ -3551,6 +3550,22 @@ JAVASCRIPT
                     $object::getTypeName(1),
                     $object->getID(),
                 );
+            }
+            //launch child meta if needed
+            $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($metademands_id);
+            if (count($childs_meta) > 0) {
+                foreach ($childs_meta as $k => $child_meta) {
+                    if (isset($_SESSION['metademands_hide'])
+                        && in_array($child_meta, $_SESSION['metademands_hide'])) {
+                        continue;
+                    }
+                    Html::redirect(PluginMetademandsWizard::getFormURL() . "?metademands_id=".$child_meta."&step=" . self::STEP_SHOW);
+                }
+            }
+
+
+            if (isset($_SESSION['plugin_metademands'])) {
+                unset($_SESSION['plugin_metademands']);
             }
         }
 
@@ -4442,6 +4457,7 @@ JAVASCRIPT
                     $KO[] = 1;
                 }
             } else {
+                //TODO XACA
                 if (isset($_SESSION['metademands_hide'])
                     && in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
                     continue;
