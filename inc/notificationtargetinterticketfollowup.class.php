@@ -179,9 +179,12 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                                            'type'   => CommonITILActor::ASSIGN
                                         ]
                                      ]);
-            while ($data = $iterator->next()) {
-                //Add the group in the notified users list
-                $this->addForGroup(0, $data['groups_id']);
+
+            if (count($iterator)) {
+                foreach ($iterator as $data) {
+                    //Add the group in the notified users list
+                    $this->addForGroup(0, $data['groups_id']);
+                }
             }
         }
     }
@@ -190,23 +193,23 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
     {
         global $DB, $CFG_GLPI;
         $this->obj = $data['ticket'];
-        $item      = $this->obj;
-        $type      = CommonITILActor::ASSIGN;
-        $inter     = new PluginMetademandsInterticketfollowup();
+        $item = $this->obj;
+        $type = CommonITILActor::ASSIGN;
+        $inter = new PluginMetademandsInterticketfollowup();
         $inter->getFromDB($data['interticketfollowup_id']);
         if ($inter->fields['targets_id'] == 0) {
-            $first_tickets_id       = PluginMetademandsInterticketfollowup::getFirstTicket($inter->fields['tickets_id']);
-            $ticket_metademand      = new PluginMetademandsTicket_Metademand();
+            $first_tickets_id = PluginMetademandsInterticketfollowup::getFirstTicket($inter->fields['tickets_id']);
+            $ticket_metademand = new PluginMetademandsTicket_Metademand();
             $ticket_metademand_data = $ticket_metademand->find(['tickets_id' => $first_tickets_id]);
-            $tickets_found          = [];
+            $tickets_found = [];
             // If ticket is Parent : Check if all sons ticket are closed
             if (count($ticket_metademand_data)) {
                 $ticket_metademand_data = reset($ticket_metademand_data);
-                $tickets_found          = PluginMetademandsTicket::getSonTickets(
+                $tickets_found = PluginMetademandsTicket::getSonTickets(
                     $first_tickets_id,
                     $ticket_metademand_data['plugin_metademands_metademands_id']
                 );
-                $list_tickets           = [];
+                $list_tickets = [];
                 foreach ($tickets_found as $ticket_found) {
                     if ($ticket_found['tickets_id'] != $inter->fields['tickets_id']) {
                         $list_tickets[] = $ticket_found['tickets_id'];
@@ -221,57 +224,62 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
             $tickets_id = [$inter->fields['targets_id'], $inter->fields['tickets_id']];
         }
 
+
         $userlinktable = "glpi_tickets_users";
-        $fkfield       = $this->obj->getForeignKeyField();
+        $fkfield = $this->obj->getForeignKeyField();
 
         //Look for the user by his id
-        $criteria                                     = ['LEFT JOIN' => [
-              User::getTable() => [
-                 'ON' => [
-                    $userlinktable   => 'users_id',
-                    User::getTable() => 'id'
-                 ]
-              ]
-           ]] + $this->getDistinctUserCriteria() + $this->getProfileJoinCriteria();
-        $criteria['FROM']                             = $userlinktable;
-        $criteria['FIELDS']                           = array_merge(
+        $criteria = ['LEFT JOIN' => [
+                User::getTable() => [
+                    'ON' => [
+                        $userlinktable => 'users_id',
+                        User::getTable() => 'id'
+                    ]
+                ]
+            ]] + $this->getDistinctUserCriteria() + $this->getProfileJoinCriteria();
+        $criteria['FROM'] = $userlinktable;
+        $criteria['FIELDS'] = array_merge(
             $criteria['FIELDS'],
             [
-                                  "$userlinktable.use_notification AS notif",
-                                  "$userlinktable.alternative_email AS altemail"
-                               ]
+                "$userlinktable.use_notification AS notif",
+                "$userlinktable.alternative_email AS altemail"
+            ]
         );
         $criteria['WHERE']["$userlinktable.$fkfield"] = $tickets_id;
-        $criteria['WHERE']["$userlinktable.type"]     = $type;
+        $criteria['WHERE']["$userlinktable.type"] = $type;
 
         $iterator = $DB->request($criteria);
-        while ($data = $iterator->next()) {
-            //Add the user email and language in the notified users list
-            if ($data['notif']) {
-                $author_email = UserEmail::getDefaultForUser($data['users_id']);
-                $author_lang  = $data["language"];
-                $author_id    = $data['users_id'];
 
-                if (!empty($data['altemail'])
-                    && ($data['altemail'] != $author_email)
-                    && NotificationMailing::isUserAddressValid($data['altemail'])) {
-                    $author_email = $data['altemail'];
-                }
-                if (empty($author_lang)) {
-                    $author_lang = $CFG_GLPI["language"];
-                }
-                if (empty($author_id)) {
-                    $author_id = -1;
-                }
+        if (count($iterator)) {
+            foreach ($iterator as $data) {
 
-                $user = [
-                   'language' => $author_lang,
-                   'users_id' => $author_id
-                ];
-                if ($this->isMailMode()) {
-                    $user['email'] = $author_email;
+                //Add the user email and language in the notified users list
+                if ($data['notif']) {
+                    $author_email = UserEmail::getDefaultForUser($data['users_id']);
+                    $author_lang = $data["language"];
+                    $author_id = $data['users_id'];
+
+                    if (!empty($data['altemail'])
+                        && ($data['altemail'] != $author_email)
+                        && NotificationMailing::isUserAddressValid($data['altemail'])) {
+                        $author_email = $data['altemail'];
+                    }
+                    if (empty($author_lang)) {
+                        $author_lang = $CFG_GLPI["language"];
+                    }
+                    if (empty($author_id)) {
+                        $author_id = -1;
+                    }
+
+                    $user = [
+                        'language' => $author_lang,
+                        'users_id' => $author_id
+                    ];
+                    if ($this->isMailMode()) {
+                        $user['email'] = $author_email;
+                    }
+                    $this->addToRecipientsList($user);
                 }
-                $this->addToRecipientsList($user);
             }
         }
 
@@ -286,14 +294,16 @@ class PluginMetademandsNotificationTargetInterticketfollowup extends Notificatio
                                        'type'             => $type
                                     ]
                                  ]);
-        while ($data = $iterator->next()) {
-            if ($this->isMailMode()) {
-                if (NotificationMailing::isUserAddressValid($data['alternative_email'])) {
-                    $this->addToRecipientsList([
-                                                  'email'    => $data['alternative_email'],
-                                                  'language' => $CFG_GLPI["language"],
-                                                  'users_id' => -1
-                                               ]);
+        if (count($iterator)) {
+            foreach ($iterator as $data) {
+                if ($this->isMailMode()) {
+                    if (NotificationMailing::isUserAddressValid($data['alternative_email'])) {
+                        $this->addToRecipientsList([
+                            'email' => $data['alternative_email'],
+                            'language' => $CFG_GLPI["language"],
+                            'users_id' => -1
+                        ]);
+                    }
                 }
             }
         }
