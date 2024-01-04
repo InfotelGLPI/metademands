@@ -667,7 +667,8 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
                         case 'dropdown_multiple':
                             $value = " ";
-                            if (!empty($elt['custom_values'])) {
+
+                            if (!empty($elt['custom_values']) && $elt['item'] != 'User') {
                                 $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
                                 foreach ($custom_values as $k => $val) {
                                     if ($elt['item'] != "other") {
