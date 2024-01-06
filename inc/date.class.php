@@ -154,7 +154,7 @@ class PluginMetademandsDate extends CommonDBTM
 
     public static function getFieldValue($field)
     {
-        return $field['value'] ?? Html::convDate($field['value']);
+        return Html::convDate($field['value']);
     }
 
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)

@@ -615,9 +615,9 @@ class PluginMetademandsRadio extends CommonDBTM
 
         //by default - hide all
         $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
-
-        $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
-
+        if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
+        }
         foreach ($check_values as $idc => $check_value) {
             $blocks_idc = [];
             $hidden_block = $check_value['hidden_block'];

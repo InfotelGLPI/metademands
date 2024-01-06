@@ -946,6 +946,11 @@ class PluginMetademandsWizard extends CommonDBTM
 //            unset($metademands_data[1]);
 //        }
 
+        $see_summary = 0;
+        if ($metademands->fields['is_basket'] == 1) {
+            $see_summary = 1;
+        }
+
         if (count($metademands_data)) {
 //            if ($step - 1 > count($metademands_data) && !$preview) {
 //                self::showWizardSteps(PluginMetademandsMetademand::STEP_CREATE, $metademands_id, $preview, $seeform, $current_ticket, $meta_validated);
@@ -1013,10 +1018,7 @@ class PluginMetademandsWizard extends CommonDBTM
 //                    echo "</div>";
 //                    echo "</div>";
 
-                    $see_summary = 0;
-                    if ($metademands->fields['is_basket'] == 1) {
-                        $see_summary = 1;
-                    }
+
                     $style = "";
                     if ($see_summary == 0) {
                         $style = "style='margin-top: 20px'";
@@ -1219,8 +1221,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
 
                 echo Html::hidden('create_metademands', ['value' => 1]);
-                if (!$preview) {
-                    echo "<a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
+                if (!$preview && $see_summary == 0) {
+                    echo "<br><a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
                     echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";
                     echo "</a>";
                 }

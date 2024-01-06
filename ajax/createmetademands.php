@@ -118,7 +118,6 @@ if (isset($_POST['see_basket_summary'])) {
             $meta = $orderprojects->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
         }
 
-
         if (Plugin::isPluginActive('orderfollowup') && (!isset($_POST['field']) || empty($_POST['field']))) {
             if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
                 $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];

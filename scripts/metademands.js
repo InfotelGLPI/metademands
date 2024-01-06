@@ -269,6 +269,7 @@
 
 
 // Get input elements and table
+var filterRefInput = document.getElementById('searchref');
 var filterNameInput = document.getElementById('searchname');
 var filterDescriptionInput = document.getElementById('searchdescription');
 var table = document.getElementById('tablesearch');
@@ -277,19 +278,22 @@ if (table !== null) {
    var rows = table.getElementsByTagName('tr');
 
 // Add event listeners to the input elements
+   filterRefInput.addEventListener('input', filterTable);
    filterNameInput.addEventListener('input', filterTable);
    filterDescriptionInput.addEventListener('input', filterTable);
 
    function filterTable() {
+      var filterRef = filterRefInput.value.toUpperCase();
       var filterName = filterNameInput.value.toUpperCase();
       var filterDesc = filterDescriptionInput.value.toUpperCase();
 
       // Loop through all table rows, hide those that don't match the filter criteria
       for (var i = 0; i < rows.length; i++) {
-         var name = rows[i].getElementsByTagName('td')[0].textContent.toUpperCase();
-         var desc = rows[i].getElementsByTagName('td')[1].textContent.toUpperCase();
+         var ref = rows[i].getElementsByTagName('td')[0].textContent.toUpperCase();
+         var name = rows[i].getElementsByTagName('td')[1].textContent.toUpperCase();
+         var desc = rows[i].getElementsByTagName('td')[2].textContent.toUpperCase();
 
-         if (name.includes(filterName) && desc.includes(filterDesc)) {
+         if (ref.includes(filterRef) && name.includes(filterName) && desc.includes(filterDesc)) {
             rows[i].style.display = '';
          } else {
             rows[i].style.display = 'none';

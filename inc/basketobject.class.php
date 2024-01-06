@@ -52,7 +52,7 @@ class PluginMetademandsBasketobject extends CommonDBTM
         }
 
         if (empty($input['name'])) {
-            Session::addMessageAfterRedirect(__("The object name is mandatory", "metademands"), false, ERROR);
+            Session::addMessageAfterRedirect(__("The designation is mandatory", "metademands"), false, ERROR);
             return false;
         }
 
@@ -96,7 +96,7 @@ class PluginMetademandsBasketobject extends CommonDBTM
             'id' => '1',
             'table' => $this->getTable(),
             'field' => 'name',
-            'name' => __('Name'),
+            'name' => __('Designation', 'metademands'),
             'datatype' => 'itemlink',
             'itemlink_type' => $this->getType(),
         ];
@@ -194,7 +194,7 @@ class PluginMetademandsBasketobject extends CommonDBTM
         $this->showFormHeader($options);
 
         echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='2'>" . __('Object name', 'metademands') . "<span style='color : red'> *</span></td>";
+        echo "<td colspan='2'>" . __('Designation', 'metademands') . "<span style='color : red'> *</span></td>";
         echo "<td colspan='2'>";
         $options = [
             'value' => $this->fields['name']
