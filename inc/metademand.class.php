@@ -2274,13 +2274,14 @@ JAVASCRIPT
                                     $n = $this->getName();
                                 }
 
-                                if (empty($comm = self::displayField($this->getID(), 'comment'))) {
-                                    $comm = $this->getField("comment");
-                                }
+//                                if (empty($comm = self::displayField($this->getID(), 'comment'))) {
+//                                    $comm = $this->getField("comment");
+//                                }
+                                $comm = Dropdown::getDropdownName("glpi_entities", $_SESSION['glpiactive_entity']);
                                 $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm);
                                 if ($metademand->fields['is_order'] == 0) {
                                     $values_form['0'] = isset($values) ? $values : [];
-                                    $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), false);
+                                    $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), $parent_tickets_id, false);
                                 } elseif ($metademand->fields['is_order'] == 1) {
                                     if ($metademand->fields['create_one_ticket'] == 0) {
                                         //create one ticket for each basket
@@ -2295,11 +2296,11 @@ JAVASCRIPT
 
                                         $values_form = $baskets;
                                     }
-                                    $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), true);
+                                    $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), $parent_tickets_id, true);
                                 }
                                 $docPdf->Close();
                                 //TODO TO Tranlate
-                                $name = PluginMetaDemandsMetaDemandPdf::cleanTitle($n);
+                                $name = PluginMetaDemandsMetaDemandPdf::cleanTitle($comm." ".$n);
                                 $docitem = $docPdf->addDocument($name, $object_class, $object->getID(), $_SESSION['glpiactive_entity']);
                             }
                         }

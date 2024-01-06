@@ -30,7 +30,7 @@
 if (!defined('GLPI_ROOT')) {
     die("Sorry. You can't access directly to this file");
 }
-
+define('EURO',chr(128));
 /**
  * Class PluginMetaDemandsMetaDemandPdf
  */
@@ -215,15 +215,27 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $this->Image($image, $this->margin_left + 5, $this->margin_top + $height / 3, $width, $height); // x, y, w, h
 
         //Cellule contenant le titre
-        $this->SetX($this->margin_left + $largeurCoteTitre);
         $title = str_replace("’", "'", $this->title);
-        $this->CellTitleValue($largeurCaseTitre, 20, Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($title)), 'TBL', 'C', '', 1, $this->title_size, 'black');
+        $subtitle = Toolbox::stripTags($this->subtitle);
+        $this->SetX($this->margin_left + $largeurCoteTitre);
+        $this->CellTitleValue($largeurCaseTitre, 5, '', 'TLR', 'C', '', 0, $this->font_size, 'black');
+        $this->SetY($this->GetY() + 5);
+        $this->SetX($this->margin_left + $largeurCoteTitre);
 
-        //Cellule ne contenant rien pour le moment
+        $this->CellTitleValue($largeurCaseTitre, 5, Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($title)), 'LR', 'C', '', 1, $this->title_size, 'black');
+        $this->SetY($this->GetY() + 5);
+        $this->SetX($this->margin_left + $largeurCoteTitre);
+        $this->CellTitleValue($largeurCaseTitre, 10, Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($subtitle)), 'BLR', 'C', '', 0, $this->font_size, 'black');
+        $this->SetY($this->GetY() - 10);
+
+
+
+        //Date
         $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
         $this->CellTitleValue($largeurCoteTitre, 5, '', 'TLR', 'C', 'grey', 0, $this->font_size, 'black');
         $this->SetY($this->GetY() + 5);
         $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
+
         $this->CellTitleValue($largeurCoteTitre, 5, Toolbox::decodeFromUtf8(__('Created on', 'metademands')), 'LR', 'C', 'grey', 0, $this->font_size, 'black');
         $this->SetY($this->GetY() + 5);
         $this->SetX($this->margin_left + $largeurCoteTitre + $largeurCaseTitre);
@@ -296,7 +308,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
      */
     function MultiCellValue($w, $h, $type, $label, $values, $border = 'LRB', $align = 'C', $color = '', $bold = false, $size = 10, $fontColor = '', $link = '')
     {
-
         if (empty($size)) {
             $size = $this->font_size;
         }
@@ -345,6 +356,93 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         }
     }
 
+    function BasicTable($header, $data, $color = '')
+    {
+        $this->SetBackgroundColor($this->bgcolor);
+        $w = array(20, 40, 50, 15, 15, 30, 20); //190
+        for($i=0;$i<count($header);$i++)
+            $this->Cell($w[$i],7,$header[$i],1,0,'C',true);
+        $this->Ln();
+        // Color and font restoration
+        $this->SetBackgroundColor($color);
+        // Data
+        $fill = false;
+        $total = 0;
+        foreach($data as $row)
+        {
+            $this->Cell($w[0],6,$row[0],'LR',0,'L',$fill);
+            $this->Cell($w[1],6,$row[1],'LR',0,'L',$fill);
+            $this->Cell($w[2],6,$row[2],'LR',0,'L',$fill);
+            $this->Cell($w[3],6,$row[3],'LR',0,'L',$fill);
+            $this->Cell($w[4],6,$row[4],'LR',0,'L',$fill);
+            $this->Cell($w[5],6,$row[5]." ".EURO,'LR',0,'L',$fill);
+            $this->Cell($w[6],6,$row[6]." ".EURO,'LR',0,'L',$fill);
+            $this->Ln();
+            $fill = !$fill;
+
+            $total += $row[6];
+        }
+        // Closing line
+        $this->Cell(array_sum($w),0,'','T');
+
+        $this->Ln();
+        $this->Cell(110,6,"",0,0,'C',true);
+        $grandtotal = __('Grand total (HT)', 'orderfollowup');
+        $this->SetBackgroundColor($this->bgcolor);
+        $this->Cell(60,6,Toolbox::decodeFromUtf8($grandtotal),1,0,'C',true);
+        $this->SetBackgroundColor($color);
+        $this->Cell(20,6,Html::formatNumber($total, false, 2)." ".EURO,1,0,'L',$fill);
+
+    }
+
+    function BasicTableFreeInputs($header, $data, $color = '')
+    {
+        $this->SetBackgroundColor($this->bgcolor);
+        $w = array(20, 50, 55, 15, 30, 20);//190
+        for($i=0;$i<count($header);$i++)
+            $this->Cell($w[$i],7,$header[$i],1,0,'C',true);
+        $this->Ln();
+        // Color and font restoration
+        $this->SetBackgroundColor($color);
+        // Data
+        $fill = false;
+        $total = 0;
+        foreach($data as $row)
+        {
+            $this->Cell($w[0],6,$row[0],'LR',0,'L',$fill);
+            $this->Cell($w[1],6,$row[1],'LR',0,'L',$fill);
+            $this->Cell($w[2],6,$row[2],'LR',0,'L',$fill);
+            $this->Cell($w[3],6,$row[3],'LR',0,'L',$fill);
+            $this->Cell($w[4],6,$row[4]." ".EURO,'LR',0,'L',$fill);
+            $this->Cell($w[5],6,$row[5]." ".EURO,'LR',0,'L',$fill);
+            $this->Ln();
+            $fill = !$fill;
+
+            $total += $row[5];
+        }
+        // Closing line
+        $this->Cell(array_sum($w),0,'','T');
+
+        $this->Ln();
+        $this->Cell(110,6,"",0,0,'C',true);
+        $grandtotal = __('Grand total (TTC)', 'orderfollowup');
+        $this->SetBackgroundColor($this->bgcolor);
+        $this->Cell(60,6,Toolbox::decodeFromUtf8($grandtotal),1,0,'C',true);
+        $this->SetBackgroundColor($color);
+        $this->Cell(20,6,Html::formatNumber($total, false, 2)." ".EURO,1,0,'L',$fill);
+
+
+        $this->Ln();
+        $this->Cell(110,6,"",0,0,'C',true);
+        $grandtotalHT = __('Grand total (HT)', 'orderfollowup')." ".__('(if VAT 20%)', 'orderfollowup');
+        $this->SetBackgroundColor($this->bgcolor);
+        $this->Cell(60,6,Toolbox::decodeFromUtf8($grandtotalHT),1,0,'C',true);
+        $this->SetBackgroundColor($color);
+        $totalHT = $total / 1.2;
+        $this->Cell(20,6,Html::formatNumber($totalHT, false, 2)." ".EURO,1,0,'L',$fill);
+
+
+    }
 
     /**
      * Redéfinit une fonte
@@ -368,7 +466,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
      * @param      $fields
      * @param bool $with_basket
      */
-    public function setFields($form, $field_forms, $metademands_id, $with_basket = false)
+    public function setFields($form, $field_forms, $metademands_id, $parent_tickets_id, $with_basket = false)
     {
         global $PLUGIN_HOOKS;
 
@@ -386,6 +484,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
             $newForm = [];
             $widths = [];
+            $fields['tickets_id'] = $parent_tickets_id;
 
             foreach ($form as $key => $elt) {
                 if ($with_basket && $elt['is_basket'] == false) {
@@ -424,7 +523,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
             if ($i > 0) {
                 $this->MultiCellValue($this->title_width, $this->linebreak_height, 'linebreak', '', '', 'TB', 'C', '', 0, '', 'black');
             }
-//            Toolbox::logInfo($newForm);
+
             foreach ($newForm as $key => $elt) {
 
                 $meta = new PluginMetademandsMetademand();
@@ -603,7 +702,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     break;
                                 case 'ITILCategory_Metademands':
                                     $value = Dropdown::getDropdownName($dbu->getTableForItemType('ITILCategory'), $fields[$elt['id']]);
-                                    $value = ($value == '&nbsp;') ? ' ' : $value;
+                                    $value = ($value == '&nbsp;') ? ' ' : Toolbox::stripTags($value);
                                     break;
                                 case 'mydevices':
                                     $dbu = new DbUtils();
@@ -640,7 +739,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                 //others
                                 default:
                                     $value = Dropdown::getDropdownName($dbu->getTableForItemType($elt['item']), $fields[$elt['id']]);
-                                    $value = ($value == '&nbsp;') ? ' ' : $value;
+                                    $value = ($value == '&nbsp;') ? ' ' : Toolbox::stripTags($value);
                                     break;
                             }
                             $value = Toolbox::stripslashes_deep($value);
@@ -888,9 +987,50 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label2, $value2, 'LRBT', 'L', '', 0, '', 'black');
                             break;
                         case 'basket':
-                            $value = PluginMetademandsBasket::displayFieldPDF($elt,$fields, $label);
-                            $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                            if (Plugin::isPluginActive('orderfollowup')) {
+                                $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                                if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $elt['plugin_metademands_metademands_id']])) {
+                                    $items = PluginMetademandsBasket::displayFieldPDF($elt,$fields, $label);
+                                    if (count($items)) {
+                                        foreach ($items as $id => $values) {
+                                            foreach ($values as $label => $value) {
+                                                $header[$id][] = $label;
+                                                $data[$id][] = $value;
+                                            }
+                                        }
+                                        $header = end($header);
+                                        $this->BasicTable($header,$data);
+                                    }
+                                } else {
+                                    $value = PluginMetademandsBasket::displayFieldPDF($elt,$fields, $label);
+                                    $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                                }
+
+                            } else {
+                                $value = PluginMetademandsBasket::displayFieldPDF($elt,$fields, $label);
+                                $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                            }
                             break;
+
+                        case 'free_input':
+                            if (Plugin::isPluginActive('orderfollowup')) {
+                                $ordermaterialmeta = new PluginOrderfollowupMetademand();
+                                if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $elt['plugin_metademands_metademands_id']])) {
+                                    $items = PluginOrderfollowupFreeinput::displayFieldPDF($elt,$fields, $label);
+                                    if (count($items)) {
+                                        foreach ($items as $id => $values) {
+                                            foreach ($values as $label => $value) {
+                                                $header[$id][] = $label;
+                                                $data[$id][] = $value;
+                                            }
+                                        }
+                                        $header = end($header);
+                                        $this->BasicTableFreeInputs($header,$data, '');
+                                    }
+                                }
+                            }
+                            break;
+
                         default:
 
                             if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -945,12 +1085,12 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
      * @param $form
      * @param $fields
      */
-    public function drawPdf($form, $fields, $metademands_id, $with_basket = false)
+    public function drawPdf($form, $fields, $metademands_id, $parent_tickets_id, $with_basket = false)
     {
         $this->AliasNbPages();
         $this->AddPage("P");
         $this->SetAutoPageBreak(false);
-        $this->setFields($form, $fields, $metademands_id, $with_basket);
+        $this->setFields($form, $fields, $metademands_id, $parent_tickets_id, $with_basket);
     }
 
     /**
