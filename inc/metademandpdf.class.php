@@ -914,6 +914,17 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             }
                             break;
 
+                        case 'time':
+                            $value = $fields[$elt['id']];
+                            $value = Toolbox::stripslashes_deep($value);
+                            if ($value != null) {
+                                $value = Toolbox::decodeFromUtf8($value);
+
+                                // Draw line
+                                $this->MultiCellValue($this->value_width, $this->line_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                            }
+                            break;
+
                         case 'datetime':
                             $value = Html::convDateTime($fields[$elt['id']]);
                             $value = Toolbox::stripslashes_deep($value);

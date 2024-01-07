@@ -47,11 +47,11 @@ class PluginMetademandsField extends CommonDBChild
 
     public static $field_types = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple',
                                   'title', 'title-block', 'informations', 'text', 'textarea', 'yesno',
-                                  'checkbox', 'radio', 'number', 'basket', 'date', 'datetime', 'date_interval',
+                                  'checkbox', 'radio', 'number', 'basket', 'date', 'time', 'datetime', 'date_interval',
                                   'datetime_interval','upload', 'link',
                                    'parent_field'];
 
-    public static $allowed_options_types = ['upload', 'text', 'date', 'datetime', 'date_interval', 'datetime_interval',
+    public static $allowed_options_types = ['upload', 'text', 'date', 'time', 'datetime', 'date_interval', 'datetime_interval',
         'dropdown_multiple', 'dropdown_object', 'basket'];
     public static $allowed_options_items = ['User'];
 
@@ -1163,6 +1163,9 @@ JAVASCRIPT
                 case 'date':
                     echo PluginMetademandsDate::showFieldCustomFields($params);
                     break;
+                case 'time':
+                    echo PluginMetademandsTime::showFieldCustomFields($params);
+                    break;
                 case 'datetime':
                     echo PluginMetademandsDatetime::showFieldCustomFields($params);
                     break;
@@ -1540,6 +1543,8 @@ JAVASCRIPT
                 return PluginMetademandsNumber::getTypeName();
             case 'date':
                 return PluginMetademandsDate::getTypeName();
+            case 'time':
+                return PluginMetademandsTime::getTypeName();
             case 'datetime':
                 return PluginMetademandsDatetime::getTypeName();
             case 'date_interval':
@@ -2247,11 +2252,14 @@ JAVASCRIPT
             case 'date':
                 PluginMetademandsDate::showWizardField($data, $namefield, $value, $on_order);
                 break;
-            case 'date_interval':
-                PluginMetademandsDateinterval::showWizardField($data, $namefield, $value, $on_order);
+            case 'time':
+                PluginMetademandsTime::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'datetime':
                 PluginMetademandsDatetime::showWizardField($data, $namefield, $value, $on_order);
+                break;
+            case 'date_interval':
+                PluginMetademandsDateinterval::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'datetime_interval':
                 PluginMetademandsDatetimeinterval::showWizardField($data, $namefield, $value, $on_order);
@@ -2364,6 +2372,11 @@ JAVASCRIPT
                                                 case 'date':
                                                     $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
                                                     $value_parent_field .= Html::convDate($value);
+                                                    break;
+
+                                                case 'time':
+                                                    $value_parent_field = "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='" . $value . "'>";
+                                                    $value_parent_field .= $value;
                                                     break;
 
                                                 case 'datetime':
@@ -2601,6 +2614,8 @@ JAVASCRIPT
                     PluginMetademandsNumber::showFieldCustomValues($values, $key, $params);
                     break;
                 case 'date':
+                    break;
+                case 'time':
                     break;
                 case 'date_interval':
                     break;

@@ -106,7 +106,13 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                      $USE_TABLE       = true;
                      $already_display = true;
                      break;
-
+                   case "time" :
+                       echo "<table><tr><td>";
+                       Html::showTimeField($search["linkfield"], ['value' => $_POST['value']]);
+                       echo "</td>";
+                       $USE_TABLE       = true;
+                       $already_display = true;
+                       break;
                   case "datetime" :
                      if (!isset($_POST['relative_dates']) || !$_POST['relative_dates']) {
                         echo "<table><tr><td>";
@@ -224,7 +230,13 @@ if (isset($_POST["itemtype"]) && isset($_POST["id_field"]) && $_POST["id_field"]
                      $USE_TABLE       = true;
                      $already_display = true;
                      break;
-
+                   case "time" :
+                       echo "<table><tr><td>";
+                       Html::showTimeField($search["linkfield"], $_POST["value"]);
+                       echo "</td>";
+                       $USE_TABLE       = true;
+                       $already_display = true;
+                       break;
                   case "datetime" :
                      echo "<table><tr><td>";
                      Html::showDateTimeField($search["linkfield"], ['value' => $_POST["value"]]);

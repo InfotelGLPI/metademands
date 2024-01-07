@@ -216,9 +216,11 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                     break;
                 case 'date':
                     break;
-                case 'date_interval':
+                case 'time':
                     break;
                 case 'datetime':
+                    break;
+                case 'date_interval':
                     break;
                 case 'datetime_interval':
                     break;

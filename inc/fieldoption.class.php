@@ -498,9 +498,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'date':
                 break;
-            case 'date_interval':
+            case 'time':
                 break;
             case 'datetime':
+                break;
+            case 'date_interval':
                 break;
             case 'datetime_interval':
                 break;
@@ -668,9 +670,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'date':
                 break;
-            case 'date_interval':
+            case 'time':
                 break;
             case 'datetime':
+                break;
+            case 'date_interval':
                 break;
             case 'datetime_interval':
                 break;
@@ -748,9 +752,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'date':
                 break;
-            case 'date_interval':
+            case 'time':
                 break;
             case 'datetime':
+                break;
+            case 'date_interval':
                 break;
             case 'datetime_interval':
                 break;
@@ -1090,9 +1096,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 break;
             case 'date':
                 break;
-            case 'date_interval':
+            case 'time':
                 break;
             case 'datetime':
+                break;
+            case 'date_interval':
                 break;
             case 'datetime_interval':
                 break;
@@ -1211,9 +1219,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                             break;
                         case 'date':
                             break;
-                        case 'date_interval':
+                        case 'time':
                             break;
                         case 'datetime':
+                            break;
+                        case 'date_interval':
                             break;
                         case 'datetime_interval':
                             break;
@@ -1286,6 +1296,8 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 case 'number':
                     break;
                 case 'date':
+                    break;
+                case 'time':
                     break;
                 case 'date_interval':
                     break;

@@ -3884,6 +3884,13 @@ JAVASCRIPT
                         PluginMetademandsDate::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
+                case 'time':
+                    if ($return_value == true) {
+                        return PluginMetademandsTime::getFieldValue($field);
+                    } else {
+                        PluginMetademandsTime::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    }
+                    break;
                 case 'datetime':
                     if ($return_value == true) {
                         return PluginMetademandsDatetime::getFieldValue($field);

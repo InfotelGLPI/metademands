@@ -3181,8 +3181,8 @@ class PluginMetademandsWizard extends CommonDBTM
                         $msg[] = $result['msg'];
                     }
                     break;
-                case 'date_interval':
-                    $result = PluginMetademandsDateinterval::checkMandatoryFields($value, $fields);
+                case 'time':
+                    $result = PluginMetademandsTime::checkMandatoryFields($value, $fields);
                     if ($result['checkKo'] == 1) {
                         $checkKo[] = $result['checkKo'];
                         $msg[] = $result['msg'];
@@ -3190,6 +3190,13 @@ class PluginMetademandsWizard extends CommonDBTM
                     break;
                 case 'datetime':
                     $result = PluginMetademandsDatetime::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'date_interval':
+                    $result = PluginMetademandsDateinterval::checkMandatoryFields($value, $fields);
                     if ($result['checkKo'] == 1) {
                         $checkKo[] = $result['checkKo'];
                         $msg[] = $result['msg'];

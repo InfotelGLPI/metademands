@@ -176,6 +176,9 @@ class PluginMetademandsBasket extends CommonDBTM
         $field .= "</tr>";
 
         if ($nb > 10) {
+
+            $field .= "<a id='backtotop'></a>";
+
             $field .= "<tr class='tab_bg_1'>";
             $field .= "<th>";
             $field .= "<input type='text' id='searchref' size='10' placeholder='" . __('Search..', 'metademands') . "'>";
@@ -1170,6 +1173,9 @@ class PluginMetademandsBasket extends CommonDBTM
                         break;
                     case 'date':
                         echo PluginMetademandsDate::getFieldValue($values);
+                        break;
+                    case 'time':
+                        echo PluginMetademandsTime::getFieldValue($values);
                         break;
                     case 'datetime':
                         echo PluginMetademandsDatetime::getFieldValue($values);
