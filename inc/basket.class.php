@@ -192,9 +192,12 @@ class PluginMetademandsBasket extends CommonDBTM
             $field .= "<th colspan='4'>";
             $field .= "</th>";
             $field .= "</tr>";
-        }
 
-        $field .= "<tbody id='tablesearch'>";
+            $field .= "<tbody id='tablesearch'>";
+        } else {
+
+            $field .= "<tbody>";
+        }
 
         if (isset($custom_values[0]) && $custom_values[0] == 0) {
 

@@ -40,8 +40,20 @@ $step        = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
 $fields      = new PluginMetademandsField();
+$nofreeinputs = false;
 
-if (isset($_POST['save_form']) && isset($_POST['field'])) {
+if (isset($_POST['is_freeinput'])
+    && $_POST['is_freeinput'] == 1
+    && isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+
+    if (count($_SESSION['plugin_orderfollowup']['freeinputs']) == 0) {
+        $nofreeinputs = true;
+        $step = $_POST['step'];
+        unset($_POST['create_metademands']);
+    }
+}
+
+if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === false) {
     $nblines = 0;
     $KO      = false;
 

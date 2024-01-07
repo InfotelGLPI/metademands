@@ -1931,7 +1931,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $params['modal'] = $modal;
 
                 $params['ID'] = $ID;
-                $params['href'] = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=".$params['ID']."&step=create_metademands";
+                $params['nexthref'] = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=".$params['ID']."&step=".PluginMetademandsMetademand::STEP_CREATE;
 
 //                if (isset($_SESSION['metademands_hide']) && count($_SESSION['metademands_hide'])) {
 //                    foreach ($_SESSION['metademands_hide'] as $metachild) {
@@ -1989,13 +1989,12 @@ class PluginMetademandsWizard extends CommonDBTM
                   var use_condition = '$use_condition';
                   var show_button = 1;
                   var show_rule = '$show_rule';
-                  var next_href = '$href';
-
+                  var nexthref = '$nexthref';
+                  
                   findFirstTab($block_id);
                   
-                  
                   if(use_condition == true) {
-                     $('document').ready(checkConditions);          
+                     $('document').ready(checkConditions);
                     if(show_rule == 2){
                      show_button = 0;
                      if(document.getElementById('nextBtn').innerHTML == submittitle) {
@@ -2012,7 +2011,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         if(document.getElementById('nextBtn').innerHTML == nexttitle){
                             document.getElementById('nextBtn').style.display = 'inline';
                         }
-                    });                              
+                    });
                     }
                     
                     function checkConditions() {
@@ -2066,7 +2065,7 @@ class PluginMetademandsWizard extends CommonDBTM
 //                // convert JSON string to valid object
 //                const parsedObject = JSON.parse(str);
 //                
-//                console.log(parsedObject);     
+//                console.log(parsedObject);
                   showTab(currentTab, nexttitle, submittitle, submitmsg); // Display the current tab
                   
                   function showTab(n,create = false, submittitle, submitmsg) {
@@ -2143,7 +2142,7 @@ class PluginMetademandsWizard extends CommonDBTM
                        
                          var finded = false;
                         
-                         while (finded == false) {  
+                         while (finded == false) {
 
                             if(true) {
                                
@@ -2212,19 +2211,27 @@ class PluginMetademandsWizard extends CommonDBTM
                                    datatype: 'html',
                                    data: arrayDatas,
                                    success: function (response) {
-                                      $.ajax({
-                                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-                                            type: 'POST',
-                                            data: arrayDatas,
-                                            success: function (response) {
-                                               window.location.href = next_href;
-                                            },
-                                            error: function (xhr, status, error) {
-                                               console.log(xhr);
-                                               console.log(status);
-                                               console.log(error);
-                                            }
-                                         });
+                                      if(response != 1){
+                                          $.ajax({
+                                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                                                type: 'POST',
+                                                data: arrayDatas,
+                                                success: function (response) {
+                                                   if(response != 1){
+                                                        window.location.href = nexthref;
+                                                   } else {
+                                                        location.reload();
+                                                   }
+                                                },
+                                                error: function (xhr, status, error) {
+                                                   console.log(xhr);
+                                                   console.log(status);
+                                                   console.log(error);
+                                                }
+                                             });
+                                      } else {
+                                           location.reload();
+                                       }
                                    },
                                    error: function (xhr, status, error) {
                                       console.log(xhr);

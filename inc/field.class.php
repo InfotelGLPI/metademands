@@ -2171,6 +2171,7 @@ JAVASCRIPT
             }
         }
         echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
+
         if ($data['type'] != "title" && $data['type'] != "title-block"  && $data['type'] != "informations" ) {
             if ($data['hide_title'] == 1) {
                 echo "</div>";
