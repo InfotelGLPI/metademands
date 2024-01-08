@@ -232,7 +232,7 @@ class PluginMetademandsStepform extends CommonDBTM
                       var step = {$step};
                       function loadForm(form_id) {
                          $('#ajax_loader').show();
-                         var data_send = $('form').serializeArray();
+                         var data_send = $('#wizard_form').serializeArray();
                          data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
@@ -259,7 +259,7 @@ class PluginMetademandsStepform extends CommonDBTM
                              jQuery('.resume_builder_input').trigger('change');
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
-                             arrayDatas = $('form').serializeArray();
+                             arrayDatas = $('#wizard_form').serializeArray();
                              arrayDatas.push({name: \"save_form\", value: true});
                              arrayDatas.push({name: \"is_model\", value: 1});
                              $.ajax({
@@ -288,7 +288,7 @@ class PluginMetademandsStepform extends CommonDBTM
                              jQuery('.resume_builder_input').trigger('change');
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
-                             arrayDatas = $('form').serializeArray();
+                             arrayDatas = $('#wizard_form').serializeArray();
                              arrayDatas.push({name: \"save_model\", value: true});
                              arrayDatas.push({name: \"is_model\", value: 1});
                              $.ajax({

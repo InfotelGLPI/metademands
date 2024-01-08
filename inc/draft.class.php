@@ -50,6 +50,13 @@ class PluginMetademandsDraft extends CommonDBTM {
       return count($drafts);
    }
 
+    public function cleanDBonPurge()
+    {
+        $temp = new PluginMetademandsDraft_Value();
+        $temp->deleteByCriteria(['plugin_metademands_drafts_id' => $this->fields['id']]);
+    }
+
+
    /**
     * @param $users_id
     * @param $plugin_metademands_metademands_id
@@ -221,7 +228,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                       var step = {$step};
                       function loadDraft(draft_id) {
                          $('#ajax_loader').show();
-                         var data_send = $('form').serializeArray();
+                         var data_send = $('#wizard_form').serializeArray();
                          data_send.push({name: 'plugin_metademands_drafts_id', value: draft_id},{name: 'metademands_id', value: meta_id});
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loaddraft.php',
@@ -247,7 +254,7 @@ class PluginMetademandsDraft extends CommonDBTM {
                              jQuery('.resume_builder_input').trigger('change');
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
-                             arrayDatas = $('form').serializeArray();
+                             arrayDatas = $('#wizard_form').serializeArray();
                              arrayDatas.push({name: \"save_draft\", value: true});
                              $.ajax({
                                 url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',

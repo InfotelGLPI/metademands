@@ -6046,6 +6046,12 @@ JAVASCRIPT
 
         $temp = new PluginMetademandsMetademandValidation();
         $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsForm();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsDraft();
+        $temp->deleteByCriteria(['plugin_metademands_metademands_id' => $this->fields['id']]);
     }
 
     /**

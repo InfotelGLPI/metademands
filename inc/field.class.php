@@ -2767,16 +2767,23 @@ JAVASCRIPT
     */
     public static function _serialize($input)
     {
-        if ($input != null || $input == []) {
-            if (is_array($input)) {
-                foreach ($input as &$value) {
-                    if ($value != null) {
-                        $value = urlencode(Html::cleanPostForTextArea($value));
-                    }
-                }
+//        if ($input != null || $input == []) {
+//            if (is_array($input)) {
+//                foreach ($input as &$value) {
+//                    if ($value != null) {
+//                        $value = urlencode(Html::cleanPostForTextArea($value));
+//                    }
+//                }
+//
+//                return json_encode($input);
+//            }
+//        }
 
-                return json_encode($input);
-            }
+        if (is_array($input)) {
+            foreach($input as $k => $v) $data_temp[urlencode($k)]=self::_serialize($v);
+            return $data_temp;
+        } else {
+            return urlencode($input);
         }
     }
 
@@ -2787,15 +2794,21 @@ JAVASCRIPT
     */
     public static function _unserialize($input)
     {
-        if (!empty($input)) {
-            if (!is_array($input)) {
-                $input = json_decode($input, true);
-            }
-            if (is_array($input) && !empty($input)) {
-                foreach ($input as &$value) {
-                    $value = urldecode($value);
-                }
-            }
+//        if (!empty($input)) {
+//            if (!is_array($input)) {
+//                $input = json_decode($input, true);
+//            }
+//            if (is_array($input) && !empty($input)) {
+//                foreach ($input as &$value) {
+//                    $value = urldecode($value);
+//                }
+//            }
+//        }
+        if (is_array($input)) {
+            foreach($input as $k => $v) $data_temp[json_decode($k, true)]=self::_unserialize($v);
+            return $data_temp;
+        } else {
+            return json_decode($input, true);
         }
 
         return $input;

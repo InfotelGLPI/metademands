@@ -1545,46 +1545,88 @@ class PluginMetademandsBasket extends CommonDBTM
             }
             $post = json_encode($fields);
             $meta_id = $fields['metademands_id'];
-            $content .= "<script>
+            $metademands = new PluginMetademandsMetademand();
+            if ($metademands->getFromDB($meta_id)) {
+                $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+                $content .= "<script>
                           $('#submitOrder').click(function() {
                              var meta_id = $meta_id;
-                             $.ajax({
-                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-                               type: 'POST',
-                               data: $post,
-                               success: function (response) {
-                                  $('#ajax_loader').hide();
-                                  if (response == 1) {
-                                     window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
-                                  } else {
-                                     $.ajax({
-                                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-                                        type: 'POST',
-                                        data: $post,
-                                        success: function (response) {
-                                           window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
-                                        },
-                                        error: function (xhr, status, error) {
-                                           console.log(xhr);
-                                           console.log(status);
-                                           console.log(error);
-                                        }
-                                     });
-                                  }
-                               },
-                               error: function (xhr, status, error) {
-                                  console.log(xhr);
-                                  console.log(status);
-                                  console.log(error);
-                               }
-                            });
+//                             arrayDatas = $post;
+                             arrayDatas = $('#wizard_form').serializeArray();
+                             arrayDatas.push({name: 'save_form', value: true});
+                             arrayDatas.push({name: 'step', value: 2});
+                             arrayDatas.push({name: 'form_name', value: '$name'});
+//                             $.ajax({
+//                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+//                               type: 'POST',
+//                               data: $post,
+//                               success: function (response) {
+//                                  $('#ajax_loader').hide();
+//                                  if (response == 1) {
+//                                     window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
+//                                  } else {
+//                                     $.ajax({
+//                                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+//                                        type: 'POST',
+//                                        data: $post,
+//                                        success: function (response) {
+//                                           window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
+//                                        },
+//                                        error: function (xhr, status, error) {
+//                                           console.log(xhr);
+//                                           console.log(status);
+//                                           console.log(error);
+//                                        }
+//                                     });
+//                                  }
+//                               },
+//                               error: function (xhr, status, error) {
+//                                  console.log(xhr);
+//                                  console.log(status);
+//                                  console.log(error);
+//                               }
+//                            });
+                            $.ajax({
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
+                                   type: 'POST',
+                                   datatype: 'html',
+                                   data: arrayDatas,
+                                   success: function (response) {
+                                      if(response != 1){
+                                          $.ajax({
+                                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                                                type: 'POST',
+                                                data: arrayDatas,
+                                                success: function (response) {
+                                                   if(response != 1){
+                                                        window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
+                                                   } else {
+                                                        location.reload();
+                                                   }
+                                                },
+                                                error: function (xhr, status, error) {
+                                                   console.log(xhr);
+                                                   console.log(status);
+                                                   console.log(error);
+                                                }
+                                             });
+                                      } else {
+                                           location.reload();
+                                       }
+                                   },
+                                   error: function (xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                   }
+                                });
                           });
                           $('#prevBtn').hide();
                           $('.step_wizard').hide();
                           
                         </script>";
 //            }
-
+            }
         } else
             if (is_array($freeinputs) && count($freeinputs) > 0) {
 
@@ -1712,6 +1754,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 }
             }
         }
+
         if (is_array($materials) && count($materials) > 0) {
 
             if ($formatAsTable) {
@@ -1766,7 +1809,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $result[$field['rank']]['content'] .= "</tr>";
             }
 
-            foreach ($materials as $id => $mat_id) {
+            foreach ($materials as $mat_id => $q) {
                 $totalrow = 0;
 
                 $material = new PluginMetademandsBasketobject();

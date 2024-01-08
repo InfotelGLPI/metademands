@@ -35,6 +35,11 @@ class PluginMetademandsForm extends CommonDBTM {
    static $rightname = 'plugin_metademands';
 
 
+    public function cleanDBonPurge()
+    {
+        $temp = new PluginMetademandsForm_Value();
+        $temp->deleteByCriteria(['plugin_metademands_forms_id' => $this->fields['id']]);
+    }
    /**
     * @param $users_id
     * @param $plugin_metademands_metademands_id
@@ -224,7 +229,7 @@ class PluginMetademandsForm extends CommonDBTM {
                       var step = {$step};
                       function loadForm(form_id) {
                          $('#ajax_loader').show();
-                         var data_send = $('form').serializeArray();
+                         var data_send = $('#wizard_form').serializeArray();
                          data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
@@ -251,7 +256,7 @@ class PluginMetademandsForm extends CommonDBTM {
                              jQuery('.resume_builder_input').trigger('change');
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
-                             arrayDatas = $('form').serializeArray();
+                             arrayDatas = $('#wizard_form').serializeArray();
                              arrayDatas.push({name: \"save_form\", value: true});
                              arrayDatas.push({name: \"is_model\", value: 1});
                              $.ajax({
@@ -280,7 +285,7 @@ class PluginMetademandsForm extends CommonDBTM {
                              jQuery('.resume_builder_input').trigger('change');
                              $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
                              $('#ajax_loader').show();
-                             arrayDatas = $('form').serializeArray();
+                             arrayDatas = $('#wizard_form').serializeArray();
                              arrayDatas.push({name: \"save_model\", value: true});
                              arrayDatas.push({name: \"is_model\", value: 1});
                              $.ajax({

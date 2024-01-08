@@ -2182,7 +2182,7 @@ class PluginMetademandsWizard extends CommonDBTM
                            $(this).prop('selected', true);
                         });
                         $('#ajax_loader').show();
-                        arrayDatas = $('form').serializeArray();
+                        arrayDatas = $('#wizard_form').serializeArray();
                         arrayDatas.push({name: 'save_form', value: true});
                         arrayDatas.push({name: 'step', value: 2});
                         arrayDatas.push({name: 'form_name', value: '$name'});
@@ -2192,7 +2192,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2',
                                    type: 'POST',
                                    datatype: 'html',
-                                   data: $('form').serializeArray(),
+                                   data: $('#wizard_form').serializeArray(),
                                    success: function (response) {
                                       $('#ajax_loader').hide();
                                       $('.md-wizard').append(response);
@@ -2257,7 +2257,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         $('select[id$=\"_to\"] option').each(function () {
                            $(this).prop('selected', true);
                         });
-                        arrayDatas = $('form').serializeArray();
+                        arrayDatas = $('#wizard_form').serializeArray();
                         arrayDatas.push({name: 'block_id', value: id_bloc});
                         arrayDatas.push({name: 'action', value: 'nextUser'});
                         arrayDatas.push({name: 'update_stepform', value: updatestepform});

@@ -77,6 +77,15 @@ if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === fa
                 }
             }
 
+            if (Plugin::isPluginActive('orderfollowup')) {
+                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+                    foreach ($freeinputs as $freeinput) {
+                        $_POST['freeinputs'][] = $freeinput;
+                    }
+                }
+            }
+
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
@@ -119,6 +128,9 @@ if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === fa
                                 $_POST['field'][$id] = $_POST['quantity'][$id];
                             }
 
+                            if ($value['type'] == 'free_input' && $_POST['freeinputs']) {
+                                $_POST['field'][$id] = $_POST['freeinputs'];
+                            }
                         }
                     }
                 }
