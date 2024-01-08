@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-07 10:53+0000\n"
+"POT-Creation-Date: 2024-01-08 09:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,11 +62,11 @@ msgid_plural "Meta-Demands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ajax/adddraft.php:154
+#: ajax/adddraft.php:170
 msgid "Draft name is required"
 msgstr ""
 
-#: ajax/addform.php:167
+#: ajax/addform.php:179
 msgid "Form name is required"
 msgstr ""
 
@@ -75,33 +75,33 @@ msgstr ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/deletedraft.php:58 inc/draft.class.php:158
+#: ajax/deletedraft.php:58 inc/draft.class.php:165
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
-#: ajax/deletedraft.php:64 inc/draft.class.php:164
+#: ajax/deletedraft.php:64 inc/draft.class.php:171
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: ajax/deletedraft.php:70 inc/draft.class.php:171
+#: ajax/deletedraft.php:70 inc/draft.class.php:178
 msgid "No draft available for this form"
 msgstr ""
 
-#: ajax/deleteform.php:59 inc/form.class.php:160 inc/form.class.php:432
-#: inc/form.class.php:518 inc/stepform.class.php:169
+#: ajax/deleteform.php:59 inc/form.class.php:165 inc/form.class.php:437
+#: inc/form.class.php:523 inc/stepform.class.php:169
 msgctxt "button"
 msgid "Load form"
 msgstr ""
 
-#: ajax/deleteform.php:65 inc/form.class.php:167 inc/stepform.class.php:176
+#: ajax/deleteform.php:65 inc/form.class.php:172 inc/stepform.class.php:176
 #: inc/stepform.class.php:413 inc/stepform.class.php:593
 msgctxt "button"
 msgid "Delete form"
 msgstr ""
 
-#: ajax/deleteform.php:71 inc/form.class.php:177 inc/stepform.class.php:186
+#: ajax/deleteform.php:71 inc/form.class.php:182 inc/stepform.class.php:186
 #: inc/stepform.class.php:605 inc/wizard.class.php:648 inc/wizard.class.php:769
 msgid "No existing forms founded"
 msgstr ""
@@ -195,34 +195,34 @@ msgstr ""
 msgid "Basket"
 msgstr ""
 
-#: inc/basket.class.php:124 inc/basket.class.php:1286 inc/basket.class.php:1721
-#: inc/basket.class.php:2038 inc/basketobject.class.php:116
+#: inc/basket.class.php:124 inc/basket.class.php:1286 inc/basket.class.php:1764
+#: inc/basket.class.php:2081 inc/basketobject.class.php:116
 #: inc/basketobject.class.php:221
 msgid "Reference"
 msgstr ""
 
-#: inc/basket.class.php:126 inc/basket.class.php:1287 inc/basket.class.php:1723
-#: inc/basket.class.php:2039 inc/basketobject.class.php:99
+#: inc/basket.class.php:126 inc/basket.class.php:1287 inc/basket.class.php:1766
+#: inc/basket.class.php:2082 inc/basketobject.class.php:99
 #: inc/basketobject.class.php:197
 msgid "Designation"
 msgstr ""
 
-#: inc/basket.class.php:133 inc/basket.class.php:1313 inc/basket.class.php:1746
+#: inc/basket.class.php:133 inc/basket.class.php:1313 inc/basket.class.php:1789
 msgid "Estimated unit price"
 msgstr ""
 
-#: inc/basket.class.php:140 inc/basket.class.php:1319 inc/basket.class.php:1737
-#: inc/basket.class.php:2046
+#: inc/basket.class.php:140 inc/basket.class.php:1319 inc/basket.class.php:1780
+#: inc/basket.class.php:2089
 msgid "Unit"
 msgstr ""
 
-#: inc/basket.class.php:143 inc/basket.class.php:1321 inc/basket.class.php:1753
-#: inc/basket.class.php:2055
+#: inc/basket.class.php:143 inc/basket.class.php:1321 inc/basket.class.php:1796
+#: inc/basket.class.php:2098
 msgid "Unit price (HT)"
 msgstr ""
 
-#: inc/basket.class.php:149 inc/basket.class.php:1327 inc/basket.class.php:1741
-#: inc/basket.class.php:2041 inc/basket.class.php:2078
+#: inc/basket.class.php:149 inc/basket.class.php:1327 inc/basket.class.php:1784
+#: inc/basket.class.php:2084 inc/basket.class.php:2121
 msgid "Quantity"
 msgstr ""
 
@@ -230,15 +230,15 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: inc/basket.class.php:159 inc/basket.class.php:1333 inc/basket.class.php:1761
-#: inc/basket.class.php:2058
+#: inc/basket.class.php:159 inc/basket.class.php:1333 inc/basket.class.php:1804
+#: inc/basket.class.php:2101
 msgid "Total (HT)"
 msgstr ""
 
 #: inc/basket.class.php:162 inc/basket.class.php:167 inc/basket.class.php:172
 #: inc/basket.class.php:1335 inc/basket.class.php:1338
-#: inc/basket.class.php:1341 inc/basket.class.php:1976
-#: inc/basket.class.php:1980
+#: inc/basket.class.php:1341 inc/basket.class.php:2019
+#: inc/basket.class.php:2023
 msgid "Total"
 msgstr ""
 
@@ -255,7 +255,7 @@ msgid "Search for description.."
 msgstr ""
 
 #: inc/basket.class.php:227 inc/basket.class.php:305 inc/basket.class.php:1408
-#: inc/basket.class.php:1478 inc/basket.class.php:1834
+#: inc/basket.class.php:1478 inc/basket.class.php:1877
 msgid "On quotation"
 msgstr ""
 
@@ -319,7 +319,7 @@ msgstr ""
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
-#: inc/basket.class.php:1523 inc/basket.class.php:1974
+#: inc/basket.class.php:1523 inc/basket.class.php:2017
 #: inc/metademandpdf.class.php:390 inc/metademandpdf.class.php:437
 msgid "Grand total (HT)"
 msgstr ""
@@ -329,15 +329,15 @@ msgctxt "button"
 msgid "Send order"
 msgstr ""
 
-#: inc/basket.class.php:1654
+#: inc/basket.class.php:1696
 msgid "No items on basket"
 msgstr ""
 
-#: inc/basket.class.php:1730
+#: inc/basket.class.php:1773
 msgid "Order type"
 msgstr ""
 
-#: inc/basket.class.php:1842
+#: inc/basket.class.php:1885
 msgid "On catalog"
 msgstr ""
 
@@ -619,35 +619,35 @@ msgstr ""
 msgid "Date & Hour interval"
 msgstr ""
 
-#: inc/draft.class.php:95
+#: inc/draft.class.php:102
 msgid "Current draft"
 msgstr ""
 
-#: inc/draft.class.php:101
+#: inc/draft.class.php:108
 msgctxt "button"
 msgid "Save draft"
 msgstr ""
 
-#: inc/draft.class.php:108 inc/draft.class.php:134 inc/form.class.php:100
-#: inc/form.class.php:127 inc/stepform.class.php:109 inc/stepform.class.php:136
+#: inc/draft.class.php:115 inc/draft.class.php:141 inc/form.class.php:105
+#: inc/form.class.php:132 inc/stepform.class.php:109 inc/stepform.class.php:136
 msgctxt "button"
 msgid "Clean form"
 msgstr ""
 
-#: inc/draft.class.php:115
+#: inc/draft.class.php:122
 msgid "New draft"
 msgstr ""
 
-#: inc/draft.class.php:124
+#: inc/draft.class.php:131
 msgid "Draft name"
 msgstr ""
 
-#: inc/draft.class.php:127
+#: inc/draft.class.php:134
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
 
-#: inc/draft.class.php:145 inc/wizard.class.php:519
+#: inc/draft.class.php:152 inc/wizard.class.php:519
 msgid "Your drafts"
 msgstr ""
 
@@ -688,7 +688,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:286 inc/field.class.php:468 inc/field.class.php:1289
-#: inc/field.class.php:2982 inc/step.class.php:273 inc/step.class.php:356
+#: inc/field.class.php:2995 inc/step.class.php:273 inc/step.class.php:356
 msgid "Block"
 msgstr ""
 
@@ -704,7 +704,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:428 inc/field.class.php:2917 inc/field.class.php:3000
+#: inc/field.class.php:428 inc/field.class.php:2930 inc/field.class.php:3013
 msgid "Additional label"
 msgstr ""
 
@@ -716,11 +716,11 @@ msgstr ""
 msgid "Remember to activate basket mode on your metademand !"
 msgstr ""
 
-#: inc/field.class.php:542 inc/field.class.php:1281 inc/field.class.php:2919
+#: inc/field.class.php:542 inc/field.class.php:1281 inc/field.class.php:2932
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:663 inc/field.class.php:1286 inc/field.class.php:3024
+#: inc/field.class.php:663 inc/field.class.php:1286 inc/field.class.php:3037
 msgid "Display into the basket"
 msgstr ""
 
@@ -781,7 +781,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:1290 inc/field.class.php:2991
+#: inc/field.class.php:1290 inc/field.class.php:3004
 msgid "Order"
 msgstr ""
 
@@ -892,43 +892,43 @@ msgstr ""
 msgid "Block %s"
 msgstr ""
 
-#: inc/form.class.php:73 inc/stepform.class.php:83
+#: inc/form.class.php:78 inc/stepform.class.php:83
 msgid "Current form"
 msgstr ""
 
-#: inc/form.class.php:84 inc/form.class.php:116 inc/stepform.class.php:94
+#: inc/form.class.php:89 inc/form.class.php:121 inc/stepform.class.php:94
 #: inc/stepform.class.php:125
 msgid "Form name"
 msgstr ""
 
-#: inc/form.class.php:87 inc/stepform.class.php:97
+#: inc/form.class.php:92 inc/stepform.class.php:97
 msgctxt "button"
 msgid "Save model"
 msgstr ""
 
-#: inc/form.class.php:89 inc/form.class.php:119 inc/stepform.class.php:99
+#: inc/form.class.php:94 inc/form.class.php:124 inc/stepform.class.php:99
 #: inc/stepform.class.php:128
 msgctxt "button"
 msgid "Save as model"
 msgstr ""
 
-#: inc/form.class.php:108 inc/stepform.class.php:117
+#: inc/form.class.php:113 inc/stepform.class.php:117
 msgid "New model"
 msgstr ""
 
-#: inc/form.class.php:328 inc/form.class.php:395
+#: inc/form.class.php:333 inc/form.class.php:400
 msgid "Initial form"
 msgid_plural "Initial forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/form.class.php:340 inc/form.class.php:487
+#: inc/form.class.php:345 inc/form.class.php:492
 msgid "Associated form"
 msgid_plural "Associated forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/form.class.php:405 inc/form.class.php:496
+#: inc/form.class.php:410 inc/form.class.php:501
 msgid "See form"
 msgstr ""
 
@@ -1214,39 +1214,39 @@ msgstr ""
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:6202
+#: inc/metademand.class.php:6208
 msgid "No file specified"
 msgstr ""
 
-#: inc/metademand.class.php:6217
+#: inc/metademand.class.php:6223
 msgid "The file is not an XML file"
 msgstr ""
 
-#: inc/metademand.class.php:6514
+#: inc/metademand.class.php:6520
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:6523
+#: inc/metademand.class.php:6529
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:6635
+#: inc/metademand.class.php:6641
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:6724
+#: inc/metademand.class.php:6730
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:6724
+#: inc/metademand.class.php:6730
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:6737
+#: inc/metademand.class.php:6743
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:6769 inc/wizard.class.php:791
+#: inc/metademand.class.php:6775 inc/wizard.class.php:791
 msgid "Find a form"
 msgstr ""
 
