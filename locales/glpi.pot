@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-08 09:31+0000\n"
+"POT-Creation-Date: 2024-01-08 10:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -688,7 +688,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:286 inc/field.class.php:468 inc/field.class.php:1289
-#: inc/field.class.php:2995 inc/step.class.php:273 inc/step.class.php:356
+#: inc/field.class.php:3012 inc/step.class.php:273 inc/step.class.php:356
 msgid "Block"
 msgstr ""
 
@@ -704,7 +704,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:428 inc/field.class.php:2930 inc/field.class.php:3013
+#: inc/field.class.php:428 inc/field.class.php:2947 inc/field.class.php:3030
 msgid "Additional label"
 msgstr ""
 
@@ -716,11 +716,11 @@ msgstr ""
 msgid "Remember to activate basket mode on your metademand !"
 msgstr ""
 
-#: inc/field.class.php:542 inc/field.class.php:1281 inc/field.class.php:2932
+#: inc/field.class.php:542 inc/field.class.php:1281 inc/field.class.php:2949
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:663 inc/field.class.php:1286 inc/field.class.php:3037
+#: inc/field.class.php:663 inc/field.class.php:1286 inc/field.class.php:3054
 msgid "Display into the basket"
 msgstr ""
 
@@ -781,7 +781,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:1290 inc/field.class.php:3004
+#: inc/field.class.php:1290 inc/field.class.php:3021
 msgid "Order"
 msgstr ""
 
@@ -1836,22 +1836,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3265
+#: inc/wizard.class.php:3270
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3274
+#: inc/wizard.class.php:3279
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3307
+#: inc/wizard.class.php:3312
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3311
+#: inc/wizard.class.php:3316
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
