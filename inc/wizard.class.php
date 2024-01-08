@@ -3049,7 +3049,12 @@ class PluginMetademandsWizard extends CommonDBTM
             && isset($post[$fieldname][$id])) {
             $content[$id]['plugin_metademands_fields_id'] = $id;
             if ($value['type'] != "upload") {
-                $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];
+                if ($value['type'] == "free_input") {
+                    $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serializeArray($post[$fieldname][$id]) : $post[$fieldname][$id];
+                } else {
+                    $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];
+                }
+
             }
             $content[$id]['value2'] = (isset($post[$fieldname][$id . "-2"])) ? $post[$fieldname][$id . "-2"] : "";
             $content[$id]['item'] = $value['item'];
