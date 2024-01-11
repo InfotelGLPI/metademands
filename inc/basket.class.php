@@ -1556,37 +1556,7 @@ class PluginMetademandsBasket extends CommonDBTM
                              arrayDatas.push({name: 'save_form', value: true});
                              arrayDatas.push({name: 'step', value: 2});
                              arrayDatas.push({name: 'form_name', value: '$name'});
-//                             $.ajax({
-//                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-//                               type: 'POST',
-//                               data: $post,
-//                               success: function (response) {
-//                                  $('#ajax_loader').hide();
-//                                  if (response == 1) {
-//                                     window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
-//                                  } else {
-//                                     $.ajax({
-//                                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-//                                        type: 'POST',
-//                                        data: $post,
-//                                        success: function (response) {
-//                                           window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
-//                                        },
-//                                        error: function (xhr, status, error) {
-//                                           console.log(xhr);
-//                                           console.log(status);
-//                                           console.log(error);
-//                                        }
-//                                     });
-//                                  }
-//                               },
-//                               error: function (xhr, status, error) {
-//                                  console.log(xhr);
-//                                  console.log(status);
-//                                  console.log(error);
-//                               }
-//                            });
-                            $.ajax({
+                             $.ajax({
                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
                                    type: 'POST',
                                    datatype: 'html',
@@ -1620,83 +1590,20 @@ class PluginMetademandsBasket extends CommonDBTM
                                       console.log(error);
                                    }
                                 });
-                          });
-                          $('#prevBtn').hide();
-                          $('.step_wizard').hide();
+                           });
+                           $('#prevBtn').hide();
+                           $('.step_wizard').hide();
                           
                         </script>";
 //            }
             }
-        } else
-            if (is_array($freeinputs) && count($freeinputs) > 0) {
-
-//                if (Plugin::isPluginActive('orderfollowup')) {
-//                    $content .= PluginOrderfollowupFreeinput::displayBasketSummary($fields);
-//                }
-//                //            if ($grandtotal > 0) {
-//                $content .= "<br><span style='float:right'>";
-//                $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
-//
-//                $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
-//                $content .= Html::submit($title, ['name' => 'send_order',
-//                    'form' => '',
-//                    'id' => 'submitOrder',
-//                    'class' => 'btn btn-success right']);
-//                $content .= "</span>";
-//
-//                $paramUrl = "";
-//                $meta_validated = false;
-//                if ($current_ticket > 0 && !$meta_validated) {
-//                    $paramUrl = "current_ticket_id=$current_ticket&meta_validated=$meta_validated&";
-//                }
-//                $post = json_encode($fields);
-//                $meta_id = $fields['metademands_id'];
-//                $content .= "<script>
-//                          $('#submitOrder').click(function() {
-//                             var meta_id = $meta_id;
-//                             $.ajax({
-//                               url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
-//                               type: 'POST',
-//                               data: $post,
-//                               success: function (response) {
-//                                  $('#ajax_loader').hide();
-//                                  if (response == 1) {
-//                                     window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=2';
-//                                  } else {
-//                                     $.ajax({
-//                                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
-//                                        type: 'POST',
-//                                        data: $post,
-//                                        success: function (response) {
-//                                           window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?" . $paramUrl . "metademands_id=' + meta_id + '&step=create_metademands';
-//                                        },
-//                                        error: function (xhr, status, error) {
-//                                           console.log(xhr);
-//                                           console.log(status);
-//                                           console.log(error);
-//                                        }
-//                                     });
-//                                  }
-//                               },
-//                               error: function (xhr, status, error) {
-//                                  console.log(xhr);
-//                                  console.log(status);
-//                                  console.log(error);
-//                               }
-//                            });
-//                          });
-//                          $('#prevBtn').hide();
-//                          $('.step_wizard').hide();
-//
-//                        </script>";
-
-            } else {
-                $content .= "<table>";
-                $content .= "<tr class='tab_bg_1'>";
-                $content .= "<th colspan='4'>" . __('No items on basket', 'metademands') . "</th>";
-                $content .= "</tr>";
-                $content .= "</table>";
-            }
+        } else {
+            $content .= "<table>";
+            $content .= "<tr class='tab_bg_1'>";
+            $content .= "<th colspan='4'>" . __('No items on basket', 'metademands') . "</th>";
+            $content .= "</tr>";
+            $content .= "</table>";
+        }
         return $content;
     }
 

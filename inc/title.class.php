@@ -64,7 +64,10 @@ class PluginMetademandsTitle extends CommonDBTM
             echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
         }
         if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
-            $label = $data['name'];
+            $label = "";
+            if (isset($data['name'])) {
+                $label = $data['name'];
+            }
         }
 
         echo $label;

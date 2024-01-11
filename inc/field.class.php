@@ -395,7 +395,12 @@ class PluginMetademandsField extends CommonDBChild
         // LABEL
         echo "<td>" . __('Label') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
         echo "<td>";
-        echo Html::input('name', ['value' => stripslashes($this->fields["name"]), 'size' => 40]);
+        if (isset($this->fields["name"])) {
+            $name = stripslashes($this->fields["name"]);
+        } else {
+            $name = "";
+        }
+        echo Html::input('name', ['value' => $name, 'size' => 40]);
         if ($ID > 0) {
             echo Html::hidden('entities_id', ['value' => $this->fields["entities_id"]]);
             echo Html::hidden('is_recursive', ['value' => $this->fields["is_recursive"]]);
@@ -1317,7 +1322,12 @@ JAVASCRIPT
 //                }
                 echo $value['id'];
                 echo "</td>";
-                $name = $value['name'];
+
+                $name = "";
+                if (isset($value['name'])) {
+                    $name = $value['name'];
+                }
+
                 echo "<td>";
                 echo " <a href='" . Toolbox::getItemTypeFormURL(__CLASS__) . "?id=" . $value['id'] . "'>";
                 if (empty(trim($name))) {
@@ -2089,7 +2099,10 @@ JAVASCRIPT
 //        }
 
         if (empty($label = self::displayField($data['id'], 'name'))) {
-            $label = $data['name'];
+            $label = "";
+            if (isset($data['name'])) {
+                $label = $data['name'];
+            }
         }
         if ($data["use_date_now"] == true) {
             if ($data["type"] == 'date' ||
@@ -3125,7 +3138,7 @@ JAVASCRIPT
         $order = [Dropdown::EMPTY_VALUE];
 
         foreach ($this->find($restrict, ['order']) as $id => $values) {
-            $order[$id] = $values['name'];
+            $order[$id] = $values['name']??$id;
             //if (!empty($values['label2'])) {
             //   $order[$id] .= ' - ' . $values['label2'];
             //}

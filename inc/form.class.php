@@ -421,6 +421,7 @@ class PluginMetademandsForm extends CommonDBTM {
             $meta = new PluginMetademandsMetademand();
             $meta->getFromDB($plugin_metademands_metademands_id);
             echo $meta->getName();
+//            echo $form_metademand_fields['name'];
             echo "</td>";
 
             echo "<td>";

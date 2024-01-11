@@ -72,3 +72,8 @@ CREATE TABLE `glpi_plugin_metademands_basketobjecttypetranslations`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = DYNAMIC;
+
+DROP TABLE IF EXISTS `glpi_plugin_metademands_itilapplications`;
+DROP TABLE IF EXISTS `glpi_plugin_metademands_itilenvironments`;
+DROP TABLE IF EXISTS `glpi_plugin_metademands_tickets_itilapplications`;
+DROP TABLE IF EXISTS `glpi_plugin_metademands_tickets_itilenvironments`;

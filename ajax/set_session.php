@@ -38,7 +38,11 @@ Session::checkLoginUser();
 $KO = false;
 
 if (isset($_REQUEST["tasks_id"]) && $_REQUEST["tasks_id"] > 0) {
-    PluginMetademandsMetademandTask::setUsedTask($_REQUEST["tasks_id"], $_REQUEST["used"]);
+    $used = PluginMetademandsMetademandTask::setUsedTask($_REQUEST["tasks_id"], $_REQUEST["used"]);
+
+    if ($used == 0) {
+        $KO = true;
+    }
 }  else {
     $KO = true;
 }

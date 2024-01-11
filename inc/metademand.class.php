@@ -4483,7 +4483,7 @@ JAVASCRIPT
                     $KO[] = 1;
                 }
             } else {
-                //TODO XACA
+
                 if (isset($_SESSION['metademands_hide'])
                     && in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
                     continue;

@@ -303,7 +303,13 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 $fields_data = $fields->find(['id' => $data['hidden_link']]);
 
                 foreach ($fields_data as $id => $value) {
-                    echo $value['rank'] . " - " . urldecode(html_entity_decode($value['name']));
+
+                    $name = $id;
+                    if (isset($value['name'])) {
+                        $name = $value['name'];
+                    }
+
+                    echo $value['rank'] . " - " . urldecode(html_entity_decode($name));
                 }
                 echo "</td>";
 
