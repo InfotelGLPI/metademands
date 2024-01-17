@@ -434,7 +434,8 @@ class PluginMetademandsCondition extends CommonDBChild
         $allConditions = $dbu->getAllDataFromTable('glpi_plugin_metademands_conditions', ['plugin_metademands_metademands_id' => $item->fields['id'], 'ORDER' => 'order ASC']);
         if (count($allConditions) > 0) {
             html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $params = ['container' => 'mass' . __CLASS__ . $rand];
+            $params = ['item' => __CLASS__,
+                'container' => 'mass' . __CLASS__ . $rand];
             Html::showMassiveActions($params);
 
 
@@ -536,6 +537,43 @@ class PluginMetademandsCondition extends CommonDBChild
     }
 
 
+    public function rawSearchOptions()
+    {
+        $tab = [];
+
+        $tab[] = [
+            'id' => 'common',
+            'name' => self::getTypeName(1)
+        ];
+
+        $tab[] = [
+            'id' => '1',
+            'table' => $this->getTable(),
+            'field' => 'check_value',
+            'name' => __('Value to check', 'metademands'),
+            'datatype' => 'text'
+        ];
+
+        $tab[] = [
+            'id' => '2',
+            'table' => $this->getTable(),
+            'field' => 'order',
+            'name' => __('Pool', 'metademands'),
+            'massiveaction' => true,
+            'datatype' => 'number'
+        ];
+
+        $tab[] = [
+            'id' => '3',
+            'table' => $this->getTable(),
+            'field' => 'show_logic',
+            'name' => __('Logical operator', 'metademands'),
+            'massiveaction' => false,
+            'datatype' => 'specific'
+        ];
+
+        return $tab;
+    }
     static function displayCheckValue($ID)
     {
         $condition = new self();
