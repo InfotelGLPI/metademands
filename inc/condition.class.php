@@ -496,7 +496,7 @@ class PluginMetademandsCondition extends CommonDBChild
                             $fieldURL = $field->getLinkURL();
                             echo "<a href='$fieldURL' style='color:royalblue;'>";
                         }
-                        echo Dropdown::getDropdownName(PluginMetademandsField::getTable(), $condition['plugin_metademands_fields_id']);
+                        echo Dropdown::getDropdownName(PluginMetademandsField::getTable(), $condition['plugin_metademands_fields_id']) . " (" . $condition['plugin_metademands_fields_id'] . ") ";
                         if (Session::haveRight('plugin_metademands', UPDATE)) {
                             echo "</a> ";
                         }
