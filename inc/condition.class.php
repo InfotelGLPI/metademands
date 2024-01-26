@@ -430,8 +430,9 @@ class PluginMetademandsCondition extends CommonDBChild
         if ($canedit) {
             echo "<div id='viewcondition" . $item->getType() . $item->getID() . "$rand'></div>\n";
         }
+        $self = new self();
         $allConditions = [];
-        $allConditions = $dbu->getAllDataFromTable('glpi_plugin_metademands_conditions', ['plugin_metademands_metademands_id' => $item->fields['id'], 'ORDER' => 'order ASC']);
+        $allConditions = $self->find(['plugin_metademands_metademands_id' => $item->fields['id']], ['order','id']);
         if (count($allConditions) > 0) {
             html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
             $params = ['item' => __CLASS__,

@@ -219,7 +219,7 @@ class PluginMetademandsGroup extends CommonDBChild
         if (!$this->canCreate()) {
             return false;
         }
-
+        $config = PluginMetademandsConfig::getInstance();
         $used_groups = [];
 
         $dataMetademandGroup = $this->find(['plugin_metademands_metademands_id' => $item->fields['id']]);
@@ -262,6 +262,13 @@ class PluginMetademandsGroup extends CommonDBChild
                 'multiple' => true,
                 'used' => $used_groups
             ]);
+            echo "</td>";
+            echo "</tr>";
+            echo "<tr class='tab_bg_1'>";
+            // Add groups with a regex
+            echo "<td class='center'>";
+            echo __('Regular expression', 'metademands') . '&nbsp;';
+            echo Html::input('regex_value', ['type' => 'text', 'width' => '150px', 'class' => '']);
             echo "</td>";
             echo "</tr>";
 
