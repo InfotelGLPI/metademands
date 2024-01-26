@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-18 10:29+0000\n"
+"POT-Creation-Date: 2024-01-26 10:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -268,8 +268,8 @@ msgid "With unit price (HT)"
 msgstr ""
 
 #: inc/basket.class.php:460 inc/checkbox.class.php:249
-#: inc/condition.class.php:322 inc/condition.class.php:455
-#: inc/condition.class.php:553 inc/condition.class.php:851
+#: inc/condition.class.php:322 inc/condition.class.php:456
+#: inc/condition.class.php:554 inc/condition.class.php:852
 #: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:421
 #: inc/dropdownmultiple.class.php:606 inc/dropdownobject.class.php:409
 #: inc/field.class.php:1289 inc/fieldoption.class.php:228
@@ -464,39 +464,39 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: inc/condition.class.php:318 inc/condition.class.php:451
-#: inc/condition.class.php:570 inc/condition.class.php:847
+#: inc/condition.class.php:318 inc/condition.class.php:452
+#: inc/condition.class.php:571 inc/condition.class.php:848
 msgid "Logical operator"
 msgstr ""
 
-#: inc/condition.class.php:319 inc/condition.class.php:452
-#: inc/condition.class.php:848 inc/field.class.php:261
+#: inc/condition.class.php:319 inc/condition.class.php:453
+#: inc/condition.class.php:849 inc/field.class.php:261
 msgid "Field"
 msgstr ""
 
-#: inc/condition.class.php:320 inc/condition.class.php:849
+#: inc/condition.class.php:320 inc/condition.class.php:850
 msgid "Field type"
 msgstr ""
 
-#: inc/condition.class.php:321 inc/condition.class.php:454
-#: inc/condition.class.php:850
+#: inc/condition.class.php:321 inc/condition.class.php:455
+#: inc/condition.class.php:851
 msgid "Equality operator"
 msgstr ""
 
-#: inc/condition.class.php:323 inc/condition.class.php:456
-#: inc/condition.class.php:561 inc/condition.class.php:852
+#: inc/condition.class.php:323 inc/condition.class.php:457
+#: inc/condition.class.php:562 inc/condition.class.php:853
 msgid "Pool"
 msgstr ""
 
-#: inc/condition.class.php:324 inc/condition.class.php:853
+#: inc/condition.class.php:324 inc/condition.class.php:854
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: inc/condition.class.php:444
+#: inc/condition.class.php:445
 msgid "List of conditions"
 msgstr ""
 
-#: inc/condition.class.php:534
+#: inc/condition.class.php:535
 msgid "No conditions founded"
 msgstr ""
 
@@ -956,7 +956,11 @@ msgstr ""
 msgid "Add a group"
 msgstr ""
 
-#: inc/group.class.php:299
+#: inc/group.class.php:270
+msgid "Regular expression"
+msgstr ""
+
+#: inc/group.class.php:306
 msgid "Groups allowed to enter a demand"
 msgstr ""
 
