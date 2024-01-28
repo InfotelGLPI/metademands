@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-26 10:19+0000\n"
+"POT-Creation-Date: 2024-01-28 11:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -688,7 +688,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:286 inc/field.class.php:473 inc/field.class.php:1294
-#: inc/field.class.php:3025 inc/step.class.php:273 inc/step.class.php:356
+#: inc/field.class.php:3027 inc/step.class.php:273 inc/step.class.php:356
 msgid "Block"
 msgstr ""
 
@@ -704,7 +704,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:433 inc/field.class.php:2960 inc/field.class.php:3043
+#: inc/field.class.php:433 inc/field.class.php:2962 inc/field.class.php:3045
 msgid "Additional label"
 msgstr ""
 
@@ -716,11 +716,11 @@ msgstr ""
 msgid "Remember to activate basket mode on your metademand !"
 msgstr ""
 
-#: inc/field.class.php:547 inc/field.class.php:1286 inc/field.class.php:2962
+#: inc/field.class.php:547 inc/field.class.php:1286 inc/field.class.php:2964
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:668 inc/field.class.php:1291 inc/field.class.php:3067
+#: inc/field.class.php:668 inc/field.class.php:1291 inc/field.class.php:3069
 msgid "Display into the basket"
 msgstr ""
 
@@ -781,7 +781,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:1295 inc/field.class.php:3034
+#: inc/field.class.php:1295 inc/field.class.php:3036
 msgid "Order"
 msgstr ""
 
