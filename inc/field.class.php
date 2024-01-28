@@ -2820,7 +2820,9 @@ JAVASCRIPT
             }
             if (is_array($input) && !empty($input)) {
                 foreach ($input as &$value) {
-                    $value = urldecode($value);
+                    if ($value != null) {
+                        $value = urldecode($value);
+                    }
                 }
             }
         }
