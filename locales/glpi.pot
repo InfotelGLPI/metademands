@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-30 10:22+0000\n"
+"POT-Creation-Date: 2024-01-30 17:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,23 +148,23 @@ msgstr ""
 msgid "Please activate the plugin"
 msgstr ""
 
-#: front/nextGroup.form.php:63
+#: front/nextGroup.form.php:64
 #, php-format
 msgid ""
 "The form has been sent to user %s from group %s, you can close the window"
 msgstr ""
 
-#: front/nextGroup.form.php:65
+#: front/nextGroup.form.php:70
 #, php-format
 msgid "The form has been sent to the group %s, you can close the window"
 msgstr ""
 
-#: front/nextGroup.form.php:74 front/nextGroup.form.php:82
-#: inc/step.class.php:558
+#: front/nextGroup.form.php:81 front/nextGroup.form.php:88
+#: inc/step.class.php:593
 msgid "Next recipient"
 msgstr ""
 
-#: front/nextGroup.form.php:83
+#: front/nextGroup.form.php:89
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
@@ -584,10 +584,6 @@ msgstr ""
 msgid "Add all form actors as ticket requester"
 msgstr ""
 
-#: inc/configstep.class.php:175
-msgid "Cannot change settings because blocks are linked to multiple groups"
-msgstr ""
-
 #: inc/date.class.php:51
 msgid "Date"
 msgstr ""
@@ -688,7 +684,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:286 inc/field.class.php:473 inc/field.class.php:1294
-#: inc/field.class.php:3027 inc/step.class.php:273 inc/step.class.php:356
+#: inc/field.class.php:3027 inc/step.class.php:287 inc/step.class.php:369
 msgid "Block"
 msgstr ""
 
@@ -886,7 +882,7 @@ msgid ""
 msgstr ""
 
 #: inc/fieldoption.class.php:1027 inc/mailtask.class.php:150
-#: inc/step.class.php:247 inc/step.class.php:367 inc/step.class.php:387
+#: inc/step.class.php:258 inc/step.class.php:380 inc/step.class.php:404
 #: inc/task.class.php:701 inc/task.class.php:1093 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
@@ -1477,50 +1473,50 @@ msgid_plural "Step-by-Step blocks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/step.class.php:222
+#: inc/step.class.php:229
 msgid "Add a new association"
 msgstr ""
 
-#: inc/step.class.php:255
+#: inc/step.class.php:267
 msgid ""
 "Be careful if all blocks are not assigned, they will be displayed to the "
 "last assigned group"
 msgstr ""
 
-#: inc/step.class.php:267
+#: inc/step.class.php:281
 msgid "List of associations"
 msgstr ""
 
-#: inc/step.class.php:275
+#: inc/step.class.php:289
 msgid "Message"
 msgstr ""
 
-#: inc/step.class.php:321
+#: inc/step.class.php:337
 msgid "No association found"
 msgstr ""
 
-#: inc/step.class.php:442
+#: inc/step.class.php:466
 msgid "Message to next group on form"
 msgstr ""
 
-#: inc/step.class.php:531
+#: inc/step.class.php:561
 msgid "This group is already assigned to this block"
 msgstr ""
 
-#: inc/step.class.php:597
+#: inc/step.class.php:635
 msgid "There is a problem with the setup"
 msgstr ""
 
-#: inc/step.class.php:639
+#: inc/step.class.php:679
 msgid "Select the next group"
 msgstr ""
 
-#: inc/step.class.php:688
+#: inc/step.class.php:726
 msgctxt "button"
 msgid "Validate"
 msgstr ""
 
-#: inc/step.class.php:804
+#: inc/step.class.php:875
 msgid "Error assigning to next group"
 msgstr ""
 
