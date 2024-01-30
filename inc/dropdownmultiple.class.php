@@ -38,7 +38,7 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsDropdownmultiple extends CommonDBTM
 {
 
-    public static $dropdown_multiple_items = ['other', 'Appliance', 'User'];
+    public static $dropdown_multiple_items = ['other', 'Location', 'Appliance', 'User'];
 
     const CLASSIC_DISPLAY = 0;
     const DOUBLE_COLUMN_DISPLAY = 1;
@@ -78,7 +78,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $options = PluginMetademandsField::_unserialize($data['custom_values']);
 
                 if (isset($options['user_group']) && $options['user_group'] == 1) {
-                    $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
+                    $condition = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
                     $group_user_data = Group_User::getUserGroups(Session::getLoginUserID(), $condition);
 
                     $requester_users = [];
@@ -100,6 +100,150 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $list = [];
             foreach ($iterator as $datau) {
                 $list[$datau['users_id']] = getUserName($datau['users_id'], 0, true);
+            }
+
+            if (!empty($value) && !is_array($value)) {
+                $value = json_decode($value);
+            }
+            if (!is_array($value)) {
+                $value = [];
+            }
+
+            if ($data["display_type"] != self::CLASSIC_DISPLAY) {
+                $name = $namefield . "[" . $data['id'] . "][]";
+                $css = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
+                $field = "$css
+                           <div class=\"row\">";
+                $field .= "<div class=\"zone\">
+                                   <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+
+                if (is_array($list) && count($list) > 0) {
+                    foreach ($list as $k => $val) {
+                        if (!in_array($k, $value)) {
+                            $field .= "<option value=\"$k\" >$val</option>";
+                        }
+                    }
+                }
+
+                $field .= "</select></div>";
+
+                $field .= " <div class=\"centralCol\" style='width: 3%;'>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn  buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
+                               </div>";
+
+                $required = "";
+                if ($data['is_mandatory'] == 1) {
+                    $required = "required=required";
+                }
+                $field .= "<div class=\"zone\">
+                                   <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
+                if (is_array($value) && count($value) > 0) {
+                    foreach ($value as $k => $val) {
+                        $field .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
+                    }
+                }
+                $field .= "</select></div>";
+
+                $field .= "</div>";
+
+                $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
+                           <script type="text/javascript">
+                           jQuery(document).ready(function($) {
+                                  $("#multiselect' . $namefield . $data["id"] . '").multiselect({
+                                      search: {
+                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
+                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
+                                      },
+                                      keepRenderingSort: true,
+                                      fireSearch: function(value) {
+                                          return value.length > 2;
+                                      },
+                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
+                                        let self = Multiselect;
+                        
+                                        $options.each(function(index, option) {
+                                            let $option = $(option);
+                        
+                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
+                                                return true;
+                                            }
+                        
+                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
+                                                let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
+                                                let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
+                                                let $destinationGroup = $destination.find(optgroupSelector);
+                        
+                                                if (!$destinationGroup.length) {
+                                                    $destinationGroup = $sourceGroup.clone(true);
+                                                    $destinationGroup.empty();
+                        
+                                                    $destination.move($destinationGroup);
+                                                }
+                        
+                                                if ($option.is("optgroup")) {
+                                                    let disabledSelector = "";
+                        
+                                                    if (self.options.ignoreDisabled) {
+                                                        disabledSelector = ":not(:disabled)";
+                                                    }
+                        
+                                                    $destinationGroup.move($option.find("option" + disabledSelector));
+                                                } else {
+                                                    $destinationGroup.move($option);
+                                                }
+                        
+                                                $sourceGroup.removeIfEmpty();
+                                            } else {
+                                                $destination.move($option);
+                                                //Color change when multiselect value is switch
+                                                $destination[0].value = $options[index].value;
+                                                let selected = $destination[0].selectedIndex;
+                                                let destOption = $destination[0].options[selected];
+                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
+                                                    if($destination[0].name=="from"){
+                                                        destOption.style.color = "red";
+                                                    } else{
+                                                        destOption.style.color = "green";
+                                                    }
+                                                } else{
+                                                    destOption.style.color="#555555";
+                                                }
+                                            }
+                                        });                        
+                                        return self;
+                                          
+                                      }
+                                  });
+                              });
+                           </script>';
+            } else {
+                $field = Dropdown::showFromArray(
+                    $namefield . "[" . $data['id'] . "]",
+                    $list,
+                    ['values' => $value,
+                        'width' => '250px',
+                        'multiple' => true,
+                        'display' => false,
+                        'required' => ($data['is_mandatory'] ? "required" : "")
+                    ]
+                );
+            }
+        } else if ($data['item'] == Location::getType()) {
+
+            $self = new PluginMetademandsField();
+
+
+            $criteria['FROM'] = Location::getTable();
+            $criteria['ORDER'] = ['NAME ASC'];
+
+            $iterator = $DB->request($criteria);
+
+            $list = [];
+            foreach ($iterator as $datau) {
+                $list[$datau['id']] = $datau['completename'];
             }
 
             if (!empty($value) && !is_array($value)) {
@@ -411,12 +555,14 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $dbu = new DbUtils();
         if ($params["item"] != "User") {
             if ($params["item"] != "other"
+                && $params["item"] != "Location"
                 && !empty($params["item"])
                 && $dbu->getItemForItemtype($params["item"])
             ) {
                 $item = new $params['item'];
+                $criteria = [];
 
-                $items = $item->find(["is_deleted" => 0], ["name ASC"]);
+                $items = $item->find($criteria, ["name ASC"]);
                 foreach ($items as $key => $v) {
 
                     echo "<tr>";
@@ -443,6 +589,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         && $values[$key] != 0) {
                         $checked = "checked";
                     }
+
                     echo "<input type='checkbox' name='custom_values[" . $key . "]'  value='$key' $checked />";
                     echo '</p>';
                     echo "</td>";
@@ -450,106 +597,109 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     echo "</tr>";
                 }
             } else {
-                if (is_array($values) && !empty($values)) {
-                    echo "<div id='drag'>";
-                    echo "<table class='tab_cadre_fixe'>";
-                    foreach ($values as $key => $value) {
-                        echo "<tr>";
+                if ($params['item'] != 'Location') {
+                    if (is_array($values) && !empty($values)) {
 
-                        echo '<td class="rowhandler control center">';
-                        echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                        echo "<p id='custom_values$key'>";
-                        echo __('Value');
-                        $name = "custom_values[$key]";
-                        echo Html::input($name, ['value' => $value, 'size' => 50]);
-                        echo '</p>';
-                        echo '</div>';
-                        echo '</td>';
+                        echo "<div id='drag'>";
+                        echo "<table class='tab_cadre_fixe'>";
+                        foreach ($values as $key => $value) {
+                            echo "<tr>";
 
-                        echo '<td class="rowhandler control center">';
-                        echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                        //                     echo "<p id='default_values$key'>";
-                        $display_default = false;
-                        //                     if ($params['value'] == 'dropdown_multiple') {
-                        $display_default = true;
-                        //                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                        $checked = "";
-                        //                        if (isset($default[$key])
-                        //                            && $default[$key] == 1) {
-                        //                           $checked = "checked";
-                        //                        }
-                        //                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
-                        echo "<p id='default_values$key'>";
-                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                        $name = "default_values[" . $key . "]";
-                        $value = ($default_values[$key] ?? 0);
-                        Dropdown::showYesNo($name, $value);
-                        echo '</p>';
-                        //                     }
-                        //                     echo '</p>';
-                        echo '</div>';
-                        echo '</td>';
+                            echo '<td class="rowhandler control center">';
+                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                            echo "<p id='custom_values$key'>";
+                            echo __('Value');
+                            $name = "custom_values[$key]";
+                            echo Html::input($name, ['value' => $value, 'size' => 50]);
+                            echo '</p>';
+                            echo '</div>';
+                            echo '</td>';
 
-                        echo '<td class="rowhandler control center">';
-                        echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                        echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
-                        if (isset($params['id'])) {
-                            echo PluginMetademandsField::showSimpleForm(
-                                PluginMetademandsField::getFormURL(),
-                                'delete_field_custom_values',
-                                _x('button', 'Delete permanently'),
-                                ['id' => $key,
-                                    'plugin_metademands_fields_id' => $params['id'],
-                                ],
-                                'fa-times-circle'
-                            );
+                            echo '<td class="rowhandler control center">';
+                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                            //                     echo "<p id='default_values$key'>";
+                            $display_default = false;
+                            //                     if ($params['value'] == 'dropdown_multiple') {
+                            $display_default = true;
+                            //                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                            $checked = "";
+                            //                        if (isset($default[$key])
+                            //                            && $default[$key] == 1) {
+                            //                           $checked = "checked";
+                            //                        }
+                            //                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
+                            echo "<p id='default_values$key'>";
+                            echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                            $name = "default_values[" . $key . "]";
+                            $value = ($default_values[$key] ?? 0);
+                            Dropdown::showYesNo($name, $value);
+                            echo '</p>';
+                            //                     }
+                            //                     echo '</p>';
+                            echo '</div>';
+                            echo '</td>';
+
+                            echo '<td class="rowhandler control center">';
+                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
+                            echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
+                            if (isset($params['id'])) {
+                                echo PluginMetademandsField::showSimpleForm(
+                                    PluginMetademandsField::getFormURL(),
+                                    'delete_field_custom_values',
+                                    _x('button', 'Delete permanently'),
+                                    ['id' => $key,
+                                        'plugin_metademands_fields_id' => $params['id'],
+                                    ],
+                                    'fa-times-circle'
+                                );
+                            }
+                            echo '</div>';
+                            echo '</td>';
+
+                            echo "</tr>";
                         }
+                        if (isset($params['id'])) {
+                            echo Html::hidden('fields_id', ['value' => $params["id"], 'id' => 'fields_id']);
+                        }
+                        echo '</table>';
                         echo '</div>';
+                        echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
                         echo '</td>';
 
                         echo "</tr>";
-                    }
-                    if (isset($params['id'])) {
-                        echo Html::hidden('fields_id', ['value' => $params["id"], 'id' => 'fields_id']);
-                    }
-                    echo '</table>';
-                    echo '</div>';
-                    echo Html::scriptBlock('$(document).ready(function() {plugin_metademands_redipsInit()});');
-                    echo '</td>';
+                        echo "<tr>";
+                        echo "<td colspan='4' align='right' id='show_custom_fields'>";
+                        PluginMetademandsField::initCustomValue(max(array_keys($values)), false, $display_default);
+                        echo "</td>";
+                        echo "</tr>";
+                    } else {
+                        //                  echo "<tr>";
+                        //                  echo "<td>";
+                        echo __('Value') . " 1 ";
+                        echo Html::input('custom_values[1]', ['size' => 50]);
+                        echo "</td>";
+                        echo "<td>";
+                        $display_default = false;
+                        //                  if ($params['value'] == 'dropdown_multiple') {
+                        $display_default = true;
+                        //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                        //                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
+                        echo "<p id='default_values1'>";
+                        echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                        $name = "default_values[1]";
+                        $value = 0;
+                        Dropdown::showYesNo($name, $value);
+                        echo '</p>';
+                        echo "</td>";
+                        //                  }
+                        echo "</tr>";
 
-                    echo "</tr>";
-                    echo "<tr>";
-                    echo "<td colspan='4' align='right' id='show_custom_fields'>";
-                    PluginMetademandsField::initCustomValue(max(array_keys($values)), false, $display_default);
-                    echo "</td>";
-                    echo "</tr>";
-                } else {
-                    //                  echo "<tr>";
-                    //                  echo "<td>";
-                    echo __('Value') . " 1 ";
-                    echo Html::input('custom_values[1]', ['size' => 50]);
-                    echo "</td>";
-                    echo "<td>";
-                    $display_default = false;
-                    //                  if ($params['value'] == 'dropdown_multiple') {
-                    $display_default = true;
-                    //                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                    //                     echo '<input type="checkbox" name="default_values[1]"  value="1"/>';
-                    echo "<p id='default_values1'>";
-                    echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-                    $name = "default_values[1]";
-                    $value = 0;
-                    Dropdown::showYesNo($name, $value);
-                    echo '</p>';
-                    echo "</td>";
-                    //                  }
-                    echo "</tr>";
-
-                    echo "<tr>";
-                    echo "<td colspan='2' align='right' id='show_custom_fields'>";
-                    PluginMetademandsField::initCustomValue(1, false, $display_default);
-                    echo "</td>";
-                    echo "</tr>";
+                        echo "<tr>";
+                        echo "<td colspan='2' align='right' id='show_custom_fields'>";
+                        PluginMetademandsField::initCustomValue(1, false, $display_default);
+                        echo "</td>";
+                        echo "</tr>";
+                    }
                 }
             }
         }
@@ -558,8 +708,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
     static function showFieldCustomFields($params)
     {
 
-        $disp                              = [];
-        $disp[self::CLASSIC_DISPLAY]       = __("Classic display", "metademands");
+        $disp = [];
+        $disp[self::CLASSIC_DISPLAY] = __("Classic display", "metademands");
         $disp[self::DOUBLE_COLUMN_DISPLAY] = __("Double column display", "metademands");
         echo "<tr><td>";
         echo "<table class='metademands_show_custom_fields'>";
@@ -583,13 +733,13 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
 
             $informations["full_name"] = __('Complete name');
-            $informations["realname"]  = __('Surname');
+            $informations["realname"] = __('Surname');
             $informations["firstname"] = __('First name');
-            $informations["name"]      = __('Login');
+            $informations["name"] = __('Login');
             //                     $informations["group"]             = Group::getTypeName(1);
             $informations["email"] = _n('Email', 'Emails', 1);
-            echo Dropdown::showFromArray('informations_to_display', $informations, ['values'   => $params['informations_to_display'],
-                'display'  => false,
+            echo Dropdown::showFromArray('informations_to_display', $informations, ['values' => $params['informations_to_display'],
+                'display' => false,
                 'multiple' => true]);
             echo "</td>";
             echo "</tr>";
@@ -636,6 +786,17 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     'used' => $already_used
                 ]);
                 break;
+            case 'Location':
+                $lrand = mt_rand();
+                $name = "check_value";
+                Location::dropdown(['name' => $name,
+                    'entity' => $_SESSION['glpiactiveentities'],
+                    'rand' => $lrand,
+                    'value' => $params['check_value'],
+                    'display' => true,
+                    'used' => $already_used
+                ]);
+                break;
             default:
                 $dbu = new DbUtils();
                 if ($item = $dbu->getItemForItemtype($params["item"])
@@ -648,7 +809,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     $params['item']::Dropdown(["name" => $name,
                         "value" => $params['check_value'], 'used' => $already_used]);
                 } else {
-                    if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
+                    if ($params["item"] != "other" && $params["item"] != "Location" && $params["type"] == "dropdown_multiple") {
                         $elements[0] = Dropdown::EMPTY_VALUE;
                         if (is_array(json_decode($params['custom_values'], true))) {
                             $elements += json_decode($params['custom_values'], true);
@@ -684,13 +845,16 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             case 'User':
                 echo getUserName($params['check_value'], 0, true);
                 break;
+            case 'Location':
+                echo Dropdown::getDropdownName("glpi_locations",$params['check_value']);
+                break;
             default:
                 $dbu = new DbUtils();
                 if ($item = $dbu->getItemForItemtype($params["item"])
                     && $params['type'] != "dropdown_multiple") {
                     echo Dropdown::getDropdownName(getTableForItemType($params["item"]), $params['check_value']);
                 } else {
-                    if ($params["item"] != "other" && $params["type"] == "dropdown_multiple") {
+                    if ($params["item"] != "other" && $params["item"] != "Location" && $params["type"] == "dropdown_multiple") {
                         $elements = [];
                         if (is_array(json_decode($params['custom_values'], true))) {
                             $elements += json_decode($params['custom_values'], true);
@@ -1105,7 +1269,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
 
-
             $script .= "});";
 
             //Initialize id default value
@@ -1187,7 +1350,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             }
                         });";
             }
-
 
 
             $script .= "});";
@@ -1329,7 +1491,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             });
                          } else {
                             $('[bloc-id =\"bloc'+key+'\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
                         }
                     });";
 
@@ -1485,7 +1647,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             });
                          } else {
                             $('[bloc-id =\"bloc'+key+'\"]').show();
-                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
+                            " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block) . "
                         }
                     });";
 
@@ -1589,7 +1751,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
     {
 
         if (!empty($field['custom_values'])
-            && $field['item'] != 'User') {
+            && $field['item'] != 'User'
+            && $field['item'] != 'Location') {
             if ($field['item'] != "other") {
                 $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
                 foreach ($custom_values as $k => $val) {
@@ -1628,7 +1791,15 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
             }
             return implode(',', $parseValue);
-
+        } else if ($field['item'] == 'Location') {
+            $parseValue = [];
+            $item = new $field["item"]();
+            foreach ($field['value'] as $value) {
+                if ($item->getFromDB($value)) {
+                    $parseValue[] = $field["item"]::getFriendlyNameById($value);
+                }
+            }
+            return implode('<br>', $parseValue);
         }
     }
 
@@ -1649,7 +1820,20 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
-        } elseif ($field['item'] == 'User') {
+        } else if ($field['item'] == 'Location') {
+            $result[$field['rank']]['display'] = true;
+            if ($formatAsTable) {
+                $result[$field['rank']]['content'] .= "<td $style_title>";
+            }
+            $result[$field['rank']]['content'] .= $label;
+            if ($formatAsTable) {
+                $result[$field['rank']]['content'] .= "</td><td>";
+            }
+            $result[$field['rank']]['content'] .= self::getFieldValue($field, $lang);
+            if ($formatAsTable) {
+                $result[$field['rank']]['content'] .= "</td>";
+            }
+        } else if ($field['item'] == 'User') {
             $information = json_decode($field['informations_to_display']);
 
             if ($formatAsTable) {

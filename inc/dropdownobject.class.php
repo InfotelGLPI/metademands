@@ -249,30 +249,32 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 } else {
                     $name = $namefield . "[" . $data['id'] . "]";
 
-                    if (!empty($data['custom_values'])) {
-                        $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
-                            && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
-
-                        $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
-                        $group_user_data = Group_User::getUserGroups($_POST['value'], $condition);
-
-                        $requester_groups = [];
-                        foreach ($group_user_data as $groups) {
-                            $requester_groups[] = $groups['id'];
-                        }
-                        $options = PluginMetademandsField::_unserialize($data['custom_values']);
-
-                        foreach ($options as $type_group => $values) {
-                            if ($type_group != 'user_group') {
-                                $cond[$type_group] = $values;
-                            } else {
-                                if (count($requester_groups) > 0) {
-                                    $cond["glpi_groups.id"] = $requester_groups;
-                                }
-                            }
-                        }
-                        unset($cond['user_group']);
-                    }
+//                    if (!empty($data['custom_values'])) {
+//                        $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
+//                            && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+//
+//                        if ($_POST['value'] > 0) {
+//                            $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
+//                            $group_user_data = Group_User::getUserGroups($_POST['value'], $condition);
+//
+//                            $requester_groups = [];
+//                            foreach ($group_user_data as $groups) {
+//                                $requester_groups[] = $groups['id'];
+//                            }
+//                            $options = PluginMetademandsField::_unserialize($data['custom_values']);
+//
+//                            foreach ($options as $type_group => $values) {
+//                                if ($type_group != 'user_group') {
+//                                    $cond[$type_group] = $values;
+//                                } else {
+//                                    if (count($requester_groups) > 0) {
+//                                        $cond["glpi_groups.id"] = $requester_groups;
+//                                    }
+//                                }
+//                            }
+//                            unset($cond['user_group']);
+//                        }
+//                    }
                     $val_group = (isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])
                         && !is_array($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']])) ? $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] : 0;
 
