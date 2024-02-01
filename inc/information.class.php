@@ -65,14 +65,19 @@ class PluginMetademandsInformation extends CommonDBTM
             }
         }
 
-        if (empty($todisplay) && empty($todisplay = PluginMetademandsField::displayField($data['id'], 'comment'))) {
-            $todisplay = $data['comment'];
+        if (!empty($data['comment'])) {
+            if (empty(PluginMetademandsField::displayField($data['id'], 'comment'))) {
+                $todisplay .= htmlspecialchars_decode(stripslashes($data['comment']));
+            } else {
+                $todisplay .=PluginMetademandsField::displayField($data['id'], 'comment');
+            }
         }
 
-        if (empty($todisplay) && !empty($data['label2'])) {
-            $todisplay = $data['label2'];
-            if (empty($todisplay = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                $todisplay = htmlspecialchars_decode(stripslashes($data['label2']));
+        if (!empty($data['label2'])) {
+            if (empty(PluginMetademandsField::displayField($data['id'], 'label2'))) {
+                $todisplay .= htmlspecialchars_decode(stripslashes($data['label2']));
+            } else {
+                $todisplay .=PluginMetademandsField::displayField($data['id'], 'label2');
             }
         }
 

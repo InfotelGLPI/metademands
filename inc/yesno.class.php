@@ -295,10 +295,11 @@ class PluginMetademandsYesno extends CommonDBTM
                 $custom_values = PluginMetademandsField::_unserialize($data['custom_values']);
 
                 if ($idc == $custom_values) {
-                    PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1);
-                    $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                    $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
-                    $script .= "});";
+                    if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
+                        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                        $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                        $script .= "});";
+                    }
                 } else {
                     if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
                         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";

@@ -689,10 +689,11 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
                         if ($idc == $k) {
-                            PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1);
-                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                            $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
-                            $script .= "});";
+                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                $script .= "});";
+                            }
                         } else {
                             if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
                                 $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
