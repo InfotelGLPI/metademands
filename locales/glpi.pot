@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-30 17:59+0000\n"
+"POT-Creation-Date: 2024-01-31 08:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -320,7 +320,7 @@ msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
 #: inc/basket.class.php:1523 inc/basket.class.php:1924
-#: inc/metademandpdf.class.php:390 inc/metademandpdf.class.php:437
+#: inc/metademandpdf.class.php:393 inc/metademandpdf.class.php:442
 msgid "Grand total (HT)"
 msgstr ""
 
@@ -1296,11 +1296,11 @@ msgstr ""
 msgid "Created on"
 msgstr ""
 
-#: inc/metademandpdf.class.php:428
+#: inc/metademandpdf.class.php:433
 msgid "Grand total (TTC)"
 msgstr ""
 
-#: inc/metademandpdf.class.php:437
+#: inc/metademandpdf.class.php:442
 msgid "(if VAT 20%)"
 msgstr ""
 
