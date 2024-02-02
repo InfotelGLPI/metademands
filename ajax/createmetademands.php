@@ -238,8 +238,8 @@ if ($nofreeinputs === false) {
                         $dataOld = $data;
 
                         // Double appel for prevent order fields
-                        PluginMetademandsFieldOption::unsetHidden($data, $post);
-                        PluginMetademandsFieldOption::unsetHidden($dataOld, $post);
+//                        PluginMetademandsFieldOption::unsetHidden($data, $post);
+//                        PluginMetademandsFieldOption::unsetHidden($dataOld, $post);
                         $_POST['field'] = $post;
 
 
@@ -333,9 +333,9 @@ if ($nofreeinputs === false) {
                         }
 
                         foreach ($checks as $check) {
-                            if ($check['result'] == true) {
-                                $KO = true;
-                            }
+//                            if ($check['result'] == true) {
+//                                $KO = true;
+//                            }
                             $content = array_merge($content, $check['content']);
                         }
 

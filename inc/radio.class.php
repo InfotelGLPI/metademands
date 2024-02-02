@@ -822,8 +822,6 @@ class PluginMetademandsRadio extends CommonDBTM
 
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
     {
-
-        Toolbox::logInfo($field);
         if (!empty($field['custom_values'])) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
