@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-18 10:29+0000\n"
+"POT-Creation-Date: 2024-02-01 11:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -148,23 +148,23 @@ msgstr ""
 msgid "Please activate the plugin"
 msgstr ""
 
-#: front/nextGroup.form.php:63
+#: front/nextGroup.form.php:64
 #, php-format
 msgid ""
 "The form has been sent to user %s from group %s, you can close the window"
 msgstr ""
 
-#: front/nextGroup.form.php:65
+#: front/nextGroup.form.php:70
 #, php-format
 msgid "The form has been sent to the group %s, you can close the window"
 msgstr ""
 
-#: front/nextGroup.form.php:74 front/nextGroup.form.php:82
-#: inc/step.class.php:558
+#: front/nextGroup.form.php:81 front/nextGroup.form.php:88
+#: inc/step.class.php:593
 msgid "Next recipient"
 msgstr ""
 
-#: front/nextGroup.form.php:83
+#: front/nextGroup.form.php:89
 msgid "A problem occurred, the form was not sent"
 msgstr ""
 
@@ -195,34 +195,34 @@ msgstr ""
 msgid "Basket"
 msgstr ""
 
-#: inc/basket.class.php:124 inc/basket.class.php:1286 inc/basket.class.php:1671
-#: inc/basket.class.php:1988 inc/basketobject.class.php:116
+#: inc/basket.class.php:124 inc/basket.class.php:1287 inc/basket.class.php:1672
+#: inc/basket.class.php:1989 inc/basketobject.class.php:116
 #: inc/basketobject.class.php:221
 msgid "Reference"
 msgstr ""
 
-#: inc/basket.class.php:126 inc/basket.class.php:1287 inc/basket.class.php:1673
-#: inc/basket.class.php:1989 inc/basketobject.class.php:99
+#: inc/basket.class.php:126 inc/basket.class.php:1288 inc/basket.class.php:1674
+#: inc/basket.class.php:1990 inc/basketobject.class.php:99
 #: inc/basketobject.class.php:197
 msgid "Designation"
 msgstr ""
 
-#: inc/basket.class.php:133 inc/basket.class.php:1313 inc/basket.class.php:1696
+#: inc/basket.class.php:133 inc/basket.class.php:1314 inc/basket.class.php:1697
 msgid "Estimated unit price"
 msgstr ""
 
-#: inc/basket.class.php:140 inc/basket.class.php:1319 inc/basket.class.php:1687
-#: inc/basket.class.php:1996
+#: inc/basket.class.php:140 inc/basket.class.php:1320 inc/basket.class.php:1688
+#: inc/basket.class.php:1997
 msgid "Unit"
 msgstr ""
 
-#: inc/basket.class.php:143 inc/basket.class.php:1321 inc/basket.class.php:1703
-#: inc/basket.class.php:2005
+#: inc/basket.class.php:143 inc/basket.class.php:1322 inc/basket.class.php:1704
+#: inc/basket.class.php:2006
 msgid "Unit price (HT)"
 msgstr ""
 
-#: inc/basket.class.php:149 inc/basket.class.php:1327 inc/basket.class.php:1691
-#: inc/basket.class.php:1991 inc/basket.class.php:2028
+#: inc/basket.class.php:149 inc/basket.class.php:1328 inc/basket.class.php:1692
+#: inc/basket.class.php:1992 inc/basket.class.php:2029
 msgid "Quantity"
 msgstr ""
 
@@ -230,15 +230,15 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: inc/basket.class.php:159 inc/basket.class.php:1333 inc/basket.class.php:1711
-#: inc/basket.class.php:2008
+#: inc/basket.class.php:159 inc/basket.class.php:1334 inc/basket.class.php:1712
+#: inc/basket.class.php:2009
 msgid "Total (HT)"
 msgstr ""
 
 #: inc/basket.class.php:162 inc/basket.class.php:167 inc/basket.class.php:172
-#: inc/basket.class.php:1335 inc/basket.class.php:1338
-#: inc/basket.class.php:1341 inc/basket.class.php:1926
-#: inc/basket.class.php:1930
+#: inc/basket.class.php:1336 inc/basket.class.php:1339
+#: inc/basket.class.php:1342 inc/basket.class.php:1927
+#: inc/basket.class.php:1931
 msgid "Total"
 msgstr ""
 
@@ -254,8 +254,8 @@ msgstr ""
 msgid "Search for description.."
 msgstr ""
 
-#: inc/basket.class.php:227 inc/basket.class.php:305 inc/basket.class.php:1408
-#: inc/basket.class.php:1478 inc/basket.class.php:1784
+#: inc/basket.class.php:227 inc/basket.class.php:305 inc/basket.class.php:1409
+#: inc/basket.class.php:1479 inc/basket.class.php:1785
 msgid "On quotation"
 msgstr ""
 
@@ -268,10 +268,10 @@ msgid "With unit price (HT)"
 msgstr ""
 
 #: inc/basket.class.php:460 inc/checkbox.class.php:249
-#: inc/condition.class.php:322 inc/condition.class.php:455
-#: inc/condition.class.php:553 inc/condition.class.php:851
+#: inc/condition.class.php:322 inc/condition.class.php:456
+#: inc/condition.class.php:554 inc/condition.class.php:852
 #: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:421
-#: inc/dropdownmultiple.class.php:606 inc/dropdownobject.class.php:409
+#: inc/dropdownmultiple.class.php:756 inc/dropdownobject.class.php:411
 #: inc/field.class.php:1289 inc/fieldoption.class.php:228
 #: inc/radio.class.php:248 inc/yesno.class.php:115
 msgid "Value to check"
@@ -281,16 +281,16 @@ msgstr ""
 #: inc/checkbox.class.php:285 inc/dropdown.class.php:178
 #: inc/dropdown.class.php:214 inc/dropdownmeta.class.php:470
 #: inc/dropdownmeta.class.php:480 inc/dropdownmeta.class.php:502
-#: inc/dropdownobject.class.php:472 inc/dropdownobject.class.php:482
-#: inc/dropdownobject.class.php:504 inc/radio.class.php:268
+#: inc/dropdownobject.class.php:474 inc/dropdownobject.class.php:484
+#: inc/dropdownobject.class.php:506 inc/radio.class.php:268
 #: inc/radio.class.php:284
 msgid "Not null value"
 msgstr ""
 
 #: inc/basket.class.php:582 inc/checkbox.class.php:390
 #: inc/dropdown.class.php:311 inc/dropdownmeta.class.php:602
-#: inc/dropdownmultiple.class.php:782 inc/dropdownmultiple.class.php:920
-#: inc/dropdownobject.class.php:607 inc/radio.class.php:366
+#: inc/dropdownmultiple.class.php:946 inc/dropdownmultiple.class.php:1085
+#: inc/dropdownobject.class.php:609 inc/radio.class.php:366
 #: inc/text.class.php:194 inc/textarea.class.php:204 inc/wizard.class.php:1499
 #: inc/yesno.class.php:208
 msgctxt "button"
@@ -299,45 +299,45 @@ msgstr ""
 
 #: inc/basket.class.php:583 inc/checkbox.class.php:391
 #: inc/dropdown.class.php:312 inc/dropdownmeta.class.php:603
-#: inc/dropdownmultiple.class.php:783 inc/dropdownmultiple.class.php:921
-#: inc/dropdownobject.class.php:608 inc/radio.class.php:367
+#: inc/dropdownmultiple.class.php:947 inc/dropdownmultiple.class.php:1086
+#: inc/dropdownobject.class.php:610 inc/radio.class.php:367
 #: inc/text.class.php:195 inc/textarea.class.php:205 inc/wizard.class.php:866
 #: inc/wizard.class.php:1473 inc/wizard.class.php:1496
 #: inc/wizard.class.php:1505 inc/wizard.class.php:1515 inc/yesno.class.php:209
 msgid "Next"
 msgstr ""
 
-#: inc/basket.class.php:1276
+#: inc/basket.class.php:1277
 msgid "Basket summary"
 msgstr ""
 
-#: inc/basket.class.php:1510
+#: inc/basket.class.php:1511
 msgid "Grand total"
 msgstr ""
 
-#: inc/basket.class.php:1515
+#: inc/basket.class.php:1516
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
-#: inc/basket.class.php:1523 inc/basket.class.php:1924
-#: inc/metademandpdf.class.php:390 inc/metademandpdf.class.php:437
+#: inc/basket.class.php:1524 inc/basket.class.php:1925
+#: inc/metademandpdf.class.php:393 inc/metademandpdf.class.php:442
 msgid "Grand total (HT)"
 msgstr ""
 
-#: inc/basket.class.php:1532 inc/basketline.class.php:94
+#: inc/basket.class.php:1533 inc/basketline.class.php:94
 msgctxt "button"
 msgid "Send order"
 msgstr ""
 
-#: inc/basket.class.php:1603
+#: inc/basket.class.php:1604
 msgid "No items on basket"
 msgstr ""
 
-#: inc/basket.class.php:1680
+#: inc/basket.class.php:1681
 msgid "Order type"
 msgstr ""
 
-#: inc/basket.class.php:1792
+#: inc/basket.class.php:1793
 msgid "On catalog"
 msgstr ""
 
@@ -401,8 +401,8 @@ msgstr ""
 
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
 #: inc/dropdownmeta.class.php:343 inc/dropdownmeta.class.php:399
-#: inc/dropdownmultiple.class.php:431 inc/dropdownmultiple.class.php:483
-#: inc/dropdownmultiple.class.php:539 inc/field.class.php:2763
+#: inc/dropdownmultiple.class.php:577 inc/dropdownmultiple.class.php:632
+#: inc/dropdownmultiple.class.php:688 inc/field.class.php:2763
 #: inc/radio.class.php:176 inc/radio.class.php:226 inc/yesno.class.php:94
 msgid "Default value"
 msgid_plural "Default values"
@@ -464,39 +464,39 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: inc/condition.class.php:318 inc/condition.class.php:451
-#: inc/condition.class.php:570 inc/condition.class.php:847
+#: inc/condition.class.php:318 inc/condition.class.php:452
+#: inc/condition.class.php:571 inc/condition.class.php:848
 msgid "Logical operator"
 msgstr ""
 
-#: inc/condition.class.php:319 inc/condition.class.php:452
-#: inc/condition.class.php:848 inc/field.class.php:261
+#: inc/condition.class.php:319 inc/condition.class.php:453
+#: inc/condition.class.php:849 inc/field.class.php:261
 msgid "Field"
 msgstr ""
 
-#: inc/condition.class.php:320 inc/condition.class.php:849
+#: inc/condition.class.php:320 inc/condition.class.php:850
 msgid "Field type"
 msgstr ""
 
-#: inc/condition.class.php:321 inc/condition.class.php:454
-#: inc/condition.class.php:850
+#: inc/condition.class.php:321 inc/condition.class.php:455
+#: inc/condition.class.php:851
 msgid "Equality operator"
 msgstr ""
 
-#: inc/condition.class.php:323 inc/condition.class.php:456
-#: inc/condition.class.php:561 inc/condition.class.php:852
+#: inc/condition.class.php:323 inc/condition.class.php:457
+#: inc/condition.class.php:562 inc/condition.class.php:853
 msgid "Pool"
 msgstr ""
 
-#: inc/condition.class.php:324 inc/condition.class.php:853
+#: inc/condition.class.php:324 inc/condition.class.php:854
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
-#: inc/condition.class.php:444
+#: inc/condition.class.php:445
 msgid "List of conditions"
 msgstr ""
 
-#: inc/condition.class.php:534
+#: inc/condition.class.php:535
 msgid "No conditions founded"
 msgstr ""
 
@@ -584,10 +584,6 @@ msgstr ""
 msgid "Add all form actors as ticket requester"
 msgstr ""
 
-#: inc/configstep.class.php:175
-msgid "Cannot change settings because blocks are linked to multiple groups"
-msgstr ""
-
 #: inc/date.class.php:51
 msgid "Date"
 msgstr ""
@@ -659,23 +655,23 @@ msgstr ""
 msgid "Dropdown multiple"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:440
+#: inc/dropdownmultiple.class.php:586
 msgid "Display value in the dropdown"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:562
+#: inc/dropdownmultiple.class.php:712
 msgid "Classic display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:563
+#: inc/dropdownmultiple.class.php:713
 msgid "Double column display"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:567
+#: inc/dropdownmultiple.class.php:717
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:578 inc/dropdownobject.class.php:382
+#: inc/dropdownmultiple.class.php:728 inc/dropdownobject.class.php:384
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
@@ -688,7 +684,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:286 inc/field.class.php:473 inc/field.class.php:1294
-#: inc/field.class.php:3025 inc/step.class.php:273 inc/step.class.php:356
+#: inc/field.class.php:3027 inc/step.class.php:287 inc/step.class.php:369
 msgid "Block"
 msgstr ""
 
@@ -704,7 +700,7 @@ msgstr ""
 msgid "Hide title"
 msgstr ""
 
-#: inc/field.class.php:433 inc/field.class.php:2960 inc/field.class.php:3043
+#: inc/field.class.php:433 inc/field.class.php:2962 inc/field.class.php:3045
 msgid "Additional label"
 msgstr ""
 
@@ -716,11 +712,11 @@ msgstr ""
 msgid "Remember to activate basket mode on your metademand !"
 msgstr ""
 
-#: inc/field.class.php:547 inc/field.class.php:1286 inc/field.class.php:2962
+#: inc/field.class.php:547 inc/field.class.php:1286 inc/field.class.php:2964
 msgid "Object"
 msgstr ""
 
-#: inc/field.class.php:668 inc/field.class.php:1291 inc/field.class.php:3067
+#: inc/field.class.php:668 inc/field.class.php:1291 inc/field.class.php:3069
 msgid "Display into the basket"
 msgstr ""
 
@@ -781,7 +777,7 @@ msgstr ""
 msgid "Use this field as a ticket field"
 msgstr ""
 
-#: inc/field.class.php:1295 inc/field.class.php:3034
+#: inc/field.class.php:1295 inc/field.class.php:3036
 msgid "Order"
 msgstr ""
 
@@ -886,7 +882,7 @@ msgid ""
 msgstr ""
 
 #: inc/fieldoption.class.php:1027 inc/mailtask.class.php:150
-#: inc/step.class.php:247 inc/step.class.php:367 inc/step.class.php:387
+#: inc/step.class.php:258 inc/step.class.php:380 inc/step.class.php:404
 #: inc/task.class.php:701 inc/task.class.php:1093 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
@@ -956,7 +952,11 @@ msgstr ""
 msgid "Add a group"
 msgstr ""
 
-#: inc/group.class.php:299
+#: inc/group.class.php:270
+msgid "Regular expression"
+msgstr ""
+
+#: inc/group.class.php:306
 msgid "Groups allowed to enter a demand"
 msgstr ""
 
@@ -1296,11 +1296,11 @@ msgstr ""
 msgid "Created on"
 msgstr ""
 
-#: inc/metademandpdf.class.php:428
+#: inc/metademandpdf.class.php:433
 msgid "Grand total (TTC)"
 msgstr ""
 
-#: inc/metademandpdf.class.php:437
+#: inc/metademandpdf.class.php:442
 msgid "(if VAT 20%)"
 msgstr ""
 
@@ -1473,50 +1473,50 @@ msgid_plural "Step-by-Step blocks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/step.class.php:222
+#: inc/step.class.php:229
 msgid "Add a new association"
 msgstr ""
 
-#: inc/step.class.php:255
+#: inc/step.class.php:267
 msgid ""
 "Be careful if all blocks are not assigned, they will be displayed to the "
 "last assigned group"
 msgstr ""
 
-#: inc/step.class.php:267
+#: inc/step.class.php:281
 msgid "List of associations"
 msgstr ""
 
-#: inc/step.class.php:275
+#: inc/step.class.php:289
 msgid "Message"
 msgstr ""
 
-#: inc/step.class.php:321
+#: inc/step.class.php:337
 msgid "No association found"
 msgstr ""
 
-#: inc/step.class.php:442
+#: inc/step.class.php:466
 msgid "Message to next group on form"
 msgstr ""
 
-#: inc/step.class.php:531
+#: inc/step.class.php:561
 msgid "This group is already assigned to this block"
 msgstr ""
 
-#: inc/step.class.php:597
+#: inc/step.class.php:635
 msgid "There is a problem with the setup"
 msgstr ""
 
-#: inc/step.class.php:639
+#: inc/step.class.php:679
 msgid "Select the next group"
 msgstr ""
 
-#: inc/step.class.php:688
+#: inc/step.class.php:726
 msgctxt "button"
 msgid "Validate"
 msgstr ""
 
-#: inc/step.class.php:804
+#: inc/step.class.php:875
 msgid "Error assigning to next group"
 msgstr ""
 

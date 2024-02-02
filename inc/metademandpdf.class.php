@@ -371,6 +371,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         foreach($data as $row)
         {
             $this->Cell($w[0],6,$row[0],'LR',0,'L',$fill);
+
+            $row[1] = Toolbox::substr($row[1], 0, 20) . "...";
+            $row[2] = Toolbox::substr($row[2], 0, 25) . "...";
             $this->Cell($w[1],6,$row[1],'LR',0,'L',$fill);
             $this->Cell($w[2],6,$row[2],'LR',0,'L',$fill);
             $this->Cell($w[3],6,$row[3],'LR',0,'L',$fill);
@@ -410,6 +413,8 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         foreach($data as $row)
         {
             $this->Cell($w[0],6,$row[0],'LR',0,'L',$fill);
+            $row[1] = Toolbox::substr($row[1], 0, 30) . "...";
+            $row[2] = Toolbox::substr($row[2], 0, 35) . "...";
             $this->Cell($w[1],6,$row[1],'LR',0,'L',$fill);
             $this->Cell($w[2],6,$row[2],'LR',0,'L',$fill);
             $this->Cell($w[3],6,$row[3],'LR',0,'L',$fill);

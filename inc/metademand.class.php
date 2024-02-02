@@ -6723,7 +6723,7 @@ JAVASCRIPT
                     echo "<span class='bulle bulleMarge bulleDefault' style='$class_state'>";
                     echo self::getStateItem($state);
                     echo "</span>";
-                    echo "<h2 style='$class'><i class='fas $fa' style='float: right;'></i>" . $ticket->getLink() . "</h2>";
+                    echo "<h2 class='dateColor'><i class='fas $fa' style='float: right;'></i>" . $ticket->getLink() . "</h2>";
 
                     $statusicon = CommonITILObject::getStatusClass($ticket->fields['status']);
 

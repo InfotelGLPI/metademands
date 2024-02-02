@@ -443,10 +443,11 @@ class PluginMetademandsRadio extends CommonDBTM
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
                         if ($idc == $k) {
-                            PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1);
-                            $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-                            $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
-                            $script .= "});";
+                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                $script .= "});";
+                            }
                         } else {
                             if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
                                 $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
@@ -481,13 +482,7 @@ class PluginMetademandsRadio extends CommonDBTM
         if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
 
             $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            if (is_array($session_value)) {
-                foreach ($session_value as $k => $fieldSession) {
-                    if ($fieldSession > 0) {
-                        $script2 .= "$('[id=\"field[" . $id . "][" . $fieldSession . "]\"]').prop('checked', true);";
-                    }
-                }
-            }
+            $script2 .= "$('[id=\"field[" . $id . "][" . $session_value . "]\"]').prop('checked', true);";
         }
 
         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
@@ -508,12 +503,8 @@ class PluginMetademandsRadio extends CommonDBTM
 
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                if (is_array($session_value)) {
-                    foreach ($session_value as $k => $fieldSession) {
-                        if ($fieldSession == $idc && $hidden_link > 0) {
-                            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-                        }
-                    }
+                if ($session_value == $idc && $hidden_link > 0) {
+                    $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
                 }
             }
 
@@ -832,6 +823,7 @@ class PluginMetademandsRadio extends CommonDBTM
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
     {
 
+        Toolbox::logInfo($field);
         if (!empty($field['custom_values'])) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {

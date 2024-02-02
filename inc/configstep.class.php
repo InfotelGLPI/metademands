@@ -151,32 +151,32 @@ class PluginMetademandsConfigstep extends CommonDBTM
 
     public function prepareInputForUpdate($input)
     {
-        $array_unique = [];
-        $blocks = [];
-        $step = new PluginMetademandsStep();
-        $condition = [
-            'plugin_metademands_metademands_id' => $input['plugin_metademands_metademands_id']
-        ];
-        $configStep = new PluginMetademandsConfigstep();
-        $res = $configStep->getFromDBByCrit(['id' => $input['id']]);
-        if ($res) {
-            if ($configStep->fields['link_user_block'] != $input['link_user_block']
-                || $configStep->fields['multiple_link_groups_blocks'] != $input['multiple_link_groups_blocks']) {
-                $steps = $step->find($condition);
-
-                if ($steps) {
-                    foreach ($steps as $block) {
-                        $blocks[] = $block['block_id'];
-                    }
-
-                    $array_unique = array_unique($blocks);
-                    if (count($array_unique) != count($blocks)) {
-                        $input = [];
-                        Session::addMessageAfterRedirect(__('Cannot change settings because blocks are linked to multiple groups', 'metademands'), false, ERROR);
-                    }
-                }
-            }
-        }
+//        $array_unique = [];
+//        $blocks = [];
+//        $step = new PluginMetademandsStep();
+//        $condition = [
+//            'plugin_metademands_metademands_id' => $input['plugin_metademands_metademands_id']
+//        ];
+//        $configStep = new PluginMetademandsConfigstep();
+//        $res = $configStep->getFromDBByCrit(['id' => $input['id']]);
+//        if ($res) {
+//            if ($configStep->fields['link_user_block'] != $input['link_user_block']
+//                || $configStep->fields['multiple_link_groups_blocks'] != $input['multiple_link_groups_blocks']) {
+//                $steps = $step->find($condition);
+//
+//                if ($steps) {
+//                    foreach ($steps as $block) {
+//                        $blocks[] = $block['block_id'];
+//                    }
+//
+//                    $array_unique = array_unique($blocks);
+//                    if (count($array_unique) != count($blocks)) {
+//                        $input = [];
+//                        Session::addMessageAfterRedirect(__('Cannot change settings because blocks are linked to multiple groups', 'metademands'), false, ERROR);
+//                    }
+//                }
+//            }
+//        }
 
         return $input;
     }
