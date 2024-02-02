@@ -2276,8 +2276,10 @@ class PluginMetademandsWizard extends CommonDBTM
                            ismultiplenumber = z[i].getAttribute('ismultiplenumber');
                            minimal_mandatory = z[i].getAttribute('minimal_mandatory');
                            var fieldname = z[i].name;
+                           var idfield = fieldname.replace(/[\[\]]/g,'')
+                           var visible = $('[id-field=\"'+idfield+'\"]').css('display');
 
-                           if (z[i].value == 0 && isnumber == null && ismultiplenumber == null && fieldmandatory == true) {
+                           if (z[i].value == 0 && isnumber == null && ismultiplenumber == null && fieldmandatory == true && visible != 'none') {
                               // add an 'invalid' class to the field:
                               var fieldname = z[i].name;
                               var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');

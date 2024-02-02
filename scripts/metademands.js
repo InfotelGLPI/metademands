@@ -200,12 +200,14 @@
          // console.log(obs.val());
          // console.log(check_value);
          //check_value is not an array
-         var op1 = (!Array.isArray(check_value) && check_value != 0 && obs.val() == check_value);
+         
+         var op1 = (!Array.isArray(check_value) && (check_value != 0 && obs.val() == check_value || check_value == -1 && obs.val() != 0));
          //check_value is an array
-         var op2 = (Array.isArray(check_value) && obs.val() != 0 && type != 'radio' && type != 'checkbox'  && check_value.includes(parseInt(obs.val(), 10)));
+         var op2 = (Array.isArray(check_value) && obs.val() != 0 && type != 'radio' && type != 'checkbox'  && (check_value.includes(parseInt(obs.val(), 10)) || check_value.includes(-1)));
 
          var op3 = (Array.isArray(check_value)  && (type == 'radio' || type == 'checkbox') && check_value.includes(parseInt(obs.val(), 10)));
 
+      
          if (op1 || op2 || op3) {
 
             $('#' + toupdate).html('*');
@@ -242,7 +244,6 @@
                $("[name='field[" + id_field + "]']").next('input').removeAttr('required');
             // }
          }
-
       };
 
       // this.metademand_displayField = function (toupdate, toobserve, check_value) {
