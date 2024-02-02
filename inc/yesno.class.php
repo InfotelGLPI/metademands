@@ -559,6 +559,16 @@ class PluginMetademandsYesno extends CommonDBTM
             //specific - one value
             $script .= PluginMetademandsFieldoption::setEmptyBlockFields($hidden_block);
             $script .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').hide();";
+
+            if (is_array($childs_by_checkvalue)) {
+                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                    if ($idc == $k) {
+                        foreach ($childs_blocks as $childs) {
+                            $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').hide();";
+                        }
+                    }
+                }
+            }
             $script .= " }";
 //            $script .= "if ($(this).val() != $idc) {";
 //            if (is_array($blocks_idc) && count($blocks_idc) > 0) {
