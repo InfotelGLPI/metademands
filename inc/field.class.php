@@ -848,6 +848,7 @@ JAVASCRIPT
                 ];
             }
 
+           
             foreach ($allowed_fields as $id => $value) {
                 if (in_array($searchOption[$id]['linkfield'], $granted_fields) || in_array($id, $granted_fields)) {
                     $ticket_fields[$id] = $searchOption[$id]['name'];
