@@ -52,7 +52,7 @@ class PluginMetademandsField extends CommonDBChild
                                    'parent_field'];
 
     public static $allowed_options_types = ['upload', 'text', 'date', 'time', 'datetime', 'date_interval', 'datetime_interval',
-        'dropdown_multiple', 'dropdown_object', 'basket'];
+        'dropdown_multiple', 'dropdown_object', 'basket', 'informations'];
     public static $allowed_options_items = ['User'];
 
     public static $allowed_custom_types = ['checkbox', 'yesno', 'radio', 'link', 'dropdown_multiple', 'number', 'basket'];
@@ -1142,6 +1142,7 @@ JAVASCRIPT
                 case 'title-block':
                     break;
                 case 'informations':
+                    echo PluginMetademandsInformation::showFieldCustomFields($params);
                     break;
                 case 'text':
                     echo PluginMetademandsText::showFieldCustomFields($params);

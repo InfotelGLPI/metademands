@@ -38,6 +38,9 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsInformation extends CommonDBTM
 {
 
+    const INFO = 1;
+    const WARNING = 2;
+    const ALERT = 3;
     /**
      * Return the localized name of the current Type
      * Should be overloaded in each new class
@@ -55,7 +58,15 @@ class PluginMetademandsInformation extends CommonDBTM
     {
 
         $field = '';
-        $class = "class='alert alert-warning alert-dismissible fade show informations'";
+
+        $display = "alert-secondary";
+        if ($data["display_type"] == 2) {
+            $display = "alert-warning";
+        }
+        if ($data["display_type"] == 3) {
+            $display = "alert-danger";
+        }
+        $class = "class='alert $display alert-dismissible fade show informations'";
         $field .= "<div $class>";
 
         $todisplay = "";
@@ -87,7 +98,7 @@ class PluginMetademandsInformation extends CommonDBTM
             if ($icon) {
                 $field = "<i class='fas fa-2x $icon' style='color: $color;'></i>&nbsp;";
             }
-            $field .= "<label class='col-form-label' style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</label>";
+            $field .= "<label style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</label>";
         }
         if ($preview) {
             $field .= $config_link;
@@ -100,6 +111,26 @@ class PluginMetademandsInformation extends CommonDBTM
     static function showFieldCustomValues($values, $key, $params)
     {
 
+    }
+
+    static function showFieldCustomFields($params)
+    {
+        echo "<tr><td>";
+        echo "<table class='metademands_show_custom_fields'>";
+
+        echo "<tr><td>";
+        echo __('Type', 'metademands');
+        echo '</td>';
+        echo "<td>";
+        $values[self::INFO] = __('Information', 'metademands');
+        $values[self::WARNING] = __('Warning', 'metademands');
+        $values[self::ALERT] = __('Alert', 'metademands');
+
+        Dropdown::showFromArray("display_type", $values, ['value' => $params['display_type']]);
+        echo "</td></tr>";
+
+        echo "</table>";
+        echo "</td></tr>";
     }
 
     static function fieldsLinkScript($data, $idc, $rand)
