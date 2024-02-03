@@ -59,7 +59,7 @@ class PluginMetademandsInformation extends CommonDBTM
 
         $field = '';
 
-        $display = "alert-secondary";
+        $display = "alert-info";
         if ($data["display_type"] == 2) {
             $display = "alert-warning";
         }
