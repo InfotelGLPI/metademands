@@ -5,17 +5,17 @@
 # 
 # Translators:
 # Kevin HAINRY <kevin.hainry@infotel.com>, 2021
-# Xavier CAILLAUD <thetsmr@gmail.com>, 2024
 # Simon Thivet, 2024
+# Xavier CAILLAUD <thetsmr@gmail.com>, 2024
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-30 17:59+0000\n"
+"POT-Creation-Date: 2024-02-03 13:21+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
-"Last-Translator: Simon Thivet, 2024\n"
+"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2024\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -207,36 +207,36 @@ msgstr "Il y a un problème avec le panier"
 msgid "Basket"
 msgstr "Panier"
 
-#: inc/basket.class.php:124 inc/basket.class.php:1286
-#: inc/basket.class.php:1671 inc/basket.class.php:1988
+#: inc/basket.class.php:124 inc/basket.class.php:1287
+#: inc/basket.class.php:1672 inc/basket.class.php:1989
 #: inc/basketobject.class.php:116 inc/basketobject.class.php:221
 msgid "Reference"
 msgstr "Référence"
 
-#: inc/basket.class.php:126 inc/basket.class.php:1287
-#: inc/basket.class.php:1673 inc/basket.class.php:1989
+#: inc/basket.class.php:126 inc/basket.class.php:1288
+#: inc/basket.class.php:1674 inc/basket.class.php:1990
 #: inc/basketobject.class.php:99 inc/basketobject.class.php:197
 msgid "Designation"
 msgstr "Désignation"
 
-#: inc/basket.class.php:133 inc/basket.class.php:1313
-#: inc/basket.class.php:1696
+#: inc/basket.class.php:133 inc/basket.class.php:1314
+#: inc/basket.class.php:1697
 msgid "Estimated unit price"
 msgstr "Prix unitaire estimé"
 
-#: inc/basket.class.php:140 inc/basket.class.php:1319
-#: inc/basket.class.php:1687 inc/basket.class.php:1996
+#: inc/basket.class.php:140 inc/basket.class.php:1320
+#: inc/basket.class.php:1688 inc/basket.class.php:1997
 msgid "Unit"
 msgstr "Unité"
 
-#: inc/basket.class.php:143 inc/basket.class.php:1321
-#: inc/basket.class.php:1703 inc/basket.class.php:2005
+#: inc/basket.class.php:143 inc/basket.class.php:1322
+#: inc/basket.class.php:1704 inc/basket.class.php:2006
 msgid "Unit price (HT)"
 msgstr "Prix unitaire (HT)"
 
-#: inc/basket.class.php:149 inc/basket.class.php:1327
-#: inc/basket.class.php:1691 inc/basket.class.php:1991
-#: inc/basket.class.php:2028
+#: inc/basket.class.php:149 inc/basket.class.php:1328
+#: inc/basket.class.php:1692 inc/basket.class.php:1992
+#: inc/basket.class.php:2029
 msgid "Quantity"
 msgstr "Quantité"
 
@@ -244,15 +244,15 @@ msgstr "Quantité"
 msgid "Select"
 msgstr "Sélectionner"
 
-#: inc/basket.class.php:159 inc/basket.class.php:1333
-#: inc/basket.class.php:1711 inc/basket.class.php:2008
+#: inc/basket.class.php:159 inc/basket.class.php:1334
+#: inc/basket.class.php:1712 inc/basket.class.php:2009
 msgid "Total (HT)"
 msgstr "Total (HT)"
 
 #: inc/basket.class.php:162 inc/basket.class.php:167 inc/basket.class.php:172
-#: inc/basket.class.php:1335 inc/basket.class.php:1338
-#: inc/basket.class.php:1341 inc/basket.class.php:1926
-#: inc/basket.class.php:1930
+#: inc/basket.class.php:1336 inc/basket.class.php:1339
+#: inc/basket.class.php:1342 inc/basket.class.php:1927
+#: inc/basket.class.php:1931
 msgid "Total"
 msgstr "Total"
 
@@ -268,8 +268,8 @@ msgstr "Chercher un nom.."
 msgid "Search for description.."
 msgstr "Chercher une description.."
 
-#: inc/basket.class.php:227 inc/basket.class.php:305 inc/basket.class.php:1408
-#: inc/basket.class.php:1478 inc/basket.class.php:1784
+#: inc/basket.class.php:227 inc/basket.class.php:305 inc/basket.class.php:1409
+#: inc/basket.class.php:1479 inc/basket.class.php:1785
 msgid "On quotation"
 msgstr "Sur catalogue"
 
@@ -286,7 +286,7 @@ msgstr "Avec le prix unitaire (HT)"
 #: inc/condition.class.php:554 inc/condition.class.php:852
 #: inc/dropdown.class.php:144 inc/dropdownmeta.class.php:421
 #: inc/dropdownmultiple.class.php:756 inc/dropdownobject.class.php:411
-#: inc/field.class.php:1289 inc/fieldoption.class.php:228
+#: inc/field.class.php:1290 inc/fieldoption.class.php:228
 #: inc/radio.class.php:248 inc/yesno.class.php:115
 msgid "Value to check"
 msgstr "Valeur à vérifier"
@@ -303,7 +303,7 @@ msgstr "Valeur non nulle"
 
 #: inc/basket.class.php:582 inc/checkbox.class.php:390
 #: inc/dropdown.class.php:311 inc/dropdownmeta.class.php:602
-#: inc/dropdownmultiple.class.php:946 inc/dropdownmultiple.class.php:1084
+#: inc/dropdownmultiple.class.php:946 inc/dropdownmultiple.class.php:1085
 #: inc/dropdownobject.class.php:609 inc/radio.class.php:366
 #: inc/text.class.php:194 inc/textarea.class.php:204 inc/wizard.class.php:1499
 #: inc/yesno.class.php:208
@@ -313,7 +313,7 @@ msgstr "Sauver et envoyer"
 
 #: inc/basket.class.php:583 inc/checkbox.class.php:391
 #: inc/dropdown.class.php:312 inc/dropdownmeta.class.php:603
-#: inc/dropdownmultiple.class.php:947 inc/dropdownmultiple.class.php:1085
+#: inc/dropdownmultiple.class.php:947 inc/dropdownmultiple.class.php:1086
 #: inc/dropdownobject.class.php:610 inc/radio.class.php:367
 #: inc/text.class.php:195 inc/textarea.class.php:205 inc/wizard.class.php:866
 #: inc/wizard.class.php:1473 inc/wizard.class.php:1496
@@ -321,37 +321,37 @@ msgstr "Sauver et envoyer"
 msgid "Next"
 msgstr "Suivant"
 
-#: inc/basket.class.php:1276
+#: inc/basket.class.php:1277
 msgid "Basket summary"
 msgstr "Récapitulatif du panier"
 
-#: inc/basket.class.php:1510
+#: inc/basket.class.php:1511
 msgid "Grand total"
 msgstr "Total général"
 
-#: inc/basket.class.php:1515
+#: inc/basket.class.php:1516
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr "* Les prix sont des estimations et ne constituent pas une estimation"
 
-#: inc/basket.class.php:1523 inc/basket.class.php:1924
-#: inc/metademandpdf.class.php:390 inc/metademandpdf.class.php:437
+#: inc/basket.class.php:1524 inc/basket.class.php:1925
+#: inc/metademandpdf.class.php:393 inc/metademandpdf.class.php:442
 msgid "Grand total (HT)"
 msgstr "Total général (HT)"
 
-#: inc/basket.class.php:1532 inc/basketline.class.php:94
+#: inc/basket.class.php:1533 inc/basketline.class.php:94
 msgctxt "button"
 msgid "Send order"
 msgstr "Envoyer la commande"
 
-#: inc/basket.class.php:1603
+#: inc/basket.class.php:1604
 msgid "No items on basket"
 msgstr "Pas d'éléments dans le panier"
 
-#: inc/basket.class.php:1680
+#: inc/basket.class.php:1681
 msgid "Order type"
 msgstr "Type de commande"
 
-#: inc/basket.class.php:1792
+#: inc/basket.class.php:1793
 msgid "On catalog"
 msgstr "Sur catalogue"
 
@@ -417,7 +417,7 @@ msgstr "Case à cocher"
 #: inc/checkbox.class.php:177 inc/checkbox.class.php:227
 #: inc/dropdownmeta.class.php:343 inc/dropdownmeta.class.php:399
 #: inc/dropdownmultiple.class.php:577 inc/dropdownmultiple.class.php:632
-#: inc/dropdownmultiple.class.php:688 inc/field.class.php:2763
+#: inc/dropdownmultiple.class.php:688 inc/field.class.php:2764
 #: inc/radio.class.php:176 inc/radio.class.php:226 inc/yesno.class.php:94
 msgid "Default value"
 msgid_plural "Default values"
@@ -703,8 +703,8 @@ msgstr "Objet GLPI"
 msgid "Wizard creation"
 msgstr "Création du formulaire"
 
-#: inc/field.class.php:286 inc/field.class.php:473 inc/field.class.php:1294
-#: inc/field.class.php:3027 inc/step.class.php:287 inc/step.class.php:369
+#: inc/field.class.php:286 inc/field.class.php:473 inc/field.class.php:1295
+#: inc/field.class.php:3028 inc/step.class.php:287 inc/step.class.php:369
 msgid "Block"
 msgstr "Bloc"
 
@@ -720,7 +720,7 @@ msgstr "Merci d'ajouter le champ : Catégorie de la métademande"
 msgid "Hide title"
 msgstr "Cacher le titre"
 
-#: inc/field.class.php:433 inc/field.class.php:2962 inc/field.class.php:3045
+#: inc/field.class.php:433 inc/field.class.php:2963 inc/field.class.php:3046
 msgid "Additional label"
 msgstr "Label supplémentaire"
 
@@ -732,11 +732,11 @@ msgstr "Prend toute la ligne"
 msgid "Remember to activate basket mode on your metademand !"
 msgstr "Pensez à activer le mode panier sur votre métademande !"
 
-#: inc/field.class.php:547 inc/field.class.php:1286 inc/field.class.php:2964
+#: inc/field.class.php:547 inc/field.class.php:1287 inc/field.class.php:2965
 msgid "Object"
 msgstr "Objet"
 
-#: inc/field.class.php:668 inc/field.class.php:1291 inc/field.class.php:3069
+#: inc/field.class.php:668 inc/field.class.php:1292 inc/field.class.php:3070
 msgid "Display into the basket"
 msgstr "Afficher dans le panier"
 
@@ -748,78 +748,78 @@ msgstr "Seulement les utilisateurs de mes groupes"
 msgid "Use this field as object field"
 msgstr "Utiliser comme champ de l'objet"
 
-#: inc/field.class.php:870
+#: inc/field.class.php:871
 msgid "Use richt text"
 msgstr "Utiliser le texte riche"
 
-#: inc/field.class.php:899
+#: inc/field.class.php:900
 msgid "Use this field for child ticket field"
 msgstr "Utiliser ce champ comme champ des tickets enfants"
 
-#: inc/field.class.php:918
+#: inc/field.class.php:919
 msgid "Use id of requester by default"
 msgstr ""
 "Utiliser le demandeur en utilisateur par défaut de la liste déroulante"
 
-#: inc/field.class.php:928 inc/field.class.php:941
+#: inc/field.class.php:929 inc/field.class.php:942
 msgid "Read-Only"
 msgstr "Lecture seule"
 
-#: inc/field.class.php:948
+#: inc/field.class.php:949
 msgid "Hidden field"
 msgstr "Champ caché"
 
-#: inc/field.class.php:970
+#: inc/field.class.php:971
 msgid "Link this to a user field"
 msgstr "Lier ce champ à un champ utilisateur"
 
-#: inc/field.class.php:991
+#: inc/field.class.php:992
 msgid "Link this to a plugin \"fields\" field"
 msgstr "Lier ce champ à un champ du plugin \"fields\""
 
-#: inc/field.class.php:1236
+#: inc/field.class.php:1237
 msgid "Add a new field"
 msgstr "Ajouter un nouveau champ"
 
-#: inc/field.class.php:1240
+#: inc/field.class.php:1241
 msgid "Add a existing field"
 msgstr "Ajouter un champ existant"
 
-#: inc/field.class.php:1276
+#: inc/field.class.php:1277
 msgid "Form fields"
 msgstr "Champs du formulaire"
 
-#: inc/field.class.php:1288 inc/fieldoption.class.php:229
+#: inc/field.class.php:1289 inc/fieldoption.class.php:229
 #: inc/fieldoption.class.php:821
 msgid "Link a task to the field"
 msgstr "Lier le champ à une sous demande"
 
-#: inc/field.class.php:1293
+#: inc/field.class.php:1294
 msgid "Use this field as a ticket field"
 msgstr "Utiliser ce champ comme champ du ticket"
 
-#: inc/field.class.php:1295 inc/field.class.php:3036
+#: inc/field.class.php:1296 inc/field.class.php:3037
 msgid "Order"
 msgstr "Ordre"
 
-#: inc/field.class.php:1405
+#: inc/field.class.php:1406
 msgid "Multiples"
 msgstr "Multiples"
 
-#: inc/field.class.php:1571
+#: inc/field.class.php:1572
 msgid "Father's field"
 msgstr "Champ père"
 
-#: inc/field.class.php:1998
+#: inc/field.class.php:1999
 msgid "Category of the metademand"
 msgstr "Catégorie de la métademande"
 
-#: inc/field.class.php:2092
+#: inc/field.class.php:2093
 #, php-format
 msgid "Maximum number of documents : %s "
 msgstr "Nombre maximum de documents : %s "
 
-#: inc/field.class.php:2572
+#: inc/field.class.php:2573
 msgid "Custom values"
 msgstr "Valeurs personnalisées"
 
@@ -854,15 +854,15 @@ msgstr "Lier à un champ caché"
 msgid "Link a hidden block"
 msgstr "Lier un bloc caché"
 
-#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:899
+#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:916
 msgid "Childs blocks"
 msgstr "Blocs enfants"
 
-#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:908
+#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:925
 msgid "Link a validation"
 msgstr "Lier a une demande de validation"
 
-#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:927
+#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:944
 msgid "Bind to the value of this checkbox"
 msgstr "Lier à la valeur de cette case à cocher"
 
@@ -893,7 +893,15 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, le bloc devient "
 "visible"
 
-#: inc/fieldoption.class.php:900
+#: inc/fieldoption.class.php:892
+msgid ""
+"This block is already used by another field. You can have some problems if "
+"the save value to check is used"
+msgstr ""
+"Ce bloc est déjà utilisé par un autre champ. Vous pouvez rencontrer des "
+"problèmes si la valeur à vérifier est déjà utilisée"
+
+#: inc/fieldoption.class.php:917
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
@@ -901,7 +909,7 @@ msgstr ""
 "Si des blocs enfants existent, ces blocs sont masqués lorsque vous "
 "désélectionnez l'option configurée"
 
-#: inc/fieldoption.class.php:909
+#: inc/fieldoption.class.php:926
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
@@ -909,7 +917,7 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la demande de "
 "validation sera envoyée à l'utilisateur"
 
-#: inc/fieldoption.class.php:928
+#: inc/fieldoption.class.php:945
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
@@ -917,7 +925,7 @@ msgstr ""
 "Si la valeur sélectionnée est égale à la valeur à vérifier, la valeur de la "
 "case à cocher est définie"
 
-#: inc/fieldoption.class.php:1027 inc/mailtask.class.php:150
+#: inc/fieldoption.class.php:1044 inc/mailtask.class.php:150
 #: inc/step.class.php:258 inc/step.class.php:380 inc/step.class.php:404
 #: inc/task.class.php:701 inc/task.class.php:1093 inc/tickettask.class.php:168
 #, php-format
@@ -1345,11 +1353,11 @@ msgstr "Responsable de la ressource"
 msgid "Created on"
 msgstr "Créé le"
 
-#: inc/metademandpdf.class.php:428
+#: inc/metademandpdf.class.php:433
 msgid "Grand total (TTC)"
 msgstr "Total général (TTC)"
 
-#: inc/metademandpdf.class.php:437
+#: inc/metademandpdf.class.php:442
 msgid "(if VAT 20%)"
 msgstr "(si TVA 20%)"
 
@@ -1903,22 +1911,22 @@ msgstr "Utilisateur précédent"
 msgid "Previous data edited"
 msgstr "Données précédentes complétées"
 
-#: inc/wizard.class.php:3012
+#: inc/wizard.class.php:3016
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
 
-#: inc/wizard.class.php:3021
+#: inc/wizard.class.php:3025
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr "La date %1$s ne peut être supérieure à la date %2$s"
 
-#: inc/wizard.class.php:3054
+#: inc/wizard.class.php:3058
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s"
 
-#: inc/wizard.class.php:3058
+#: inc/wizard.class.php:3062
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
