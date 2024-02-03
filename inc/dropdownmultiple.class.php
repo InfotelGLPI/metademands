@@ -1809,7 +1809,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
     {
 
         if (!empty($field['custom_values'])
-            && $field['item'] != 'User') {
+            && $field['item'] != 'User' && $field['value'] > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title>";
@@ -1822,7 +1822,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
-        } else if ($field['item'] == 'Location') {
+        } else if ($field['item'] == 'Location' && $field['value'] > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title>";
@@ -1835,7 +1835,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
-        } else if ($field['item'] == 'User') {
+        } else if ($field['item'] == 'User' && $field['value'] > 0) {
             $information = json_decode($field['informations_to_display']);
 
             if ($formatAsTable) {

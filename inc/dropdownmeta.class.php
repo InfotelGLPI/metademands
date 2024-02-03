@@ -999,7 +999,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
     {
 
         if (!empty($field['custom_values'])
-            && $field['item'] == 'other') {
+            && $field['item'] == 'other' && $field['value'] > 0) {
 
             $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
             $custom_values[0] = Dropdown::EMPTY_VALUE;
