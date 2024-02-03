@@ -877,6 +877,24 @@ class PluginMetademandsFieldOption extends CommonDBChild
             if (empty($params['hidden_block'])) {
                 $params['hidden_block'] = 0;
             }
+            if (!empty($params['hidden_block'])) {
+                $field = new PluginMetademandsField();
+                $fields = $field->find(['plugin_metademands_metademands_id' => $metademands_id] );
+                $hidden_blocks = [];
+                foreach($fields as $field) {
+                    $fieldoptions = new self();
+                    $fieldscheck = $fieldoptions->find(['plugin_metademands_fields_id' => $field['id'], 'hidden_block' => $params['hidden_block']] );
+                    foreach($fieldscheck as $fieldschec) {
+                        $hidden_blocks[] = $field['id'];
+                    }
+                    if (count($hidden_blocks) > 1) {
+                        echo "<span class='alert alert-warning d-flex'>";
+                        echo __('This block is already used by another field. You can have some problems if the save value to check is used', 'metademands');
+                        echo "</span>";
+                    }
+                }
+            }
+
             Dropdown::showNumber('hidden_block', ['value' => $params['hidden_block'],
                 'used' => [$field_class->getField('rank')],
                 'min' => 1,
@@ -884,7 +902,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 'toadd' => [0 => Dropdown::EMPTY_VALUE]]);
 
             echo "</td></tr>";
-
 
             if ($field_class->getField("type") == "checkbox"
                 || $field_class->getField("type") == "radio"
