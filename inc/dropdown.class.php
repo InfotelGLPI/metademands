@@ -546,7 +546,7 @@ class PluginMetademandsDropdown extends CommonDBTM
         $script .= "var tohide = {};";
 
         //by default - hide all
-        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
         if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
             $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
         }
@@ -557,7 +557,7 @@ class PluginMetademandsDropdown extends CommonDBTM
             $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
             //specific for radio / dropdowns - one value
-            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
             $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
             $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
@@ -605,7 +605,7 @@ class PluginMetademandsDropdown extends CommonDBTM
             $script .= " }";
 
             $script .= "if ($(this).val() == 0 ) {";
-            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
             $script .= " }";
 
         }

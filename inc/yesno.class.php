@@ -385,45 +385,45 @@ class PluginMetademandsYesno extends CommonDBTM
                 }
             }
 
-            $childs_blocks = [];
-            if (isset($data['options'])) {
-                $opts = $data['options'];
-                foreach ($opts as $optid => $opt) {
-                    if ($optid == $idc) {
-                        if (!empty($opt['childs_blocks'])) {
-                            $childs_blocks[] = json_decode($opt['childs_blocks'], true);
-                        }
-                    }
-                }
-
-                if (is_array($childs_blocks)) {
-                    if (count($childs_blocks) > 0) {
-                        $script .= "if ($(this).val() != $idc) {";
-                        foreach ($childs_blocks as $childs) {
-                            if (is_array($childs)) {
-                                foreach ($childs as $k => $v) {
-                                    if (!is_array($v)) {
-                                        $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($v);
-                                        $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
-                                    }
-                                }
-                            }
-                        }
-                        $script .= " }";
-
-                        foreach ($childs_blocks as $childs) {
-                            if (is_array($childs)) {
-                                foreach ($childs as $k => $v) {
-                                    if ($v > 0) {
-                                        $hiddenblocks[] = $v;
-                                        $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+//            $childs_blocks = [];
+//            if (isset($data['options'])) {
+//                $opts = $data['options'];
+//                foreach ($opts as $optid => $opt) {
+//                    if ($optid == $idc) {
+//                        if (!empty($opt['childs_blocks'])) {
+//                            $childs_blocks[] = json_decode($opt['childs_blocks'], true);
+//                        }
+//                    }
+//                }
+//
+//                if (is_array($childs_blocks)) {
+//                    if (count($childs_blocks) > 0) {
+//                        $script .= "if ($(this).val() != $idc) {";
+//                        foreach ($childs_blocks as $childs) {
+//                            if (is_array($childs)) {
+//                                foreach ($childs as $k => $v) {
+//                                    if (!is_array($v)) {
+//                                        $script .= PluginMetademandsFieldoption::resetMandatoryBlockFields($v);
+//                                        $script .= "$('div[bloc-id=\"bloc$v\"]').hide();";
+//                                    }
+//                                }
+//                            }
+//                        }
+//                        $script .= " }";
+//
+//                        foreach ($childs_blocks as $childs) {
+//                            if (is_array($childs)) {
+//                                foreach ($childs as $k => $v) {
+//                                    if ($v > 0) {
+//                                        $hiddenblocks[] = $v;
+//                                        $_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['hidden_blocks'] = $hiddenblocks;
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
         $script .= "});";
 
@@ -475,15 +475,30 @@ class PluginMetademandsYesno extends CommonDBTM
         if ($debug) {
             $script = "console.log('blocksHiddenScript-yesno $id');";
         }
+
+        //by default - hide all
+        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+        if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
+        }
+
+        //if reload form on loading
+        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    $script .= "$('[name=\"$name\"]').val($session_value).trigger('change');";
+                }
+            } else {
+                $script .= "$('[name=\"$name\"]').val($session_value).trigger('change');";
+            }
+        }
+
         $script .= "$('[name=\"$name\"]').change(function() {";
 
         $script .= "var tohide = {};";
 
-        //by default - hide all
-        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
-        if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-            $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
-        }
         foreach ($check_values as $idc => $check_value) {
             $blocks_idc = [];
             $hidden_block = $data['options'][$idc]['hidden_block'];
@@ -513,7 +528,7 @@ class PluginMetademandsYesno extends CommonDBTM
             $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
             //specific for radio / dropdowns - one value
-            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+//            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
             $script .= "$('[bloc-id =\"bloc'+$hidden_block+'\"]').show();";
             $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);

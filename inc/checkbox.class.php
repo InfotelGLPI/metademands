@@ -673,7 +673,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
         //by default - hide all
 //        if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
         if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
          $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
         }

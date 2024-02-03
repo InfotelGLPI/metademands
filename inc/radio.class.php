@@ -480,9 +480,15 @@ class PluginMetademandsRadio extends CommonDBTM
 
         //if reload form on loading
         if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
-
             $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-            $script2 .= "$('[id=\"field[" . $id . "][" . $session_value . "]\"]').prop('checked', true);";
+
+            if (is_array($session_value)) {
+                foreach ($session_value as $k => $fieldSession) {
+                    $script2 .= "$('[id=\"field[" . $id . "][" . $fieldSession . "]\"]').prop('checked', true);";
+                }
+            } else {
+                $script2 .= "$('[id=\"field[" . $id . "][" . $session_value . "]\"]').prop('checked', true);";
+            }
         }
 
         $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
@@ -605,7 +611,7 @@ class PluginMetademandsRadio extends CommonDBTM
         $script .= "var tohide = {};";
 
         //by default - hide all
-        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+        $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
         if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
             $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
         }
@@ -770,7 +776,7 @@ class PluginMetademandsRadio extends CommonDBTM
             $script .= " } else {";
 
             //specific for radio - one value
-//            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+//            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
 
             $script .= " }";
 

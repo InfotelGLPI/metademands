@@ -943,6 +943,7 @@ class PluginMetademandsStep extends CommonDBChild
                                 $docitem = null;
                                 foreach ($data as $form_metademands_id => $line) {
                                     PluginMetademandsStepform_Value::setFormValues(
+                                        $_POST['metademands_id'],
                                         $line['form'],
                                         $_POST['field'],
                                         $form_new_id
@@ -965,11 +966,13 @@ class PluginMetademandsStep extends CommonDBChild
                             unset($_SESSION['plugin_metademands'][$user_id]);
 
                             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+
                             if (count($metademands_data) && $form_new_id > 0) {
                                 foreach ($metademands_data as $form_step => $data) {
                                     $docitem = null;
                                     foreach ($data as $form_metademands_id => $line) {
                                         PluginMetademandsStepform_Value::setFormValues(
+                                            $_POST['metademands_id'],
                                             $line['form'],
                                             $_POST['field'],
                                             $form_new_id

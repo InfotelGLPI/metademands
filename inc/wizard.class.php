@@ -1600,13 +1600,14 @@ class PluginMetademandsWizard extends CommonDBTM
                                                         });
                                                     });");
 
-
                         if (isset($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
                             if (is_array($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
                                 $hidden_blocks = $_SESSION['plugin_metademands'][$ID]['hidden_blocks'];
                                 $script = "";
-                                foreach ($hidden_blocks as $hidden_block) {
-                                    $script .= "$('div[bloc-id=\"bloc$hidden_block\"]').hide();";
+                                foreach ($hidden_blocks as $hidden_b) {
+                                    foreach ($hidden_b as $hidden_) {
+                                        $script .= "$('div[bloc-id=\"bloc$hidden_\"]').hide();";
+                                    }
                                 }
                                 echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                             }
@@ -1737,24 +1738,24 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                   if(use_condition == true) {
                      $('document').ready(checkConditions);
-                    if(show_rule == 2){
-                     show_button = 0;
-                     if(document.getElementById('nextBtn').innerHTML == submittitle) {
-                        document.getElementById('nextBtn').style.display = 'none';
-                     }
-                     } else if (show_rule == 3){ 
-                           show_button = 1;
+                     if (show_rule == 2) {
+                        show_button = 0;
+                        if(document.getElementById('nextBtn').innerHTML == submittitle) {
+                           document.getElementById('nextBtn').style.display = 'none';
                         }
-                    if(document.getElementById('nextBtn').innerHTML == nexttitle) {
+                     } else if (show_rule == 3) { 
+                           show_button = 1;
+                     }
+                     if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                         $('#nextBtn').on('click', checkConditions);
-                    }
-                    $('#wizard_form').on('change', 'input, select, textarea', checkConditions);
-                    $('#prevBtn').on('click', function(){
-                        if(document.getElementById('nextBtn').innerHTML == nexttitle){
+                     }
+                     $('#wizard_form').on('change', 'input, select, textarea', checkConditions);
+                     $('#prevBtn').on('click', function(){
+                        if(document.getElementById('nextBtn').innerHTML == nexttitle) {
                             document.getElementById('nextBtn').style.display = 'inline';
                         }
-                    });
-                    }
+                     });
+                  }
                     
                     function checkConditions() {
                         var formDatas;
@@ -1771,7 +1772,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                       eval('valid_condition=' + response );
                                     
 //                                      console.log(valid_condition);
-                                      
+//                                      console.log(show_button);
+//                                      console.log(document.getElementById('nextBtn').innerHTML);
                                       if(valid_condition) {
                                           if(show_button == 1) {
                                             if(document.getElementById('nextBtn').innerHTML == submittitle) {
@@ -1782,7 +1784,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 document.getElementById('nextBtn').style.display = 'inline';
                                             }
                                           }
-                                      } 
+                                      }
                                       else {
                                          if(show_button == 1 ){
                                             if(document.getElementById('nextBtn').innerHTML == submittitle) {

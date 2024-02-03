@@ -1358,8 +1358,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
         }
     }
 
-    public static function hideAllblockbyDefault($check_values)
+    public static function hideAllblockbyDefault($data = [])
     {
+
+        $metaid = $data['plugin_metademands_metademands_id'] ?? 0;
+        $check_values = $data['options'] ?? [];
+        $id = $data["id"] ?? 0;
 
         $script = '';
         $hidden_blocks = [];
@@ -1382,14 +1386,46 @@ class PluginMetademandsFieldOption extends CommonDBChild
             }
         }
 
+        //Fonction to drop loaded hidden_block & child_blocks from default hiding if exists in session
+        if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
+
+            $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
+
+            if (!is_array($session_value)
+                && isset($check_values[$session_value])) {
+
+                if (($key = array_search($check_values[$session_value]['hidden_block'], $hidden_blocks)) !== false) {
+                    unset($hidden_blocks[$key]);
+                }
+                $session_childs_blocks = [];
+                if (isset($check_values[$session_value]['childs_blocks'])) {
+                    $session_childs_blocks[] = json_decode($check_values[$session_value]['childs_blocks'], true);
+                }
+                if (count($session_childs_blocks) > 0) {
+                    foreach ($session_childs_blocks as $k => $session_childs_block) {
+                        if (is_array($session_childs_block)) {
+                            foreach ($session_childs_block as $session_childs) {
+                                foreach ($session_childs as $session_child) {
+                                    foreach ($childs as $k => $child) {
+                                        if (($key = array_search($session_child, $child)) !== false) {
+                                            unset($childs[$k][$key]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         $json_hidden_blocks = json_encode($hidden_blocks);
         $json_childs_blocks = json_encode($childs);
 
         $script .= "var hidden_blocks = {$json_hidden_blocks};
                     var child_blocks = {$json_childs_blocks};
                     var tohideblock = {};";
-        $script .= "//by default - hide all
-                    $.each( hidden_blocks, function( key, value ) {
+        $script .= "$.each( hidden_blocks, function( key, value ) {
                         tohideblock[value] = true;
                     });
                     $.each( child_blocks, function( key, value ) {
@@ -1401,39 +1437,14 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                     $.each(tohideblock, function( key, value ) {
                                         $('div[bloc-id =\"bloc'+key+'\"]').find(':input').each(function() {
                                              switch(this.type) {
-                                                case 'password':
-                                                case 'text':
-                                                case 'textarea':
-                                                case 'file':
-                                                case 'date':
-                                                case 'number':
-                                                case 'tel':
-                                                case 'email':
-//                                                    jQuery(this).val('');
-//                                                    if (typeof tinymce !== 'undefined' && tinymce.get(this.id)) {
-//                                                        tinymce.get(this.id).setContent('');
-//                                                    }
-                                                    break;
-                                                case 'select-one':
-                                                case 'select-multiple':
-//                                                    jQuery(this).val('0').trigger('change');
-//                                                    jQuery(this).val('0');
-                                                    break;
                                                 case 'checkbox':
                                                 case 'radio':
-//                                                     this.checked = false;
                                                      var checkname = this.name;
                                                      $(\"[name^='\"+checkname+\"']\").removeAttr('required');
+                                                    break;
                                             }
                                             jQuery(this).removeAttr('required');
-//                                            regex = /multiselectfield.*_to/g;
-//                                            totest = this.id;
-//                                            found = totest.match(regex);
-//                                            if(found !== null) {
-//                                              regex = /multiselectfield[0-9]*/;
-//                                               found = totest.match(regex);
-//                                               $('#'+found[0]+'_leftAll').click();
-//                                            }
+
                                         });
                                     });
                                 }

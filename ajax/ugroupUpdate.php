@@ -111,7 +111,8 @@ $opt  = ['name'      => $_POST["field"],
          'condition' => $cond,
          'rand'      => $rand
 ];
-if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
+
+if ($fieldGroup->fields["is_mandatory"] && $fieldGroup->fields['is_mandatory'] == 1) {
     $opt['specific_tags'] = ['required' => 'required'];
 }
 Group::dropdown($opt);

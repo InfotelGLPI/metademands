@@ -1397,7 +1397,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $script .= "var tohide = {};";
 
             //by default - hide all
-            $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+            $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
             if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
             }
@@ -1548,7 +1548,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $script .= "var tohide = {};";
 
             //by default - hide all
-            $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($check_values);
+            $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
             if (!isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $script2 .= PluginMetademandsFieldoption::emptyAllblockbyDefault($check_values);
             }
