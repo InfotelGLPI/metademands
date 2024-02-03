@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-03 13:00+0000\n"
+"POT-Creation-Date: 2024-02-03 13:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -832,15 +832,15 @@ msgstr ""
 msgid "Link a hidden block"
 msgstr ""
 
-#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:899
+#: inc/fieldoption.class.php:233 inc/fieldoption.class.php:916
 msgid "Childs blocks"
 msgstr ""
 
-#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:908
+#: inc/fieldoption.class.php:234 inc/fieldoption.class.php:925
 msgid "Link a validation"
 msgstr ""
 
-#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:927
+#: inc/fieldoption.class.php:235 inc/fieldoption.class.php:944
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
@@ -863,25 +863,31 @@ msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:900
+#: inc/fieldoption.class.php:892
+msgid ""
+"This block is already used by another field. You can have some problems if "
+"the save value to check is used"
+msgstr ""
+
+#: inc/fieldoption.class.php:917
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
 msgstr ""
 
-#: inc/fieldoption.class.php:909
+#: inc/fieldoption.class.php:926
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
 msgstr ""
 
-#: inc/fieldoption.class.php:928
+#: inc/fieldoption.class.php:945
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
 msgstr ""
 
-#: inc/fieldoption.class.php:1027 inc/mailtask.class.php:150
+#: inc/fieldoption.class.php:1044 inc/mailtask.class.php:150
 #: inc/step.class.php:258 inc/step.class.php:380 inc/step.class.php:404
 #: inc/task.class.php:701 inc/task.class.php:1093 inc/tickettask.class.php:168
 #, php-format
