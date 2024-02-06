@@ -646,6 +646,7 @@ CREATE TABLE `glpi_plugin_metademands_configsteps`
     `link_user_block`                   tinyint      NOT NULL DEFAULT '0',
     `multiple_link_groups_blocks`       tinyint      NOT NULL DEFAULT '0',
     `add_user_as_requester`             tinyint      NOT NULL DEFAULT '0',
+    `step_by_step_interface`            tinyint      NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB

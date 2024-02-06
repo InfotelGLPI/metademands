@@ -40,6 +40,12 @@ class PluginMetademandsConfigstep extends CommonDBTM
     public static $itemtype = 'PluginMetademandsMetademand';
     public static $items_id = 'plugin_metademands_metademands_id';
 
+    const BOTH_INTERFACE = 0;
+    const ONLY_HELPDESK_INTERFACE = 1;
+    const ONLY_CENTRAL_INTERFACE = 2;
+
+
+
     public static $disableAutoEntityForwarding   = true;
     static function canView() {
         return Session::haveRight(self::$rightname, UPDATE);
@@ -59,6 +65,15 @@ class PluginMetademandsConfigstep extends CommonDBTM
     public static function getTypeName($nb = 0)
     {
         return __('Step by step settings', 'metademands');
+    }
+
+    public static function getEnumInterface()
+    {
+        return [
+            self::ONLY_CENTRAL_INTERFACE => __('Standard interface'),
+            self::ONLY_HELPDESK_INTERFACE => __('Simplified interface'),
+            self::BOTH_INTERFACE => __('Both', 'metademands'),
+        ];
     }
 
 
@@ -139,7 +154,13 @@ class PluginMetademandsConfigstep extends CommonDBTM
         echo "<td>";
         Dropdown::showYesNo('add_user_as_requester', $addasrequester);
         echo "</td>";
+        echo "<tr class='tab_bg_1'>";
         echo "<td>";
+        echo __('Interface', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        Dropdown::showFromArray('step_by_step_interface', self::getEnumInterface(),['value' => $confStep->fields['step_by_step_interface']]);
+        echo "</td>";
         echo "</tr>";
         echo "<tr><td class='tab_bg_2 center' colspan='6'>";
         echo Html::hidden('plugin_metademands_metademands_id', ['value' => $item->fields['id']]);
