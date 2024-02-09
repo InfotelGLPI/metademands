@@ -535,6 +535,46 @@ function plugin_metademands_uninstall() {
 //   }
 //}
 
+/**
+ * Triggered after an item was transferred
+ * @param $parm array-key
+ * 'type' => transfered item type,
+ * 'id' => transfered item id,
+ * 'newID' => transfered item id,
+ * 'entities_id' => transfered to entity id
+ * @return void
+ */
+function plugin_item_transfer_metademands($parm)
+{
+    // transfer a metademand's relation after GLPI transfered it in Transfer->transferItem()
+    if ($parm['type'] === 'PluginMetademandsMetademand') {
+        global $DB;
+        $DB->update('glpi_plugin_metademands_fields',
+            ['entities_id' => $parm['entities_id']],
+            [
+                'WHERE' => [
+                    'plugin_metademands_metademands_id' => $parm['id']
+                ]
+            ]
+        );
+        $DB->update('glpi_plugin_metademands_tasks',
+            ['entities_id' => $parm['entities_id']],
+            [
+                'WHERE' => [
+                    'plugin_metademands_metademands_id' => $parm['id']
+                ]
+            ]
+        );
+        $DB->update('glpi_plugin_metademands_ticketfields',
+            ['entities_id' => $parm['entities_id']],
+            [
+                'WHERE' => [
+                    'plugin_metademands_metademands_id' => $parm['id']
+                ]
+            ]
+        );
+    }
+}
 
 function plugin_metademands_item_purge($item) {
 
