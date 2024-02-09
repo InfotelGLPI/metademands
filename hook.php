@@ -588,7 +588,7 @@ function plugin_metademands_getDatabaseRelations() {
                                                           "glpi_plugin_metademands_ticketfields"          => "plugin_metademands_metademands_id",
                                                           "glpi_plugin_metademands_tasks"                 => "plugin_metademands_metademands_id",
                                                           "glpi_plugin_metademands_groups"                => "plugin_metademands_metademands_id",
-                                                          "glpi_plugin_metademands_basketlines"           => "plugin_metademands_metademands_id",
+//                                                          "glpi_plugin_metademands_basketlines"           => "plugin_metademands_metademands_id",
                                                           "glpi_plugin_metademands_metademandvalidations" => "plugin_metademands_metademands_id",
                                                           "glpi_plugin_metademands_metademands_resources" => "plugin_metademands_metademands_id",
                                                           "glpi_plugin_metademands_drafts"                => "plugin_metademands_metademands_id",

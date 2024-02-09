@@ -1634,7 +1634,7 @@ class PluginMetademandsBasket extends CommonDBTM
         }
 
         $total = 0;
-        $nb = 5;
+        $nb = 4;
         if (Plugin::isPluginActive('ordermaterial')) {
             $ordermaterialmeta = new PluginOrdermaterialMetademand();
             if ($ordermaterialmeta->getFromDBByCrit(['plugin_metademands_metademands_id' => $meta_id])) {

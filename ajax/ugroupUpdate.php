@@ -81,7 +81,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 unset($cond['user_group']);
 //chercher les champs de la meta avec param : updatefromthisfield
 $groups_id = 0;
-if (isset($_POST['value']) && $_POST["value"] > 0
+if (isset($_POST['value']) && !is_array($_POST["value"]) && $_POST["value"] > 0
     && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     $user = new User();
     if ($user->getFromDB($_POST["value"])) {
@@ -99,6 +99,9 @@ if (isset($_POST['fields_id'])
     $groups_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
+if (is_array($groups_id)) {
+    $groups_id = 0;
+}
 
 if (isset($_POST['groups_id']) && $_POST['groups_id'] > 0) {
     $groups_id = $_POST['groups_id'];

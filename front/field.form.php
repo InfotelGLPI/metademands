@@ -97,6 +97,7 @@ if (isset($_POST["add"])) {
     if ((!isset($_POST["custom_values"]) || empty($_POST["custom_values"])) && $_POST['type'] == 'yesno') {
         $_POST["custom_values"] = 1;
     }
+    $_POST["name"] = Toolbox::addslashes_deep($_POST["name"]);
 
    // Check update rights for fields
    $field->check(-1, UPDATE, $_POST);

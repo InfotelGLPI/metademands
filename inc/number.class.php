@@ -57,6 +57,9 @@ class PluginMetademandsNumber extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
+        if (is_array($value)) {
+            $value = 0;
+        }
 
         $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
         $opt                   = ['value'         => $value,

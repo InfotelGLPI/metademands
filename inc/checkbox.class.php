@@ -859,7 +859,13 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
     {
-        if (!empty($field['custom_values']) && $field['value'] > 0) {
+        if (is_string($field['value'])) {
+            $field['value'] = PluginMetademandsField::_unserialize($field['value']);
+        } else {
+            $field['value'] = json_decode(json_encode($field['value']), true);
+        }
+
+        if (!empty($field['custom_values']) && count($field['value']) > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title>";

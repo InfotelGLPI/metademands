@@ -39,6 +39,8 @@ $KO = true;
 
 $form = new PluginMetademandsForm();
 
+use Glpi\Toolbox\Sanitizer;
+
 if (isset($_POST['save_model'])) {
 
     $form->getFromDB($_POST['plugin_metademands_forms_id']);
