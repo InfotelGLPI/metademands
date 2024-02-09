@@ -1,4 +1,5 @@
 ALTER TABLE `glpi_plugin_metademands_metademands` ADD `is_basket` tinyint DEFAULT 0;
+ALTER TABLE `glpi_plugin_metademands_configsteps` ADD `step_by_step_interface` tinyint DEFAULT 0;
 
 DROP TABLE IF EXISTS `glpi_plugin_metademands_basketobjecttypes`;
 CREATE TABLE `glpi_plugin_metademands_basketobjecttypes`

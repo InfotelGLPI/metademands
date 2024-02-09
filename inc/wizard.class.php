@@ -1042,9 +1042,24 @@ class PluginMetademandsWizard extends CommonDBTM
         $allfields = [];
 
         $use_as_step = 0;
-
+        $stepConfig = new PluginMetademandsConfigstep();
+        $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
         if ($metademands->fields['step_by_step_mode'] == 1) {
-            $use_as_step = 1;
+            switch ($stepConfig->fields['step_by_step_interface']){
+                case PluginMetademandsConfigstep::BOTH_INTERFACE:
+                    $use_as_step = 1;
+                    break;
+                case PluginMetademandsConfigstep::ONLY_HELPDESK_INTERFACE:
+                if(Session::getCurrentInterface() == 'helpdesk'){
+                    $use_as_step = 1;
+                }
+                    break;
+                case PluginMetademandsConfigstep::ONLY_CENTRAL_INTERFACE:
+                    if(Session::getCurrentInterface() == 'central'){
+                        $use_as_step = 1;
+                    }
+                    break;
+            }
         }
         if ($preview || $seeform) {
             $use_as_step = 0;
@@ -1625,8 +1640,6 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<span id = 'modalgroupspan'>";
                 echo "</span>";
 
-                $stepConfig = new PluginMetademandsConfigstep();
-                $res = $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
                 $modal = true;
                 $updateStepform = 0;
                 if (!isset($stepConfig->fields['link_user_block'])

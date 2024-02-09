@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-03 15:59+0000\n"
+"POT-Creation-Date: 2024-02-06 08:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -291,7 +291,7 @@ msgstr ""
 #: inc/dropdown.class.php:311 inc/dropdownmeta.class.php:602
 #: inc/dropdownmultiple.class.php:946 inc/dropdownmultiple.class.php:1085
 #: inc/dropdownobject.class.php:609 inc/radio.class.php:366
-#: inc/text.class.php:194 inc/textarea.class.php:204 inc/wizard.class.php:1499
+#: inc/text.class.php:194 inc/textarea.class.php:204 inc/wizard.class.php:1514
 #: inc/yesno.class.php:208
 msgctxt "button"
 msgid "Save & Post"
@@ -302,8 +302,8 @@ msgstr ""
 #: inc/dropdownmultiple.class.php:947 inc/dropdownmultiple.class.php:1086
 #: inc/dropdownobject.class.php:610 inc/radio.class.php:367
 #: inc/text.class.php:195 inc/textarea.class.php:205 inc/wizard.class.php:866
-#: inc/wizard.class.php:1473 inc/wizard.class.php:1496
-#: inc/wizard.class.php:1505 inc/wizard.class.php:1515 inc/yesno.class.php:209
+#: inc/wizard.class.php:1488 inc/wizard.class.php:1511
+#: inc/wizard.class.php:1520 inc/wizard.class.php:1530 inc/yesno.class.php:209
 msgid "Next"
 msgstr ""
 
@@ -568,20 +568,28 @@ msgstr ""
 msgid "Icon for Service Catalog widget"
 msgstr ""
 
-#: inc/configstep.class.php:61
+#: inc/configstep.class.php:67
 msgid "Step by step settings"
 msgstr ""
 
-#: inc/configstep.class.php:123
+#: inc/configstep.class.php:75
+msgid "Both"
+msgstr ""
+
+#: inc/configstep.class.php:138
 msgid "Link multiple groups to a block"
 msgstr ""
 
-#: inc/configstep.class.php:129
+#: inc/configstep.class.php:144
 msgid "Allow sending the form to a user"
 msgstr ""
 
-#: inc/configstep.class.php:137
+#: inc/configstep.class.php:152
 msgid "Add all form actors as ticket requester"
+msgstr ""
+
+#: inc/configstep.class.php:159
+msgid "Interface"
 msgstr ""
 
 #: inc/date.class.php:51
@@ -1828,52 +1836,52 @@ msgstr ""
 msgid "You do not have access to the form"
 msgstr ""
 
-#: inc/wizard.class.php:1075
+#: inc/wizard.class.php:1090
 msgid "You have items on your basket"
 msgstr ""
 
-#: inc/wizard.class.php:1470
+#: inc/wizard.class.php:1485
 msgid "Previous"
 msgstr ""
 
-#: inc/wizard.class.php:1509
+#: inc/wizard.class.php:1524
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr ""
 
-#: inc/wizard.class.php:1516
+#: inc/wizard.class.php:1531
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr ""
 
-#: inc/wizard.class.php:1528
+#: inc/wizard.class.php:1543
 msgid "Thanks to fill mandatory fields"
 msgstr ""
 
-#: inc/wizard.class.php:1583
+#: inc/wizard.class.php:1598
 msgid "Previous user"
 msgstr ""
 
-#: inc/wizard.class.php:1593
+#: inc/wizard.class.php:1608
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3016
+#: inc/wizard.class.php:3029
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3025
+#: inc/wizard.class.php:3038
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3058
+#: inc/wizard.class.php:3071
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3062
+#: inc/wizard.class.php:3075
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""

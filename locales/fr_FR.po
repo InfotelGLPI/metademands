@@ -5,17 +5,17 @@
 # 
 # Translators:
 # Kevin HAINRY <kevin.hainry@infotel.com>, 2021
-# Simon Thivet, 2024
 # Xavier CAILLAUD <thetsmr@gmail.com>, 2024
+# Simon Thivet, 2024
 # 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-03 15:59+0000\n"
+"POT-Creation-Date: 2024-02-06 08:23+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
-"Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2024\n"
+"Last-Translator: Simon Thivet, 2024\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -305,7 +305,7 @@ msgstr "Valeur non nulle"
 #: inc/dropdown.class.php:311 inc/dropdownmeta.class.php:602
 #: inc/dropdownmultiple.class.php:946 inc/dropdownmultiple.class.php:1085
 #: inc/dropdownobject.class.php:609 inc/radio.class.php:366
-#: inc/text.class.php:194 inc/textarea.class.php:204 inc/wizard.class.php:1499
+#: inc/text.class.php:194 inc/textarea.class.php:204 inc/wizard.class.php:1514
 #: inc/yesno.class.php:208
 msgctxt "button"
 msgid "Save & Post"
@@ -316,8 +316,8 @@ msgstr "Sauver et envoyer"
 #: inc/dropdownmultiple.class.php:947 inc/dropdownmultiple.class.php:1086
 #: inc/dropdownobject.class.php:610 inc/radio.class.php:367
 #: inc/text.class.php:195 inc/textarea.class.php:205 inc/wizard.class.php:866
-#: inc/wizard.class.php:1473 inc/wizard.class.php:1496
-#: inc/wizard.class.php:1505 inc/wizard.class.php:1515 inc/yesno.class.php:209
+#: inc/wizard.class.php:1488 inc/wizard.class.php:1511
+#: inc/wizard.class.php:1520 inc/wizard.class.php:1530 inc/yesno.class.php:209
 msgid "Next"
 msgstr "Suivant"
 
@@ -587,21 +587,29 @@ msgstr "Commentaire pour le widget de ServiceCatalog"
 msgid "Icon for Service Catalog widget"
 msgstr "Icône pour le widget de ServiceCatalog"
 
-#: inc/configstep.class.php:61
+#: inc/configstep.class.php:67
 msgid "Step by step settings"
 msgstr "Paramètres du mode pas à pas"
 
-#: inc/configstep.class.php:123
+#: inc/configstep.class.php:75
+msgid "Both"
+msgstr "Les deux"
+
+#: inc/configstep.class.php:138
 msgid "Link multiple groups to a block"
 msgstr "Lier plusieurs groupes à un bloc"
 
-#: inc/configstep.class.php:129
+#: inc/configstep.class.php:144
 msgid "Allow sending the form to a user"
 msgstr "Autoriser l'envoi du formulaire à un utilisateur"
 
-#: inc/configstep.class.php:137
+#: inc/configstep.class.php:152
 msgid "Add all form actors as ticket requester"
 msgstr "Ajouter tous les acteurs du formulaire comme demandeur du ticket"
+
+#: inc/configstep.class.php:159
+msgid "Interface"
+msgstr "Interface"
 
 #: inc/date.class.php:51
 msgid "Date"
@@ -1897,52 +1905,52 @@ msgstr "Ajouter au panier"
 msgid "You do not have access to the form"
 msgstr "Vous n'avez pas accès au formulaire"
 
-#: inc/wizard.class.php:1075
+#: inc/wizard.class.php:1090
 msgid "You have items on your basket"
 msgstr "Vous avez des objets dans votre panier"
 
-#: inc/wizard.class.php:1470
+#: inc/wizard.class.php:1485
 msgid "Previous"
 msgstr "Précédent"
 
-#: inc/wizard.class.php:1509
+#: inc/wizard.class.php:1524
 msgctxt "button"
 msgid "See basket summary & send it"
 msgstr "Voir le récapitulatif du panier et Envoyer"
 
-#: inc/wizard.class.php:1516
+#: inc/wizard.class.php:1531
 msgctxt "button"
 msgid "Save & send to another user / group"
 msgstr "Enregistrer et envoyer à un autre utilisateur/groupe"
 
-#: inc/wizard.class.php:1528
+#: inc/wizard.class.php:1543
 msgid "Thanks to fill mandatory fields"
 msgstr "Merci de remplir les champs requis"
 
-#: inc/wizard.class.php:1583
+#: inc/wizard.class.php:1598
 msgid "Previous user"
 msgstr "Utilisateur précédent"
 
-#: inc/wizard.class.php:1593
+#: inc/wizard.class.php:1608
 msgid "Previous data edited"
 msgstr "Données précédentes complétées"
 
-#: inc/wizard.class.php:3016
+#: inc/wizard.class.php:3029
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr "La date %s ne peut être inférieure à la date d'aujourd'hui"
 
-#: inc/wizard.class.php:3025
+#: inc/wizard.class.php:3038
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr "La date %1$s ne peut être supérieure à la date %2$s"
 
-#: inc/wizard.class.php:3058
+#: inc/wizard.class.php:3071
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr "Trop de documents ont été envoyées, maximum %s. Merci de corriger: %s"
 
-#: inc/wizard.class.php:3062
+#: inc/wizard.class.php:3075
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr "Le champ ne correspond pas au format attendu. Merci de corriger: %s"
