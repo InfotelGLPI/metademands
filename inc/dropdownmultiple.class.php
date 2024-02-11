@@ -796,6 +796,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     'display' => true,
                     'used' => $already_used
                 ]);
+//                ,
+//                'toadd' => [-1 => __('Not null value', 'metademands')]
                 break;
             default:
                 $dbu = new DbUtils();
@@ -806,11 +808,17 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     //               } else {
                     $name = "check_value";
                     //               }
-                    $params['item']::Dropdown(["name" => $name,
+                    $params['item']::dropdown(["name" => $name,
                         "value" => $params['check_value'], 'used' => $already_used]);
+//                    ,
+//                    'toadd' => [-1 => __('Not null value', 'metademands')]
                 } else {
+
+//                    $elements[-1] = __('Not null value', 'metademands');
+                    $elements[0] = Dropdown::EMPTY_VALUE;
+
                     if ($params["item"] != "other" && $params["item"] != "Location" && $params["type"] == "dropdown_multiple") {
-                        $elements[0] = Dropdown::EMPTY_VALUE;
+
                         if (is_array(json_decode($params['custom_values'], true))) {
                             $elements += json_decode($params['custom_values'], true);
                         }
@@ -820,7 +828,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             }
                         }
                     } else {
-                        $elements[0] = Dropdown::EMPTY_VALUE;
+
                         if (is_array(json_decode($params['custom_values'], true))) {
                             $elements += json_decode($params['custom_values'], true);
                         }
