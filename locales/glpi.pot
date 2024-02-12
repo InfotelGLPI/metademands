@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-12 08:34+0000\n"
+"POT-Creation-Date: 2024-02-12 09:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +18,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:687
+#: hook.php:723
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:700
+#: hook.php:736
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:716
+#: hook.php:752
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:727
+#: hook.php:763
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:739
+#: hook.php:775
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1138 inc/metademand.class.php:5775
+#: hook.php:1174 inc/metademand.class.php:5775
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1156 inc/metademand.class.php:5895
+#: hook.php:1192 inc/metademand.class.php:5895
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1173 inc/metademand.class.php:5952
+#: hook.php:1209 inc/metademand.class.php:5952
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1190 inc/metademand.class.php:5827
+#: hook.php:1226 inc/metademand.class.php:5827
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: setup.php:199 inc/menu.class.php:42 inc/metademand.class.php:89
+#: setup.php:201 inc/menu.class.php:42 inc/metademand.class.php:89
 #: inc/profile.class.php:131 inc/profile.class.php:189 inc/tools.class.php:132
 #: inc/tools.class.php:202
 msgid "Meta-Demand"
