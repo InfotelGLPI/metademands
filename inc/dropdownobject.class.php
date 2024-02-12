@@ -190,6 +190,11 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 if (empty($value)) {
                     $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                 }
+                if (empty($value)) {
+                    $user = new User();
+                    $user->getFromDB(Session::getLoginUserID());
+                    $value = ($data['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                }
 
                 $right = "all";
                 if (!empty($data['custom_values'])) {

@@ -922,6 +922,17 @@ JAVASCRIPT
             Dropdown::showYesNo('default_use_id_requester', $this->fields['default_use_id_requester']);
             echo "</td>";
             echo "</tr>";
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2'>";
+            echo "</td>";
+            echo "<td>";
+            echo __('Use id of supervisor requester by default', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('default_use_id_requester_supervisor', $this->fields['default_use_id_requester_supervisor']);
+            echo "</td>";
+            echo "</tr>";
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='2'>";
             echo "</td>";
