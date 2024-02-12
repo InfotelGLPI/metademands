@@ -124,6 +124,8 @@ function plugin_init_metademands()
         $PLUGIN_HOOKS['pre_item_add']['metademands'] = ['Ticket' =>
                                                            ['PluginMetademandsTicket', 'pre_add_ticket']];
 
+        $PLUGIN_HOOKS['item_transfer']['metademands'] = 'plugin_item_transfer_metademands';
+
         if (Session::haveRight("plugin_metademands", READ)
             || Session::haveRight('plugin_metademands_createmeta', READ)) {
             $PLUGIN_HOOKS['menu_toadd']['metademands'] = ['helpdesk' => 'PluginMetademandsMenu', 'management' => 'PluginMetademandsBasketobject'];
