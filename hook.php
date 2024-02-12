@@ -549,30 +549,26 @@ function plugin_item_transfer_metademands($parm)
     // transfer a metademand's relation after GLPI transfered it in Transfer->transferItem()
     if ($parm['type'] === 'PluginMetademandsMetademand') {
         global $DB;
-        $DB->update('glpi_plugin_metademands_fields',
-            ['entities_id' => $parm['entities_id']],
-            [
-                'WHERE' => [
-                    'plugin_metademands_metademands_id' => $parm['id']
+        $tables = [
+            'glpi_plugin_metademands_fields',
+            'glpi_plugin_metademands_tasks',
+            'glpi_plugin_metademands_groupconfigs',
+            'glpi_plugin_metademands_groups',
+            'glpi_plugin_metademands_metademands_resources',
+            'glpi_plugin_metademandstasks',
+            'glpi_plugin_metademands_ticketfields',
+            'glpi_plugin_metademands_tickettasks',
+        ];
+        foreach($tables as $table) {
+            $DB->update($table,
+                ['entities_id' => $parm['entities_id']],
+                [
+                    'WHERE' => [
+                        'plugin_metademands_metademands_id' => $parm['id']
+                    ]
                 ]
-            ]
-        );
-        $DB->update('glpi_plugin_metademands_tasks',
-            ['entities_id' => $parm['entities_id']],
-            [
-                'WHERE' => [
-                    'plugin_metademands_metademands_id' => $parm['id']
-                ]
-            ]
-        );
-        $DB->update('glpi_plugin_metademands_ticketfields',
-            ['entities_id' => $parm['entities_id']],
-            [
-                'WHERE' => [
-                    'plugin_metademands_metademands_id' => $parm['id']
-                ]
-            ]
-        );
+            );
+        }
     }
 }
 
