@@ -555,9 +555,7 @@ function plugin_item_transfer_metademands($parm)
             'glpi_plugin_metademands_groupconfigs',
             'glpi_plugin_metademands_groups',
             'glpi_plugin_metademands_metademands_resources',
-            'glpi_plugin_metademandstasks',
-            'glpi_plugin_metademands_ticketfields',
-            'glpi_plugin_metademands_tickettasks',
+            'glpi_plugin_metademands_ticketfields'
         ];
         foreach($tables as $table) {
             $DB->update($table,
