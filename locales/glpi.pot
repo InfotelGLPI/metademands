@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-13 11:30+0000\n"
+"POT-Creation-Date: 2024-02-16 11:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1435,23 +1435,23 @@ msgstr ""
 msgid "Next user in charge of demand"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:156 inc/stepform.class.php:386
+#: inc/notificationtargetstepform.class.php:160 inc/stepform.class.php:386
 msgid "Publisher"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:157
+#: inc/notificationtargetstepform.class.php:161
 msgid "Group in charge of the next step"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:158
+#: inc/notificationtargetstepform.class.php:162
 msgid "User in charge of the next step"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:159
+#: inc/notificationtargetstepform.class.php:163
 msgid "Date of the last step"
 msgstr ""
 
-#: inc/notificationtargetstepform.class.php:160
+#: inc/notificationtargetstepform.class.php:164
 msgid "Date of the next reminder"
 msgstr ""
 
