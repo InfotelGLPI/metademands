@@ -129,6 +129,7 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
      **/
     public function getDataForObject(CommonDBTM $item, array $options, $simple = false)
     {
+    global $CFG_GLPI;
 
         $meta = new PluginMetademandsMetademand();
         $meta->getFromDB($item->fields['plugin_metademands_metademands_id']);
@@ -141,6 +142,8 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
         $data["##$objettype.users_id_dest##"] = getUserName($item->getField('users_id_dest'), 0, true);
         $data["##$objettype.date##"] = Html::convDateTime($item->getField('date'));
         $data["##$objettype.reminder_date##"] = Html::convDateTime($item->getField('reminder_date'));
+        $data["##$objettypeMeta.url##"] = urldecode($CFG_GLPI["url_base"] . "/".PLUGIN_METADEMANDS_WEBDIR_NOFULL . "/front/stepform.php");
+
 
         return $data;
     }
@@ -152,12 +155,14 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
         $objettype = strtolower($this->obj->getType());
 
         //Locales
+
         $tags = [$objettypeMeta . '.title' => __('Title'),
             $objettype . '.user_editor' => __('Publisher', 'metademands'),
             $objettype . '.nextgroup' => __('Group in charge of the next step', 'metademands'),
             $objettype . '.users_id_dest' => __('User in charge of the next step', 'metademands'),
             $objettype . '.date' => __('Date of the last step', 'metademands'),
             $objettype . '.reminder_date' => __('Date of the next reminder', 'metademands'),
+            $objettypeMeta . '.url' => __('URL'),
         ];
 
         foreach ($tags as $tag => $label) {
