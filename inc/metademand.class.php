@@ -2202,6 +2202,7 @@ JAVASCRIPT
                                 Session::addMessageAfterRedirect($message, false, ERROR);
                                 return false;
                             }
+                            $input['_actors'] = [];
                             $parent_tickets_id = $object->add($input);
                         }
 
