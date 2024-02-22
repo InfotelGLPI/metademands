@@ -835,7 +835,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         }
         $script .= "$('[name=\"$name\"]').change(function() {";
 
-        $script .= "var tohide = {};";
+        $script .= "var todisplay = {};tohide = {};";
 
         //by default - hide all
         $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);

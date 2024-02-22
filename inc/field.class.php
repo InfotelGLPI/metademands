@@ -2207,8 +2207,9 @@ JAVASCRIPT
 
 
    /**
+    * Generate the HTML to display a field
     * @param      $metademands_data
-    * @param      $data
+    * @param array $data row from DB with associated options, see PluginMetademandsMetademand->constructForm() for details
     * @param bool $on_order
     * @param int  $itilcategories_id
     *
