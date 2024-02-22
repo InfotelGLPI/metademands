@@ -2101,8 +2101,6 @@ class PluginMetademandsWizard extends CommonDBTM
                  
                   
                   function validateForm() {
-                 
-                  console.log(csrInput, csrInput.required)
                      // This function deals with validation of the form fields
                      var x, y, i, valid = true, ko = 0, radioexists = 0, lengthr = 0;
                   
@@ -2123,7 +2121,6 @@ class PluginMetademandsWizard extends CommonDBTM
                         fieldname = y[i].name;
                         fieldtype = y[i].type;
                         fieldmandatory = y[i].required;
-                        //console.log(fieldtype);
                         if (fieldname != '_uploader_filename[]'
                            && fieldname != '_uploader_content[]'
                            && fieldtype != 'file'
@@ -2134,7 +2131,7 @@ class PluginMetademandsWizard extends CommonDBTM
                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
 
                            if (res != 'none') {
-                              if (y[i].value == '') {
+                              if (y[i].value == '' && y[i].type !== 'hidden') {
                                   $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                   $('[name=\"' + fieldname + '\"]').attr('required', 'required');
     //                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
@@ -2164,10 +2161,10 @@ class PluginMetademandsWizard extends CommonDBTM
                             }
                         }
                         if (y[i].type == 'file' && fieldname == '_uploader_filename[]' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
-                            //if (y[i].parentElement.firstChild.id.includes('87'))
-                            console.log('second loop', y[i])
                             var inputPieceJointe = document.getElementById(fieldid);
-                            if (inputPieceJointe.files.length > 0) {
+                            let fileIndicator = inputPieceJointe.parentElement.getElementsByClassName('fileupload_info')[0];
+                            
+                            if (fileIndicator.getElementsByTagName('p').length > 0) {
                                $('[name=\"' + fieldname + '\"]').removeClass('invalid');
                                $('[name=\"' + fieldname + '\"]').removeAttr('required');
 //                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
@@ -2175,9 +2172,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                $('[name=\"' + fieldname + '\"]').attr('required', 'required');
 //                               $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                               var newfieldname = fieldid.match(/\[(.*?)\]/);
+                               var newfieldname = fileIndicator.id.match(/\d+$/);
                                if (newfieldname) {
-                                   mandatory.push(newfieldname[1]);
+                                   mandatory.push(newfieldname[0]);
                                }
                                ko++;
                             }
