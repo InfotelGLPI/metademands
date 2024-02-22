@@ -53,6 +53,21 @@ if (isset($_POST['is_freeinput'])
     }
 }
 
+//why i don't know
+if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
+    foreach ($_POST['quantity'] as $k => $v) {
+        foreach ($v as $key => $q) {
+            if ($q > 0) {
+                $_POST['field'][$k][$key] = $key;
+            }
+            if ($q == 0) {
+                unset($_POST['quantity'][$k][$key]);
+                unset($_POST['field'][$k][$key]);
+            }
+        }
+    }
+}
+
 if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === false) {
     $nblines = 0;
     $KO      = false;
@@ -128,7 +143,7 @@ if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === fa
                                 $_POST['field'][$id] = $_POST['quantity'][$id];
                             }
 
-                            if ($value['type'] == 'free_input' && $_POST['freeinputs']) {
+                            if ($value['type'] == 'free_input' && isset($_POST['freeinputs'])) {
                                 $_POST['field'][$id] = $_POST['freeinputs'];
                             }
                         }

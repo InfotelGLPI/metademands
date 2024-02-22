@@ -632,6 +632,7 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($step === PluginMetademandsMetademand::STEP_CREATE) {
 
             $values = isset($_SESSION['plugin_metademands'][$metademands_id]) ? $_SESSION['plugin_metademands'][$metademands_id] : [];
+
             if (count($values) > 0) {
                 self::createMetademands($metademands_id, $values, $options);
             }
@@ -1044,21 +1045,24 @@ class PluginMetademandsWizard extends CommonDBTM
         $use_as_step = 0;
         $stepConfig = new PluginMetademandsConfigstep();
         $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
+
         if ($metademands->fields['step_by_step_mode'] == 1) {
-            switch ($stepConfig->fields['step_by_step_interface']){
-                case PluginMetademandsConfigstep::BOTH_INTERFACE:
-                    $use_as_step = 1;
-                    break;
-                case PluginMetademandsConfigstep::ONLY_HELPDESK_INTERFACE:
-                if(Session::getCurrentInterface() == 'helpdesk'){
-                    $use_as_step = 1;
-                }
-                    break;
-                case PluginMetademandsConfigstep::ONLY_CENTRAL_INTERFACE:
-                    if(Session::getCurrentInterface() == 'central'){
+            if (isset($stepConfig->fields['step_by_step_interface'])) {
+                switch ($stepConfig->fields['step_by_step_interface']) {
+                    case PluginMetademandsConfigstep::BOTH_INTERFACE:
                         $use_as_step = 1;
-                    }
-                    break;
+                        break;
+                    case PluginMetademandsConfigstep::ONLY_HELPDESK_INTERFACE:
+                        if (Session::getCurrentInterface() == 'helpdesk') {
+                            $use_as_step = 1;
+                        }
+                        break;
+                    case PluginMetademandsConfigstep::ONLY_CENTRAL_INTERFACE:
+                        if (Session::getCurrentInterface() == 'central') {
+                            $use_as_step = 1;
+                        }
+                        break;
+                }
             }
         }
         if ($preview || $seeform) {

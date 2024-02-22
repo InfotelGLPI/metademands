@@ -118,7 +118,7 @@ if (isset($_POST['save_draft'])) {
                           $_POST['field'][$id] = $_POST['quantity'][$id];
                       }
 
-                      if ($value['type'] == 'free_input' && $_POST['freeinputs']) {
+                      if ($value['type'] == 'free_input' && isset($_POST['freeinputs'])) {
                           $_POST['field'][$id] = $_POST['freeinputs'];
                       }
                   }

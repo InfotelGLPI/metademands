@@ -212,7 +212,18 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         list($width, $height, $type, $attr) = getimagesize($image);
         list($width, $height) = $this->imageResize($width, $height, $target);
         $this->CellTitleValue($largeurCoteTitre, 20, '', 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
-        $this->Image($image, $this->margin_left + 5, $this->margin_top + $height / 3, $width, $height); // x, y, w, h
+        if (!Plugin::isPluginActive('orderfollowup')) {
+            $this->Image(
+                $image,
+                $this->margin_left + 5,
+                $this->margin_top + $height / 3,
+                $width,
+                $height
+            ); // x, y, w, h
+        }
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $largeurCaseTitre += 85;
+        }
 
         //Cellule contenant le titre
         $title = str_replace("’", "'", $this->title);
@@ -220,6 +231,8 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $this->SetX($this->margin_left + $largeurCoteTitre);
         $this->CellTitleValue($largeurCaseTitre, 5, '', 'TLR', 'C', '', 0, $this->font_size, 'black');
         $this->SetY($this->GetY() + 5);
+
+
         $this->SetX($this->margin_left + $largeurCoteTitre);
 
         $this->CellTitleValue($largeurCaseTitre, 5, Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($title)), 'LR', 'C', '', 1, $this->title_size, 'black');
@@ -227,7 +240,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $this->SetX($this->margin_left + $largeurCoteTitre);
         $this->CellTitleValue($largeurCaseTitre, 10, Toolbox::decodeFromUtf8(Toolbox::stripslashes_deep($subtitle)), 'BLR', 'C', '', 0, $this->font_size, 'black');
         $this->SetY($this->GetY() - 10);
-
 
 
         //Date
@@ -359,7 +371,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
     function BasicTable($header, $data, $color = '')
     {
         $this->SetBackgroundColor($this->bgcolor);
-        $w = array(20, 40, 50, 15, 15, 30, 20); //190
+        $w = array(20, 80, 80, 15, 30, 30, 20); //275
         for($i=0;$i<count($header);$i++)
             $this->Cell($w[$i],7,$header[$i],1,0,'C',true);
         $this->Ln();
@@ -371,12 +383,12 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         foreach($data as $row)
         {
             $this->Cell($w[0],6,$row[0],'LR',0,'L',$fill);
-
-            $row[1] = Toolbox::substr($row[1], 0, 20) . "...";
-            $row[2] = Toolbox::substr($row[2], 0, 25) . "...";
+            $row[1] = Toolbox::substr($row[1], 0, 40) . "...";
+            $row[2] = Toolbox::substr($row[2], 0, 40) . "...";
             $this->Cell($w[1],6,$row[1],'LR',0,'L',$fill);
             $this->Cell($w[2],6,$row[2],'LR',0,'L',$fill);
             $this->Cell($w[3],6,$row[3],'LR',0,'L',$fill);
+            $row[4] = Toolbox::substr($row[4], 0, 20);
             $this->Cell($w[4],6,$row[4],'LR',0,'L',$fill);
             $this->Cell($w[5],6,$row[5]." ".EURO,'LR',0,'L',$fill);
             $this->Cell($w[6],6,$row[6]." ".EURO,'LR',0,'L',$fill);
@@ -389,7 +401,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $this->Cell(array_sum($w),0,'','T');
 
         $this->Ln();
-        $this->Cell(110,6,"",0,0,'C',true);
+        $this->Cell(195,6,"",0,0,'C',true);
         $grandtotal = __('Grand total (HT)', 'orderfollowup');
         $this->SetBackgroundColor($this->bgcolor);
         $this->Cell(60,6,Toolbox::decodeFromUtf8($grandtotal),1,0,'C',true);
@@ -401,7 +413,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
     function BasicTableFreeInputs($header, $data, $color = '')
     {
         $this->SetBackgroundColor($this->bgcolor);
-        $w = array(20, 50, 55, 15, 30, 20);//190
+        $w = array(30, 80, 100, 15, 30, 20);//190
         for($i=0;$i<count($header);$i++)
             $this->Cell($w[$i],7,$header[$i],1,0,'C',true);
         $this->Ln();
@@ -412,12 +424,14 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $total = 0;
         foreach($data as $row)
         {
+            $row[0] = Toolbox::substr($row[0], 0, 15);
             $this->Cell($w[0],6,$row[0],'LR',0,'L',$fill);
-            $row[1] = Toolbox::substr($row[1], 0, 30) . "...";
-            $row[2] = Toolbox::substr($row[2], 0, 35) . "...";
-            $this->Cell($w[1],6,$row[1],'LR',0,'L',$fill);
-            $this->Cell($w[2],6,$row[2],'LR',0,'L',$fill);
+            $r1 = Toolbox::substr($row[1], 0, 40);
+            $r2 = Toolbox::substr($row[2], 0, 50);
+            $this->Cell($w[1],6,$r1,'LR',0,'L',$fill);
+            $this->Cell($w[2],6,$r2,'LR',0,'L',$fill);
             $this->Cell($w[3],6,$row[3],'LR',0,'L',$fill);
+            $row[4] = Toolbox::substr($row[4], 0, 20);
             $this->Cell($w[4],6,$row[4]." ".EURO,'LR',0,'L',$fill);
             $this->Cell($w[5],6,$row[5]." ".EURO,'LR',0,'L',$fill);
             $this->Ln();
@@ -429,7 +443,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $this->Cell(array_sum($w),0,'','T');
 
         $this->Ln();
-        $this->Cell(110,6,"",0,0,'C',true);
+        $this->Cell(195,6,"",0,0,'C',true);
         $grandtotal = __('Grand total (TTC)', 'orderfollowup');
         $this->SetBackgroundColor($this->bgcolor);
         $this->Cell(60,6,Toolbox::decodeFromUtf8($grandtotal),1,0,'C',true);
@@ -438,7 +452,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
 
         $this->Ln();
-        $this->Cell(110,6,"",0,0,'C',true);
+        $this->Cell(195,6,"",0,0,'C',true);
         $grandtotalHT = __('Grand total (HT)', 'orderfollowup')." ".__('(if VAT 20%)', 'orderfollowup');
         $this->SetBackgroundColor($this->bgcolor);
         $this->Cell(60,6,Toolbox::decodeFromUtf8($grandtotalHT),1,0,'C',true);
@@ -560,7 +574,11 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
 
                     $y = $this->GetY();
                     if (($y + $this->line_height) >= ($this->page_height - $this->header_height)) {
-                        $this->AddPage("P");
+                        if (Plugin::isPluginActive('orderfollowup')) {
+                            $this->AddPage("L");
+                        } else {
+                            $this->AddPage("P");
+                        }
                     }
 
                     $label = "";
@@ -1104,7 +1122,12 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
     public function drawPdf($form, $fields, $metademands_id, $parent_tickets_id, $with_basket = false)
     {
         $this->AliasNbPages();
-        $this->AddPage("P");
+        if (Plugin::isPluginActive('orderfollowup')) {
+            $this->AddPage("L");
+        } else {
+            $this->AddPage("P");
+        }
+
         $this->SetAutoPageBreak(false);
         $this->setFields($form, $fields, $metademands_id, $parent_tickets_id, $with_basket);
     }
