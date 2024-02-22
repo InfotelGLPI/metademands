@@ -1740,20 +1740,6 @@ class PluginMetademandsWizard extends CommonDBTM
                   var show_rule = '$show_rule';
                   var nexthref = '$nexthref';
                   
-                  let x = document.getElementsByClassName('tab-nostep');
-                  let y = x[currentTab].getElementsByTagName('input');
-                  let fileInputs = Array.from(y).filter(el => el.type === 'file');
-                  let csrInput = fileInputs[fileInputs.length - 2];
-                  console.log(csrInput, csrInput.required)
-                 let callbackMutation = function(mutationsList) {
-                    for(var mutation of mutationsList) {
-                        if (mutation.type == 'attributes') {
-                            console.log('propriété ' + mutation.attributeName + ' modifié');
-                        }
-                    }
-                };
-                  let observer = new MutationObserver(callbackMutation);
-                  observer.observe(csrInput, { attributes: true, childList: true });
                   findFirstTab($block_id);
                   
                   if(use_condition == true) {
