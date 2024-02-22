@@ -106,7 +106,7 @@ if (count($used) == 0) {
 
 $temp   = [];
 foreach ($result as $item) {
-   $temp[$item['id']] = $item['completename'];
+   $temp[$item['id']] = html_entity_decode($item['completename']);
 }
 
 Dropdown::showFromArray('itilcategories_id', $temp,
