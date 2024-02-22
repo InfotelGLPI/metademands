@@ -1563,10 +1563,10 @@ class PluginMetademandsFieldOption extends CommonDBChild
         if (is_array($fields_data) && count($fields_data) > 0) {
             foreach ($fields_data as $data) {
                 $id = $data['id'];
-                $script .= "$(\"[name='field[$id]']\").attr('required', 'required');
-//                $(\"[name='field[$id]']\").css('border','solid 1px red');
-//                $(\"[name='field[$id]']\").next().css('border','solid 1px red');
-";
+                $script .= "$(\"[name='field[$id]']\").attr('required', 'required');";
+                if ($data['type'] == 'upload') {
+                    $script .= "document.querySelector(\"[id-field='field$id'] div input\").required = true;";
+                }
             }
             $script .= "fixButtonIndicator();";
         }

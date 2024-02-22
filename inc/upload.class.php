@@ -54,10 +54,6 @@ class PluginMetademandsUpload extends CommonDBTM
 
     static function showWizardField($data, $namefield, $value, $on_order, $idline)
     {
-
-        if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
-            $comment = $data['comment'];
-        }
         $self = new self();
         $arrayFiles = json_decode($value, true);
         $field      = "";
