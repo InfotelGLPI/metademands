@@ -2146,21 +2146,21 @@ class PluginMetademandsWizard extends CommonDBTM
                                 $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
                             }
                         }
-                        if (y[i].type == 'file' && fieldname == '_uploader_filename[]' && fieldname.indexOf('_uploader_field') == -1 && fieldmandatory == true) {
+                        if (y[i].type == 'file' && fieldname == '_uploader_filename[]' && fieldname.indexOf('_uploader_field') == -1 && y[i].required) {
                             var inputPieceJointe = document.getElementById(fieldid);
                             let fileIndicator = inputPieceJointe.parentElement.getElementsByClassName('fileupload_info')[0];
                             
                             if (fileIndicator.getElementsByTagName('p').length > 0) {
-                               $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                               $('[name=\"' + fieldname + '\"]').removeAttr('required');
-//                               $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                               $('#'+y[i].id).removeClass('invalid');
+                               $('#'+y[i].id).removeAttr('required');
+//                         $('[for=\"' + fieldname + '\"]').css('color', 'unset');
                             } else {
-                               $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                               $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-//                               $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                               $('#'+y[i].id).addClass('invalid');
+                               $('#'+y[i].id).attr('required', 'required');
+//                         $('[for=\"' + fieldname + '\"]').css('color', 'red');
                                var newfieldname = fileIndicator.id.match(/\d+$/);
                                if (newfieldname) {
-                                   mandatory.push(newfieldname[0]);
+                                  mandatory.push(newfieldname[0]);
                                }
                                ko++;
                             }
