@@ -1054,7 +1054,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
             $temp = [];
             foreach ($result as $item) {
-                $temp[$item['id']] = $item['completename'];
+                $temp[$item['id']] = html_entity_decode($item['completename']);
             }
 
             $categories = [];

@@ -1220,7 +1220,6 @@ class PluginMetademandsBasket extends CommonDBTM
 //        }
 
         $materials = $fields["field"] ?? [];
-        $freeinputs = $fields["freeinputs"] ?? [];//NOT USED
         $quantities = $fields["quantity"] ?? [];
         $content = "";
 

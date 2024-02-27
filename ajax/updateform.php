@@ -72,7 +72,8 @@ if (isset($_POST['save_model'])) {
 
                 $field = new PluginMetademandsField();
                 $field->getFromDB($value['plugin_metademands_fields_id']);
-                if ($field->fields['type'] == 'textarea' && $field->fields['use_richtext'] == 1) {
+
+                if (isset($field->fields['type']) && $field->fields['type'] == 'textarea' && $field->fields['use_richtext'] == 1) {
                     $form_value = new PluginMetademandsForm_Value();
                     $form_value->getFromDB($value['plugin_metademands_forms_id']);
                     $inputv = Toolbox::convertTagToImage($value['value'], $form_value, $input, false);
@@ -114,7 +115,8 @@ if (isset($_POST['save_model'])) {
         $KO = false;
 
         if ($nblines == 0) {
-            $post = $_POST['field'];
+            $post    = isset($_POST['field']) ?? "";
+
             $nblines = 1;
         }
 
@@ -124,6 +126,16 @@ if (isset($_POST['save_model'])) {
         for ($i = 0; $i < $nblines; $i++) {
 
             $_POST['field'] = $post;
+
+            if (Plugin::isPluginActive('orderfollowup')) {
+                if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
+                    $freeinputs = $_SESSION['plugin_orderfollowup']['freeinputs'];
+                    foreach ($freeinputs as $freeinput) {
+                        $_POST['freeinputs'][] = $freeinput;
+                    }
+                }
+            }
+
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
@@ -134,8 +146,6 @@ if (isset($_POST['save_model'])) {
                                 if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                                     && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
                                     $_POST['field'][$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
-                                } else {
-                                    $_POST['field'][$id] = [];
                                 }
                             } else {
                                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id] = $post[$id];
@@ -159,6 +169,17 @@ if (isset($_POST['save_model'])) {
                             }
                             if ($value['item'] == 'ITILCategory_Metademands') {
                                 $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+                            }
+
+                            if ($value['type'] == 'basket' && isset($_POST['quantity'])) {
+                                $_POST['field'][$id] = $_POST['quantity'][$id];
+                            }
+
+                            if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {
+                                if(!isset($_POST['field']) || !is_array($_POST['field'])){
+                                    $_POST['field'] = [];
+                                }
+                                $_POST['field'][$id] = $_POST['freeinputs'];
                             }
                         }
 
