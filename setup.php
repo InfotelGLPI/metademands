@@ -57,9 +57,9 @@ function plugin_init_metademands()
     $plugin = new Plugin();
     if (Session::getLoginUserID()) {
 
-        $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuze.js';
+        $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuse.js';
         $PLUGIN_HOOKS["add_javascript"]['metademands'][] = 'lib/fuzzysearch.js.php';
-        $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/fuze.js"];
+        $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/fuse.js"];
         $PLUGIN_HOOKS["javascript"]['metademands']     = [PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/fuzzysearch.js.php"];
 
         if (isset($_SESSION['glpiactiveprofile']['interface'])

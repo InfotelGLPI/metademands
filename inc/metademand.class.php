@@ -1609,11 +1609,14 @@ JAVASCRIPT
     }
 
     /**
+     * Get all datas for a metademand
      * @param       $metademands_id
      * @param array $forms
      * @param int $step
      *
-     * @return array
+     * @return array $form[$step][$metademands_id] then 2 keys :
+     * 'form' => PluginMetademandsField->find(),
+     * 'tasks' => array, PluginMetademandsTask->getTasks()
      * @throws \GlpitestSQLError
      */
     public function constructMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW)
@@ -6231,11 +6234,10 @@ JAVASCRIPT
         }
 
 
-        //      $xml   = simplexml_load_file(GLPI_PLUGIN_DOC_DIR . '/test.xml');
+        // $xml = simplexml_load_file(GLPI_PLUGIN_DOC_DIR . '/test.xml');
         $xml = simplexml_load_file($file);
         $json = json_encode($xml);
         $datas = json_decode($json, true);
-
         $metademand = new PluginMetademandsMetademand();
         $oldId = $datas['id'];
         unset($datas['id']);

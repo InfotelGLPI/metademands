@@ -128,9 +128,25 @@ class PluginMetademandsForm_Value extends CommonDBTM
                                 $field['value'] = json_encode($values[$fields_id]);
                                 $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                             }
-                        } else {
-                            $field['value'] = json_encode($values[$fields_id]);
+
+                        } else if ($metafield->fields["type"] == "free_input") {
+
+                            if (is_array($values[$fields_id])) {
+                                $table = [];
+//                                Toolbox::logInfo($values[$fields_id]);
+                                foreach ($values[$fields_id] as $k => $field) {
+                                    $table[]= Toolbox::encodeInUtf8($field);
+                                }
+//                                Toolbox::logInfo($table);
+                                $field['value'] = json_encode($table);
+                            } else {
+                                $field['value'] = json_encode($values[$fields_id]);
+                            }
+
+
                             $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
+                        }  else {
+                            $field['value'] = json_encode($values[$fields_id]);
                         }
                     }
                 }
@@ -168,6 +184,15 @@ class PluginMetademandsForm_Value extends CommonDBTM
             if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"])) {
                 unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"]);
             }
+//            $array = json_decode($values['value'], true);
+//            if (is_array($array)) {
+////                Toolbox::logInfo($array);
+//                foreach ($array as $k => $fields) {
+//                    foreach ($fields as $field) {
+//                        Toolbox::logInfo(Toolbox::decodeFromUtf8($field));
+//                    }
+//                }
+//            }
             $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'], true)) ?? Toolbox::addslashes_deep($values['value']);
             if (!empty($values['value2'])) {
                 $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"] = Toolbox::addslashes_deep(json_decode($values['value2'], true)) ?? Toolbox::addslashes_deep($values['value2']);

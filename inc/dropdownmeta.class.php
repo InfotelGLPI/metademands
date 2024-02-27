@@ -835,7 +835,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         }
         $script .= "$('[name=\"$name\"]').change(function() {";
 
-        $script .= "var tohide = {};";
+        $script .= "tohide = {};";
 
         //by default - hide all
         $script2 .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
@@ -914,7 +914,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 //            }
 
             $script .= " } else {";
-
 //            $script .= "if ($(this).val() != $idc) {";
 ////            if (is_array($blocks_idc) && count($blocks_idc) > 0) {
 ////                foreach ($blocks_idc as $k => $block_idc) {

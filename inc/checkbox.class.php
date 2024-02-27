@@ -865,7 +865,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
             $field['value'] = json_decode(json_encode($field['value']), true);
         }
 
-        if (!empty($field['custom_values']) && count($field['value']) > 0) {
+        if (!empty($field['custom_values']) && $field['value'] > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title>";

@@ -69,6 +69,7 @@ if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
 }
 
 if (isset($_POST['save_form'])) {
+
     $nblines = 0;
     $KO      = false;
 

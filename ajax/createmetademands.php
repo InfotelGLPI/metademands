@@ -86,8 +86,8 @@ if ($nofreeinputs === false) {
         if (isset($post['quantity']) && is_array($post['quantity'])) {
             foreach ($post['quantity'] as $k => $v) {
                 foreach ($v as $key => $q) {
-                    if ($q > 0 && !isset($post['field'][$k])) {
-                        $post['field'][$k] = [$key => $key];
+                    if ($q > 0) {
+                        $post['field'][$k][$key] = $key;
                     }
                     if ($q == 0) {
                         unset($post['quantity'][$k][$key]);
