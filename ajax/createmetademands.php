@@ -237,6 +237,9 @@ if ($nofreeinputs === false) {
                             }
                         }
 
+                        //Drop empty values for launch check_values
+                        $post = array_filter($post);
+
                         //Clean $post & $data & $_POST
                         $dataOld = $data;
 
@@ -247,18 +250,18 @@ if ($nofreeinputs === false) {
 
 
                         //check fields_link to be mandatory
-                        $fields_links = [];
-                        foreach ($data as $id => $value) {
-                            if (isset($value['options'])) {
-                                $unserialisedCheck = $value['options'];
-                                foreach ($unserialisedCheck as $key => $check) {
-                                    $fields_links[] = $check['fields_link'];
-                                }
-                            }
-                        }
-
-                        $fields_links = array_unique($fields_links);
-                        $fields_links = array_filter($fields_links);
+//                        $fields_links = [];
+//                        foreach ($data as $id => $value) {
+//                            if (isset($value['options'])) {
+//                                $unserialisedCheck = $value['options'];
+//                                foreach ($unserialisedCheck as $key => $check) {
+//                                    $fields_links[] = $check['fields_link'];
+//                                }
+//                            }
+//                        }
+//
+//                        $fields_links = array_unique($fields_links);
+//                        $fields_links = array_filter($fields_links);
 
 //                    $toBeMandatory = [];
 //                    foreach ($fields_links as $fields_link) {
@@ -282,7 +285,7 @@ if ($nofreeinputs === false) {
                         //end fields_link to be mandatory
                         foreach ($data as $id => $value) {
                             if (!isset($post[$id])) {
-                                $post[$id] = [];
+                                continue;
                             }
 
                             if (isset($value['options'])) {
@@ -336,9 +339,9 @@ if ($nofreeinputs === false) {
                         }
 
                         foreach ($checks as $check) {
-//                            if ($check['result'] == true) {
-//                                $KO = true;
-//                            }
+                            if ($check['result'] == true) {
+                                $KO = true;
+                            }
                             $content = array_merge($content, $check['content']);
                         }
 

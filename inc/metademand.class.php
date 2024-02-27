@@ -274,7 +274,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         if ($config['simpleticket_to_metademand']) {
             if (($type == 'show' && $object->fields["id"] == 0)
                 || ($type == 'update' && $object->fields["id"] > 0)) {
-                if (!empty($object->input["itilcategories_id"])) {
+                if (!empty($object->input["itilcategories_id"]) && $object->input["type"] != "formcreator") {
                     $dbu = new DbUtils();
                     $metademand = new self();
                     $metas = $metademand->find(['is_active' => 1,
