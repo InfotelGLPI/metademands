@@ -58,15 +58,6 @@ class PluginMetademandsForm_Value extends CommonDBTM
                         $linked_docs = [];
                         if ($field['type'] == "upload"
                         ) {
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'])) {
-//                                $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'];
-//                            }
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'])) {
-//                                $linked_docs['_prefix_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'];
-//                            }
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'])) {
-//                                $linked_docs['_tag_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'];
-//                            }
 
                             $field['value'] = 'filename';
 
@@ -97,6 +88,20 @@ class PluginMetademandsForm_Value extends CommonDBTM
                             $field['value'] = $linked_docs[$fieldname];
                             $field['value'] = Sanitizer::unsanitize($field['value']);
                             $field['value'] = Toolbox::addslashes_deep($field['value']);
+                        } else if ($field["type"] == "free_input") {
+
+                            if (is_array($values[$fields_id])) {
+                                $table = [];
+                                foreach ($values[$fields_id] as $k => $field) {
+                                    $table[]= $field;
+                                }
+                                $field['value'] = json_encode($table, JSON_UNESCAPED_UNICODE);
+                            } else {
+                                $field['value'] = json_encode($values[$fields_id], JSON_UNESCAPED_UNICODE);
+                            }
+
+
+                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                         }
 
                     } else {

@@ -460,3 +460,8 @@ textarea.invalid,
     opacity: 1;
     visibility: visible;
 }
+
+/*Used in OrderFollowUp*/
+#freeinput_table select:not(.form-control), #freeinput_table input:not(.submit):not(.form-control):not([type=submit]):not([type=color]):not([type=reset]):not([type=checkbox]):not([type=radio]):not(.select2-search__field):not(.numInput):not(.tox-textfield) {
+    width: 100%;
+}

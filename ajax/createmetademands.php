@@ -100,7 +100,11 @@ if ($nofreeinputs === false) {
         $metademands->getFromDB($_POST['form_metademands_id']);
 
         if ($metademands->fields['is_basket'] == 1) {
-            echo PluginMetademandsBasket::displayBasketSummary($post);
+            if (isset($_POST['is_freeinput']) && $_POST['is_freeinput'] == 1) {
+                echo PluginOrderfollowupFreeinput::displayBasketSummary($post);
+            }else{
+                echo PluginMetademandsBasket::displayBasketSummary($post);
+            }
         }
 
 
@@ -121,7 +125,6 @@ if ($nofreeinputs === false) {
                 }
             }
         }
-
     } else {
 
         if ($metademands->canCreate()

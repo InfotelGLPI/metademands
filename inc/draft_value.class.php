@@ -124,6 +124,21 @@ class PluginMetademandsDraft_Value extends CommonDBTM
                                 $field['value'] = json_encode($values[$fields_id]);
                                 $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                             }
+                        }else if ($metafield->fields["type"] == "free_input") {
+
+                            if (is_array($values[$fields_id])) {
+                                $table = [];
+                                foreach ($values[$fields_id] as $k => $item) {
+                                    $table[] = $item;
+                                }
+
+                                $field['value'] = json_encode($table, JSON_UNESCAPED_UNICODE);
+                            } else {
+                                $field['value'] = json_encode($values[$fields_id], JSON_UNESCAPED_UNICODE);
+                            }
+
+
+                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                         } else {
                             $field['value'] = json_encode($values[$fields_id]);
                             $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];

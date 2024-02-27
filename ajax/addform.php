@@ -68,12 +68,14 @@ if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
     }
 }
 
-if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === false) {
+if (isset($_POST['save_form'])) {
+
     $nblines = 0;
     $KO      = false;
 
     if ($nblines == 0) {
-        $post    = $_POST['field'];
+        $post    = isset($_POST['field']) ?? "";
+
         $nblines = 1;
     }
 
@@ -102,6 +104,7 @@ if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === fa
             }
 
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
                     $docitem = null;
@@ -111,8 +114,6 @@ if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === fa
                                 if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                                     && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
                                     $_POST['field'][$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
-                                } else {
-                                    $_POST['field'][$id] = 0;
                                 }
                             } else {
                                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id] = $post[$id];
@@ -143,13 +144,17 @@ if (isset($_POST['save_form']) && isset($_POST['field']) && $nofreeinputs === fa
                                 $_POST['field'][$id] = $_POST['quantity'][$id];
                             }
 
-                            if ($value['type'] == 'free_input' && isset($_POST['freeinputs'])) {
+                            if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {
+                                if(!isset($_POST['field']) || !is_array($_POST['field'])){
+                                    $_POST['field'] = [];
+                                }
                                 $_POST['field'][$id] = $_POST['freeinputs'];
                             }
                         }
                     }
                 }
             }
+
             $metademands->getFromDB($_POST['metademands_id']);
             if ($KO === false) {
                 // Save requester user

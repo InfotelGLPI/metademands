@@ -283,7 +283,9 @@ if (isset($_POST['next'])) {
     }
 
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
-} elseif (isset($_POST['previous'])) {
+}
+
+elseif (isset($_POST['previous'])) {
 
     if (isset($_SESSION['metademands_hide'])) {
         unset($_SESSION['metademands_hide']);
@@ -399,7 +401,9 @@ if (isset($_POST['next'])) {
     } else {
         Html::helpFooter();
     }
-} elseif (isset($_POST['return'])) {
+}
+
+elseif (isset($_POST['return'])) {
     if (isset($_SESSION['metademands_hide'])) {
         unset($_SESSION['metademands_hide']);
     }
@@ -408,7 +412,9 @@ if (isset($_POST['next'])) {
     }
 
     Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
-} elseif (isset($_POST['add_to_basket'])) {
+}
+
+elseif (isset($_POST['add_to_basket'])) {
 
     $KO = false;
     $step = PluginMetademandsMetademand::STEP_SHOW;
@@ -466,7 +472,9 @@ if (isset($_POST['next'])) {
     }
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $step);
 
-} elseif (isset($_POST['update_basket_line'])) {
+}
+
+elseif (isset($_POST['update_basket_line'])) {
 
     $line = $_POST['update_basket_line'];
     if (isset($_POST['field_basket_' . $line])) {
@@ -514,27 +522,37 @@ if (isset($_POST['next'])) {
     }
 
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
-} elseif (isset($_POST['delete_basket_line'])) {
+}
+
+elseif (isset($_POST['delete_basket_line'])) {
     $basketline = new PluginMetademandsBasketline();
     $basketline->deleteFromBasket($_POST);
 
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
-} elseif (isset($_POST['delete_basket_file'])) {
+}
+
+elseif (isset($_POST['delete_basket_file'])) {
     $basketline = new PluginMetademandsBasketline();
     $basketline->deleteFileFromBasket($_POST);
 
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
-} elseif (isset($_POST['clear_basket'])) {
+}
+
+elseif (isset($_POST['clear_basket'])) {
     $basketline = new PluginMetademandsBasketline();
     $basketline->deleteByCriteria(['plugin_metademands_metademands_id' => $_POST['metademands_id'],
         'users_id' => Session::getLoginUserID()]);
 
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . PluginMetademandsMetademand::STEP_SHOW);
 
-} elseif (isset($_POST['clean_form'])) {
+}
+
+elseif (isset($_POST['clean_form'])) {
     unset($_SESSION['plugin_metademands']);
     Html::redirect($wizard->getFormURL() . "?metademands_id=" . $_POST['metademands_id'] . "&step=" . $_POST['step']);
-} else {
+}
+
+else {
 
     //Default wizard
     if (Session::getCurrentInterface() == 'central') {

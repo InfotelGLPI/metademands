@@ -41,13 +41,12 @@ $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
 $fields      = new PluginMetademandsField();
 
-
 if (isset($_POST['save_draft'])) {
    $nblines = 0;
    $KO      = false;
    //Create ticket
    if ($nblines == 0) {
-      $post    = $_POST['field'];
+      $post    = isset($_POST['field']) ?? "";
       $nblines = 1;
    }
 
@@ -87,8 +86,6 @@ if (isset($_POST['save_draft'])) {
                         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                             && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
                            $_POST['field'][$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
-                        } else {
-                           $_POST['field'][$id] = [];
                         }
                      } else {
                         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id] = $post[$id];
@@ -118,7 +115,10 @@ if (isset($_POST['save_draft'])) {
                           $_POST['field'][$id] = $_POST['quantity'][$id];
                       }
 
-                      if ($value['type'] == 'free_input' && isset($_POST['freeinputs'])) {
+                      if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {
+                          if(!isset($_POST['field']) || !is_array($_POST['field'])){
+                              $_POST['field'] = [];
+                          }
                           $_POST['field'][$id] = $_POST['freeinputs'];
                       }
                   }
@@ -195,6 +195,12 @@ if (isset($_POST['save_draft'])) {
       }
    }
 }
+
+
+//Toolbox::logInfo($KO);
+//
+//Toolbox::logInfo($_POST);
+
 if ($KO === false) {
    echo 0;
 } else {
