@@ -115,7 +115,9 @@ if (isset($_POST['save_model'])) {
         $KO = false;
 
         if ($nblines == 0) {
-            $post    = isset($_POST['field']) ?? "";
+            if(isset($_POST['field'])){
+                $post    =  $_POST['field'];
+            }
 
             $nblines = 1;
         }
@@ -124,8 +126,6 @@ if (isset($_POST['save_model'])) {
         $content = [];
 
         for ($i = 0; $i < $nblines; $i++) {
-
-            $_POST['field'] = $post;
 
             if (Plugin::isPluginActive('orderfollowup')) {
                 if (isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
@@ -137,6 +137,11 @@ if (isset($_POST['save_model'])) {
             }
 
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+
+            if(!isset($post) || !is_array($post)){
+                $_POST['field'] = [];
+            }
+
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
                     $docitem = null;
