@@ -46,8 +46,13 @@ if (isset($_POST['save_draft'])) {
    $KO      = false;
    //Create ticket
    if ($nblines == 0) {
-      $post    = isset($_POST['field']) ?? "";
-      $nblines = 1;
+       if(isset($_POST['field'])){
+           $post    =  $_POST['field'];
+       }else{
+           $post['field']  = [];
+       }
+
+       $nblines = 1;
    }
 
    if ($KO === false) {
@@ -56,8 +61,6 @@ if (isset($_POST['save_draft'])) {
       $content = [];
 
       for ($i = 0; $i < $nblines; $i++) {
-
-         $_POST['field']   = $post;
 
           if (isset($_POST['_filename'])) {
               foreach ($_POST['_filename'] as $key => $filename) {
@@ -76,7 +79,12 @@ if (isset($_POST['save_draft'])) {
               }
           }
 
-         $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+          $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+
+          if (!isset($_POST['field']) || !is_array($_POST['field'])) {
+              $_POST['field'] = [];
+          }
+
          if (count($metademands_data)) {
             foreach ($metademands_data as $form_step => $data) {
                $docitem = null;
@@ -116,9 +124,7 @@ if (isset($_POST['save_draft'])) {
                       }
 
                       if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {
-                          if(!isset($_POST['field']) || !is_array($_POST['field'])){
-                              $_POST['field'] = [];
-                          }
+
                           $_POST['field'][$id] = $_POST['freeinputs'];
                       }
                   }

@@ -133,14 +133,13 @@ class PluginMetademandsForm_Value extends CommonDBTM
 
                             if (is_array($values[$fields_id])) {
                                 $table = [];
-//                                Toolbox::logInfo($values[$fields_id]);
-                                foreach ($values[$fields_id] as $k => $field) {
-                                    $table[]= Toolbox::encodeInUtf8($field);
+                                foreach ($values[$fields_id] as $k => $item) {
+                                    $table[] = $item;
                                 }
-//                                Toolbox::logInfo($table);
-                                $field['value'] = json_encode($table);
+
+                                $field['value'] = json_encode($table, JSON_UNESCAPED_UNICODE);
                             } else {
-                                $field['value'] = json_encode($values[$fields_id]);
+                                $field['value'] = json_encode($values[$fields_id], JSON_UNESCAPED_UNICODE);
                             }
 
 

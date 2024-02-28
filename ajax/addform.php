@@ -74,7 +74,12 @@ if (isset($_POST['save_form'])) {
     $KO      = false;
 
     if ($nblines == 0) {
-        $post    = isset($_POST['field']) ?? "";
+        if(isset($_POST['field'])){
+            $post    =  $_POST['field'];
+        }else{
+            $post['field']  = [];
+        }
+
 
         $nblines = 1;
     }
@@ -84,7 +89,6 @@ if (isset($_POST['save_form'])) {
         $content = [];
 
         for ($i = 0; $i < $nblines; $i++) {
-            $_POST['field']   = $post;
 
             if (isset($_POST['_filename'])) {
                 foreach ($_POST['_filename'] as $key => $filename) {
@@ -113,42 +117,39 @@ if (isset($_POST['save_form'])) {
                             if (!isset($post[$id])) {
                                 if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id])
                                     && $value['plugin_metademands_metademands_id'] != $_POST['form_metademands_id']) {
-                                    $_POST['field'][$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
+                                    $post[$id] = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id];
                                 }
                             } else {
                                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$id] = $post[$id];
                             }
 
                             if ($value['type'] == 'radio') {
-                                if (!isset($_POST['field'][$id])) {
-                                    $_POST['field'][$id] = null;
+                                if (!isset($post[$id])) {
+                                    $post[$id] = null;
                                 }
                             }
                             if ($value['type'] == 'checkbox') {
-                                if (!isset($_POST['field'][$id])) {
-                                    $_POST['field'][$id] = 0;
+                                if (!isset($post[$id])) {
+                                    $post[$id] = 0;
                                 }
                             }
                             if ($value['type'] == 'informations'
                                 || $value['type'] == 'title'
                                 || $value['type'] == 'title-block') {
-//                                if (!isset($_POST['field'][$id])) {
-                                    $_POST['field'][$id] = "";
+//                                if (!isset($post[$id])) {
+                                    $post[$id] = "";
 //                                }
                             }
                             if ($value['item'] == 'ITILCategory_Metademands') {
-                                $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+                                $post[$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                             }
 
                             if ($value['type'] == 'basket' && isset($_POST['quantity'])) {
-                                $_POST['field'][$id] = $_POST['quantity'][$id];
+                                $post[$id] = $_POST['quantity'][$id];
                             }
 
                             if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {
-                                if(!isset($_POST['field']) || !is_array($_POST['field'])){
-                                    $_POST['field'] = [];
-                                }
-                                $_POST['field'][$id] = $_POST['freeinputs'];
+                                $post[$id] = $_POST['freeinputs'];
                             }
                         }
                     }
@@ -237,7 +238,7 @@ if (isset($_POST['save_form'])) {
                     foreach ($metademands_data as $form_step => $data) {
                         $docitem = null;
                         foreach ($data as $form_metademands_id => $line) {
-                            PluginMetademandsForm_Value::setFormValues($_POST['metademands_id'], $line['form'], $_POST['field'], $form_new_id);
+                            PluginMetademandsForm_Value::setFormValues($_POST['metademands_id'], $line['form'], $post, $form_new_id);
                         }
                     }
                 }
