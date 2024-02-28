@@ -61,7 +61,11 @@ class PluginMetademandsText extends CommonDBTM
         $name = $namefield . "[" . $data['id'] . "]";
         $opt = ['value' => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
             'placeholder' => (!$comment == null) ? Glpi\RichText\RichText::getTextFromHtml($comment) : "",
-            'size' => 35];
+            'size' => 35
+        ];
+        if ($data['regex']) {
+            $opt['pattern'] = $data['regex'];
+        }
         if ($data['is_mandatory'] == 1) {
             $opt['required'] = "required";
         }
