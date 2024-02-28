@@ -2121,7 +2121,8 @@ class PluginMetademandsWizard extends CommonDBTM
                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
 
                            if (res != 'none') {
-                              if (y[i].value == '' && y[i].type !== 'hidden') {
+                              //ignore for hidden inputs below file inputs  
+                              if (y[i].value == '' && !y[i].parentElement.querySelector('input[type=\"file\"')) {
                                   $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                   $('[name=\"' + fieldname + '\"]').attr('required', 'required');
     //                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
