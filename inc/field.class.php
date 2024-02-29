@@ -933,6 +933,7 @@ JAVASCRIPT
             Dropdown::showYesNo('default_use_id_requester_supervisor', $this->fields['default_use_id_requester_supervisor']);
             echo "</td>";
             echo "</tr>";
+
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='2'>";
             echo "</td>";
@@ -941,6 +942,31 @@ JAVASCRIPT
             echo "</td>";
             echo "<td>";
             Dropdown::showYesNo('readonly', ($this->fields['readonly']));
+            echo "</td>";
+            echo "</tr>";
+        }
+
+        if ($ID > 0 && ($this->fields['type'] == "dropdown_multiple"
+                && $this->fields["item"] == "User")) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2'>";
+            echo "</td>";
+            echo "<td>";
+            echo __('Use id of requester by default', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('default_use_id_requester', $this->fields['default_use_id_requester']);
+            echo "</td>";
+            echo "</tr>";
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2'>";
+            echo "</td>";
+            echo "<td>";
+            echo __('Use id of supervisor requester by default', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('default_use_id_requester_supervisor', $this->fields['default_use_id_requester_supervisor']);
             echo "</td>";
             echo "</tr>";
         }

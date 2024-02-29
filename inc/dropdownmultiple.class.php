@@ -106,7 +106,17 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $value = json_decode($value);
             }
             if (!is_array($value)) {
-                $value = [];
+                $default_user = $data['default_use_id_requester'] == 0 ? 0 : Session::getLoginUserID();
+                if ($default_user == 0) {
+                    $user = new User();
+                    $user->getFromDB(Session::getLoginUserID());
+                    $default_user = ($data['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                }
+                if ($default_user > 0) {
+                    $value = [$default_user];
+                } else {
+                    $value = [];
+                }
             }
 
             if ($data["display_type"] != self::CLASSIC_DISPLAY) {
@@ -220,10 +230,20 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                               });
                            </script>';
             } else {
+
+                $default_user = $data['default_use_id_requester'] == 0 ? 0 : Session::getLoginUserID();
+
+                if ($default_user == 0) {
+                    $user = new User();
+                    $user->getFromDB(Session::getLoginUserID());
+                    $default_user = ($data['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                }
+
                 $field = Dropdown::showFromArray(
                     $namefield . "[" . $data['id'] . "]",
                     $list,
                     ['values' => $value,
+                        'value' => $default_user,
                         'width' => '250px',
                         'multiple' => true,
                         'display' => false,
@@ -1843,7 +1863,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
-        } else if ($field['item'] == 'User' && $field['value'] > 0) {
+        } else if ($field['item'] == 'User' && ($field['value'] > 0 || (is_array($field['value']) && count($field['value']) > 0))) {
             $information = json_decode($field['informations_to_display']);
 
             if ($formatAsTable) {

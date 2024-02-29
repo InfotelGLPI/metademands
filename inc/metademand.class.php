@@ -724,6 +724,24 @@ class PluginMetademandsMetademand extends CommonDBTM
         ];
 
         $tab[] = [
+            'id'                 => '121',
+            'table'              => $this->getTable(),
+            'field'              => 'date_creation',
+            'name'               => __('Creation date'),
+            'datatype'           => 'datetime',
+            'massiveaction'      => false
+        ];
+
+        $tab[] = [
+            'id'                 => '19',
+            'table'              => $this->getTable(),
+            'field'              => 'date_mod',
+            'name'               => __('Last update'),
+            'datatype'           => 'datetime',
+            'massiveaction'      => false
+        ];
+
+        $tab[] = [
             'id' => '92',
             'table' => $this->getTable(),
             'field' => 'itilcategories_id',
