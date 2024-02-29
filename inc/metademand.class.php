@@ -1615,7 +1615,7 @@ JAVASCRIPT
      * @param int $step
      *
      * @return array $form[$step][$metademands_id] then 2 keys :
-     * 'form' => PluginMetademandsField->find(),
+     * 'form' => PluginMetademandsField->find(), pour chacun ajout des options associé dans une clé 'options' (avec clé = check_value et valeur = le reste)
      * 'tasks' => array, PluginMetademandsTask->getTasks()
      * @throws \GlpitestSQLError
      */
@@ -1634,7 +1634,7 @@ JAVASCRIPT
         if (!empty($metademands_id) && !$hidden) {
             // get normal form data
             $field = new PluginMetademandsField();
-            $form_data = $field->find(
+            $fields_data = $field->find(
                 ['plugin_metademands_metademands_id' => $metademands_id],
                 ['rank', 'order']
             );
@@ -1644,32 +1644,34 @@ JAVASCRIPT
             $forms[$step][$metademands_id]['form'] = [];
             $forms[$step][$metademands_id]['tasks'] = [];
 
-            if (count($form_data)) {
+            if (count($fields_data)) {
                 //TODO add array options
-                foreach ($form_data as $idf => $form_data_fields) {
-
+                foreach ($fields_data as $id => $field_data) {
+                    if ($field_data['link_to_user']) {
+                        continue;
+                    }
                     $fieldopt = new PluginMetademandsFieldOption();
-                    if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $idf])) {
+                    if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $id])) {
 
                         foreach ($opts as $opt) {
                             $check_value = $opt["check_value"];
-                            if ($idf > 0 && $fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $idf, "check_value" => $check_value])) {
-                                $form_data[$idf]["options"][$check_value]['plugin_metademands_tasks_id'] = $fieldopt->fields['plugin_metademands_tasks_id'] ?? 0;
-                                $form_data[$idf]["options"][$check_value]['fields_link'] = $fieldopt->fields['fields_link'] ?? 0;
-                                $form_data[$idf]["options"][$check_value]['hidden_link'] = $fieldopt->fields['hidden_link'] ?? 0;
-                                $form_data[$idf]["options"][$check_value]['hidden_block'] = $fieldopt->fields['hidden_block'] ?? 0;
-                                $form_data[$idf]["options"][$check_value]['users_id_validate'] = $fieldopt->fields['users_id_validate'] ?? 0;
-                                $form_data[$idf]["options"][$check_value]['childs_blocks'] = $fieldopt->fields['childs_blocks'];
-                                $form_data[$idf]["options"][$check_value]['checkbox_value'] = $fieldopt->fields['checkbox_value'] ?? 0;
-                                $form_data[$idf]["options"][$check_value]['checkbox_id'] = $fieldopt->fields['checkbox_id'] ?? 0;
-                                $form_data[$idf]["options"][$check_value]['parent_field_id'] = $fieldopt->fields['parent_field_id'] ?? 0;
+                            if ($id > 0 && $fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $id, "check_value" => $check_value])) {
+                                $fields_data[$id]["options"][$check_value]['plugin_metademands_tasks_id'] = $fieldopt->fields['plugin_metademands_tasks_id'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['fields_link'] = $fieldopt->fields['fields_link'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['hidden_link'] = $fieldopt->fields['hidden_link'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['hidden_block'] = $fieldopt->fields['hidden_block'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['users_id_validate'] = $fieldopt->fields['users_id_validate'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['childs_blocks'] = $fieldopt->fields['childs_blocks'];
+                                $fields_data[$id]["options"][$check_value]['checkbox_value'] = $fieldopt->fields['checkbox_value'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['checkbox_id'] = $fieldopt->fields['checkbox_id'] ?? 0;
+                                $fields_data[$id]["options"][$check_value]['parent_field_id'] = $fieldopt->fields['parent_field_id'] ?? 0;
                             }
                         }
                     }
 
                 }
 
-                $forms[$step][$metademands_id]['form'] = $form_data;
+                $forms[$step][$metademands_id]['form'] = $fields_data;
             }
 
             // Task only for demands

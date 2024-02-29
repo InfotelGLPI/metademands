@@ -178,7 +178,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         if (!in_array($item->fields['type'], $allowed_options_types)
             && !in_array($item->fields['item'], $allowed_options_items)) {
-            echo __('No options are allowed for this field type', 'metademands');
+            echo "<h3 class='text-center mt-4'>".__('No options are allowed for this field type', 'metademands')."</h3>";
+            return false;
+        }
+
+        if ($item->fields['link_to_user']) {
+            echo "<h3 class='text-center mt-4'>".__("Options aren't available for a field whose value is linked to a user field", 'metademands')."</h3>";
             return false;
         }
 
