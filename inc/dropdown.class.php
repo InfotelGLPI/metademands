@@ -451,7 +451,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                         }
                         if ( ($(this).val() == $idc ||  ($(this).val() != 0 && $idc == -1 ))) {
                             tohide[$hidden_link] = false;
-                        }console.log($id +' : '+tohide)"
+                        }console.log($id +' : '+tohide);"
             ;
 
             $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";

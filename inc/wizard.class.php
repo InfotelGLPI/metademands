@@ -2122,7 +2122,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                            if (res != 'none') {
                                //ignore for hidden inputs below file inputs  
-                               if(!y[i].parentElement.querySelector('input[type=\"file\"')) {
+                               if(!y[i].parentElement.querySelector('input[type=\"file\"]')) {
                                     if (y[i].value == '') {
                                       $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                       $('[name=\"' + fieldname + '\"]').attr('required', 'required');
