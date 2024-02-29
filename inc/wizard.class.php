@@ -2121,27 +2121,43 @@ class PluginMetademandsWizard extends CommonDBTM
                            var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
 
                            if (res != 'none') {
-                              //ignore for hidden inputs below file inputs  
-                              if (y[i].value == '' && !y[i].parentElement.querySelector('input[type=\"file\"')) {
-                                  $('[name=\"' + fieldname + '\"]').addClass('invalid');
-                                  $('[name=\"' + fieldname + '\"]').attr('required', 'required');
-    //                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
-                                  //hack for date
-                                  $('[name=\"' + fieldname + '\"]').next('input').addClass('invalid');
-                                  $('[name=\"' + fieldname + '\"]').next('input').attr('required', 'required');
-                                  var newfieldname = fieldname.match(/\[(.*?)\]/);
-                                  if (newfieldname) {
-                                     mandatory.push(newfieldname[1]);
-                                  }
-                                  ko++;
-                               } else {
-                                    $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                    $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                                    //hack for date
-                                    $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
-                                    $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
-                                  
-    //                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                               //ignore for hidden inputs below file inputs  
+                               if(!y[i].parentElement.querySelector('input[type=\"file\"]')) {
+                                    if (y[i].value == '') {
+                                      $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                      $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+        //                              $('[for=\"' + fieldname + '\"]').css('color', 'red');
+                                      //hack for date
+                                      $('[name=\"' + fieldname + '\"]').next('input').addClass('invalid');
+                                      $('[name=\"' + fieldname + '\"]').next('input').attr('required', 'required');
+                                      var newfieldname = fieldname.match(/\[(.*?)\]/);
+                                      if (newfieldname) {
+                                         mandatory.push(newfieldname[1]);
+                                      }
+                                      ko++;
+                                   } else {
+                                        $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                        $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                                        if (y[i].type === 'text') {
+                                            if (y[i].pattern) {
+                                                let regex = new RegExp(y[i].pattern);
+                                                if (!regex.test(y[i].value)) {
+                                                    $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                                    $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                                                    var newfieldname = fieldname.match(/\[(.*?)\]/);
+                                                     if (newfieldname) {
+                                                        mandatory.push(newfieldname[1]);
+                                                     }
+                                                     ko++;
+                                                }
+                                            }
+                                        }
+                                        //hack for date
+                                        $('[name=\"' + fieldname + '\"]').next('input').removeClass('invalid');
+                                        $('[name=\"' + fieldname + '\"]').next('input').removeAttr('required');
+                                      
+        //                              $('[for=\"' + fieldname + '\"]').css('color', 'unset');
+                                   }
                                }
                             } else {
                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
