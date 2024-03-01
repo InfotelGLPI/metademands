@@ -183,15 +183,7 @@ class PluginMetademandsForm_Value extends CommonDBTM
             if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"])) {
                 unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"]);
             }
-//            $array = json_decode($values['value'], true);
-//            if (is_array($array)) {
-////                Toolbox::logInfo($array);
-//                foreach ($array as $k => $fields) {
-//                    foreach ($fields as $field) {
-//                        Toolbox::logInfo(Toolbox::decodeFromUtf8($field));
-//                    }
-//                }
-//            }
+
             $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id']] = Toolbox::addslashes_deep(json_decode($values['value'], true)) ?? Toolbox::addslashes_deep($values['value']);
             if (!empty($values['value2'])) {
                 $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields'][$values['plugin_metademands_fields_id'] . "-2"] = Toolbox::addslashes_deep(json_decode($values['value2'], true)) ?? Toolbox::addslashes_deep($values['value2']);

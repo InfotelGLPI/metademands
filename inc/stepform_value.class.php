@@ -57,15 +57,6 @@ class PluginMetademandsStepform_Value extends CommonDBTM
                         $linked_docs = [];
                         if ($field['type'] == "upload"
                         ) {
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'])) {
-//                                $linked_docs['_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_filename'];
-//                            }
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'])) {
-//                                $linked_docs['_prefix_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_prefix_filename'];
-//                            }
-//                            if (isset($_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'])) {
-//                                $linked_docs['_tag_filename'] = $_SESSION['plugin_metademands'][$metademands_id]['fields']['uploaded_files']['_tag_filename'];
-//                            }
 
                             $field['value'] = 'filename';
 

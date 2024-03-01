@@ -517,9 +517,9 @@ class PluginMetademandsStepform extends CommonDBTM
             $url = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.php";
             echo "<a href=\"" . $url . "\">";
             if (count($stepforms) == 1) {
-                echo __('Do you want to see him ?', 'servicecatalog');
+                echo __('Do you want to see him ?', 'metademands');
             } else {
-                echo __('Do you want to see them ?', 'servicecatalog');
+                echo __('Do you want to see them ?', 'metademands');
             }
             echo "</a>";
             echo "</div>";
@@ -585,6 +585,7 @@ class PluginMetademandsStepform extends CommonDBTM
                     echo __('Step', 'metademands');
                     echo $name['block_id'];
                     echo "</span></em>";
+                    //TODO Change to new right
                     if (Session::haveRight("plugin_metademands", DELETE)) {
                         $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
                         echo "<br><span style='color:darkred'>";

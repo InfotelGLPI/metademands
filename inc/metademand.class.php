@@ -3685,7 +3685,7 @@ JAVASCRIPT
                 $self = new self();
                 $self->getFromDB($metademands_id);
                 if ($self->getField('hide_no_field') == 1) {
-                    if ($field['type'] == 'radio' && $field['value'] === "") {
+                    if ($field['type'] == 'radio' && ($field['value'] === "" || (is_array($field['value']) && count($field['value']) == 0))) {
                         continue;
                     }
                     if ($field['type'] == 'number' && $field['value'] == "0") {

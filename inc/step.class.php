@@ -717,20 +717,21 @@ class PluginMetademandsStep extends CommonDBChild
             echo "</tr>";
 
         }
+        if ($conf->fields['multiple_link_groups_blocks'] || $conf->fields['link_user_block']) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2'>";
 
-        echo "<tr class='tab_bg_1'>";
-        echo "<td colspan='2'>";
+            echo Html::submit(_sx(
+                'button',
+                'Validate',
+                'metademands'
+            ), ['name'  => 'execute',
+                'id'    => 'formsubmit',
+                'class' => 'btn btn-primary']);
 
-        echo Html::submit(_sx(
-            'button',
-            'Validate',
-            'metademands'
-        ), ['name'  => 'execute',
-            'id'    => 'formsubmit',
-            'class' => 'btn btn-primary']);
-
-        echo "</td>";
-        echo "</tr>";
+            echo "</td>";
+            echo "</tr>";
+        }
         echo "</table>";
         Html::closeform();
 
