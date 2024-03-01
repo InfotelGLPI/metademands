@@ -54,6 +54,7 @@ class PluginMetademandsUpload extends CommonDBTM
 
     static function showWizardField($data, $namefield, $value, $on_order, $idline)
     {
+        Html::requireJs('tinymce');
         $self = new self();
         $arrayFiles = json_decode($value, true);
         $field      = "";

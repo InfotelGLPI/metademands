@@ -595,7 +595,7 @@ class PluginMetademandsStep extends CommonDBChild
                 'reloadonclose' => true,
                 'autoopen' => true,
                 'width' => 400,
-                'height' => 300
+                'height' => 400
             ]
         );
 
