@@ -384,6 +384,8 @@ class PluginMetademandsField extends CommonDBChild
             }
         }
 
+        echo Html::hidden('plugin_metademands_metademands_id', ['value' => $this->fields["plugin_metademands_metademands_id"]]);
+
         if (count($metademand_fields->fields) < 1 && count($categories) > 1) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
             echo "<i class='fas fa-exclamation-triangle fa-3x'></i>&nbsp;" . __('Please add a type category field', 'metademands');
