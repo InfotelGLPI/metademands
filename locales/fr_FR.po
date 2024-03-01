@@ -190,7 +190,7 @@ msgstr "L'option vide a été supprimée"
 
 #: front/tools.form.php:54
 msgid "Empty custom value has been cleaned"
-msgstr "Les valeurs personnalisées vides ont été nettoyée"
+msgstr "Les valeurs personnalisées vides ont été nettoyées"
 
 #: front/wizard.form.php:109
 msgid "This metademand cannot be used with this entity"
