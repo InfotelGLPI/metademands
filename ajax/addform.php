@@ -68,7 +68,7 @@ if (isset($_POST['quantity']) && is_array($_POST['quantity'])) {
     }
 }
 
-if (isset($_POST['save_form'])) {
+if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
 
     $nblines = 0;
     $KO      = false;

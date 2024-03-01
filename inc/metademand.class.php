@@ -173,7 +173,22 @@ class PluginMetademandsMetademand extends CommonDBTM
                     );
                 }
             } else {
-                if ($item->getType() == 'Ticket' && $this->canView()) {
+                $ticket_metademand = new PluginMetademandsTicket_Metademand();
+                $ticket_metademand_datas = $ticket_metademand->find(['tickets_id' => $item->fields['id']]);
+
+                // If ticket is Parent : Check if all sons ticket are closed
+                $tickets_found = [];
+                if (count($ticket_metademand_datas)) {
+                    $ticket_metademand_datas = reset($ticket_metademand_datas);
+                    $tickets_found = PluginMetademandsTicket::getSonTickets(
+                        $item->fields['id'],
+                        $ticket_metademand_datas['plugin_metademands_metademands_id'],
+                        [],
+                        true,
+                        true
+                    );
+                }
+                if (count($tickets_found) > 0 && $item->getType() == 'Ticket' && $this->canView()) {
                     $name = __('Demand Progression', 'metademands');
                     return self::createTabEntry(
                         $name,

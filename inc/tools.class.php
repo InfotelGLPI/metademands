@@ -194,6 +194,7 @@ class PluginMetademandsTools extends CommonDBTM
                 $field->getfromDB($array['plugin_metademands_fields_id']);
 
                 echo "<table class='tab_cadre_fixe'>";
+
                 echo "<tr class='tab_bg_2'>";
                 echo "<th class='left' width='50%'>";
                 echo __('Field');
@@ -204,6 +205,7 @@ class PluginMetademandsTools extends CommonDBTM
                 echo "<th class='center'>";
                 echo "</th>";
                 echo "</tr>";
+
                 echo "<tr class='tab_bg_2'>";
                 echo "<td class='left'>";
                 echo $field->getLink();
@@ -227,6 +229,98 @@ class PluginMetademandsTools extends CommonDBTM
             echo "<tr class='tab_bg_2'>";
             echo "<th class='left'>";
             echo __('No empty field options founded', 'metademands');
+            echo "</th>";
+            echo "</tr>";
+        }
+
+        echo "</table></div>";
+
+
+        echo "<br><div class='left'>";
+        echo "<table class='tab_cadre_fixe'>";
+
+        $query = "SELECT id, type, custom_values
+                    FROM
+                        glpi_plugin_metademands_fields
+                    WHERE
+                        type = 'radio' OR type = 'checkbox' OR type = 'dropdown_meta'";
+
+        $result = $DB->query($query);
+
+        if ($DB->numrows($result) > 0) {
+            echo "<tr class='tab_bg_2'>";
+            echo "<th class='left'>";
+            echo __('Empty custom values', 'metademands');
+            echo "</th>";
+            echo "</tr>";
+
+            echo "<tr class='tab_bg_2'>";
+            echo "<td class='left'>";
+
+            while ($array = $DB->fetchAssoc($result)) {
+
+                $field = new PluginMetademandsField();
+                $field->getfromDB($array['id']);
+
+                if (isset($array['custom_values'])) {
+                    $test = json_decode($array['custom_values'], true);
+                    if (!array_key_exists('0', $test)) {
+                        continue;
+                    }
+                    echo "<table class='tab_cadre_fixe'>";
+                    echo "<tr class='tab_bg_2'>";
+                    echo "<th class='left' width='50%'>";
+                    echo __('Field');
+                    echo "</th>";
+                    echo "</th>";
+                    echo "<th class='center'>";
+                    echo __('Type');
+                    echo "</th>";
+                    echo "<th class='center'>";
+                    echo __('Value');
+                    echo "</th>";
+                    echo "<th class='left'>";
+                    echo _n('Meta-Demand', 'Meta-Demands', 1, 'metademands');
+                    echo "</th>";
+                    echo "<th class='center'>";
+                    echo "</th>";
+                    echo "</tr>";
+
+                    echo "<tr class='tab_bg_2'>";
+                    echo "<td class='left'>";
+                    echo $field->getLink();
+                    echo "</td>";
+                    echo "<td class='left'>";
+                    echo $array['type'];
+                    echo "</td>";
+                    echo "<td class='left'>";
+                    var_dump($test);
+                    $start_one = array_combine(range(1, count($test)), array_values($test));
+                    var_dump($start_one);
+                    echo "</td>";
+                    echo "<td class='left'>";
+                    echo Dropdown::getDropdownName(
+                        "glpi_plugin_metademands_metademands",
+                        $field->fields['plugin_metademands_metademands_id']
+                    );
+                    echo "</td>";
+                    echo "<td class='center'>";
+                    echo Html::getSimpleForm(
+                        PluginMetademandsTools::getFormURL(),
+                        'fix_emptycustomvalues',
+                        _x('button', 'Fix empty custom values', 'metademands'),
+                        ['id' => $array['id']],
+                        'fa-check-circle'
+                    );
+                    echo "</td>";
+                    echo "</tr>";
+                    echo "</table>";
+                }
+            }
+        } else {
+            echo "<tr class='tab_bg_2'>";
+            echo "<th class='left'>";
+            echo __('No empty custom values founded', 'metademands');
             echo "</th>";
             echo "</tr>";
         }

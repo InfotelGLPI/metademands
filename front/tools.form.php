@@ -42,6 +42,17 @@ if (isset($_POST["purge_emptyoptions"])) {
     $field->delete($_POST, 1);
     Session::addMessageAfterRedirect(__('Empty option has been deleted', 'metademands'));
     Html::back();
+} else if (isset($_POST["fix_emptycustomvalues"])) {
+    $itil = $_POST["id"];
+    $field = new PluginMetademandsField();
+    $field->getfromDB($itil);
+    $test = json_decode($field->fields['custom_values'], true);
+    $start_one = array_combine(range(1, count($test)), array_values($test));
+    $input['custom_values'] = json_encode($start_one);
+    $input['id'] = $itil;
+    $field->update($input, 1);
+    Session::addMessageAfterRedirect(__('Empty custom value has been cleaned', 'metademands'));
+    Html::back();
 } else {
     Html::displayRightError();
 }

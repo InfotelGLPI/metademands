@@ -125,7 +125,7 @@ if ($nofreeinputs === false) {
                 }
             }
         }
-    } else {
+    } else if (isset($_POST['form_metademands_id'])) {
 
         if ($metademands->canCreate()
             || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
@@ -384,5 +384,8 @@ if ($nofreeinputs === false) {
         } else {
             echo $KO;
         }
+    }  else {
+        $KO = true;
+        echo $KO;
     }
 }

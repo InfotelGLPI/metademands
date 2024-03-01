@@ -84,9 +84,11 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function canCreate()
     {
-        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+        if (Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]) 
+              || Session::haveRight('plugin_metademands_createmeta', READ)) {
+            return true;
+        }
     }
-
     /**
      *
      * @param CommonGLPI $item
@@ -155,7 +157,7 @@ class PluginMetademandsWizard extends CommonDBTM
             $this->check($ID, READ);
             $metademand->getFromDB($this->fields['plugin_metademands_metademands_id']);
         } else {
-            // Create item
+             //Create item
             $item = $options['item'];
             $canedit = $metademand->can($item->fields['id'], UPDATE);
             $this->getEmpty();
@@ -167,11 +169,11 @@ class PluginMetademandsWizard extends CommonDBTM
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr><th class='tab_bg_1'>" . PluginMetademandsWizard::getTypeName() . "</th></tr>";
         $meta = new PluginMetademandsMetademand();
-//        if ($meta->getFromDB($item->fields['id'])) {
-//            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-//                $background_color = $meta->fields['background_color'];
-//            }
-//        }
+        if ($meta->getFromDB($item->fields['id'])) {
+            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
+                $background_color = $meta->fields['background_color'];
+            }
+        }
         echo "<tr><td>";
         $options = ['step' => PluginMetademandsMetademand::STEP_SHOW,
             'metademands_id' => $item->getID(),
