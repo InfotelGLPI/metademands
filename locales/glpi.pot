@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-01 18:25+0000\n"
+"POT-Creation-Date: 2024-03-02 09:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -160,7 +160,7 @@ msgid "The form has been sent to the group %s, you can close the window"
 msgstr ""
 
 #: front/nextGroup.form.php:81 front/nextGroup.form.php:88
-#: inc/step.class.php:593
+#: inc/step.class.php:605
 msgid "Next recipient"
 msgstr ""
 
@@ -696,7 +696,7 @@ msgid "Wizard creation"
 msgstr ""
 
 #: inc/field.class.php:336 inc/field.class.php:546 inc/field.class.php:1475
-#: inc/field.class.php:3321 inc/step.class.php:287 inc/step.class.php:369
+#: inc/field.class.php:3321 inc/step.class.php:299 inc/step.class.php:381
 msgid "Block"
 msgstr ""
 
@@ -910,7 +910,7 @@ msgid ""
 msgstr ""
 
 #: inc/fieldoption.class.php:1049 inc/mailtask.class.php:150
-#: inc/step.class.php:258 inc/step.class.php:380 inc/step.class.php:404
+#: inc/step.class.php:270 inc/step.class.php:392 inc/step.class.php:416
 #: inc/task.class.php:701 inc/task.class.php:1093 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
@@ -1517,50 +1517,50 @@ msgid_plural "Step-by-Step blocks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/step.class.php:229
+#: inc/step.class.php:241
 msgid "Add a new association"
 msgstr ""
 
-#: inc/step.class.php:267
+#: inc/step.class.php:279
 msgid ""
 "Be careful if all blocks are not assigned, they will be displayed to the "
 "last assigned group"
 msgstr ""
 
-#: inc/step.class.php:281
+#: inc/step.class.php:293
 msgid "List of associations"
 msgstr ""
 
-#: inc/step.class.php:289
+#: inc/step.class.php:301
 msgid "Message"
 msgstr ""
 
-#: inc/step.class.php:337
+#: inc/step.class.php:349
 msgid "No association found"
 msgstr ""
 
-#: inc/step.class.php:466
+#: inc/step.class.php:478
 msgid "Message to next group on form"
 msgstr ""
 
-#: inc/step.class.php:561
+#: inc/step.class.php:573
 msgid "This group is already assigned to this block"
 msgstr ""
 
-#: inc/step.class.php:635
+#: inc/step.class.php:647
 msgid "There is a problem with the setup"
 msgstr ""
 
-#: inc/step.class.php:679
+#: inc/step.class.php:691
 msgid "Select the next group"
 msgstr ""
 
-#: inc/step.class.php:726
+#: inc/step.class.php:738
 msgctxt "button"
 msgid "Validate"
 msgstr ""
 
-#: inc/step.class.php:876
+#: inc/step.class.php:888
 msgid "Error assigning to next group"
 msgstr ""
 
