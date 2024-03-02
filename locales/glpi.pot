@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 10:12+0000\n"
+"POT-Creation-Date: 2024-03-02 10:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1516,7 +1516,7 @@ msgid "Hide button in menu"
 msgstr ""
 
 #: inc/profile.class.php:229
-msgid "Cancel / Delete a form"
+msgid "Cancel / delete a form"
 msgstr ""
 
 #: inc/radio.class.php:51
