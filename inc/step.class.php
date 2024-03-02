@@ -175,9 +175,21 @@ class PluginMetademandsStep extends CommonDBChild
      */
     public static function getMsgForNextBlock($plugin_metademands_metademands_id, $block_id)
     {
+        global $DB;
+
+        $rank = 0;
+        $ranks = $DB->request(['SELECT' => ['MAX' => 'rank AS maxblock'],
+            'FROM' => 'glpi_plugin_metademands_fields',
+            'WHERE' => ['plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id']]]);
+
+        foreach ($ranks as $data) {
+            $rank = $data['maxblock'];
+        }
+
         $self = new self();
         $condition = [
             'block_id' => $block_id,
+            'NOT' => ['block_id' => $rank],
             'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id
         ];
 
