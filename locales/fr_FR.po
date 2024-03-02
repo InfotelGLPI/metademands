@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-02 10:12+0000\n"
+"POT-Creation-Date: 2024-03-02 10:15+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2024\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -1574,7 +1574,7 @@ msgid "Hide button in menu"
 msgstr "Cacher le lien dans le menu"
 
 #: inc/profile.class.php:229
-msgid "Cancel / Delete a form"
+msgid "Cancel / delete a form"
 msgstr "Annuler / supprimer un formulaire"
 
 #: inc/radio.class.php:51
