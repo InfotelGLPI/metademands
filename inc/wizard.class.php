@@ -1480,6 +1480,21 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</div>";
                 }
 
+                if (Session::haveRight("plugin_metademands_cancelform", READ)
+                && isset($_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'])) {
+                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                    $plugin_metademands_stepforms_id = $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'];
+                    echo "<br><span style='color:darkred'>";
+                    Html::showSimpleForm(
+                        $target,
+                        'delete_form_from_list',
+                        _sx('button', 'Cancel form', 'metademands'),
+                        ['plugin_metademands_stepforms_id' => $plugin_metademands_stepforms_id],
+//                        'fa-trash-alt fa-2x'
+                    );
+                    echo "</span>";
+                }
+
                 echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
 
@@ -2490,20 +2505,15 @@ class PluginMetademandsWizard extends CommonDBTM
 //                             create = true;
                          } else {
                              if(create) {
-                              document.getElementById('nextBtn').innerHTML = submitsteptitle;
-//                            document.getElementById('nextMsg').style.display = 'block';
-//                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
+                                  document.getElementById('nextBtn').innerHTML = submitsteptitle;
+    //                            document.getElementById('nextMsg').style.display = 'block';
+    //                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
                              } else {
-                                document.getElementById('nextBtn').innerHTML = nextsteptitle;
+                                    document.getElementById('nextBtn').innerHTML = nextsteptitle;
+                             }
                          }
-                         }
-                         
-                         
-
                      }
-                     
                   }
-               
                </script>";
     }
 
@@ -2644,7 +2654,8 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                     }
 
-                    PluginMetademandsStepform::deleteAfterCreate($values['plugin_metademands_stepforms_id']);
+                    $step = new PluginMetademandsStepform();
+                    $step->deleteAfterCreate($values['plugin_metademands_stepforms_id'], false);
                 }
 
                 if (is_array($result)) {

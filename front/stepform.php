@@ -44,7 +44,7 @@ if (Session::getCurrentInterface() == 'central') {
 $meta = new PluginMetademandsMetademand();
 $stepform = new PluginMetademandsStepform();
 
-if ($meta->canView() || Session::haveRight("config", UPDATE)) {
+if ($meta->canView() || Session::haveRight("plugin_metademands_fillform", READ)) {
     $stepform->showWaitingForm();
 } else {
    Html::displayRightError();

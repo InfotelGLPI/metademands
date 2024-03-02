@@ -38,7 +38,7 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
 {
     const TARGET_NEXT_GROUP = 6300;
     const TARGET_NEXT_USER = 6301;
-
+    const REQUESTER = 6302;
     /**
      * Get events related to Itil Object
      *
@@ -50,7 +50,7 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
     {
         $events = [
             'new_step_form' => __("A new form has been completed", 'metademands'),
-//            'reminder_step_form' => __('Reminder for a waiting form', 'metademands'),
+            'delete_step_form' => __('A form has been cancelled', 'metademands'),
         ];
 
         asort($events);
@@ -64,6 +64,7 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
     {
         $this->addTarget(self::TARGET_NEXT_GROUP, __('Next group in charge of demand', 'metademands'));
         $this->addTarget(self::TARGET_NEXT_USER, __('Next user in charge of demand', 'metademands'));
+        $this->addTarget(self::REQUESTER, __('Form requester', 'metademands'));
     }
 
     /**
@@ -83,6 +84,8 @@ class PluginMetademandsNotificationTargetStepform extends NotificationTarget
                 break;
             case self::TARGET_NEXT_USER:
                 return $this->getUserAddress($this->obj->fields['users_id_dest']);
+            case self::REQUESTER:
+                return $this->getUserAddress($this->obj->fields['users_id']);
         }
     }
 

@@ -95,7 +95,9 @@ class PluginMetademandsProfile extends Profile
                        'plugin_metademands_updatemeta' => 1,
                        'plugin_metademands_on_login' => 0,
                        'plugin_metademands_in_menu' => 0,
-                'plugin_metademands_createmeta' => 1];
+                        'plugin_metademands_createmeta' => 1,
+                        'plugin_metademands_fillform' => 0,
+                        'plugin_metademands_cancelform' => 0];
 
             self::addDefaultProfileInfos($ID, $rights);
             $prof->showForm($ID);
@@ -140,6 +142,22 @@ class PluginMetademandsProfile extends Profile
             'checked' => $effective_rights['plugin_metademands_createmeta']]);
         echo "</td></tr>\n";
 
+        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_fillform']);
+        echo "<tr class='tab_bg_2'>";
+        echo "<td width='20%'>" . __('Fill out a form', 'metademands') . "</td>";
+        echo "<td colspan='5'>";
+        Html::showCheckbox(['name'    => '_plugin_metademands_fillform[1_0]',
+            'checked' => $effective_rights['plugin_metademands_fillform']]);
+        echo "</td></tr>\n";
+
+        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_cancelform']);
+        echo "<tr class='tab_bg_2'>";
+        echo "<td width='20%'>" . __('Cancel /delete a form', 'metademands') . "</td>";
+        echo "<td colspan='5'>";
+        Html::showCheckbox(['name'    => '_plugin_metademands_cancelform[1_0]',
+            'checked' => $effective_rights['plugin_metademands_cancelform']]);
+        echo "</td></tr>\n";
+
         echo "<tr class='tab_bg_2'>";
         echo "<td width='20%'>" . __('Right to update a meta-demand form from the ticket', 'metademands') . "</td>";
         echo "<td colspan='5'>";
@@ -147,6 +165,7 @@ class PluginMetademandsProfile extends Profile
         Html::showCheckbox(['name'    => '_plugin_metademands_updatemeta[1_0]',
                             'checked' => $effective_rights['plugin_metademands_updatemeta']]);
         echo "</td></tr>\n";
+
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_on_login']);
         echo "<tr class='tab_bg_2'>";
         echo "<td width='20%'>".__('Show form selection on connection and replace the create form', 'metademands')."</td>";
@@ -154,6 +173,7 @@ class PluginMetademandsProfile extends Profile
         Html::showCheckbox(['name'    => '_plugin_metademands_on_login[1_0]',
             'checked' => $effective_rights['plugin_metademands_on_login']]);
         echo "</td></tr>\n";
+
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_in_menu']);
         echo "<tr class='tab_bg_2'>";
         echo "<td width='20%'>".__('Hide button in menu', 'metademands')."</td>";
@@ -200,6 +220,14 @@ class PluginMetademandsProfile extends Profile
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
                 'label'    => __('Create a meta-demand', 'metademands'),
                 'field'    => 'plugin_metademands_createmeta'
+            ];
+            $rights[] = ['itemtype' => 'PluginMetademandsStepform',
+                'label'    => __('Fill out a form', 'metademands'),
+                'field'    => 'plugin_metademands_fillform'
+            ];
+            $rights[] = ['itemtype' => 'PluginMetademandsStepform',
+                'label'    => __('Cancel / Delete a form', 'metademands'),
+                'field'    => 'plugin_metademands_cancelform'
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
                          'label'    => __('Right to update a meta-demand form from the ticket', 'metademands'),
@@ -357,7 +385,9 @@ class PluginMetademandsProfile extends Profile
                    'plugin_metademands_updatemeta' => 1,
                    'plugin_metademands_on_login' => 0,
                    'plugin_metademands_in_menu' => 0,
-            'plugin_metademands_createmeta' => 1];
+            'plugin_metademands_createmeta' => 1,
+            'plugin_metademands_fillform' => 0,
+            'plugin_metademands_cancelform' => 0];
 
         self::addDefaultProfileInfos(
             $profiles_id,

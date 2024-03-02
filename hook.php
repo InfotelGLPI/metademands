@@ -440,7 +440,7 @@ function plugin_metademands_uninstall() {
     }
 
     $options = ['itemtype' => 'PluginMetademandsStepform',
-                'event'    => 'reminder_step_form',
+                'event'    => 'delete_step_form',
                 'FIELDS'   => 'id'];
 
     $notif = new Notification();
