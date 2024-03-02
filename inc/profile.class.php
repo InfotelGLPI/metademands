@@ -226,7 +226,7 @@ class PluginMetademandsProfile extends Profile
                 'field'    => 'plugin_metademands_fillform'
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsStepform',
-                'label'    => __('Cancel / Delete a form', 'metademands'),
+                'label'    => __('Cancel / delete a form', 'metademands'),
                 'field'    => 'plugin_metademands_cancelform'
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
