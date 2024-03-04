@@ -34,58 +34,85 @@ Html::header_nocache();
 Session::checkLoginUser();
 
 if (!isset($_POST['step'])) {
-   $_POST['step'] = 'default';
+    $_POST['step'] = 'default';
 }
 
 switch ($_POST['step']) {
-   case 'order':
-      $fields = new PluginMetademandsField();
-      $fields->showOrderDropdown($_POST['rank'],
-                                 $_POST['fields_id'],
-                                 $_POST['previous_fields_id'],
-                                 $_POST["metademands_id"]);
-      break;
-   case 'object':
-      global $CFG_GLPI;
-//      if ($_POST["type"] == "dropdown"
+    case 'order':
+        $fields = new PluginMetademandsField();
+        $fields->showOrderDropdown(
+            $_POST['rank'],
+            $_POST['fields_id'],
+            $_POST['previous_fields_id'],
+            $_POST["metademands_id"]
+        );
+        break;
+    case 'object':
+        global $CFG_GLPI;
+        if ($_POST['type'] === 'text') {
+            echo "
+                <div class='custom-control custom-checkbox custom-control-inline'>
+                    <label>" . __('Link this to a user field', 'metademands') . "</label>
+                    <input class='form-check-input' type='checkbox' name='item' value='User'>
+                </div>
+            ";
+        } else {
+            //      if ($_POST["type"] == "dropdown"
 //          || $_POST["type"] == "dropdown_object"
 //          || $_POST["type"] == "dropdown_meta"
 //          || $_POST["type"] == "dropdown_multiple") {
-         $randItem   = PluginMetademandsField::dropdownFieldItems("item", $_POST["type"], ['value' => $_POST['item'], 'rand' => $_POST["rand"]]);
-         $paramsItem = ['value'          => '__VALUE__',
-                        'item'           => '__VALUE__',
-                        'type'           => $_POST['type'],
-                        'max_upload'     => $_POST['max_upload'],
-                        'regex'          => $_POST['regex'],
-                        'display_type'   => $_POST['display_type'],
-                        'informations_to_display'   => $_POST['informations_to_display'],
-                        'metademands_id' => $_POST["metademands_id"],
-                        'custom_values'  => $_POST["custom_values"],
-                        'comment_values' => $_POST["comment_values"],
-                        'default_values' => $_POST["default_values"],
-         ];
+            $randItem = PluginMetademandsField::dropdownFieldItems(
+                "item",
+                $_POST["type"],
+                ['value' => $_POST['item'], 'rand' => $_POST["rand"]]
+            );
+            $paramsItem = [
+                'value' => '__VALUE__',
+                'item' => '__VALUE__',
+                'type' => $_POST['type'],
+                'max_upload' => $_POST['max_upload'],
+                'regex' => $_POST['regex'],
+                'display_type' => $_POST['display_type'],
+                'informations_to_display' => $_POST['informations_to_display'],
+                'metademands_id' => $_POST["metademands_id"],
+                'custom_values' => $_POST["custom_values"],
+                'comment_values' => $_POST["comment_values"],
+                'default_values' => $_POST["default_values"],
+            ];
 
-         Ajax::updateItemOnSelectEvent('dropdown_item' . $randItem, "show_values", PLUGIN_METADEMANDS_WEBDIR .
-                                                                                   "/ajax/viewtypefields.php?id=" . $_POST['metademands_id'], $paramsItem);
+            Ajax::updateItemOnSelectEvent(
+                'dropdown_item' . $randItem,
+                "show_values",
+                PLUGIN_METADEMANDS_WEBDIR .
+                "/ajax/viewtypefields.php?id=" . $_POST['metademands_id'],
+                $paramsItem
+            );
 //      }
-
-      break;
+        }
+        break;
     case 'listfieldbytype':
         $fields = new PluginMetademandsField();
         $crit = ["type" => $_POST['value']];
-        $rand = PluginMetademandsField::dropdown(['name'  => "existing_field_id", "condition" => $crit]);
-        $params = ['fields_id'               => '__VALUE__'];
-        Ajax::updateItemOnSelectEvent('dropdown_existing_field_id' . $rand, "show_fields_infos", PLUGIN_METADEMANDS_WEBDIR .
-            "/ajax/viewfieldinfos.php", $params);
+        $rand = PluginMetademandsField::dropdown(['name' => "existing_field_id", "condition" => $crit]);
+        $params = ['fields_id' => '__VALUE__'];
+        Ajax::updateItemOnSelectEvent(
+            'dropdown_existing_field_id' . $rand,
+            "show_fields_infos",
+            PLUGIN_METADEMANDS_WEBDIR .
+            "/ajax/viewfieldinfos.php",
+            $params
+        );
         break;
-   default:
-      $fields = new PluginMetademandsField();
-      $fields->getEditValue(PluginMetademandsField::_unserialize(stripslashes($_POST['custom_values'])),
-                            PluginMetademandsField::_unserialize(stripslashes($_POST['comment_values'])),
-                            PluginMetademandsField::_unserialize(stripslashes($_POST['default_values'])),
-                            $_POST);
-      $fields->viewTypeField($_POST);
-      break;
+    default:
+        $fields = new PluginMetademandsField();
+        $fields->getEditValue(
+            PluginMetademandsField::_unserialize(stripslashes($_POST['custom_values'])),
+            PluginMetademandsField::_unserialize(stripslashes($_POST['comment_values'])),
+            PluginMetademandsField::_unserialize(stripslashes($_POST['default_values'])),
+            $_POST
+        );
+        $fields->viewTypeField($_POST);
+        break;
 }
 
 Html::ajaxFooter();
