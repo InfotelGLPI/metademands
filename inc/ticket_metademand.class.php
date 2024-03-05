@@ -117,7 +117,7 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
       AND `glpi_plugin_metademands_tickets_metademands`.`plugin_metademands_metademands_id` = $meta_id 
       AND (`glpi_tickets`.`status` IN ($status)) " .
                 getEntitiesRestrictRequest("AND", "glpi_tickets");
-      $query .= " ORDER BY glpi_tickets.date_mod DESC";
+      $query .= " ORDER BY id DESC";
 
       return $query;
 

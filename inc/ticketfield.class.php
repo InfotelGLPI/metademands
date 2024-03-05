@@ -213,6 +213,12 @@ class PluginMetademandsTicketField extends CommonDBChild {
       $used_fields = $this->getPredefinedFields($item->fields['id'], true);
       $fields      = $tt->getAllowedFieldsNames(true, isset($used_fields['itemtype']));
 
+       $cats = json_decode($item->fields['itilcategories_id'], true);
+
+       if (is_array($cats) && count($cats) > 1) {
+           $cats = reset($cats);
+       }
+
       if ($canedit) {
          echo "<div class='center first-bloc'>";
          echo "<form name='ticketfield_form' method='post' action='" . Toolbox::getItemTypeFormURL(__CLASS__) . "'>";
@@ -221,7 +227,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
          echo "<th colspan='6'>";
          echo __('Synchronise with ticket template', 'metademands') . " ";
          $ticket = new Ticket();
-         $tt     = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $item->fields['itilcategories_id'], $item->fields['entities_id']);
+         $tt     = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $cats, $item->fields['entities_id']);
          echo $tt->getLink();
          echo "</th>";
          echo "</tr>";
