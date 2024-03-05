@@ -46,7 +46,7 @@ if(isset($_POST['apply_rule'])){
 
 // override itil_categories_id if checkbox all was checked
 if (isset($_POST['itilcategories_id_all']) && $_POST['itilcategories_id_all'] == 1) {
-    $_POST['itilcategories_id'] = 'all';
+    $_POST['itilcategories_id'] = array_keys(PluginMetademandsMetademand::getAvailableItilCategories($_POST['id']));
     unset($_POST['itilcategories_id_all']);
 }
 

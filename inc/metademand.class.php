@@ -1020,75 +1020,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             echo "<td>" . __('Category') . "</td>";
             echo "<td>";
 
-            if ($this->fields['type']) {
-                switch ($this->fields['type']) {
-                    case Ticket::INCIDENT_TYPE:
-                        $criteria['is_incident'] = 1;
-                        $crit['type'] = Ticket::INCIDENT_TYPE;
-                        break;
-
-                    case Ticket::DEMAND_TYPE:
-                        $criteria['is_request'] = 1;
-                        $crit['type'] = Ticket::DEMAND_TYPE;
-                        break;
-                }
-            } else {
-                $criteria = ['is_incident' => 1];
-                $crit = ['type' => Ticket::INCIDENT_TYPE];
-            }
-
-            if ($this->fields['object_to_create'] == 'Problem') {
-                $criteria = ['is_problem' => 1];
-                $crit = ['object_to_create' => 'Problem'];
-            } elseif ($this->fields['object_to_create'] == 'Change') {
-                $criteria = ['is_change' => 1];
-                $crit = ['object_to_create' => 'Change'];
-            }
-
-            $criteria += getEntitiesRestrictCriteria(
-                \ITILCategory::getTable(),
-                'entities_id',
-                $_SESSION['glpiactiveentities'],
-                true
-            );
-
-            $dbu = new DbUtils();
-
-            $crit["is_deleted"] = 0;
-            $crit["is_template"] = 0;
-            $crit["type"] = $this->fields['type'];
-            $crit += ['NOT' => [
-                'id' => $ID
-            ]];
-            $cats = $dbu->getAllDataFromTable(self::getTable(), $crit);
-
-            $used = [];
-            foreach ($cats as $item) {
-                $tempcats = json_decode($item['itilcategories_id'], true);
-                if (is_array($tempcats)) {
-                    foreach ($tempcats as $tempcat) {
-                        $used [] = $tempcat;
-                    }
-                }
-            }
-
-//            $ticketcats = $dbu->getAllDataFromTable(PluginMetademandsTicketTask::getTable());
-//            foreach ($ticketcats as $item) {
-//                if ($item['itilcategories_id'] > 0) {
-//                    $used [] = $item['itilcategories_id'];
-//                }
-//            }
-            $used = array_unique($used);
-            if (count($used) > 0) {
-                $criteria += ['NOT' => [
-                    'id' => $used
-                ]];
-            }
-            $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
-            $temp = [];
-            foreach ($result as $item) {
-                $temp[$item['id']] = html_entity_decode($item['completename']);
-            }
+            $availableCategories = self::getAvailableItilCategories($ID);
 
             $categories = [];
             if (isset($this->fields['itilcategories_id'])) {
@@ -1101,9 +1033,12 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $categories = json_encode($array);
                 }
             }
-            $values = $this->fields['itilcategories_id'] && $this->fields['itilcategories_id'] !== 'all' ? json_decode($categories) : [];
+            $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
 
-            $checked = $this->fields['itilcategories_id'] === 'all' ? 'checked' : '';
+            // if all available itil categories are selected checkbox is checked
+            $diff1 = array_diff($values, array_keys($availableCategories));
+            $diff2 = array_diff(array_keys($availableCategories), $values);
+            $checked = empty($diff1) && empty($diff2) ? 'checked' : '';
             echo "<div class='custom-control custom-checkbox custom-control-inline'>
                     <label>" . __('All categories') . "</label>
                     <input id='itilcategories_id_all' class='form-check-input' type='checkbox' name='itilcategories_id_all' value='1' $checked>
@@ -1111,15 +1046,18 @@ class PluginMetademandsMetademand extends CommonDBTM
             echo "<span id='show_category_by_type'>";
             Dropdown::showFromArray(
                 'itilcategories_id',
-                $temp,
+                $availableCategories,
                 ['values' => $values,
                     'width' => '100%',
                     'multiple' => true,
-                    'entity' => $_SESSION['glpiactiveentities']]
+                    'entity' => $_SESSION['glpiactiveentities'],
+                ]
             );
+            $jsDefaultVisibility = $checked ? 'categoriesSelect.hidden = true' : '';
             echo "<script type='text/javascript'>
                         $(function() {
                             let categoriesSelect = document.getElementById('show_category_by_type');
+                            $jsDefaultVisibility
                             document.getElementById('itilcategories_id_all').addEventListener('change', (e) => categoriesSelect.hidden = e.target.checked)
                         })
                     </script>";
@@ -6953,5 +6891,80 @@ HTML;
             echo "</tr>";
         }
         echo "</table></div>";
+    }
+
+    /**
+     * Get the list of available categories for a given metademand
+     * @param $id int metademand id
+     * @return array id => completename
+     */
+    public static function getAvailableItilCategories($id) {
+        $metademand = new self();
+        $metademand->getFromDB($id);
+        if ($metademand->fields['type']) {
+            switch ($metademand->fields['type']) {
+                case Ticket::INCIDENT_TYPE:
+                    $critCategory['is_incident'] = 1;
+                    $critMeta['type'] = Ticket::INCIDENT_TYPE;
+                    break;
+
+                case Ticket::DEMAND_TYPE:
+                    $critCategory['is_request'] = 1;
+                    $critMeta['type'] = Ticket::DEMAND_TYPE;
+                    break;
+            }
+        } else {
+            $critCategory = ['is_incident' => 1];
+            $critMeta = ['type' => Ticket::INCIDENT_TYPE];
+        }
+
+        if ($metademand->fields['object_to_create'] == 'Problem') {
+            $critCategory = ['is_problem' => 1];
+            $critMeta = ['object_to_create' => 'Problem'];
+        } elseif ($metademand->fields['object_to_create'] == 'Change') {
+            $critCategory = ['is_change' => 1];
+            $critMeta = ['object_to_create' => 'Change'];
+        }
+
+        $critCategory += getEntitiesRestrictCriteria(
+            \ITILCategory::getTable(),
+            'entities_id',
+            $_SESSION['glpiactiveentities'],
+            true
+        );
+
+        $dbu = new DbUtils();
+
+        $critMeta["is_deleted"] = 0;
+        $critMeta["is_template"] = 0;
+        $critMeta["type"] = $metademand->fields['type'];
+        $critMeta += ['NOT' => [
+            'id' => $id
+        ]];
+        $metademands = $dbu->getAllDataFromTable(self::getTable(), $critMeta);
+
+        $usedCategories = [];
+        foreach ($metademands as $item) {
+            $tempcats = json_decode($item['itilcategories_id'], true);
+            if (is_array($tempcats)) {
+                foreach ($tempcats as $tempcat) {
+                    $usedCategories[] = $tempcat;
+                }
+            }
+        }
+
+        $usedCategories = array_unique($usedCategories);
+        if (count($usedCategories) > 0) {
+            $critCategory += ['NOT' => [
+                'id' => $usedCategories
+            ]];
+        }
+        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
+        $availableCategories = [];
+        foreach ($result as $item) {
+            $availableCategories[$item['id']] = html_entity_decode($item['completename']);
+        }
+
+        return $availableCategories;
     }
 }
