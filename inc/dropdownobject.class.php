@@ -61,7 +61,6 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         }
 
         switch ($data['item']) {
-
             case 'User':
                 $userrand = mt_rand();
                 $field    = "";
@@ -229,6 +228,38 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     $field .= Html::hidden($namefield . "[" . $data['id'] . "]", ['value' => $value]);
                 }
                 echo User::dropdown($opt);
+
+                $relatedTextFields = new PluginMetademandsField();
+                $relatedTextFields = $relatedTextFields->find([
+                    'item' => 'User',
+                    'type' => 'text',
+                    'link_to_user' => $data['id']
+                ]);
+                if (count($relatedTextFields)) {
+                    $updateJs = '';
+                    foreach($relatedTextFields as $textField) {
+                        $updateJs .= "let field{$textField['id']} = $(\"[id-field='field{$textField['id']}'] input\");
+                        field{$textField['id']}.attr('value', response[{$textField['used_by_ticket']}] ?? '');
+                        field{$textField['id']}.trigger('input');
+                        ";
+                    }
+                    echo "<script type='text/javascript'>
+                        $(function() {
+                            $(\"[id-field='field{$data['id']}'] select\").on('change', function(e) {
+                                 $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
+                                     data: { 
+                                         id : $(this).val()
+                                     },
+                                  success: function(response){
+                                       response = JSON.parse(response);
+                                       $updateJs
+                                    },
+                                });
+                            })
+                        })
+                    </script>";
+                }
                 break;
             case 'Group':
                 $field = "";

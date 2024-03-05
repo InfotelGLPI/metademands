@@ -689,7 +689,7 @@ class PluginMetademandsField extends CommonDBChild
 
         } else {
             echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
-
+            echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
         }
         echo "<br><br>";
         echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
@@ -762,11 +762,15 @@ JAVASCRIPT
             $params = [
                 'id' => 'dropdown_type' . $randType,
                 'to_change' => 'dropdown_item' . $randItem,
-                'value' => 'dropdown',
-                'value2' => 'dropdown_object',
-                'value3' => 'dropdown_meta',
-                'value4' => 'dropdown_multiple',
-                'value5' => 'basket',
+                'values' => [
+                    'dropdown',
+                    'dropdown_object',
+                    'dropdown_meta',
+                    'dropdown_multiple',
+                    'basket',
+                    'text'
+                ],
+                'values_plugin' => [],
                 'current_item' => $this->fields['item'],
                 'current_type' => $this->fields['type'],
                 'titleDisplay' => 'show_item_object',
@@ -779,7 +783,7 @@ JAVASCRIPT
             ];
             if (isset($PLUGIN_HOOKS['metademands'])) {
                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                    $params['value_plugin'] = self::addPluginFieldTypeValue($plug);
+                    $params['values_plugin'][] = self::addPluginFieldTypeValue($plug);
                 }
             }
 
@@ -982,6 +986,17 @@ JAVASCRIPT
                     $ticket_fields[$id] = $searchOption[$id]['name'];
                 }
             }
+
+            // looking for a field of users, doesnt correspond to ITIL options
+            if ($this->fields['type'] == "text" && $this->fields["item"] == "User") {
+                $ticket_fields = [
+                    0 => Dropdown::EMPTY_VALUE,
+                    6 => _n('Phone', 'Phones', 0),
+                    11 => __('Mobile phone'),
+                    22 => _x('infocom', 'Administrative number')
+                ];
+            }
+
             Dropdown::showFromArray(
                 'used_by_ticket',
                 $ticket_fields,
@@ -1133,6 +1148,8 @@ JAVASCRIPT
                     && $this->fields["item"] == "Location")
                 || ($this->fields['type'] == "dropdown_meta"
                     && $this->fields["item"] == "mydevices")
+                || ($this->fields['type'] == "text"
+                    && $this->fields["item"] == "User")
             )
         ) {
             echo "<tr class='tab_bg_1'>";
@@ -1604,8 +1621,18 @@ JAVASCRIPT
                 echo "<td>";
 
                 $searchOption = Search::getOptions('Ticket');
-                if (isset($searchOption[$value['used_by_ticket']]['name'])) {
-                    echo $searchOption[$value['used_by_ticket']]['name'];
+                if ($value['used_by_ticket']) {
+                    if ($value['item'] === 'User' && $value['type'] === 'text') {
+                        $options = [
+                            0 => Dropdown::EMPTY_VALUE,
+                            6 => _n('Phone', 'Phones', 0),
+                            11 => __('Mobile phone'),
+                            22 => _x('infocom', 'Administrative number')
+                        ];
+                        echo $options[$value['used_by_ticket']];
+                    } else if (isset($searchOption[$value['used_by_ticket']]['name'])) {
+                        echo $searchOption[$value['used_by_ticket']]['name'];
+                    }
                 }
                 echo "</td>";
 
