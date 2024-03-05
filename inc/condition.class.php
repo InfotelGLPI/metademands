@@ -51,6 +51,10 @@ class PluginMetademandsCondition extends CommonDBChild
     const SHOW_CONDITION_GE = 6;
     const SHOW_CONDITION_REGEX = 7;
 
+    const SHOW_CONDITION_EMPTY = 8;
+
+    const SHOW_CONDITION_NOTEMPTY = 9;
+
     const SHOW_RULE_ALWAYS = 1;
     const SHOW_RULE_HIDDEN = 2;
     const SHOW_RULE_SHOWN = 3;
@@ -136,6 +140,8 @@ class PluginMetademandsCondition extends CommonDBChild
                 self::SHOW_CONDITION_EQ => '=',
                 self::SHOW_CONDITION_NE => '≠',
                 self::SHOW_CONDITION_REGEX => __('Regex', 'metademands'),
+                self::SHOW_CONDITION_EMPTY => __('Empty', 'metademands'),
+                self::SHOW_CONDITION_NOTEMPTY => __('Not empty', 'metademands')
             ];
         } else if (in_array($type, $number_types)) {
             $enumConditions = [
@@ -145,6 +151,8 @@ class PluginMetademandsCondition extends CommonDBChild
                 self::SHOW_CONDITION_GT => '>',
                 self::SHOW_CONDITION_LE => '≤',
                 self::SHOW_CONDITION_GE => '≥',
+                self::SHOW_CONDITION_EMPTY => __('Empty', 'metademands'),
+                self::SHOW_CONDITION_NOTEMPTY => __('Not empty', 'metademands')
             ];
         } else if ($type == 0) {
             $enumConditions = [
@@ -155,7 +163,8 @@ class PluginMetademandsCondition extends CommonDBChild
                 self::SHOW_CONDITION_LE => '≤',
                 self::SHOW_CONDITION_GE => '≥',
                 self::SHOW_CONDITION_REGEX => __('Regex', 'metademands'),
-
+                self::SHOW_CONDITION_EMPTY => __('Empty', 'metademands'),
+                self::SHOW_CONDITION_NOTEMPTY => __('Not empty', 'metademands')
             ];
         }
 
@@ -194,6 +203,12 @@ class PluginMetademandsCondition extends CommonDBChild
                 break;
             case self::SHOW_CONDITION_REGEX:
                 $return = "Regex";
+                break;
+            case self::SHOW_CONDITION_EMPTY:
+                $return = __('Empty', 'metademands');
+                break;
+            case self::SHOW_CONDITION_NOTEMPTY:
+                $return = __('Not empty', 'metademands');
                 break;
 
         }
@@ -597,7 +612,11 @@ class PluginMetademandsCondition extends CommonDBChild
             case 'text':
             case 'textarea':
             case 'number':
+            if (empty($condition->fields['check_value'])) {
+                echo "";
+            } else {
                 echo Glpi\RichText\RichText::getTextFromHtml($condition->fields['check_value']);
+            }
                 break;
 
             case 'date':
@@ -771,6 +790,20 @@ class PluginMetademandsCondition extends CommonDBChild
                         $return = true;
                     }
                     break;
+                case self::SHOW_CONDITION_EMPTY:
+                    if (!empty($value)) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                    break;
+                case self::SHOW_CONDITION_NOTEMPTY:
+                    if (!empty($value)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                    break;
 
             }
         } else {            // For checkbox and multiple choice dropdown field
@@ -910,7 +943,6 @@ class PluginMetademandsCondition extends CommonDBChild
             'value' => $this->fields['show_condition'],
             'rand' => $rand,
         ];
-
         Dropdown::showFromArray(
             'show_condition',
             PluginMetademandsCondition::getEnumShowCondition($this->fields['type']),
@@ -1035,7 +1067,9 @@ class PluginMetademandsCondition extends CommonDBChild
             } else {
                 switch ($type) {
                     default :
-                        $option = [];
+                        $option = [
+                            'required' => true
+                        ];
                         if($ID > 0 ){
                             $option['value'] = $condition->fields['check_value'];
                         }

@@ -76,11 +76,13 @@ if (isset($_POST['add'])) {
             'show_logic' => $_POST['show_logic'],
             'show_condition' => $_POST['show_condition'],
             'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
-            'check_value' => $_POST['check_value'],
             'item' => $item,
             'type' => $type,
             'order' => $_POST['order']
         ];
+        if (isset($_POST['check_value'])) {
+            $input['check_value'] = $_POST['check_value'];
+        }
     }
 
     $res = $condition->add($input);
@@ -104,6 +106,7 @@ if (isset($_POST['add'])) {
             'type' => $type,
             'order' => $_POST['order']
         ];
+
         if(empty($_POST['check_value'])){
             Session::addMessageAfterRedirect(__('You have to select an item', 'metademands'), false, ERROR);
             Html::back();
@@ -117,11 +120,13 @@ if (isset($_POST['add'])) {
             'show_logic' => $_POST['show_logic'],
             'show_condition' => $_POST['show_condition'],
             'plugin_metademands_metademands_id' => $_POST['plugin_metademands_metademands_id'],
-            'check_value' => $_POST['check_value'],
             'item' => $item,
             'type' => $type,
             'order' => $_POST['order']
         ];
+        if (isset($_POST['check_value'])) {
+            $input['check_value'] = $_POST['check_value'];
+        }
     }
     $res = $condition->update($input);
     Html::back();

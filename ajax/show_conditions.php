@@ -39,12 +39,13 @@ Session::checkLoginUser();
 if (isset($_POST['fields_id'])) {
     $fields_id = $_POST['fields_id'];
 }
+if (isset($_POST['rand'])) {
+    $rand = $_POST['rand'];
+}
 $field = new PluginMetademandsField();
-$rand = mt_rand();
 if ($field->getFromDB($fields_id)) {
     $item = $field->fields['item'];
     $type = $field->fields['type'];
-
     $options = [
         'display_emptychoice' => false,
         'rand' => $rand,
@@ -56,4 +57,14 @@ if ($field->getFromDB($fields_id)) {
         $options
     );
 
+    Ajax::updateItemOnSelectEvent(
+        "dropdown_show_condition$rand",
+        "show_value_to_check_$rand",
+        PLUGIN_METADEMANDS_WEBDIR . "/ajax/show_check_value.php",
+        [
+            'show_condition' => '__VALUE__',
+            'fields_id' => $fields_id,
+            'rand' => $rand
+        ]
+    );
 }
