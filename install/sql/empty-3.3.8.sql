@@ -404,6 +404,7 @@ CREATE TABLE `glpi_plugin_metademands_configs`
     `languageTech`                      varchar(100)          DEFAULT NULL,
     `use_draft`                         tinyint               DEFAULT 0,
     `show_form_changes`                 tinyint      NOT NULL DEFAULT '0',
+    `add_groups_with_regex`             tinyint      NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
