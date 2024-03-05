@@ -690,30 +690,34 @@ class PluginMetademandsField extends CommonDBChild
         } else {
             echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
             echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
+            echo Html::hidden('type', ['value' => $this->fields['type']]);
         }
-        echo "<br><br>";
-        echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
+        if ($this->fields['type'] == "title"
+        || $this->fields['type'] == "title-block"
+        || $this->fields['type'] == "informations") {
+            echo "<br><br>";
+            echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
 
-        Html::showColorField('color', ['value' => $this->fields["color"]]);
+            Html::showColorField('color', ['value' => $this->fields["color"]]);
 
-        echo "<br><br>";
+            echo "<br><br>";
 
-        echo __('Icon') . "&nbsp;";
+            echo __('Icon') . "&nbsp;";
 
-        $icon_selector_id = 'icon_' . mt_rand();
-        echo Html::select(
-            'icon',
-            [$this->fields['icon'] => $this->fields['icon']],
-            [
-                'id' => $icon_selector_id,
-                'selected' => $this->fields['icon'],
-                'style' => 'width:175px;'
-            ]
-        );
+            $icon_selector_id = 'icon_' . mt_rand();
+            echo Html::select(
+                'icon',
+                [$this->fields['icon'] => $this->fields['icon']],
+                [
+                    'id' => $icon_selector_id,
+                    'selected' => $this->fields['icon'],
+                    'style' => 'width:175px;'
+                ]
+            );
 
-        echo Html::script('js/Forms/FaIconSelector.js');
-        echo Html::scriptBlock(
-            <<<JAVASCRIPT
+            echo Html::script('js/Forms/FaIconSelector.js');
+            echo Html::scriptBlock(
+                <<<JAVASCRIPT
          $(
             function() {
                var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
@@ -721,7 +725,9 @@ class PluginMetademandsField extends CommonDBChild
             }
          );
 JAVASCRIPT
-        );
+            );
+        }
+
 
         if ($ID < 1) {
 

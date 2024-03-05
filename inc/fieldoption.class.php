@@ -1427,10 +1427,12 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     foreach ($session_childs_blocks as $k => $session_childs_block) {
                         if (is_array($session_childs_block)) {
                             foreach ($session_childs_block as $session_childs) {
-                                foreach ($session_childs as $session_child) {
-                                    foreach ($childs as $k => $child) {
-                                        if (($key = array_search($session_child, $child)) !== false) {
-                                            unset($childs[$k][$key]);
+                                if (is_array($session_childs)) {
+                                    foreach ($session_childs as $session_child) {
+                                        foreach ($childs as $k => $child) {
+                                            if (($key = array_search($session_child, $child)) !== false) {
+                                                unset($childs[$k][$key]);
+                                            }
                                         }
                                     }
                                 }
