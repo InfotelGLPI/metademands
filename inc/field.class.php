@@ -693,8 +693,8 @@ class PluginMetademandsField extends CommonDBChild
             echo Html::hidden('type', ['value' => $this->fields['type']]);
         }
         if ($this->fields['type'] == "title"
-        || $this->fields['type'] == "title-block"
-        || $this->fields['type'] == "informations") {
+            || $this->fields['type'] == "title-block"
+            || $this->fields['type'] == "informations") {
             echo "<br><br>";
             echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
 
@@ -871,7 +871,8 @@ JAVASCRIPT
         if ($ID > 0
             && $this->fields['type'] != "title"
             && $this->fields['type'] != "title-block"
-            && $this->fields['type'] != "informations") {
+            && $this->fields['type'] != "informations"
+            && $this->fields['type'] != 'text') {
             echo "<td>";
             echo __('Use this field as object field', 'metademands');
             echo "</td>";
@@ -991,16 +992,6 @@ JAVASCRIPT
                 if (in_array($searchOption[$id]['linkfield'], $granted_fields) || in_array($id, $granted_fields)) {
                     $ticket_fields[$id] = $searchOption[$id]['name'];
                 }
-            }
-
-            // looking for a field of users, doesnt correspond to ITIL options
-            if ($this->fields['type'] == "text" && $this->fields["item"] == "User") {
-                $ticket_fields = [
-                    0 => Dropdown::EMPTY_VALUE,
-                    6 => _n('Phone', 'Phones', 0),
-                    11 => __('Mobile phone'),
-                    22 => _x('infocom', 'Administrative number')
-                ];
             }
 
             Dropdown::showFromArray(
@@ -1182,8 +1173,8 @@ JAVASCRIPT
         } else {
             Html::hidden('link_to_field', ['value' => 0]);
         }
+        echo "<tr class='tab_bg_1'>";
         if (Plugin::isPluginActive('fields')) {
-            echo "<tr class='tab_bg_1'>";
             echo "<td>";
             echo __('Link this to a plugin "fields" field', 'metademands');
             echo "</td>";
@@ -1222,11 +1213,30 @@ JAVASCRIPT
             Dropdown::showFromArray('plugin_fields_fields_id', $datas, $opt);
 
             echo "</td>";
-            echo "<td colspan='2'>";
-            echo "</td>";
-            echo "</tr>";
+        } else {
+            echo "<td></td>
+            <td></td>";
         }
 
+        if ($this->fields['type'] == 'text' && $this->fields['item'] == 'User') {
+            echo '<td>' . __('User information to get', 'metademands') . '</td>';
+            $options = [
+                0 => Dropdown::EMPTY_VALUE,
+                6 => _n('Phone', 'Phones', 0),
+                11 => __('Mobile phone'),
+                22 => _x('infocom', 'Administrative number')
+            ];
+            echo '<td>';
+            Dropdown::showFromArray(
+                'used_by_ticket',
+                $options,
+                ['value' => $this->fields["used_by_ticket"]]
+            );
+            echo '</td>';
+        } else {
+            echo '<td></td><td></td>';
+        }
+        echo "</tr>";
 
         echo "<tr class='tab_bg_1'>";
         // SHOW SPECIFIC VALUES
@@ -1627,18 +1637,8 @@ JAVASCRIPT
                 echo "<td>";
 
                 $searchOption = Search::getOptions('Ticket');
-                if ($value['used_by_ticket']) {
-                    if ($value['item'] === 'User' && $value['type'] === 'text') {
-                        $options = [
-                            0 => Dropdown::EMPTY_VALUE,
-                            6 => _n('Phone', 'Phones', 0),
-                            11 => __('Mobile phone'),
-                            22 => _x('infocom', 'Administrative number')
-                        ];
-                        echo $options[$value['used_by_ticket']];
-                    } else if (isset($searchOption[$value['used_by_ticket']]['name'])) {
-                        echo $searchOption[$value['used_by_ticket']]['name'];
-                    }
+                if ($value['used_by_ticket'] && $value['item'] !== 'User' && $value['type'] !== 'text') {
+                    echo $searchOption[$value['used_by_ticket']]['name'];
                 }
                 echo "</td>";
 
