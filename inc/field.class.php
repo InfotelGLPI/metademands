@@ -689,7 +689,7 @@ class PluginMetademandsField extends CommonDBChild
 
         } else {
             echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
-
+            echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
         }
         echo "<br><br>";
         echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
@@ -1621,8 +1621,18 @@ JAVASCRIPT
                 echo "<td>";
 
                 $searchOption = Search::getOptions('Ticket');
-                if (isset($searchOption[$value['used_by_ticket']]['name'])) {
-                    echo $searchOption[$value['used_by_ticket']]['name'];
+                if ($value['used_by_ticket']) {
+                    if ($value['item'] === 'User' && $value['type'] === 'text') {
+                        $options = [
+                            0 => Dropdown::EMPTY_VALUE,
+                            6 => _n('Phone', 'Phones', 0),
+                            11 => __('Mobile phone'),
+                            22 => _x('infocom', 'Administrative number')
+                        ];
+                        echo $options[$value['used_by_ticket']];
+                    } else if (isset($searchOption[$value['used_by_ticket']]['name'])) {
+                        echo $searchOption[$value['used_by_ticket']]['name'];
+                    }
                 }
                 echo "</td>";
 
