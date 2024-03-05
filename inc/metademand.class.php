@@ -1101,9 +1101,13 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $categories = json_encode($array);
                 }
             }
-            $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
+            $values = $this->fields['itilcategories_id'] && $this->fields['itilcategories_id'] !== 'all' ? json_decode($categories) : [];
 
-
+            $checked = $this->fields['itilcategories_id'] === 'all' ? 'checked' : '';
+            echo "<div class='custom-control custom-checkbox custom-control-inline'>
+                    <label>" . __('All categories') . "</label>
+                    <input id='itilcategories_id_all' class='form-check-input' type='checkbox' name='itilcategories_id_all' value='1' $checked>
+                </div>";
             echo "<span id='show_category_by_type'>";
             Dropdown::showFromArray(
                 'itilcategories_id',
@@ -1113,6 +1117,12 @@ class PluginMetademandsMetademand extends CommonDBTM
                     'multiple' => true,
                     'entity' => $_SESSION['glpiactiveentities']]
             );
+            echo "<script type='text/javascript'>
+                        $(function() {
+                            let categoriesSelect = document.getElementById('show_category_by_type');
+                            document.getElementById('itilcategories_id_all').addEventListener('change', (e) => categoriesSelect.hidden = e.target.checked)
+                        })
+                    </script>";
             echo "</span>";
             echo "</td>";
             echo "</tr>";

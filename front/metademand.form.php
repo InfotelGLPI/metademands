@@ -44,6 +44,12 @@ if(isset($_POST['apply_rule'])){
     Html::back();
 }
 
+// override itil_categories_id if checkbox all was checked
+if (isset($_POST['itilcategories_id_all']) && $_POST['itilcategories_id_all'] == 1) {
+    $_POST['itilcategories_id'] = 'all';
+    unset($_POST['itilcategories_id_all']);
+}
+
 if (isset($_POST["add"])) {
 
    $meta->check(-1, CREATE, $_POST);
