@@ -3100,7 +3100,10 @@ JAVASCRIPT
             if (is_array($input)) {
                 foreach ($input as &$value) {
                     if ($value != null) {
-                        $value = urlencode(Html::cleanPostForTextArea($value));
+                        $clean = Html::cleanPostForTextArea($value);
+                        if ($clean != null) {
+                            $value = urlencode($clean);
+                        }
                     }
                 }
 

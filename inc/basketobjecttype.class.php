@@ -35,7 +35,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsBasketobjecttype extends CommonDropdown {
 
-   static $rightname = "plugin_metademands";
+    static $rightname = "dropdown";
    var $can_be_translated = true;
 
    /**
