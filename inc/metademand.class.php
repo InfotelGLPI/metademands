@@ -420,52 +420,54 @@ class PluginMetademandsMetademand extends CommonDBTM
     {
         global $DB;
         $cat_already_store = false;
-
-
-        if (isset($input['itilcategories_id']) && count($input['itilcategories_id']) > 0) {
-            //retrieve all multiple cats from all metademands
-            if ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change') {
-                $input['type'] = 0;
-            }
-
-            $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
-                'FROM' => $this->getTable(),
-                'WHERE' => ['is_deleted' => 0, 'is_template' => 0, 'type' => $input['type']]]);
-            $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
-                'FROM' => $this->getTable(),
-                'WHERE' => ['id' => $input['id'], 'is_deleted' => 0, 'is_template' => 0, 'type' => $input['type']]]);
-            $cats = [];
-            $number_cats_meta = count($iterator_meta_existing_cats);
-            if ($number_cats_meta) {
-                foreach ($iterator_meta_existing_cats as $data) {
-                    $cats = json_decode($data['itilcategories_id']);
-                    $iterator_meta_existing_cats->next();
+        if (isset($input['itilcategories_id'])) {
+            if (count($input['itilcategories_id']) > 0) {
+                //retrieve all multiple cats from all metademands
+                if ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change') {
+                    $input['type'] = 0;
                 }
-                if (!isset($cats) || $cats == null) {
-                    $cats = [];
-                }
-            }
 
-            if (count($input['itilcategories_id']) >= count($cats)) {
-                foreach ($input['itilcategories_id'] as $post_cats) {
-                    if (in_array($post_cats, $cats)) {
-                        unset($cats[array_search($post_cats, $cats)]);
-                    } else {
-                        $cats[] = $post_cats;
+                $iterator_cats = $DB->request(['SELECT' => ['id', 'itilcategories_id'],
+                    'FROM' => $this->getTable(),
+                    'WHERE' => ['is_deleted' => 0, 'is_template' => 0, 'type' => $input['type']]]);
+                $iterator_meta_existing_cats = $DB->request(['SELECT' => 'itilcategories_id',
+                    'FROM' => $this->getTable(),
+                    'WHERE' => ['id' => $input['id'], 'is_deleted' => 0, 'is_template' => 0, 'type' => $input['type']]]);
+                $cats = [];
+                $number_cats_meta = count($iterator_meta_existing_cats);
+                if ($number_cats_meta) {
+                    foreach ($iterator_meta_existing_cats as $data) {
+                        $cats = json_decode($data['itilcategories_id']);
+                        $iterator_meta_existing_cats->next();
+                    }
+                    if (!isset($cats) || $cats == null) {
+                        $cats = [];
                     }
                 }
-                foreach ($iterator_cats as $data) {
-                    if (is_array(json_decode($data['itilcategories_id'])) && $input['id'] != $data['id']) {
-                        $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
+
+                if (count($input['itilcategories_id']) >= count($cats)) {
+                    foreach ($input['itilcategories_id'] as $post_cats) {
+                        if (in_array($post_cats, $cats)) {
+                            unset($cats[array_search($post_cats, $cats)]);
+                        } else {
+                            $cats[] = $post_cats;
+                        }
                     }
-                    if ($cat_already_store) {
-                        $error = __('The category is related to a demand. Thank you to select another', 'metademands');
-                        Session::addMessageAfterRedirect($error, false, ERROR);
-                        return false;
+                    foreach ($iterator_cats as $data) {
+                        if (is_array(json_decode($data['itilcategories_id'])) && $input['id'] != $data['id']) {
+                            $cat_already_store = !empty(array_intersect($cats, json_decode($data['itilcategories_id'])));
+                        }
+                        if ($cat_already_store) {
+                            $error = __('The category is related to a demand. Thank you to select another', 'metademands');
+                            Session::addMessageAfterRedirect($error, false, ERROR);
+                            return false;
+                        }
+                        $iterator_cats->next();
                     }
-                    $iterator_cats->next();
-                }
-                if (!$cat_already_store) {
+                    if (!$cat_already_store) {
+                        $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
+                    }
+                } else {
                     $input['itilcategories_id'] = json_encode($input['itilcategories_id']);
                 }
             } else {
@@ -1036,13 +1038,24 @@ class PluginMetademandsMetademand extends CommonDBTM
             $values = $this->fields['itilcategories_id'] ? json_decode($categories) : [];
 
             // if all available itil categories are selected checkbox is checked
-            $diff1 = array_diff($values, array_keys($availableCategories));
-            $diff2 = array_diff(array_keys($availableCategories), $values);
-            $checked = empty($diff1) && empty($diff2) ? 'checked' : '';
-            echo "<div class='custom-control custom-checkbox custom-control-inline'>
-                    <label>" . __('All categories') . "</label>
+            if (count($availableCategories)) {
+                $diff1 = array_diff($values, array_keys($availableCategories));
+                $diff2 = array_diff(array_keys($availableCategories), $values);
+                $checked = empty($diff1) && empty($diff2) ? 'checked' : '';
+                echo "<div class='custom-control custom-checkbox custom-control-inline'>
+                    <label>" . __('All available categories', 'metademands') . "</label>
                     <input id='itilcategories_id_all' class='form-check-input' type='checkbox' name='itilcategories_id_all' value='1' $checked>
                 </div>";
+                $jsDefaultVisibility = $checked ? 'categoriesSelect.hidden = true' : '';
+                echo "<script type='text/javascript'>
+                        $(function() {
+                            let categoriesSelect = document.getElementById('show_category_by_type');
+                            $jsDefaultVisibility
+                            document.getElementById('itilcategories_id_all').addEventListener('change', (e) => categoriesSelect.hidden = e.target.checked)
+                        })
+                    </script>";
+            }
+
             echo "<span id='show_category_by_type'>";
             Dropdown::showFromArray(
                 'itilcategories_id',
@@ -1053,14 +1066,6 @@ class PluginMetademandsMetademand extends CommonDBTM
                     'entity' => $_SESSION['glpiactiveentities'],
                 ]
             );
-            $jsDefaultVisibility = $checked ? 'categoriesSelect.hidden = true' : '';
-            echo "<script type='text/javascript'>
-                        $(function() {
-                            let categoriesSelect = document.getElementById('show_category_by_type');
-                            $jsDefaultVisibility
-                            document.getElementById('itilcategories_id_all').addEventListener('change', (e) => categoriesSelect.hidden = e.target.checked)
-                        })
-                    </script>";
             echo "</span>";
             echo "</td>";
             echo "</tr>";

@@ -50,6 +50,11 @@ if (isset($_POST['itilcategories_id_all']) && $_POST['itilcategories_id_all'] ==
     unset($_POST['itilcategories_id_all']);
 }
 
+// allow a metademand to have all its categories removed
+if (!isset($_POST['itilcategories_id'])) {
+    $_POST['itilcategories_id'] = [];
+}
+
 if (isset($_POST["add"])) {
 
    $meta->check(-1, CREATE, $_POST);
