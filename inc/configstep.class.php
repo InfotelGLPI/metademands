@@ -154,7 +154,6 @@ class PluginMetademandsConfigstep extends CommonDBTM
         echo "<td>";
         Dropdown::showYesNo('add_user_as_requester', $addasrequester);
         echo "</td>";
-        echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('Interface', 'metademands');
         echo "</td>";
