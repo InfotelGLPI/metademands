@@ -226,6 +226,15 @@ class PluginMetademandsConfig extends CommonDBTM {
       Dropdown::showYesNo('display_buttonlist_servicecatalog', $config['display_buttonlist_servicecatalog']);
       echo "</td>";
       echo "</tr>";
+      echo "<tr class='tab_bg_1'>";
+
+      echo "<td>";
+      echo __('Allow adding groups by regex', 'metademands');
+      echo "</td>";
+      echo "<td>";
+       Dropdown::showYesNo('add_groups_with_regex', $config['add_groups_with_regex']);
+      echo "</td>";
+      echo "</tr>";
 
 
       if ($config['display_buttonlist_servicecatalog'] == 1) {

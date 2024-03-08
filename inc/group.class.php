@@ -236,7 +236,8 @@ class PluginMetademandsGroup extends CommonDBChild
         $groups = [];
         $group = new Group();
         $condition = [];
-
+        $config = new PluginMetademandsConfig();
+        $config->getFromDB(1);
         $dbu = new DbUtils();
         $condition += $dbu->getEntitiesRestrictCriteria($group->getTable(), '', '', $group->maybeRecursive());
         $dataGroup = $group->find($condition, 'name');
@@ -264,13 +265,15 @@ class PluginMetademandsGroup extends CommonDBChild
             ]);
             echo "</td>";
             echo "</tr>";
-            echo "<tr class='tab_bg_1'>";
             // Add groups with a regex
-            echo "<td class='center'>";
-            echo __('Regular expression', 'metademands') . '&nbsp;';
-            echo Html::input('regex_value', ['type' => 'text', 'width' => '150px', 'class' => '']);
-            echo "</td>";
-            echo "</tr>";
+            if($config->fields['add_groups_with_regex']){
+                echo "<tr class='tab_bg_1'>";
+                echo "<td class='center'>";
+                echo __('Regular expression', 'metademands') . '&nbsp;';
+                echo Html::input('regex_value', ['type' => 'text', 'width' => '150px', 'class' => '']);
+                echo "</td>";
+                echo "</tr>";
+            }
 
             echo "<tr>";
             echo "<td class='tab_bg_2 center'>";

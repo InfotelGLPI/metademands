@@ -1015,6 +1015,7 @@ class PluginMetademandsWizard extends CommonDBTM
             Html::redirect($url);
         }
         $metademands = new PluginMetademandsMetademand();
+        $dbu = new DbUtils();
         $metademands->getFromDB($metademands_id);
 
         $paramUrl = "";
@@ -1717,7 +1718,18 @@ class PluginMetademandsWizard extends CommonDBTM
                 $params['paramUrl'] = $paramUrl;
                 $params['list_blocks'] = $list_blocks;
                 $params['updateStepform'] = $updateStepform;
-
+                $params['use_richtext'] = 0;
+                $richtext_id = [];
+                if(countElementsInTable("glpi_plugin_metademands_fields", ['plugin_metademands_metademands_id' => $metademands_id, 'use_richtext' => 1, 'type' => 'textarea']) > 0){
+                    $params['use_richtext'] = 1;
+                    $richtext_fields = $dbu->getAllDataFromTable("glpi_plugin_metademands_fields",
+                        ['plugin_metademands_metademands_id' => $metademands_id, 'use_richtext' => 1, 'type' => 'textarea']
+                    );
+                    foreach ($richtext_fields as $f) {
+                        $richtext_id[] = $f['id'];
+                    }
+                }
+                $params['richtext_id'] = json_encode($richtext_id);
                 self::validateScript($params);
 
             } else {
@@ -1743,7 +1755,8 @@ class PluginMetademandsWizard extends CommonDBTM
             }
         }
         echo "<script>
-                  var nexttitle = '$nexttitle';
+                  $(document).ready(function (){
+                       var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
                   var submitmsg = '$submitmsg'; 
                   var use_as_step = '$use_as_step';
@@ -1760,7 +1773,8 @@ class PluginMetademandsWizard extends CommonDBTM
                   var show_button = 1;
                   var show_rule = '$show_rule';
                   var nexthref = '$nexthref';
-                  
+                  var use_richtext = '$use_richtext';
+                  var richtext_ids = {$richtext_id};
                   findFirstTab($block_id);
                   
                   if(use_condition == true) {
@@ -1776,18 +1790,34 @@ class PluginMetademandsWizard extends CommonDBTM
                      if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                         $('#nextBtn').on('click', checkConditions);
                      }
-                     $('#wizard_form').on('change', 'input, select, textarea', checkConditions);
+                     $('#wizard_form').on('change, keyup', 'input, select, textarea', checkConditions);
+                     if(use_richtext){
+                         for( let i = 0; i < richtext_ids.length; i++ ){
+                            let field = 'field' + richtext_ids[i];
+                            tinyMCE.get(field).on('keyup', checkConditions);
+                        } 
+                     }
                      $('#prevBtn').on('click', function(){
                         if(document.getElementById('nextBtn').innerHTML == nexttitle) {
                             document.getElementById('nextBtn').style.display = 'inline';
                         }
                      });
                   }
-                   
                   
                     function checkConditions() {
                         var formDatas;
                         formDatas = $('#wizard_form').serializeArray();
+                        if(use_richtext){
+                           for(let i = 0; i < richtext_ids.length; i++ ){
+                                   let field = 'field' + richtext_ids[i];
+                                   let content = tinyMCE.get(field).getContent();
+                                   let name = 'field[' + richtext_ids[i] + ']';
+                                   formDatas.push({
+                                        name: name,
+                                        value: content
+                                   });
+                               }
+                           }
                         $.ajax({
                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/condition.php',
                                    type: 'POST',
@@ -2514,6 +2544,7 @@ class PluginMetademandsWizard extends CommonDBTM
                          }
                      }
                   }
+                  });
                </script>";
     }
 

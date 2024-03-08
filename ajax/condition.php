@@ -39,7 +39,7 @@ $fields = $_POST['field'];
 $tab = PluginMetademandsCondition::conditionsTab($_POST['metademands_id']);
 foreach ($tab as $key => $value) {
     if (array_key_exists($value['fields_id'], $fields)) {
-        $tab[$key]['value'] = $fields[$value['fields_id']];
+        $tab[$key]['value'] =\Glpi\RichText\RichText::getTextFromHtml($fields[$value['fields_id']]);
     } else {
         $tab[$key]['value'] = '';
     }
@@ -62,5 +62,4 @@ foreach ($tab as $key => $condition) {
     $predicate .= " $result ";
 }
 $predicate .= ")";
-$predicate_result = false;
 echo json_encode($predicate);
