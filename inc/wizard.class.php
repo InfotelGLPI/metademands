@@ -1496,10 +1496,10 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "</span>";
                 }
 
-                echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button' onclick='nextPrev(-1)'>";
+                echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button'>";
                 echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
 
-                echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button' onclick='nextPrev(1)'>";
+                echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'>";
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
 
@@ -1756,6 +1756,11 @@ class PluginMetademandsWizard extends CommonDBTM
         }
         echo "<script>
                   $(document).ready(function (){
+                    const prevBtn = document.getElementById('prevBtn');
+                    const nextBtn = document.getElementById('nextBtn');
+                    prevBtn.addEventListener('click', () => nextPrev(-1));
+                    nextBtn.addEventListener('click', () => nextPrev(1));
+                    
                        var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
                   var submitmsg = '$submitmsg'; 
