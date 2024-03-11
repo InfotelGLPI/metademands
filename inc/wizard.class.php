@@ -1123,7 +1123,6 @@ class PluginMetademandsWizard extends CommonDBTM
             ) {
                 echo "<script>
                     function fixButtonIndicator() {
-                        console.trace();
     // This function removes the 'active' class of all steps...
     const use_as_step = window.metademands.use_as_step == 1;
     if (use_as_step) {
@@ -1132,7 +1131,6 @@ class PluginMetademandsWizard extends CommonDBTM
         x = document.getElementsByClassName('tab-nostep');
     }
 
-    console.log(x);
     let create = false;
     if (use_as_step == 1) {
         let nextTab = window.metademands.currentTab + 1;
