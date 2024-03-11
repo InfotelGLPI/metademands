@@ -1109,6 +1109,60 @@ class PluginMetademandsWizard extends CommonDBTM
                             }
                 });');
 
+            if ($metademands->fields['is_order'] == 0
+                && !$preview
+                && (!$seeform
+                    || (isset($options['resources_id'])
+                        && $options['resources_id'] > 0)
+                    || ($current_ticket > 0
+                        && ((!$meta_validated
+                                && $metademands->fields['can_update'] == true) ||
+                            ($meta_validated
+                                && $metademands->fields['can_clone'] == true))
+                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
+            ) {
+                echo "<script>
+                    function fixButtonIndicator() {
+                        console.trace();
+    // This function removes the 'active' class of all steps...
+    const use_as_step = window.metademands.use_as_step == 1;
+    if (use_as_step) {
+        x = document.getElementsByClassName('tab-step');
+    } else {
+        x = document.getElementsByClassName('tab-nostep');
+    }
+
+    console.log(x);
+    let create = false;
+    if (use_as_step == 1) {
+        let nextTab = window.metademands.currentTab + 1;
+        while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+            nextTab = nextTab + 1;
+        }
+
+        if (x[nextTab] != undefined) {
+            let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+            let id_bloc = parseInt(bloc.replace('bloc', ''));
+            if (!window.metademands.listBlock.includes(id_bloc)) {
+                create = true;
+            }
+        }
+
+        if (nextTab >= x.length) {
+            document.getElementById('nextBtn').innerHTML = window.metademands.submittitle;
+//                             create = true;
+        } else {
+            if (create) {
+                document.getElementById('nextBtn').innerHTML = window.metademands.submitsteptitle;
+            } else {
+                document.getElementById('nextBtn').innerHTML = window.metademands.nextsteptitle;
+            }
+        }
+    }
+}
+
+                </script>";
+            }
 
             foreach ($allfields as $block => $line) {
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
@@ -1760,6 +1814,27 @@ class PluginMetademandsWizard extends CommonDBTM
                     const nextBtn = document.getElementById('nextBtn');
                     prevBtn.addEventListener('click', () => nextPrev(-1));
                     nextBtn.addEventListener('click', () => nextPrev(1));
+                    
+                    window.metademands = {};
+                    window.metademands.nexttitle = '$nexttitle';
+                  window.metademands.submittitle = '$submittitle';
+                  window.metademands.submitmsg = '$submitmsg'; 
+                  window.metademands.use_as_step = '$use_as_step';
+                  window.metademands.nextsteptitle = '$nextsteptitle';
+                  window.metademands.submitsteptitle = '$submitsteptitle';
+                  window.metademands.submitstepmsg = '$submitstepmsg';
+                  window.metademands.seesummary = '$see_summary';
+                  window.metademands.hiddenblocs = {$json_hidden_blocks};
+                  window.metademands.msg = '$alert';
+                  window.metademands.all_meta_fields = {$json_all_meta_fields};
+                  window.metademands.firstnumTab = 0;
+                  window.metademands.currentTab = 0; // Current tab is set to be the first tab (0)
+                  window.metademands.use_condition = '$use_condition';
+                  window.metademands.show_button = 1;
+                  window.metademands.show_rule = '$show_rule';
+                  window.metademands.nexthref = '$nexthref';
+                  window.metademands.use_richtext = '$use_richtext';
+                  window.metademands.richtext_ids = {$richtext_id};
                     
                        var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
@@ -2508,46 +2583,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                  } 
                              });
                      });
-                  }
-                  
-                  function fixButtonIndicator() {
-                     // This function removes the 'active' class of all steps...
-                     if (use_as_step == 1) {
-                        var x = document.getElementsByClassName('tab-step');
-                     } else {
-                        var x = document.getElementsByClassName('tab-nostep');
-                     }
-                   
-                     create = false;
-                     if (use_as_step == 1) {
-                         nextTab = currentTab + 1;
-                         while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-                             nextTab = nextTab + 1;
-                         }
-                   
-                          var listBlock = [" . implode(",", $list_blocks) . "];
-                        
-                          if(x[nextTab] != undefined) {
-                               bloc = x[nextTab].firstChild.getAttribute('bloc-id');
-                               id_bloc = parseInt(bloc.replace('bloc',''));
-                                if(!listBlock.includes(id_bloc)) {
-                                    create = true; 
-                                }
-                          }
-
-                         if(nextTab >= x.length) {
-                            document.getElementById('nextBtn').innerHTML = submittitle;
-//                             create = true;
-                         } else {
-                             if(create) {
-                                  document.getElementById('nextBtn').innerHTML = submitsteptitle;
-    //                            document.getElementById('nextMsg').style.display = 'block';
-    //                            document.getElementById('nextMsg').innerHTML = submitstepmsg;
-                             } else {
-                                    document.getElementById('nextBtn').innerHTML = nextsteptitle;
-                             }
-                         }
-                     }
                   }
                   });
                </script>";
