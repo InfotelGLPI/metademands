@@ -42,7 +42,6 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
     PRIMARY KEY (`id`),
     KEY `name` (`name`),
     KEY `entities_id` (`entities_id`),
-    KEY `itilcategories_id` (`itilcategories_id`),
     KEY `is_recursive` (`is_recursive`),
     KEY `is_template` (`is_template`),
     KEY `is_deleted` (`is_deleted`)
