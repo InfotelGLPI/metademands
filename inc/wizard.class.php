@@ -1555,7 +1555,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
 
-                echo "</span>";
+//                echo "</span>";
                 echo "</div>";
                 echo "</div>";
                 echo "</div>";

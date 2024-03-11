@@ -215,7 +215,7 @@ class PluginMetademandsTicketField extends CommonDBChild {
 
        $cats = json_decode($item->fields['itilcategories_id'], true);
 
-       if (is_array($cats) && count($cats) > 1) {
+       if (is_array($cats)) {
            $cats = reset($cats);
        }
 
