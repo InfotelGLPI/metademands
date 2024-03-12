@@ -41,6 +41,7 @@ class PluginMetademandsField extends CommonDBChild
     public static $itemtype = 'PluginMetademandsMetademand';
     public static $items_id = 'plugin_metademands_metademands_id';
 
+    public $dohistory = true;
     // Request type
     const MAX_FIELDS = 40;
 
@@ -242,6 +243,9 @@ class PluginMetademandsField extends CommonDBChild
         $this->addDefaultFormTab($ong);
         $this->addStandardTab('PluginMetademandsFieldOption', $ong, $options);
         $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
+        if (Session::getCurrentInterface() == 'central') {
+            $this->addStandardTab('Log', $ong, $options);
+        }
         return $ong;
     }
 
