@@ -287,8 +287,9 @@ class PluginMetademandsField extends CommonDBChild
         }
 
         // Data saved in session
-        if (isset($_SESSION['glpi_plugin_metademands_fields'])) {
-            foreach ($_SESSION['glpi_plugin_metademands_fields'] as $key => $value) {
+        $sessionId = $ID > 0 ? $ID : 0;
+        if (isset($_SESSION['glpi_plugin_metademands_fields'][$sessionId])) {
+            foreach ($_SESSION['glpi_plugin_metademands_fields'][$sessionId] as $key => $value) {
                 $this->fields[$key] = $value;
             }
             unset($_SESSION['glpi_plugin_metademands_fields']);
@@ -428,8 +429,9 @@ class PluginMetademandsField extends CommonDBChild
         }
 
         // Data saved in session
-        if (isset($_SESSION['glpi_plugin_metademands_fields'])) {
-            foreach ($_SESSION['glpi_plugin_metademands_fields'] as $key => $value) {
+        $sessionId = $ID > 0 ? $ID : 0;
+        if (isset($_SESSION['glpi_plugin_metademands_fields'][$sessionId])) {
+            foreach ($_SESSION['glpi_plugin_metademands_fields'][$sessionId] as $key => $value) {
                 $this->fields[$key] = $value;
             }
             unset($_SESSION['glpi_plugin_metademands_fields']);
@@ -3292,7 +3294,7 @@ JAVASCRIPT
             'type' => __('Type'),
             'item' => __('Object', 'metademands')
         ];
-
+        $id = isset($input['id']) ? $input['id'] : 0;
         foreach ($input as $key => $value) {
             if (array_key_exists($key, $mandatory_fields)) {
                 if (empty($value)) {
@@ -3308,7 +3310,7 @@ JAVASCRIPT
                     }
                 }
             }
-            $_SESSION['glpi_plugin_metademands_fields'][$key] = $value;
+            $_SESSION['glpi_plugin_metademands_fields'][$id][$key] = $value;
         }
 
         if ($checkKo) {
