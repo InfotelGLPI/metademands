@@ -6286,7 +6286,9 @@ JAVASCRIPT
                 $fields[$k][$key] = Html::entity_decode_deep($f);
                 if ($key == "custom_values") {
                     $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+                    if ($field['type'] != 'yesno') {
+                        $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+                    }
                     if (is_null($fields[$k][$key])) {
                         $fields[$k][$key] = "[]";
                     }
