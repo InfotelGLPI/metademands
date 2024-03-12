@@ -3154,7 +3154,7 @@ class PluginMetademandsWizard extends CommonDBTM
             if ($value['type'] == "text"
                 && !empty($value["regex"])) {
                 if ((!empty($fields['value']) && $value['is_mandatory'] == 0) || $value['is_mandatory'] == 1) {
-                    if (!preg_match(($value['regex']), $fields['value'])) {
+                    if (!preg_match('/'.$value['regex'].'/', $fields['value'])) {
                         $msg3[] = $value['name'];
                         $checkRegex[] = 1;
                     }
