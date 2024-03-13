@@ -422,16 +422,19 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             echo "</tr>";
             echo "<tr>";
             echo "<td colspan='2' class='center'>";
-            $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
+            $decode = json_decode($params['informations_to_display']);
+            $values = empty($decode) ? ['full_name'] : $decode;
             $informations["full_name"]         = __('Complete name');
             $informations["realname"]          = __('Surname');
             $informations["firstname"]         = __('First name');
             $informations["name"]              = __('Login');
             //                  $informations["group"]             = Group::getTypeName(1);
             $informations["email"] = _n('Email', 'Emails', 1);
-            echo Dropdown::showFromArray('informations_to_display', $informations, ['values'   => $params['informations_to_display'],
+            echo Dropdown::showFromArray('informations_to_display', $informations, [
+                'values'   => $values,
                 'display'  => false,
-                'multiple' => true]);
+                'multiple' => true
+            ]);
             echo "</td>";
             echo "</tr>";
             echo "</table>";
@@ -994,6 +997,12 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     $item = new $field['item']();
                     $content = "";
                     $information = json_decode($field['informations_to_display']);
+
+                    // legacy support
+                    if (empty($information)) {
+                        $information = ['full_name'];
+                    }
+
                     if ($item->getFromDB($field['value'])) {
                         if (in_array('full_name', $information)) {
                             $content .= "" . $field["item"]::getFriendlyNameById($field['value']) . " ";

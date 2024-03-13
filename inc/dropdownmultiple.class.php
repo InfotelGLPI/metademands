@@ -750,7 +750,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             echo "</tr>";
             echo "<tr>";
             echo "<td colspan='2' class='center'>";
-            $params['informations_to_display'] = json_decode($params['informations_to_display']) ?? [];
+            $decode = json_decode($params['informations_to_display']);
+            $values = empty($decode) ? ['full_name'] : $decode;
 
             $informations["full_name"] = __('Complete name');
             $informations["realname"] = __('Surname');
@@ -758,9 +759,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $informations["name"] = __('Login');
             //                     $informations["group"]             = Group::getTypeName(1);
             $informations["email"] = _n('Email', 'Emails', 1);
-            echo Dropdown::showFromArray('informations_to_display', $informations, ['values' => $params['informations_to_display'],
+            echo Dropdown::showFromArray('informations_to_display', $informations, [
+                'values' => $values,
                 'display' => false,
-                'multiple' => true]);
+                'multiple' => true
+            ]);
             echo "</td>";
             echo "</tr>";
         }
@@ -1865,6 +1868,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
         } else if ($field['item'] == 'User' && ($field['value'] > 0 || (is_array($field['value']) && count($field['value']) > 0))) {
             $information = json_decode($field['informations_to_display']);
+
+            // legacy support
+            if (empty($information)) {
+                $information = ['full_name'];
+            }
 
             if ($formatAsTable) {
                 $dataItems = "<table style='border:0;'>";
