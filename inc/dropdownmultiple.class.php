@@ -1866,6 +1866,10 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         } else if ($field['item'] == 'User' && ($field['value'] > 0 || (is_array($field['value']) && count($field['value']) > 0))) {
             $information = json_decode($field['informations_to_display']);
 
+            if (empty($information)) {
+                $information = ['full_name'];
+            }
+
             if ($formatAsTable) {
                 $dataItems = "<table style='border:0;'>";
             }
