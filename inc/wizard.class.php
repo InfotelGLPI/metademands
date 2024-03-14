@@ -1833,6 +1833,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   window.metademands.nexthref = '$nexthref';
                   window.metademands.use_richtext = '$use_richtext';
                   window.metademands.richtext_ids = {$richtext_id};
+                  window.metademands.listBlock = [" . implode(",", $list_blocks) . "];
                     
                        var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
@@ -2122,11 +2123,11 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                         return false;
                      }
-                     var listBlock = [" . implode(",", $list_blocks) . "];
+
                      bloc = x[currentTab].firstChild.getAttribute('bloc-id');
                      id_bloc = parseInt(bloc.replace('bloc',''));
  
-                     if(!listBlock.includes(id_bloc)) { 
+                     if(!window.metademands.listBlock.includes(id_bloc)) { 
                         var meta_id = {$ID};
                         if (typeof tinyMCE !== 'undefined') {
                            tinyMCE.triggerSave();
