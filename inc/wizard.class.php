@@ -1098,14 +1098,15 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div class='tab-nostep'>";
                 $cpt = 1;
             }
-            echo Html::scriptBlock('$(document).keypress(function(e){
+
+            echo Html::scriptBlock('$("#meta-form").keypress(function(e){
                             if (e.which == 13){
                                 var target = $(e.target);
                                 if(!target.is("textarea")) {
+                                     e.preventDefault();
                                      $("#submitjob").click();
                                      $("#nextBtn").click();
                                 }
-                                
                             }
                 });');
 
@@ -1122,43 +1123,43 @@ class PluginMetademandsWizard extends CommonDBTM
                         && Session::haveRight('plugin_metademands_updatemeta', READ)))
             ) {
                 echo "<script>
+                    /**
+                    *  set the content of the nextBtn element
+                    */
                     function fixButtonIndicator() {
-    // This function removes the 'active' class of all steps...
-    const use_as_step = '$use_as_step';
-    if (use_as_step) {
-        x = document.getElementsByClassName('tab-step');
-    } else {
-        x = document.getElementsByClassName('tab-nostep');
-    }
-
-    let create = false;
-    if (use_as_step == 1) {
-        let nextTab = window.metademands.currentTab + 1;
-        while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-            nextTab = nextTab + 1;
-        }
-
-        if (x[nextTab] != undefined) {
-            let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
-            let id_bloc = parseInt(bloc.replace('bloc', ''));
-            if (!window.metademands.listBlock.includes(id_bloc)) {
-                create = true;
-            }
-        }
-
-        if (nextTab >= x.length) {
-            document.getElementById('nextBtn').innerHTML = window.metademands.submittitle;
-//                             create = true;
-        } else {
-            if (create) {
-                document.getElementById('nextBtn').innerHTML = window.metademands.submitsteptitle;
-            } else {
-                document.getElementById('nextBtn').innerHTML = window.metademands.nextsteptitle;
-            }
-        }
-    }
-}
-
+                        const use_as_step = '$use_as_step';
+                        if (use_as_step) {
+                            x = document.getElementsByClassName('tab-step');
+                        } else {
+                            x = document.getElementsByClassName('tab-nostep');
+                        }
+                    
+                        let create = false;
+                        if (use_as_step == 1) {
+                            let nextTab = window.metademands.currentTab + 1;
+                            while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                                nextTab = nextTab + 1;
+                            }
+                    
+                            if (x[nextTab] != undefined) {
+                                let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+                                let id_bloc = parseInt(bloc.replace('bloc', ''));
+                                if (!window.metademands.listBlock.includes(id_bloc)) {
+                                    create = true;
+                                }
+                            }
+                    
+                            if (nextTab >= x.length) {
+                                document.getElementById('nextBtn').innerHTML = window.metademands.submittitle;
+                            } else {
+                                if (create) {
+                                    document.getElementById('nextBtn').innerHTML = window.metademands.submitsteptitle;
+                                } else {
+                                    document.getElementById('nextBtn').innerHTML = window.metademands.nextsteptitle;
+                                }
+                            }
+                        }
+                    }
                 </script>";
             }
 
