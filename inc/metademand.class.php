@@ -6149,7 +6149,9 @@ JAVASCRIPT
 
         $this->toXml($xml, $fields);
 
-        $name = "/metademands/" . $this->getField('name') . ".xml";
+        $safeName = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $this->getField('name'));
+        $safeName = mb_ereg_replace("([\.]{2,})", '', $safeName);
+        $name = "/metademands/" . $safeName . ".xml";
 
         $xml->saveXML(GLPI_PLUGIN_DOC_DIR . $name);
 
