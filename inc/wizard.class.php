@@ -1098,7 +1098,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "<div class='tab-nostep'>";
                 $cpt = 1;
             }
-
+            // #meta-form to avoid hijacking the whole page
+            // e.preventDefault() to avoid reloading the page and lose filled values
             echo Html::scriptBlock('$("#meta-form").keypress(function(e){
                             if (e.which == 13){
                                 var target = $(e.target);
@@ -1144,18 +1145,18 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (x[nextTab] != undefined) {
                                 let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
                                 let id_bloc = parseInt(bloc.replace('bloc', ''));
-                                if (!window.metademands.listBlock.includes(id_bloc)) {
+                                if (!metademands.listBlock.includes(id_bloc)) {
                                     create = true;
                                 }
                             }
                     
                             if (nextTab >= x.length) {
-                                document.getElementById('nextBtn').innerHTML = window.metademands.submittitle;
+                                document.getElementById('nextBtn').innerHTML = metademands.submittitle;
                             } else {
                                 if (create) {
-                                    document.getElementById('nextBtn').innerHTML = window.metademands.submitsteptitle;
+                                    document.getElementById('nextBtn').innerHTML = metademands.submitsteptitle;
                                 } else {
-                                    document.getElementById('nextBtn').innerHTML = window.metademands.nextsteptitle;
+                                    document.getElementById('nextBtn').innerHTML = metademands.nextsteptitle;
                                 }
                             }
                         }
@@ -1815,36 +1816,30 @@ class PluginMetademandsWizard extends CommonDBTM
                     nextBtn.addEventListener('click', () => nextPrev(1));
                     
                     window.metademands = {};
-                    window.metademands.nexttitle = '$nexttitle';
-                  window.metademands.submittitle = '$submittitle';
-                  window.metademands.submitmsg = '$submitmsg'; 
-                  window.metademands.use_as_step = '$use_as_step';
-                  window.metademands.nextsteptitle = '$nextsteptitle';
-                  window.metademands.submitsteptitle = '$submitsteptitle';
-                  window.metademands.submitstepmsg = '$submitstepmsg';
-                  window.metademands.seesummary = '$see_summary';
-                  window.metademands.hiddenblocs = {$json_hidden_blocks};
-                  window.metademands.msg = '$alert';
-                  window.metademands.all_meta_fields = {$json_all_meta_fields};
-                  window.metademands.firstnumTab = 0;
-                  window.metademands.currentTab = 0; // Current tab is set to be the first tab (0)
-                  window.metademands.use_condition = '$use_condition';
-                  window.metademands.show_button = 1;
-                  window.metademands.show_rule = '$show_rule';
-                  window.metademands.nexthref = '$nexthref';
-                  window.metademands.use_richtext = '$use_richtext';
-                  window.metademands.richtext_ids = {$richtext_id};
-                  window.metademands.listBlock = [" . implode(",", $list_blocks) . "];
+                    metademands.nexttitle = '$nexttitle';
+                  metademands.submittitle = '$submittitle';
+                  metademands.submitmsg = '$submitmsg'; 
+                  metademands.use_as_step = '$use_as_step';
+                  metademands.nextsteptitle = '$nextsteptitle';
+                  metademands.seesummary = '$see_summary';
+                  metademands.msg = '$alert';
+                  metademands.all_meta_fields = {$json_all_meta_fields};
+                  metademands.firstnumTab = 0;
+                  metademands.currentTab = 0; // Current tab is set to be the first tab (0)
+                  metademands.use_condition = '$use_condition';
+                  metademands.show_button = 1;
+                  metademands.show_rule = '$show_rule';
+                  metademands.nexthref = '$nexthref';
+                  metademands.use_richtext = '$use_richtext';
+                  metademands.richtext_ids = {$richtext_id};
+                  metademands.listBlock = [" . implode(",", $list_blocks) . "];
                     
                        var nexttitle = '$nexttitle';
                   var submittitle = '$submittitle';
                   var submitmsg = '$submitmsg'; 
                   var use_as_step = '$use_as_step';
                   var nextsteptitle = '$nextsteptitle';
-                  var submitsteptitle = '$submitsteptitle';
-                  var submitstepmsg = '$submitstepmsg';
                   var seesummary = '$see_summary';
-                  var hiddenblocs = {$json_hidden_blocks};
                   var msg = '$alert';
                   var all_meta_fields = {$json_all_meta_fields};
                   var firstnumTab = 0;
@@ -1904,12 +1899,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                    datatype: 'JSON',
                                    data: formDatas,
                                    success: function (response) {
-//                                      console.log(response);
                                       eval('valid_condition=' + response );
-                                    
-//                                      console.log(valid_condition);
-//                                      console.log(show_button);
-//                                      console.log(document.getElementById('nextBtn').innerHTML);
                                       if(valid_condition) {
                                           if(show_button == 1) {
                                             if(document.getElementById('nextBtn').innerHTML == submittitle) {
@@ -1940,16 +1930,11 @@ class PluginMetademandsWizard extends CommonDBTM
                                    }
                                 });
                   }
-//                  const str = sessionStorage.getItem('tasks_id');
-//
-//                // convert JSON string to valid object
-//                const parsedObject = JSON.parse(str);
-//                
-//                console.log(parsedObject);
-                  showTab(currentTab, nexttitle, submittitle, submitmsg); // Display the current tab
+
+                  showTab(currentTab, nexttitle, submittitle); // Display the current tab
                  
                   
-                  function showTab(n,create = false, submittitle, submitmsg) {
+                  function showTab(n,create = false, submittitle) {
                      // This function will display the specified tab of the form...
                      //document.getElementById('nextMsg').style.display = 'none';
                      if (use_as_step == 1) {
@@ -2128,7 +2113,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      bloc = x[currentTab].firstChild.getAttribute('bloc-id');
                      id_bloc = parseInt(bloc.replace('bloc',''));
  
-                     if(!window.metademands.listBlock.includes(id_bloc)) { 
+                     if(!metademands.listBlock.includes(id_bloc)) { 
                         var meta_id = {$ID};
                         if (typeof tinyMCE !== 'undefined') {
                            tinyMCE.triggerSave();
