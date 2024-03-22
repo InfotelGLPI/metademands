@@ -124,7 +124,9 @@ if (isset($_POST["add"])) {
            || $_POST["type"] == 'radio'
            || $_POST["type"] == 'dropdown_multiple'
            || (isset($_POST['item']) && ($_POST['item'] == 'Group'
-                                         || $_POST['item'] == 'User'))
+                                         || $_POST['item'] == 'User'
+                   || $_POST['item'] == 'urgency'
+                   || $_POST['item'] == 'impact'))
            || $_POST['type'] == 'number'
            || $_POST['type'] == 'basket')) {
       $comment_values = "";
