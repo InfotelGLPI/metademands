@@ -96,7 +96,7 @@ class PluginMetademandsField extends CommonDBChild
         'number',
         'basket'
     ];
-    public static $allowed_custom_items = ['other'];
+    public static $allowed_custom_items = ['other', 'urgency', 'impact'];
 
     public static $not_null = 'NOT_NULL';
 
@@ -2907,6 +2907,8 @@ JAVASCRIPT
 
             if ($params["type"] != "dropdown_multiple") {
                 switch ($params['item']) {
+                    case 'impact':
+                    case 'urgency':
                     case 'other':
                         PluginMetademandsDropdownmeta::showFieldCustomValues($values, $key, $params);
                         break;

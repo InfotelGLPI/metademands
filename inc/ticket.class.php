@@ -74,8 +74,9 @@ class PluginMetademandsTicket extends CommonDBTM
     {
         // Metademand redirection on ticket creation
 
-        if (isset($_REQUEST['id'])
-          && $_REQUEST['id'] == 0
+        if (((isset($_REQUEST['id'])
+          && $_REQUEST['id'] == 0) || (isset($_SESSION['glpiactiveprofile']['interface'])
+                    && $_SESSION['glpiactiveprofile']['interface'] != 'central'))
           && isset($_REQUEST['type'])
           && isset($_REQUEST['itilcategories_id'])) {
             $myticket                             = new Ticket();
