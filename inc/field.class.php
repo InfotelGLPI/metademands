@@ -3198,6 +3198,13 @@ JAVASCRIPT
      */
     public function prepareInputForAdd($input)
     {
+        // legacy support
+        if (isset($input['existing_field_id']) && isset($input['item']) && $input['item'] == 'User') {
+            if (isset($input['informations_to_display']) && $input['informations_to_display'] == '[]') {
+                $input['informations_to_display'] = '["full_name"]';
+            }
+        }
+
         if (!$this->checkMandatoryFields($input)) {
             return false;
         }
