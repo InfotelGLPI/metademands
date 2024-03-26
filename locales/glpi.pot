@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-25 09:23+0000\n"
+"POT-Creation-Date: 2024-03-26 14:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1291,31 +1291,31 @@ msgstr ""
 msgid "The file is not an XML file"
 msgstr ""
 
-#: inc/metademand.class.php:6516
+#: inc/metademand.class.php:6522
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:6525
+#: inc/metademand.class.php:6531
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:6637
+#: inc/metademand.class.php:6643
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:6726
+#: inc/metademand.class.php:6732
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:6726
+#: inc/metademand.class.php:6732
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:6739
+#: inc/metademand.class.php:6745
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:6771 inc/wizard.class.php:794
+#: inc/metademand.class.php:6777 inc/wizard.class.php:794
 msgid "Find a form"
 msgstr ""
 
@@ -1943,22 +1943,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3116
+#: inc/wizard.class.php:3118
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3125
+#: inc/wizard.class.php:3127
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3158
+#: inc/wizard.class.php:3160
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3162
+#: inc/wizard.class.php:3164
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
