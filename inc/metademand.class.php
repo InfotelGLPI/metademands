@@ -6311,7 +6311,10 @@ JAVASCRIPT
                 } elseif ($key == "informations_to_display") {
                     $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
                     $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
+                    // legacy support
+                    if (isset($field['item']) && $field['item'] == 'User' && $f == '[]') {
+                        $fields[$k][$key] = '["full_name"]';
+                    } else if (is_null($fields[$k][$key])) {
                         $fields[$k][$key] = "[]";
                     }
                 } elseif ($key == "fieldtranslations") {
@@ -6326,7 +6329,10 @@ JAVASCRIPT
             $oldIDField = $fields[$k]["id"];
             unset($fields[$k]["id"]);
             $fields[$k]['entities_id'] = $_SESSION['glpiactive_entity'];
+            // json_decode on informations_to_display will return NULL if addslashes_deep is called on it
+            $informationsToDisplay = $fields[$k]['informations_to_display'];
             $fields[$k] = Toolbox::addslashes_deep($fields[$k]);
+            $fields[$k]['informations_to_display'] = $informationsToDisplay;
             $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
             $fields[$k]["date_creation"] = $_SESSION['glpi_currenttime'];
             $fields[$k]["date_mod"] = $_SESSION['glpi_currenttime'];
