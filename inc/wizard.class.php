@@ -1865,7 +1865,9 @@ class PluginMetademandsWizard extends CommonDBTM
                      if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                         $('#nextBtn').on('click', checkConditions);
                      }
-                     $('#wizard_form').on('change, keyup', 'input, select, textarea', checkConditions);
+                     $('#wizard_form input').on('change, keyup', checkConditions);
+                     $('#wizard_form select').on('change', checkConditions);
+                     $('#wizard_form textarea').on('change, keyup', checkConditions);
                      if(use_richtext){
                          for( let i = 0; i < richtext_ids.length; i++ ){
                             let field = 'field' + richtext_ids[i];
