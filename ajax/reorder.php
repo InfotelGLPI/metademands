@@ -33,5 +33,5 @@ Html::header_nocache();
 
 Session::checkRight("plugin_metademands", UPDATE);
 
-$field = new PluginMetademandsField();
+$field = new PluginMetademandsFieldParameter();
 $field->reorder($_POST);

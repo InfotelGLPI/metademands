@@ -109,7 +109,7 @@ class PluginMetademandsTitleblock extends CommonDBTM
         }
     }
 
-    static function showFieldCustomValues($values, $key, $params)
+    static function showFieldCustomValues($params)
     {
 
     }

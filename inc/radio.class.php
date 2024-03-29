@@ -138,7 +138,8 @@ class PluginMetademandsRadio extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($params) {
+    static function showFieldCustomValues($params)
+    {
 
         $custom_values = $params['custom_values'];
         $default_values = $params['default_values'];
@@ -154,15 +155,15 @@ class PluginMetademandsRadio extends CommonDBTM
                 echo "<tr class='tab_bg_1'>";
 
                 echo '<td class="rowhandler control center">';
-                echo "<p id='custom_values$key'>";
+                echo "<span id='custom_values$key'>";
                 echo __('Value') . " " . $key . " ";
                 $name = "custom_values[$key]";
                 echo Html::input($name, ['value' => $value, 'size' => 30]);
-                echo '</p>';
+                echo '</span>';
                 echo "</td>";
 
                 echo '<td class="rowhandler control center">';
-                echo "<p id='comment_values$key'>";
+                echo "<span id='comment_values$key'>";
                 echo " " . __('Comment') . " ";
                 $value_comment = "";
                 if (isset($comment_values[$key])) {
@@ -170,16 +171,16 @@ class PluginMetademandsRadio extends CommonDBTM
                 }
                 $name = "comment_values[" . $key . "]";
                 echo Html::input($name, ['value' => $value_comment, 'size' => 30]);
-                echo '</p>';
+                echo '</span>';
                 echo "</td>";
 
                 echo "<td>";
-                echo "<p id='default_values$key'>";
+                echo "<span id='default_values$key'>";
                 echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                 $name  = "default_values[" . $key . "]";
                 $value = ($default_values[$key] ?? 0);
                 Dropdown::showYesNo($name, $value);
-                echo '</p>';
+                echo '</span>';
                 echo "</td>";
 
                 echo '<td class="rowhandler control center">';
@@ -223,12 +224,12 @@ class PluginMetademandsRadio extends CommonDBTM
             echo "</td>";
 
             echo "<td>";
-            echo "<p id='default_values$key'>";
+            echo "<span id='default_values$key'>";
             echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
             $name  = "default_values[" . $key . "]";
             $value = ($default[$key] ?? 0);
             Dropdown::showYesNo($name, $value);
-            echo '</p>';
+            echo '</span>';
             echo "</td>";
 
             echo "</tr>";

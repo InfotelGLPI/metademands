@@ -590,22 +590,22 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                     echo "<tr class='tab_bg_1'>";
                     echo "<td>";
-                    echo "<p id='custom_values$key'>";
+                    echo "<span id='custom_values$key'>";
                     echo $v["name"] . " ";
-                    echo '</p>';
+                    echo '</span>';
                     echo "</td>";
 
                     echo "<td>";
-                    echo "<p id='default_values$key'>";
+                    echo "<span id='default_values$key'>";
                     echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                     $name = "default_values[" . $key . "]";
                     $value = (isset($default[$key]) ? $default[$key] : 0);
                     Dropdown::showYesNo($name, $value);
-                    echo '</p>';
+                    echo '</span>';
                     echo "</td>";
 
                     echo "<td>";
-                    echo "<p id='present_values$key'>";
+                    echo "<span id='present_values$key'>";
                     echo " " . __('Display value in the dropdown', 'metademands') . " ";
                     $checked = "";
                     if (isset($custom_values[$key])
@@ -614,7 +614,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     }
 
                     echo "<input type='checkbox' name='custom_values[" . $key . "]'  value='$key' $checked />";
-                    echo '</p>';
+                    echo '</span>';
                     echo "</td>";
 
                     echo "</tr>";
@@ -630,17 +630,17 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                             echo '<td class="rowhandler control center">';
 //                            echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                            echo "<p id='custom_values$key'>";
+                            echo "<span id='custom_values$key'>";
                             echo __('Value') . " " . $key . " ";
                             $name = "custom_values[$key]";
                             echo Html::input($name, ['value' => $value, 'size' => 50]);
-                            echo '</p>';
+                            echo '</span>';
 //                            echo '</div>';
                             echo '</td>';
 
                             echo '<td class="rowhandler control center">';
                             echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                            //                     echo "<p id='default_values$key'>";
+                            //                     echo "<span id='default_values$key'>";
                             $display_default = false;
                             //                     if ($params['value'] == 'dropdown_multiple') {
                             $display_default = true;
@@ -651,12 +651,12 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                             //                           $checked = "checked";
                             //                        }
                             //                        echo "<input type='checkbox' name='default_values[" . $key . "]'  value='1' $checked />";
-                            echo "<p id='default_values$key'>";
+                            echo "<span id='default_values$key'>";
                             echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                             $name = "default_values[" . $key . "]";
                             $value = ($default_values[$key] ?? 0);
                             Dropdown::showYesNo($name, $value);
-                            echo '</p>';
+                            echo '</span>';
                             //                     }
                             //                     echo '</p>';
                             echo '</div>';
@@ -701,12 +701,12 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         echo Html::input('custom_values[1]', ['size' => 50]);
                         echo "</td>";
                         echo "<td>";
-                        echo "<p id='default_values$key'>";
+                        echo "<span id='default_values$key'>";
                         echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                         $name  = "default_values[" . $key . "]";
                         $value = ($default[$key] ?? 0);
                         Dropdown::showYesNo($name, $value);
-                        echo '</p>';
+                        echo '</span>';
                         echo "</td>";
                         //                  }
                         echo "</tr>";

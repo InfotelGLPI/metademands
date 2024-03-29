@@ -112,7 +112,7 @@ class PluginMetademandsTextarea extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($values, $key, $params)
+    static function showFieldCustomValues($params)
     {
 
     }

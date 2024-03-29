@@ -368,17 +368,18 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "<tr class='tab_bg_1'>";
 
                 echo '<td class="rowhandler control center">';
-//                echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-                echo "<p id='custom_values$key'>";
                 echo __('Value') . " " . $key . " ";
+                echo '</td>';
+
+                echo '<td class="rowhandler control center">';
+                echo "<span id='custom_values$key'>";
                 $name = "custom_values[$key]";
                 echo Html::input($name, ['value' => $value, 'size' => 50]);
-                echo '</p>';
-//                echo '</div>';
+                echo '</span>';
                 echo '</td>';
 
 //                echo '<td class="rowhandler control center">';
-//                echo "<p id='comment_values$key'>";
+//                echo "<span id='comment_values$key'>";
 //                echo " " . __('Comment') . " ";
 //                $value_comment = "";
 //                if (isset($comment_values[$key])) {
@@ -386,18 +387,16 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 //                }
 //                $name = "comment_values[" . $key . "]";
 //                echo Html::input($name, ['value' => $value_comment, 'size' => 30]);
-//                echo '</p>';
+//                echo '</span>';
 //                echo "</td>";
 
-                echo "<td>";
-//                echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
-
-                echo "<p id='default_values$key'>";
-                echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
+                echo '<td class="rowhandler control center">';
+                echo "<span id='default_values$key'>";
+                echo _n('Default value', 'Default values', 1, 'metademands');
                 $name  = "default_values[" . $key . "]";
                 $value = ($default_values[$key] ?? 0);
                 Dropdown::showYesNo($name, $value);
-                echo '</p>';
+                echo '</span>';
                 echo "</td>";
 
                 echo '<td class="rowhandler control center">';
@@ -435,17 +434,21 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         } else {
             if ($params['item'] != 'urgency' && $params['item'] != 'impact') {
                 $key = 1;
+                echo "<td>";
                 echo __('Value') . " ".$key;
+                echo "</td>";
+
+                echo "<td>";
                 echo Html::input('custom_values[1]', ['size' => 50]);
                 echo "</td>";
 
                 echo "<td>";
-                echo "<p id='default_values$key'>";
+                echo "<span id='default_values$key'>";
                 echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
                 $name  = "default_values[" . $key . "]";
                 $value = ($default[$key] ?? 0);
                 Dropdown::showYesNo($name, $value);
-                echo '</p>';
+                echo '</span>';
                 echo "</td>";
 
                 echo "</tr>";
