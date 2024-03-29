@@ -72,32 +72,6 @@ class PluginMetademandsField extends CommonDBChild
         'parent_field'
     ];
 
-    public static $allowed_options_types = [
-        'upload',
-        'text',
-        'date',
-        'time',
-        'datetime',
-        'date_interval',
-        'datetime_interval',
-        'dropdown_multiple',
-        'dropdown_object',
-        'basket',
-        'informations'
-    ];
-    public static $allowed_options_items = ['User'];
-
-    public static $allowed_custom_types = [
-        'checkbox',
-        'yesno',
-        'radio',
-        'link',
-        'dropdown_multiple',
-        'number',
-        'basket'
-    ];
-    public static $allowed_custom_items = ['other', 'urgency', 'impact'];
-
     public static $not_null = 'NOT_NULL';
 
 
@@ -241,6 +215,7 @@ class PluginMetademandsField extends CommonDBChild
     {
         $ong = [];
         $this->addDefaultFormTab($ong);
+        $this->addStandardTab('PluginMetademandsFieldParameter', $ong, $options);
         $this->addStandardTab('PluginMetademandsFieldOption', $ong, $options);
         $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
         if (Session::getCurrentInterface() == 'central') {
@@ -324,11 +299,7 @@ class PluginMetademandsField extends CommonDBChild
 
         echo "<div id='show_listfields_by_type'>";
         echo "</div>";
-//        $rand = self::dropdown(['name'  => "existing_field_id"]);
-//        $params = ['fields_id'               => '__VALUE__'];
-//        Ajax::updateItemOnSelectEvent('dropdown_existing_field_id' . $rand, "show_fields_infos", PLUGIN_METADEMANDS_WEBDIR .
-//            "/ajax/viewfieldinfos.php?id=" . $this->fields['id'], $params);
-//
+
         echo "<div id='show_fields_infos'>";
         echo "</div>";
 
@@ -425,7 +396,7 @@ class PluginMetademandsField extends CommonDBChild
             $this->check(-1, CREATE, $options);
             $this->getEmpty();
             $this->fields["plugin_metademands_metademands_id"] = $item->fields['id'];
-            $this->fields['color'] = '#000';
+
         }
 
         // Data saved in session
@@ -485,21 +456,8 @@ class PluginMetademandsField extends CommonDBChild
         }
         echo "</td>";
 
-        // MANDATORY
-        echo "<td>" . __('Mandatory field') . "</td>";
-        echo "<td>";
-        Dropdown::showYesNo("is_mandatory", $this->fields["is_mandatory"]);
+        echo "<td colspan='2'>";
         echo "</td>";
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        echo "<td>";
-        echo __('Hide title', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        Dropdown::showYesNo('hide_title', ($this->fields['hide_title']));
-        echo "</td>";
-        echo "<td colspan='2'> </td>";
         echo "</tr>";
 
         // LABEL 2
@@ -519,7 +477,6 @@ class PluginMetademandsField extends CommonDBChild
             'cols' => 50,
             'rows' => 3
         ]);
-        //      Html::autocompletionTextField($this, "label2", ['value' => stripslashes($this->fields["label2"])]);
         echo "</td>";
 
         // COMMENT
@@ -540,15 +497,41 @@ class PluginMetademandsField extends CommonDBChild
         echo "</tr>";
 
         echo "<tr class='tab_bg_1'>";
+        // TYPE
+        echo "<td>" . __('Type') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
         echo "<td>";
-        echo __('Takes the whole row', 'metademands');
-        echo "</td>";
-        echo "<td>";
-        Dropdown::showYesNo('row_display', ($this->fields['row_display']));
+
+        if ($ID < 1) {
+            $randType = self::dropdownFieldTypes("type", [
+                'value' => $this->fields["type"],
+                'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+            ]);
+
+            $paramsType = [
+                'value' => '__VALUE__',
+                'type' => '__VALUE__',
+                'item' => $this->fields['item'],
+                'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                'change_type' => 1
+            ];
+            Ajax::updateItemOnSelectEvent(
+                'dropdown_type' . $randType,
+                "show_values",
+                PLUGIN_METADEMANDS_WEBDIR .
+                "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                $paramsType
+            );
+        } else {
+            echo self::getFieldTypesName($this->fields['type']);
+        }
+        if ($metademand->fields['is_basket'] == 0
+            && ($this->fields['type'] == 'basket' || $this->fields['type'] == 'free_input')) {
+            echo "<span class='alert alert-warning d-flex'>";
+            echo __('Remember to activate basket mode on your metademand !', 'metademands');
+            echo "</span>";
+        }
         echo "</td>";
 
-
-        // BLOCK
         echo "<td>" . __('Block', 'metademands') . "</td>";
         echo "<td>";
         $randRank = Dropdown::showNumber('rank', [
@@ -571,73 +554,7 @@ class PluginMetademandsField extends CommonDBChild
             $paramsRank
         );
         echo "</td>";
-        echo "</tr>";
 
-        echo "<tr class='tab_bg_1'>";
-        // TYPE
-        echo "<td>" . __('Type') . "<span style='color:red'>&nbsp;*&nbsp;</span></td>";
-        echo "<td>";
-
-        if ($ID < 1) {
-            $randType = self::dropdownFieldTypes("type", [
-                'value' => $this->fields["type"],
-                'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
-            ]);
-
-            $paramsType = [
-                'value' => '__VALUE__',
-                'type' => '__VALUE__',
-                'item' => $this->fields['item'],
-                'max_upload' => $this->fields['max_upload'],
-                'regex' => $this->fields['regex'],
-                'use_future_date' => $this->fields['use_future_date'],
-                'use_date_now' => $this->fields['use_date_now'],
-                'additional_number_day' => $this->fields['additional_number_day'],
-                'display_type' => $this->fields['display_type'],
-                'informations_to_display' => $this->fields['informations_to_display'],
-                'custom_values' => $this->fields['custom_values'],
-                'comment_values' => $this->fields['comment_values'],
-                'default_values' => $this->fields['default_values'],
-                'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                'link_to_user' => $this->fields["link_to_user"],
-                'readonly' => $this->fields["readonly"],
-                'hidden' => $this->fields["hidden"],
-                'change_type' => 1
-            ];
-            Ajax::updateItemOnSelectEvent(
-                'dropdown_type' . $randType,
-                "show_values",
-                PLUGIN_METADEMANDS_WEBDIR .
-                "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                $paramsType
-            );
-        } else {
-            echo self::getFieldTypesName($this->fields['type']);
-        }
-        if ($metademand->fields['is_basket'] == 0
-            && ($this->fields['type'] == 'basket' || $this->fields['type'] == 'free_input')) {
-            echo "<span class='alert alert-warning d-flex'>";
-            echo __('Remember to activate basket mode on your metademand !', 'metademands');
-            echo "</span>";
-        }
-        echo "</td>";
-
-        // ORDER
-        if ($this->fields['type'] != "title-block") {
-            echo "<td>" . __('Display field after', 'metademands') . "</td>";
-            echo "<td>";
-            echo "<span id='show_order'>";
-            $this->showOrderDropdown(
-                $this->fields['rank'],
-                $this->fields['id'],
-                $this->fields['plugin_metademands_fields_id'],
-                $this->fields["plugin_metademands_metademands_id"]
-            );
-            echo "</span>";
-            echo "</td>";
-        } else {
-            echo "<td colspan='2'></td>";
-        }
         echo "</tr>";
 
         echo "<tr class='tab_bg_1'>";
@@ -666,21 +583,9 @@ class PluginMetademandsField extends CommonDBChild
                 'value' => '__VALUE__',
                 'type' => '__VALUE__',
                 'item' => $this->fields['item'],
-                'max_upload' => $this->fields['max_upload'],
-                'regex' => $this->fields['regex'],
-                'use_date_now' => $this->fields['use_date_now'],
-                'additional_number_day' => $this->fields['additional_number_day'],
-                'display_type' => $this->fields['display_type'],
-                'informations_to_display' => $this->fields['informations_to_display'],
-                'custom_values' => $this->fields['custom_values'],
-                'comment_values' => $this->fields['comment_values'],
-                'default_values' => $this->fields['default_values'],
                 'step' => 'object',
                 'rand' => $randItem,
                 'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                'link_to_user' => $this->fields["link_to_user"],
-                'readonly' => $this->fields["readonly"],
-                'hidden' => $this->fields["hidden"],
                 'change_type' => 1
             ];
             Ajax::updateItemOnSelectEvent(
@@ -698,722 +603,29 @@ class PluginMetademandsField extends CommonDBChild
             echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
             echo Html::hidden('type', ['value' => $this->fields['type']]);
         }
-        if ($this->fields['type'] == "title"
-            || $this->fields['type'] == "title-block"
-            || $this->fields['type'] == "informations") {
-            echo "<br><br>";
-            echo __('Color') . "<span style='color:red'>&nbsp;*&nbsp;</span>";
 
-            Html::showColorField('color', ['value' => $this->fields["color"]]);
-
-            echo "<br><br>";
-
-            echo __('Icon') . "&nbsp;";
-
-            $icon_selector_id = 'icon_' . mt_rand();
-            echo Html::select(
-                'icon',
-                [$this->fields['icon'] => $this->fields['icon']],
-                [
-                    'id' => $icon_selector_id,
-                    'selected' => $this->fields['icon'],
-                    'style' => 'width:175px;'
-                ]
+        // ORDER
+        if ($this->fields['type'] != "title-block") {
+            echo "<td>" . __('Display field after', 'metademands') . "</td>";
+            echo "<td>";
+            echo "<span id='show_order'>";
+            $this->showOrderDropdown(
+                $this->fields['rank'],
+                $this->fields['id'],
+                $this->fields['plugin_metademands_fields_id'],
+                $this->fields["plugin_metademands_metademands_id"]
             );
-
-            echo Html::script('js/Forms/FaIconSelector.js');
-            echo Html::scriptBlock(
-                <<<JAVASCRIPT
-         $(
-            function() {
-               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
-               icon_selector.init();
-            }
-         );
-JAVASCRIPT
-            );
-        }
-
-
-        if ($ID < 1) {
-
             echo "</span>";
-
-            $paramsItem = [
-                'value' => '__VALUE__',
-                'item' => '__VALUE__',
-                'type' => $this->fields['type'],
-                'max_upload' => $this->fields['max_upload'],
-                'regex' => $this->fields['regex'],
-                'use_date_now' => $this->fields['use_date_now'],
-                'additional_number_day' => $this->fields['additional_number_day'],
-                'display_type' => $this->fields['display_type'],
-                'informations_to_display' => $this->fields['informations_to_display'],
-                'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                'custom_values' => $this->fields["custom_values"],
-                'comment_values' => $this->fields["comment_values"],
-                'default_values' => $this->fields["default_values"],
-                'link_to_user' => $this->fields["link_to_user"],
-                'readonly' => $this->fields["readonly"],
-                'hidden' => $this->fields["hidden"]
-            ];
-            Ajax::updateItemOnSelectEvent(
-                'dropdown_item' . $randItem,
-                "show_values",
-                PLUGIN_METADEMANDS_WEBDIR .
-                "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                $paramsItem
-            );
-
-
-            echo Html::hidden(
-                'plugin_metademands_metademands_id',
-                ['value' => $this->fields["plugin_metademands_metademands_id"]]
-            );
-
-            $params = [
-                'id' => 'dropdown_type' . $randType,
-                'to_change' => 'dropdown_item' . $randItem,
-                'values' => [
-                    'dropdown',
-                    'dropdown_object',
-                    'dropdown_meta',
-                    'dropdown_multiple',
-                    'basket',
-                    'text'
-                ],
-                'values_plugin' => [],
-                'current_item' => $this->fields['item'],
-                'current_type' => $this->fields['type'],
-                'titleDisplay' => 'show_item_object',
-                'valueDisplay' => 'show_item',
-                'titleDisplay_title' => 'show_item_label_title',
-                'valueDisplay_title' => 'show_item_title',
-                'value_title' => 'title',
-                'value_informations' => 'informations',
-                'value_title_block' => 'title-block',
-            ];
-            if (isset($PLUGIN_HOOKS['metademands'])) {
-                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                    $params['values_plugin'][] = self::addPluginFieldTypeValue($plug);
-                }
-            }
-
-            $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-                    ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
-                ) . ");";
-            $script .= "metademandWizard.metademands_show_field_onchange(" . json_encode($params) . ");";
-            $script .= "metademandWizard.metademands_show_field(" . json_encode($params) . ");";
-            echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
-        }
-        echo "</td>";
-        // Is_Basket Fields
-        if ($metademand->fields['is_order'] == 1) {
-            echo "<td>" . __('Display into the basket', 'metademands') . "</td>";
-            echo "<td>";
-            if ($ID > 0) {
-                $value = $this->fields["is_basket"];
-            } else {
-                $value = 1;
-            }
-            Dropdown::showYesNo("is_basket", $value);
             echo "</td>";
         } else {
             echo "<td colspan='2'></td>";
         }
 
-        echo "</tr>";
 
-        echo "<tr class='tab_bg_1'>";
-        if ($this->fields['type'] == "dropdown_object"
-            && $this->fields["item"] == "Group") {
-            $custom_values = self::_unserialize($this->fields['custom_values']);
-            $is_assign = $custom_values['is_assign'] ?? 0;
-            $is_watcher = $custom_values['is_watcher'] ?? 0;
-            $is_requester = $custom_values['is_requester'] ?? 0;
-            $user_group = $custom_values['user_group'] ?? 0;
-            echo "<td></td>";
-
-            echo "<td>";
-            echo __('Requester');
-            echo "&nbsp;";
-            // Assigned group
-            Dropdown::showYesNo('is_requester', $is_requester);
-            echo "<br>";
-            echo __('Watcher');
-            echo "&nbsp;";
-            // Watcher group
-            Dropdown::showYesNo('is_watcher', $is_watcher);
-            echo "<br>";
-            echo __('Assigned');
-            echo "&nbsp;";
-            // Requester group
-            Dropdown::showYesNo('is_assign', $is_assign);
-            echo "<br>";
-            echo __('My groups');
-            echo "&nbsp;";
-            // user_group
-            Dropdown::showYesNo('user_group', $user_group);
-            echo "</td>";
-        } elseif (($this->fields['type'] == "dropdown_object"
-                && $this->fields["item"] == "User")
-            || ($this->fields['type'] == "dropdown_multiple"
-                && $this->fields["item"] == "User")) {
-            $custom_values = self::_unserialize($this->fields['custom_values']);
-            $user_group = $custom_values['user_group'] ?? 0;
-            echo "<td></td>";
-
-            echo "<td>";
-            echo __('Only users of my groups', 'metademands');
-            echo "&nbsp;";
-            // user_group
-            Dropdown::showYesNo('user_group', $user_group);
-            echo "</td>";
-        } else {
-            echo "<td colspan='2'></td>";
-        }
-
-        //TODO permit linked items_id / itemtype
-        if ($ID > 0
-            && $this->fields['type'] != "title"
-            && $this->fields['type'] != "title-block"
-            && $this->fields['type'] != "informations"
-            && $this->fields['type'] != 'text') {
-            echo "<td>";
-            echo __('Use this field as object field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            $ticket_fields[0] = Dropdown::EMPTY_VALUE;
-            $objectclass = $metademand->fields['object_to_create'];
-            $searchOption = Search::getOptions($objectclass);
-
-            if ($objectclass == 'Ticket') {
-                $tt = new TicketTemplate();
-            } elseif ($objectclass == 'Problem') {
-                $tt = new ProblemTemplate();
-            } elseif ($objectclass == 'Change') {
-                $tt = new ChangeTemplate();
-            }
-            $allowed_fields = $tt->getAllowedFields(true, true);
-
-            unset($allowed_fields[-2]);
-
-            //      Array ( [1] => name [21] => content [12] => status [10] => urgency [11] => impact [3] => priority
-            //      [15] => date [4] => _users_id_requester [71] => _groups_id_requester [5] => _users_id_assign
-            //      [8] => _groups_id_assign [6] => _suppliers_id_assign [66] => _users_id_observer [65] => _groups_id_observer
-            //      [7] => itilcategories_id [131] => itemtype [13] => items_id [142] => _documents_id [175] => _tasktemplates_id [9] => requesttypes_id
-            //      [83] => locations_id [37] => slas_id_tto [30] => slas_id_ttr [190] => olas_id_tto [191] => olas_id_ttr [18] => time_to_resolve
-            //      [155] => time_to_own [180] => internal_time_to_resolve [185] => internal_time_to_own [45] => actiontime [52] => global_validation [14] => type )
-            //         $granted_fields = [
-            //            4,
-            //            71,
-            //            66,
-            //            65,
-            //            'urgency',
-            //            'impact',
-            //            'priority',
-            //            'locations_id',
-            //            'requesttypes_id',
-            //            'itemtype',
-            //            'items_id',
-            //            'time_to_resolve',
-            //         ];
-            $granted_fields = [];
-            if (($this->fields['type'] == "dropdown_object"
-                    && $this->fields["item"] == "User")
-                || ($this->fields['type'] == "dropdown_multiple"
-                    && $this->fields["item"] == "User")) {
-                //Valideur
-                $allowed_fields[59] = __('Approver');
-                $granted_fields = [
-                    4,
-                    66,
-                    59
-                ];
-            }
-            if ($this->fields['type'] == "dropdown_object"
-                && $this->fields["item"] == "Group") {
-                $granted_fields = [
-                    71,
-                    65,
-                ];
-            }
-
-            if ($this->fields['type'] == "dropdown_object"
-                && $this->fields["item"] == "Entity") {
-                $allowed_fields[80] = 'entities_id';
-                $granted_fields = [
-                    80,
-                ];
-            }
-
-            if ($this->fields['type'] == "dropdown"
-                && $this->fields["item"] == "Location") {
-                $granted_fields = [
-                    'locations_id',
-                ];
-            }
-
-            if ($this->fields['type'] == "dropdown"
-                && $this->fields["item"] == "RequestType") {
-                $granted_fields = [
-                    'requesttypes_id',
-                ];
-            }
-
-            if ($this->fields['type'] == "dropdown_meta"
-                && ($this->fields["item"] == "urgency" || $this->fields["item"] == "impact" || $this->fields["item"] == "priority")) {
-                $granted_fields = [
-                    $this->fields["item"]
-                ];
-            }
-
-            if ($this->fields['type'] == "dropdown_meta"
-                && ($this->fields["item"] == "ITILCategory_Metademands")) {
-                $granted_fields = [
-                    'itilcategories_id'
-                ];
-            }
-
-            if ($this->fields['type'] == "date"
-                || $this->fields["type"] == "datetime") {
-                $granted_fields = [
-                    'time_to_resolve'
-                ];
-            }
-
-            if (($this->fields['type'] == "dropdown_meta"
-                    && $this->fields["item"] == "mydevices")
-                || ($this->fields['type'] == "dropdown_multiple"
-                    && $this->fields["item"] == "Appliance")
-                || ($this->fields['type'] == "dropdown_object"
-                    && Ticket::isPossibleToAssignType($this->fields["item"]))) {
-                $granted_fields = [
-                    13
-                ];
-            }
-
-
-            foreach ($allowed_fields as $id => $value) {
-                if (in_array($searchOption[$id]['linkfield'], $granted_fields) || in_array($id, $granted_fields)) {
-                    $ticket_fields[$id] = $searchOption[$id]['name'];
-                }
-            }
-
-            Dropdown::showFromArray(
-                'used_by_ticket',
-                $ticket_fields,
-                ['value' => $this->fields["used_by_ticket"]]
-            );
-            echo "</td>";
-        } else {
-            echo "<td colspan='2'></td>";
-        }
-        echo "</tr>";
-
-        if ($ID > 0 && $this->fields['type'] == "textarea") {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>";
-            echo __('Use richt text', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo('use_richtext', ($this->fields['use_richtext']));
-            echo "</td>";
-            echo "<td colspan='2'></td>";
-            echo "</tr>";
-        }
-
-        if ($ID > 0 && (
-                ($this->fields['type'] == "dropdown_object"
-                    && ($this->fields["item"] == "User"
-                        || $this->fields["item"] == "Group"))
-                || ($this->fields['type'] == "dropdown"
-                    && ($this->fields["item"] == "Location"
-                        || $this->fields["item"] == "RequestType"))
-                || ($this->fields['type'] == "dropdown_meta"
-                    && ($this->fields["item"] == "urgency"
-                        || $this->fields["item"] == "impact"
-                        || $this->fields["item"] == "priority"))
-                || $this->fields['type'] == "date"
-                || $this->fields["type"] == "datetime"
-            )
-        ) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
-            echo "</td>";
-            if ($metademand->fields['object_to_create'] == 'Ticket') {
-                echo "<td>";
-                echo __('Use this field for child ticket field', 'metademands');
-                echo "</td>";
-                echo "<td>";
-                Dropdown::showYesNo('used_by_child', $this->fields['used_by_child']);
-            } else {
-                echo "<td colspan='2'>";
-            }
-            echo "</td>";
-            echo "</tr>";
-        } else {
-            Html::hidden('used_by_child', ['value' => 0]);
-        }
-
-        if ($ID > 0 && ($this->fields['type'] == "dropdown_object"
-                && $this->fields["item"] == "User")) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
-            echo "</td>";
-            echo "<td>";
-            echo __('Use id of requester by default', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo('default_use_id_requester', $this->fields['default_use_id_requester']);
-            echo "</td>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
-            echo "</td>";
-            echo "<td>";
-            echo __('Use id of supervisor requester by default', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo(
-                'default_use_id_requester_supervisor',
-                $this->fields['default_use_id_requester_supervisor']
-            );
-            echo "</td>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
-            echo "</td>";
-            echo "<td>";
-            echo __('Read-Only', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo('readonly', ($this->fields['readonly']));
-            echo "</td>";
-            echo "</tr>";
-        }
-
-        if ($ID > 0 && ($this->fields['type'] == "dropdown_multiple"
-                && $this->fields["item"] == "User")) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
-            echo "</td>";
-            echo "<td>";
-            echo __('Use id of requester by default', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo('default_use_id_requester', $this->fields['default_use_id_requester']);
-            echo "</td>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
-            echo "</td>";
-            echo "<td>";
-            echo __('Use id of supervisor requester by default', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo(
-                'default_use_id_requester_supervisor',
-                $this->fields['default_use_id_requester_supervisor']
-            );
-            echo "</td>";
-            echo "</tr>";
-        }
-
-        if ($ID > 0 && ($this->fields['type'] == "dropdown_meta"
-                && $this->fields["item"] == "ITILCategory_Metademands")) {
-            echo "<tr class='tab_bg_1'>";
-
-            echo "<td>";
-            echo __('Read-Only', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo('readonly', ($this->fields['readonly']));
-            echo "</td>";
-
-            echo "<td>";
-            echo __('Hidden field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            Dropdown::showYesNo('hidden', ($this->fields['hidden']));
-            echo "</td>";
-
-            echo "</tr>";
-        }
-
-        if ($ID > 0 && (
-                ($this->fields['type'] == "dropdown_object"
-                    && $this->fields["item"] == "Group")
-                || ($this->fields['type'] == "dropdown"
-                    && $this->fields["item"] == "Location")
-                || ($this->fields['type'] == "dropdown_meta"
-                    && $this->fields["item"] == "mydevices")
-                || ($this->fields['type'] == "text"
-                    && $this->fields["item"] == "User")
-            )
-        ) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
-            echo "</td>";
-            echo "<td>";
-            echo __('Link this to a user field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-            $arrayAvailable = [];
-            $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
-            $field = new self();
-            $fields = $field->find([
-                "plugin_metademands_metademands_id" => $this->fields['plugin_metademands_metademands_id'],
-                'type' => "dropdown_object",
-                "item" => User::getType()
-            ]);
-            foreach ($fields as $f) {
-                $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
-            }
-            Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $this->fields['link_to_user']]);
-            echo "</td>";
-            echo "</tr>";
-        } else {
-            Html::hidden('link_to_field', ['value' => 0]);
-        }
-        echo "<tr class='tab_bg_1'>";
-        if (Plugin::isPluginActive('fields')) {
-            echo "<td>";
-            echo __('Link this to a plugin "fields" field', 'metademands');
-            echo "</td>";
-            echo "<td>";
-
-            $arrayAvailableContainer = [];
-            $fieldsContainer = new PluginFieldsContainer();
-            $fieldsContainers = $fieldsContainer->find();
-
-            $meta = new PluginMetademandsMetademand();
-            $meta->getFromDB($this->fields["plugin_metademands_metademands_id"]);
-            foreach ($fieldsContainers as $container) {
-                $typesContainer = json_decode($container['itemtypes']);
-                if (is_array($typesContainer) && in_array($meta->fields["object_to_create"], $typesContainer)) {
-                    $arrayAvailableContainer[] = $container['id'];
-                }
-            }
-
-            $pluginfield = new PluginMetademandsPluginfields();
-            $opt = ['display_emptychoice' => true];
-            if ($pluginfield->getFromDBByCrit(['plugin_metademands_fields_id' => $ID])) {
-                $opt["value"] = $pluginfield->fields["plugin_fields_fields_id"];
-            }
-            $condition = [];
-            if (count($arrayAvailableContainer) > 0) {
-                $condition = ['plugin_fields_containers_id' => $arrayAvailableContainer];
-            }
-
-            $field = new PluginFieldsField();
-            $fields_values = $field->find($condition);
-            $datas = [];
-            foreach ($fields_values as $fields_value) {
-                $datas[$fields_value['id']] = $fields_value['label'];
-            }
-
-            Dropdown::showFromArray('plugin_fields_fields_id', $datas, $opt);
-
-            echo "</td>";
-        } else {
-            echo "<td></td>
-            <td></td>";
-        }
-
-        if ($this->fields['type'] == 'text' && $this->fields['item'] == 'User') {
-            echo '<td>' . __('User information to get', 'metademands') . '</td>';
-            $options = [
-                0 => Dropdown::EMPTY_VALUE,
-                6 => _n('Phone', 'Phones', 0),
-                11 => __('Mobile phone'),
-                22 => _x('infocom', 'Administrative number')
-            ];
-            echo '<td>';
-            Dropdown::showFromArray(
-                'used_by_ticket',
-                $options,
-                ['value' => $this->fields["used_by_ticket"]]
-            );
-            echo '</td>';
-        } else {
-            echo '<td></td><td></td>';
-        }
-        echo "</tr>";
-
-        echo "<tr class='tab_bg_1'>";
-        // SHOW SPECIFIC VALUES
-        echo "<td colspan='4'>";
-        echo "<div id='show_values'>";
-        $this->fields["dropdown"] = false;
-
-        $paramTypeField = [
-            'id' => $this->fields['id'],
-            'value' => $this->fields['type'],
-            'custom_values' => $this->fields['custom_values'],
-            'comment_values' => $this->fields['comment_values'],
-            'default_values' => $this->fields['default_values'],
-            'max_upload' => $this->fields['max_upload'],
-            'regex' => $this->fields['regex'],
-            'use_future_date' => $this->fields['use_future_date'],
-            'use_date_now' => $this->fields['use_date_now'],
-            'additional_number_day' => $this->fields['additional_number_day'],
-            'display_type' => $this->fields['display_type'],
-            'informations_to_display' => $this->fields['informations_to_display'],
-            'item' => $this->fields['item'],
-            'type' => $this->fields['type'],
-            'drop' => $this->fields["dropdown"],
-            'link_to_user' => $this->fields["link_to_user"],
-            'readonly' => $this->fields["readonly"],
-            'hidden' => $this->fields["hidden"],
-            'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-        ];
-
-        $this->getEditValue(
-            self::_unserialize($this->fields['custom_values']),
-            self::_unserialize($this->fields['comment_values']),
-            self::_unserialize($this->fields['default_values']),
-            $paramTypeField
-        );
-        $this->viewTypeField($paramTypeField);
-
-        echo "</div>";
-        echo "</td>";
         echo "</tr>";
 
         $this->showFormButtons(['colspan' => 2]);
         return true;
-    }
-
-
-    /**
-     * View options for items or types
-     *
-     * @param array $options
-     *
-     * @return void
-     * @throws \GlpitestSQLError
-     */
-    public function viewTypeField($options)
-    {
-        global $PLUGIN_HOOKS;
-
-        $params['value'] = 0;
-
-        foreach ($options as $key => $value) {
-            $params[$key] = $value;
-        }
-
-        $allowed_options_types = self::$allowed_options_types;
-        $allowed_options_items = self::$allowed_options_items;
-        $new_fields = [];
-
-//        if (Plugin::isPluginActive('ldapfields')) {
-//            $ldapfields_containers = new PluginLdapfieldsContainer();
-//            $ldapfields = $ldapfields_containers->find(['type' => 'dropdown', 'is_active' => true]);
-//            if (count($ldapfields) > 0) {
-//                foreach ($ldapfields as $ldapfield) {
-//                    array_push($allowed_options_types, $ldapfield['name']);
-//                }
-//            }
-//        }
-
-        if (isset($PLUGIN_HOOKS['metademands'])) {
-            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                if (Plugin::isPluginActive($plug)) {
-                    $new_fields = self::addPluginFieldItems($plug);
-                    if (is_array($new_fields) && count($new_fields) > 0) {
-                        $allowed_options_types = array_merge($allowed_options_types, $new_fields);
-                    }
-                }
-            }
-        }
-
-        if (in_array($params['type'], $allowed_options_types)
-            || in_array($params['item'], $allowed_options_items)) {
-            $metademands = new PluginMetademandsMetademand();
-            $metademands->getFromDB($options['metademands_id']);
-
-            if (is_array($new_fields) && in_array($params['value'], $new_fields)) {
-                $params['value'] = $params['type'];
-            }
-            if ($params["type"] === "dropdown") {
-                $params['value'] = $params['type'];
-            }
-
-
-            echo "<div id='show_type_fields'>";
-            echo "<table width='100%' class='metademands_show_values'>";
-
-            switch ($params["value"]) {
-                case 'title':
-                    break;
-                case 'title-block':
-                    break;
-                case 'informations':
-                    echo PluginMetademandsInformation::showFieldCustomFields($params);
-                    break;
-                case 'text':
-                    echo PluginMetademandsText::showFieldCustomFields($params);
-                    break;
-                case 'textarea':
-                    break;
-                case 'dropdown_meta':
-                    break;
-                case 'dropdown_object':
-                    echo PluginMetademandsDropdownobject::showFieldCustomFields($params);
-                    break;
-                case 'dropdown':
-                    break;
-                case 'dropdown_multiple':
-                    echo PluginMetademandsDropdownmultiple::showFieldCustomFields($params);
-                    break;
-                case 'checkbox':
-                    break;
-                case 'radio':
-                    break;
-                case 'yesno':
-                    break;
-                case 'number':
-                    break;
-                case 'date':
-                    echo PluginMetademandsDate::showFieldCustomFields($params);
-                    break;
-                case 'time':
-                    echo PluginMetademandsTime::showFieldCustomFields($params);
-                    break;
-                case 'datetime':
-                    echo PluginMetademandsDatetime::showFieldCustomFields($params);
-                    break;
-                case 'date_interval':
-                    echo PluginMetademandsDateinterval::showFieldCustomFields($params);
-                    break;
-                case 'datetime_interval':
-                    echo PluginMetademandsDatetimeInterval::showFieldCustomFields($params);
-                    break;
-                case 'upload':
-                    echo PluginMetademandsUpload::showFieldCustomFields($params);
-                    break;
-                case 'link':
-                    break;
-                case 'parent_field':
-                    break;
-                default:
-                    if (isset($PLUGIN_HOOKS['metademands'])) {
-                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                            if (Plugin::isPluginActive($plug)) {
-                                echo self::showPluginCustomvalues($plug, $params);
-                            }
-                        }
-                    }
-                    break;
-            }
-            echo "</table>";
-            echo "</div>";
-        }
     }
 
     /**
@@ -1527,19 +739,6 @@ JAVASCRIPT
                     echo "</td>";
                 }
                 echo "<td>";
-//                if ($canedit) {
-//                    echo "\n<script type='text/javascript' >\n";
-//                    echo "function viewEditField" . $item->getType() . $value['id'] . "$rand() {\n";
-//                    $params = ['type' => __CLASS__,
-//                        'parenttype' => get_class($item),
-//                        $item->getForeignKeyField() => $item->getID(),
-//                        'id' => $value["id"]];
-//                    Ajax::updateItemJsCode("viewfield" . $item->getType() . $item->getID() . "$rand",
-//                        $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-//                        $params);
-//                    echo "};";
-//                    echo "</script>\n";
-//                }
                 echo $value['id'];
                 echo "</td>";
 
@@ -1847,32 +1046,6 @@ JAVASCRIPT
      *
      * @param $plug
      */
-    public static function showPluginCustomvalues($plug, $params)
-    {
-        global $PLUGIN_HOOKS;
-
-        $dbu = new DbUtils();
-        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-            foreach ($pluginclasses as $pluginclass) {
-                if (!class_exists($pluginclass)) {
-                    continue;
-                }
-                $form[$pluginclass] = [];
-                $item = $dbu->getItemForItemtype($pluginclass);
-                if ($item && is_callable([$item, 'showCustomvalues'])) {
-                    $item->showCustomvalues($params);
-                }
-            }
-        }
-    }
-
-    /**
-     * Load fields from plugins
-     *
-     * @param $plug
-     */
     public static function showPluginFieldCase(
         $plug,
         $metademands_data,
@@ -1986,34 +1159,6 @@ JAVASCRIPT
         }
     }
 
-
-    /**
-     * Load fields from plugins
-     *
-     * @param $plug
-     *
-     * @return void
-     */
-    public static function addPluginFieldTypeValue($plug)
-    {
-        global $PLUGIN_HOOKS;
-
-        $dbu = new DbUtils();
-        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
-            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
-
-            foreach ($pluginclasses as $pluginclass) {
-                if (!class_exists($pluginclass)) {
-                    continue;
-                }
-                $form[$pluginclass] = [];
-                $item = $dbu->getItemForItemtype($pluginclass);
-                if ($item && is_callable([$item, 'addFieldTypeValue'])) {
-                    return $item->addFieldTypeValue();
-                }
-            }
-        }
-    }
 
     /**
      * Load fields from plugins
@@ -2228,7 +1373,7 @@ JAVASCRIPT
 
         switch ($value) {
             case 'other':
-                return __('Other');
+                return __('My values', 'metademands');;
             case 'ITILCategory_Metademands':
                 return __('Category of the metademand', 'metademands');
             case 'mydevices':
@@ -2365,7 +1510,9 @@ JAVASCRIPT
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $hidden = 0;
         }
-        if ($data['type'] != "title" && $data['type'] != "title-block" && $data['type'] != "informations") {
+        if ($data['type'] != "title"
+            && $data['type'] != "title-block"
+            && $data['type'] != "informations") {
             if ($data['hide_title'] == 0) {
                 if ($hidden == 0) {
                     echo "<span $required class='col-form-label metademand-label'>";
@@ -2424,7 +1571,9 @@ JAVASCRIPT
         }
         echo self::getFieldInput($metademands_data, $data, false, $itilcategories_id, 0, $preview, $config_link);
 
-        if ($data['type'] != "title" && $data['type'] != "title-block" && $data['type'] != "informations") {
+        if ($data['type'] != "title"
+            && $data['type'] != "title-block"
+            && $data['type'] != "informations") {
             if ($data['hide_title'] == 1) {
                 echo "</div>";
             }
@@ -2623,7 +1772,7 @@ JAVASCRIPT
                                                 break;
                                             case 'checkbox':
                                                 if (!empty($line_data['form'][$parent_field_id]['custom_values'])) {
-                                                    $line_data['form'][$parent_field_id]['custom_values'] = self::_unserialize(
+                                                    $line_data['form'][$parent_field_id]['custom_values'] = PluginMetademandsFieldParameter::_unserialize(
                                                         $line_data['form'][$parent_field_id]['custom_values']
                                                     );
                                                     foreach ($line_data['form'][$parent_field_id]['custom_values'] as $k => $val) {
@@ -2636,7 +1785,7 @@ JAVASCRIPT
                                                             $line_data['form'][$parent_field_id]['custom_values'][$k] = $ret;
                                                         }
                                                     }
-                                                    $checkboxes = self::_unserialize($value);
+                                                    $checkboxes = PluginMetademandsFieldParameter::_unserialize($value);
 
                                                     $custom_checkbox = [];
                                                     $value_parent_field = "";
@@ -2653,7 +1802,7 @@ JAVASCRIPT
 
                                             case 'radio':
                                                 if (!empty($line_data['form'][$parent_field_id]['custom_values'])) {
-                                                    $line_data['form'][$parent_field_id]['custom_values'] = self::_unserialize(
+                                                    $line_data['form'][$parent_field_id]['custom_values'] = PluginMetademandsFieldParameter::_unserialize(
                                                         $line_data['form'][$parent_field_id]['custom_values']
                                                     );
                                                     foreach ($line_data['form'][$parent_field_id]['custom_values'] as $k => $val) {
@@ -2817,323 +1966,6 @@ JAVASCRIPT
         return ($first ? 0 : $rep);
     }
 
-    /**
-     * @param        $action
-     * @param        $btname
-     * @param        $btlabel
-     * @param array $fields
-     * @param string $btimage
-     * @param string $btoption
-     * @param string $confirm
-     *
-     * @return string
-     */
-    public static function showSimpleForm(
-        $action,
-        $btname,
-        $btlabel,
-        array $fields = [],
-        $btimage = '',
-        $btoption = '',
-        $confirm = ''
-    ) {
-        return Html::getSimpleForm($action, $btname, $btlabel, $fields, $btimage, $btoption, $confirm);
-    }
-
-
-
-    /**
-     * @param $url
-     */
-//    public function addNewOpt($url)
-//    {
-//        $res = "<script type='text/javascript'>
-//
-//      let root_metademands_doc = '" . PLUGIN_METADEMANDS_WEBDIR . "';
-//
-//                $('#addNewOpt').click(function() {
-//                    let nb = document.getElementById('nbOptions').valueOf().value;
-//                    nb++;
-//                    parent.parent.window.location.replace(root_metademands_doc + '/front/" . $url . "&nbOpt='+nb);
-//                });
-//                </script>";
-//        echo $res;
-//    }
-
-
-    /**
-     * View custom values for items or types
-     *
-     * @param array $values
-     * @param array $comment
-     * @param array $default
-     * @param array $options
-     *
-     * @return void
-     */
-    public function getEditValue($values = [], $comment = [], $default = [], $options = [])
-    {
-        $params['value'] = 0;
-        $params['item'] = '';
-        $params['type'] = '';
-
-        foreach ($options as $key => $value) {
-            $params[$key] = $value;
-        }
-
-        $allowed_custom_types = self::$allowed_custom_types;
-        $allowed_custom_items = self::$allowed_custom_items;
-
-        if (in_array($params['value'], $allowed_custom_types)
-            || in_array($params['item'], $allowed_custom_items)) {
-            echo "<table width='100%' class='metademands_show_values'>";
-            if ($params['value'] != "dropdown_multiple"
-                && $params['item'] != 'User') {
-                echo "<tr><th colspan='4'>" . __('Custom values', 'metademands') . "</th></tr>";
-            }
-
-            echo "<tr><td>";
-            echo '<table width=\'100%\' class="tab_cadre">';
-            if ($params["type"] == "dropdown_multiple" && empty($params["item"])) {
-                $params["item"] = "other";
-            }
-
-            if ($params["type"] == "radio") {
-                $params["item"] = "radio";
-            }
-            if ($params["type"] == "checkbox") {
-                $params["item"] = "checkbox";
-            }
-
-            if ($params["type"] != "dropdown_multiple") {
-                switch ($params['item']) {
-                    case 'impact':
-                    case 'urgency':
-                    case 'other':
-                        PluginMetademandsDropdownmeta::showFieldCustomValues($values, $key, $params);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            switch ($params['type']) {
-                case 'title':
-                    break;
-                case 'title-block':
-                    break;
-                case 'informations':
-                    break;
-                case 'text':
-                    break;
-                case 'textarea':
-                    break;
-                case 'dropdown_meta':
-                    break;
-                case 'dropdown_object':
-                    break;
-                case 'dropdown':
-                    break;
-                case 'dropdown_multiple':
-                    PluginMetademandsDropdownmultiple::showFieldCustomValues($values, $key, $params);
-                    break;
-                case 'checkbox':
-                    PluginMetademandsCheckbox::showFieldCustomValues($values, $key, $params);
-                    break;
-                case 'radio':
-                    PluginMetademandsRadio::showFieldCustomValues($values, $key, $params);
-                    break;
-                case 'yesno':
-                    PluginMetademandsYesno::showFieldCustomValues($values, $key, $params);
-                    break;
-                case 'number':
-                    PluginMetademandsNumber::showFieldCustomValues($values, $key, $params);
-                    break;
-                case 'date':
-                    break;
-                case 'time':
-                    break;
-                case 'date_interval':
-                    break;
-                case 'datetime':
-                    break;
-                case 'datetime_interval':
-                    break;
-                case 'upload':
-                    break;
-                case 'link':
-                    PluginMetademandsLink::showFieldCustomValues($values, $key, $params);
-                    break;
-                case 'basket':
-                    PluginMetademandsBasket::showFieldCustomValues($values, $key, $params);
-                    break;
-                case 'parent_field':
-                    break;
-            }
-
-            echo '</table>';
-            echo "</td></tr></table>";
-        }
-    }
-
-
-    public function reorderArray($targetArray, $indexFrom, $indexTo)
-    {
-        $targetElement = $targetArray[$indexFrom];
-        $magicIncrement = ($indexTo - $indexFrom) / abs($indexTo - $indexFrom);
-
-        for ($Element = $indexFrom; $Element != $indexTo; $Element += $magicIncrement) {
-            $targetArray[$Element] = $targetArray[$Element + $magicIncrement];
-        }
-
-        $targetArray[$indexTo] = $targetElement;
-
-        return $targetArray;
-    }
-
-    /**
-     * @param array $params
-     */
-    public function reorder(array $params)
-    {
-        $crit = [
-            'id' => $params['field_id'],
-        ];
-
-        $itemMove = new self();
-        $itemMove->getFromDBByCrit($crit);
-
-        $custom_values = self::_unserialize($itemMove->fields["custom_values"]);
-        $default_values = self::_unserialize($itemMove->fields["default_values"]);
-        $comment_values = self::_unserialize($itemMove->fields["comment_values"]);
-
-        if (isset($params['old_order']) && isset($params['new_order'])) {
-            $old_order = $params['old_order'];
-            $new_order = $params['new_order'];
-
-            $old_order = $old_order + 1;
-            $new_order = $new_order + 1;
-
-            $new_custom_values = $this->reorderArray($custom_values, $old_order, $new_order);
-            $new_default_values = $this->reorderArray($default_values, $old_order, $new_order);
-            $new_comment_values = $this->reorderArray($comment_values, $old_order, $new_order);
-
-            $itemMove->update([
-                'id' => $params['field_id'],
-                'custom_values' => self::_serialize($new_custom_values),
-                'default_values' => self::_serialize($new_default_values),
-                'comment_values' => self::_serialize($new_comment_values)
-            ]);
-        }
-    }
-
-    /**
-     * @param      $count
-     * @param bool $display_comment
-     */
-    /**
-     * @param      $count
-     * @param bool $display_comment
-     * @param bool $display_default
-     */
-    public static function initCustomValue($count, $display_comment = false, $display_default = false)
-    {
-        Html::requireJs("metademands");
-        $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-                ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
-            ) . ");";
-
-        echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => $display_comment]);
-        echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
-        echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
-
-        echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer' 
-            onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");' 
-            title='" . _sx("button", "Add") . "'/></i>&nbsp;";
-    }
-
-    /**
-     * @param $valueId
-     * @param $display_comment
-     * @param $display_default
-     */
-    public static function addNewValue($valueId, $display_comment, $display_default)
-    {
-        $valueId = $valueId + 1;
-        echo '<table width=\'100%\' class="tab_cadre">';
-        echo "<tr>";
-
-        echo "<td id='show_custom_fields'>";
-        echo '<p id=\'custom_values' . $valueId . '\'>';
-        echo __('Value') . ' ' . $valueId . ' ';
-        $name = "custom_values[$valueId]";
-        echo Html::input($name, ['size' => 50]);
-        echo "</td>";
-        echo '</p>';
-
-        echo "<td id='show_custom_fields'>";
-        echo '<p id=\'comment_values' . $valueId . '\'>';
-        if ($display_comment) {
-            echo " " . __('Comment') . " ";
-            $name = "comment_values[$valueId]";
-            echo Html::input($name, ['size' => 30]);
-        }
-        echo '</p>';
-        echo "</td>";
-
-        echo "<td id='show_custom_fields'>";
-        echo '<p id=\'default_values' . $valueId . '\'>';
-        if ($display_default) {
-            echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-            //         echo '<input type="checkbox" name="default_values[' . $valueId . ']"  value="1"/>';
-            $name = "default_values[$valueId]";
-            $value = 0;
-            Dropdown::showYesNo($name, $value);
-        }
-        echo '</p>';
-        echo "</td>";
-
-        echo "</tr>";
-        echo '</td></tr></table>';
-    }
-
-    /**
-     * @param $input
-     *
-     * @return string
-     */
-    public static function _serialize($input)
-    {
-        if ($input != null || $input == []) {
-            if (is_array($input)) {
-                foreach ($input as &$value) {
-                    if ($value != null) {
-                        $clean = Html::cleanPostForTextArea($value);
-                        if ($clean != null) {
-                            $value = urlencode($clean);
-                        }
-                    }
-                }
-
-                return json_encode($input);
-            }
-        }
-    }
-
-    public static function _serializeArray($input)
-    {
-        if ($input != null || $input == []) {
-            $data_temp = [];
-            if (is_array($input)) {
-                foreach ($input as $k => $v) {
-                    $data_temp[urlencode($k)] = self::_serializeArray($v);
-                }
-                return $data_temp;
-            } else {
-                return urlencode($input);
-            }
-        }
-    }
 
     /**
      * @param $input
@@ -3158,23 +1990,6 @@ JAVASCRIPT
         return $input;
     }
 
-    public static function _unserializeArray($input)
-    {
-        if (!empty($input)) {
-            $data_temp = [];
-            if (is_array($input)) {
-                foreach ($input as $k => $v) {
-                    $data_temp[json_decode($k, true)] = self::_unserializeArray($v);
-                }
-                return $data_temp;
-            } else {
-                return json_decode($input, true);
-            }
-        }
-
-        return $input;
-    }
-
     /**
      * @param $metademands_id
      *
@@ -3188,11 +2003,7 @@ JAVASCRIPT
         return $listMetademandsFields;
     }
 
-    /**
-     * @param array $input
-     *
-     * @return array|bool
-     */
+
     /**
      * @param array $input
      *
@@ -3228,11 +2039,7 @@ JAVASCRIPT
         return $input;
     }
 
-    /**
-     * @param array $input
-     *
-     * @return array|bool
-     */
+
     /**
      * @param array $input
      *
@@ -3262,6 +2069,9 @@ JAVASCRIPT
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
 
         $temp = new PluginMetademandsFieldOption();
+        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsFieldParameter();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
 
         $temp = new PluginMetademandsFieldOption();
@@ -3305,13 +2115,6 @@ JAVASCRIPT
         ];
         $id = isset($input['id']) ? $input['id'] : 0;
         foreach ($input as $key => $value) {
-            if ($key === 'informations_to_display' && (in_array($input['type'], ['dropdown_multiple', 'dropdown_object']) && $input['item'] === 'User')) {
-                $temp = json_decode($value);
-                if (empty($temp)) {
-                    $msg[] = __("Informations to display in ticket and PDF", "metademands");
-                    $checkKo = true;
-                }
-            }
             if (array_key_exists($key, $mandatory_fields)) {
                 if (empty($value)) {
                     if (($key == 'item' && ($input['type'] == 'dropdown'

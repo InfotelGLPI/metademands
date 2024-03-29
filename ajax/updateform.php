@@ -73,25 +73,28 @@ if (isset($_POST['save_model'])) {
                 $field = new PluginMetademandsField();
                 $field->getFromDB($value['plugin_metademands_fields_id']);
 
-                if (isset($field->fields['type']) && $field->fields['type'] == 'textarea' && $field->fields['use_richtext'] == 1) {
-                    $form_value = new PluginMetademandsForm_Value();
-                    $form_value->getFromDB($value['plugin_metademands_forms_id']);
-                    $inputv = Toolbox::convertTagToImage($value['value'], $form_value, $input, false);
-                    $inputv = Sanitizer::unsanitize($inputv);
-                    $inputv = Toolbox::addslashes_deep($inputv);
-                    //Toolbox::logInfo($inputv);
-                    $form_values->add(['plugin_metademands_forms_id' => $newid,
-                        'plugin_metademands_fields_id' => $value['plugin_metademands_fields_id'],
-                        'value' => $inputv,
-                        'value2' => $value['value2']]);
+                $fieldparameter            = new PluginMetademandsFieldParameter();
+                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['plugin_metademands_fields_id']])) {
 
-                } else {
-                    $form_values->add(['plugin_metademands_forms_id' => $newid,
-                        'plugin_metademands_fields_id' => $value['plugin_metademands_fields_id'],
-                        'value' => $value['value'],
-                        'value2' => $value['value2']]);
+                    if (isset($field->fields['type']) && $field->fields['type'] == 'textarea' && $fieldparameter->fields['use_richtext'] == 1) {
+                        $form_value = new PluginMetademandsForm_Value();
+                        $form_value->getFromDB($value['plugin_metademands_forms_id']);
+                        $inputv = Toolbox::convertTagToImage($value['value'], $form_value, $input, false);
+                        $inputv = Sanitizer::unsanitize($inputv);
+                        $inputv = Toolbox::addslashes_deep($inputv);
+                        //Toolbox::logInfo($inputv);
+                        $form_values->add(['plugin_metademands_forms_id' => $newid,
+                            'plugin_metademands_fields_id' => $value['plugin_metademands_fields_id'],
+                            'value' => $inputv,
+                            'value2' => $value['value2']]);
+
+                    } else {
+                        $form_values->add(['plugin_metademands_forms_id' => $newid,
+                            'plugin_metademands_fields_id' => $value['plugin_metademands_fields_id'],
+                            'value' => $value['value'],
+                            'value2' => $value['value2']]);
+                    }
                 }
-
             }
         }
     } else {

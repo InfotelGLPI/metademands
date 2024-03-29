@@ -63,7 +63,7 @@ class PluginMetademandsLink extends CommonDBTM
         }
 
         if (!empty($data['custom_values'])) {
-            $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+            $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
             foreach ($data['custom_values'] as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
                     $data['custom_values'][$k] = $ret;
@@ -91,14 +91,14 @@ class PluginMetademandsLink extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($values, $key, $params)
+    static function showFieldCustomValues($params)
     {
-        // Show yes/no default value
-        echo "<tr><td id='show_custom_fields'>";
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
         $linkType = 0;
         $linkVal  = '';
-        if (isset($params['custom_values']) && !empty($params['custom_values'])) {
-            $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
+        if (isset($params['custom_values'])
+            && !empty($params['custom_values'])) {
             $linkType                = $params['custom_values'][0] ?? "";
             $linkVal                 = $params['custom_values'][1] ?? "";
         }
@@ -117,7 +117,8 @@ class PluginMetademandsLink extends CommonDBTM
             ['value' => $linkType]
         );
         echo "<br /><i>" . __("*use field \"Additional label\" for the button title", "metademands") . "</i>";
-        echo "</td></tr>";
+        echo "</td>";
+        echo "</tr>";
     }
 
     static function isCheckValueOK($value, $check_value)

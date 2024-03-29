@@ -57,7 +57,7 @@ class PluginMetademandsYesno extends CommonDBTM
         $options[1] = __('No');
         $options[2] = __('Yes');
 
-        $defaults = PluginMetademandsField::_unserialize($data['custom_values']);
+        $defaults = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
 
         if ($value == "") {
             //warning : this is default value
@@ -85,22 +85,24 @@ class PluginMetademandsYesno extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($values, $key, $params)
+    static function showFieldCustomValues($params)
     {
 
-
         // Show yes/no default value
-        echo "<tr><td id='show_custom_fields'>";
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
         echo _n('Default value', 'Default values', 1, 'metademands') . "&nbsp;";
         $p = [];
-        if (isset($params['custom_values'])) {
+
+        if (isset($params['custom_values']) && !is_array($params['custom_values'])) {
             $p['value'] = $params['custom_values'];
         }
         $data[1] = __('No');
         $data[2] = __('Yes');
 
         Dropdown::showFromArray("custom_values", $data, $p);
-        echo "</td></tr>";
+        echo "</td>";
+        echo "</tr>";
 
     }
 
@@ -292,7 +294,7 @@ class PluginMetademandsYesno extends CommonDBTM
 
             $tasks_id = $check_value['plugin_metademands_tasks_id'];
             if (isset($data['custom_values'])) {
-                $custom_values = PluginMetademandsField::_unserialize($data['custom_values']);
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
 
                 if ($idc == $custom_values) {
                     if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
@@ -431,7 +433,7 @@ class PluginMetademandsYesno extends CommonDBTM
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
             if (isset($data['custom_values'])) {
-                $custom_values = PluginMetademandsField::_unserialize($data['custom_values']);
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
                 if ($idc == $custom_values) {
                     $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
                 }
@@ -506,7 +508,7 @@ class PluginMetademandsYesno extends CommonDBTM
             //Default values
             //Warning : not use default_values
             if (isset($data['custom_values'])) {
-                $custom_values = PluginMetademandsField::_unserialize($data['custom_values']);
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
 
                 if ($idc == $custom_values) {
                     $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();

@@ -750,7 +750,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     break;
                                 case 'other':
                                     if (!empty($elt['custom_values']) && isset ($elt['custom_values'])) {
-                                        $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
+                                        $custom_values = PluginMetademandsFieldParameter::_unserialize($elt['custom_values']);
                                         foreach ($custom_values as $k => $val) {
                                             if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
                                                 $custom_values[$k] = $ret;
@@ -791,7 +791,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $value = " ";
 
                             if (!empty($elt['custom_values']) && $elt['item'] != 'User') {
-                                $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
+                                $custom_values = PluginMetademandsFieldParameter::_unserialize($elt['custom_values']);
                                 foreach ($custom_values as $k => $val) {
                                     if ($elt['item'] != "other") {
                                         $custom_values[$k] = $elt["item"]::getFriendlyNameById($k);
@@ -874,13 +874,13 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'checkbox':
                             $value = " ";
                             if (!empty($elt['custom_values'])) {
-                                $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
+                                $custom_values = PluginMetademandsFieldParameter::_unserialize($elt['custom_values']);
                                 foreach ($custom_values as $k => $val) {
                                     if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
                                         $custom_values[$k] = $ret;
                                     }
                                 }
-                                $values = PluginMetademandsField::_unserialize($fields[$elt['id']]);
+                                $values = PluginMetademandsFieldParameter::_unserialize($fields[$elt['id']]);
                                 $custom_checkbox = [];
 
                                 foreach ($custom_values as $k => $v) {
@@ -903,14 +903,14 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                         case 'radio' :
                             $value = " ";
                             if (!empty($elt['custom_values'])) {
-                                $custom_values = PluginMetademandsField::_unserialize($elt['custom_values']);
+                                $custom_values = PluginMetademandsFieldParameter::_unserialize($elt['custom_values']);
                                 foreach ($custom_values as $k => $val) {
                                     if (!empty($ret = PluginMetademandsField::displayField($elt["id"], "custom" . $k))) {
                                         $custom_values[$k] = $ret;
                                     }
                                 }
                                 if (isset($fields[$elt['id']]) && $fields[$elt['id']] != NULL) {
-                                    $values = PluginMetademandsField::_unserialize($fields[$elt['id']]);
+                                    $values = PluginMetademandsFieldParameter::_unserialize($fields[$elt['id']]);
                                     foreach ($custom_values as $k => $v) {
                                         if ($values == $k) {
                                             $value = $custom_values[$k];

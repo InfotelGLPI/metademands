@@ -67,7 +67,7 @@ class PluginMetademandsUpload extends CommonDBTM
                     $wiz = new PluginMetademandsWizard();
                     $field .= "&nbsp;";
                     //own showSimpleForm for return (not echo)
-                    $field .= PluginMetademandsField::showSimpleForm(
+                    $field .= PluginMetademandsFieldParameter::showSimpleForm(
                         $wiz->getFormURL(),
                         'delete_basket_file',
                         _x('button', 'Delete permanently'),
@@ -154,25 +154,21 @@ class PluginMetademandsUpload extends CommonDBTM
 
     }
 
-    static function showFieldCustomFields($params)
+    static function showFieldParameters($params)
     {
 
-        echo "<tr><td>";
-        echo "<table class='metademands_show_custom_fields'>";
-        echo "<tr><td>";
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
         echo __('Number of documents allowed', 'metademands');
-        //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
-        echo '</td>';
+        echo "</td>";
         echo "<td>";
         $data[0] = Dropdown::EMPTY_VALUE;
         for ($i = 1; $i <= 50; $i++) {
             $data[$i] = $i;
         }
-
         echo Dropdown::showFromArray("max_upload", $data, ['value' => $params['max_upload'], 'display' => false]);
-        echo "</td></tr>";
-        echo "</table>";
-        echo "</td></tr>";
+        echo "</td>";
+        echo "</tr>";
 
     }
 

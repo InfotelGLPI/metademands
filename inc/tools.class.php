@@ -98,7 +98,7 @@ class PluginMetademandsTools extends CommonDBTM
         $query = "SELECT plugin_metademands_fields_id, COUNT(plugin_metademands_fields_id),
                         check_value, COUNT(check_value) as nbr_doublon
                     FROM
-                        glpi_plugin_metademands_fieldoptions
+                        `glpi_plugin_metademands_fieldoptions`
                     GROUP BY 
                         plugin_metademands_fields_id, 
                         check_value
@@ -164,7 +164,7 @@ class PluginMetademandsTools extends CommonDBTM
 
         $query = "SELECT id, plugin_metademands_fields_id
                     FROM
-                        glpi_plugin_metademands_fieldoptions
+                        `glpi_plugin_metademands_fieldoptions`
                     WHERE
                         (`plugin_metademands_tasks_id` = 0 OR `plugin_metademands_tasks_id` IS NULL) AND
                         `fields_link` = 0 AND
@@ -239,11 +239,18 @@ class PluginMetademandsTools extends CommonDBTM
         echo "<br><div class='left'>";
         echo "<table class='tab_cadre_fixe'>";
 
-        $query = "SELECT id, type, custom_values
+        $query = "SELECT `glpi_plugin_metademands_fieldparameters`.`id`, 
+                            `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`, 
+                           `glpi_plugin_metademands_fields`.`type`, 
+                           `glpi_plugin_metademands_fieldparameters`.`custom_values`
                     FROM
-                        glpi_plugin_metademands_fields
+                        `glpi_plugin_metademands_fieldparameters`
+                    LEFT JOIN `glpi_plugin_metademands_fields` 
+                        ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`)
                     WHERE
-                        type = 'radio' OR type = 'checkbox' OR type = 'dropdown_meta'";
+                        `glpi_plugin_metademands_fields`.`type` = 'radio' 
+                        OR `glpi_plugin_metademands_fields`.`type` = 'checkbox' 
+                        OR `glpi_plugin_metademands_fields`.`type` = 'dropdown_meta'";
 
         $result = $DB->query($query);
 
@@ -260,11 +267,15 @@ class PluginMetademandsTools extends CommonDBTM
             while ($array = $DB->fetchAssoc($result)) {
 
                 $field = new PluginMetademandsField();
-                $field->getfromDB($array['id']);
+                $field->getfromDB($array['plugin_metademands_fields_id']);
 
                 if (isset($array['custom_values'])) {
                     $test = json_decode($array['custom_values'], true);
-                    if (!array_key_exists('0', $test)) {
+
+                    if ($test == null) {
+                        continue;
+                    }
+                    if ($test != null && !array_key_exists('0', $test)) {
                         continue;
                     }
                     echo "<table class='tab_cadre_fixe'>";

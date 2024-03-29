@@ -197,7 +197,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
                 $right = "all";
                 if (!empty($data['custom_values'])) {
-                    $options = PluginMetademandsField::_unserialize($data['custom_values']);
+                    $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
                     if (isset($options['user_group']) && $options['user_group'] == 1) {
                         $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
                         $group_user_data = Group_User::getUserGroups(Session::getLoginUserID(), $condition);
@@ -231,17 +231,25 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
                 $relatedTextFields = new PluginMetademandsField();
                 $relatedTextFields = $relatedTextFields->find([
-                    'item' => 'User',
+                    'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
                     'type' => 'text',
-                    'link_to_user' => $data['id']
                 ]);
+                $field_parameter = new PluginMetademandsFieldParameter();
+
                 if (count($relatedTextFields)) {
                     $updateJs = '';
-                    foreach($relatedTextFields as $textField) {
-                        $updateJs .= "let field{$textField['id']} = $(\"[id-field='field{$textField['id']}'] input\");
-                        field{$textField['id']}.attr('value', response[{$textField['used_by_ticket']}] ?? '');
+
+                    foreach ($relatedTextFields as $textField) {
+                        if ($field_parameter->getFromDBByCrit(
+                            ["plugin_metademands_fields_id" => $textField['id'], 'link_to_user' => $data['id']]
+                        )) {
+                            if (!empty($field_parameter->fields['used_by_ticket'])) {
+                                $updateJs .= "let field{$textField['id']} = $(\"[id-field='field{$textField['id']}'] input\");
+                        field{$textField['id']}.attr('value', response[{$field_parameter->fields['used_by_ticket']}] ?? '');
                         field{$textField['id']}.trigger('input');
                         ";
+                            }
+                        }
                     }
                     echo "<script type='text/javascript'>
                         $(function() {
@@ -297,7 +305,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 //                            foreach ($group_user_data as $groups) {
 //                                $requester_groups[] = $groups['id'];
 //                            }
-//                            $options = PluginMetademandsField::_unserialize($data['custom_values']);
+//                            $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
 //
 //                            foreach ($options as $type_group => $values) {
 //                                if ($type_group != 'user_group') {
@@ -334,7 +342,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 $field = "";
 
                 if (!empty($data['custom_values']) && $data['item'] == 'Group') {
-                    $options = PluginMetademandsField::_unserialize($data['custom_values']);
+                    $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
                     foreach ($options as $k => $val) {
                         if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
                             $options[$k] = $ret;
@@ -409,19 +417,65 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
     }
 
-    static function showFieldCustomFields($params)
+    static function showFieldParameters($params)
     {
 
         if ($params['item'] == 'User') {
-            echo "<tr><td>";
-            echo "<table class='metademands_show_custom_fields'>";
-            echo "<tr>";
-            echo "<td colspan='2' class='center'>";
-            echo __("Informations to display in ticket and PDF", "metademands");
+
+            $custom_values = PluginMetademandsFieldParameter::_unserialize($params['custom_values']);
+            $user_group = $custom_values['user_group'] ?? 0;
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Only users of my groups', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('user_group', $user_group);
+            echo "</td>";
+
+            if ($params['object_to_create'] == 'Ticket') {
+                echo "<td>";
+                echo __('Use this field for child ticket field', 'metademands');
+                echo "</td>";
+                echo "<td>";
+                Dropdown::showYesNo('used_by_child', $params['used_by_child']);
+                echo "</td>";
+            } else {
+                echo "<td colspan='2'></td>";
+            }
+            echo "</tr>";
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Use id of requester by default', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('default_use_id_requester', $params['default_use_id_requester']);
+            echo "</td>";
+
+            echo "<td>";
+            echo __('Use id of supervisor requester by default', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo(
+                'default_use_id_requester_supervisor',
+                $params['default_use_id_requester_supervisor']
+            );
             echo "</td>";
             echo "</tr>";
-            echo "<tr>";
-            echo "<td colspan='2' class='center'>";
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Read-Only', 'metademands');
+            echo "</td>";
+            echo "<td>";
+            Dropdown::showYesNo('readonly', ($params['readonly']));
+            echo "</td>";
+
+            echo "<td>";
+            echo __("Informations to display in ticket and PDF", "metademands");
+            echo "</td>";
+            echo "<td>";
             $decode = json_decode($params['informations_to_display']);
             $values = empty($decode) ? ['full_name'] : $decode;
             $informations["full_name"]         = __('Complete name');
@@ -435,10 +489,81 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 'display'  => false,
                 'multiple' => true
             ]);
+            echo "</tr>";
+
+        } else if ($params["item"] == "Group") {
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Link this to a user field', 'metademands');
+            echo "</td>";
+            echo "<td>";
+
+            $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
+            $field = new PluginMetademandsField();
+            $fields = $field->find([
+                "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
+                'type' => "dropdown_object",
+                "item" => User::getType()
+            ]);
+            foreach ($fields as $f) {
+                $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+            }
+            Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
+            echo "</td>";
+
+            if ($params['object_to_create'] == 'Ticket') {
+                echo "<td>";
+                echo __('Use this field for child ticket field', 'metademands');
+                echo "</td>";
+                echo "<td>";
+                Dropdown::showYesNo('used_by_child', $params['used_by_child']);
+                echo "</td>";
+            } else {
+                echo "<td colspan='2'></td>";
+            }
+            echo "</tr>";
+
+            echo "<tr class='tab_bg_1'>";
+            $custom_values = PluginMetademandsFieldParameter::_unserialize($params['custom_values']);
+            $is_assign = $custom_values['is_assign'] ?? 0;
+            $is_watcher = $custom_values['is_watcher'] ?? 0;
+            $is_requester = $custom_values['is_requester'] ?? 0;
+            $user_group = $custom_values['user_group'] ?? 0;
+            echo "<td>";
+            echo __('Requester');
+            echo "</td>";
+            echo "<td>";
+            // Assigned group
+            Dropdown::showYesNo('is_requester', $is_requester);
+            echo "</td>";
+            echo "<td>";
+            echo __('Watcher');
+            echo "</td>";
+            echo "<td>";
+            // Watcher group
+            Dropdown::showYesNo('is_watcher', $is_watcher);
             echo "</td>";
             echo "</tr>";
-            echo "</table>";
-            echo "</td></tr>";
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Assigned');
+            echo "</td>";
+            echo "<td>";
+            // Requester group
+            Dropdown::showYesNo('is_assign', $is_assign);
+            echo "</td>";
+
+            echo "<td>";
+            echo __('My groups');
+            echo "</td>";
+            echo "<td>";
+            // user_group
+            Dropdown::showYesNo('user_group', $user_group);
+            echo "</td>";
+
+            echo "</tr>";
         }
 
     }
@@ -484,7 +609,7 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 $name = "check_value";
                 $cond = [];
                 if (!empty($params['custom_values'])) {
-                    $options = PluginMetademandsField::_unserialize($params['custom_values']);
+                    $options = PluginMetademandsFieldParameter::_unserialize($params['custom_values']);
                     foreach ($options as $type_group => $values) {
                         $cond[$type_group] = $values;
                     }
@@ -722,8 +847,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
         foreach ($check_values as $idc => $check_value) {
             $tasks_id = $check_value['plugin_metademands_tasks_id'];
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
@@ -832,8 +957,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         //Initialize id default value
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {

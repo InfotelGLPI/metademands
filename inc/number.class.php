@@ -57,11 +57,12 @@ class PluginMetademandsNumber extends CommonDBTM
         if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
             $comment = $data['comment'];
         }
+
         if (is_array($value)) {
             $value = 0;
         }
 
-        $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+        $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
         $opt                   = ['value'         => $value,
             'min'           => ((isset($data['custom_values'][0]) && $data['custom_values'][0] != "") ? $data['custom_values'][0] : 0),
             'max'           => ((isset($data['custom_values'][1]) && $data['custom_values'][1] != "") ? $data['custom_values'][1] : 999999),
@@ -70,23 +71,26 @@ class PluginMetademandsNumber extends CommonDBTM
         ];
         $minimal_mandatory = ((isset($data['custom_values'][3]) && $data['custom_values'][3] != "") ? $data['custom_values'][3] : 0);
         if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
-            $opt['specific_tags'] = ['required' => 'required', 'isnumber' => 'isnumber', 'minimal_mandatory' => $minimal_mandatory];
+            $opt['specific_tags'] = ['required' => 'required',
+                'isnumber' => 'isnumber',
+                'minimal_mandatory' => $minimal_mandatory
+            ];
         }
         $field = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
 
         echo $field;
     }
 
-    static function showFieldCustomValues($values, $key, $params)
+    static function showFieldCustomValues($params)
     {
         // Show number custom value
-        echo "<tr><td id='show_custom_fields'>";
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
         $min = 0;
         $max  = 0;
         $step  = 0;
         $minimal  = 0;
         if (isset($params['custom_values']) && !empty($params['custom_values'])) {
-            $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
             $min = $params['custom_values'][0] ?? "";
             $max = $params['custom_values'][1] ?? "";
             $step = $params['custom_values'][2] ?? "";

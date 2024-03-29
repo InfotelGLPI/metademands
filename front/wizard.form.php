@@ -86,15 +86,16 @@ if (empty($_GET['step'])) {
 $config = new PluginMetademandsConfig();
 $config->getFromDB(1);
 
-if (Session::getCurrentInterface() != 'central'
-    && Plugin::isPluginActive('servicecatalog')
-    && ($_GET['step'] == PluginMetademandsMetademand::STEP_INIT || $_GET['step'] == PluginMetademandsMetademand::STEP_LIST)
-    && $config->getField('display_buttonlist_servicecatalog') == 0
-    && Session::haveRight("plugin_servicecatalog", READ)) {
-
-    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
-
-}
+//unactivate because   ../index.php?redirect=PluginMetademandsWizard_X is broken
+//if (Session::getCurrentInterface() != 'central'
+//    && Plugin::isPluginActive('servicecatalog')
+//    && ($_GET['step'] == PluginMetademandsMetademand::STEP_INIT || $_GET['step'] == PluginMetademandsMetademand::STEP_LIST)
+//    && $config->getField('display_buttonlist_servicecatalog') == 0
+//    && Session::haveRight("plugin_servicecatalog", READ)) {
+//
+//    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
+//
+//}
 
 // Url Redirect case
 if (isset($_GET['id'])) {

@@ -56,7 +56,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
-        $custom_values = PluginMetademandsField::_unserialize($data['custom_values']);
+        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
         $value = '';
         if (isset($data['value'])) {
             $value = $data['value'];
@@ -426,31 +426,34 @@ class PluginMetademandsBasket extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($values, $key, $params)
+    static function showFieldCustomValues($params)
     {
 
-        $params['custom_values'] = PluginMetademandsField::_unserialize($params['custom_values']);
         $quantity = $params['custom_values'][0] ?? 0;
         $price = $params['custom_values'][1] ?? 0;
 
-        echo "<tr><td>";
-        echo "<table class='metademands_show_custom_fields'>";
-        echo "<tr><td>";
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
         echo __('With quantity', 'metademands');
-        echo '</td>';
+        echo "</td>";
         echo "<td>";
         Dropdown::showYesNo('custom_values[0]', $quantity);
-        echo "</td></tr>";
-        if (Plugin::isPluginActive('ordermaterial') || Plugin::isPluginActive('orderfollowup')) {
-            echo "<tr><td>";
+        echo "</td>";
+        echo "<td colspan='2'></td>";
+        echo "</tr>";
+
+        if (Plugin::isPluginActive('ordermaterial')
+            || Plugin::isPluginActive('orderfollowup')) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
             echo __('With unit price (HT)', 'metademands');
-            echo '</td>';
+            echo "</td>";
             echo "<td>";
             Dropdown::showYesNo('custom_values[1]', $price);
-            echo "</td></tr>";
+            echo "</td>";
+            echo "<td colspan='2'></td>";
+            echo "</tr>";
         }
-        echo "</table>";
-        echo "</td></tr>";
     }
 
     static function getParamsValueToCheck($fieldoption, $item, $params)
@@ -595,7 +598,7 @@ class PluginMetademandsBasket extends CommonDBTM
         }
 
         $withquantity = false;
-        $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+        $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
         if (isset($data['custom_values'][0]) && $data['custom_values'][0] == 1) {
             $withquantity = true;
         }
@@ -686,8 +689,8 @@ class PluginMetademandsBasket extends CommonDBTM
 
         foreach ($check_values as $idc => $check_value) {
             $tasks_id = $check_value['plugin_metademands_tasks_id'];
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
@@ -720,7 +723,7 @@ class PluginMetademandsBasket extends CommonDBTM
         $id = $data["id"];
 
         $withquantity = false;
-        $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+        $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
         if (isset($data['custom_values'][0]) && $data['custom_values'][0] == 1) {
             $withquantity = true;
         }
@@ -891,8 +894,8 @@ class PluginMetademandsBasket extends CommonDBTM
             }
             $hidden_link = $check_value['hidden_link'];
             //Initialize id default value
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
@@ -913,7 +916,7 @@ class PluginMetademandsBasket extends CommonDBTM
         $id = $data["id"];
 
         $withquantity = false;
-        $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+        $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
         if (isset($data['custom_values'][0]) && $data['custom_values'][0] == 1) {
             $withquantity = true;
         }
@@ -1077,8 +1080,8 @@ class PluginMetademandsBasket extends CommonDBTM
             }
 
             $hidden_block = $check_value['hidden_block'];
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
                         if ($idc == $k) {
@@ -1295,7 +1298,7 @@ class PluginMetademandsBasket extends CommonDBTM
                     $field->getFromDB($id);
 
                     if (isset($field->fields['custom_values'])) {
-                        $custom_values = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                        $custom_values = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
                         if (isset($custom_values[0]) && $custom_values[0] == 1) {
                             $withquantity = true;
                         }
@@ -1353,7 +1356,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $field->getFromDB($id);
 
                 if (isset($field->fields['custom_values'])) {
-                    $custom_values = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                    $custom_values = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
                     if (isset($custom_values[0]) && $custom_values[0] == 1) {
                         $withquantity = true;
                     }
@@ -1651,7 +1654,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $fieldmeta = new PluginMetademandsField();
                 $fieldmeta->getFromDB($field['id']);
 
-                $custom_values = PluginMetademandsField::_unserialize($fieldmeta->fields['custom_values']);
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($fieldmeta->fields['custom_values']);
 
                 if ($custom_values[1] == 1) {
                     $withprice = true;
@@ -1727,7 +1730,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 $fieldmeta = new PluginMetademandsField();
                 $fieldmeta->getFromDB($field['id']);
                 $withquantity = false;
-                $custom_values = PluginMetademandsField::_unserialize($fieldmeta->fields['custom_values']);
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($fieldmeta->fields['custom_values']);
                 if ($custom_values[0] == 1) {
                     $withquantity = true;
                 }
@@ -1998,7 +2001,7 @@ class PluginMetademandsBasket extends CommonDBTM
 //                        $fieldmeta = new PluginMetademandsField();
 //                        $fieldmeta->getFromDB($field['id']);
 //                        $withquantity = false;
-//                        $custom_values = PluginMetademandsField::_unserialize($fieldmeta->fields['custom_values']);
+//                        $custom_values = PluginMetademandsFieldParameter::_unserialize($fieldmeta->fields['custom_values']);
 //
 //                        if (isset($custom_values[1]) && $custom_values[1] == 1) {
 

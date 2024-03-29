@@ -65,7 +65,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
             $requester_groups[] = $groups['id'];
         }
 
-        $options = PluginMetademandsField::_unserialize($fieldGroup->fields['custom_values']);
+        $options = PluginMetademandsFieldParameter::_unserialize($fieldGroup->fields['custom_values']);
 
         foreach ($options as $type_group => $values) {
             if ($type_group != 'user_group') {
@@ -99,12 +99,13 @@ if (isset($_POST['fields_id'])
     $groups_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
-if (is_array($groups_id)) {
-    $groups_id = 0;
-}
 
 if (isset($_POST['groups_id']) && $_POST['groups_id'] > 0) {
     $groups_id = $_POST['groups_id'];
+}
+
+if (is_array($groups_id)) {
+    $groups_id = 0;
 }
 
 $rand = mt_rand();

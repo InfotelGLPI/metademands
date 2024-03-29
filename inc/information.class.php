@@ -113,24 +113,64 @@ class PluginMetademandsInformation extends CommonDBTM
 
     }
 
-    static function showFieldCustomFields($params)
-    {
-        echo "<tr><td>";
-        echo "<table class='metademands_show_custom_fields'>";
 
-        echo "<tr><td>";
+    static function showFieldParameters($params)
+    {
+        echo "<tr class='tab_bg_1'>";
+
+        echo "<td>";
+        echo __('Color');
+        echo "</td>";
+
+        echo "<td>";
+        Html::showColorField('color', ['value' => $params["color"]]);
+        echo "</td>";
+
+        echo "<td>";
+        echo __('Icon') . "&nbsp;";
+        echo "</td>";
+        echo "<td>";
+        $icon_selector_id = 'icon_' . mt_rand();
+        echo Html::select(
+            'icon',
+            [$params['icon'] => $params['icon']],
+            [
+                'id' => $icon_selector_id,
+                'selected' => $params['icon'],
+                'style' => 'width:175px;'
+            ]
+        );
+
+        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::scriptBlock(
+            <<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+        );
+        echo "</td>";
+        echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
+
+        echo "<td>";
         echo __('Type', 'metademands');
         echo '</td>';
+
         echo "<td>";
         $values[self::INFO] = __('Information', 'metademands');
         $values[self::WARNING] = __('Warning', 'metademands');
         $values[self::ALERT] = __('Alert', 'metademands');
 
         Dropdown::showFromArray("display_type", $values, ['value' => $params['display_type']]);
-        echo "</td></tr>";
+        echo "</td>";
+        echo "<td colspan='2'></td>";
+        echo "</tr>";
 
-        echo "</table>";
-        echo "</td></tr>";
     }
 
     static function fieldsLinkScript($data, $idc, $rand)

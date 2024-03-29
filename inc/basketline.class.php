@@ -316,7 +316,7 @@ class PluginMetademandsBasketline extends CommonDBTM
                     }
 
                 } else {
-                    $newvalue = is_array($value) ? PluginMetademandsField::_serialize($value) : $value;
+                    $newvalue = is_array($value) ? PluginMetademandsFieldParameter::_serialize($value) : $value;
                 }
 
                 if (!str_ends_with($fields_id, "-2")) {

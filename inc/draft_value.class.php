@@ -50,6 +50,15 @@ class PluginMetademandsDraft_Value extends CommonDBTM
         if (count($parent_fields)) {
             foreach ($parent_fields as $fields_id => $field) {
 
+                $fieldparameter            = new PluginMetademandsFieldParameter();
+                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fields_id])) {
+                    unset($fieldparameter->fields['plugin_metademands_fields_id']);
+                    unset($fieldparameter->fields['id']);
+
+                    $params = $fieldparameter->fields;
+                    $field = array_merge($field, $params);
+                }
+
                 $field['value'] = '';
                 if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
 

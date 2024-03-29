@@ -53,7 +53,6 @@ class PluginMetademandsTitleblock extends CommonDBTM
 
     static function showWizardField($data, $namefield, $value, $on_order, $preview, $config_link)
     {
-
         $color = PluginMetademandsWizard::hex2rgba($data['color'], "0.03");
         $rank = $data['rank'];
         $style_background = "style='background-color: $color!important;border-color: " . $data['color'] . "!important;border-radius: 0;margin-bottom: 10px;'";
@@ -113,6 +112,48 @@ class PluginMetademandsTitleblock extends CommonDBTM
     static function showFieldCustomValues($values, $key, $params)
     {
 
+    }
+
+    static function showFieldParameters($params)
+    {
+
+        echo "<tr class='tab_bg_1'>";
+
+        echo "<td>";
+        echo __('Color');
+        echo "</td>";
+        echo "<td>";
+        Html::showColorField('color', ['value' => $params["color"]]);
+        echo "</td>";
+
+        echo "<td>";
+        echo __('Icon') . "&nbsp;";
+        echo "</td>";
+        echo "<td>";
+        $icon_selector_id = 'icon_' . mt_rand();
+        echo Html::select(
+            'icon',
+            [$params['icon'] => $params['icon']],
+            [
+                'id' => $icon_selector_id,
+                'selected' => $params['icon'],
+                'style' => 'width:175px;'
+            ]
+        );
+
+        echo Html::script('js/Forms/FaIconSelector.js');
+        echo Html::scriptBlock(
+            <<<JAVASCRIPT
+         $(
+            function() {
+               var icon_selector = new GLPI.Forms.FaIconSelector(document.getElementById('{$icon_selector_id}'));
+               icon_selector.init();
+            }
+         );
+JAVASCRIPT
+        );
+        echo "</td>";
+        echo "</tr>";
     }
 
     static function fieldsLinkScript($data, $idc, $rand)

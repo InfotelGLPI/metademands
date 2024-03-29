@@ -84,6 +84,16 @@ class PluginMetademandsTicket_Field extends CommonDBTM
         $ticket->getFromDB($tickets_id);
         if (count($parent_fields)) {
             foreach ($parent_fields as $fields_id => $field) {
+
+                $fieldparameter            = new PluginMetademandsFieldParameter();
+                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fields_id])) {
+                    unset($fieldparameter->fields['plugin_metademands_fields_id']);
+                    unset($fieldparameter->fields['id']);
+
+                    $params = $fieldparameter->fields;
+                    $field = array_merge($field, $params);
+                }
+
                 $field['value'] = '';
                 if (isset($values[$fields_id]) && !is_array($values[$fields_id])) {
 
@@ -147,12 +157,12 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                 if (is_array($tasks_id)) {
                     foreach ($tasks_id as $task) {
                         if ($task == $plugin_metademands_tasks_id) {
-                            $test = self::isCheckValueOKFieldsLinks(PluginMetademandsField::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
+                            $test = self::isCheckValueOKFieldsLinks(PluginMetademandsFieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
                             $check[] = ($test == false) ? 0 : 1;
                         }
                     }
                 } else if ($tasks_id == $plugin_metademands_tasks_id) {
-                    $test = self::isCheckValueOKFieldsLinks(PluginMetademandsField::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
+                    $test = self::isCheckValueOKFieldsLinks(PluginMetademandsFieldParameter::_unserialize($data['field_value']) ?? $data['field_value'], $check_values, $data['type']);
                     $check[] = ($test == false) ? 0 : 1;
                 }
             }

@@ -1213,7 +1213,16 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 if ($line[$keys[0]]['type'] == 'title-block') {
 
-                    PluginMetademandsField::displayFieldByType($metademands_data, $line[$keys[0]], $preview, $itilcategories_id);
+                    $data = $line[$keys[0]];
+                    $fieldparameter            = new PluginMetademandsFieldParameter();
+                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $line[$keys[0]]['id']])) {
+                        unset($fieldparameter->fields['plugin_metademands_fields_id']);
+                        unset($fieldparameter->fields['id']);
+
+                        $params = $fieldparameter->fields;
+                        $data = array_merge($line[$keys[0]], $params);
+                    }
+                    PluginMetademandsField::displayFieldByType($metademands_data, $data, $preview, $itilcategories_id);
 
                 }
 
@@ -1224,12 +1233,23 @@ class PluginMetademandsWizard extends CommonDBTM
                 } else {
                     echo "<div class=\"row\" style='$style'>";
                 }
+
                 foreach ($line as $key => $data) {
                     $config_link = "";
                     if (Session::getCurrentInterface() == 'central' && $preview) {
                         $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
                         $config_link .= "<i class='fas fa-wrench'></i></a>";
                     }
+
+                    $fieldparameter            = new PluginMetademandsFieldParameter();
+                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])) {
+                        unset($fieldparameter->fields['plugin_metademands_fields_id']);
+                        unset($fieldparameter->fields['id']);
+
+                        $params = $fieldparameter->fields;
+                        $data = array_merge($data, $params);
+                    }
+
                     // Manage ranks ???
                     if (isset($keyIndexes[$key])
                         && isset($keys[$keyIndexes[$key] - 1])
@@ -1481,6 +1501,13 @@ class PluginMetademandsWizard extends CommonDBTM
                 // Fields linked
                 foreach ($line as $data) {
 
+                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])) {
+                        unset($fieldparameter->fields['plugin_metademands_fields_id']);
+                        unset($fieldparameter->fields['id']);
+
+                        $params = $fieldparameter->fields;
+                        $data = array_merge($data, $params);
+                    }
                     //verifie si une sous metademande doit etre lancé
                     PluginMetademandsFieldOption::taskScript($data);
 
@@ -1774,13 +1801,20 @@ class PluginMetademandsWizard extends CommonDBTM
                 $params['updateStepform'] = $updateStepform;
                 $params['use_richtext'] = 0;
                 $richtext_id = [];
-                if(countElementsInTable("glpi_plugin_metademands_fields", ['plugin_metademands_metademands_id' => $metademands_id, 'use_richtext' => 1, 'type' => 'textarea']) > 0){
+                if(countElementsInTable("glpi_plugin_metademands_fields", ['plugin_metademands_metademands_id' => $metademands_id, 'type' => 'textarea']) > 0){
                     $params['use_richtext'] = 1;
                     $richtext_fields = $dbu->getAllDataFromTable("glpi_plugin_metademands_fields",
-                        ['plugin_metademands_metademands_id' => $metademands_id, 'use_richtext' => 1, 'type' => 'textarea']
+                        ['plugin_metademands_metademands_id' => $metademands_id, 'type' => 'textarea']
                     );
                     foreach ($richtext_fields as $f) {
-                        $richtext_id[] = $f['id'];
+                        $fieldparameter            = new PluginMetademandsFieldParameter();
+                        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $f['id']])) {
+                            if ($fieldparameter->fields['use_richtext'] == 1) {
+                                $richtext_id[] = $f['id'];
+                            }
+                        }
+
+
                     }
                 }
                 $params['richtext_id'] = json_encode($richtext_id);
@@ -2898,9 +2932,9 @@ class PluginMetademandsWizard extends CommonDBTM
             $content[$id]['plugin_metademands_fields_id'] = $id;
             if ($value['type'] != "upload") {
                 if ($value['type'] == "free_input") {
-                    $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serializeArray($post[$fieldname][$id]) : $post[$fieldname][$id];
+                    $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsFieldParameter::_serializeArray($post[$fieldname][$id]) : $post[$fieldname][$id];
                 } else {
-                    $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsField::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];
+                    $content[$id]['value'] = (is_array($post[$fieldname][$id])) ? PluginMetademandsFieldParameter::_serialize($post[$fieldname][$id]) : $post[$fieldname][$id];
                 }
 
             }

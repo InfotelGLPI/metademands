@@ -79,7 +79,7 @@ function migrateFieldsOptions()
             $input["plugin_metademands_fields_id"] = $f["id"];
             $input["parent_field_id"] = $f['parent_field_id'];
 
-            $check_values = PluginMetademandsField::_unserialize($f['check_value']);
+            $check_values = PluginMetademandsFieldParameter::_unserialize($f['check_value']);
             if (is_array($check_values)) {
                 foreach ($check_values as $k => $check_value) {
 
@@ -99,7 +99,7 @@ function migrateFieldsOptions()
 
                         $input["check_value"] = $check_value;
 
-                        $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
+                        $plugin_metademands_tasks_id = PluginMetademandsFieldParameter::_unserialize($f['plugin_metademands_tasks_id']);
 
                         if (is_array($plugin_metademands_tasks_id)) {
                             if (isset($plugin_metademands_tasks_id[$check_value])) {
@@ -115,7 +115,7 @@ function migrateFieldsOptions()
                             $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
                         }
 
-                        $users_id_validate = PluginMetademandsField::_unserialize($f['users_id_validate']);
+                        $users_id_validate = PluginMetademandsFieldParameter::_unserialize($f['users_id_validate']);
                         if (is_array($users_id_validate)) {
                             if (isset($users_id_validate[$check_value])) {
                                 $input["users_id_validate"] = $users_id_validate[$check_value];
@@ -130,7 +130,7 @@ function migrateFieldsOptions()
                             $input["users_id_validate"] = $users_id_validate;
                         }
 
-                        $fields_link = PluginMetademandsField::_unserialize($f['fields_link']);
+                        $fields_link = PluginMetademandsFieldParameter::_unserialize($f['fields_link']);
                         if (is_array($fields_link)) {
                             if (isset($fields_link[$check_value])) {
                                 $input["fields_link"] = $fields_link[$check_value];
@@ -145,7 +145,7 @@ function migrateFieldsOptions()
                             $input["fields_link"] = $fields_link;
                         }
 
-                        $hidden_link = PluginMetademandsField::_unserialize($f['hidden_link']);
+                        $hidden_link = PluginMetademandsFieldParameter::_unserialize($f['hidden_link']);
                         if (is_array($hidden_link)) {
                             if (isset($hidden_link[$check_value])) {
                                 $input["hidden_link"] = $hidden_link[$check_value];
@@ -160,7 +160,7 @@ function migrateFieldsOptions()
                             $input["hidden_link"] = $hidden_link;
                         }
 
-                        $hidden_block = PluginMetademandsField::_unserialize($f['hidden_block']);
+                        $hidden_block = PluginMetademandsFieldParameter::_unserialize($f['hidden_block']);
                         if (is_array($hidden_block)) {
                             if (isset($hidden_block[$check_value])) {
                                 $input["hidden_block"] = $hidden_block[$check_value];
@@ -189,7 +189,7 @@ function migrateFieldsOptions()
                         }
 
 
-                        $checkbox_value = PluginMetademandsField::_unserialize($f['checkbox_value']);
+                        $checkbox_value = PluginMetademandsFieldParameter::_unserialize($f['checkbox_value']);
                         if (is_array($checkbox_value)) {
                             if (isset($checkbox_value[$check_value])) {
                                 $input["checkbox_value"] = $checkbox_value[$check_value];
@@ -204,7 +204,7 @@ function migrateFieldsOptions()
                             $input["checkbox_value"] = $checkbox_value;
                         }
 
-                        $checkbox_id = PluginMetademandsField::_unserialize($f['checkbox_id']);
+                        $checkbox_id = PluginMetademandsFieldParameter::_unserialize($f['checkbox_id']);
                         if (is_array($checkbox_id)) {
                             if (isset($checkbox_id[$check_value])) {
                                 $input["checkbox_id"] = $checkbox_id[$check_value];
@@ -269,7 +269,7 @@ function migrateFieldsOptions()
                     $f["type"] != 'datetime_interval') {
                     $input["check_value"] = $check_value = $f["check_value"];
 
-                    $plugin_metademands_tasks_id = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
+                    $plugin_metademands_tasks_id = PluginMetademandsFieldParameter::_unserialize($f['plugin_metademands_tasks_id']);
 
                     if (is_array($plugin_metademands_tasks_id)) {
                         if (isset($plugin_metademands_tasks_id[$check_value])) {
@@ -285,7 +285,7 @@ function migrateFieldsOptions()
                         $input["plugin_metademands_tasks_id"] = $plugin_metademands_tasks_id;
                     }
 
-                    $users_id_validate = PluginMetademandsField::_unserialize($f['users_id_validate']);
+                    $users_id_validate = PluginMetademandsFieldParameter::_unserialize($f['users_id_validate']);
                     if (is_array($users_id_validate)) {
                         if (isset($users_id_validate[$check_value])) {
                             $input["users_id_validate"] = $users_id_validate[$check_value];
@@ -300,7 +300,7 @@ function migrateFieldsOptions()
                         $input["users_id_validate"] = $users_id_validate;
                     }
 
-                    $fields_link = PluginMetademandsField::_unserialize($f['fields_link']);
+                    $fields_link = PluginMetademandsFieldParameter::_unserialize($f['fields_link']);
                     if (is_array($fields_link)) {
                         if (isset($fields_link[$check_value])) {
                             $input["fields_link"] = $fields_link[$check_value];
@@ -315,7 +315,7 @@ function migrateFieldsOptions()
                         $input["fields_link"] = $fields_link;
                     }
 
-                    $hidden_link = PluginMetademandsField::_unserialize($f['hidden_link']);
+                    $hidden_link = PluginMetademandsFieldParameter::_unserialize($f['hidden_link']);
                     if (is_array($hidden_link)) {
                         if (isset($hidden_link[$check_value])) {
                             $input["hidden_link"] = $hidden_link[$check_value];
@@ -330,7 +330,7 @@ function migrateFieldsOptions()
                         $input["hidden_link"] = $hidden_link;
                     }
 
-                    $hidden_block = PluginMetademandsField::_unserialize($f['hidden_block']);
+                    $hidden_block = PluginMetademandsFieldParameter::_unserialize($f['hidden_block']);
                     if (is_array($hidden_block)) {
                         if (isset($hidden_block[$check_value])) {
                             $input["hidden_block"] = $hidden_block[$check_value];
@@ -359,7 +359,7 @@ function migrateFieldsOptions()
                     }
 
 
-                    $checkbox_value = PluginMetademandsField::_unserialize($f['checkbox_value']);
+                    $checkbox_value = PluginMetademandsFieldParameter::_unserialize($f['checkbox_value']);
                     if (is_array($checkbox_value)) {
                         if (isset($checkbox_value[$check_value])) {
                             $input["checkbox_value"] = $checkbox_value[$check_value];
@@ -374,7 +374,7 @@ function migrateFieldsOptions()
                         $input["checkbox_value"] = $checkbox_value;
                     }
 
-                    $checkbox_id = PluginMetademandsField::_unserialize($f['checkbox_id']);
+                    $checkbox_id = PluginMetademandsFieldParameter::_unserialize($f['checkbox_id']);
                     if (is_array($checkbox_id)) {
                         if (isset($checkbox_id[$check_value])) {
                             $input["checkbox_id"] = $checkbox_id[$check_value];

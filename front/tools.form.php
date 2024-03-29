@@ -44,7 +44,7 @@ if (isset($_POST["purge_emptyoptions"])) {
     Html::back();
 } else if (isset($_POST["fix_emptycustomvalues"])) {
     $itil = $_POST["id"];
-    $field = new PluginMetademandsField();
+    $field = new PluginMetademandsFieldParameter();
     $field->getfromDB($itil);
     $test = json_decode($field->fields['custom_values'], true);
     $start_one = array_combine(range(1, count($test)), array_values($test));

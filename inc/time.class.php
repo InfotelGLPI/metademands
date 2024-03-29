@@ -74,7 +74,7 @@ class PluginMetademandsTime extends CommonDBTM
 
     }
 
-    static function showFieldCustomFields($params)
+    static function showFieldParameters($params)
     {
 
     }

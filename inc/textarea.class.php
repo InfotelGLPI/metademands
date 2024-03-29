@@ -117,6 +117,20 @@ class PluginMetademandsTextarea extends CommonDBTM
 
     }
 
+    static function showFieldParameters($params)
+    {
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo __('Use richt text', 'metademands');
+        echo "</td>";
+        echo "<td>";
+        Dropdown::showYesNo('use_richtext', ($params['use_richtext']));
+        echo "</td>";
+        echo "<td colspan='2'></td>";
+        echo "</tr>";
+    }
+
     static function getParamsValueToCheck($fieldoption, $item, $params)
     {
 
@@ -335,8 +349,8 @@ class PluginMetademandsTextarea extends CommonDBTM
         //Initialize id default value
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
@@ -383,7 +397,7 @@ class PluginMetademandsTextarea extends CommonDBTM
             $script = "console.log('blocksHiddenScript-textarea $id');";
         }
 
-        if ($data['use_richtext'] == 1) {
+        if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
 
 //            $script .= "if (typeof tinymce !== 'undefined') {
 //                            tinymce.init({

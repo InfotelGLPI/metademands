@@ -37,7 +37,7 @@ function plugin_metademands_install() {
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
     if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.8.sql");
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.11.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
@@ -387,6 +387,65 @@ function plugin_metademands_install() {
     //version 3.3.9
     $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.9.sql");
 
+    //version 3.3.11
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldparameters")) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.11.sql");
+
+        $metademand_fields = new PluginMetademandsField();
+        $fields = $metademand_fields->find();
+
+        $metademand_fieldparams = new PluginMetademandsFieldParameter();
+
+        if (count($fields) > 0) {
+
+            foreach ($fields as $k => $field) {
+
+                if (!$metademand_fieldparams->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id']])) {
+                    $input = [
+                        'plugin_metademands_fields_id' => $field['id'],
+                        'row_display' => $field['row_display'],
+                        'hide_title' => $field['hide_title'],
+                        'is_basket' => $field['is_basket'],
+                        'color' => $field['color'],
+                        'icon' => $field['icon'],
+                        'is_mandatory' => $field['is_mandatory'],
+                        'used_by_ticket' => $field['used_by_ticket'],
+                        'used_by_child' => $field['used_by_child'],
+                        'use_richtext' => $field['use_richtext'],
+                        'default_use_id_requester' => $field['default_use_id_requester'],
+                        'default_use_id_requester_supervisor' => $field['default_use_id_requester_supervisor'],
+                        'readonly' => $field['readonly'],
+                        'custom_values' => $field['custom_values'],
+                        'comment_values' => $field['comment_values'],
+                        'default_values' => $field['default_values'],
+                        'max_upload' => $field['max_upload'],
+                        'regex' => $field['regex'],
+                        'use_future_date' => $field['use_future_date'],
+                        'use_date_now' => $field['use_date_now'],
+                        'additional_number_day' => $field['additional_number_day'],
+                        'display_type' => $field['display_type'],
+                        'informations_to_display' => $field['informations_to_display'],
+                        'link_to_user' => $field["link_to_user"],
+                        'readonly' => $field["readonly"],
+                        'hidden' => $field["hidden"],
+                        'item' => $field['item'],
+                        'type' => $field['type'],
+                    ];
+
+                    if (in_array($input['type'], ['dropdown_multiple', 'dropdown_object'])
+                        && $input['item'] === 'User') {
+                        $temp =  PluginMetademandsFieldParameter::_unserialize($input['informations_to_display']);
+                        if (empty($temp)) {
+                            $input['informations_to_display'] = PluginMetademandsFieldParameter::_serialize(['full_name']);
+                        }
+                    }
+
+                    $metademand_fieldparams->add($input);
+                }
+            }
+        }
+    }
+
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {
         mkdir($rep_files_metademands);
@@ -488,6 +547,7 @@ function plugin_metademands_uninstall() {
         "glpi_plugin_metademands_tickets_fields",
         "glpi_plugin_metademands_fields",
         "glpi_plugin_metademands_fieldoptions",
+        "glpi_plugin_metademands_fieldparameters",
         "glpi_plugin_metademands_tasks",
         "glpi_plugin_metademands_metademands",
         "glpi_plugin_metademands_basketlines",

@@ -354,7 +354,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 $fields = new PluginMetademandsField();
                 if ($fields->getFromDB($data['checkbox_id'])) {
                     echo $fields->getName();
-                    $arrayValues = PluginMetademandsField::_unserialize($fields->fields['custom_values']);
+                    $arrayValues = PluginMetademandsFieldParameter::_unserialize($fields->fields['custom_values']);
                     echo "<br>";
                     echo $arrayValues[$data["checkbox_value"]];
                 }
@@ -972,7 +972,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 $arrayValues[0] = Dropdown::EMPTY_VALUE;
                 if (!empty($params['checkbox_id'])) {
                     $fields->getFromDB($params['checkbox_id']);
-                    $arrayValues = PluginMetademandsField::_unserialize($fields->fields['custom_values']);
+                    $arrayValues = PluginMetademandsFieldParameter::_unserialize($fields->fields['custom_values']);
                 }
                 echo "<span id='checkbox_value'>\n";
                 $elements = $arrayValues ?? [];

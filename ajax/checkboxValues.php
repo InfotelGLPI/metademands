@@ -36,6 +36,6 @@ Session::checkLoginUser();
 $KO          = false;
 $fields = new PluginMetademandsField();
 $fields->getFromDB($_POST['checkbox_id_val']);
-$arrayValues = PluginMetademandsField::_unserialize($fields->getField('custom_values'));
+$arrayValues = PluginMetademandsFieldParameter::_unserialize($fields->getField('custom_values'));
 
 Dropdown::showFromArray('checkbox_value',$arrayValues,['display_emptychoice'=> false]);

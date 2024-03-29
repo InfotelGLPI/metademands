@@ -59,16 +59,16 @@ class PluginMetademandsCheckbox extends CommonDBTM
         }
 
         if (!empty($data['custom_values'])) {
-            $data['custom_values'] = PluginMetademandsField::_unserialize($data['custom_values']);
+            $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
             foreach ($data['custom_values'] as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
                     $data['custom_values'][$k] = $ret;
                 }
             }
-            $data['comment_values'] = PluginMetademandsField::_unserialize($data['comment_values']);
-            $defaults = PluginMetademandsField::_unserialize($data['default_values']);
+            $data['comment_values'] = PluginMetademandsFieldParameter::_unserialize($data['comment_values']);
+            $defaults = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
             if (!empty($value)) {
-                $value = PluginMetademandsField::_unserialize($value);
+                $value = PluginMetademandsFieldParameter::_unserialize($value);
             }
             $nbr = 0;
             $inline = "";
@@ -139,18 +139,19 @@ class PluginMetademandsCheckbox extends CommonDBTM
         echo $field;
     }
 
-    static function showFieldCustomValues($values, $key, $params)
+    static function showFieldCustomValues($params)
     {
 
-        $default_values = PluginMetademandsField::_unserialize($params['default_values']);
-        $comment_values = PluginMetademandsField::_unserialize($params['comment_values']);
+        $custom_values = $params['custom_values'];
+        $default_values = $params['default_values'];
+        $comment_values = $params['comment_values'];
 
         echo "<tr>";
         echo "<td>";
-        if (is_array($values) && !empty($values)) {
+        if (is_array($custom_values) && !empty($custom_values)) {
             echo "<div id='drag'>";
             echo "<table class='tab_cadre_fixe'>";
-            foreach ($values as $key => $value) {
+            foreach ($custom_values as $key => $value) {
                 echo "<tr>";
 
                 echo '<td class="rowhandler control center">';
@@ -185,8 +186,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
                 echo "<div class=\"drag row\" style=\"cursor: move;border-width: 0 !important;border-style: none !important; border-color: initial !important;border-image: initial !important;\">";
                 echo "<i class=\"fas fa-grip-horizontal grip-rule\"></i>";
                 if (isset($params['id'])) {
-                    echo PluginMetademandsField::showSimpleForm(
-                        PluginMetademandsField::getFormURL(),
+                    echo PluginMetademandsFieldParameter::showSimpleForm(
+                        PluginMetademandsFieldParameter::getFormURL(),
                         'delete_field_custom_values',
                         _x('button', 'Delete permanently'),
                         ['id' => $key,
@@ -209,11 +210,12 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
             echo "<tr>";
             echo "<td colspan='4' align='right' id='show_custom_fields'>";
-            PluginMetademandsField::initCustomValue(max(array_keys($values)), true, true);
+            PluginMetademandsFieldParameter::initCustomValue(max(array_keys($custom_values)), true, true);
             echo "</td>";
             echo "</tr>";
         } else {
-            echo __('Value') . " 1 ";
+            $key = 1;
+            echo __('Value') . " ".$key;
             echo Html::input('custom_values[1]', ['size' => 30]);
             echo "</td>";
             echo "<td>";
@@ -230,14 +232,16 @@ class PluginMetademandsCheckbox extends CommonDBTM
             Dropdown::showYesNo($name, $value);
             echo '</p>';
             echo "</td>";
+
             echo "</tr>";
 
             echo "<tr>";
             echo "<td colspan='3' align='right'  id='show_custom_fields'>";
-            PluginMetademandsField::initCustomValue(0, true, true);
+            PluginMetademandsFieldParameter::initCustomValue($key, true, true);
             echo "</td>";
             echo "</tr>";
         }
+        echo "</td>";
         echo "</tr>";
 
     }
@@ -475,8 +479,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
         foreach ($check_values as $idc => $check_value) {
             $tasks_id = $check_value['plugin_metademands_tasks_id'];
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
@@ -618,8 +622,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
 
                 $hidden_link = $check_value['hidden_link'];
                 //Initialize id default value
-                if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                    $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+                if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                    $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
                     foreach ($default_values as $k => $v) {
                         if ($v == 1) {
@@ -683,8 +687,8 @@ class PluginMetademandsCheckbox extends CommonDBTM
             $hidden_block = $check_value['hidden_block'];
 
             //Default values
-            if (is_array(PluginMetademandsField::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsField::_unserialize($data['default_values']);
+            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
                 foreach ($default_values as $k => $v) {
                     if ($v == 1) {
                         if ($idc == $k) {
@@ -828,7 +832,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
     public static function getFieldValue($field, $lang)
     {
         if (isset($field['custom_values']) && !empty($field['custom_values'])) {
-            $custom_values = PluginMetademandsField::_unserialize($field['custom_values']);
+            $custom_values = PluginMetademandsFieldParameter::_unserialize($field['custom_values']);
             foreach ($custom_values as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($field["id"], "custom" . $k, $lang))) {
                     $custom_values[$k] = $ret;
@@ -836,7 +840,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
             }
             if (!empty($field['value'])) {
                 if (is_string($field['value'])) {
-                    $field['value'] = PluginMetademandsField::_unserialize($field['value']);
+                    $field['value'] = PluginMetademandsFieldParameter::_unserialize($field['value']);
                 } else {
                     $field['value'] = json_decode(json_encode($field['value']), true);
                 }
@@ -860,7 +864,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
     public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
     {
         if (is_string($field['value'])) {
-            $field['value'] = PluginMetademandsField::_unserialize($field['value']);
+            $field['value'] = PluginMetademandsFieldParameter::_unserialize($field['value']);
         } else {
             $field['value'] = json_decode(json_encode($field['value']), true);
         }

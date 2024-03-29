@@ -637,7 +637,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 break;
             case 'radio':
             case 'checkbox':
-                $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                $choices = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
                 echo $choices[$condition->fields['check_value']];
                 break;
 
@@ -651,7 +651,7 @@ class PluginMetademandsCondition extends CommonDBChild
             case 'dropdown_meta':
                 switch ($field->fields['item']) {
                     case 'other':
-                        $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                        $choices = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
                         echo $choices[$condition->fields['check_value']];
                         break;
                     case 'ITILCategory_Metademands':
@@ -1007,7 +1007,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 if ($type == 'dropdown_meta') {
                     switch ($item) {
                         case 'other':
-                            $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                            $choices = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
                             Dropdown::showFromArray(
                                 $options['name'],
                                 $choices,
@@ -1099,7 +1099,7 @@ class PluginMetademandsCondition extends CommonDBChild
                         if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
-                        $choices = PluginMetademandsField::_unserialize($field->fields['custom_values']);
+                        $choices = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
                         Dropdown::showFromArray(
                             "$name",
                             $choices,

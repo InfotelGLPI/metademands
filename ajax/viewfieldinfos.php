@@ -57,7 +57,6 @@ if ($field->getFromDB($_POST["fields_id"])) {
     echo "</td>";
     echo "</tr>";
 
-
     echo "</table>";
 }
 

@@ -57,10 +57,7 @@ switch ($_POST['step']) {
                 </div>
             ";
         } else {
-            //      if ($_POST["type"] == "dropdown"
-//          || $_POST["type"] == "dropdown_object"
-//          || $_POST["type"] == "dropdown_meta"
-//          || $_POST["type"] == "dropdown_multiple") {
+
             $randItem = PluginMetademandsField::dropdownFieldItems(
                 "item",
                 $_POST["type"],
@@ -70,14 +67,7 @@ switch ($_POST['step']) {
                 'value' => '__VALUE__',
                 'item' => '__VALUE__',
                 'type' => $_POST['type'],
-                'max_upload' => $_POST['max_upload'],
-                'regex' => $_POST['regex'],
-                'display_type' => $_POST['display_type'],
-                'informations_to_display' => $_POST['informations_to_display'],
                 'metademands_id' => $_POST["metademands_id"],
-                'custom_values' => $_POST["custom_values"],
-                'comment_values' => $_POST["comment_values"],
-                'default_values' => $_POST["default_values"],
             ];
 
             Ajax::updateItemOnSelectEvent(
@@ -87,7 +77,6 @@ switch ($_POST['step']) {
                 "/ajax/viewtypefields.php?id=" . $_POST['metademands_id'],
                 $paramsItem
             );
-//      }
         }
         break;
     case 'listfieldbytype':
@@ -104,14 +93,6 @@ switch ($_POST['step']) {
         );
         break;
     default:
-        $fields = new PluginMetademandsField();
-        $fields->getEditValue(
-            PluginMetademandsField::_unserialize(stripslashes($_POST['custom_values'])),
-            PluginMetademandsField::_unserialize(stripslashes($_POST['comment_values'])),
-            PluginMetademandsField::_unserialize(stripslashes($_POST['default_values'])),
-            $_POST
-        );
-        $fields->viewTypeField($_POST);
         break;
 }
 

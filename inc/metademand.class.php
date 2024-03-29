@@ -2580,7 +2580,13 @@ JAVASCRIPT
                                                                     $value = str_replace("\\n", '","', $value);
                                                                 }
                                                             }
-                                                            $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                            if ($value != null) {
+                                                                $line['tasks'][$key]['content'] = str_replace(
+                                                                    "#" . $content . "#",
+                                                                    $value,
+                                                                    $line['tasks'][$key]['content']
+                                                                );
+                                                            }
                                                         } else {
                                                             $explodeContent2 = explode(".", $content);
 
@@ -2704,7 +2710,10 @@ JAVASCRIPT
                                                                 $value = str_replace("\\n", '","', $value);
                                                             }
                                                         }
-                                                        $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                        if ($value != null) {
+                                                            $line['tasks'][$key]['content'] = str_replace("#" . $content . "#", $value, $line['tasks'][$key]['content']);
+                                                        }
+
                                                     } else {
                                                         $explodeContent2 = explode(".", $content);
 
@@ -3930,7 +3939,7 @@ JAVASCRIPT
                     $metademand_field = new PluginMetademandsField();
                     if (isset($field['parent_field_id']) && $metademand_field->getFromDB($field['parent_field_id'])) {
                         $parent_field = $field;
-                        $custom_values = PluginMetademandsField::_unserialize($metademand_field->fields['custom_values']);
+                        $custom_values = PluginMetademandsFieldParameter::_unserialize($metademand_field->fields['custom_values']);
                         foreach ($custom_values as $k => $val) {
                             if (!empty($ret = PluginMetademandsField::displayField($field["parent_field_id"], "custom" . $k, $lang))) {
                                 $custom_values[$k] = $ret;
@@ -5307,6 +5316,7 @@ JAVASCRIPT
 
             $fields = new PluginMetademandsField();
             $fieldoptions = new PluginMetademandsFieldOption();
+            $fieldparameters = new PluginMetademandsFieldParameter();
             $ticketfields = new PluginMetademandsTicketField();
             $tasks = new PluginMetademandsTask();
             $groups = new PluginMetademandsGroup();
@@ -5444,6 +5454,41 @@ JAVASCRIPT
 
                 $newFields = $fields->find(['plugin_metademands_metademands_id' => $new_metademands_id]);
                 foreach ($newFields as $newField) {
+
+                    $old_field_id = $associated_fields[$newField["id"]];
+                    $oldfielddata = new PluginMetademandsField();
+                    $oldfielddata->getFromDB($old_field_id);
+                    $oldParams = $fieldparameters->find(['plugin_metademands_fields_id' => $old_field_id]);
+                    foreach ($oldParams as $oldParam) {
+                        $input['custom_values'] = $oldParam['custom_values'];
+                        $input['default_values'] = $oldParam['default_values'];
+                        $input['comment_values'] = $oldParam['comment_values'];
+                        $input['hide_title'] = $oldParam['hide_title'];
+                        $input['is_mandatory'] = $oldParam['is_mandatory'];
+                        $input['max_upload'] = $oldParam['max_upload'];
+                        $input['regex'] = $oldParam['regex'];
+                        $input['color'] = $oldParam['color'];
+                        $input['row_display'] = $oldParam['row_display'];
+                        $input['is_basket'] = $oldParam['is_basket'];
+                        $input['display_type'] = $oldParam['display_type'];
+                        $input['used_by_ticket'] = $oldParam['used_by_ticket'];
+                        $input['used_by_child'] = $oldParam['used_by_child'];
+                        $input['link_to_user'] = $oldParam['link_to_user'];
+                        $input['default_use_id_requester'] = $oldParam['default_use_id_requester'];
+                        $input['default_use_id_requester_supervisor'] = $oldParam['default_use_id_requester_supervisor'];
+                        $input['use_future_date'] = $oldParam['use_future_date'];
+                        $input['use_date_now'] = $oldParam['use_date_now'];
+                        $input['additional_number_day'] = $oldParam['additional_number_day'];
+                        $input['informations_to_display'] = $oldParam['informations_to_display'];
+                        $input['use_richtext'] = $oldParam['use_richtext'];
+                        $input['icon'] = $oldParam['icon'];
+                        $input['readonly'] = $oldParam['readonly'];
+                        $input['hidden'] = $oldParam['hidden'];
+                        $input['plugin_metademands_fields_id'] = $newField['id'];
+                        $input['type'] = $oldfielddata->fields['type'];
+                        $input['item'] = $oldfielddata->fields['item'];
+                        $fieldparameters->add($input);
+                    }
 
                     $old_field_id = $associated_fields[$newField["id"]];
                     $oldOptions = $fieldoptions->find(['plugin_metademands_fields_id' => $old_field_id]);
@@ -5724,8 +5769,8 @@ JAVASCRIPT
 //        $field = new PluginMetademandsField();
 //        $fields = $field->find(["plugin_metademands_metademands_id" => $metademands_id]);
 //        foreach ($fields as $f) {
-//            $check_values = PluginMetademandsField::_unserialize($f['check_value']);
-//            $tasks_fields = PluginMetademandsField::_unserialize($f['plugin_metademands_tasks_id']);
+//            $check_values = PluginMetademandsFieldParameter::_unserialize($f['check_value']);
+//            $tasks_fields = PluginMetademandsFieldParameter::_unserialize($f['plugin_metademands_tasks_id']);
 //            if (is_array($check_values)) {
 //                foreach ($check_values as $id => $check) {
 //                    if ($check != "0") {
@@ -6096,12 +6141,18 @@ JAVASCRIPT
         }
         $metafield = new PluginMetademandsField();
         $metafieldoption = new PluginMetademandsFieldOption();
+        $metafieldparameter = new PluginMetademandsFieldParameter();
         $condition = new PluginMetademandsCondition();
         $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
         $fields['metafieldoptions'] = [];
         foreach ($metafields as $id => $metafield) {
             $fields['metafields']['field' . $id] = $metafield;
+
+            $metafieldparameters = $metafieldparameter->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+            foreach ($metafieldparameters as $idparameters => $metafieldparam) {
+                $fields['metafieldparameters']['fieldparameters' . $idparameters] = $metafieldparam;
+            }
 
             $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
             $metaconditions = $condition->find(['plugin_metademands_fields_id' => $metafield['id']]);
@@ -6251,6 +6302,11 @@ JAVASCRIPT
             $fieldoptions = $datas['metafieldoptions'];
         }
 
+        $fieldparameters = [];
+        if (isset($datas['metafieldparameters'])) {
+            $fieldparameters = $datas['metafieldparameters'];
+        }
+
         $tasks = [];
         if (isset($datas['tasks'])) {
             $tasks = $datas['tasks'];
@@ -6286,38 +6342,7 @@ JAVASCRIPT
             $metaconditions = [];
             foreach ($field as $key => $f) {
                 $fields[$k][$key] = Html::entity_decode_deep($f);
-                if ($key == "custom_values") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    if ($field['type'] != 'yesno') {
-                        $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    }
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "comment_values") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } else if (str_contains($key, 'condition')) {
-                    $metaconditions[] = $f;
-                } elseif ($key == "default_values") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "informations_to_display") {
-                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
-                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
-                    // legacy support
-                    if (isset($field['item']) && $field['item'] == 'User' && $f == '[]') {
-                        $fields[$k][$key] = '["full_name"]';
-                    } else if (is_null($fields[$k][$key])) {
-                        $fields[$k][$key] = "[]";
-                    }
-                } elseif ($key == "fieldtranslations") {
+                if ($key == "fieldtranslations") {
                     $fieldstranslations = $f;
                 } else {
                     if (is_array($f) && empty($f)) {
@@ -6329,10 +6354,9 @@ JAVASCRIPT
             $oldIDField = $fields[$k]["id"];
             unset($fields[$k]["id"]);
             $fields[$k]['entities_id'] = $_SESSION['glpiactive_entity'];
-            // json_decode on informations_to_display will return NULL if addslashes_deep is called on it
-            $informationsToDisplay = $fields[$k]['informations_to_display'];
+
             $fields[$k] = Toolbox::addslashes_deep($fields[$k]);
-            $fields[$k]['informations_to_display'] = $informationsToDisplay;
+
             $fields[$k]["plugin_metademands_metademands_id"] = $newIDMeta;
             $fields[$k]["date_creation"] = $_SESSION['glpi_currenttime'];
             $fields[$k]["date_mod"] = $_SESSION['glpi_currenttime'];
@@ -6406,6 +6430,51 @@ JAVASCRIPT
             }
         }
 
+        //Add new options & update fields
+        $fieldMetaparam = new PluginMetademandsFieldParameter();
+
+        foreach ($fieldparameters as $new => $old) {
+
+            $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+            $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
+
+            $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
+            $toUpdate["default_values"] = $old["default_values"]?? $empty_values;
+            $toUpdate["comment_values"] = $old["comment_values"]?? $empty_values;
+            $toUpdate["hide_title"] = $old["hide_title"] ?? 0;
+            $toUpdate["is_mandatory"] = $old["is_mandatory"] ?? 0;
+            $toUpdate["max_upload"] = $old["max_upload"] ?? 0;
+            $toUpdate["regex"] = $old["regex"] ?? "";
+            $toUpdate["color"] = $old["color"] ?? "";
+            $toUpdate["row_display"] = $old["row_display"]?? 0;
+            $toUpdate["is_basket"] = $old["is_basket"] ?? 0;
+            $toUpdate["display_type"] = $old["display_type"]?? 0;
+            $toUpdate["used_by_ticket"] = $old["used_by_ticket"]?? 0;
+            $toUpdate["used_by_child"] = $old["used_by_child"]?? 0;
+            $toUpdate["link_to_user"] = $old["link_to_user"] ?? 0;
+            $toUpdate["default_use_id_requester"] = $old["default_use_id_requester"] ?? 0;
+            $toUpdate["default_use_id_requester_supervisor"] = $old["default_use_id_requester_supervisor"] ?? 0;
+            $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
+            $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
+            $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
+            $toUpdate["informations_to_display"] = $old["informations_to_display"];
+            $toUpdate["use_richtext"] = $old["use_richtext"] ?? 0;
+            $toUpdate["icon"] = $old["icon"] ?? "";
+            $toUpdate["readonly"] = $old["readonly"] ?? 0;
+            $toUpdate["hidden"] = $old["hidden"] ?? 0;
+
+            if ($plugin_metademands_fields_id != 0
+                && isset($mapTableField[$plugin_metademands_fields_id])) {
+                $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+            }
+            $fielddata = new PluginMetademandsField();
+            if ($fielddata->getFromDB($toUpdate['plugin_metademands_fields_id'])) {
+                $toUpdate["type"] = $fielddata->fields["type"];
+                $toUpdate["item"] = $fielddata->fields["item"];
+            }
+
+            $fieldMetaparam->add($toUpdate);
+        }
 
         //Add new options & update fields
         $fieldMetaopt = new PluginMetademandsFieldOption();

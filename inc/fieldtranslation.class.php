@@ -196,7 +196,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             $searchOption = $item->getSearchOptionByField('field', $data['field']);
             if (empty($searchOption)) {
                if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
-                  $custom = PluginMetademandsField::_unserialize($item->fields["custom_values"]);
+                  $custom = PluginMetademandsFieldParameter::_unserialize($item->fields["custom_values"]);
 
                   foreach ($custom as $key => $val) {
                      if ("custom" . $key == $data["field"]) {
@@ -322,7 +322,7 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
          }
       }
       if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
-         $custom = PluginMetademandsField::_unserialize($item->fields["custom_values"]);
+         $custom = PluginMetademandsFieldParameter::_unserialize($item->fields["custom_values"]);
          if (is_array($custom)) {
             foreach ($custom as $key => $val) {
                $options["custom" . $key] = $val;
