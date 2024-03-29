@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-29 16:22+0000\n"
+"POT-Creation-Date: 2024-03-29 17:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -128,16 +128,18 @@ msgstr ""
 msgid "Not empty"
 msgstr ""
 
-#: ajax/viewfieldinfos.php:43 inc/fieldparameter.class.php:492
+#: ajax/viewfieldinfos.php:43 inc/fieldparameter.class.php:306
+#: inc/fieldparameter.class.php:420
 msgid "Field informations"
 msgstr ""
 
-#: ajax/viewfieldinfos.php:54 inc/fieldparameter.class.php:503
+#: ajax/viewfieldinfos.php:54 inc/fieldparameter.class.php:317
+#: inc/fieldparameter.class.php:431
 msgid "Example"
 msgstr ""
 
-#: ajax/viewtypefields.php:55 inc/dropdown.class.php:158
-#: inc/dropdownmeta.class.php:497 inc/dropdownobject.class.php:498
+#: ajax/viewtypefields.php:55 inc/dropdown.class.php:159
+#: inc/dropdownmeta.class.php:500 inc/dropdownobject.class.php:498
 #: inc/text.class.php:87
 msgid "Link this to a user field"
 msgstr ""
@@ -292,27 +294,27 @@ msgstr ""
 #: inc/basket.class.php:463 inc/checkbox.class.php:253
 #: inc/condition.class.php:337 inc/condition.class.php:471
 #: inc/condition.class.php:569 inc/condition.class.php:885
-#: inc/dropdown.class.php:183 inc/dropdownmeta.class.php:542
+#: inc/dropdown.class.php:184 inc/dropdownmeta.class.php:545
 #: inc/dropdownmultiple.class.php:803 inc/dropdownobject.class.php:575
 #: inc/field.class.php:721 inc/fieldoption.class.php:233
-#: inc/radio.class.php:251 inc/yesno.class.php:117
+#: inc/radio.class.php:252 inc/yesno.class.php:117
 msgid "Value to check"
 msgstr ""
 
 #: inc/basket.class.php:464 inc/checkbox.class.php:273
-#: inc/checkbox.class.php:289 inc/dropdown.class.php:217
-#: inc/dropdown.class.php:253 inc/dropdownmeta.class.php:596
-#: inc/dropdownmeta.class.php:606 inc/dropdownmeta.class.php:628
+#: inc/checkbox.class.php:289 inc/dropdown.class.php:218
+#: inc/dropdown.class.php:254 inc/dropdownmeta.class.php:599
+#: inc/dropdownmeta.class.php:609 inc/dropdownmeta.class.php:631
 #: inc/dropdownobject.class.php:638 inc/dropdownobject.class.php:648
-#: inc/dropdownobject.class.php:670 inc/radio.class.php:271
-#: inc/radio.class.php:287
+#: inc/dropdownobject.class.php:670 inc/radio.class.php:272
+#: inc/radio.class.php:288
 msgid "Not null value"
 msgstr ""
 
 #: inc/basket.class.php:585 inc/checkbox.class.php:394
-#: inc/dropdown.class.php:350 inc/dropdownmeta.class.php:726
+#: inc/dropdown.class.php:351 inc/dropdownmeta.class.php:729
 #: inc/dropdownmultiple.class.php:1001 inc/dropdownmultiple.class.php:1140
-#: inc/dropdownobject.class.php:773 inc/radio.class.php:369
+#: inc/dropdownobject.class.php:773 inc/radio.class.php:370
 #: inc/text.class.php:237 inc/textarea.class.php:218 inc/wizard.class.php:1610
 #: inc/yesno.class.php:210
 msgctxt "button"
@@ -320,9 +322,9 @@ msgid "Save & Post"
 msgstr ""
 
 #: inc/basket.class.php:586 inc/checkbox.class.php:395
-#: inc/dropdown.class.php:351 inc/dropdownmeta.class.php:728
+#: inc/dropdown.class.php:352 inc/dropdownmeta.class.php:731
 #: inc/dropdownmultiple.class.php:1002 inc/dropdownmultiple.class.php:1141
-#: inc/dropdownobject.class.php:774 inc/radio.class.php:370
+#: inc/dropdownobject.class.php:774 inc/radio.class.php:371
 #: inc/text.class.php:238 inc/textarea.class.php:219 inc/wizard.class.php:869
 #: inc/wizard.class.php:1584 inc/wizard.class.php:1607
 #: inc/wizard.class.php:1616 inc/wizard.class.php:1626 inc/yesno.class.php:211
@@ -422,10 +424,10 @@ msgid "Checkbox"
 msgstr ""
 
 #: inc/checkbox.class.php:178 inc/checkbox.class.php:229
-#: inc/dropdownmeta.class.php:396 inc/dropdownmeta.class.php:444
+#: inc/dropdownmeta.class.php:395 inc/dropdownmeta.class.php:447
 #: inc/dropdownmultiple.class.php:600 inc/dropdownmultiple.class.php:655
-#: inc/dropdownmultiple.class.php:705 inc/fieldparameter.class.php:1164
-#: inc/radio.class.php:178 inc/radio.class.php:227 inc/yesno.class.php:94
+#: inc/dropdownmultiple.class.php:705 inc/fieldparameter.class.php:1091
+#: inc/radio.class.php:179 inc/radio.class.php:228 inc/yesno.class.php:94
 msgid "Default value"
 msgid_plural "Default values"
 msgstr[0] ""
@@ -622,8 +624,8 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: inc/date.class.php:82 inc/datetime.class.php:82 inc/dropdown.class.php:147
-#: inc/dropdownmeta.class.php:486 inc/dropdownobject.class.php:438
+#: inc/date.class.php:82 inc/datetime.class.php:82 inc/dropdown.class.php:148
+#: inc/dropdownmeta.class.php:489 inc/dropdownobject.class.php:438
 #: inc/dropdownobject.class.php:517
 msgid "Use this field for child ticket field"
 msgstr ""
@@ -691,11 +693,11 @@ msgstr ""
 msgid "Dropdown"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:521 inc/dropdownobject.class.php:469
+#: inc/dropdownmeta.class.php:524 inc/dropdownobject.class.php:469
 msgid "Read-Only"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:528
+#: inc/dropdownmeta.class.php:531
 msgid "Hidden field"
 msgstr ""
 
@@ -732,7 +734,7 @@ msgid "Use id of supervisor requester by default"
 msgstr ""
 
 #: inc/dropdownmultiple.class.php:777 inc/dropdownobject.class.php:476
-#: inc/fieldparameter.class.php:1301
+#: inc/fieldparameter.class.php:1228
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
@@ -788,7 +790,7 @@ msgid "Link a task to the field"
 msgstr ""
 
 #: inc/field.class.php:723 inc/field.class.php:2224
-#: inc/fieldparameter.class.php:684
+#: inc/fieldparameter.class.php:611
 msgid "Display into the basket"
 msgstr ""
 
@@ -924,24 +926,26 @@ msgid_plural "Parameters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/fieldparameter.class.php:664
+#: inc/fieldparameter.class.php:87 inc/fieldparameter.class.php:900
+msgid "Custom value"
+msgid_plural "Custom values"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/fieldparameter.class.php:591
 msgid "Hide title"
 msgstr ""
 
-#: inc/fieldparameter.class.php:676
+#: inc/fieldparameter.class.php:603
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/fieldparameter.class.php:713
+#: inc/fieldparameter.class.php:640
 msgid "Use this field as object field"
 msgstr ""
 
-#: inc/fieldparameter.class.php:847
+#: inc/fieldparameter.class.php:774
 msgid "Link this to a plugin \"fields\" field"
-msgstr ""
-
-#: inc/fieldparameter.class.php:973
-msgid "Custom values"
 msgstr ""
 
 #: inc/form.class.php:78 inc/stepform.class.php:83
