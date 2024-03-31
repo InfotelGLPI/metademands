@@ -63,19 +63,9 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         'date_interval',
         'datetime_interval',
         'upload',
+        'link',
     ];
     public static $allowed_parameters_items = ['User', 'Group'];
-
-    public static $allowed_custom_types = [
-        'checkbox',
-        'yesno',
-        'radio',
-        'link',
-        'dropdown_multiple',
-        'number',
-        'basket'
-    ];
-    public static $allowed_custom_items = ['other', 'urgency', 'impact'];
 
     static function getTypeName($nb = 0)
     {
@@ -117,25 +107,8 @@ class PluginMetademandsFieldParameter extends CommonDBTM
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-        switch ($item->getType()) {
-            case "PluginMetademandsField" :
-                $nbparam = self::getNumberOfParametersForItem($item);
-                $ong[1] = self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nbparam);
-
-                $allowed_custom_types = self::$allowed_custom_types;
-                $allowed_custom_items = self::$allowed_custom_items;
-
-                if (isset($item->fields['type'])
-                    && in_array($item->fields['type'], $allowed_custom_types)
-                    || in_array($item->fields['item'], $allowed_custom_items)) {
-                    $nbcustom = self::getNumberOfCustomValuesForItem($item);
-                    $ong[2]  = self::createTabEntry(self::getCustomTypeName(Session::getPluralNumber()), $nbcustom);
-                }
-
-
-                return $ong;
-        }
-        return '';
+        $nb = self::getNumberOfParametersForItem($item);
+        return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
     }
 
 
@@ -157,27 +130,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
     }
 
     /**
-     * Return the number of Custom Values for an item
-     *
-     * @param item
-     *
-     * @return int number of Custom Values for this item
-     */
-    static function getNumberOfCustomValuesForItem($item)
-    {
-        $field_parameter = new PluginMetademandsFieldParameter();
-        $params = $field_parameter->find(["plugin_metademands_fields_id" => $item->getID()]);
-        $custom_values = [];
-        if (count($params) > 0) {
-            foreach ($params as $param) {
-                $custom_values = PluginMetademandsFieldParameter::_unserialize($param['custom_values']);
-            }
-        }
-        return count($custom_values);
-    }
-
-
-    /**
      *
      * @static
      *
@@ -189,26 +141,11 @@ class PluginMetademandsFieldParameter extends CommonDBTM
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-        if ($item->getType() == "PluginMetademandsField") {
-            switch ($tabnum) {
-                case 1:
-                    $field_parameter = new PluginMetademandsFieldParameter();
-                    if ($field_parameter->getFromDBByCrit(["plugin_metademands_fields_id" => $item->getID()])) {
-                        $field_parameter->showParameterForm($field_parameter->getID(), ['parent' => $item]);
-                    } else {
-                        $field_parameter->showParameterForm(-1, ['parent' => $item]);
-                    }
-                    break;
-
-                case 2:
-                    $field_parameter = new PluginMetademandsFieldParameter();
-                    if ($field_parameter->getFromDBByCrit(["plugin_metademands_fields_id" => $item->getID()])) {
-                        $field_parameter->showCustomValuesForm($field_parameter->getID(), ['parent' => $item]);
-                    } else {
-                        $field_parameter->showCustomValuesForm(-1, ['parent' => $item]);
-                    }
-                    break;
-            }
+        $field_parameter = new PluginMetademandsFieldParameter();
+        if ($field_parameter->getFromDBByCrit(["plugin_metademands_fields_id" => $item->getID()])) {
+            $field_parameter->showParameterForm($field_parameter->getID(), ['parent' => $item]);
+        } else {
+            $field_parameter->showParameterForm(-1, ['parent' => $item]);
         }
 
         return true;
@@ -235,15 +172,15 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 
         $metademand = new PluginMetademandsMetademand();
         $metademand_fields = new PluginMetademandsField();
+        $metademand_custom = new PluginMetademandsFieldCustomvalue();
         $item = $options['parent'];
 
         if ($ID > 0) {
             $this->check($ID, UPDATE);
-            $metademand_fields->getFromDBByCrit(["id" => $this->fields['plugin_metademands_fields_id']]);
+            $metademand_fields->getFromDB($item->getID());
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
         } else {
             $metademand_fields->getFromDB($item->getID());
-
             $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
             // Create item
             $options['itemtype'] = get_class($item);
@@ -258,45 +195,9 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         echo Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
         echo Html::hidden('item', ['value' => $metademand_fields->fields['item']]);
 
-        $paramTypeField = [
-            'id' => $this->fields['id'],
-            'name' => $metademand_fields->fields['name'],
-            'comment' => $metademand_fields->fields['comment'],
-            'label2' => $metademand_fields->fields['label2'],
-            'rank' => $metademand_fields->fields['rank'],
-            'row_display' => $this->fields['row_display'],
-            'hide_title' => $this->fields['hide_title'],
-            'is_basket' => $this->fields['is_basket'],
-            'color' => $this->fields['color'],
-            'icon' => $this->fields['icon'],
-            'is_mandatory' => $this->fields['is_mandatory'],
-            'used_by_ticket' => $this->fields['used_by_ticket'],
-            'object_to_create' => $metademand->fields['object_to_create'],
-            'is_order' => $metademand->fields['is_order'],
-            'used_by_child' => $this->fields['used_by_child'],
-            'use_richtext' => $this->fields['use_richtext'],
-            'default_use_id_requester' => $this->fields['default_use_id_requester'],
-            'default_use_id_requester_supervisor' => $this->fields['default_use_id_requester_supervisor'],
-            'readonly' => $this->fields['readonly'],
-            'custom_values' => self::_unserialize($this->fields['custom_values']),
-            'comment_values' => self::_unserialize($this->fields['comment_values']),
-            'default_values' => self::_unserialize($this->fields['default_values']),
-            'max_upload' => $this->fields['max_upload'],
-            'regex' => $this->fields['regex'],
-            'use_future_date' => $this->fields['use_future_date'],
-            'use_date_now' => $this->fields['use_date_now'],
-            'additional_number_day' => $this->fields['additional_number_day'],
-            'display_type' => $this->fields['display_type'],
-            'informations_to_display' => $this->fields['informations_to_display'],
-            'item' => $metademand_fields->fields['item'],
-            'type' => $metademand_fields->fields['type'],
-            'link_to_user' => $this->fields["link_to_user"],
-            'readonly' => $this->fields["readonly"],
-            'hidden' => $this->fields["hidden"],
-            'plugin_metademands_metademands_id' => $metademand_fields->fields["plugin_metademands_metademands_id"],
-        ];
+        $params = PluginMetademandsField::getAllParamsFromField($metademand_fields);
 
-        self::showFieldParameters($paramTypeField);
+        self::showFieldParameters($params);
 
         $this->showFormButtons(['colspan' => 2, 'candel' => false,]);
 
@@ -309,14 +210,14 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             echo "<tr class='tab_bg_1'>";
             echo "<td>" . __('Type') . "</td>";
             echo "<td>";
-            echo PluginMetademandsField::getFieldTypesName($paramTypeField["type"]);
+            echo PluginMetademandsField::getFieldTypesName($params["type"]);
             echo "</td>";
             echo "</tr>";
 
             echo "<tr class='tab_bg_1'>";
             echo "<td>" . __('Example', 'metademands') . "</td>";
             echo "<td>";
-            echo PluginMetademandsField::getFieldInput([], $paramTypeField, false, 0, 0, false, "");
+            echo PluginMetademandsField::getFieldInput([], $params, false, 0, 0, false, "");
             echo "</td>";
             echo "</tr>";
 
@@ -327,119 +228,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         return true;
     }
 
-
-    /**
-     * @param       $ID
-     * @param array $options
-     *
-     * @return bool
-     * @throws \GlpitestSQLError
-     */
-    public function showCustomValuesForm($ID = -1, $options = [])
-    {
-        global $PLUGIN_HOOKS;
-
-        if (!$this->canview()) {
-            return false;
-        }
-        if (!$this->cancreate()) {
-            return false;
-        }
-        Html::requireJs('tinymce');
-
-        $metademand = new PluginMetademandsMetademand();
-        $metademand_fields = new PluginMetademandsField();
-        $item = $options['parent'];
-
-        if ($ID > 0) {
-            $this->check($ID, UPDATE);
-            $metademand_fields->getFromDBByCrit(["id" => $this->fields['plugin_metademands_fields_id']]);
-            $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
-        } else {
-            $metademand_fields->getFromDB($item->getID());
-
-            $metademand->getFromDB($metademand_fields->fields['plugin_metademands_metademands_id']);
-            // Create item
-            $options['itemtype'] = get_class($item);
-            $options['items_id'] = $item->getID();
-//            $this->check(-1, CREATE, $options);
-        }
-
-        $this->showFormHeader($options);
-
-
-        echo Html::hidden('plugin_metademands_fields_id', ['value' => $item->getID()]);
-        echo Html::hidden('type', ['value' => $metademand_fields->fields['type']]);
-        echo Html::hidden('item', ['value' => $metademand_fields->fields['item']]);
-
-        $paramTypeField = [
-            'id' => $this->fields['id'],
-            'name' => $metademand_fields->fields['name'],
-            'comment' => $metademand_fields->fields['comment'],
-            'label2' => $metademand_fields->fields['label2'],
-            'rank' => $metademand_fields->fields['rank'],
-            'row_display' => $this->fields['row_display'],
-            'hide_title' => $this->fields['hide_title'],
-            'is_basket' => $this->fields['is_basket'],
-            'color' => $this->fields['color'],
-            'icon' => $this->fields['icon'],
-            'is_mandatory' => $this->fields['is_mandatory'],
-            'used_by_ticket' => $this->fields['used_by_ticket'],
-            'object_to_create' => $metademand->fields['object_to_create'],
-            'is_order' => $metademand->fields['is_order'],
-            'used_by_child' => $this->fields['used_by_child'],
-            'use_richtext' => $this->fields['use_richtext'],
-            'default_use_id_requester' => $this->fields['default_use_id_requester'],
-            'default_use_id_requester_supervisor' => $this->fields['default_use_id_requester_supervisor'],
-            'readonly' => $this->fields['readonly'],
-            'custom_values' => self::_unserialize($this->fields['custom_values']),
-            'comment_values' => self::_unserialize($this->fields['comment_values']),
-            'default_values' => self::_unserialize($this->fields['default_values']),
-            'max_upload' => $this->fields['max_upload'],
-            'regex' => $this->fields['regex'],
-            'use_future_date' => $this->fields['use_future_date'],
-            'use_date_now' => $this->fields['use_date_now'],
-            'additional_number_day' => $this->fields['additional_number_day'],
-            'display_type' => $this->fields['display_type'],
-            'informations_to_display' => $this->fields['informations_to_display'],
-            'item' => $metademand_fields->fields['item'],
-            'type' => $metademand_fields->fields['type'],
-            'link_to_user' => $this->fields["link_to_user"],
-            'readonly' => $this->fields["readonly"],
-            'hidden' => $this->fields["hidden"],
-            'plugin_metademands_metademands_id' => $metademand_fields->fields["plugin_metademands_metademands_id"],
-        ];
-
-        self::showFieldCustomValues($paramTypeField);
-
-        $this->showFormButtons(['colspan' => 2, 'candel' => false,]);
-
-        if ($ID > 0) {
-            echo "<table class='tab_cadre' width='100%'>";
-            echo "<tr class='tab_bg_1'>";
-            echo "<th colspan='2'>" . __('Field informations', 'metademands') . "</th>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Type') . "</td>";
-            echo "<td>";
-            echo PluginMetademandsField::getFieldTypesName($paramTypeField["type"]);
-            echo "</td>";
-            echo "</tr>";
-
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Example', 'metademands') . "</td>";
-            echo "<td>";
-            echo PluginMetademandsField::getFieldInput([], $paramTypeField, false, 0, 0, false, "");
-            echo "</td>";
-            echo "</tr>";
-
-            echo "</table>";
-        }
-
-
-        return true;
-    }
 
     /**
      * View options for items or types
@@ -581,12 +369,14 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         if ($params['type'] != "title"
             && $params['type'] != "title-block"
             && $params['type'] != "informations") {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td>" . __('Mandatory field') . "</td>";
-            echo "<td>";
-            Dropdown::showYesNo("is_mandatory", $params["is_mandatory"]);
-            echo "</td>";
 
+            echo "<tr class='tab_bg_1'>";
+            if ($params['type'] != "link") {
+                echo "<td>" . __('Mandatory field') . "</td>";
+                echo "<td>";
+                Dropdown::showYesNo("is_mandatory", $params["is_mandatory"]);
+                echo "</td>";
+            }
             echo "<td>";
             echo __('Hide title', 'metademands');
             echo "</td>";
@@ -634,7 +424,8 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             && $params['type'] != 'yesno'
             && $params['type'] != 'radio'
             && $params['type'] != 'number'
-            && $params['type'] != 'basket') {
+            && $params['type'] != 'basket'
+            && $params['type'] != 'link') {
 
             echo "<td>";
             echo __('Use this field as object field', 'metademands');
@@ -768,7 +559,8 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 
         if ($params['type'] != "title"
             && $params['type'] != "title-block"
-            && $params['type'] != "informations") {
+            && $params['type'] != "informations"
+            && $params['type'] != 'link') {
             if (Plugin::isPluginActive('fields')) {
                 echo "<td>";
                 echo __('Link this to a plugin "fields" field', 'metademands');
@@ -863,322 +655,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         }
     }
 
-    /**
-     * View custom values for items or types
-     *
-     * @param array $values
-     * @param array $comment
-     * @param array $default
-     * @param array $options
-     *
-     * @return void
-     */
-    static public function showFieldCustomValues($params = [])
-    {
-//        $params['value'] = 0;
-//        $params['item'] = '';
-//        $params['type'] = '';
-//
-//        $values = $options['custom_values'];
-//        $comment = $options['comment_values'];
-//        $default = $options['default_values'];
-//
-//        foreach ($options as $key => $value) {
-//            $params[$key] = $value;
-//        }
-
-        $allowed_custom_types = self::$allowed_custom_types;
-        $allowed_custom_items = self::$allowed_custom_items;
-
-        if (in_array($params['type'], $allowed_custom_types)
-            || in_array($params['item'], $allowed_custom_items)) {
-            echo "<table class='tab_cadre_fixe'>";
-            if ($params['type'] != "dropdown_multiple"
-                && $params['item'] != 'User') {
-                echo "<tr class='tab_bg_1'>";
-                echo "<th colspan='4'>";
-                echo _n('Custom value', 'Custom values',2,'metademands');
-                echo "</th>";
-                echo "</tr>";
-            }
-
-            if ($params["type"] == "dropdown_multiple" && empty($params["item"])) {
-                $params["item"] = "other";
-            }
-
-            if ($params["type"] == "radio") {
-                $params["item"] = "radio";
-            }
-            if ($params["type"] == "checkbox") {
-                $params["item"] = "checkbox";
-            }
-
-            if ($params["type"] != "dropdown_multiple") {
-                switch ($params['item']) {
-                    case 'impact':
-                    case 'urgency':
-                    case 'other':
-                        PluginMetademandsDropdownmeta::showFieldCustomValues($params);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            switch ($params['type']) {
-                case 'title':
-                    break;
-                case 'title-block':
-                    break;
-                case 'informations':
-                    break;
-                case 'text':
-                    break;
-                case 'textarea':
-                    break;
-                case 'dropdown_meta':
-                    break;
-                case 'dropdown_object':
-                    break;
-                case 'dropdown':
-                    break;
-                case 'dropdown_multiple':
-                    PluginMetademandsDropdownmultiple::showFieldCustomValues($params);
-                    break;
-                case 'checkbox':
-                    PluginMetademandsCheckbox::showFieldCustomValues($params);
-                    break;
-                case 'radio':
-                    PluginMetademandsRadio::showFieldCustomValues($params);
-                    break;
-                case 'yesno':
-                    PluginMetademandsYesno::showFieldCustomValues($params);
-                    break;
-                case 'number':
-                    PluginMetademandsNumber::showFieldCustomValues($params);
-                    break;
-                case 'date':
-                    break;
-                case 'time':
-                    break;
-                case 'date_interval':
-                    break;
-                case 'datetime':
-                    break;
-                case 'datetime_interval':
-                    break;
-                case 'upload':
-                    break;
-                case 'link':
-                    PluginMetademandsLink::showFieldCustomValues($params);
-                    break;
-                case 'basket':
-                    PluginMetademandsBasket::showFieldCustomValues($params);
-                    break;
-                case 'parent_field':
-                    break;
-            }
-
-            echo "</table>";
-        }
-    }
-
-
-    public function reorderArray($targetArray, $indexFrom, $indexTo)
-    {
-        $targetElement = $targetArray[$indexFrom];
-        $magicIncrement = ($indexTo - $indexFrom) / abs($indexTo - $indexFrom);
-
-        for ($Element = $indexFrom; $Element != $indexTo; $Element += $magicIncrement) {
-            $targetArray[$Element] = $targetArray[$Element + $magicIncrement];
-        }
-
-        $targetArray[$indexTo] = $targetElement;
-
-        return $targetArray;
-    }
-
-    /**
-     * @param array $params
-     */
-    public function reorder(array $params)
-    {
-
-        $itemMove = new self();
-        $itemMove->getFromDB($params['field_id']);
-
-        $custom_values = self::_unserialize($itemMove->fields["custom_values"]);
-        $default_values = self::_unserialize($itemMove->fields["default_values"]);
-        $comment_values = self::_unserialize($itemMove->fields["comment_values"]);
-
-        if (isset($params['old_order']) && isset($params['new_order'])) {
-            $old_order = $params['old_order'];
-            $new_order = $params['new_order'];
-
-            $old_order = $old_order + 1;
-            $new_order = $new_order + 1;
-
-            $new_custom_values = $this->reorderArray($custom_values, $old_order, $new_order);
-            $new_default_values = $this->reorderArray($default_values, $old_order, $new_order);
-            $new_comment_values = $this->reorderArray($comment_values, $old_order, $new_order);
-
-            $itemMove->update([
-                'id' => $params['field_id'],
-                'custom_values' => self::_serialize($new_custom_values),
-                'default_values' => self::_serialize($new_default_values),
-                'comment_values' => self::_serialize($new_comment_values)
-            ]);
-        }
-    }
-
-    /**
-     * @param      $count
-     * @param bool $display_comment
-     */
-    /**
-     * @param      $count
-     * @param bool $display_comment
-     * @param bool $display_default
-     */
-    public static function initCustomValue($count, $display_comment = false, $display_default = false)
-    {
-        Html::requireJs("metademands");
-        $script = "var metademandWizard = $(document).metademandWizard(" . json_encode(
-                ['root_doc' => PLUGIN_METADEMANDS_WEBDIR]
-            ) . ");";
-
-        echo Html::hidden('display_comment', ['id' => 'display_comment', 'value' => $display_comment]);
-        echo Html::hidden('count_custom_values', ['id' => 'count_custom_values', 'value' => $count]);
-        echo Html::hidden('display_default', ['id' => 'display_default', 'value' => $display_default]);
-
-        echo "&nbsp;<i class='fa-2x fas fa-plus-square' style='cursor:pointer'
-            onclick='$script metademandWizard.metademands_add_custom_values(\"show_custom_fields\");'
-            title='" . _sx("button", "Add") . "'/></i>&nbsp;";
-    }
-
-    /**
-     * @param $valueId
-     * @param $display_comment
-     * @param $display_default
-     */
-    public static function addNewValue($valueId, $display_comment, $display_default)
-    {
-//        $valueId = $valueId + 1;
-        echo '<table width=\'100%\' class="tab_cadre">';
-        echo "<tr>";
-
-        echo "<td id='show_custom_fields'>";
-        echo '<span id=\'custom_values' . $valueId . '\'>';
-        echo __('Value') . ' ' . $valueId . ' ';
-        $name = "custom_values[$valueId]";
-        echo Html::input($name, ['size' => 50]);
-        echo "</td>";
-        echo '</span>';
-
-        echo "<td id='show_custom_fields'>";
-        echo '<span id=\'comment_values' . $valueId . '\'>';
-        if ($display_comment) {
-            echo " " . __('Comment') . " ";
-            $name = "comment_values[$valueId]";
-            echo Html::input($name, ['size' => 30]);
-        }
-        echo '</span>';
-        echo "</td>";
-
-        echo "<td id='show_custom_fields'>";
-        echo '<span id=\'default_values' . $valueId . '\'>';
-        if ($display_default) {
-            echo " " . _n('Default value', 'Default values', 1, 'metademands') . " ";
-            //         echo '<input type="checkbox" name="default_values[' . $valueId . ']"  value="1"/>';
-            $name = "default_values[$valueId]";
-            $value = 0;
-            Dropdown::showYesNo($name, $value);
-        }
-        echo '</span>';
-        echo "</td>";
-
-        echo "</tr>";
-        echo '</td></tr></table>';
-    }
-
-//    /**
-//     * @param $input
-//     *
-//     * @return string
-//     */
-//    public static function _serialize($input)
-//    {
-//        if ($input != null || $input == []) {
-//            if (is_array($input)) {
-//                foreach ($input as &$value) {
-//                    if ($value != null) {
-//                        $clean = Html::cleanPostForTextArea($value);
-//                        if ($clean != null) {
-//                            $value = urlencode($clean);
-//                        }
-//                    }
-//                }
-//
-//                return json_encode($input);
-//            }
-//        }
-//    }
-//
-//    public static function _serializeArray($input)
-//    {
-//        if ($input != null || $input == []) {
-//            $data_temp = [];
-//            if (is_array($input)) {
-//                foreach ($input as $k => $v) {
-//                    $data_temp[urlencode($k)] = self::_serializeArray($v);
-//                }
-//                return $data_temp;
-//            } else {
-//                return urlencode($input);
-//            }
-//        }
-//    }
-//
-//    /**
-//     * @param $input
-//     *
-//     * @return mixed
-//     */
-//    public static function _unserialize($input)
-//    {
-//        if (!empty($input)) {
-//            if (!is_array($input)) {
-//                $input = json_decode($input, true);
-//            }
-//            if (is_array($input) && !empty($input)) {
-//                foreach ($input as &$value) {
-//                    if ($value != null) {
-//                        $value = urldecode($value);
-//                    }
-//                }
-//            }
-//        }
-//
-//        return $input;
-//    }
-//
-//    public static function _unserializeArray($input)
-//    {
-//        if (!empty($input)) {
-//            $data_temp = [];
-//            if (is_array($input)) {
-//                foreach ($input as $k => $v) {
-//                    $data_temp[json_decode($k, true)] = self::_unserializeArray($v);
-//                }
-//                return $data_temp;
-//            } else {
-//                return json_decode($input, true);
-//            }
-//        }
-//
-//        return $input;
-//    }
-
 
     /**
      * @param array $input
@@ -1242,29 +718,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             return false;
         }
         return true;
-    }
-
-    /**
-     * @param        $action
-     * @param        $btname
-     * @param        $btlabel
-     * @param array $fields
-     * @param string $btimage
-     * @param string $btoption
-     * @param string $confirm
-     *
-     * @return string
-     */
-    public static function showSimpleForm(
-        $action,
-        $btname,
-        $btlabel,
-        array $fields = [],
-        $btimage = '',
-        $btoption = '',
-        $confirm = ''
-    ) {
-        return Html::getSimpleForm($action, $btname, $btlabel, $fields, $btimage, $btoption, $confirm);
     }
 
 

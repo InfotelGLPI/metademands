@@ -67,7 +67,7 @@ class PluginMetademandsUpload extends CommonDBTM
                     $wiz = new PluginMetademandsWizard();
                     $field .= "&nbsp;";
                     //own showSimpleForm for return (not echo)
-                    $field .= PluginMetademandsFieldParameter::showSimpleForm(
+                    $field .= PluginMetademandsFieldCustomvalue::showSimpleForm(
                         $wiz->getFormURL(),
                         'delete_basket_file',
                         _x('button', 'Delete permanently'),

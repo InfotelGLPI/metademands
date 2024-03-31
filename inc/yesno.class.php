@@ -94,15 +94,25 @@ class PluginMetademandsYesno extends CommonDBTM
         echo _n('Default value', 'Default values', 1, 'metademands') . "&nbsp;";
         $p = [];
 
+//        Toolbox::logInfo($params);
         if (isset($params['custom_values']) && !is_array($params['custom_values'])) {
             $p['value'] = $params['custom_values'];
         }
         $data[1] = __('No');
         $data[2] = __('Yes');
 
-        Dropdown::showFromArray("custom_values", $data, $p);
+        Dropdown::showFromArray("custom", $data, $p);
         echo "</td>";
         echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo Html::submit("", ['name'  => 'update',
+            'class' => 'btn btn-primary',
+            'icon'  => 'fas fa-save']);
+        echo "</td>";
+        echo "</tr>";
+        Html::closeForm();
 
     }
 
@@ -293,8 +303,8 @@ class PluginMetademandsYesno extends CommonDBTM
         foreach ($check_values as $idc => $check_value) {
 
             $tasks_id = $check_value['plugin_metademands_tasks_id'];
-            if (isset($data['custom_values'])) {
-                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+            if (isset($data['custom'])) {
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
 
                 if ($idc == $custom_values) {
                     if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
@@ -356,7 +366,7 @@ class PluginMetademandsYesno extends CommonDBTM
                             " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                            }";
 
-            if ($idc == $data["custom_values"]) {
+            if ($idc == $data["custom"]) {
                 $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
 
                 //if reload form
@@ -432,8 +442,8 @@ class PluginMetademandsYesno extends CommonDBTM
         //Initialize id default value
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
-            if (isset($data['custom_values'])) {
-                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+            if (isset($data['custom'])) {
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
                 if ($idc == $custom_values) {
                     $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
                 }
@@ -507,8 +517,8 @@ class PluginMetademandsYesno extends CommonDBTM
 
             //Default values
             //Warning : not use default_values
-            if (isset($data['custom_values'])) {
-                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+            if (isset($data['custom'])) {
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
 
                 if ($idc == $custom_values) {
                     $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();

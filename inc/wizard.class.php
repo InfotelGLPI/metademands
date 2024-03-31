@@ -1221,7 +1221,30 @@ class PluginMetademandsWizard extends CommonDBTM
 
                         $params = $fieldparameter->fields;
                         $data = array_merge($line[$keys[0]], $params);
+                        if (isset($fieldparameter->fields['default'])) {
+                            $line[$keys[0]]['default_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['default']);
+                        }
+
+                        if (isset($fieldparameter->fields['custom'])) {
+                            $line[$keys[0]]['custom_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
+                        }
                     }
+
+                    $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                    $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+                    //Block Title
+                    if (isset($line[$keys[0]]['type'])
+                        && in_array($line[$keys[0]]['type'], $allowed_customvalues_types)
+                        || in_array($line[$keys[0]]['item'], $allowed_customvalues_items)) {
+                        $field_custom = new PluginMetademandsFieldCustomvalue();
+                        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $line[$keys[0]]['id']], "rank")) {
+                            if (count($customs) > 0) {
+                                $line[$keys[0]]['custom_values'] = $customs;
+                            }
+                        }
+                    }
+
                     PluginMetademandsField::displayFieldByType($metademands_data, $data, $preview, $itilcategories_id);
 
                 }
@@ -1248,6 +1271,30 @@ class PluginMetademandsWizard extends CommonDBTM
 
                         $params = $fieldparameter->fields;
                         $data = array_merge($data, $params);
+
+                        if (isset($fieldparameter->fields['default'])) {
+                            $data['default_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['default']);
+                        }
+
+                        if (isset($fieldparameter->fields['custom'])) {
+                            $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
+                        }
+                    }
+
+                    $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                    $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+                    if (isset($data['type'])
+                        && (in_array($data['type'], $allowed_customvalues_types)
+                            || in_array($data['item'], $allowed_customvalues_items))
+                        && $data['item'] != "urgency"
+                        && $data['item'] != "impact") {
+                        $field_custom = new PluginMetademandsFieldCustomvalue();
+                        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
+                            if (count($customs) > 0) {
+                                $data['custom_values'] = $customs;
+                            }
+                        }
                     }
 
                     // Manage ranks ???
@@ -1507,7 +1554,30 @@ class PluginMetademandsWizard extends CommonDBTM
 
                         $params = $fieldparameter->fields;
                         $data = array_merge($data, $params);
+
+                        if (isset($fieldparameter->fields['default'])) {
+                            $data['default_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['default']);
+                        }
+
+                        if (isset($fieldparameter->fields['custom'])) {
+                            $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
+                        }
                     }
+
+                    $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                    $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+                    if (isset($data['type'])
+                        && in_array($data['type'], $allowed_customvalues_types)
+                        || in_array($data['item'], $allowed_customvalues_items)) {
+                        $field_custom = new PluginMetademandsFieldCustomvalue();
+                        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
+                            if (count($customs) > 0) {
+                                $data['custom_values'] = $customs;
+                            }
+                        }
+                    }
+
                     //verifie si une sous metademande doit etre lancé
                     PluginMetademandsFieldOption::taskScript($data);
 
@@ -1759,7 +1829,11 @@ class PluginMetademandsWizard extends CommonDBTM
                         if (isset($data['name'])) {
                             $label = $data['name'];
                         }
-                        $all_meta_fields[$data['id']] = $data['hide_title'] == 1 ? PluginMetademandsField::getFieldTypesName($data['type']) : $label;
+                        $metademand_params = new PluginMetademandsFieldParameter();
+                        $metademand_params->getFromDBByCrit(
+                            ["plugin_metademands_fields_id" => $data["id"]]
+                        );
+                        $all_meta_fields[$data['id']] = $metademand_params->fields['hide_title'] == 1 ? PluginMetademandsField::getFieldTypesName($data['type']) : $label;
                     }
                 }
                 $json_all_meta_fields = json_encode($all_meta_fields);
@@ -2993,6 +3067,12 @@ class PluginMetademandsWizard extends CommonDBTM
         $msg2 = [];
         $msg3 = [];
         $all_fields = $post[$fieldname];
+
+        $field = new PluginMetademandsField();
+        if ($field->getFromDB($value["id"])) {
+            $value = PluginMetademandsField::getAllParamsFromField($field);
+        }
+
 
         if ($value['type'] != 'parent_field') {
             // Check fields empty

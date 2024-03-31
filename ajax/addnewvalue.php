@@ -35,7 +35,7 @@ Session::checkRight("plugin_metademands", UPDATE);
 
 switch ($_POST['action']) {
    case 'add':
-      PluginMetademandsFieldParameter::addNewValue($_POST['count'], $_POST['display_comment'], $_POST['display_default']);
+      PluginMetademandsFieldCustomvalue::addNewValue($_POST['count'], $_POST['display_comment'], $_POST['display_default']);
       break;
 }
 

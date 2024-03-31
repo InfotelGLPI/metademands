@@ -26,6 +26,7 @@
  along with Metademands. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
+
 /**
  *
  */
@@ -62,7 +63,6 @@ class PluginMetademandsTools extends CommonDBTM
      */
     function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-
         if ($item->getType() == 'PluginMetademandsConfig') {
             return self::getTypeName();
         }
@@ -79,7 +79,6 @@ class PluginMetademandsTools extends CommonDBTM
      */
     static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-
         if ($item->getType() == 'PluginMetademandsConfig') {
             $self = new self();
             $self->showTools();
@@ -119,7 +118,6 @@ class PluginMetademandsTools extends CommonDBTM
             echo "<td class='left'>";
 
             while ($array = $DB->fetchAssoc($result)) {
-
                 $field = new PluginMetademandsField();
                 $field->getfromDB($array['plugin_metademands_fields_id']);
 
@@ -141,7 +139,10 @@ class PluginMetademandsTools extends CommonDBTM
                 echo $field->getLink();
                 echo "</td>";
                 echo "<td class='left'>";
-                echo Dropdown::getDropdownName("glpi_plugin_metademands_metademands", $field->fields['plugin_metademands_metademands_id']);
+                echo Dropdown::getDropdownName(
+                    "glpi_plugin_metademands_metademands",
+                    $field->fields['plugin_metademands_metademands_id']
+                );
                 echo "</td>";
                 echo "<td class='left'>";
                 echo $array['nbr_doublon'];
@@ -166,7 +167,7 @@ class PluginMetademandsTools extends CommonDBTM
                     FROM
                         `glpi_plugin_metademands_fieldoptions`
                     WHERE
-                        (`plugin_metademands_tasks_id` = 0 OR `plugin_metademands_tasks_id` IS NULL) AND
+                        ((`plugin_metademands_tasks_id` = 0 OR `plugin_metademands_tasks_id` IS NULL) AND
                         `fields_link` = 0 AND
                         `hidden_link` = 0 AND
                         `hidden_block` = 0 AND
@@ -174,7 +175,7 @@ class PluginMetademandsTools extends CommonDBTM
                         `childs_blocks` = '[]' AND
                         `checkbox_value` = 0 AND
                         `checkbox_id` = 0 AND
-                        `parent_field_id` = 0";
+                        `parent_field_id` = 0) OR `check_value` = 0";
 
         $result = $DB->query($query);
 
@@ -189,7 +190,6 @@ class PluginMetademandsTools extends CommonDBTM
             echo "<td class='left'>";
 
             while ($array = $DB->fetchAssoc($result)) {
-
                 $field = new PluginMetademandsField();
                 $field->getfromDB($array['plugin_metademands_fields_id']);
 
@@ -211,7 +211,10 @@ class PluginMetademandsTools extends CommonDBTM
                 echo $field->getLink();
                 echo "</td>";
                 echo "<td class='left'>";
-                echo Dropdown::getDropdownName("glpi_plugin_metademands_metademands", $field->fields['plugin_metademands_metademands_id']);
+                echo Dropdown::getDropdownName(
+                    "glpi_plugin_metademands_metademands",
+                    $field->fields['plugin_metademands_metademands_id']
+                );
                 echo "</td>";
                 echo "<td class='center'>";
                 echo Html::getSimpleForm(
@@ -242,15 +245,18 @@ class PluginMetademandsTools extends CommonDBTM
         $query = "SELECT `glpi_plugin_metademands_fieldparameters`.`id`, 
                             `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`, 
                            `glpi_plugin_metademands_fields`.`type`, 
-                           `glpi_plugin_metademands_fieldparameters`.`custom_values`
+                           `glpi_plugin_metademands_fieldcustomvalues`.`name`
                     FROM
                         `glpi_plugin_metademands_fieldparameters`
                     LEFT JOIN `glpi_plugin_metademands_fields` 
                         ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldparameters`.`plugin_metademands_fields_id`)
+                    LEFT JOIN `glpi_plugin_metademands_fieldcustomvalues` 
+                        ON (`glpi_plugin_metademands_fields`.`id` = `glpi_plugin_metademands_fieldcustomvalues`.`plugin_metademands_fields_id`)
                     WHERE
                         `glpi_plugin_metademands_fields`.`type` = 'radio' 
                         OR `glpi_plugin_metademands_fields`.`type` = 'checkbox' 
-                        OR `glpi_plugin_metademands_fields`.`type` = 'dropdown_meta'";
+                        OR `glpi_plugin_metademands_fields`.`type` = 'dropdown_meta'
+                        OR `glpi_plugin_metademands_fields`.`type` = 'dropdown_multiple'";
 
         $result = $DB->query($query);
 
@@ -265,7 +271,6 @@ class PluginMetademandsTools extends CommonDBTM
             echo "<td class='left'>";
 
             while ($array = $DB->fetchAssoc($result)) {
-
                 $field = new PluginMetademandsField();
                 $field->getfromDB($array['plugin_metademands_fields_id']);
 

@@ -96,7 +96,7 @@ class PluginMetademandsInformation extends CommonDBTM
             $icon = $data['icon'];
             $color = $data['color'];
             if ($icon) {
-                $field = "<i class='fas fa-2x $icon' style='color: $color;'></i>&nbsp;";
+                $field .= "<i class='fas fa-2x $icon' style='color: $color;'></i>&nbsp;";
             }
             $field .= "<label style='color: $color;'>" . htmlspecialchars_decode(stripslashes($todisplay)) . "</label>";
         }

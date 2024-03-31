@@ -53,7 +53,10 @@ if ($field->getFromDB($_POST["fields_id"])) {
     echo "<tr class='tab_bg_1'>";
     echo "<td>" . __('Example', 'metademands') . "</td>";
     echo "<td>";
-    echo PluginMetademandsField::getFieldInput([], $field->fields, false, 0, 0, false, "");
+
+    $params = PluginMetademandsField::getAllParamsFromField($field);
+
+    echo PluginMetademandsField::getFieldInput([], $params, false, 0, 0, false, "");
     echo "</td>";
     echo "</tr>";
 

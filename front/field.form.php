@@ -35,6 +35,7 @@ if (empty($_GET["id"])) {
 }
 
 $field = new PluginMetademandsField();
+$fieldparameter = new PluginMetademandsFieldParameter();
 
 if (isset($_POST['existing_field_id'])) {
     if ($field->getFromDB($_POST['existing_field_id'])) {
@@ -64,6 +65,8 @@ if (isset($_POST["add"])) {
    $field->check(-1, UPDATE, $_POST);
 
    if ($_POST['id'] = $field->add($_POST)) {
+
+       $fieldparameter->add(["plugin_metademands_fields_id" => $_POST['id']]);
       $field->recalculateOrder($_POST);
       PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_ADD);
       unset($_SESSION['glpi_plugin_metademands_fields']);

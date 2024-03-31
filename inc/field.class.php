@@ -216,6 +216,7 @@ class PluginMetademandsField extends CommonDBChild
         $ong = [];
         $this->addDefaultFormTab($ong);
         $this->addStandardTab('PluginMetademandsFieldParameter', $ong, $options);
+        $this->addStandardTab('PluginMetademandsFieldCustomvalue', $ong, $options);
         $this->addStandardTab('PluginMetademandsFieldOption', $ong, $options);
         $this->addStandardTab('PluginMetademandsFieldTranslation', $ong, $options);
         if (Session::getCurrentInterface() == 'central') {
@@ -694,6 +695,9 @@ class PluginMetademandsField extends CommonDBChild
             ['rank', 'order']
         );
 
+        $fieldparameter = new PluginMetademandsFieldParameter();
+        $fieldopt = new PluginMetademandsFieldOption();
+
         if (is_array($data) && count($data) > 0) {
             if ($canedit) {
                 Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
@@ -759,7 +763,6 @@ class PluginMetademandsField extends CommonDBChild
                 echo "<td>" . self::getFieldTypesName($value['type']);
                 //name of parent field
                 if ($value['type'] == 'parent_field') {
-                    $fieldopt = new PluginMetademandsFieldOption();
                     if ($fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $value['id']])) {
                         $field = new self();
                         if ($field->getFromDB($fieldopt->fields['parent_field_id'])) {
@@ -774,12 +777,14 @@ class PluginMetademandsField extends CommonDBChild
                 echo "</td>";
                 echo "<td>" . self::getFieldItemsName($value['type'], $value['item']) . "</td>";
                 echo "<td>";
-                if ($value['is_mandatory'] == 1) {
-                    echo "<span class='red'>";
-                }
-                echo Dropdown::getYesNo($value['is_mandatory']);
-                if ($value['is_mandatory'] == 1) {
-                    echo "</span>";
+                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
+                    if ($fieldparameter->fields['is_mandatory'] == 1) {
+                        echo "<span class='red'>";
+                    }
+                    echo Dropdown::getYesNo($fieldparameter->fields['is_mandatory']);
+                    if ($fieldparameter->fields['is_mandatory'] == 1) {
+                        echo "</span>";
+                    }
                 }
                 echo "</td>";
 
@@ -826,9 +831,29 @@ class PluginMetademandsField extends CommonDBChild
                         foreach ($opts as $opt) {
                             $data['item'] = $value['item'];
                             $data['type'] = $value['type'];
-                            $data['custom_values'] = $value['custom_values'];
+
                             $data['check_value'] = $opt['check_value'];
                             $data['parent_field_id'] = $opt['parent_field_id'];
+
+                            $metademand_custom = new PluginMetademandsFieldCustomvalue();
+                            $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                            $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+                            if (isset($value['type'])
+                                && in_array($value['type'], $allowed_customvalues_types)
+                                || in_array($value['item'], $allowed_customvalues_items)) {
+
+                                $data['custom_values'] = [];
+                                if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $value['id']], "rank")) {
+                                    if (count($customs) > 0) {
+                                        $data['custom_values'] = $customs;
+                                    }
+                                }
+
+                            } else {
+                                $data['custom_values'] = $value['custom_values'] ?? [];
+                            }
+
                             echo PluginMetademandsFieldOption::getValueToCheck($data);
                         }
                     }
@@ -842,8 +867,10 @@ class PluginMetademandsField extends CommonDBChild
                 echo "<td>";
 
                 $searchOption = Search::getOptions('Ticket');
-                if ($value['used_by_ticket'] && $value['item'] !== 'User' && $value['type'] !== 'text') {
-                    echo $searchOption[$value['used_by_ticket']]['name'];
+                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $value['id']])) {
+                    if ($fieldparameter->fields['used_by_ticket'] && $value['item'] !== 'User' && $value['type'] !== 'text') {
+                        echo $searchOption[$fieldparameter->fields['used_by_ticket']]['name'];
+                    }
                 }
                 echo "</td>";
 
@@ -1442,6 +1469,86 @@ class PluginMetademandsField extends CommonDBChild
         }
     }
 
+
+    public static function getAllParamsFromField($field) {
+
+        $metademand = new PluginMetademandsMetademand();
+        $metademand_params = new PluginMetademandsFieldParameter();
+        $field_custom = new PluginMetademandsFieldCustomvalue();
+
+        $metademand_params->getFromDBByCrit(
+            ["plugin_metademands_fields_id" => $field->getID()]
+        );
+        $metademand->getFromDB($field->fields['plugin_metademands_metademands_id']);
+
+        $default_values = [];
+        if (isset($metademand_params->fields['default'])) {
+            $default_values = PluginMetademandsFieldParameter::_unserialize($metademand_params->fields['default']);
+        }
+
+        $custom_values = [];
+        if (isset($metademand_params->fields['custom'])) {
+            $custom_values = PluginMetademandsFieldParameter::_unserialize($metademand_params->fields['custom']);
+        }
+
+        $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+        $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+        if (isset($field->fields['type'])
+            && (in_array($field->fields['type'], $allowed_customvalues_types)
+                || in_array($field->fields['item'], $allowed_customvalues_items))
+            && $field->fields['item'] != "urgency"
+            && $field->fields['item'] != "impact") {
+            $custom_values = [];
+            if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
+                if (count($customs) > 0) {
+                    $custom_values = $customs;
+                }
+                $default_values = [];
+            }
+        }
+
+        $params = [
+            'id' => $field->fields['id'],
+            'object_to_create' => $metademand->fields['object_to_create'],
+            'is_order' => $metademand->fields['is_order'],
+            'name' => $field->fields['name'],
+            'comment' => $field->fields['comment'],
+            'label2' => $field->fields['label2'],
+            'rank' => $field->fields['rank'],
+            'plugin_metademands_metademands_id' => $field->fields["plugin_metademands_metademands_id"],
+            'plugin_metademands_fields_id' => $field->getID(),
+            'item' => $field->fields['item'],
+            'type' => $field->fields['type'],
+            'row_display' => $metademand_params->fields['row_display']??0 ,
+            'hide_title' => $metademand_params->fields['hide_title']??0,
+            'is_basket' => $metademand_params->fields['is_basket']??0,
+            'color' => $metademand_params->fields['color']??"",
+            'icon' => $metademand_params->fields['icon']??"",
+            'is_mandatory' => 0,
+            'used_by_ticket' => $metademand_params->fields['used_by_ticket']??0,
+            'used_by_child' => $metademand_params->fields['used_by_child']??0,
+            'use_richtext' => $metademand_params->fields['use_richtext']??0,
+            'default_use_id_requester' => $metademand_params->fields['default_use_id_requester']??0,
+            'default_use_id_requester_supervisor' => $metademand_params->fields['default_use_id_requester_supervisor']??0,
+            'readonly' => $metademand_params->fields['readonly']??0,
+            'max_upload' => $metademand_params->fields['max_upload']??0,
+            'regex' => $metademand_params->fields['regex']??0,
+            'use_future_date' => $metademand_params->fields['use_future_date']??0,
+            'use_date_now' => $metademand_params->fields['use_date_now']??0,
+            'additional_number_day' => $metademand_params->fields['additional_number_day']??0,
+            'display_type' => $metademand_params->fields['display_type']??0,
+            'informations_to_display' => $metademand_params->fields['informations_to_display']??['fullname'],
+            'link_to_user' => $metademand_params->fields["link_to_user"]??0,
+            'readonly' => $metademand_params->fields["readonly"]??0,
+            'hidden' => $metademand_params->fields["hidden"]??0,
+            'custom_values' => $custom_values,
+            'default_values' => $default_values,
+        ];
+
+        return $params;
+
+    }
 
     /**
      * @param        $data
@@ -2072,6 +2179,9 @@ class PluginMetademandsField extends CommonDBChild
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
 
         $temp = new PluginMetademandsFieldParameter();
+        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+
+        $temp = new PluginMetademandsFieldCustomvalue();
         $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
 
         $temp = new PluginMetademandsFieldOption();

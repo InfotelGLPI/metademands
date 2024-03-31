@@ -37,16 +37,23 @@ if (strpos($_SERVER['PHP_SELF'], "ugroupUpdate.php")) {
 Session::checkLoginUser();
 
 $fieldGroup = new PluginMetademandsField();
+$fieldparameter = new PluginMetademandsFieldParameter();
 $cond       = [];
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
-        if ($fieldGroup->getFromDBByCrit(['link_to_user'                      => $_POST['id_fielduser'],
-                                          'type'                              => "dropdown_object",
+
+        if ($fields = $fieldGroup->find(['type'                              => "dropdown_object",
                                           'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                           'item'                              => Group::getType()])) {
-            $id             = $fieldGroup->fields['id'];
-            $_POST["field"] = "field[$id]";
+            foreach ($fields as $field) {
+                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id'], 'link_to_user' => $_POST['id_fielduser']])) {
+                    $id             = $field['id'];
+                    $_POST["field"] = "field[$id]";
+                    $fieldGroup->getFromDB($fieldparameter->fields['plugin_metademands_fields_id']);
+                }
+            }
+
         }
     } else {
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {
@@ -54,6 +61,8 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
         }
 
         $fieldGroup->getFromDB($_POST['fields_id']);
+        $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' =>$_POST['fields_id']]);
+
     }
 
     if (!empty($fieldGroup->fields['custom_values']) && $_POST["value"]) {
@@ -116,9 +125,15 @@ $opt  = ['name'      => $_POST["field"],
          'rand'      => $rand
 ];
 
-if ($fieldGroup->fields["is_mandatory"] && $fieldGroup->fields['is_mandatory'] == 1) {
-    $opt['specific_tags'] = ['required' => 'required'];
+$fieldparameter            = new PluginMetademandsFieldParameter();
+
+if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldGroup->fields['id']])) {
+    if ($fieldparameter->fields["is_mandatory"] && $fieldparameter->fields['is_mandatory'] == 1) {
+        $opt['specific_tags'] = ['required' => 'required'];
+    }
 }
+
+
 Group::dropdown($opt);
 
 $_POST['name'] = "group_user";

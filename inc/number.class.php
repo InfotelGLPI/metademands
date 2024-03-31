@@ -62,14 +62,14 @@ class PluginMetademandsNumber extends CommonDBTM
             $value = 0;
         }
 
-        $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
         $opt                   = ['value'         => $value,
-            'min'           => ((isset($data['custom_values'][0]) && $data['custom_values'][0] != "") ? $data['custom_values'][0] : 0),
-            'max'           => ((isset($data['custom_values'][1]) && $data['custom_values'][1] != "") ? $data['custom_values'][1] : 999999),
-            'step'          => ((isset($data['custom_values'][2]) && $data['custom_values'][2] != "") ? $data['custom_values'][2] : 1),
+            'min'           => ((isset($custom_values[0]) && $custom_values[0] != "") ? $custom_values[0] : 0),
+            'max'           => ((isset($custom_values[1]) && $custom_values[1] != "") ? $custom_values[1] : 999999),
+            'step'          => ((isset($custom_values[2]) && $custom_values[2] != "") ? $custom_values[2] : 1),
             'display'       => false,
         ];
-        $minimal_mandatory = ((isset($data['custom_values'][3]) && $data['custom_values'][3] != "") ? $data['custom_values'][3] : 0);
+        $minimal_mandatory = ((isset($custom_values[3]) && $custom_values[3] != "") ? $custom_values[3] : 0);
         if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
             $opt['specific_tags'] = ['required' => 'required',
                 'isnumber' => 'isnumber',
@@ -83,13 +83,16 @@ class PluginMetademandsNumber extends CommonDBTM
 
     static function showFieldCustomValues($params)
     {
-        // Show number custom value
+        $target = PluginMetademandsFieldCustomvalue::getFormURL();
+        echo "<form method='post' action=\"$target\">";
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         $min = 0;
         $max  = 0;
         $step  = 0;
         $minimal  = 0;
+        Toolbox::logInfo($params);
+
         if (isset($params['custom_values']) && !empty($params['custom_values'])) {
             $min = $params['custom_values'][0] ?? "";
             $max = $params['custom_values'][1] ?? "";
@@ -98,27 +101,36 @@ class PluginMetademandsNumber extends CommonDBTM
         }
         echo '<label>' . __("Minimal count") . '</label>&nbsp;';
         $opt                   = ['value'         => $min];
-        Dropdown::showNumber("custom_values[0]", $opt);
+        Dropdown::showNumber("custom[0]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Maximal count") . '</label>&nbsp;';
         $opt                   = ['value'         => $max, 'max' => 999999];
-        Dropdown::showNumber("custom_values[1]", $opt);
+        Dropdown::showNumber("custom[1]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Step for number", "metademands") . '</label>&nbsp;';
         $opt                   = ['value'         => $step, 'min' => 1];
-        Dropdown::showNumber("custom_values[2]", $opt);
+        Dropdown::showNumber("custom[2]", $opt);
         echo "</td>";
 
         echo "<td>";
         echo '<label>' . __("Minimal mandatory", "metademands") . '</label>&nbsp;';
         $opt                   = ['value'         => $minimal];
-        Dropdown::showNumber("custom_values[3]", $opt);
+        Dropdown::showNumber("custom[3]", $opt);
         echo "</td>";
         echo "</tr>";
+
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo Html::submit("", ['name'  => 'update',
+            'class' => 'btn btn-primary',
+            'icon'  => 'fas fa-save']);
+        echo "</td>";
+        echo "</tr>";
+        Html::closeForm();
     }
 
     /**

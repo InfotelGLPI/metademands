@@ -1633,9 +1633,14 @@ JAVASCRIPT
             if (count($fields_data)) {
                 //TODO add array options
                 foreach ($fields_data as $id => $field_data) {
-                    if ($field_data['link_to_user']) {
-                        continue;
+
+                    $fieldparameter            = new PluginMetademandsFieldParameter();
+                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field_data["id"]])) {
+                        if ($fieldparameter->fields['link_to_user']) {
+                            continue;
+                        }
                     }
+
                     $fieldopt = new PluginMetademandsFieldOption();
                     if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $id])) {
 
@@ -1987,8 +1992,17 @@ JAVASCRIPT
                     }
 
                     $list_fields = $line['form'];
+
+
                     $searchOption = Search::getOptions($object_class);
                     foreach ($list_fields as $id => $fields_values) {
+
+                        $metafield = new PluginMetademandsField();
+                        if ($metafield->getFromDB($id)) {
+                            $params = PluginMetademandsField::getAllParamsFromField($metafield);
+                        }
+                        $fields_values = array_merge($fields_values, $params);
+
                         // ignore used_by_ticket when used to autofill text field
                         if ($fields_values['used_by_ticket'] > 0 && !($fields_values['type'] == 'text' && $fields_values['item'] == 'User')) {
                             foreach ($values_form as $k => $v) {
@@ -3750,6 +3764,12 @@ JAVASCRIPT
     {
         global $PLUGIN_HOOKS;
 
+
+        $metafield = new PluginMetademandsField();
+        if ($metafield->getFromDB($field["id"])) {
+            $params = PluginMetademandsField::getAllParamsFromField($metafield);
+        }
+        $field = array_merge($field, $params);
 
         $style_title = "class='title'";
         if ($color != "") {

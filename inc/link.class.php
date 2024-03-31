@@ -61,15 +61,16 @@ class PluginMetademandsLink extends CommonDBTM
         if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
             $label2 = $data['label2'];
         }
+        $field = "";
 
         if (!empty($data['custom_values'])) {
-            $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
-            foreach ($data['custom_values'] as $k => $val) {
+            $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+            foreach ($custom_values as $k => $val) {
                 if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
-                    $data['custom_values'][$k] = $ret;
+                    $custom_values[$k] = $ret;
                 }
             }
-            switch ($data['custom_values'][0]) {
+            switch ($custom_values[0]) {
                 case 'button':
                     $btnLabel = __('Link');
                     if (!empty($label2)) {
@@ -77,15 +78,15 @@ class PluginMetademandsLink extends CommonDBTM
                     }
 
                     $field = "<input type='submit' class='submit btn btn-primary' style='margin-top: 5px;' value ='" . Toolbox::stripTags($btnLabel) . "' 
-                     target='_blank' onclick=\"window.open('" . $data['custom_values'][1] . "','_blank');return false\">";
+                     target='_blank' onclick=\"window.open('" . $custom_values[1] . "','_blank');return false\">";
 
                     break;
                 case 'link_a':
-                    $field = Html::link($data['custom_values'][1], $data['custom_values'][1], ['target' => '_blank']);
+                    $field = Html::link($custom_values[1], $custom_values[1], ['target' => '_blank']);
                     break;
             }
             $title = $namefield . "[" . $data['id'] . "]";
-            $field .= Html::hidden($title, ['value' => $data['custom_values'][1]]);
+            $field .= Html::hidden($title, ['value' => $custom_values[1]]);
         }
 
         echo $field;
@@ -93,23 +94,27 @@ class PluginMetademandsLink extends CommonDBTM
 
     static function showFieldCustomValues($params)
     {
+
+        $target = PluginMetademandsFieldCustomvalue::getFormURL();
+        echo "<form method='post' action=\"$target\">";
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         $linkType = 0;
         $linkVal  = '';
         if (isset($params['custom_values'])
             && !empty($params['custom_values'])) {
-            $linkType                = $params['custom_values'][0] ?? "";
-            $linkVal                 = $params['custom_values'][1] ?? "";
+            $custom_values = $params['custom_values'];
+            $linkType                = $custom_values[0] ?? "";
+            $linkVal                 = $custom_values[1] ?? "";
         }
         echo '<label>' . __("Link") . '</label>';
-        echo Html::input('custom_values[1]', ['value' => $linkVal, 'size' => 30]);
+        echo Html::input('custom[1]', ['value' => $linkVal, 'size' => 30]);
         echo "</td>";
         echo "<td>";
 
         echo '<label>' . __("Button Type", "metademands") . '</label>&nbsp;';
         Dropdown::showFromArray(
-            "custom_values[0]",
+            "custom[0]",
             [
                 'button' => __('button', "metademands"),
                 'link_a' => __('Web link')
@@ -119,6 +124,14 @@ class PluginMetademandsLink extends CommonDBTM
         echo "<br /><i>" . __("*use field \"Additional label\" for the button title", "metademands") . "</i>";
         echo "</td>";
         echo "</tr>";
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo Html::submit("", ['name'  => 'update',
+            'class' => 'btn btn-primary',
+            'icon'  => 'fas fa-save']);
+        echo "</td>";
+        echo "</tr>";
+        Html::closeForm();
     }
 
     static function isCheckValueOK($value, $check_value)

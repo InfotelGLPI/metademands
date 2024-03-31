@@ -56,7 +56,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
-        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
         $value = '';
         if (isset($data['value'])) {
             $value = $data['value'];
@@ -432,12 +432,15 @@ class PluginMetademandsBasket extends CommonDBTM
         $quantity = $params['custom_values'][0] ?? 0;
         $price = $params['custom_values'][1] ?? 0;
 
+        $target = PluginMetademandsFieldCustomvalue::getFormURL();
+        echo "<form method='post' action=\"$target\">";
+
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
         echo __('With quantity', 'metademands');
         echo "</td>";
         echo "<td>";
-        Dropdown::showYesNo('custom_values[0]', $quantity);
+        Dropdown::showYesNo('custom[0]', $quantity);
         echo "</td>";
         echo "<td colspan='2'></td>";
         echo "</tr>";
@@ -449,11 +452,19 @@ class PluginMetademandsBasket extends CommonDBTM
             echo __('With unit price (HT)', 'metademands');
             echo "</td>";
             echo "<td>";
-            Dropdown::showYesNo('custom_values[1]', $price);
+            Dropdown::showYesNo('custom[1]', $price);
             echo "</td>";
             echo "<td colspan='2'></td>";
             echo "</tr>";
         }
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>";
+        echo Html::submit("", ['name'  => 'update',
+            'class' => 'btn btn-primary',
+            'icon'  => 'fas fa-save']);
+        echo "</td>";
+        echo "</tr>";
+        Html::closeForm();
     }
 
     static function getParamsValueToCheck($fieldoption, $item, $params)

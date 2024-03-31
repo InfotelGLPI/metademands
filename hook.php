@@ -444,6 +444,97 @@ function plugin_metademands_install() {
                 }
             }
         }
+
+        $metademand_fields = new PluginMetademandsField();
+        $fields = $metademand_fields->find();
+
+        $metademand_fieldcustom = new PluginMetademandsFieldCustomvalue();
+        $metademand_params = new PluginMetademandsFieldParameter();
+        if (count($fields) > 0) {
+            foreach ($fields as $k => $field) {
+                $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+                if (isset($field['type'])
+                    && in_array($field['type'], $allowed_customvalues_types)
+                    || in_array($field['item'], $allowed_customvalues_items)) {
+                    $custom_values = PluginMetademandsFieldParameter::_unserialize($field['custom_values']);
+                    $default_values = PluginMetademandsFieldParameter::_unserialize($field['default_values']);
+                    $comment_values = PluginMetademandsFieldParameter::_unserialize($field['comment_values']);
+
+                    $inputs = [];
+                    $rank = 0;
+                    if (is_array($custom_values) && count($custom_values) > 0) {
+                        foreach ($custom_values as $k => $name) {
+                            $inputs[$k]['plugin_metademands_fields_id'] = $field['id'];
+                            if (isset($custom_values[$k])) {
+                                $inputs[$k]['name'] = Toolbox::addslashes_deep($custom_values[$k]);
+                            }
+                            if (isset($default_values[$k])) {
+                                $inputs[$k]['is_default'] = $default_values[$k];
+                            }
+                            if (isset($comment_values[$k])) {
+                                $inputs[$k]['comment'] = Toolbox::addslashes_deep($comment_values[$k]);
+                            }
+                            $inputs[$k]['old_check_value'] = $k;
+                            $inputs[$k]['rank'] = $rank;
+                            $rank++;
+                        }
+                    }
+
+                    foreach ($inputs as $key => $input) {
+                        $newid = $metademand_fieldcustom->add($input);
+
+                        $metademand_params->getFromDBByCrit(["plugin_metademands_fields_id" => $field['id']]);
+                        $metademand_params->update([
+                            "id" => $metademand_params->fields['id'],
+                            "custom_values" => null,
+                            "default_values" => null,
+                            "comment_values" => null
+                        ]);
+
+                        $metademand_options = new PluginMetademandsFieldOption();
+                        $fieldoptions = $metademand_options->find(
+                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']]
+                        );
+                        if (count($fieldoptions) > 0) {
+                            foreach ($fieldoptions as $ko => $fieldoption) {
+                                $metademand_options->update(["id" => $fieldoption['id'], "check_value" => $newid]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `custom_values`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `default_values`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `comment_values`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `hide_title`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `is_mandatory`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `max_upload`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `regex`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `color`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `row_display`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `is_basket`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `display_type`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `used_by_ticket`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `used_by_child`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `link_to_user`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `default_use_id_requester`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `default_use_id_requester_supervisor`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `use_future_date`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `use_date_now`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `additional_number_day`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `informations_to_display`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `use_richtext`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `icon`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `readonly`;
+ALTER TABLE glpi_plugin_metademands_fields DROP `hidden`;
+ALTER TABLE `glpi_plugin_metademands_fieldparameters` CHANGE `custom_values` `custom` TEXT COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE `glpi_plugin_metademands_fieldparameters` CHANGE `default_values` `default` TEXT COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+ALTER TABLE glpi_plugin_metademands_fieldparameters DROP `comment_values`;";
+        $DB->query($query);
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";

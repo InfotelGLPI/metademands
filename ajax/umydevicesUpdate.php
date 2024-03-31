@@ -41,7 +41,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
       if ($fieldUser->getFromDBByCrit(['link_to_user' => $_POST['id_fielduser'],
                                        'type'         => "dropdown_meta",
                                        'item'         => "mydevices"])) {
-         $_POST["field"] = "field[" . $fieldUser->fields['id'] . "]";
+          $fieldparameter            = new PluginMetademandsFieldParameter();
+          if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id'], 'link_to_user' => $_POST['id_fielduser']])) {
+              $_POST["field"] = "field[" . $fieldUser->fields['id'] . "]";
+          }
       }
 
    } else {

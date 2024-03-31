@@ -181,10 +181,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
             echo "<h3 class='text-center mt-4'>".__('No options are allowed for this field type', 'metademands')."</h3>";
             return false;
         }
-
-        if ($item->fields['link_to_user']) {
-            echo "<h3 class='text-center mt-4'>".__("Options aren't available for a field whose value is linked to a user field", 'metademands')."</h3>";
-            return false;
+        $fieldparameter            = new PluginMetademandsFieldParameter();
+        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $item->fields['id']])) {
+            if ($fieldparameter->fields['link_to_user']) {
+                echo "<h3 class='text-center mt-4'>" . __(
+                        "Options aren't available for a field whose value is linked to a user field",
+                        'metademands'
+                    ) . "</h3>";
+                return false;
+            }
         }
 
         if ($canedit) {
@@ -246,7 +251,32 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
                 $data['item'] = $item->fields['item'];
                 $data['type'] = $item->fields['type'];
-                $data['custom_values'] = $item->fields['custom_values'];
+
+                $metademand_custom = new PluginMetademandsFieldCustomvalue();
+                $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+                if (isset($item->fields['type'])
+                    && (in_array($item->fields['type'], $allowed_customvalues_types)
+                        || in_array($item->fields['item'], $allowed_customvalues_items))
+                    && $item->fields['item'] != "urgency"
+                    && $item->fields['item'] != "impact") {
+
+                    $custom_values = [];
+                    if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $item->getID()], "rank")) {
+                        if (count($customs) > 0) {
+                            $custom_values = $customs;
+                        }
+                    }
+
+                } else {
+                    $metademand_params = new PluginMetademandsFieldParameter();
+                    $metademand_params->getFromDBByCrit(
+                        ["plugin_metademands_fields_id" => $item->getID()]
+                    );
+                    $custom_values = $metademand_params->fields['custom'];
+                }
+                $data['custom_values'] = $custom_values;
 
                 $onhover = '';
                 if ($canedit) {
@@ -427,6 +457,31 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         $this->showFormHeader($options);
 
+        $metademand_custom = new PluginMetademandsFieldCustomvalue();
+        $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+        $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+        if (isset($item->fields['type'])
+            && (in_array($item->fields['type'], $allowed_customvalues_types)
+                || in_array($item->fields['item'], $allowed_customvalues_items))
+            && $item->fields['item'] != "urgency"
+            && $item->fields['item'] != "impact") {
+
+            $custom_values = [];
+            if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $item->getID()], "rank")) {
+                if (count($customs) > 0) {
+                    $custom_values = $customs;
+                }
+            }
+
+        } else {
+            $metademand_params = new PluginMetademandsFieldParameter();
+            $metademand_params->getFromDBByCrit(
+                ["plugin_metademands_fields_id" => $item->getID()]
+            );
+            $custom_values = $metademand_params->fields['custom'];
+        }
+
         $params = [
             'item' => $item->fields['item'],
             'type' => $item->fields['type'],
@@ -436,7 +491,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'fields_link' => $this->fields['fields_link'] ?? 0,
             'hidden_link' => $this->fields['hidden_link'] ?? 0,
             'hidden_block' => $this->fields['hidden_block'] ?? 0,
-            'custom_values' => $item->fields['custom_values'] ?? 0,
+            'custom_values' => $custom_values ?? 0,
             'check_value' => $this->fields['check_value'] ?? 0,
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
             'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
@@ -892,11 +947,11 @@ class PluginMetademandsFieldOption extends CommonDBChild
                     foreach($fieldscheck as $fieldschec) {
                         $hidden_blocks[] = $field['id'];
                     }
-                    if (count($hidden_blocks) > 1) {
-                        echo "<span class='alert alert-warning d-flex'>";
-                        echo __('This block is already used by another field. You can have some problems if the save value to check is used', 'metademands');
-                        echo "</span>";
-                    }
+                }
+                if (count($hidden_blocks) > 1) {
+                    echo "<span class='alert alert-warning d-flex'>";
+                    echo __('This block is already used by another field. You can have some problems if the save value to check is used', 'metademands');
+                    echo "</span>";
                 }
             }
 
@@ -1303,15 +1358,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 case 'dropdown_meta':
                     PluginMetademandsDropdownmeta::blocksHiddenScript($data);
                     break;
-                case 'dropdown_object':
-                    PluginMetademandsDropdownobject::blocksHiddenScript($data);
-                    break;
-                case 'dropdown':
-                    PluginMetademandsDropdown::blocksHiddenScript($data);
-                    break;
-                case 'dropdown_multiple':
-                    PluginMetademandsDropdownmultiple::blocksHiddenScript($data);
-                    break;
+//                case 'dropdown_object':
+//                    PluginMetademandsDropdownobject::blocksHiddenScript($data);
+//                    break;
+//                case 'dropdown':
+//                    PluginMetademandsDropdown::blocksHiddenScript($data);
+//                    break;
+//                case 'dropdown_multiple':
+//                    PluginMetademandsDropdownmultiple::blocksHiddenScript($data);
+//                    break;
                 case 'checkbox':
                     PluginMetademandsCheckbox::blocksHiddenScript($data);
                     break;
@@ -1566,13 +1621,17 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         $script = '';
         $fields = new PluginMetademandsField();
-        $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid,'rank' => $blockid, 'is_mandatory' => 1]);
+        $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metaid,'rank' => $blockid]);
         if (is_array($fields_data) && count($fields_data) > 0) {
             foreach ($fields_data as $data) {
-                $id = $data['id'];
-                $script .= "$(\"[name='field[$id]']\").attr('required', 'required');";
-                if ($data['type'] == 'upload') {
-                    $script .= "document.querySelector(\"[id-field='field$id'] div input\").required = true;";
+
+                $fieldparameter            = new PluginMetademandsFieldParameter();
+                if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id'], 'is_mandatory' => 1])) {
+                    $id = $data['id'];
+                    $script .= "$(\"[name='field[$id]']\").attr('required', 'required');";
+                    if ($data['type'] == 'upload') {
+                        $script .= "document.querySelector(\"[id-field='field$id'] div input\").required = true;";
+                    }
                 }
             }
             $script .= "fixButtonIndicator();";

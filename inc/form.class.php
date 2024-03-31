@@ -111,7 +111,7 @@ class PluginMetademandsForm extends CommonDBTM {
          } else {
             $return .= "<div class='card-header'>";
             $return .= __("New model", 'metademands');
-            $return .= "</div>";
+            $return .= " <span class='red'>*</span></div>";
             $return .= "<table class='tab_cadre_fixe'>";
             $return .= "<tr class=''>";
             $return .= "<td colspan='4' class='center'>";

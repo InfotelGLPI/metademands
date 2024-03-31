@@ -126,29 +126,13 @@
             success: function (response) {
                var item_bloc = $('#' + field_id);
                item_bloc.append(response);
-
+               $('#add_custom_values').show();
                var scripts, scriptsFinder = /<script[^>]*>([\s\S]+?)<\/script>/gi;
                while (scripts == scriptsFinder.exec(response)) {
                   eval(scripts[1]);
                }
             }
          });
-      };
-
-      /**
-       * metademands_delete_custom_values : delete text input
-       *
-       * @param field_id
-       */
-      this.metademands_delete_custom_values = function (field_id) {
-         var count = $('#count_custom_values').val();
-         $('#custom_values' + count).remove();
-         $('#comment_values' + count).remove();
-         $('#default_values' + count).remove();
-         $('#' + field_id + count).remove();
-         $('#count_custom_values').val(parseInt(count) - 1);
-
-
       };
 
       /**

@@ -57,6 +57,27 @@ class PluginMetademandsDraft_Value extends CommonDBTM
 
                     $params = $fieldparameter->fields;
                     $field = array_merge($field, $params);
+                    if (isset($fieldparameter->fields['default'])) {
+                        $field['default_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['default']);
+                    }
+
+                    if (isset($fieldparameter->fields['custom'])) {
+                        $field['custom_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
+                    }
+                }
+
+                $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+                if (isset($field['type'])
+                    && in_array($field['type'], $allowed_customvalues_types)
+                    || in_array($field['item'], $allowed_customvalues_items)) {
+                    $field_custom = new PluginMetademandsFieldCustomvalue();
+                    if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $fields_id], "rank")) {
+                        if (count($customs) > 0) {
+                            $field['custom_values'] = $customs;
+                        }
+                    }
                 }
 
                 $field['value'] = '';
