@@ -56,7 +56,7 @@ class PluginMetademandsBasket extends CommonDBTM
 
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
-        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
+        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
         $value = '';
         if (isset($data['value'])) {
             $value = $data['value'];
