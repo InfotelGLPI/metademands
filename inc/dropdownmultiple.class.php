@@ -574,10 +574,20 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     //                              });
                     //                           </script>";
                 } else {
+
+                    if (count($custom_values) > 0) {
+                        foreach ($custom_values as $k => $val) {
+                            $custom_values[$k] = $val['name'];
+                        }
+                    }
+                    if (!is_array($value)) {
+                        $value = [];
+                    }
                     $field = Dropdown::showFromArray(
                         $namefield . "[" . $data['id'] . "]",
-                        $data['custom_values'],
-                        ['values' => $value,
+                        $custom_values,
+                        [
+                            'values' => $value,
                             'width' => '250px',
                             'multiple' => true,
                             'display' => false,
@@ -1049,10 +1059,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
                 if ($data["item"] == "other") {
-                    $val = Toolbox::addslashes_deep($custom_value[$idc]);
-                    $script .= "if ($(value).attr('title') == '$val') {
-                                    tohide[" . $tasks_id . "] = false;
-                                }";
+                    //TODO MIGRATE
+//                    $val = Toolbox::addslashes_deep($custom_value[$idc]);
+//                    $script .= "if ($(value).attr('title') == '$val') {
+//                                    tohide[" . $tasks_id . "] = false;
+//                                }";
                 } else {
                     $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($tasks_id) . "') {
                                     tohide[" . $tasks_id . "] = false;
@@ -1305,10 +1316,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
                 if ($data["item"] == "other") {
-                    $val = Toolbox::addslashes_deep($custom_value[$idc]);
-                    $script .= "if ($(value).attr('title') == '$val') {
-                                    tohide[" . $hidden_link . "] = false;
-                                }";
+                    //TODO MIGRATE
+//                    $val = Toolbox::addslashes_deep($custom_value[$idc]);
+//                    $script .= "if ($(value).attr('title') == '$val') {
+//                                    tohide[" . $hidden_link . "] = false;
+//                                }";
                 } else {
                     $script .= "if ($(value).attr('title') == '" . $data["item"]::getFriendlyNameById($hidden_link) . "') {
                                     tohide[" . $hidden_link . "] = false;
