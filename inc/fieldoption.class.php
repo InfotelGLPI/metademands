@@ -1358,15 +1358,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 case 'dropdown_meta':
                     PluginMetademandsDropdownmeta::blocksHiddenScript($data);
                     break;
-//                case 'dropdown_object':
-//                    PluginMetademandsDropdownobject::blocksHiddenScript($data);
-//                    break;
-//                case 'dropdown':
-//                    PluginMetademandsDropdown::blocksHiddenScript($data);
-//                    break;
-//                case 'dropdown_multiple':
-//                    PluginMetademandsDropdownmultiple::blocksHiddenScript($data);
-//                    break;
+                case 'dropdown_object':
+                    PluginMetademandsDropdownobject::blocksHiddenScript($data);
+                    break;
+                case 'dropdown':
+                    PluginMetademandsDropdown::blocksHiddenScript($data);
+                    break;
+                case 'dropdown_multiple':
+                    PluginMetademandsDropdownmultiple::blocksHiddenScript($data);
+                    break;
                 case 'checkbox':
                     PluginMetademandsCheckbox::blocksHiddenScript($data);
                     break;

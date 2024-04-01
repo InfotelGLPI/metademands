@@ -5337,6 +5337,8 @@ JAVASCRIPT
             $fields = new PluginMetademandsField();
             $fieldoptions = new PluginMetademandsFieldOption();
             $fieldparameters = new PluginMetademandsFieldParameter();
+            $fieldcustoms = new PluginMetademandsFieldCustomvalue();
+
             $ticketfields = new PluginMetademandsTicketField();
             $tasks = new PluginMetademandsTask();
             $groups = new PluginMetademandsGroup();
@@ -5522,6 +5524,16 @@ JAVASCRIPT
                         $input['childs_blocks'] = $oldOption['childs_blocks'];
                         $input['checkbox_value'] = $oldOption['checkbox_value'];
                         $input['checkbox_id'] = $oldOption['checkbox_id'];
+                        $input['plugin_metademands_fields_id'] = $newField['id'];
+                        $fieldoptions->add($input);
+                    }
+
+                    $oldCustoms = $fieldcustoms->find(['plugin_metademands_fields_id' => $old_field_id]);
+                    foreach ($oldCustoms as $oldCustom) {
+                        $input['name'] = $oldOption['name'];
+                        $input['is_default'] = $oldOption['is_default'];
+                        $input['comment'] = $oldOption['comment'];
+                        $input['rank'] = $oldOption['rank'];
                         $input['plugin_metademands_fields_id'] = $newField['id'];
                         $fieldoptions->add($input);
                     }
@@ -6162,10 +6174,12 @@ JAVASCRIPT
         $metafield = new PluginMetademandsField();
         $metafieldoption = new PluginMetademandsFieldOption();
         $metafieldparameter = new PluginMetademandsFieldParameter();
+        $metafieldcustom = new PluginMetademandsFieldCustomvalue();
         $condition = new PluginMetademandsCondition();
         $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
         $fields['metafieldoptions'] = [];
+        $fields['metafieldcustoms'] = [];
         foreach ($metafields as $id => $metafield) {
             $fields['metafields']['field' . $id] = $metafield;
 
@@ -6174,7 +6188,6 @@ JAVASCRIPT
                 $fields['metafieldparameters']['fieldparameters' . $idparameters] = $metafieldparam;
             }
 
-            $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
             $metaconditions = $condition->find(['plugin_metademands_fields_id' => $metafield['id']]);
             if (!empty($metaconditions)) {
                 foreach ($metaconditions as $key => $value) {
@@ -6182,8 +6195,14 @@ JAVASCRIPT
                 }
             }
 
+            $metafieldoptions = $metafieldoption->find(['plugin_metademands_fields_id' => $metafield["id"]]);
             foreach ($metafieldoptions as $idoptions => $metafieldopt) {
                 $fields['metafieldoptions']['fieldoptions' . $idoptions] = $metafieldopt;
+            }
+
+            $metafieldcustoms = $metafieldcustom->find(['plugin_metademands_fields_id' => $metafield["id"]]);
+            foreach ($metafieldcustoms as $idcustoms => $metafieldcustom) {
+                $fields['metafieldoptions']['fieldcustoms' . $idcustoms] = $metafieldcustom;
             }
         }
 
@@ -6327,6 +6346,11 @@ JAVASCRIPT
             $fieldparameters = $datas['metafieldparameters'];
         }
 
+        $fieldcustoms = [];
+        if (isset($datas['metafieldcustoms'])) {
+            $fieldcustoms = $datas['metafieldcustoms'];
+        }
+
         $tasks = [];
         if (isset($datas['tasks'])) {
             $tasks = $datas['tasks'];
@@ -6450,7 +6474,7 @@ JAVASCRIPT
             }
         }
 
-        //Add new options & update fields
+        //Add new params & update fields
         $fieldMetaparam = new PluginMetademandsFieldParameter();
 
         foreach ($fieldparameters as $new => $old) {
@@ -6553,6 +6577,39 @@ JAVASCRIPT
             }
 
             $fieldMetaopt->add($toUpdate);
+        }
+
+        //Add new custom values & update fields
+        $fieldMetacustom = new PluginMetademandsFieldCustomvalue();
+
+        foreach ($fieldcustoms as $new => $old) {
+
+            $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+            $name = $old["name"] ?? "";
+            $is_default = $old["is_default"] ?? 0;
+            $comment = $old["comment"] ?? "";
+            $rank = $old["rank"] ?? 0;
+
+            $toUpdate = [];
+            if ($name != "") {
+                $toUpdate["name"] = $name;
+            }
+            if ($is_default != 0) {
+                $toUpdate["is_default"] = $is_default;
+            }
+            if ($comment != "") {
+                $toUpdate["comment"] = $comment;
+            }
+            if ($rank != 0) {
+                $toUpdate["rank"] = $rank;
+            }
+
+            if ($plugin_metademands_fields_id != 0
+                && isset($mapTableField[$plugin_metademands_fields_id])) {
+                $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+            }
+
+            $fieldMetacustom->add($toUpdate);
         }
 
         foreach ($mapTableTaskReverse as $new => $old) {

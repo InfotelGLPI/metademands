@@ -439,28 +439,27 @@ class PluginMetademandsRadio extends CommonDBTM
 
         foreach ($check_values as $idc => $check_value) {
             $tasks_id = $check_value['plugin_metademands_tasks_id'];
-            //TODO MIGRATE
-//            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-//                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-//
-//                foreach ($default_values as $k => $v) {
-//                    if ($v == 1) {
-//                        if ($idc == $k) {
-//                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
-//                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-//                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
-//                                $script .= "});";
-//                            }
-//                        } else {
-//                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
-//                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
-//                                $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
-//                                $script .= "});";
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+
+            if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                $custom_values = $data['custom_values'];
+                foreach ($custom_values as $k => $custom_value) {
+                    if ($custom_value['is_default'] == 1) {
+                        if ($idc == $k) {
+                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 1)) {
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$nextsteptitle'";
+                                $script .= "});";
+                            }
+                        } else {
+                            if (PluginMetademandsMetademandTask::setUsedTask($tasks_id, 0)) {
+                                $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').ready(function() {";
+                                $script .= "document.getElementById('nextBtn').innerHTML = '$title'";
+                                $script .= "});";
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
@@ -508,7 +507,7 @@ class PluginMetademandsRadio extends CommonDBTM
                             tohide[$hidden_link] = false;
                         }";
 
-            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+//            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
@@ -523,18 +522,14 @@ class PluginMetademandsRadio extends CommonDBTM
 //            }
 
             //Initialize id default value
-            //TODO MIGRATE
-//            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-//                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-//
-//                foreach ($default_values as $k => $v) {
-//                    if ($v == 1) {
-//                        if ($idc == $k) {
-//                            $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
-//                        }
-//                    }
-//                }
-//            }
+            if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                $custom_values = $data['custom_values'];
+                foreach ($custom_values as $k => $custom_value) {
+                    if ($k == $idc && $custom_value['is_default'] == 1) {
+                        $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
+                    }
+                }
+            }
 
             $script .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
@@ -624,29 +619,26 @@ class PluginMetademandsRadio extends CommonDBTM
             $hidden_block = $check_value['hidden_block'];
 
             //Default values
-            //TODO MIGRATE
-//            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-//                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-//                foreach ($default_values as $k => $v) {
-//                    if ($v == 1) {
-//                        if ($idc == $k) {
-//                            $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
-//                                " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
-//
-//                            if (is_array($childs_by_checkvalue)) {
-//                                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-//                                    if ($idc == $k) {
-//                                        foreach ($childs_blocks as $childs) {
-//                                            $script2 .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
-//                                                 " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $childs);
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
+            if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                $custom_values = $data['custom_values'];
+                foreach ($custom_values as $k => $custom_value) {
+                    if ($k == $idc && $custom_value['is_default'] == 1) {
+                        $script2 .= "$('[bloc-id =\"bloc" . $hidden_block . "\"]').show();
+                                " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
+
+                        if (is_array($childs_by_checkvalue)) {
+                            foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+                                if ($idc == $k) {
+                                    foreach ($childs_blocks as $childs) {
+                                        $script2 .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+                                                 " . PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $childs);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             $script .= "if ($(this).val() == $idc || $idc == -1 ) {";
 
