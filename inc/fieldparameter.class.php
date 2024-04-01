@@ -366,25 +366,30 @@ class PluginMetademandsFieldParameter extends CommonDBTM
     {
 
         // MANDATORY
+        echo "<tr class='tab_bg_1'>";
         if ($params['type'] != "title"
             && $params['type'] != "title-block"
             && $params['type'] != "informations") {
 
-            echo "<tr class='tab_bg_1'>";
+
             if ($params['type'] != "link") {
                 echo "<td>" . __('Mandatory field') . "</td>";
                 echo "<td>";
                 Dropdown::showYesNo("is_mandatory", $params["is_mandatory"]);
                 echo "</td>";
             }
+        }
+        if ($params['type'] != "title-block"
+            && $params['type'] != "informations") {
             echo "<td>";
             echo __('Hide title', 'metademands');
             echo "</td>";
             echo "<td>";
             Dropdown::showYesNo('hide_title', ($params['hide_title']));
             echo "</td>";
-            echo "</tr>";
         }
+        echo "</tr>";
+
         if ($params['type'] != "title"
             && $params['type'] != "title-block"
             && $params['type'] != "informations") {

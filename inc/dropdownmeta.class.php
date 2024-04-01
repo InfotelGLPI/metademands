@@ -1037,20 +1037,20 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $script .= PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block);
 
             $blocks_idc[] = $hidden_block;
-            if (is_array($childs_by_checkvalue)) {
-                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
-                    if ($idc == $k) {
-                        foreach ($childs_blocks as $childs) {
-                            $blocks_idc[] = $childs;
-                            $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
-                                                     " . PluginMetademandsFieldoption::setMandatoryBlockFields(
-                                    $metaid,
-                                    $childs
-                                );
-                        }
-                    }
-                }
-            }
+//            if (is_array($childs_by_checkvalue)) {
+//                foreach ($childs_by_checkvalue as $k => $childs_blocks) {
+//                    if ($idc == $k) {
+//                        foreach ($childs_blocks as $childs) {
+//                            $blocks_idc[] = $childs;
+//                            $script .= "$('[bloc-id =\"bloc" . $childs . "\"]').show();
+//                                                     " . PluginMetademandsFieldoption::setMandatoryBlockFields(
+//                                    $metaid,
+//                                    $childs
+//                                );
+//                        }
+//                    }
+//                }
+//            }
 
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
@@ -1082,9 +1082,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 //
 //            $script .= " }";
 //
-//            $script .= "if ($(this).val() == 0) {";
-//            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
-//            $script .= " }";
+            $script .= "if ($(this).val() == 0) {";
+            $script .= PluginMetademandsFieldoption::hideAllblockbyDefault($data);
+            $script .= " }";
             $script .= " }";
             if ($data["item"] == "ITILCategory_Metademands") {
                 if (isset($_GET['itilcategories_id']) && $idc == $_GET['itilcategories_id']) {

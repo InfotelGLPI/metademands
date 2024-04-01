@@ -62,7 +62,7 @@ class PluginMetademandsNumber extends CommonDBTM
             $value = 0;
         }
 
-        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
         $opt                   = ['value'         => $value,
             'min'           => ((isset($custom_values[0]) && $custom_values[0] != "") ? $custom_values[0] : 0),
             'max'           => ((isset($custom_values[1]) && $custom_values[1] != "") ? $custom_values[1] : 999999),
