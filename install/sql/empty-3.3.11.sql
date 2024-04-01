@@ -125,9 +125,8 @@ CREATE TABLE `glpi_plugin_metademands_fieldparameters`
 (
     `id`                                  int unsigned NOT NULL AUTO_INCREMENT,
     `plugin_metademands_fields_id`        int unsigned NOT NULL DEFAULT '0',
-    `custom_values`                       text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    `default_values`                      text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-    `comment_values`                      text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `custom`                              text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+    `default`                             text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
     `hide_title`                          tinyint      NOT NULL           DEFAULT '0',
     `is_mandatory`                        int          NOT NULL           DEFAULT '0',
     `max_upload`                          int          NOT NULL           DEFAULT 0,
