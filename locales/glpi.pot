@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-01 16:19+0000\n"
+"POT-Creation-Date: 2024-04-01 16:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -739,7 +739,7 @@ msgid "Use id of supervisor requester by default"
 msgstr ""
 
 #: inc/dropdownmultiple.class.php:810 inc/dropdownobject.class.php:476
-#: inc/fieldparameter.class.php:704
+#: inc/fieldparameter.class.php:709
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
@@ -795,7 +795,7 @@ msgid "Link a task to the field"
 msgstr ""
 
 #: inc/field.class.php:727 inc/field.class.php:2334
-#: inc/fieldparameter.class.php:401
+#: inc/fieldparameter.class.php:406
 msgid "Display into the basket"
 msgstr ""
 
@@ -942,19 +942,19 @@ msgid_plural "Parameters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/fieldparameter.class.php:381
+#: inc/fieldparameter.class.php:385
 msgid "Hide title"
 msgstr ""
 
-#: inc/fieldparameter.class.php:393
+#: inc/fieldparameter.class.php:398
 msgid "Takes the whole row"
 msgstr ""
 
-#: inc/fieldparameter.class.php:431
+#: inc/fieldparameter.class.php:436
 msgid "Use this field as object field"
 msgstr ""
 
-#: inc/fieldparameter.class.php:566
+#: inc/fieldparameter.class.php:571
 msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
