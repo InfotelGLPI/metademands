@@ -145,7 +145,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                             }
 
                             if ($value['type'] == 'basket' && isset($_POST['quantity'])) {
-                                $post[$id] = $_POST['quantity'][$id];
+                                $post[$id] = isset($_POST['quantity'][$id]) ? $_POST['quantity'][$id] : 0;
                             }
 
                             if ($value['type'] == 'free_input' && isset($_POST['freeinputs']) && !empty($_POST['freeinputs'])) {

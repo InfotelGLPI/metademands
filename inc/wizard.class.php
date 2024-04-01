@@ -2892,6 +2892,11 @@ class PluginMetademandsWizard extends CommonDBTM
         $KO = false;
         $content = [];
 
+        $field = new PluginMetademandsField();
+        if ($field->getFromDB($value["id"])) {
+            $value = PluginMetademandsField::getAllParamsFromField($field);
+        }
+
         if (($value['type'] == 'date_interval' || $value['type'] == 'datetime_interval') && !isset($value['second_date_ok'])) {
             $value['second_date_ok'] = true;
             $value['id'] = $id . '-2';
@@ -3067,12 +3072,6 @@ class PluginMetademandsWizard extends CommonDBTM
         $msg2 = [];
         $msg3 = [];
         $all_fields = $post[$fieldname];
-
-        $field = new PluginMetademandsField();
-        if ($field->getFromDB($value["id"])) {
-            $value = PluginMetademandsField::getAllParamsFromField($field);
-        }
-
 
         if ($value['type'] != 'parent_field') {
             // Check fields empty

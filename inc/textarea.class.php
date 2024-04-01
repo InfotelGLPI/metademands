@@ -347,20 +347,21 @@ class PluginMetademandsTextarea extends CommonDBTM
         }
         $script .= "});";
         //Initialize id default value
-        foreach ($check_values as $idc => $check_value) {
-            $hidden_link = $check_value['hidden_link'];
-            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-
-                foreach ($default_values as $k => $v) {
-                    if ($v == 1) {
-                        if ($idc == $k) {
-                            $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
-                        }
-                    }
-                }
-            }
-        }
+        //TODO MIGRATE
+//        foreach ($check_values as $idc => $check_value) {
+//            $hidden_link = $check_value['hidden_link'];
+//            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+//                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
+//
+//                foreach ($default_values as $k => $v) {
+//                    if ($v == 1) {
+//                        if ($idc == $k) {
+//                            $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
+//                        }
+//                    }
+//                }
+//            }
+//        }
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
     }
 
