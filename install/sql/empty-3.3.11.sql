@@ -108,6 +108,7 @@ CREATE TABLE `glpi_plugin_metademands_fields`
     `date_creation`                       timestamp NULL DEFAULT NULL,
     `date_mod`                            timestamp NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
+    KEY                                   `plugin_metademands_fields_id` (`plugin_metademands_fields_id`),
     KEY                                   `plugin_metademands_metademands_id` (`plugin_metademands_metademands_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
