@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-01 16:48+0000\n"
+"POT-Creation-Date: 2024-04-05 18:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,7 +140,7 @@ msgstr ""
 
 #: ajax/viewtypefields.php:55 inc/dropdown.class.php:159
 #: inc/dropdownmeta.class.php:538 inc/dropdownobject.class.php:498
-#: inc/text.class.php:87
+#: inc/text.class.php:112
 msgid "Link this to a user field"
 msgstr ""
 
@@ -293,7 +293,7 @@ msgstr ""
 
 #: inc/basket.class.php:474 inc/checkbox.class.php:260
 #: inc/condition.class.php:337 inc/condition.class.php:471
-#: inc/condition.class.php:569 inc/condition.class.php:885
+#: inc/condition.class.php:569 inc/condition.class.php:892
 #: inc/dropdown.class.php:184 inc/dropdownmeta.class.php:583
 #: inc/dropdownmultiple.class.php:836 inc/dropdownobject.class.php:575
 #: inc/field.class.php:725 inc/fieldoption.class.php:238
@@ -315,7 +315,7 @@ msgstr ""
 #: inc/dropdown.class.php:351 inc/dropdownmeta.class.php:761
 #: inc/dropdownmultiple.class.php:1032 inc/dropdownmultiple.class.php:1181
 #: inc/dropdownobject.class.php:773 inc/radio.class.php:368
-#: inc/text.class.php:237 inc/textarea.class.php:218 inc/wizard.class.php:1680
+#: inc/text.class.php:262 inc/textarea.class.php:218 inc/wizard.class.php:1680
 #: inc/yesno.class.php:220
 msgctxt "button"
 msgid "Save & Post"
@@ -325,7 +325,7 @@ msgstr ""
 #: inc/dropdown.class.php:352 inc/dropdownmeta.class.php:763
 #: inc/dropdownmultiple.class.php:1033 inc/dropdownmultiple.class.php:1182
 #: inc/dropdownobject.class.php:774 inc/radio.class.php:369
-#: inc/text.class.php:238 inc/textarea.class.php:219 inc/wizard.class.php:869
+#: inc/text.class.php:263 inc/textarea.class.php:219 inc/wizard.class.php:869
 #: inc/wizard.class.php:1654 inc/wizard.class.php:1677
 #: inc/wizard.class.php:1686 inc/wizard.class.php:1696 inc/yesno.class.php:221
 msgid "Next"
@@ -457,7 +457,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: inc/condition.class.php:142 inc/condition.class.php:165
-#: inc/text.class.php:127
+#: inc/text.class.php:152
 msgid "Regex"
 msgstr ""
 
@@ -494,30 +494,30 @@ msgid "Apply"
 msgstr ""
 
 #: inc/condition.class.php:333 inc/condition.class.php:467
-#: inc/condition.class.php:586 inc/condition.class.php:881
+#: inc/condition.class.php:586 inc/condition.class.php:888
 msgid "Logical operator"
 msgstr ""
 
 #: inc/condition.class.php:334 inc/condition.class.php:468
-#: inc/condition.class.php:882 inc/field.class.php:282
+#: inc/condition.class.php:889 inc/field.class.php:282
 msgid "Field"
 msgstr ""
 
-#: inc/condition.class.php:335 inc/condition.class.php:883
+#: inc/condition.class.php:335 inc/condition.class.php:890
 msgid "Field type"
 msgstr ""
 
 #: inc/condition.class.php:336 inc/condition.class.php:470
-#: inc/condition.class.php:884
+#: inc/condition.class.php:891
 msgid "Equality operator"
 msgstr ""
 
 #: inc/condition.class.php:338 inc/condition.class.php:472
-#: inc/condition.class.php:577 inc/condition.class.php:886
+#: inc/condition.class.php:577 inc/condition.class.php:893
 msgid "Pool"
 msgstr ""
 
-#: inc/condition.class.php:339 inc/condition.class.php:887
+#: inc/condition.class.php:339 inc/condition.class.php:894
 msgid "Order of execution and grouping of conditions"
 msgstr ""
 
@@ -1724,11 +1724,11 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: inc/text.class.php:106
+#: inc/text.class.php:131
 msgid "User information to get"
 msgstr ""
 
-#: inc/text.class.php:142 inc/textarea.class.php:139
+#: inc/text.class.php:167 inc/textarea.class.php:139
 msgid "If field empty"
 msgstr ""
 
