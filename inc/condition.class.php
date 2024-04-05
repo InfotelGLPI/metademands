@@ -598,6 +598,7 @@ class PluginMetademandsCondition extends CommonDBChild
         $itemType = $condition->fields['item'];
         $field = new PluginMetademandsField();
         $field->getFromDB($condition->fields['plugin_metademands_fields_id']);
+        $params = PluginMetademandsField::getAllParamsFromField($field);
 
         switch ($type) {
             case 'dropdown_multiple':
@@ -637,7 +638,10 @@ class PluginMetademandsCondition extends CommonDBChild
                 break;
             case 'radio':
             case 'checkbox':
-                $choices = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
+                $choices = [];
+                foreach ($params['custom_values'] as $key => $val) {
+                    $choices[$val['id']] = $val['name'];
+                }
                 echo $choices[$condition->fields['check_value']];
                 break;
 
@@ -651,7 +655,10 @@ class PluginMetademandsCondition extends CommonDBChild
             case 'dropdown_meta':
                 switch ($field->fields['item']) {
                     case 'other':
-                        $choices = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
+                        $choices = [];
+                        foreach ($params['custom_values'] as $key => $val) {
+                            $choices[$val['id']] = $val['name'];
+                        }
                         echo $choices[$condition->fields['check_value']];
                         break;
                     case 'ITILCategory_Metademands':
@@ -999,6 +1006,8 @@ class PluginMetademandsCondition extends CommonDBChild
                 'entity_sons' => $_SESSION['glpiactive_entity_recursive']
             ];
 
+            $params = PluginMetademandsField::getAllParamsFromField($field);
+
             if ($item != ''
                 && ($type == 'dropdown'
                     || $type == 'dropdown_object'
@@ -1007,7 +1016,10 @@ class PluginMetademandsCondition extends CommonDBChild
                 if ($type == 'dropdown_meta') {
                     switch ($item) {
                         case 'other':
-                            $choices = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
+                            $choices = [];
+                            foreach ($params['custom_values'] as $key => $val) {
+                                $choices[$val['id']] = $val['name'];
+                            }
                             Dropdown::showFromArray(
                                 $options['name'],
                                 $choices,
@@ -1099,7 +1111,10 @@ class PluginMetademandsCondition extends CommonDBChild
                         if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
-                        $choices = PluginMetademandsFieldParameter::_unserialize($field->fields['custom_values']);
+                        $choices = [];
+                        foreach ($params['custom_values'] as $key => $val) {
+                            $choices[$val['id']] = $val['name'];
+                        }
                         Dropdown::showFromArray(
                             "$name",
                             $choices,

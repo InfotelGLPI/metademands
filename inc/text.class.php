@@ -69,6 +69,31 @@ class PluginMetademandsText extends CommonDBTM
         if ($data['is_mandatory'] == 1) {
             $opt['required'] = "required";
         }
+        $updateJs = '';
+        if (!empty($data['used_by_ticket'])) {
+            $updateJs .= "let field{$data['id']} = $(\"[id-field='field{$data['id']}'] input\");
+                        field{$data['id']}.attr('value', response[{$data['used_by_ticket']}] ?? '');
+                        field{$data['id']}.trigger('input');
+                        ";
+        }
+        $ID = $data['link_to_user'];
+        echo "<script type='text/javascript'>
+                        $(function() {
+                            $(\"[name='field[$ID]']\").ready(function() {
+                                 $.ajax({
+                                     url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/uTextFieldUpdate.php',
+                                     data: { 
+                                         id : $(\"[name='field[$ID]']\").val()
+                                     },
+                                  success: function(response){
+                                       response = JSON.parse(response);
+                                       $updateJs
+                                    },
+                                });
+                            })
+                        })
+                    </script>";
+
         $field = Html::input($name, $opt);
 
         echo $field;
