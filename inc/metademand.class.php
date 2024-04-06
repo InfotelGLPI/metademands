@@ -4396,10 +4396,15 @@ JAVASCRIPT
                                     }
                                 }
                                 foreach ($list_fields as $id => $fields_values) {
-                                    if ($fields_values['used_by_ticket'] > 0 && $fields_values['used_by_child'] == 1) {
+                                    $params = [];
+                                    $field = new PluginMetademandsField();
+                                    if ($field->getFromDB($id)) {
+                                        $params = PluginMetademandsField::getAllParamsFromField($field);
+                                    }
+                                    if ($params['used_by_ticket'] > 0 && $params['used_by_child'] == 1) {
                                         if (isset($values_form[$id])) {
-                                            $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
-                                            if ($values_form[$id] > 0 && $fields_values['used_by_ticket'] == 4) {
+                                            $name = $searchOption[$params['used_by_ticket']]['linkfield'];
+                                            if ($values_form[$id] > 0 && $params['used_by_ticket'] == 4) {
                                                 $name = "_users_id_requester";
                                             }
                                             if ($fields_values['used_by_ticket'] == 71) {

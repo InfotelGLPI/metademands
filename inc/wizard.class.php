@@ -1925,40 +1925,40 @@ class PluginMetademandsWizard extends CommonDBTM
                     
                     window.metademands = {};
                     metademands.nexttitle = '$nexttitle';
-                  metademands.submittitle = '$submittitle';
-                  metademands.submitmsg = '$submitmsg'; 
-                  metademands.use_as_step = '$use_as_step';
-                  metademands.nextsteptitle = '$nextsteptitle';
-                  metademands.seesummary = '$see_summary';
-                  metademands.msg = '$alert';
-                  metademands.all_meta_fields = {$json_all_meta_fields};
-                  metademands.firstnumTab = 0;
-                  metademands.currentTab = 0; // Current tab is set to be the first tab (0)
-                  metademands.use_condition = '$use_condition';
-                  metademands.show_button = 1;
-                  metademands.show_rule = '$show_rule';
-                  metademands.nexthref = '$nexthref';
-                  metademands.use_richtext = '$use_richtext';
-                  metademands.richtext_ids = {$richtext_id};
-                  metademands.listBlock = [" . implode(",", $list_blocks) . "];
+                    metademands.submittitle = '$submittitle';
+                    metademands.submitmsg = '$submitmsg'; 
+                    metademands.use_as_step = '$use_as_step';
+                    metademands.nextsteptitle = '$nextsteptitle';
+                    metademands.seesummary = '$see_summary';
+                    metademands.msg = '$alert';
+                    metademands.all_meta_fields = {$json_all_meta_fields};
+                    metademands.firstnumTab = 0;
+                    metademands.currentTab = 0; // Current tab is set to be the first tab (0)
+                    metademands.use_condition = '$use_condition';
+                    metademands.show_button = 1;
+                    metademands.show_rule = '$show_rule';
+                    metademands.nexthref = '$nexthref';
+                    metademands.use_richtext = '$use_richtext';
+                    metademands.richtext_ids = {$richtext_id};
+                    metademands.listBlock = [" . implode(",", $list_blocks) . "];
                     
-                       var nexttitle = '$nexttitle';
-                  var submittitle = '$submittitle';
-                  var submitmsg = '$submitmsg'; 
-                  var use_as_step = '$use_as_step';
-                  var nextsteptitle = '$nextsteptitle';
-                  var seesummary = '$see_summary';
-                  var msg = '$alert';
-                  var all_meta_fields = {$json_all_meta_fields};
-                  var firstnumTab = 0;
-                  var currentTab = 0; // Current tab is set to be the first tab (0)
-                  var use_condition = '$use_condition';
-                  var show_button = 1;
-                  var show_rule = '$show_rule';
-                  var nexthref = '$nexthref';
-                  var use_richtext = '$use_richtext';
-                  var richtext_ids = {$richtext_id};
-                  findFirstTab($block_id);
+                    var nexttitle = '$nexttitle';
+                    var submittitle = '$submittitle';
+                    var submitmsg = '$submitmsg'; 
+                    var use_as_step = '$use_as_step';
+                    var nextsteptitle = '$nextsteptitle';
+                    var seesummary = '$see_summary';
+                    var msg = '$alert';
+                    var all_meta_fields = {$json_all_meta_fields};
+                    var firstnumTab = 0;
+                    var currentTab = 0; // Current tab is set to be the first tab (0)
+                    var use_condition = '$use_condition';
+                    var show_button = 1;
+                    var show_rule = '$show_rule';
+                    var nexthref = '$nexthref';
+                    var use_richtext = '$use_richtext';
+                    var richtext_ids = {$richtext_id};
+                    findFirstTab($block_id);
                   
                   if(use_condition == true) {
                      $('document').ready(checkConditions);
