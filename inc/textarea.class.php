@@ -139,13 +139,13 @@ class PluginMetademandsTextarea extends CommonDBTM
         echo __('If field empty', 'metademands');
         echo "</td>";
         echo "<td>";
-        if ($item->fields['use_richtext'] == 0) {
+        if ($params['use_richtext'] == 0) {
             self::showValueToCheck($fieldoption, $params);
         } else {
             echo __('Not available with Rich text option', 'metademands');
         }
         echo "</td>";
-        if ($item->fields['use_richtext'] == 0) {
+        if ($params['use_richtext'] == 0) {
             echo PluginMetademandsFieldOption::showLinkHtml($item->getID(), $params, 1, 0, 1);
         }
     }

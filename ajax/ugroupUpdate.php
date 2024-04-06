@@ -122,7 +122,8 @@ $opt  = ['name'      => $_POST["field"],
          'entity'    => $_SESSION['glpiactiveentities'],
          'value'     => $groups_id,
          'condition' => $cond,
-         'rand'      => $rand
+         'rand'      => $rand,
+    'width' => '200px'
 ];
 
 $fieldparameter            = new PluginMetademandsFieldParameter();

@@ -178,16 +178,16 @@ class PluginMetademandsFieldOption extends CommonDBChild
 
         if (!in_array($item->fields['type'], $allowed_options_types)
             && !in_array($item->fields['item'], $allowed_options_items)) {
-            echo "<h3 class='text-center mt-4'>".__('No options are allowed for this field type', 'metademands')."</h3>";
+            echo "<div class='alert alert-warning'>".__('No options are allowed for this field type', 'metademands')."</div>";
             return false;
         }
         $fieldparameter            = new PluginMetademandsFieldParameter();
         if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $item->fields['id']])) {
             if ($fieldparameter->fields['link_to_user']) {
-                echo "<h3 class='text-center mt-4'>" . __(
+                echo "<div class='alert alert-warning'>" . __(
                         "Options aren't available for a field whose value is linked to a user field",
                         'metademands'
-                    ) . "</h3>";
+                    ) . "</div>";
                 return false;
             }
         }
@@ -492,6 +492,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             'hidden_link' => $this->fields['hidden_link'] ?? 0,
             'hidden_block' => $this->fields['hidden_block'] ?? 0,
             'custom_values' => $custom_values ?? 0,
+            'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
             'check_value' => $this->fields['check_value'] ?? 0,
             'users_id_validate' => $this->fields['users_id_validate'] ?? 0,
             'checkbox_id' => $this->fields['checkbox_id'] ?? 0,
