@@ -459,12 +459,19 @@ class PluginMetademandsDropdown extends CommonDBTM
 
         $name = "field[" . $data["id"] . "]";
 
-        $script = "";
-        $script2 = "";
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $script = "console.log('fieldsHiddenScript-dropdown $id');";
+            $onchange = "console.log('fieldsHiddenScript-dropdown $id');";
+        }
+
+        //default hide of all hidden links
+        foreach ($check_values as $idc => $check_value) {
+            $hidden_link = $check_value['hidden_link'];
+            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
         }
 
         //if reload form on loading
@@ -473,19 +480,19 @@ class PluginMetademandsDropdown extends CommonDBTM
             if (is_array($session_value)) {
                 foreach ($session_value as $k => $fieldSession) {
                     if ($fieldSession > 0) {
-                        $script2 .= "$('[name=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
                     }
                 }
             }
         }
 
-        $script .= "$('[name=\"$name\"]').change(function() {";
+        $onchange .= "$('[name=\"$name\"]').change(function() {";
 
-        $script .= "var tohide = {};";
+        $onchange .= "var tohide = {};";
 
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
-            $script .= "if ($hidden_link in tohide) {
+            $onchange .= "if ($hidden_link in tohide) {
                         } else {
                             tohide[$hidden_link] = true;
                         }
@@ -494,27 +501,19 @@ class PluginMetademandsDropdown extends CommonDBTM
                         }console.log($id +' : '+tohide);"
             ;
 
-            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
-
             //if reload form
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
                 if (is_array($session_value)) {
                     foreach ($session_value as $k => $fieldSession) {
                         if ($fieldSession == $idc && $hidden_link > 0) {
-                            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
                         }
                     }
                 }
             }
 
-//            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-//                && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc
-//                    || ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] != 0 && $idc == 0))) {
-//                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-//            }
-
-        $script .= "$.each( tohide, function( key, value ) {           
+            $onchange .= "$.each( tohide, function( key, value ) {           
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             " .PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link)."
@@ -526,24 +525,9 @@ class PluginMetademandsDropdown extends CommonDBTM
                     });
               ";
         }
-        $script .= "});";
-        //Initialize id default value
-        // No default value for dropdown
-//        foreach ($check_values as $idc => $check_value) {
-//            $hidden_link = $check_value['hidden_link'];
-//            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-//                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-//
-//                foreach ($default_values as $k => $v) {
-//                    if ($v == 1) {
-//                        if ($idc == $k) {
-//                            $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+        $onchange .= "});";
+
+        echo Html::scriptBlock('$(document).ready(function() {' . $pre_onchange . " " . $onchange. " " . $post_onchange . '});');
 
     }
 

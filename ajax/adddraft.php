@@ -202,11 +202,6 @@ if (isset($_POST['save_draft'])) {
    }
 }
 
-
-//Toolbox::logInfo($KO);
-//
-//Toolbox::logInfo($_POST);
-
 if ($KO === false) {
    echo 0;
 } else {

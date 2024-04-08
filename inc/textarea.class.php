@@ -278,12 +278,19 @@ class PluginMetademandsTextarea extends CommonDBTM
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
 
-        $script = "";
-        $script2 = "";
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $script = "console.log('fieldsHiddenScript-textarea $id');";
+            $onchange = "console.log('fieldsHiddenScript-textarea $id');";
+        }
+
+        //default hide of all hidden links
+        foreach ($check_values as $idc => $check_value) {
+            $hidden_link = $check_value['hidden_link'];
+            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
         }
 
         //if reload form on loading
@@ -292,77 +299,62 @@ class PluginMetademandsTextarea extends CommonDBTM
             if (is_array($session_value)) {
                 foreach ($session_value as $k => $fieldSession) {
                     if ($fieldSession != "") {
-                        $script2 .= "$('[name=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
+                        $pre_onchange .= "$('[name=\"field[" . $id . "]\"]').val('$fieldSession').trigger('change');";
                     }
                 }
             }
         }
 
-        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
 
             if (isset($idc) && $idc == 1) {
-                $script .= "if ($(this).val().trim().length < 1) {
+                $onchange .= "if ($(this).val().trim().length < 1) {
                                  $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                   " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                               } else {
                                  $('[id-field =\"field" . $hidden_link . "\"]').show();
                               }
                                                     ";
-                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
                 if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                     $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
                     if (is_array($session_value)) {
                         foreach ($session_value as $k => $fieldSession) {
                             if ($fieldSession != "" && $hidden_link > 0) {
-                                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
                             }
                         }
                     }
                 }
             } else {
-                $script .= "if ($(this).val().trim().length < 1) {
+                $onchange .= "if ($(this).val().trim().length < 1) {
                                 $('[id-field =\"field" . $hidden_link . "\"]').show();
                              } else {
                                 $('[id-field =\"field" . $hidden_link . "\"]').hide();
                                  " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
                              }";
 
-                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
 
                 if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                     $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
                     if (is_array($session_value)) {
                         foreach ($session_value as $k => $fieldSession) {
                             if ($fieldSession == "" && $hidden_link > 0) {
-                                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                                $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
                             }
                         }
                     }
                 }
             }
         }
-        $script .= "});";
-        //Initialize id default value
-        //TODO MIGRATE
-//        foreach ($check_values as $idc => $check_value) {
-//            $hidden_link = $check_value['hidden_link'];
-//            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
-//                $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-//
-//                foreach ($default_values as $k => $v) {
-//                    if ($v == 1) {
-//                        if ($idc == $k) {
-//                            $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+        $onchange .= "});";
+
+        echo Html::scriptBlock('$(document).ready(function() {' . $pre_onchange . " " . $onchange. " " . $post_onchange . '});');
     }
 
     public static function blocksHiddenScript($data)

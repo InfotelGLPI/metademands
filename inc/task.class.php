@@ -516,7 +516,6 @@ class PluginMetademandsTask extends CommonDBChild {
             echo "<th class='center b'>" . __('Block parent ticket resolution', 'metademands') . "</th>";
             echo "</tr>";
 
-//            Toolbox::logInfo($tasks);
             foreach ($tasks as $id => $value) {
                 if($value['type'] == PluginMetademandsTask::MAIL_TYPE){
                     $mailtask = new PluginMetademandsMailTask();

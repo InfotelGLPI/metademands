@@ -472,34 +472,52 @@ class PluginMetademandsRadio extends CommonDBTM
         $check_values = $data['options'] ?? [];
         $id = $data["id"];
 
-        $script = "";
-        $script2 = "";
+        $onchange = "";
+        $pre_onchange = "";
+        $post_onchange = "";
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
         if ($debug) {
-            $script = "console.log('fieldsHiddenScript-radio $id');";
+            $onchange = "console.log('fieldsHiddenScript-radio $id');";
         }
+
+        //Initialize default value - force change after onchange fonction
+        if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+            $custom_values = $data['custom_values'];
+            foreach ($custom_values as $k => $custom_value) {
+                if ($custom_value['is_default'] == 1) {
+                    $post_onchange .= "$('[id=\"field[$id][$k]\"]').prop('checked', true).trigger('change');";
+                }
+            }
+        }
+
+        //default hide of all hidden links
+        foreach ($check_values as $idc => $check_value) {
+            $hidden_link = $check_value['hidden_link'];
+            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
+        }
+
 
         //if reload form on loading
         if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
             $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-
             if (is_array($session_value)) {
                 foreach ($session_value as $k => $fieldSession) {
-                    $script2 .= "$('[id=\"field[" . $id . "][" . $fieldSession . "]\"]').prop('checked', true);";
+                    $pre_onchange .= "$('[id=\"field[" . $id . "][" . $fieldSession . "]\"]').prop('checked', true).trigger('change');";
                 }
             } else {
-                $script2 .= "$('[id=\"field[" . $id . "][" . $session_value . "]\"]').prop('checked', true);";
+                $pre_onchange .= "$('[id=\"field[" . $id . "][" . $session_value . "]\"]').prop('checked', true).trigger('change');";
             }
         }
 
-        $script .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
+        $onchange .= "$('[name^=\"field[" . $data["id"] . "]\"]').change(function() {";
 
-        $script .= "var tohide = {};";
+        $onchange .= "var tohide = {};";
 
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
-            $script .= "if ($hidden_link in tohide) {
+
+            $onchange .= "if ($hidden_link in tohide) {
                         } else {
                             tohide[$hidden_link] = true;
                         }
@@ -507,31 +525,19 @@ class PluginMetademandsRadio extends CommonDBTM
                             tohide[$hidden_link] = false;
                         }";
 
-//            $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').hide();";
-
+            //if reload form
             if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
                 $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];
-                if ($session_value == $idc && $hidden_link > 0) {
-                    $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-                }
-            }
-
-//            if (isset($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]])
-//                && ($_SESSION['plugin_metademands'][$data["plugin_metademands_metademands_id"]]['fields'][$data["id"]] == $idc || $idc == -1)) {
-//                $script2 .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
-//            }
-
-            //Initialize id default value
-            if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
-                $custom_values = $data['custom_values'];
-                foreach ($custom_values as $k => $custom_value) {
-                    if ($k == $idc && $custom_value['is_default'] == 1) {
-                        $script .= " $('[id-field =\"field" . $hidden_link . "\"]').show();";
+                if (is_array($session_value)) {
+                    foreach ($session_value as $k => $fieldSession) {
+                        if ($fieldSession == $idc && $hidden_link > 0) {
+                            $pre_onchange .= "$('[id-field =\"field" . $hidden_link . "\"]').show();";
+                        }
                     }
                 }
             }
 
-            $script .= "$.each( tohide, function( key, value ) {
+            $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $('[id-field =\"field'+key+'\"]').hide();
                             " . PluginMetademandsFieldoption::resetMandatoryFieldsByField($hidden_link) . "
@@ -542,10 +548,9 @@ class PluginMetademandsRadio extends CommonDBTM
                         }
                     });";
         }
-        $script .= "});";
+        $onchange .= "});";
 
-
-        echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
+        echo Html::scriptBlock('$(document).ready(function() {' . $pre_onchange . " " . $onchange. " " . $post_onchange . '});');
 
     }
 
@@ -589,9 +594,9 @@ class PluginMetademandsRadio extends CommonDBTM
 
         $debug = (isset($_SESSION['glpi_use_mode'])
         && $_SESSION['glpi_use_mode'] == Session::DEBUG_MODE ? true : false);
-//        if ($debug) {
+        if ($debug) {
             $script = "console.log('blocksHiddenScript-radio $id');";
-//        }
+        }
 
         if (isset($_SESSION['plugin_metademands'][$metaid]['fields'][$id])) {
             $session_value = $_SESSION['plugin_metademands'][$metaid]['fields'][$id];

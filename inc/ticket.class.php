@@ -279,7 +279,6 @@ class PluginMetademandsTicket extends CommonDBTM
                         if ($ticket_tasks->getFromDBByCrit(['tickets_id' => $values['tickets_id']])) {
                             $task = new PluginMetademandsTask();
                             if ($task->getFromDB($ticket_tasks->fields['plugin_metademands_tasks_id'])) {
-//                                Toolbox::logInfo($task->fields['block_parent_ticket_resolution']);
                                 if ($task->fields['block_parent_ticket_resolution'] == 1) {
                                     $ko = 1;
                                 }

@@ -1129,6 +1129,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     */
                     function fixButtonIndicator() {
                         const use_as_step = '$use_as_step';
+
                         if (use_as_step) {
                             x = document.getElementsByClassName('tab-step');
                         } else {
@@ -1137,7 +1138,8 @@ class PluginMetademandsWizard extends CommonDBTM
                     
                         let create = false;
                         if (use_as_step == 1) {
-                            let nextTab = window.metademands.currentTab + 1;
+//                            let nextTab = metademands.currentTab + 1;
+                            let nextTab = Object.values(metademands.listBlock)[0];
                             while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
                                 nextTab = nextTab + 1;
                             }

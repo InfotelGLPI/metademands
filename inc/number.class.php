@@ -91,7 +91,6 @@ class PluginMetademandsNumber extends CommonDBTM
         $max  = 0;
         $step  = 0;
         $minimal  = 0;
-        Toolbox::logInfo($params);
 
         if (isset($params['custom_values']) && !empty($params['custom_values'])) {
             $min = $params['custom_values'][0] ?? "";
