@@ -2190,6 +2190,10 @@ JAVASCRIPT
 //                        $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
                         $input = Toolbox::addslashes_deep($input);
 
+                        if (isset($options['text_ticket_collectmetademand']) && $options['text_ticket_collectmetademand']) {
+                            $input['content'] = $options['text_ticket_collectmetademand'].$input['content'];
+                        }
+
                         //ADD TICKET
                         if (isset($options['current_ticket_id'])
                             && $options['current_ticket_id'] > 0
