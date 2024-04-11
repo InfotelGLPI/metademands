@@ -2695,6 +2695,13 @@ class PluginMetademandsWizard extends CommonDBTM
     public static function createMetademands($metademands_id, $values, $options = [])
     {
 
+        if (isset($values['fields']['current_ticket_id']) && $values['fields']['current_ticket_id'] > 0) {
+            $options['current_ticket_id'] = $values['fields']['current_ticket_id'];
+        }
+        if (isset($values['fields']['meta_validated'])) {
+            $options['meta_validated'] = $values['fields']['meta_validated'];
+        }
+
         $self = new self();
         $metademands = new PluginMetademandsMetademand();
         if ($metademands->getFromDB($metademands_id)) {

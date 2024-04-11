@@ -64,20 +64,29 @@ if (isset($_POST['is_freeinput'])
     }
 }
 
+$current_ticket_id = 0;
+$meta_validated = false;
+if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
+    $_POST['current_ticket_id'] = $_GET['current_ticket_id'];
+    $current_ticket_id = $_GET['current_ticket_id'];
+}
+if (isset($_POST['tickets_id']) && $_POST['tickets_id'] > 0) {
+    $_POST['current_ticket_id'] = $_POST['tickets_id'];
+    $current_ticket_id = $_POST['tickets_id'];
+}
+
+if (isset($_GET['meta_validated'])) {
+    if ($_GET['meta_validated'] > 0) {
+        $_POST['meta_validated'] = true;
+    } else {
+        $_POST['meta_validated'] = false;
+    }
+    $meta_validated = $_POST['meta_validated'];
+}
+
 if ($nofreeinputs === false) {
 
     if (isset($_POST['see_basket_summary'])) {
-
-        if (isset($_GET['current_ticket_id']) && $_GET['current_ticket_id'] > 0) {
-            $_POST['current_ticket_id'] = $_GET['current_ticket_id'];
-        }
-        if (isset($_GET['meta_validated'])) {
-            if ($_GET['meta_validated'] > 0) {
-                $_POST['meta_validated'] = true;
-            } else {
-                $_POST['meta_validated'] = false;
-            }
-        }
 
         unset($_POST['see_basket_summary']);
         $post = $_POST;
@@ -346,10 +355,16 @@ if ($nofreeinputs === false) {
                         }
 
                         if ($KO === false) {
+
                             // Save requester user
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                             // Case of simple ticket convertion
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['tickets_id'] = $_POST['tickets_id'];
+
+                            $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['current_ticket_id'] = $current_ticket_id;
+
+                            $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['meta_validated'] = $meta_validated;
+
                             // Resources id
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['resources_id'] = $_POST['resources_id'];
                             // Resources step
