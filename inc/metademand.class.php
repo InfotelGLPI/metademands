@@ -2190,8 +2190,19 @@ JAVASCRIPT
 //                        $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
                         $input = Toolbox::addslashes_deep($input);
 
-                        if (isset($options['text_ticket_collectmetademand']) && $options['text_ticket_collectmetademand']) {
-                            $input['content'] = $options['text_ticket_collectmetademand'].$input['content'];
+                        if (Plugin::isPluginActive('collectmetademand')) {
+                            if(isset($_SESSION['plugin_collectmetademands']['textOrigin'])) {
+                                $input['content'] = $_SESSION['plugin_collectmetademands']['textOrigin']."<br>".$input['content'];
+                                unset($_SESSION['plugin_collectmetademands']['textOrigin']);
+                            }
+
+                            if(isset($options['text_ticket_collectmetademand'])) {
+                                $input['content'] = $options['text_ticket_collectmetademand']."<br>".$input['content'];
+                            }
+
+                            if(isset($options['collectmetademand_entity'])) {
+                                $input['entities_id'] = $options['collectmetademand_entity'];
+                            }
                         }
 
                         //ADD TICKET
