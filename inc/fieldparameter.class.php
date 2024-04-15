@@ -249,6 +249,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 
         $allowed_parameters_types = self::$allowed_parameters_types;
         $allowed_parameters_items = self::$allowed_parameters_items;
+        $allowed_options_types = PluginMetademandsFieldOption::$allowed_options_types;
         $new_fields = [];
 
 //        if (Plugin::isPluginActive('ldapfields')) {

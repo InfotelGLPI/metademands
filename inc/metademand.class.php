@@ -4422,13 +4422,13 @@ JAVASCRIPT
                                             if ($values_form[$id] > 0 && $params['used_by_ticket'] == 4) {
                                                 $name = "_users_id_requester";
                                             }
-                                            if ($fields_values['used_by_ticket'] == 71) {
+                                            if ($params['used_by_ticket'] == 71) {
                                                 $name = "_groups_id_requester";
                                             }
-                                            if ($fields_values['used_by_ticket'] == 66) {
+                                            if ($params['used_by_ticket'] == 66) {
                                                 $name = "_users_id_observer";
                                             }
-                                            if ($fields_values['used_by_ticket'] == 65) {
+                                            if ($params['used_by_ticket'] == 65) {
                                                 $name = "_groups_id_observer";
                                             }
                                             $son_ticket_data[$name] = $values_form[$id];

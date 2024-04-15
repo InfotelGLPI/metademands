@@ -98,8 +98,17 @@ class PluginMetademandsDropdown extends CommonDBTM
                             'type' => "dropdown_object",
                             'item' => User::getType()]);
 
-                        $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
-                            && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+                        $fieldparameter            = new PluginMetademandsFieldParameter();
+                        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
+                            $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                                && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+
+                            if (empty($_POST['value'])) {
+                                $user = new User();
+                                $user->getFromDB(Session::getLoginUserID());
+                                $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            }
+                        }
 
                         $_POST['id_fielduser'] = $data['link_to_user'];
                         $_POST['fields_id']    = $data['id'];
