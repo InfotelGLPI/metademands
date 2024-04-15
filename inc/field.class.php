@@ -862,7 +862,7 @@ class PluginMetademandsField extends CommonDBChild
                 }
                 echo "</td>";
                 if ($item->fields['is_order'] == 1) {
-                    echo "<td>" . Dropdown::getYesNo($value['is_basket']) . "</td>";
+                    echo "<td>" . Dropdown::getYesNo($fieldparameter->fields['is_basket']) . "</td>";
                 }
                 echo "<td>";
 
@@ -2319,21 +2319,21 @@ class PluginMetademandsField extends CommonDBChild
             'datatype' => 'text'
         ];
 
-        $tab[] = [
-            'id' => '819',
-            'table' => $this->getTable(),
-            'field' => 'is_mandatory',
-            'name' => __('Mandatory field'),
-            'datatype' => 'bool'
-        ];
-
-        $tab[] = [
-            'id' => '820',
-            'table' => $this->getTable(),
-            'field' => 'is_basket',
-            'name' => __('Display into the basket', 'metademands'),
-            'datatype' => 'bool'
-        ];
+//        $tab[] = [
+//            'id' => '819',
+//            'table' => $this->getTable(),
+//            'field' => 'is_mandatory',
+//            'name' => __('Mandatory field'),
+//            'datatype' => 'bool'
+//        ];
+//
+//        $tab[] = [
+//            'id' => '820',
+//            'table' => $this->getTable(),
+//            'field' => 'is_basket',
+//            'name' => __('Display into the basket', 'metademands'),
+//            'datatype' => 'bool'
+//        ];
 
         $tab[] = [
             'id' => '880',

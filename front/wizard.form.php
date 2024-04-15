@@ -423,7 +423,8 @@ elseif (isset($_POST['add_to_basket'])) {
     $checks = [];
     $content = [];
     $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
-        'is_basket' => 1]);
+//        'is_basket' => 1
+    ]);
 
 
     //Clean $post & $data & $_POST

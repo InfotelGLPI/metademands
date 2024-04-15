@@ -923,11 +923,13 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
 
                         if ($metademands->fields['is_order'] == 1) {
-                            if (!$preview && countElementsInTable(
+                            if (!$preview
+                                && countElementsInTable(
                                     "glpi_plugin_metademands_basketlines",
                                     ["plugin_metademands_metademands_id" => $metademands->fields['id'],
                                         "users_id" => Session::getLoginUserID()]
-                                )) {
+                                )
+                            ) {
                                 echo "<div style='text-align: center; margin-top: 20px; margin-bottom : 20px;' class=\"bt-feature col-md-12\">";
                                 $title = "<i class='fas fa-plus' data-hasqtip='0' aria-hidden='true'></i>&nbsp;";
                                 $title .= _sx('button', 'Add to basket', 'metademands');
@@ -975,6 +977,57 @@ class PluginMetademandsWizard extends CommonDBTM
             }
 
             echo Html::hidden('create_metademands', ['value' => 1]);
+
+            if ($metademands->fields['is_order'] == 1) {
+                if (!countElementsInTable(
+                    "glpi_plugin_metademands_basketlines",
+                    ["plugin_metademands_metademands_id" => $metademands->fields['id'],
+                        "users_id"                          => Session::getLoginUserID()]
+                )) {
+                    $title = "<i class='fas fa-plus'></i>&nbsp;";
+                    $title .= _sx('button', 'Add to basket', 'metademands');
+                    echo Html::submit($title, ['name'  => 'add_to_basket',
+                        'id'    => 'add_to_basket',
+                        'class' => 'metademand_next_button btn btn-primary']);
+                } else {
+                    echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+                    echo "</div>";
+                    $title = "<i class='fas fa-save'></i>&nbsp;";
+                    $title .= _sx('button', 'Validate your basket', 'metademands');
+                    echo Html::hidden('see_basket_summary', ['value' => 1]);
+                    echo Html::submit($title, ['name'  => 'next_button',
+                        'form'  => '',
+                        'id'    => 'submitjob',
+                        'class' => 'metademand_next_button btn btn-success']);
+                    $ID = $metademands->fields['id'];
+                    echo "<script>
+                          $('#submitjob').click(function() {
+                             var meta_id = {$ID};
+                             if(typeof tinyMCE !== 'undefined'){
+                                tinyMCE.triggerSave();
+                             }
+                             jQuery('.resume_builder_input').trigger('change');
+                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                             $('#ajax_loader').show();
+                             $.ajax({
+                                   url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?metademands_id=' + meta_id + '&step=2',
+                                   type: 'POST',
+                                   datatype: 'html',
+                                   data: $('#wizard_form').serializeArray(),
+                                   success: function (response) {
+                                      $('#ajax_loader').hide();
+                                      $('.md-wizard').replaceWith(response);
+                                   },
+                                   error: function (xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                   }
+                                });
+                          });
+                        </script>";
+                }
+            }
             if (!$preview && $see_summary == 0) {
                 echo "<br><a href='#' class='metademand_middle_button' onclick='window.print();return false;'>";
                 echo "<i class='fas fa-2x fa-print' style='color:#e3e0e0;'></i>";

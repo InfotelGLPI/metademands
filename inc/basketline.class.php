@@ -154,6 +154,12 @@ class PluginMetademandsBasketline extends CommonDBTM
 
         foreach ($fields as $k => $v) {
 
+            $field = new PluginMetademandsField();
+            if ($field->getFromDB($v["id"])) {
+                $params = PluginMetademandsField::getAllParamsFromField($field);
+                $v = array_merge($v, $params);
+            }
+
             //hide blocks
             if ($v['type'] == 'informations' || $v['type'] == 'title-block' || $v['type'] == 'title') {
                 continue;
