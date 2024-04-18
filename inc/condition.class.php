@@ -202,7 +202,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 $return = "≥";
                 break;
             case self::SHOW_CONDITION_REGEX:
-                $return = "Regex";
+                $return = __('Regex', 'metademands');
                 break;
             case self::SHOW_CONDITION_EMPTY:
                 $return = __('Empty', 'metademands');

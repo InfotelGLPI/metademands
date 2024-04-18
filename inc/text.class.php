@@ -58,10 +58,14 @@ class PluginMetademandsText extends CommonDBTM
             $comment = $data['comment'];
         }
 
+        $size = "35";
+        if ($data['row_display'] == 1) {
+            $size = "70";
+        }
         $name = $namefield . "[" . $data['id'] . "]";
         $opt = ['value' => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
             'placeholder' => (!$comment == null) ? Glpi\RichText\RichText::getTextFromHtml($comment) : "",
-            'size' => 35
+            'size' => $size
         ];
         if ($data['regex']) {
             $opt['pattern'] = $data['regex'];
@@ -149,7 +153,7 @@ class PluginMetademandsText extends CommonDBTM
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>";
-        echo __('Regex', 'metademands');
+        echo __('Regex to respect', 'metademands');
         //               echo '</br><span class="metademands_wizard_comments">' . __('If the selected field is filled, this field will be displayed', 'metademands') . '</span>';
         echo "</td>";
         echo "<td>";
