@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-15 10:56+0000\n"
+"POT-Creation-Date: 2024-04-18 06:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,7 +140,7 @@ msgstr ""
 
 #: ajax/viewtypefields.php:55 inc/dropdown.class.php:168
 #: inc/dropdownmeta.class.php:538 inc/dropdownobject.class.php:498
-#: inc/text.class.php:112
+#: inc/text.class.php:116
 msgid "Link this to a user field"
 msgstr ""
 
@@ -315,7 +315,7 @@ msgstr ""
 #: inc/dropdown.class.php:360 inc/dropdownmeta.class.php:761
 #: inc/dropdownmultiple.class.php:1032 inc/dropdownmultiple.class.php:1181
 #: inc/dropdownobject.class.php:773 inc/radio.class.php:368
-#: inc/text.class.php:262 inc/textarea.class.php:218 inc/wizard.class.php:1735
+#: inc/text.class.php:266 inc/textarea.class.php:218 inc/wizard.class.php:1735
 #: inc/yesno.class.php:219
 msgctxt "button"
 msgid "Save & Post"
@@ -325,7 +325,7 @@ msgstr ""
 #: inc/dropdown.class.php:361 inc/dropdownmeta.class.php:763
 #: inc/dropdownmultiple.class.php:1033 inc/dropdownmultiple.class.php:1182
 #: inc/dropdownobject.class.php:774 inc/radio.class.php:369
-#: inc/text.class.php:263 inc/textarea.class.php:219 inc/wizard.class.php:869
+#: inc/text.class.php:267 inc/textarea.class.php:219 inc/wizard.class.php:869
 #: inc/wizard.class.php:1709 inc/wizard.class.php:1732
 #: inc/wizard.class.php:1741 inc/wizard.class.php:1751 inc/yesno.class.php:220
 msgid "Next"
@@ -457,7 +457,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: inc/condition.class.php:142 inc/condition.class.php:165
-#: inc/text.class.php:152
+#: inc/condition.class.php:205
 msgid "Regex"
 msgstr ""
 
@@ -1723,11 +1723,15 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: inc/text.class.php:131
+#: inc/text.class.php:135
 msgid "User information to get"
 msgstr ""
 
-#: inc/text.class.php:167 inc/textarea.class.php:139
+#: inc/text.class.php:156
+msgid "Regex to respect"
+msgstr ""
+
+#: inc/text.class.php:171 inc/textarea.class.php:139
 msgid "If field empty"
 msgstr ""
 
