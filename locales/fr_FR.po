@@ -1601,7 +1601,7 @@ msgstr "Créer une métademande"
 
 #: inc/profile.class.php:152 inc/profile.class.php:246
 msgid "Validate a meta-demand"
-msgstr "Valider une méta-demande"
+msgstr "Valider une métademande"
 
 #: inc/profile.class.php:159 inc/stepform.class.php:507
 msgid "form"
