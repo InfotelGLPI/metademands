@@ -653,6 +653,15 @@ function plugin_metademands_install() {
 
         $query = "DELETE FROM glpi_plugin_metademands_forms_values WHERE plugin_metademands_forms_id = 0;";
         $DB->query($query);
+
+        foreach ($DB->request("SELECT `profiles_id`
+                             FROM `glpi_profilerights` 
+                             WHERE `name` LIKE '%plugin_metademands%' 
+                             AND `rights` > '10'") as $prof) {
+
+            $rights = ['plugin_metademands_validatemeta' => 1];
+            PluginMetademandsProfile::addDefaultProfileInfos($prof['profiles_id'], $rights);
+        }
     }
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";

@@ -140,11 +140,10 @@ function plugin_init_metademands()
         // TEST Redirect
         if (isset($_SESSION["plugin_metademands_on_login_loaded"])
             && $_SESSION["plugin_metademands_on_login_loaded"] == 0) {
-            if (Session::getCurrentInterface() == "helpdesk") {
-                if (Session::haveRight('plugin_metademands_on_login',READ)) {
+            if (Session::getCurrentInterface() == "helpdesk"
+                && Session::haveRight('plugin_metademands_on_login',READ)) {
                     $_SESSION["plugin_metademands_on_login_loaded"] = 1;
                     Html::redirect(PLUGIN_METADEMANDS_WEBDIR . '/front/wizard.form.php');
-                }
             }
 
         }

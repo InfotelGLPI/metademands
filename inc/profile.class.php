@@ -96,6 +96,7 @@ class PluginMetademandsProfile extends Profile
                        'plugin_metademands_on_login' => 0,
                        'plugin_metademands_in_menu' => 0,
                         'plugin_metademands_createmeta' => 1,
+                        'plugin_metademands_validatemeta' => 1,
                         'plugin_metademands_fillform' => 0,
                         'plugin_metademands_cancelform' => 0];
 
@@ -134,6 +135,10 @@ class PluginMetademandsProfile extends Profile
 
         echo "<table class='tab_cadre_fixehov'>";
 
+        echo "<tr class='tab_bg_2'>";
+        echo "<th colspan='6'>" . _n('Meta-Demand', 'Meta-Demands', 2, 'metademands') . "</th>";
+        echo "</th></tr>\n";
+
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_createmeta']);
         echo "<tr class='tab_bg_2'>";
         echo "<td width='20%'>" . __('Create a meta-demand', 'metademands') . "</td>";
@@ -141,6 +146,18 @@ class PluginMetademandsProfile extends Profile
         Html::showCheckbox(['name'    => '_plugin_metademands_createmeta[1_0]',
             'checked' => $effective_rights['plugin_metademands_createmeta']]);
         echo "</td></tr>\n";
+
+        $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_validatemeta']);
+        echo "<tr class='tab_bg_2'>";
+        echo "<td width='20%'>" . __('Validate a meta-demand', 'metademands') . "</td>";
+        echo "<td colspan='5'>";
+        Html::showCheckbox(['name'    => '_plugin_metademands_validatemeta[1_0]',
+            'checked' => $effective_rights['plugin_metademands_validatemeta']]);
+        echo "</td></tr>\n";
+
+        echo "<tr class='tab_bg_2'>";
+        echo "<th colspan='6'>" . ucfirst(_n('form', 'forms', 2, 'metademands')) . "</th>";
+        echo "</th></tr>\n";
 
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_fillform']);
         echo "<tr class='tab_bg_2'>";
@@ -165,6 +182,10 @@ class PluginMetademandsProfile extends Profile
         Html::showCheckbox(['name'    => '_plugin_metademands_updatemeta[1_0]',
                             'checked' => $effective_rights['plugin_metademands_updatemeta']]);
         echo "</td></tr>\n";
+
+        echo "<tr class='tab_bg_2'>";
+        echo "<th colspan='6'>" . __('Simplified interface') . "</th>";
+        echo "</th></tr>\n";
 
         $effective_rights = ProfileRight::getProfileRights($profiles_id, ['plugin_metademands_on_login']);
         echo "<tr class='tab_bg_2'>";
@@ -220,6 +241,10 @@ class PluginMetademandsProfile extends Profile
             $rights[] = ['itemtype' => 'PluginMetademandsWizard',
                 'label'    => __('Create a meta-demand', 'metademands'),
                 'field'    => 'plugin_metademands_createmeta'
+            ];
+            $rights[] = ['itemtype' => 'PluginMetademandsWizard',
+                'label'    => __('Validate a meta-demand', 'metademands'),
+                'field'    => 'plugin_metademands_validatemeta'
             ];
             $rights[] = ['itemtype' => 'PluginMetademandsStepform',
                 'label'    => __('Fill out a form', 'metademands'),
@@ -386,6 +411,7 @@ class PluginMetademandsProfile extends Profile
                    'plugin_metademands_on_login' => 0,
                    'plugin_metademands_in_menu' => 0,
             'plugin_metademands_createmeta' => 1,
+            'plugin_metademands_validatemeta' => 1,
             'plugin_metademands_fillform' => 0,
             'plugin_metademands_cancelform' => 0];
 

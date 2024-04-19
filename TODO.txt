@@ -1,0 +1,13 @@
+avoir menu - vos brouillons
+Avoir bouton - ajouter en tant que brouillon
+rééditer une ligne avec bouton dédié
+
+bug réenregistrement brouillon sur commande libre
+
+groupe proposé dans pas à pas : independant de l'entité
+
+faire TODO MIGRATE
+
+bug dropdown multiple - affichage champ caché - si deselectionner le champ il n'est pas recaché
+
+Droit de validation de meta

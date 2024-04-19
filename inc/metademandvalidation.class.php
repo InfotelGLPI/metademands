@@ -36,7 +36,7 @@ if (!defined('GLPI_ROOT')) {
  */
 class PluginMetademandsMetademandValidation extends CommonDBTM
 {
-    public static $rightname = 'plugin_metademands';
+    public static $rightname = 'plugin_metademands_validatemeta';
 
     const VALIDATE_WITHOUT_TASK   = 3; // meta validate without task
     const TASK_CREATION           = 2; // task_created
@@ -70,7 +70,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
      */
     public static function canCreate()
     {
-        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+        return Session::haveRight(self::$rightname, READ);
     }
 
 
@@ -311,7 +311,7 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             && ($item->fields['status'] != Ticket::SOLVED
                 && $item->fields['status'] != Ticket::CLOSED)
             && $item->fields['is_deleted'] != 1
-        && Session::haveRight('plugin_metademands', READ)
+        && Session::haveRight('plugin_metademands_validatemeta', READ)
             && Session::getCurrentInterface() == 'central') {
             $style = "btn-green";
             if ($metaValidation->fields["validate"] == self::TO_VALIDATE
