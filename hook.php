@@ -390,7 +390,8 @@ function plugin_metademands_install() {
     //version 3.3.11
     if (!$DB->tableExists("glpi_plugin_metademands_fieldparameters")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.11.sql");
-
+        ini_set("memory_limit", "-1");
+        ini_set("max_execution_time", 0);
         $metademand_fields = new PluginMetademandsField();
         $fields = $metademand_fields->find();
 
@@ -450,6 +451,8 @@ function plugin_metademands_install() {
 
         $metademand_fieldcustom = new PluginMetademandsFieldCustomvalue();
         $metademand_params = new PluginMetademandsFieldParameter();
+
+        $old_new_custom_values = [];
         if (count($fields) > 0) {
             foreach ($fields as $k => $field) {
                 $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
@@ -502,10 +505,93 @@ function plugin_metademands_install() {
                                 $metademand_options->update(["id" => $fieldoption['id'], "check_value" => $newid]);
                             }
                         }
+
+                        $old_new_custom_values[$field['id']][$input['old_check_value']] =  $newid;
                     }
                 }
             }
         }
+
+        if (count($old_new_custom_values) > 0) {
+            foreach ($old_new_custom_values as $fieldid => $oldandnews) {
+
+                $metademand_formvalues = new PluginMetademandsForm_Value();
+                $fieldformvalues = $metademand_formvalues->find(
+                    ["plugin_metademands_fields_id" => $fieldid]
+                );
+
+                if (count($fieldformvalues) > 0) {
+                    foreach ($fieldformvalues as $k => $fieldformvalue) {
+                        $old_values = json_decode($fieldformvalue['value'], true);
+                        $new_values = [];
+                        if (is_array($old_values)) {
+                            foreach ($old_values as $k => $old_value) {
+                                if (in_array($old_value, array_keys($oldandnews))) {
+                                    $new_value = $oldandnews[$old_value];
+                                    $new_values[] = $new_value;
+                                }
+                            }
+                            $new_values = json_encode($new_values, JSON_UNESCAPED_UNICODE);
+                            $metademand_formvalues->update(
+                                ["id" => $fieldformvalue['id'], "value" => $new_values]
+                            );
+                        } else {
+                            $new_value = 0;
+                            if ($old_values > 0) {
+                                $new_value = $oldandnews[$old_values];
+                            } else {
+                                if (isset($oldandnews[1])) {
+                                    $new_value = $oldandnews[1];
+                                }
+                            }
+                            if ($new_value > 0) {
+                                $metademand_formvalues->update(
+                                    ["id" => $fieldformvalue['id'], "value" => $new_value]
+                                );
+                            }
+                        }
+                    }
+                }
+
+                $metademand_draftvalues = new PluginMetademandsDraft_Value();
+                $fielddraftvalues = $metademand_draftvalues->find(
+                    ["plugin_metademands_fields_id" => $fieldid]
+                );
+                if (count($fielddraftvalues) > 0) {
+                    foreach ($fielddraftvalues as $k => $fielddraftvalue) {
+                        $old_values = json_decode($fielddraftvalue['value'], true);
+                        $new_values = [];
+                        if (is_array($old_values)) {
+                            foreach ($old_values as $k => $old_value) {
+                                if (in_array($old_value, array_keys($oldandnews))) {
+                                    $new_value = $oldandnews[$old_value];
+                                    $new_values[] = $new_value;
+                                }
+                            }
+                            $new_values = json_encode($new_values, JSON_UNESCAPED_UNICODE);
+                            $metademand_draftvalues->update(
+                                ["id" => $fielddraftvalue['id'], "value" => $new_values]
+                            );
+                        } else {
+                            $new_value = 0;
+                            if ($old_values > 0) {
+                                $new_value = $oldandnews[$old_values];
+                            } else {
+                                if (isset($oldandnews[1])) {
+                                    $new_value = $oldandnews[1];
+                                }
+                            }
+                            if ($new_value > 0) {
+                                $metademand_formvalues->update(
+                                    ["id" => $fieldformvalue['id'], "value" => $new_value]
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `custom_values`;";
         $DB->query($query);
@@ -560,6 +646,12 @@ function plugin_metademands_install() {
         $query = "ALTER TABLE `glpi_plugin_metademands_fieldparameters` CHANGE `default_values` `default` TEXT COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;";
         $DB->query($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fieldparameters DROP `comment_values`;";
+        $DB->query($query);
+
+        $query = "DELETE FROM glpi_plugin_metademands_drafts_values WHERE plugin_metademands_drafts_id = 0;";
+        $DB->query($query);
+
+        $query = "DELETE FROM glpi_plugin_metademands_forms_values WHERE plugin_metademands_forms_id = 0;";
         $DB->query($query);
     }
 
