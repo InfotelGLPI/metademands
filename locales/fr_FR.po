@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-18 06:08+0000\n"
+"POT-Creation-Date: 2024-04-19 12:40+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2024\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -23,45 +23,46 @@ msgstr ""
 "Language: fr_FR\n"
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
-#: hook.php:901
+#: hook.php:1002
 msgid "Metademand approver"
 msgstr "Valideur de la métademande"
 
-#: hook.php:914
+#: hook.php:1015
 msgid "Metademand status"
 msgstr "Statut de la métademande"
 
-#: hook.php:930
+#: hook.php:1031
 msgid "Group child ticket"
 msgstr "Groupe des tickets enfants"
 
-#: hook.php:941
+#: hook.php:1042
 msgid "Link to metademands"
 msgstr "Lié à une métademande"
 
-#: hook.php:953
+#: hook.php:1054
 msgid "Technician child ticket"
 msgstr "Techniciens des tickets enfants"
 
-#: hook.php:1352 inc/metademand.class.php:5865
+#: hook.php:1453 inc/metademand.class.php:5865
 msgid "Running metademands"
 msgstr "Métademandes en cours"
 
-#: hook.php:1370 inc/metademand.class.php:5985
+#: hook.php:1471 inc/metademand.class.php:5985
 msgid "Metademands to be closed"
 msgstr "Métademandes à clore"
 
-#: hook.php:1387 inc/metademand.class.php:6042
+#: hook.php:1488 inc/metademand.class.php:6042
 msgid "Metademands to be validated"
 msgstr "Métademandes à valider"
 
-#: hook.php:1404 inc/metademand.class.php:5917
+#: hook.php:1505 inc/metademand.class.php:5917
 msgid "Running metademands with tickets of my groups"
 msgstr "Métademandes en cours avec des tickets affectés à mes groupes"
 
-#: setup.php:201 inc/menu.class.php:42 inc/metademand.class.php:89
-#: inc/profile.class.php:133 inc/profile.class.php:209 inc/tools.class.php:130
-#: inc/tools.class.php:203 inc/tools.class.php:299
+#: setup.php:200 inc/menu.class.php:42 inc/metademand.class.php:89
+#: inc/profile.class.php:134 inc/profile.class.php:139
+#: inc/profile.class.php:230 inc/tools.class.php:130 inc/tools.class.php:203
+#: inc/tools.class.php:299
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] "Meta-Demande"
@@ -1100,7 +1101,7 @@ msgid "Alert"
 msgstr "Danger"
 
 #: inc/interticketfollowup.class.php:50 inc/interticketfollowup.class.php:78
-#: inc/profile.class.php:215
+#: inc/profile.class.php:236
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] "Suivi inter ticket"
@@ -1594,33 +1595,44 @@ msgstr[0] "Gestion du droit"
 msgstr[1] "Gestion des droits"
 msgstr[2] "Gestion des droits"
 
-#: inc/profile.class.php:139 inc/profile.class.php:221
+#: inc/profile.class.php:144 inc/profile.class.php:242
 msgid "Create a meta-demand"
 msgstr "Créer une métademande"
 
-#: inc/profile.class.php:147 inc/profile.class.php:225
+#: inc/profile.class.php:152 inc/profile.class.php:246
+msgid "Validate a meta-demand"
+msgstr "Valider une méta-demande"
+
+#: inc/profile.class.php:159 inc/stepform.class.php:507
+msgid "form"
+msgid_plural "forms"
+msgstr[0] "formulaire"
+msgstr[1] "formulaires"
+msgstr[2] "formulaires"
+
+#: inc/profile.class.php:164 inc/profile.class.php:250
 msgid "Fill out a form"
 msgstr "Remplir un formulaire"
 
-#: inc/profile.class.php:155
+#: inc/profile.class.php:172
 msgid "Cancel /delete a form"
 msgstr "Annuler / supprimer un formulaire"
 
-#: inc/profile.class.php:162 inc/profile.class.php:233
+#: inc/profile.class.php:179 inc/profile.class.php:258
 msgid "Right to update a meta-demand form from the ticket"
 msgstr "Droit de mettre à jour un formulaire de méta-demande depuis le ticket"
 
-#: inc/profile.class.php:171 inc/profile.class.php:237
+#: inc/profile.class.php:192 inc/profile.class.php:262
 msgid "Show form selection on connection and replace the create form"
 msgstr ""
 "Afficher la sélection du formulaire lors de la connexion et remplacer le "
 "formulaire de création"
 
-#: inc/profile.class.php:179 inc/profile.class.php:241
+#: inc/profile.class.php:200 inc/profile.class.php:266
 msgid "Hide button in menu"
 msgstr "Cacher le lien dans le menu"
 
-#: inc/profile.class.php:229
+#: inc/profile.class.php:254
 msgid "Cancel / delete a form"
 msgstr "Annuler / supprimer un formulaire"
 
@@ -1710,13 +1722,6 @@ msgstr[2] "Formulaires en cours de saisie"
 #, php-format
 msgid "You have %s"
 msgstr "Vous avez %s"
-
-#: inc/stepform.class.php:507
-msgid "form"
-msgid_plural "forms"
-msgstr[0] "formulaire"
-msgstr[1] "formulaires"
-msgstr[2] "formulaires"
 
 #: inc/stepform.class.php:508
 msgid "to complete"
