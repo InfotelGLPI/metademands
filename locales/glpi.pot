@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-19 12:18+0000\n"
+"POT-Creation-Date: 2024-04-19 12:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,45 +18,46 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: hook.php:993
+#: hook.php:1002
 msgid "Metademand approver"
 msgstr ""
 
-#: hook.php:1006
+#: hook.php:1015
 msgid "Metademand status"
 msgstr ""
 
-#: hook.php:1022
+#: hook.php:1031
 msgid "Group child ticket"
 msgstr ""
 
-#: hook.php:1033
+#: hook.php:1042
 msgid "Link to metademands"
 msgstr ""
 
-#: hook.php:1045
+#: hook.php:1054
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1444 inc/metademand.class.php:5865
+#: hook.php:1453 inc/metademand.class.php:5865
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1462 inc/metademand.class.php:5985
+#: hook.php:1471 inc/metademand.class.php:5985
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1479 inc/metademand.class.php:6042
+#: hook.php:1488 inc/metademand.class.php:6042
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1496 inc/metademand.class.php:5917
+#: hook.php:1505 inc/metademand.class.php:5917
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
-#: setup.php:201 inc/menu.class.php:42 inc/metademand.class.php:89
-#: inc/profile.class.php:133 inc/profile.class.php:209 inc/tools.class.php:130
-#: inc/tools.class.php:203 inc/tools.class.php:299
+#: setup.php:200 inc/menu.class.php:42 inc/metademand.class.php:89
+#: inc/profile.class.php:134 inc/profile.class.php:139
+#: inc/profile.class.php:230 inc/tools.class.php:130 inc/tools.class.php:203
+#: inc/tools.class.php:299
 msgid "Meta-Demand"
 msgid_plural "Meta-Demands"
 msgstr[0] ""
@@ -1054,7 +1055,7 @@ msgid "Alert"
 msgstr ""
 
 #: inc/interticketfollowup.class.php:50 inc/interticketfollowup.class.php:78
-#: inc/profile.class.php:215
+#: inc/profile.class.php:236
 msgid "Inter ticket followup"
 msgid_plural "Inter ticket followups"
 msgstr[0] ""
@@ -1536,31 +1537,41 @@ msgid_plural "Rights management"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/profile.class.php:139 inc/profile.class.php:221
+#: inc/profile.class.php:144 inc/profile.class.php:242
 msgid "Create a meta-demand"
 msgstr ""
 
-#: inc/profile.class.php:147 inc/profile.class.php:225
+#: inc/profile.class.php:152 inc/profile.class.php:246
+msgid "Validate a meta-demand"
+msgstr ""
+
+#: inc/profile.class.php:159 inc/stepform.class.php:507
+msgid "form"
+msgid_plural "forms"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/profile.class.php:164 inc/profile.class.php:250
 msgid "Fill out a form"
 msgstr ""
 
-#: inc/profile.class.php:155
+#: inc/profile.class.php:172
 msgid "Cancel /delete a form"
 msgstr ""
 
-#: inc/profile.class.php:162 inc/profile.class.php:233
+#: inc/profile.class.php:179 inc/profile.class.php:258
 msgid "Right to update a meta-demand form from the ticket"
 msgstr ""
 
-#: inc/profile.class.php:171 inc/profile.class.php:237
+#: inc/profile.class.php:192 inc/profile.class.php:262
 msgid "Show form selection on connection and replace the create form"
 msgstr ""
 
-#: inc/profile.class.php:179 inc/profile.class.php:241
+#: inc/profile.class.php:200 inc/profile.class.php:266
 msgid "Hide button in menu"
 msgstr ""
 
-#: inc/profile.class.php:229
+#: inc/profile.class.php:254
 msgid "Cancel / delete a form"
 msgstr ""
 
@@ -1645,12 +1656,6 @@ msgstr[1] ""
 #, php-format
 msgid "You have %s"
 msgstr ""
-
-#: inc/stepform.class.php:507
-msgid "form"
-msgid_plural "forms"
-msgstr[0] ""
-msgstr[1] ""
 
 #: inc/stepform.class.php:508
 msgid "to complete"
