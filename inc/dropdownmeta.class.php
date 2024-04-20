@@ -837,7 +837,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
         foreach ($check_values as $idc => $check_value) {
             $tasks_id = $check_value['plugin_metademands_tasks_id'];
-            if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+            if (isset($data['custom_values'])
+                && is_array($data['custom_values'])
+                && count($data['custom_values']) > 0) {
                 $custom_values = $data['custom_values'];
                 foreach ($custom_values as $k => $custom_value) {
                     if ($custom_value['is_default'] == 1) {
@@ -1000,7 +1002,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $hidden_block = $check_value['hidden_block'];
 
             //Default values
-            if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+            if (isset($data['custom_values'])
+                && is_array($data['custom_values'])
+                && count($data['custom_values']) > 0) {
                 $custom_values = $data['custom_values'];
                 foreach ($custom_values as $k => $custom_value) {
                     if ($k == $idc && $custom_value['is_default'] == 1) {

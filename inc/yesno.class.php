@@ -57,11 +57,15 @@ class PluginMetademandsYesno extends CommonDBTM
         $options[1] = __('No');
         $options[2] = __('Yes');
 
-        $defaults = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+        $defaults = "";
+        if (isset($data['custom_values'])) {
+            $defaults = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+        }
+
 
         if ($value == "") {
             //warning : this is default value
-            $value = $data['custom_values'];
+            $value = $data['custom_values'] ?? 0;
         }
 
         $value = !empty($value) ? $value : $defaults;

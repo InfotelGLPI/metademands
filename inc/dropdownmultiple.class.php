@@ -1058,7 +1058,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
                 if ($data["item"] == "other") {
-                    if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                    if (isset($data['custom_values'])
+                        && is_array($data['custom_values'])
+                        && count($data['custom_values']) > 0) {
                         $custom_values = $data['custom_values'];
                         foreach ($custom_values as $k => $custom_value) {
                             if ($k == $idc) {
@@ -1133,7 +1135,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $tasks_id = $check_value['plugin_metademands_tasks_id'];
 
                 //Initialize id default value
-                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
                     $custom_values = $data['custom_values'];
                     foreach ($custom_values as $k => $custom_value) {
                         if ($custom_value['is_default'] == 1) {
@@ -1263,7 +1267,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 $tasks_id = $check_value['plugin_metademands_tasks_id'];
                 //Initialize id default value
-                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
                     $custom_values = $data['custom_values'];
                     foreach ($custom_values as $k => $custom_value) {
                         if ($custom_value['is_default'] == 1) {
@@ -1311,7 +1317,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $hidden_link = $check_value['hidden_link'];
 
                 //Initialize id default value
-                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
                     $custom_values = $data['custom_values'];
                     foreach ($custom_values as $k => $custom_value) {
                         if ($k == $idc && $custom_value['is_default'] == 1) {
@@ -1340,7 +1348,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 $onchange .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
                 if ($data["item"] == "other") {
-                    if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                    if (isset($data['custom_values'])
+                        && is_array($data['custom_values'])
+                        && count($data['custom_values']) > 0) {
                         $custom_values = $data['custom_values'];
                         foreach ($custom_values as $k => $custom_value) {
                             if ($k == $idc) {
@@ -1401,7 +1411,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             foreach ($check_values as $idc => $check_value) {
                 $hidden_link = $check_value['hidden_link'];
                 //Initialize id default value
-                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
                     $custom_values = $data['custom_values'];
                     foreach ($custom_values as $k => $custom_value) {
                         if ($k == $idc && $custom_value['is_default'] == 1) {
@@ -1530,7 +1542,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
                 $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
                 $val = 0;
-                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
                     $custom_values = $data['custom_values'];
                     foreach ($custom_values as $k => $custom_value) {
                         if ($k == $idc) {
@@ -1641,7 +1655,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 //                    }
 //                }
                 //Initialize id default value
-                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
                     $custom_values = $data['custom_values'];
                     foreach ($custom_values as $k => $custom_value) {
                         if ($k == $idc && $custom_value['is_default'] == 1) {
@@ -1793,7 +1809,9 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 //                    }
 //                }
                 //Initialize id default value
-                if (is_array($data['custom_values']) && count($data['custom_values']) > 0) {
+                if (isset($data['custom_values'])
+                    && is_array($data['custom_values'])
+                    && count($data['custom_values']) > 0) {
                     $custom_values = $data['custom_values'];
                     foreach ($custom_values as $k => $custom_value) {
                         if ($k == $idc && $custom_value['is_default'] == 1) {

@@ -476,7 +476,10 @@ class PluginMetademandsDropdownobject extends CommonDBTM
             echo __("Informations to display in ticket and PDF", "metademands");
             echo "</td>";
             echo "<td>";
-            $decode = json_decode($params['informations_to_display']);
+            $decode = "";
+            if (!is_array($params['informations_to_display'])) {
+                $decode = json_decode($params['informations_to_display']);
+            }
             $values = empty($decode) ? ['full_name'] : $decode;
             $informations["full_name"]         = __('Complete name');
             $informations["realname"]          = __('Surname');
