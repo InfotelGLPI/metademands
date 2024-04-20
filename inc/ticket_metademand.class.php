@@ -148,17 +148,20 @@ class PluginMetademandsTicket_Metademand extends CommonDBTM {
       $numrows = $DB->numrows($result);
 
       if ($numrows > 0) {
+          $rand = mt_rand();
 
          echo "<table class='tab_cadrehov'>";
-         echo "<tr>";
-         echo "<th></th>";
-         echo "<th>" . __('Requester') . "</th>";
-         echo "<th>" . __('Associated element') . "</th>";
-         echo "<th>" . __('Description') . "</th>";
-         echo "</tr>";
+
+         Ticket::commonListHeader(Search::HTML_OUTPUT, 'mass' . __CLASS__ . $rand);
          for ($i = 0; $i < $numrows; $i++) {
             $ID = $DB->result($result, $i, "id");
-            Ticket::showVeryShort($ID);
+
+             Ticket::showShort(
+                 $ID,
+                 [
+                     'row_num' => $i,
+                 ]
+             );
          }
          echo "</table>";
       } else {
