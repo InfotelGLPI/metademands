@@ -1596,7 +1596,7 @@ class PluginMetademandsField extends CommonDBChild
                 $label = $data['name'];
             }
         }
-        if ($data["use_date_now"] == true) {
+        if (isset($data["use_date_now"]) && $data["use_date_now"] == true) {
             if ($data["type"] == 'date' ||
                 $data["type"] == 'date_interval'
             ) {

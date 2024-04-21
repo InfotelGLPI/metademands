@@ -81,7 +81,8 @@ class PluginMetademandsDropdown extends CommonDBTM
                     'name'      => $namefield . "[" . $data['id'] . "]",
                     //                          'readonly'  => true,
                     'condition' => $cond,
-                    'display'   => false];
+                    'display'   => false,
+                    'width' => '400px'];
                 if (isset($data['is_mandatory']) && $data['is_mandatory'] ==1) {
                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                 }
@@ -120,6 +121,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                         echo "</div>";
                     } else {
                         $options['name']    = $namefield . "[" . $data['id'] . "]";
+                        $options['width']    = "400px";
                         $options['display'] = false;
                         if ($data['is_mandatory'] == 1) {
                             $options['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];

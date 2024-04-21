@@ -400,12 +400,6 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
         } elseif ($this->fields["users_id"] != 0
                    && $this->fields["validate"] == self::TASK_CREATION) {
             echo "<div class='alert alert-success d-flex'>" . __('Tasks are created', 'metademands') . "</div>";
-         //         echo "<td>" . __('Create sub-tickets', 'metademands') . "&nbsp;";
-         //         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 1 . "]' value='1' checked>";
-         //         echo "</td>";
-         //         echo "<td>" . __('Create tasks', 'metademands') . "&nbsp;";
-         //         echo "<input class='custom-control-input' type='radio' name='create_subticket' id='create_subticket[" . 0 . "]' value='0' disabled>";
-         //         echo "</td>";
         } elseif ($this->fields["users_id"] != 0
                    && $this->fields["validate"] == self::VALIDATE_WITHOUT_TASK) {
         } else {
