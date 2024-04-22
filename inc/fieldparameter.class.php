@@ -380,8 +380,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 echo "</td>";
             }
         }
-        if ($params['type'] != "title-block"
-            && $params['type'] != "informations") {
+        if ($params['type'] != "title-block") {
             echo "<td>";
             echo __('Hide title', 'metademands');
             echo "</td>";
@@ -392,8 +391,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         echo "</tr>";
 
         if ($params['type'] != "title"
-            && $params['type'] != "title-block"
-            && $params['type'] != "informations") {
+            && $params['type'] != "title-block") {
             echo "<tr class='tab_bg_1'>";
             echo "<td>";
             echo __('Takes the whole row', 'metademands');

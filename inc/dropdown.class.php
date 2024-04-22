@@ -82,7 +82,8 @@ class PluginMetademandsDropdown extends CommonDBTM
                     //                          'readonly'  => true,
                     'condition' => $cond,
                     'display'   => false,
-                    'width' => '400px'];
+//                    'width' => '400px'
+                ];
                 if (isset($data['is_mandatory']) && $data['is_mandatory'] ==1) {
                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                 }
