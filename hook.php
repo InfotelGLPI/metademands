@@ -304,12 +304,11 @@ function plugin_metademands_install() {
         $DB->query($query);
     }
     //version 3.2.19
-    if (!$DB->tableExists("glpi_plugin_metademands_fieldoptions")
-        && !$DB->fieldExists("glpi_plugin_metademands_drafts_values", "value2")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_drafts_values", "value2")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.19.sql");
     }
     //version 3.3.0
-    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "is_template")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldoptions")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.0.sql");
 
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `use_future_date` tinyint DEFAULT 0";
@@ -486,8 +485,10 @@ function plugin_metademands_install() {
                     }
 
                     foreach ($inputs as $key => $input) {
-                        $newid = $metademand_fieldcustom->add($input);
 
+                        if (!empty($input['name'])) {
+                            $newid = $metademand_fieldcustom->add($input);
+                        }
                         $metademand_params->getFromDBByCrit(["plugin_metademands_fields_id" => $field['id']]);
                         $metademand_params->update([
                             "id" => $metademand_params->fields['id'],
@@ -537,7 +538,7 @@ function plugin_metademands_install() {
                             );
                         } else {
                             $new_value = 0;
-                            if ($old_values > 0) {
+                            if ($old_values > 0 && isset($oldandnews[$old_values])) {
                                 $new_value = $oldandnews[$old_values];
                             } else {
                                 if (isset($oldandnews[1])) {
@@ -574,7 +575,7 @@ function plugin_metademands_install() {
                             );
                         } else {
                             $new_value = 0;
-                            if ($old_values > 0) {
+                            if ($old_values > 0 && isset($oldandnews[$old_values])) {
                                 $new_value = $oldandnews[$old_values];
                             } else {
                                 if (isset($oldandnews[1])) {
