@@ -63,15 +63,17 @@ class PluginMetademandsDraft extends CommonDBTM {
     *
     * @return string
     */
-   static function showDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id) {
+    static function showDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id)
+    {
+        $self = new self();
+        $drafts = $self->find([
+            'users_id' => $users_id,
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id
+        ]);
+        $return = "<span class=''>";//draft
 
-      $self   = new self();
-      $drafts = $self->find(['users_id'                          => $users_id,
-                             'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id]);
-      $return = "<span class=''>";//draft
-
-      $return .= Html::scriptBlock(
-         "$('[name=\"wizard_form\"]').submit(function() {
+        $return .= Html::scriptBlock(
+            "$('[name=\"wizard_form\"]').submit(function() {
                             $('#ajax_loader').show();
                             $('[name=\"from\"]').html('');
                             var val = $(\"input[type=submit][clicked=true]\").attr('draft_id');
@@ -88,109 +90,127 @@ class PluginMetademandsDraft extends CommonDBTM {
                       });
                         "
 
-      );
-      if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'])) {
-         $draftname = Html::cleanInputText(Toolbox::stripslashes_deep($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'])) ?? '';
-      } else {
-         $draftname = '';
-      }
+        );
+        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'])) {
+            $draftname = Html::cleanInputText(
+                Toolbox::stripslashes_deep(
+                    $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name']
+                )
+            ) ?? '';
+        } else {
+            $draftname = '';
+        }
 
 
-      if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'])) {
+        $return .= "<div class='card-header'>";
+        $return .= __("New draft", 'metademands');
+        $return .= " <span class='red'>*</span></div>";
+        $return .= "<table class='tab_cadre_fixe'>";
+        $return .= "<tr class=''>";
+        $return .= "<td colspan='4' class='center'>";
+        $return .= "<br>";
+        $return .= Html::input('draft_name', [
+            'value' => '',
+            'maxlength' => 250,
+            'size' => 40,
+            'placeholder' => __('Draft name', 'metademands')
+        ]);
+        $return .= "<br>";
+        $title = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
+        $title .= _sx('button', 'Save as draft', 'metademands');
+        $return .= Html::submit($title, [
+            'name' => 'save_draft',
+            'form' => '',
+            'id' => 'submitSave',
+            'class' => 'btn btn-success btn-sm'
+        ]);
+        $return .= "&nbsp;";
+        $title = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
+        $title .= _sx('button', 'Clean form', 'metademands');
+        $return .= Html::submit($title, [
+            'name' => 'clean_form',
+            'class' => 'btn btn-warning btn-sm'
+        ]);
+        $return .= "<br>";
+        $return .= "</td></tr>";
 
-         $return .= "<div class='card-header'>";
-         $return .= __("Current draft", 'metademands');
-         $return .= "</div>";
-         $return .= "<table class='tab_cadre_fixe'>";
-         $return .= "<tr class=''>";
-         $return .= "<td colspan='4' class='center'>";
-         $title  = "<i class='fas fa-1x fa-save pointer'></i>&nbsp;";
-         $title  .= _sx('button', 'Save draft', 'metademands') . "&nbsp;(" . $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name'] . ")";
-         $return .= Html::submit($title, ['name'  => 'save_draft',
-                                          'form'  => '',
-                                          'id'    => 'submitSave',
-                                          'class' => 'btn btn-success btn-sm']);
-         $return .= "&nbsp;";
-         $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
-         $title  .= _sx('button', 'Clean form', 'metademands');
-         $return .= Html::submit($title, ['name'  => 'clean_form',
-                                          'class' => 'btn btn-warning btn-sm']);
-         $return .= "<br>";
-         $return .= "</td></tr>";
-      } else {
-         $return .= "<div class='card-header'>";
-         $return .= __("New draft", 'metademands');
-         $return .= " <span class='red'>*</span></div>";
-         $return .= "<table class='tab_cadre_fixe'>";
-         $return .= "<tr class=''>";
-         $return .= "<td colspan='4' class='center'>";
-         $return .= "<br>";
-         $return .= Html::input('draft_name', ['value'       => $draftname,
-                                               'maxlength'   => 250,
-                                               'size'        => 40,
-                                               'placeholder' => __('Draft name', 'metademands')]);
-         $return .= "<br>";
-         $title  = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
-         $title  .= _sx('button', 'Save as draft', 'metademands');
-         $return .= Html::submit($title, ['name'  => 'save_draft',
-                                          'form'  => '',
-                                          'id'    => 'submitSave',
-                                          'class' => 'btn btn-success btn-sm']);
-         $return .= "&nbsp;";
-         $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
-         $title  .= _sx('button', 'Clean form', 'metademands');
-         $return .= Html::submit($title, ['name'  => 'clean_form',
-                                          'class' => 'btn btn-warning btn-sm']);
-         $return .= "<br>";
-         $return .= "</td></tr>";
-      }
-      $return .= "</table>";
+        $return .= "</table>";
 
-      $return .= "<table class='tab_cadre_fixe'>";
-      //      $return .= "<tr class='tab_bg_1'><th colspan='4' class='center'>";
-      $return .= "<div class='card-header'>";
-      $return .= __("Your drafts", 'metademands');
-      $return .= "</div>";
-      $return .= "<p class='card-text'>";
-      //      $return .= "</th></tr>";
-      $return .= "<tbody id='bodyDraft'>";
-      if (count($drafts) > 0) {
-         foreach ($drafts as $draft) {
-            $return .= "<tr class=''>";
-            $return .= "<td>" . Toolbox::stripslashes_deep($draft['name']) . "</td>";
-            $return .= "<td>" . Html::convDateTime($draft['date']) . "</td>";
-            $return .= "</div>";
-            $return .= "<td>";
-            $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadDraft(" . $draft['id'] . ")\">";
-            $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx('button', 'Load draft', 'metademands') . "' 
+        $return .= "<table class='tab_cadre_fixe'>";
+        //      $return .= "<tr class='tab_bg_1'><th colspan='4' class='center'>";
+        $return .= "<div class='card-header'>";
+        $return .= __("Your drafts", 'metademands');
+        $return .= "</div>";
+        $return .= "<p class='card-text'>";
+        //      $return .= "</th></tr>";
+        $return .= "<tbody id='bodyDraft'>";
+        if (count($drafts) > 0) {
+
+            foreach ($drafts as $draft) {
+                $return .= "<tr class=''>";
+                $return .= "<td>" . Toolbox::stripslashes_deep($draft['name']) . "</td>";
+                $return .= "<td>" . Html::convDateTime($draft['date']) . "</td>";
+                $return .= "</div>";
+
+                $return .= "<td>";
+                $return .= "<button form='' class='submit btn btn-success btn-sm' onclick=\"loadDraft(" . $draft['id'] . ")\">";
+                $return .= "<i class='fas fa-1x fa-cloud-download-alt pointer' title='" . _sx(
+                        'button',
+                        'Load draft',
+                        'metademands'
+                    ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
-            $return .= "</button>";
-            $return .= "</td>";
-            $return .= "<td>";
-            $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteDraft(" . $draft['id'] . ")\">";
-            $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete draft', 'metademands') . "' 
+                $return .= "</button>";
+                $return .= "</td>";
+
+                if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id'])
+                    && $draft['id'] == $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id']) {
+                    $return .= "<td>";
+                    $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();udpateDraft(" . $draft['id'] . ", '" . $draft['name'] . "')\">";
+                    $return .= "<i class='fas fa-1x fa-save pointer' title='" . _sx(
+                            'button',
+                            'Save model',
+                            'metademands'
+                        ) . "' 
+                               data-hasqtip='0' aria-hidden='true'></i>";
+                    $return .= "</button>";
+                    $return .= "</td>";
+                }
+
+                $return .= "<td>";
+                $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteDraft(" . $draft['id'] . ")\">";
+                $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx(
+                        'button',
+                        'Delete draft',
+                        'metademands'
+                    ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
-            $return .= "</button>";
-            $return .= "</td>";
-            $return .= "</tr>";
-         }
-      } else {
-         $return .= "<tr class=''><td colspan='4' class='center'>" . __('No draft available for this form', 'metademands') . "</td></tr>";
-      }
-      $return .= "</tbody>";
-      $return .= "</table>";
-      $return .= "</p>";
+                $return .= "</button>";
+                $return .= "</td>";
+                $return .= "</tr>";
+            }
+        } else {
+            $return .= "<tr class=''><td colspan='4' class='center'>" . __(
+                    'No draft available for this form',
+                    'metademands'
+                ) . "</td></tr>";
+        }
+        $return .= "</tbody>";
+        $return .= "</table>";
+        $return .= "</p>";
 
-      if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id'])) {
-         $draft_id = $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id'];
-      } else {
-         $draft_id = 0;
-      }
-      $return .= Html::hidden('plugin_metademands_drafts_id', ['value' => $draft_id, 'id' => 'plugin_metademands_drafts_id']);
+        if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id'])) {
+            $draft_id = $_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id'];
+        } else {
+            $draft_id = 0;
+        }
+        $return .= Html::hidden(
+            'plugin_metademands_drafts_id',
+            ['value' => $draft_id, 'id' => 'plugin_metademands_drafts_id']
+        );
 
-      $return .= "<script>
+        $return .= "<script>
                        var meta_id = {$plugin_metademands_metademands_id};
-                       
                       function deleteDraft(draft_id) {
                           var self_delete = false;
                           if($draft_id == draft_id ){
@@ -222,8 +242,8 @@ class PluginMetademandsDraft extends CommonDBTM {
                              });
                        };
                      </script>";
-      $step   = PluginMetademandsMetademand::STEP_SHOW;
-      $return .= "<script>
+        $step = PluginMetademandsMetademand::STEP_SHOW;
+        $return .= "<script>
                       var meta_id = {$plugin_metademands_metademands_id};
                       var step = {$step};
                       function loadDraft(draft_id) {
@@ -245,7 +265,35 @@ class PluginMetademandsDraft extends CommonDBTM {
                              });
                        };
                      </script>";
-      $return .= "<script>
+        $return .= "<script>
+                          function udpateDraft(draft_id, draft_name) {
+                             if(typeof tinyMCE !== 'undefined'){
+                                tinyMCE.triggerSave();
+                             }
+                             jQuery('.resume_builder_input').trigger('change');
+                             $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                             $('#ajax_loader').show();
+                             arrayDatas = $('#wizard_form').serializeArray();
+                             arrayDatas.push({name: \"save_draft\", value: true});
+                             arrayDatas.push({name: \"plugin_metademands_drafts_id\", value: draft_id});
+                             arrayDatas.push({name: \"draft_name\", value: draft_name});
+                             $.ajax({
+                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',
+                                   type: 'POST',
+                                   data: arrayDatas,
+                                   success: function(response){
+                                       $('#ajax_loader').hide();
+                                       document.location.reload();
+                                    },
+                                   error: function(xhr, status, error) {
+                                      console.log(xhr);
+                                      console.log(status);
+                                      console.log(error);
+                                    } 
+                                });
+                          }
+                        </script>";
+        $return .= "<script>
                           $('#submitSave').click(function() {
                            
                              if(typeof tinyMCE !== 'undefined'){
@@ -272,9 +320,8 @@ class PluginMetademandsDraft extends CommonDBTM {
                                 });
                           });
                         </script>";
-      $return .= "</span>";
+        $return .= "</span>";
 
-      return $return;
-
-   }
+        return $return;
+    }
 }
