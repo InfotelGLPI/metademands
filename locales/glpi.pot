@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-22 13:31+0000\n"
+"POT-Creation-Date: 2024-04-22 16:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1860,7 +1860,7 @@ msgstr ""
 msgid "Add attachment"
 msgstr ""
 
-#: inc/upload.class.php:162
+#: inc/upload.class.php:168
 msgid "Number of documents allowed"
 msgstr ""
 
