@@ -473,7 +473,7 @@ class PluginMetademandsYesno extends CommonDBTM
                 foreach ($session_value as $k => $fieldSession) {
                     $script .= "$('[name=\"$name\"]').val($session_value).trigger('change');";
                 }
-            } else {
+            } elseif ($session_value > 0) {
                 $script .= "$('[name=\"$name\"]').val($session_value).trigger('change');";
             }
         }
@@ -577,7 +577,9 @@ class PluginMetademandsYesno extends CommonDBTM
 //            $script .= " }";
 
         }
-        $script .= "fixButtonIndicator();});";
+        $script .= "fixButtonIndicator();
+        
+        });";
 
         echo Html::scriptBlock('$(document).ready(function() {' . $script2 . " " . $script . '});');
     }

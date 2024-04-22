@@ -56,7 +56,13 @@ class PluginMetademandsUpload extends CommonDBTM
     {
         Html::requireJs('tinymce');
         $self = new self();
+
+        if (is_array($value)) {
+            $value = "";
+        }
+
         $arrayFiles = json_decode($value, true);
+
         $field      = "";
         $nb         = 0;
         $container = 'fileupload_info_ticket'.$namefield . $data['id'];
@@ -144,7 +150,7 @@ class PluginMetademandsUpload extends CommonDBTM
                 ]);
             }
         }
-        $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
+//        $field .= "<input type='hidden' name='" . $namefield . "[" . $data['id'] . "]' value='$value'>";
 
         echo $field;
     }

@@ -509,7 +509,7 @@ class PluginMetademandsRadio extends CommonDBTM
                 foreach ($session_value as $k => $fieldSession) {
                     $pre_onchange .= "$('[id=\"field[" . $id . "][" . $fieldSession . "]\"]').prop('checked', true).trigger('change');";
                 }
-            } else {
+            } elseif ($session_value > 0) {
                 $pre_onchange .= "$('[id=\"field[" . $id . "][" . $session_value . "]\"]').prop('checked', true).trigger('change');";
             }
         }
