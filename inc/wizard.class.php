@@ -231,27 +231,32 @@ class PluginMetademandsWizard extends CommonDBTM
             'meta_validated' => 1,
             'resources_id' => 0,
             'resources_step' => '',
+            'ancestor_tickets_id' => 0,
             'meta_type' => '',
             'block_id' => 0,
             'itilcategories_id' => 0];
 
         // if given parameters, override defaults
-        foreach ($options as $key => $value) {
-            if (isset($parameters[$key])) {
-                $parameters[$key] = $value;
+        foreach ($parameters as $key => $value) {
+            if (isset($options[$key])) {
+                $parameters[$key] = $options[$key];
             }
         }
         $_SESSION['servicecatalog']['sc_itilcategories_id'] = $parameters['itilcategories_id'];
         // Retrieve session values
-        if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'])) {
-            $parameters['tickets_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'];
-        }
+//        if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'])) {
+//            $parameters['tickets_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['tickets_id'];
+//        }
         if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_id'])) {
             $parameters['resources_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_id'];
         }
         if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_step'])) {
             $parameters['resources_step'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['fields']['resources_step'];
         }
+        if (isset($_SESSION['plugin_metademands'][$parameters['metademands_id']]['ancestor_tickets_id'])) {
+            $parameters['ancestor_tickets_id'] = $_SESSION['plugin_metademands'][$parameters['metademands_id']]['ancestor_tickets_id'];
+        }
+
         Html::requireJs("metademands");
 
         echo "<div id ='content'>";
@@ -368,6 +373,7 @@ class PluginMetademandsWizard extends CommonDBTM
             echo Html::hidden('resources_id', ['value' => $parameters['resources_id']]);
             echo Html::hidden('resources_step', ['value' => $parameters['resources_step']]);
             echo Html::hidden('block_id', ['value' => $parameters['block_id']]);
+            echo Html::hidden('ancestor_tickets_id', ['value' => $parameters['ancestor_tickets_id']]);
 
             $icon = '';
 
@@ -905,12 +911,12 @@ class PluginMetademandsWizard extends CommonDBTM
 
         echo "<div class='md-wizard'>";
 
-        $see_summary = 0;
-        if ($metademands->fields['is_basket'] == 1) {
-            $see_summary = 1;
-        }
-
         if (count($metademands_data)) {
+
+            $see_summary = 0;
+            if (isset($metademands->fields['is_basket']) && $metademands->fields['is_basket'] == 1) {
+                $see_summary = 1;
+            }
 
             foreach ($metademands_data as $form_step => $data) {
                 if ($form_step == $step) {
@@ -977,6 +983,10 @@ class PluginMetademandsWizard extends CommonDBTM
             }
 
             echo Html::hidden('create_metademands', ['value' => 1]);
+
+            if (isset($options['ancestor_tickets_id'])) {
+                echo Html::hidden('ancestor_tickets_id', ['value' => $options['ancestor_tickets_id']]);
+            }
 
             if ($metademands->fields['is_order'] == 1) {
                 if (!countElementsInTable(
@@ -1736,20 +1746,22 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 $ID = $metademands->fields['id'];
 
-                $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($ID);
-                if (count($childs_meta) > 0 && !isset($_SESSION['metademands_hide'])) {
-                    $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-                }
-
                 if ($metademands->fields['is_basket'] == 1) {
                     $title = _sx('button', 'See basket summary & send it', 'metademands');
                     echo Html::hidden('see_basket_summary', ['value' => 1]);
                     $see_summary = 1;
                 }
+                $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($ID);
+                if (count($childs_meta) > 0) {
+                    $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                }
                 $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
                 $submitmsg = "";
                 $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
                 $title = _sx('button', 'Save & send to another user / group', 'metademands');
+
+
+
                 $submitsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
                 $submitstepmsg = "";
 
@@ -2914,7 +2926,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
 
             } elseif (Session::haveRight("plugin_metademands", READ)) {
-                Html::redirect($self->getFormURL() . "?step=" . $step = PluginMetademandsMetademand::STEP_INIT);
+                Html::redirect($self->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
             } else {
                 Html::back();
             }

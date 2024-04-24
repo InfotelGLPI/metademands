@@ -222,7 +222,17 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $form = new PluginMetademandsForm();
                     $form->showFormsForItilObject($item);
                     $metademands->showPluginForTicket($item);
-                    $metademands->showProgressionForm($item);
+                    $tovalidate = 0;
+                    $metaValidation = new PluginMetademandsMetademandValidation();
+                    if ($metaValidation->getFromDBByCrit(['tickets_id' => $item->fields['id']])
+                        && ($metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE
+                            || $metaValidation->fields['validate'] == PluginMetademandsMetademandValidation::TO_VALIDATE_WITHOUTTASK)) {
+                        $tovalidate = 1;
+                    }
+                    if ($tovalidate == 0) {
+                        $metademands->showProgressionForm($item);
+                    }
+
                 } else {
                     $metademands->showPluginForTicket($item);
                     $metademands->showProgressionForm($item);
@@ -1810,23 +1820,23 @@ JAVASCRIPT
                 $docitem = null;
                 foreach ($data as $form_metademands_id => $line) {
                     $metaCategories->getFromDB($form_metademands_id);
-                    if ($object_class == 'Ticket') {
-                        $noChild = false;
-                        if ($ancestor_tickets_id > 0) {
-                            // Skip ticket creation if not allowed by metademand form
-                            $metademandtasks_tasks_ids = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
-                            //                  foreach ($metademandtasks_tasks_ids as $metademandtasks_tasks_id) {
-                            if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_ids, $ancestor_tickets_id)) {
-                                $noChild = true;
-                            }
-                            //                  }
-                        } else {
-                            $values['fields']['tickets_id'] = 0;
-                        }
-                        if ($noChild) {
-                            continue;
-                        }
-                    }
+//                    if ($object_class == 'Ticket') {
+//                        $noChild = false;
+//                        if ($ancestor_tickets_id > 0) {
+//                            // Skip ticket creation if not allowed by metademand form
+//                            $metademandtasks_tasks_ids = PluginMetademandsMetademandTask::getMetademandTask_TaskId($form_metademands_id);
+//                            //                  foreach ($metademandtasks_tasks_ids as $metademandtasks_tasks_id) {
+//                            if (!PluginMetademandsTicket_Field::checkTicketCreation($metademandtasks_tasks_ids, $ancestor_tickets_id)) {
+//                                $noChild = true;
+//                            }
+//                            //                  }
+//                        } else {
+//                            $values['fields']['tickets_id'] = 0;
+//                        }
+//                        if ($noChild) {
+//                            continue;
+//                        }
+//                    }
                     $metademand = new self();
                     $metademand->getFromDB($form_metademands_id);
 
@@ -1884,6 +1894,7 @@ JAVASCRIPT
                             unset($_SESSION['plugin_metademands'][$form_metademands_id]['form_to_compare']);
                             $values_form[0] = $values['fields'];
                             $parent_fields = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
+
                             $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                         }
                     } elseif ($metademand->fields['is_order'] == 1) {
@@ -2096,7 +2107,7 @@ JAVASCRIPT
                         }
                     }
 
-                    // Case of simple ticket convertion
+                    // Case of update existing ticket with form
                     // Ticket does not exist : ADD
                     $ticket_exists = false;
 
@@ -2205,10 +2216,11 @@ JAVASCRIPT
                             }
                         }
 
-                        //ADD TICKET
+                        // Case of update existing ticket with form
                         if (isset($options['current_ticket_id'])
                             && $options['current_ticket_id'] > 0
                             && !$options['meta_validated']) {
+
                             $inputUpdate['id'] = $options['current_ticket_id'];
                             $inputUpdate['content'] = $input['content'];
                             $inputUpdate['name'] = $input['name'];
@@ -2216,8 +2228,9 @@ JAVASCRIPT
                             $object->update($inputUpdate);
                             $object->getFromDB($inputUpdate['id']);
                             $ticket_exists_array[] = 1;
-                        } else {
 
+                        } else {
+                            //ADD TICKET
                             if (empty($input['content'])) {
                                 $message = __('There is a problem on ticket creation', 'metademands');
                                 Session::addMessageAfterRedirect($message, false, ERROR);
@@ -2384,9 +2397,40 @@ JAVASCRIPT
                             if (count($line['form']) && isset($values['fields'])) {
                                 //TODO Change / problem ?
                                 $ticket_field->deleteByCriteria(['tickets_id' => $parent_tickets_id]);
+                                $input['_filename'] = [];
+                                $input['_tag_filename'] = [];
+
+                                if ($metademand->fields['is_order'] == 0) {
+                                    if (isset($values['fields']['uploaded_files']['_filename'])) {
+                                        $input['_filename'] = $values['fields']['uploaded_files']['_filename'];
+                                    }
+                                    if (isset($values['fields']['uploaded_files']['_prefix_filename'])) {
+                                        $input['_prefix_filename'] = $values['fields']['uploaded_files']['_prefix_filename'];
+                                    }
+                                    if (isset($values['fields']['uploaded_files']['_tag_filename'])) {
+                                        $input['_tag_filename'] = $values['fields']['uploaded_files']['_tag_filename'];
+                                    }
+                                } else {
+                                    if (isset($values['fields']['_filename'])) {
+                                        $input['_filename'] = $values['fields']['_filename'];
+                                    }
+                                    if (isset($values['fields']['_prefix_filename'])) {
+                                        $input['_prefix_filename'] = $values['fields']['_prefix_filename'];
+                                    }
+                                    if (isset($values['fields']['_tag_filename'])) {
+                                        $input['_tag_filename'] = $values['fields']['_tag_filename'];
+                                    }
+                                }
                                 $ticket_field->setTicketFieldsValues($line['form'], $values['fields'], $parent_tickets_id, $input);
                             }
-
+                            //case of child metademands for link it
+                            if (!empty($options['ancestor_tickets_id'])) {
+                                // Add son link to parent
+                                $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
+                                    'tickets_id_2' => $options['ancestor_tickets_id'],
+                                    'link' => Ticket_Ticket::SON_OF]);
+                                $ancestor_tickets_id = $parent_tickets_id;
+                            }
                             if (!empty($ancestor_tickets_id) && $object_class == 'Ticket') {
                                 // Add son link to parent
                                 $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
@@ -3590,7 +3634,7 @@ JAVASCRIPT
                         && in_array($child_meta, $_SESSION['metademands_hide'])) {
                         continue;
                     }
-                    Html::redirect(PluginMetademandsWizard::getFormURL() . "?metademands_id=" . $child_meta . "&step=" . self::STEP_SHOW);
+                    Html::redirect(PluginMetademandsWizard::getFormURL() . "?ancestor_tickets_id=" . $parent_tickets_id . "&metademands_id=" . $child_meta . "&step=" . self::STEP_SHOW);
                 }
             }
 
@@ -4449,6 +4493,7 @@ JAVASCRIPT
                 $son_ticket_data['type'] = $parent_fields['type'];
                 $son_ticket_data['entities_id'] = $parent_fields['entities_id'];
 
+
                 $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
                 $son_ticket_data['_auto_import'] = 1;
                 $son_ticket_data['status'] = Ticket::INCOMING;
@@ -5005,7 +5050,8 @@ JAVASCRIPT
                 foreach ($sons as $son) {
                     if (PluginMetademandsTicket_Field::checkTicketCreation($son['tasks_id'], $ticket->fields['id'])) {
                         echo "<tr class='tab_bg_1'>";
-                        if ($son['type'] == PluginMetademandsTask::TICKET_TYPE || $son['type'] == PluginMetademandsTask::TASK_TYPE) {
+                        if ($son['type'] == PluginMetademandsTask::TICKET_TYPE
+                            || $son['type'] == PluginMetademandsTask::TASK_TYPE) {
                             $color_class = '';
                         } else {
                             $color_class = "class='metademand_metademandtasks'";
@@ -5028,7 +5074,8 @@ JAVASCRIPT
 
                         //assign
                         $techdata = "";
-                        if ($son['type'] == PluginMetademandsTask::TICKET_TYPE || $son['type'] == PluginMetademandsTask::TASK_TYPE) {
+                        if ($son['type'] == PluginMetademandsTask::TICKET_TYPE
+                            || $son['type'] == PluginMetademandsTask::TASK_TYPE) {
                             if (isset($son['users_id_assign'])
                                 && $son['users_id_assign'] > 0) {
                                 $techdata .= getUserName($son['users_id_assign'], 0, true);
@@ -6198,6 +6245,7 @@ JAVASCRIPT
         $condition = new PluginMetademandsCondition();
         $metafields = $metafield->find(['plugin_metademands_metademands_id' => $this->getID()]);
         $fields['metafields'] = [];
+        $fields['metafieldparameters'] = [];
         $fields['metafieldoptions'] = [];
         $fields['metafieldcustoms'] = [];
         foreach ($metafields as $id => $metafield) {
@@ -6221,8 +6269,8 @@ JAVASCRIPT
             }
 
             $metafieldcustoms = $metafieldcustom->find(['plugin_metademands_fields_id' => $metafield["id"]]);
-            foreach ($metafieldcustoms as $idcustoms => $metafieldcustom) {
-                $fields['metafieldoptions']['fieldcustoms' . $idcustoms] = $metafieldcustom;
+            foreach ($metafieldcustoms as $idcustoms => $metafieldcusto) {
+                $fields['metafieldcustoms']['fieldcustoms' . $idcustoms] = $metafieldcusto;
             }
         }
 
@@ -6255,7 +6303,7 @@ JAVASCRIPT
             $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
         }
 
-        $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand></metademand>");
+        $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand><version>".PLUGIN_METADEMANDS_VERSION."</version></metademand>");
 
         $this->toXml($xml, $fields);
 
@@ -6349,9 +6397,15 @@ JAVASCRIPT
 
         $mapTableField = [];
         $mapTableFieldReverse = [];
-
+        $mapTableCheckValue = [];
 
         $fields = [];
+
+        $version = 0;
+        if (isset($datas['version'])) {
+            $version = $datas['version'];
+        }
+
         if (isset($datas['metafields'])) {
             $fields = $datas['metafields'];
         }
@@ -6360,12 +6414,12 @@ JAVASCRIPT
         if (isset($datas['metafieldoptions'])) {
             $fieldoptions = $datas['metafieldoptions'];
         }
-
+        $fieldoldparams = [];
         $fieldparameters = [];
         if (isset($datas['metafieldparameters'])) {
             $fieldparameters = $datas['metafieldparameters'];
         }
-
+        $fieldoldcustoms = [];
         $fieldcustoms = [];
         if (isset($datas['metafieldcustoms'])) {
             $fieldcustoms = $datas['metafieldcustoms'];
@@ -6402,11 +6456,53 @@ JAVASCRIPT
         $datas = Toolbox::addslashes_deep($datas);
         $newIDMeta = $metademand->add($datas);
         //      $translations = [];
+
+        $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+        $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
         foreach ($fields as $k => $field) {
             $metaconditions = [];
             foreach ($field as $key => $f) {
                 $fields[$k][$key] = Html::entity_decode_deep($f);
-                if ($key == "fieldtranslations") {
+
+                $fieldoldparams[$k][$key] = Html::entity_decode_deep($f);
+
+                if ($key == "custom_values" && isset($field['type'])
+                    && in_array($field['type'], $allowed_customvalues_types)
+                    || (isset($field['item']) && in_array($field['item'], $allowed_customvalues_items))
+                ) {
+                    $fieldoldcustoms[$k]["id"] = $fields[$k]["id"];
+                    $fieldoldcustoms[$k][$key] = PluginMetademandsFieldParameter::_unserialize($f);
+//                    if ($field['type'] != 'yesno') {
+//                        $fieldcustoms[$k][$key] = PluginMetademandsFieldParameter::_serialize($fields[$k][$key]);
+//                    }
+                    if (is_null($fields[$k][$key])) {
+                        $fieldoldcustoms[$k][$key] = "[]";
+                    }
+//                } elseif ($key == "comment_values") {
+//                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+//                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+//                    if (is_null($fields[$k][$key])) {
+//                        $fields[$k][$key] = "[]";
+//                    }
+                } elseif (str_contains($key, 'condition')) {
+                    $metaconditions[] = $f;
+//                } elseif ($key == "default_values") {
+//                    $fields[$k][$key] = PluginMetademandsField::_unserialize($f);
+//                    $fields[$k][$key] = PluginMetademandsField::_serialize($fields[$k][$key]);
+//                    if (is_null($fields[$k][$key])) {
+//                        $fields[$k][$key] = "[]";
+//                    }
+                } elseif ($key == "informations_to_display") {
+                    $fields[$k][$key] = PluginMetademandsFieldParameter::_unserialize($f);
+                    $fields[$k][$key] = PluginMetademandsFieldParameter::_serialize($fields[$k][$key]);
+                    // legacy support
+                    if (isset($field['item']) && $field['item'] == 'User' && $f == '[]') {
+                        $fields[$k][$key] = '["full_name"]';
+                    } elseif (is_null($fields[$k][$key])) {
+                        $fields[$k][$key] = "[]";
+                    }
+                } elseif ($key == "fieldtranslations") {
                     $fieldstranslations = $f;
                 } else {
                     if (is_array($f) && empty($f)) {
@@ -6441,15 +6537,18 @@ JAVASCRIPT
             if (isset($fieldstranslations)) {
                 foreach ($fieldstranslations as $fieldstranslation) {
                     unset($fieldstranslation['id']);
-                    $fieldstranslation['value'] = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['value']));
-                    $fieldstranslation['field'] = Html::entity_decode_deep(Toolbox::addslashes_deep($fieldstranslation['field']));
+                    $fieldstranslation['value'] = Html::entity_decode_deep(
+                        Toolbox::addslashes_deep($fieldstranslation['value'])
+                    );
+                    $fieldstranslation['field'] = Html::entity_decode_deep(
+                        Toolbox::addslashes_deep($fieldstranslation['field'])
+                    );
                     $fieldstranslation['items_id'] = $newIDField;
 
                     $trans = new PluginMetademandsFieldTranslation();
                     $trans->add($fieldstranslation);
                 }
             }
-
             //TODO Change fields id for link_to_user fields
         }
         $mapTableTask = [];
@@ -6497,56 +6596,178 @@ JAVASCRIPT
         //Add new params & update fields
         $fieldMetaparam = new PluginMetademandsFieldParameter();
 
-        foreach ($fieldparameters as $new => $old) {
+        if ($version < PLUGIN_METADEMANDS_VERSION) {
+            foreach ($fieldoldparams as $new => $old) {
+                $plugin_metademands_fields_id = $old["id"] ?? 0;
+                $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
 
-            $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
-            $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
+                $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
+                $toUpdate["default_values"] = $old["default_values"] ?? $empty_values;
+                $toUpdate["comment_values"] = $old["comment_values"] ?? $empty_values;
+                $toUpdate["hide_title"] = $old["hide_title"] ?? 0;
+                $toUpdate["is_mandatory"] = $old["is_mandatory"] ?? 0;
+                $toUpdate["max_upload"] = $old["max_upload"] ?? 0;
+                $toUpdate["regex"] = $old["regex"] ?? "";
+                $toUpdate["color"] = $old["color"] ?? "";
+                $toUpdate["row_display"] = $old["row_display"] ?? 0;
+                $toUpdate["is_basket"] = $old["is_basket"] ?? 0;
+                $toUpdate["display_type"] = $old["display_type"] ?? 0;
+                $toUpdate["used_by_ticket"] = $old["used_by_ticket"] ?? 0;
+                $toUpdate["used_by_child"] = $old["used_by_child"] ?? 0;
+                $toUpdate["link_to_user"] = $old["link_to_user"] ?? 0;
+                $toUpdate["default_use_id_requester"] = $old["default_use_id_requester"] ?? 0;
+                $toUpdate["default_use_id_requester_supervisor"] = $old["default_use_id_requester_supervisor"] ?? 0;
+                $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
+                $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
+                $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
+                $toUpdate["informations_to_display"] = PluginMetademandsFieldParameter::_serialize(['full_name']);
+                $toUpdate["use_richtext"] = $old["use_richtext"] ?? 0;
+                $toUpdate["icon"] = $old["icon"] ?? "";
+                $toUpdate["readonly"] = $old["readonly"] ?? 0;
+                $toUpdate["hidden"] = $old["hidden"] ?? 0;
 
-            $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
-            $toUpdate["default_values"] = $old["default_values"]?? $empty_values;
-            $toUpdate["comment_values"] = $old["comment_values"]?? $empty_values;
-            $toUpdate["hide_title"] = $old["hide_title"] ?? 0;
-            $toUpdate["is_mandatory"] = $old["is_mandatory"] ?? 0;
-            $toUpdate["max_upload"] = $old["max_upload"] ?? 0;
-            $toUpdate["regex"] = $old["regex"] ?? "";
-            $toUpdate["color"] = $old["color"] ?? "";
-            $toUpdate["row_display"] = $old["row_display"]?? 0;
-            $toUpdate["is_basket"] = $old["is_basket"] ?? 0;
-            $toUpdate["display_type"] = $old["display_type"]?? 0;
-            $toUpdate["used_by_ticket"] = $old["used_by_ticket"]?? 0;
-            $toUpdate["used_by_child"] = $old["used_by_child"]?? 0;
-            $toUpdate["link_to_user"] = $old["link_to_user"] ?? 0;
-            $toUpdate["default_use_id_requester"] = $old["default_use_id_requester"] ?? 0;
-            $toUpdate["default_use_id_requester_supervisor"] = $old["default_use_id_requester_supervisor"] ?? 0;
-            $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
-            $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
-            $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
-            $toUpdate["informations_to_display"] = $old["informations_to_display"];
-            $toUpdate["use_richtext"] = $old["use_richtext"] ?? 0;
-            $toUpdate["icon"] = $old["icon"] ?? "";
-            $toUpdate["readonly"] = $old["readonly"] ?? 0;
-            $toUpdate["hidden"] = $old["hidden"] ?? 0;
+                if ($plugin_metademands_fields_id != 0
+                    && isset($mapTableField[$plugin_metademands_fields_id])) {
+                    $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+                }
+                $fielddata = new PluginMetademandsField();
+                if ($fielddata->getFromDB($toUpdate['plugin_metademands_fields_id'])) {
+                    $toUpdate["type"] = $fielddata->fields["type"];
+                    $toUpdate["item"] = $fielddata->fields["item"];
+                }
 
-            if ($plugin_metademands_fields_id != 0
-                && isset($mapTableField[$plugin_metademands_fields_id])) {
-                $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+                $fieldMetaparam->add($toUpdate);
             }
-            $fielddata = new PluginMetademandsField();
-            if ($fielddata->getFromDB($toUpdate['plugin_metademands_fields_id'])) {
-                $toUpdate["type"] = $fielddata->fields["type"];
-                $toUpdate["item"] = $fielddata->fields["item"];
-            }
+        }
 
-            $fieldMetaparam->add($toUpdate);
+        if ($version == PLUGIN_METADEMANDS_VERSION) {
+            foreach ($fieldparameters as $new => $old) {
+
+                $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+                $empty_values = PluginMetademandsFieldParameter::_serialize([]);;
+
+                $toUpdate["custom_values"] = $old["custom_values"] ?? $empty_values;
+                $toUpdate["default_values"] = $old["default_values"]?? $empty_values;
+                $toUpdate["comment_values"] = $old["comment_values"]?? $empty_values;
+                $toUpdate["hide_title"] = $old["hide_title"] ?? 0;
+                $toUpdate["is_mandatory"] = $old["is_mandatory"] ?? 0;
+                $toUpdate["max_upload"] = $old["max_upload"] ?? 0;
+                $toUpdate["regex"] = $old["regex"] ?? "";
+                $toUpdate["color"] = $old["color"] ?? "";
+                $toUpdate["row_display"] = $old["row_display"]?? 0;
+                $toUpdate["is_basket"] = $old["is_basket"] ?? 0;
+                $toUpdate["display_type"] = $old["display_type"]?? 0;
+                $toUpdate["used_by_ticket"] = $old["used_by_ticket"]?? 0;
+                $toUpdate["used_by_child"] = $old["used_by_child"]?? 0;
+                $toUpdate["link_to_user"] = $old["link_to_user"] ?? 0;
+                $toUpdate["default_use_id_requester"] = $old["default_use_id_requester"] ?? 0;
+                $toUpdate["default_use_id_requester_supervisor"] = $old["default_use_id_requester_supervisor"] ?? 0;
+                $toUpdate["use_future_date"] = $old["use_future_date"] ?? 0;
+                $toUpdate["use_date_now"] = $old["use_date_now"] ?? 0;
+                $toUpdate["additional_number_day"] = $old["additional_number_day"] ?? 0;
+                $toUpdate["informations_to_display"] = $old["informations_to_display"];
+                $toUpdate["use_richtext"] = $old["use_richtext"] ?? 0;
+                $toUpdate["icon"] = $old["icon"] ?? "";
+                $toUpdate["readonly"] = $old["readonly"] ?? 0;
+                $toUpdate["hidden"] = $old["hidden"] ?? 0;
+
+                if ($plugin_metademands_fields_id != 0
+                    && isset($mapTableField[$plugin_metademands_fields_id])) {
+                    $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+                }
+                $fielddata = new PluginMetademandsField();
+                if ($fielddata->getFromDB($toUpdate['plugin_metademands_fields_id'])) {
+                    $toUpdate["type"] = $fielddata->fields["type"];
+                    $toUpdate["item"] = $fielddata->fields["item"];
+                }
+
+                $fieldMetaparam->add($toUpdate);
+            }
+        }
+
+        //Add new custom values & update fields
+        $fieldMetacustom = new PluginMetademandsFieldCustomvalue();
+        $custom_values = [];
+        if ($version < PLUGIN_METADEMANDS_VERSION) {
+            foreach ($fieldoldcustoms as $new => $old) {
+                $plugin_metademands_fields_id = $old["id"] ?? 0;
+                $custom_values = $old["custom_values"] ?? [];
+
+                if (count($custom_values) > 0) {
+                    foreach ($custom_values as $rank => $custom_value) {
+                        $name = Toolbox::addslashes_deep($custom_value);
+                        $oldrank = $rank;
+                        $is_default = $old["is_default"] ?? 0;
+                        $comment = $old["comment"] ?? "";
+
+                        $toUpdate = [];
+                        if ($name != "") {
+                            $toUpdate["name"] = $name;
+                        }
+                        if ($is_default != 0) {
+                            $toUpdate["is_default"] = $is_default;
+                        }
+                        if ($comment != "") {
+                            $toUpdate["comment"] = $comment;
+                        }
+                        $toUpdate["rank"] = $oldrank - 1;
+
+                        if ($plugin_metademands_fields_id != 0
+                            && isset($mapTableField[$plugin_metademands_fields_id])) {
+                            $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+                        }
+                        $newcustomid = $fieldMetacustom->add($toUpdate);
+                        $mapTableCheckValue[$old["id"]][$oldrank] = $newcustomid;
+                    }
+                }
+            }
+        }
+
+        if ($version == PLUGIN_METADEMANDS_VERSION) {
+            foreach ($fieldcustoms as $new => $old) {
+                $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
+                $name = $old["name"] ?? "";
+                $is_default = $old["is_default"] ?? 0;
+                $comment = $old["comment"] ?? "";
+                $rank = $old["rank"] ?? 0;
+
+                $toUpdate = [];
+                if ($name != "") {
+                    $toUpdate["name"] = $name;
+                }
+                if ($is_default != 0) {
+                    $toUpdate["is_default"] = $is_default;
+                }
+                if ($comment != "") {
+                    $toUpdate["comment"] = $comment;
+                }
+                if ($rank != 0) {
+                    $toUpdate["rank"] = $rank;
+                }
+
+                if ($plugin_metademands_fields_id != 0
+                    && isset($mapTableField[$plugin_metademands_fields_id])) {
+                    $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
+                }
+
+                $newcustomfield = $fieldMetacustom->add($toUpdate);
+                $mapTableCheckValue[$old["id"]] = $newcustomfield;
+            }
         }
 
         //Add new options & update fields
         $fieldMetaopt = new PluginMetademandsFieldOption();
+        $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+        $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
 
         foreach ($fieldoptions as $new => $old) {
 
 //            $fieldMeta->getFromDBByCrit(["plugin_metademands_fileds_id" => $new]);
 
+//            if (isset($field['type'])
+//                && !in_array($field['type'], $allowed_customvalues_types)
+//                || (isset($field['item']) && !in_array($field['item'], $allowed_customvalues_items))
+//            ) {
             $check_value = $old["check_value"] ?? 0;
             $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
             $plugin_metademands_tasks_id = $old["plugin_metademands_tasks_id"] ?? 0;
@@ -6563,6 +6784,18 @@ JAVASCRIPT
             if ($check_value != 0) {
                 $toUpdate["check_value"] = $check_value;
             }
+            if ($version == PLUGIN_METADEMANDS_VERSION) {
+                if ($check_value != 0
+                    && isset($mapTableCheckValue[$check_value])) {
+                    $toUpdate['check_value'] = $mapTableCheckValue[$check_value];
+                }
+            } else {
+                if ($check_value != 0
+                    && isset($mapTableCheckValue[$plugin_metademands_fields_id][$check_value])) {
+                    $toUpdate['check_value'] = $mapTableCheckValue[$plugin_metademands_fields_id][$check_value];
+                }
+            }
+
             if ($plugin_metademands_tasks_id != 0 && isset($mapTableTask[$plugin_metademands_tasks_id])) {
                 $toUpdate["plugin_metademands_tasks_id"] = $mapTableTask[$plugin_metademands_tasks_id];
             }
@@ -6597,39 +6830,7 @@ JAVASCRIPT
             }
 
             $fieldMetaopt->add($toUpdate);
-        }
-
-        //Add new custom values & update fields
-        $fieldMetacustom = new PluginMetademandsFieldCustomvalue();
-
-        foreach ($fieldcustoms as $new => $old) {
-
-            $plugin_metademands_fields_id = $old["plugin_metademands_fields_id"] ?? 0;
-            $name = $old["name"] ?? "";
-            $is_default = $old["is_default"] ?? 0;
-            $comment = $old["comment"] ?? "";
-            $rank = $old["rank"] ?? 0;
-
-            $toUpdate = [];
-            if ($name != "") {
-                $toUpdate["name"] = $name;
-            }
-            if ($is_default != 0) {
-                $toUpdate["is_default"] = $is_default;
-            }
-            if ($comment != "") {
-                $toUpdate["comment"] = $comment;
-            }
-            if ($rank != 0) {
-                $toUpdate["rank"] = $rank;
-            }
-
-            if ($plugin_metademands_fields_id != 0
-                && isset($mapTableField[$plugin_metademands_fields_id])) {
-                $toUpdate['plugin_metademands_fields_id'] = $mapTableField[$plugin_metademands_fields_id];
-            }
-
-            $fieldMetacustom->add($toUpdate);
+//            }
         }
 
         foreach ($mapTableTaskReverse as $new => $old) {
@@ -6659,7 +6860,6 @@ JAVASCRIPT
                 $meta_metatask->add($metat);
             }
         }
-
 
         if (!empty($translations)) {
             foreach ($translations as $key => $trans) {

@@ -75,6 +75,14 @@ if (isset($_POST['tickets_id']) && $_POST['tickets_id'] > 0) {
     $current_ticket_id = $_POST['tickets_id'];
 }
 
+if (empty($_POST['ancestor_tickets_id'])) {
+    $_POST['ancestor_tickets_id'] = 0;
+}
+
+if (isset($_POST['ancestor_tickets_id'])) {
+    $ancestor_tickets_id = $_POST['ancestor_tickets_id'];
+}
+
 if (isset($_GET['meta_validated'])) {
     if ($_GET['meta_validated'] > 0) {
         $_POST['meta_validated'] = true;
@@ -360,7 +368,10 @@ if ($nofreeinputs === false) {
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                             // Case of simple ticket convertion
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['tickets_id'] = $_POST['tickets_id'];
-
+                            //case of child metademands for link it
+                            if (isset($ancestor_tickets_id)) {
+                                $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['ancestor_tickets_id'] = $ancestor_tickets_id;
+                            }
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['current_ticket_id'] = $current_ticket_id;
 
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['meta_validated'] = $meta_validated;

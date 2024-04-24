@@ -44,8 +44,20 @@ if (empty($_GET['metademands_id'])) {
     $_GET['metademands_id'] = 0;
 }
 
+if (!isset($_GET['meta_type'])) {
+    $_GET['meta_type'] = 0;
+}
+
 if (empty($_GET['tickets_id'])) {
     $_GET['tickets_id'] = 0;
+}
+
+if (empty($_GET['ancestor_tickets_id'])) {
+    $_GET['ancestor_tickets_id'] = 0;
+}
+
+if (isset($_GET['ancestor_tickets_id'])) {
+    $ancestor_tickets_id = $_GET['ancestor_tickets_id'];
 }
 
 if (empty($_GET['resources_id'])) {
@@ -256,6 +268,10 @@ if (isset($_POST['next'])) {
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                             // Case of simple ticket convertion
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['tickets_id'] = $_POST['tickets_id'];
+                            //case of child metademands for link it
+                            if (isset($ancestor_tickets_id)) {
+                                $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['ancestor_tickets_id'] = $ancestor_tickets_id;
+                            }
                             // Resources id
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['resources_id'] = $_POST['resources_id'];
                             // Resources step
@@ -346,50 +362,53 @@ elseif (isset($_POST['previous'])) {
         // Else metademand wizard step
     } else {
 
-        $metademands->getFromDB($_POST['form_metademands_id']);
-        $type = $metademands->fields['type'];
+        if (isset($_POST['form_metademands_id'])) {
+            $metademands->getFromDB($_POST['form_metademands_id']);
+            $type = $metademands->fields['type'];
 
-        switch ($_POST['step']) {
-            case 2:
-            case 1:
-                $_POST['step'] = PluginMetademandsMetademand::STEP_INIT;
-                break;
-            default:
-                $_POST['step'] = $_POST['step'] - 1;
-                break;
-        }
+            switch ($_POST['step']) {
+                case 2:
+                case 1:
+                    $_POST['step'] = PluginMetademandsMetademand::STEP_INIT;
+                    break;
+                default:
+                    $_POST['step'] = $_POST['step'] - 1;
+                    break;
+            }
 
-        if (Session::getCurrentInterface() != 'central'
-            && Plugin::isPluginActive('servicecatalog')
-            && $_POST['step'] == PluginMetademandsMetademand::STEP_LIST
-            && Session::haveRight("plugin_servicecatalog", READ)) {
-            if ($itilcategories == 0) {
-                if (isset($_SERVER['HTTP_REFERER'])
-                    && strpos($_SERVER['HTTP_REFERER'], "wizard.form.php") !== false) {
-                    Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
-                } else {
+            if (Session::getCurrentInterface() != 'central'
+                && Plugin::isPluginActive('servicecatalog')
+                && $_POST['step'] == PluginMetademandsMetademand::STEP_LIST
+                && Session::haveRight("plugin_servicecatalog", READ)) {
+                if ($itilcategories == 0) {
+                    if (isset($_SERVER['HTTP_REFERER'])
+                        && strpos($_SERVER['HTTP_REFERER'], "wizard.form.php") !== false) {
+                        Html::redirect($wizard->getFormURL() . "?step=" . PluginMetademandsMetademand::STEP_INIT);
+                    } else {
+                        Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
+                    }
+                } elseif ($itilcategories > 0 && $type > 0) {
+                    Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
+                } elseif ($itilcategories > 0 && $type == 0) {
                     Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
                 }
-            } elseif ($itilcategories > 0 && $type > 0) {
-                Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/choosecategory.form.php?type=$type&level=1");
-            } elseif ($itilcategories > 0 && $type == 0) {
-                Html::redirect(PLUGIN_SERVICECATALOG_WEBDIR . "/front/main.form.php");
+            } elseif ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW) {
+                if (isset($_SESSION['metademands_hide'])) {
+                    unset($_SESSION['metademands_hide']);
+                }
+                if (isset($_SESSION['metademands_child_meta'])) {
+                    unset($_SESSION['metademands_child_meta']);
+                }
             }
-        } elseif ($_POST['step'] == PluginMetademandsMetademand::STEP_SHOW) {
-            if (isset($_SESSION['metademands_hide'])) {
-                unset($_SESSION['metademands_hide']);
-            }
-            if (isset($_SESSION['metademands_child_meta'])) {
-                unset($_SESSION['metademands_child_meta']);
-            }
+
+
+            $options = ['step' => $_POST['step'],
+                'metademands_id' => $_POST['metademands_id'],
+                'itilcategories_id' => $itilcategories
+            ];
+            $wizard->showWizard($options);
         }
 
-
-        $options = ['step' => $_POST['step'],
-            'metademands_id' => $_POST['metademands_id'],
-            'itilcategories_id' => $itilcategories
-        ];
-        $wizard->showWizard($options);
     }
 
     if (Session::getCurrentInterface() != 'central'
@@ -586,6 +605,7 @@ else {
         'metademands_id' => $_GET['metademands_id'],
         'preview' => false,
         'tickets_id' => $_GET['tickets_id'],
+        'ancestor_tickets_id' => $_GET['ancestor_tickets_id'],
         'resources_id' => $_GET['resources_id'],
         'resources_step' => $_GET['resources_step'],
         'itilcategories_id' => $itilcategories_id];
