@@ -445,8 +445,20 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 $tt = new ProblemTemplate();
             } elseif ($objectclass == 'Change') {
                 $tt = new ChangeTemplate();
+            } elseif ($objectclass == 'PluginReleasesRelease') {
+                $tt = new PluginReleasesReleaseTemplate();
             }
-            $allowed_fields = $tt->getAllowedFields(true, true);
+            $allowed_fields = [];
+            if ($objectclass == 'Ticket' || $objectclass == 'Problem' || $objectclass == 'Change') {
+                $allowed_fields = $tt->getAllowedFields(true, true);
+            }
+            //TODO ELCH
+            if ($objectclass == 'PluginReleasesRelease') {
+                $allowed_fields = $tt->getAllowedFields(true, true);
+                $allowed_fields[9] = 'date_production';
+                $allowed_fields[18] = 'date_preproduction';
+                unset($allowed_fields[-1]);
+            }
 
             unset($allowed_fields[-2]);
 
@@ -536,6 +548,17 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 ];
             }
 
+            //TODO ELCH
+            if ($objectclass == 'PluginReleasesRelease') {
+                if ($params['type'] == "date"
+                    || $params["type"] == "datetime") {
+                    $granted_fields = [
+                        'date_preproduction',
+                        'date_production'
+                    ];
+                }
+            }
+
             if (($params['type'] == "dropdown_meta"
                     && $params["item"] == "mydevices")
                 || ($params['type'] == "dropdown_multiple"
@@ -548,7 +571,9 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             }
 
             foreach ($allowed_fields as $id => $value) {
-                if (in_array($searchOption[$id]['linkfield'], $granted_fields) || in_array($id, $granted_fields)) {
+                if ((isset($searchOption[$id]['linkfield'])
+                        && in_array($searchOption[$id]['linkfield'], $granted_fields))
+                    || in_array($id, $granted_fields)) {
                     $ticket_fields[$id] = $searchOption[$id]['name'];
                 }
             }

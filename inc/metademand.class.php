@@ -59,7 +59,7 @@ class PluginMetademandsMetademand extends CommonDBTM
     const STEP_SHOW = 2;
 
     const STEP_CREATE = "create_metademands";
-
+    public static $types = ['Ticket', 'Problem', 'Change'];
     const TODO = 1; // todo
     const DONE = 2; // done
     const FAIL = 3; // Failed
@@ -433,7 +433,8 @@ class PluginMetademandsMetademand extends CommonDBTM
         if (isset($input['itilcategories_id'])) {
             if (count($input['itilcategories_id']) > 0) {
                 //retrieve all multiple cats from all metademands
-                if ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change') {
+
+                if ($input['object_to_create'] != 'Ticket') {
                     $input['type'] = 0;
                 }
 
@@ -503,7 +504,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         }
 
         if (isset($input['object_to_create'])
-            && ($input['object_to_create'] == 'Problem' || $input['object_to_create'] == 'Change')) {
+            && $input['object_to_create'] != 'Ticket') {
             $input['type'] = 0;
             $input['force_create_tasks'] = 1;
         }
@@ -866,6 +867,44 @@ class PluginMetademandsMetademand extends CommonDBTM
         return parent::getSpecificValueToSelect($field, $name, $values, $options);
     }
 
+
+    public static function registerType($type)
+    {
+        if (!in_array($type, self::$types)) {
+            self::$types[] = $type;
+        }
+    }
+
+
+    /**
+     * Type than could be linked to a Rack
+     *
+     * @param $all boolean, all type, or only allowed ones
+     *
+     * @return array of types
+     **/
+    public static function getTypes($all = false)
+    {
+        if ($all) {
+            return self::$types;
+        }
+
+        // Only allowed types
+        $types = self::$types;
+
+        foreach ($types as $key => $type) {
+            if (!class_exists($type)) {
+                continue;
+            }
+
+            $item = new $type();
+            if (!$item->canView()) {
+                unset($types[$key]);
+            }
+        }
+        return $types;
+    }
+
     /**
      * @param $value
      *
@@ -873,17 +912,8 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     private static function getObjectTypeName($value)
     {
-        switch ($value) {
-            case 'Ticket':
-                return __('Ticket');
-            case 'Change':
-                return __('Change');
-            case 'Problem':
-                return __('Problem');
-            default:
-                // Return $value if not define
-                return Dropdown::EMPTY_VALUE;
-        }
+        $item = new $value();
+        return $item->getTypeName(1);
     }
 
     /**
@@ -891,12 +921,12 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     private static function getObjectTypes()
     {
-        return [
-            null => Dropdown::EMPTY_VALUE,
-            'Ticket' => __('Ticket'),
-            'Change' => __('Change'),
-            'Problem' => __('Problem'),
-        ];
+        $types = [];
+        foreach (self::getTypes(true) as $type) {
+            $item = new $type();
+            $types[$type] = $item->getTypeName(1);
+        }
+        return $types;
     }
 
     public function showForm($ID, $options = [])
@@ -1163,7 +1193,7 @@ JAVASCRIPT
         echo "<td colspan='2'></td>";
         echo "</tr>";
 
-        if ($this->fields['object_to_create'] != 'Change') {
+        if ($this->fields['object_to_create'] == 'Ticket') {
             echo "</tr>";
             echo "<tr class='tab_bg_1'>";
             echo "<td>" . __('Need validation to create subticket', 'metademands') . "</td><td>";
@@ -2230,9 +2260,9 @@ JAVASCRIPT
                             $ticket_exists_array[] = 1;
 
                         } else {
-                            //ADD TICKET
+                            //ADD TICKET / CHANGE / PROBLEM / OTHERS
                             if (empty($input['content'])) {
-                                $message = __('There is a problem on ticket creation', 'metademands');
+                                $message = __('There is a problem on object creation', 'metademands');
                                 Session::addMessageAfterRedirect($message, false, ERROR);
                                 return false;
                             }
@@ -2461,6 +2491,8 @@ JAVASCRIPT
                                 }
                             }
                         }
+                        //TODO ELCH Add Hook
+
                         // Create sons tickets
                         if ($object_class == 'Ticket') {
                             if (isset($line['tasks'])
@@ -7280,31 +7312,40 @@ HTML;
      * @return array id => completename
      */
     public static function getAvailableItilCategories($id) {
+
         $metademand = new self();
         $metademand->getFromDB($id);
-        if ($metademand->fields['type']) {
-            switch ($metademand->fields['type']) {
-                case Ticket::INCIDENT_TYPE:
-                    $critCategory['is_incident'] = 1;
-                    $critMeta['type'] = Ticket::INCIDENT_TYPE;
-                    break;
 
-                case Ticket::DEMAND_TYPE:
-                    $critCategory['is_request'] = 1;
-                    $critMeta['type'] = Ticket::DEMAND_TYPE;
-                    break;
+        $critMeta = [];
+        if ($metademand->fields['object_to_create'] == 'Ticket') {
+            if ($metademand->fields['type']) {
+                switch ($metademand->fields['type']) {
+                    case Ticket::INCIDENT_TYPE:
+                        $critCategory['is_incident'] = 1;
+                        $critMeta['type'] = Ticket::INCIDENT_TYPE;
+                        break;
+
+                    case Ticket::DEMAND_TYPE:
+                        $critCategory['is_request'] = 1;
+                        $critMeta['type'] = Ticket::DEMAND_TYPE;
+                        break;
+                }
+            } else {
+                $critCategory = ['is_incident' => 1];
+                $critMeta = ['type' => Ticket::INCIDENT_TYPE];
             }
-        } else {
-            $critCategory = ['is_incident' => 1];
-            $critMeta = ['type' => Ticket::INCIDENT_TYPE];
-        }
-
-        if ($metademand->fields['object_to_create'] == 'Problem') {
+        } else if ($metademand->fields['object_to_create'] == 'Problem') {
             $critCategory = ['is_problem' => 1];
             $critMeta = ['object_to_create' => 'Problem'];
         } elseif ($metademand->fields['object_to_create'] == 'Change') {
             $critCategory = ['is_change' => 1];
             $critMeta = ['object_to_create' => 'Change'];
+
+            //TODO ELCH Add Hook for define linked crits ?
+        } elseif ($metademand->fields['object_to_create'] == 'PluginReleasesRelease') {
+            $critCategory = [];
+            //TODO ELCH Add Hook for define linked category
+            $critMeta = ['object_to_create' => 'PluginReleasesRelease'];
         }
 
         $critCategory += getEntitiesRestrictCriteria(

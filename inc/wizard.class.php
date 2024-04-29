@@ -757,6 +757,9 @@ class PluginMetademandsWizard extends CommonDBTM
         if (count($metademands_changes) > 0) {
             $data['Change'] = __('Make a change request', 'metademands');
         }
+        //TODO ELCH
+
+
         if (count($data) > 0) {
             foreach ($data as $type => $typename) {
 

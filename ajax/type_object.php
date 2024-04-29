@@ -62,7 +62,7 @@ if ($_POST['object_to_create'] != NULL) {
       echo "</span>";
       echo "</td>";
       echo "</tr>";
-   } else {
+   } elseif ($object == 'Problem' || $object == 'Change') {
       echo "<tr class='tab_bg_1'>";
       echo "<td colspan='2'></td>";
       echo "</td>";
@@ -96,6 +96,8 @@ if ($_POST['object_to_create'] != NULL) {
                                'entity'   => $_SESSION['glpiactiveentities']]);
       echo "</td>";
       echo "</tr>";
+   } else {
+       //TODO ELCH Add Hook for define linked category
    }
 }
 

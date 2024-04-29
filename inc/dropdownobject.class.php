@@ -277,13 +277,11 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 if ($data['link_to_user'] > 0) {
                     echo "<div id='group_user" . $data['link_to_user'] . "' class=\"input-group\">";
                     $_POST['groups_id'] = $value;
-                    $fieldUser          = new PluginMetademandsField();
-                    $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
-                        'type' => "dropdown_object",
-                        'item' => User::getType()]);
+//                    $fieldUser          = new PluginMetademandsField();
+//                    $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
+//                        'type' => "dropdown_object",
+//                        'item' => User::getType()]);
 
-                    $_POST['value']        = (isset($fieldUser->fields['default_use_id_requester'])
-                        && $fieldUser->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                     $_POST['id_fielduser'] = $data['link_to_user'];
                     $_POST['fields_id']    = $data['id'];
                     $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];

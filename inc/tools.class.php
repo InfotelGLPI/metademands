@@ -288,7 +288,6 @@ class PluginMetademandsTools extends CommonDBTM
                     echo "<th class='left' width='50%'>";
                     echo __('Field');
                     echo "</th>";
-                    echo "</th>";
                     echo "<th class='center'>";
                     echo __('Type');
                     echo "</th>";
@@ -339,6 +338,51 @@ class PluginMetademandsTools extends CommonDBTM
             echo __('No empty custom values founded', 'metademands');
             echo "</th>";
             echo "</tr>";
+        }
+
+
+        $query = "SELECT `glpi_plugin_metademands_groups`.`id`,
+       `glpi_plugin_metademands_groups`.`plugin_metademands_metademands_id`,
+       `glpi_plugin_metademands_groups`.`entities_id` as field_entity,
+       `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
+                    FROM
+                        `glpi_plugin_metademands_groups`
+                    LEFT JOIN `glpi_plugin_metademands_metademands` 
+                        ON (`glpi_plugin_metademands_groups`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
+                    WHERE
+                        `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_groups`.`entities_id`";
+
+        $result = $DB->query($query);
+
+        if ($DB->numrows($result) > 0) {
+            while ($array = $DB->fetchAssoc($result)) {
+                $field = new PluginMetademandsGroup();
+                $input['entities_id'] = $array["meta_entity"];
+                $input['id'] = $array["id"];
+                $field->update($input, 1);
+            }
+        }
+
+        $query = "SELECT `glpi_plugin_metademands_ticketfields`.`id`,
+       `glpi_plugin_metademands_ticketfields`.`plugin_metademands_metademands_id`,
+       `glpi_plugin_metademands_ticketfields`.`entities_id` as field_entity,
+       `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
+                    FROM
+                        `glpi_plugin_metademands_ticketfields`
+                    LEFT JOIN `glpi_plugin_metademands_metademands` 
+                        ON (`glpi_plugin_metademands_ticketfields`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
+                    WHERE
+                        `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_ticketfields`.`entities_id`";
+
+        $result = $DB->query($query);
+
+        if ($DB->numrows($result) > 0) {
+            $field = new PluginMetademandsTicketField();
+            while ($array = $DB->fetchAssoc($result)) {
+                $input['entities_id'] = $array["meta_entity"];
+                $input['id'] = $array["id"];
+                $field->update($input, 1);
+            }
         }
 
         echo "</table></div>";
