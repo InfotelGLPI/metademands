@@ -459,7 +459,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
             'class' => 'btn btn-success',
             'icon'  => 'fas fa-upload',
         'confirm' => __('Are you sure ? Custom values will be deleted !', 'metademands')]);
-        $warning = __('Please respect this format : name;(is_default:0|1);comment; - order by rank', 'metademands');
+        $warning = __('Please respect this format : name; display by default(0|1); comment; - sorted by display order', 'metademands');
         Html::showToolTip($warning);
         Html::closeForm();
         echo "</div>";
