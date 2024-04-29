@@ -737,6 +737,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, false, true);
                         echo "</td>";
                         echo "</tr>";
+                        PluginMetademandsFieldCustomvalue::importCustomValue($params);
                     } else {
                         $target = PluginMetademandsFieldCustomvalue::getFormURL();
                         echo "<form method='post' action=\"$target\">";
@@ -749,6 +750,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         echo "</td>";
                         echo "</tr>";
                         Html::closeForm();
+                        PluginMetademandsFieldCustomvalue::importCustomValue($params);
                     }
                 }
             }

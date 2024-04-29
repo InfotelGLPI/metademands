@@ -233,6 +233,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
             PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, true, true);
             echo "</td>";
             echo "</tr>";
+            PluginMetademandsFieldCustomvalue::importCustomValue($params);
 
         } else {
 
@@ -247,6 +248,7 @@ class PluginMetademandsCheckbox extends CommonDBTM
             echo "</td>";
             echo "</tr>";
             Html::closeForm();
+            PluginMetademandsFieldCustomvalue::importCustomValue($params);
         }
         echo "</td>";
         echo "</tr>";

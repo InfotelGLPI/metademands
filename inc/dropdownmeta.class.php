@@ -382,7 +382,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
 
         echo "<tr class='tab_bg_1'>";
-        echo "<td>";
+        echo "<td colspan='5'>";
         $maxrank = 0;
         $custom_values = $params['custom_values'];
         $default_values = $params['default_values'];
@@ -465,17 +465,18 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             echo '</td>';
 
             echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='4' align='left' id='show_custom_fields'>";
+            echo "<td colspan='5' align='left' id='show_custom_fields'>";
             PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, false, true);
             echo "</td>";
             echo "</tr>";
+            PluginMetademandsFieldCustomvalue::importCustomValue($params);
 
         } else {
             $target = PluginMetademandsFieldCustomvalue::getFormURL();
             if ($params['item'] != 'urgency' && $params['item'] != 'impact') {
                 echo "<form method='post' action=\"$target\">";
                 echo "<tr class='tab_bg_1'>";
-                echo "<td align='right'  id='show_custom_fields'>";
+                echo "<td align='right' id='show_custom_fields' colspan='5'>";
                 if (isset($params['plugin_metademands_fields_id'])) {
                     echo Html::hidden('fields_id', ['value' => $params["plugin_metademands_fields_id"]]);
                 }
@@ -483,6 +484,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 echo "</td>";
                 echo "</tr>";
                 Html::closeForm();
+                PluginMetademandsFieldCustomvalue::importCustomValue($params);
 
             } else {
                 $default_values = $params['default_values'];

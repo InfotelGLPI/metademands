@@ -230,6 +230,7 @@ class PluginMetademandsRadio extends CommonDBTM
             PluginMetademandsFieldCustomvalue::initCustomValue($maxrank, true, true);
             echo "</td>";
             echo "</tr>";
+            PluginMetademandsFieldCustomvalue::importCustomValue($params);
 
         } else {
             $target = PluginMetademandsFieldCustomvalue::getFormURL();
@@ -243,6 +244,7 @@ class PluginMetademandsRadio extends CommonDBTM
             echo "</td>";
             echo "</tr>";
             Html::closeForm();
+            PluginMetademandsFieldCustomvalue::importCustomValue($params);
         }
         echo "</td>";
         echo "</tr>";
