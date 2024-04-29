@@ -786,7 +786,12 @@ function plugin_metademands_uninstall() {
         "glpi_plugin_metademands_stepforms_actors",
         "glpi_plugin_metademands_conditions",
         "glpi_plugin_metademands_basketobjecttypes",
-        "glpi_plugin_metademands_basketobjects"];
+        "glpi_plugin_metademands_basketobjects",
+        "glpi_plugin_metademands_basketobjecttranslations",
+        "glpi_plugin_metademands_basketobjecttypetranslations",
+        "glpi_plugin_metademands_mailtasks",
+        "glpi_plugin_metademands_fieldparameters",
+        "glpi_plugin_metademands_fieldcustomvalues"];
     foreach ($tables as $table) {
         $DB->query("DROP TABLE IF EXISTS `$table`;");
     }
