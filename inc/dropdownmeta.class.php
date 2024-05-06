@@ -42,6 +42,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         '',
         'other',
         'ITILCategory_Metademands',
+        'ITILCategory_Requestevolutions',
         'urgency',
         'impact',
         'priority',
@@ -121,7 +122,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     );
                 }
                 break;
-
             case 'ITILCategory_Metademands':
                 if ($on_order == false) {
                     $nameitil = 'field';
@@ -173,6 +173,47 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 if ($hidden == 0) {
                     $field .= ITILCategory::dropdown($opt);
                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
+                }
+
+                if ($readonly == 1 || $hidden == 1) {
+                    $field .= Html::hidden($nameitil . "_plugin_servicecatalog_itilcategories_id", ['value' => $value]);
+                }
+                break;
+            case 'ITILCategory_Requestevolutions':
+                $nameitil = 'field';
+                $values = json_decode($metademand->fields['itilcategories_id']);
+                //from Service Catalog
+                if ($itilcategories_id > 0) {
+                    $value = $itilcategories_id;
+                }
+
+                $readonly = $data['readonly'];
+                $hidden = $data['hidden'];
+                if ($hidden == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
+                    && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+                    $hidden = 0;
+                }
+
+                if ($data['readonly'] == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
+                    && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+                    $readonly = 0;
+                }
+                $opt = [
+                    'name' => $nameitil . "_plugin_requestevolutions_itilcategories_id",
+                    'right' => 'all',
+                    'value' => $value,
+                    'condition' => ["id" => $values],
+                    'display' => false,
+                    'readonly' => $readonly ?? false,
+                    'class' => 'form-select itilmeta'
+                ];
+                if ($data['is_mandatory'] == 1) {
+                    $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
+                }
+                $field = "";
+                if ($hidden == 0) {
+                    $field .= PluginRequestevolutionsItilcategorie::dropdown($opt);
+                    $field .= "<input type='hidden' name='" . $nameitil . "_plugin_requestevolutions_itilcategories_id' value='" . $data['id'] . "' >";
                 }
 
                 if ($readonly == 1 || $hidden == 1) {

@@ -926,6 +926,13 @@ class PluginMetademandsMetademand extends CommonDBTM
             $item = new $type();
             $types[$type] = $item->getTypeName(1);
         }
+
+        //Add RequestEvolution
+        if (Plugin::isPluginActive("requestevolutions")) {
+            $types['PluginRequestevolutionsRequestevolution'] = "Demande d'évolution";
+        }
+
+
         return $types;
     }
 
@@ -2492,6 +2499,9 @@ JAVASCRIPT
                             }
                         }
                         //TODO ELCH Add Hook
+                        if($object_class == "RequestEvolution"){
+
+                        }
 
                         // Create sons tickets
                         if ($object_class == 'Ticket') {
@@ -7344,16 +7354,22 @@ HTML;
             //TODO ELCH Add Hook for define linked crits ?
         } elseif ($metademand->fields['object_to_create'] == 'PluginReleasesRelease') {
             $critCategory = [];
-            //TODO ELCH Add Hook for define linked category
             $critMeta = ['object_to_create' => 'PluginReleasesRelease'];
+        }
+        elseif ($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution') {
+            //TODO ELCH Add Hook for define linked category
+            $critCategory = [];
+            $critMeta = ['object_to_create' => 'PluginRequestevolutionsRequestevolution'];
         }
 
         $critCategory += getEntitiesRestrictCriteria(
-            \ITILCategory::getTable(),
-            'entities_id',
-            $_SESSION['glpiactiveentities'],
-            true
-        );
+                \ITILCategory::getTable(),
+                'entities_id',
+                $_SESSION['glpiactiveentities'],
+                true
+            );
+
+
 
         $dbu = new DbUtils();
 
@@ -7381,7 +7397,12 @@ HTML;
                 'id' => $usedCategories
             ]];
         }
-        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
+        if($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution'){
+            $result = $dbu->getAllDataFromTable(PluginRequestevolutionsItilcategorie::getTable(), []);
+        }else{
+            $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
+        }
+
         $availableCategories = [];
         foreach ($result as $item) {
             $availableCategories[$item['id']] = html_entity_decode($item['completename']);

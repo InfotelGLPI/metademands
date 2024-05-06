@@ -758,7 +758,10 @@ class PluginMetademandsWizard extends CommonDBTM
             $data['Change'] = __('Make a change request', 'metademands');
         }
         //TODO ELCH
-
+        $metademands_requestEvolutions = self::selectMetademands(false, "", "PluginRequestevolutionsRequestevolution");
+        if (count($metademands_requestEvolutions) > 0) {
+            $data['PluginRequestevolutionsRequestevolution'] = __('Make an evolution request', 'metademands');
+        }
 
         if (count($data) > 0) {
             foreach ($data as $type => $typename) {
