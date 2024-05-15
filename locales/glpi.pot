@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-29 11:48+0000\n"
+"POT-Creation-Date: 2024-05-15 07:24+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,7 +63,7 @@ msgid_plural "Meta-Demands"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ajax/adddraft.php:176
+#: ajax/adddraft.php:156
 msgid "Draft name is required"
 msgstr ""
 
@@ -76,33 +76,33 @@ msgstr ""
 msgid "There is no line on the basket"
 msgstr ""
 
-#: ajax/deletedraft.php:58 inc/draft.class.php:165
+#: ajax/deletedraft.php:58 inc/draft.class.php:159
 msgctxt "button"
 msgid "Load draft"
 msgstr ""
 
-#: ajax/deletedraft.php:64 inc/draft.class.php:171
+#: ajax/deletedraft.php:64 inc/draft.class.php:184
 msgctxt "button"
 msgid "Delete draft"
 msgstr ""
 
-#: ajax/deletedraft.php:70 inc/draft.class.php:178
+#: ajax/deletedraft.php:70 inc/draft.class.php:194
 msgid "No draft available for this form"
 msgstr ""
 
-#: ajax/deleteform.php:59 inc/form.class.php:165 inc/form.class.php:438
-#: inc/form.class.php:524 inc/stepform.class.php:169
+#: ajax/deleteform.php:59 inc/form.class.php:158 inc/form.class.php:452
+#: inc/form.class.php:538 inc/stepform.class.php:169
 msgctxt "button"
 msgid "Load form"
 msgstr ""
 
-#: ajax/deleteform.php:65 inc/form.class.php:172 inc/stepform.class.php:176
+#: ajax/deleteform.php:65 inc/form.class.php:180 inc/stepform.class.php:176
 #: inc/stepform.class.php:413 inc/stepform.class.php:591
 msgctxt "button"
 msgid "Delete form"
 msgstr ""
 
-#: ajax/deleteform.php:71 inc/form.class.php:182 inc/stepform.class.php:186
+#: ajax/deleteform.php:71 inc/form.class.php:192 inc/stepform.class.php:186
 #: inc/stepform.class.php:603 inc/wizard.class.php:657 inc/wizard.class.php:781
 msgid "No existing forms founded"
 msgstr ""
@@ -675,36 +675,32 @@ msgstr ""
 msgid "Date & Hour interval"
 msgstr ""
 
-#: inc/draft.class.php:102
-msgid "Current draft"
-msgstr ""
-
-#: inc/draft.class.php:108
-msgctxt "button"
-msgid "Save draft"
-msgstr ""
-
-#: inc/draft.class.php:115 inc/draft.class.php:141 inc/form.class.php:105
-#: inc/form.class.php:132 inc/stepform.class.php:109 inc/stepform.class.php:136
-msgctxt "button"
-msgid "Clean form"
-msgstr ""
-
-#: inc/draft.class.php:122
+#: inc/draft.class.php:106
 msgid "New draft"
 msgstr ""
 
-#: inc/draft.class.php:131
+#: inc/draft.class.php:116
 msgid "Draft name"
 msgstr ""
 
-#: inc/draft.class.php:134
+#: inc/draft.class.php:120
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
 
-#: inc/draft.class.php:152 inc/wizard.class.php:527
+#: inc/draft.class.php:129 inc/form.class.php:95 inc/stepform.class.php:109
+#: inc/stepform.class.php:136
+msgctxt "button"
+msgid "Clean form"
+msgstr ""
+
+#: inc/draft.class.php:142 inc/wizard.class.php:527
 msgid "Your drafts"
+msgstr ""
+
+#: inc/draft.class.php:172 inc/form.class.php:168 inc/stepform.class.php:97
+msgctxt "button"
+msgid "Save model"
 msgstr ""
 
 #: inc/dropdownmeta.class.php:61
@@ -984,43 +980,32 @@ msgstr ""
 msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
-#: inc/form.class.php:78 inc/stepform.class.php:83
-msgid "Current form"
+#: inc/form.class.php:76 inc/stepform.class.php:117
+msgid "New model"
 msgstr ""
 
-#: inc/form.class.php:89 inc/form.class.php:121 inc/stepform.class.php:94
-#: inc/stepform.class.php:125
+#: inc/form.class.php:84 inc/stepform.class.php:94 inc/stepform.class.php:125
 msgid "Form name"
 msgstr ""
 
-#: inc/form.class.php:92 inc/stepform.class.php:97
-msgctxt "button"
-msgid "Save model"
-msgstr ""
-
-#: inc/form.class.php:94 inc/form.class.php:124 inc/stepform.class.php:99
-#: inc/stepform.class.php:128
+#: inc/form.class.php:87 inc/stepform.class.php:99 inc/stepform.class.php:128
 msgctxt "button"
 msgid "Save as model"
 msgstr ""
 
-#: inc/form.class.php:113 inc/stepform.class.php:117
-msgid "New model"
-msgstr ""
-
-#: inc/form.class.php:333 inc/form.class.php:400
+#: inc/form.class.php:347 inc/form.class.php:414
 msgid "Initial form"
 msgid_plural "Initial forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/form.class.php:345 inc/form.class.php:493
+#: inc/form.class.php:359 inc/form.class.php:507
 msgid "Associated form"
 msgid_plural "Associated forms"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/form.class.php:410 inc/form.class.php:502
+#: inc/form.class.php:424 inc/form.class.php:516
 msgid "See form"
 msgstr ""
 
@@ -1671,6 +1656,10 @@ msgid "Step a metademands form"
 msgid_plural "Steps a metademands form"
 msgstr[0] ""
 msgstr[1] ""
+
+#: inc/stepform.class.php:83
+msgid "Current form"
+msgstr ""
 
 #: inc/stepform.class.php:333
 msgid "Form in progress"
