@@ -72,7 +72,33 @@ class PluginMetademandsForm extends CommonDBTM {
       $rand   = mt_rand();
       if ($is_model == true) {
 
-         if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
+          $return .= "<div class='card-header'>";
+          $return .= __("New model", 'metademands');
+          $return .= " <span class='red'>*</span></div>";
+          $return .= "<table class='tab_cadre_fixe'>";
+          $return .= "<tr class=''>";
+          $return .= "<td colspan='4' class='center'>";
+          $return .= "<br>";
+          $return .= Html::input('form_name', ['maxlength'   => 250,
+              'size'        => 40,
+              'placeholder' => __('Form name', 'metademands')]);
+          $return .= "<br>";
+          $title  = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
+          $title  .= _sx('button', 'Save as model', 'metademands');
+
+          $return .= Html::submit($title, ['name'  => 'save_form',
+              'form'  => '',
+              'id'    => 'FormAdd' . $rand,
+              'class' => 'btn btn-success btn-sm']);
+          $return .= "&nbsp;";
+          $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
+          $title  .= _sx('button', 'Clean form', 'metademands');
+          $return .= Html::submit($title, ['name'  => 'clean_form',
+              'class' => 'btn btn-warning btn-sm']);
+          $return .= "<br>";
+          $return .= "</td></tr>";
+
+         /*if (isset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_forms_name'])) {
 
             $return .= "<div class='card-header'>";
             $return .= __("Current form", 'metademands');
@@ -96,45 +122,12 @@ class PluginMetademandsForm extends CommonDBTM {
             }
 
             $return .= "&nbsp;";
-            $return .= Html::submit($title, ['name'  => 'save_model',
-                                             'form'  => '',
-                                             'id'    => 'FormSave' . $rand,
-                                             'class' => 'btn btn-success btn-sm']);
-            $return .= "&nbsp;";
-            $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
-            $title  .= _sx('button', 'Clean form', 'metademands');
-            $return .= Html::submit($title, ['name'  => 'clean_form',
-                                             'class' => 'btn btn-warning btn-sm']);
+
+
             $return .= "<br>";
             $return .= "</td></tr>";
             $return .= "</table>";
-         } else {
-            $return .= "<div class='card-header'>";
-            $return .= __("New model", 'metademands');
-            $return .= " <span class='red'>*</span></div>";
-            $return .= "<table class='tab_cadre_fixe'>";
-            $return .= "<tr class=''>";
-            $return .= "<td colspan='4' class='center'>";
-            $return .= "<br>";
-            $return .= Html::input('form_name', ['maxlength'   => 250,
-                                                 'size'        => 40,
-                                                 'placeholder' => __('Form name', 'metademands')]);
-            $return .= "<br>";
-            $title  = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
-            $title  .= _sx('button', 'Save as model', 'metademands');
-
-            $return .= Html::submit($title, ['name'  => 'save_form',
-                                             'form'  => '',
-                                             'id'    => 'FormAdd' . $rand,
-                                             'class' => 'btn btn-success btn-sm']);
-            $return .= "&nbsp;";
-            $title  = "<i class='fas fa-1x fa-broom pointer'></i>&nbsp;";
-            $title  .= _sx('button', 'Clean form', 'metademands');
-            $return .= Html::submit($title, ['name'  => 'clean_form',
-                                             'class' => 'btn btn-warning btn-sm']);
-            $return .= "<br>";
-            $return .= "</td></tr>";
-         }
+         }*/
       }
 
       $return .= "<table class='tab_cadre_fixe'>";
@@ -166,14 +159,31 @@ class PluginMetademandsForm extends CommonDBTM {
                            data-hasqtip='0' aria-hidden='true'></i>";
             $return .= "</button>";
             $return .= "</td>";
-            if ($is_model == true) {
-               $return .= "<td>";
-               $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"deleteForm(" . $form['id'] . ")\">";
-               $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx('button', 'Delete form', 'metademands') . "' 
+             if ($is_model == true) {
+                 if ($form_id == $form['id']) {
+                     $return .= "<td>";
+                     $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();udpateForm(" . $form['id'] . ", '" . $form['name'] . "')\">";
+                     $return .= "<i class='fas fa-1x fa-save pointer' title='" . _sx(
+                             'button',
+                             'Save model',
+                             'metademands'
+                         ) . "' 
                            data-hasqtip='0' aria-hidden='true'></i>";
-               $return .= "</button>";
-               $return .= "</td>";
-            }
+                     $return .= "</button>";
+                     $return .= "</td>";
+                 }
+
+                 $return .= "<td>";
+                 $return .= "<button form='' class='submit btn btn-danger btn-sm' onclick=\"if(confirm('Veuillez confirmer la suppression')){deleteForm(" . $form['id'] . ")}\">";
+                 $return .= "<i class='fas fa-1x fa-trash pointer' title='" . _sx(
+                         'button',
+                         'Delete form',
+                         'metademands'
+                     ) . "' 
+                           data-hasqtip='0' aria-hidden='true'></i>";
+                 $return .= "</button>";
+                 $return .= "</td>";
+             }
             $return .= "</tr>";
          }
       } else {
@@ -222,32 +232,8 @@ class PluginMetademandsForm extends CommonDBTM {
                              });
                        };
                      </script>";
-      }
-      $step   = PluginMetademandsMetademand::STEP_SHOW;
-      $return .= "<script>
-                      var meta_id = {$plugin_metademands_metademands_id};
-                      var step = {$step};
-                      function loadForm(form_id) {
-                         $('#ajax_loader').show();
-                         var data_send = $('#wizard_form').serializeArray();
-                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
-                          $.ajax({
-                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
-                                type: 'POST',
-                                data: data_send,
-                                success: function(response){
-                                    $('#ajax_loader').hide();
-                                    if (response == 1) {
-                                       document.location.reload();
-                                    } else {
-                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
-                                    }
-                                 }
-                             });
-                       };
-                     </script>";
-      if ($is_model == true) {
-         $return .= "<script>
+
+          $return .= "<script>
                           $('#FormAdd$rand').click(function() {
 
                              if(typeof tinyMCE !== 'undefined'){
@@ -275,10 +261,10 @@ class PluginMetademandsForm extends CommonDBTM {
                                 });
                           });
                         </script>";
-      }
-      $return .= "<script>
-                          $('#FormSave$rand').click(function() {
 
+          $return .= "<script>
+                          function udpateForm(form_id, form_name) {
+    
                              if(typeof tinyMCE !== 'undefined'){
                                 tinyMCE.triggerSave();
                              }
@@ -288,12 +274,15 @@ class PluginMetademandsForm extends CommonDBTM {
                              arrayDatas = $('#wizard_form').serializeArray();
                              arrayDatas.push({name: \"save_model\", value: true});
                              arrayDatas.push({name: \"is_model\", value: 1});
+                             arrayDatas.push({name: \"plugin_metademands_forms_id\", value: form_id});
+                             arrayDatas.push({name: \"form_name\", value: form_name});
+
                              $.ajax({
                                 url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/updateform.php',
                                    type: 'POST',
                                    data: arrayDatas,
                                    success: function(response){
-                                       $('#ajax_loader').hide();
+                                        $('#ajax_loader').hide();
                                        document.location.reload();
                                     },
                                    error: function(xhr, status, error) {
@@ -302,8 +291,33 @@ class PluginMetademandsForm extends CommonDBTM {
                                       console.log(error);
                                     }
                                 });
-                          });
+                          };
                         </script>";
+      }
+       $step   = PluginMetademandsMetademand::STEP_SHOW;
+       $return .= "<script>
+                      var meta_id = {$plugin_metademands_metademands_id};
+                      var step = {$step};
+                      function loadForm(form_id) {
+                         $('#ajax_loader').show();
+                         var data_send = $('#wizard_form').serializeArray();
+                         data_send.push({name: 'plugin_metademands_forms_id', value: form_id}, {name: 'metademands_id', value: meta_id});
+                          $.ajax({
+                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/loadform.php',
+                                type: 'POST',
+                                data: data_send,
+                                success: function(response){
+                                    $('#ajax_loader').hide();
+                                    if (response == 1) {
+                                       document.location.reload();
+                                    } else {
+                                       window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=' + meta_id + '&step=' + step;
+                                    }
+                                 }
+                             });
+                       };
+                     </script>";
+
       $return .= "</span>";
 
       return $return;
