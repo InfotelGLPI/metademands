@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-29 11:48+0000\n"
+"POT-Creation-Date: 2024-05-15 07:24+0000\n"
 "PO-Revision-Date: 2019-02-25 10:32+0000\n"
 "Last-Translator: Xavier CAILLAUD <thetsmr@gmail.com>, 2024\n"
 "Language-Team: French (France) (https://app.transifex.com/infotelGLPI/teams/96561/fr_FR/)\n"
@@ -69,7 +69,7 @@ msgstr[0] "Meta-Demande"
 msgstr[1] "Meta-Demandes"
 msgstr[2] "Meta-Demandes"
 
-#: ajax/adddraft.php:176
+#: ajax/adddraft.php:156
 msgid "Draft name is required"
 msgstr "Le nom du brouillon est obligatoire"
 
@@ -82,33 +82,33 @@ msgstr "Le nom du formulaire est requis"
 msgid "There is no line on the basket"
 msgstr "Il n'y a pas de demandes dans le panier"
 
-#: ajax/deletedraft.php:58 inc/draft.class.php:165
+#: ajax/deletedraft.php:58 inc/draft.class.php:159
 msgctxt "button"
 msgid "Load draft"
 msgstr "Charger le brouillon"
 
-#: ajax/deletedraft.php:64 inc/draft.class.php:171
+#: ajax/deletedraft.php:64 inc/draft.class.php:184
 msgctxt "button"
 msgid "Delete draft"
 msgstr "Supprimer le brouillon"
 
-#: ajax/deletedraft.php:70 inc/draft.class.php:178
+#: ajax/deletedraft.php:70 inc/draft.class.php:194
 msgid "No draft available for this form"
 msgstr "Pas de brouillons disponibles pour ce formulaire"
 
-#: ajax/deleteform.php:59 inc/form.class.php:165 inc/form.class.php:438
-#: inc/form.class.php:524 inc/stepform.class.php:169
+#: ajax/deleteform.php:59 inc/form.class.php:158 inc/form.class.php:452
+#: inc/form.class.php:538 inc/stepform.class.php:169
 msgctxt "button"
 msgid "Load form"
 msgstr "Charger le formulaire"
 
-#: ajax/deleteform.php:65 inc/form.class.php:172 inc/stepform.class.php:176
+#: ajax/deleteform.php:65 inc/form.class.php:180 inc/stepform.class.php:176
 #: inc/stepform.class.php:413 inc/stepform.class.php:591
 msgctxt "button"
 msgid "Delete form"
 msgstr "Supprimer le formulaire"
 
-#: ajax/deleteform.php:71 inc/form.class.php:182 inc/stepform.class.php:186
+#: ajax/deleteform.php:71 inc/form.class.php:192 inc/stepform.class.php:186
 #: inc/stepform.class.php:603 inc/wizard.class.php:657
 #: inc/wizard.class.php:781
 msgid "No existing forms founded"
@@ -694,38 +694,33 @@ msgstr "Date & Heure"
 msgid "Date & Hour interval"
 msgstr "Intervalle Date & Heure"
 
-#: inc/draft.class.php:102
-msgid "Current draft"
-msgstr "Brouillon ouvert"
+#: inc/draft.class.php:106
+msgid "New draft"
+msgstr "Nouveau brouillon"
 
-#: inc/draft.class.php:108
+#: inc/draft.class.php:116
+msgid "Draft name"
+msgstr "Nom du brouillon"
+
+#: inc/draft.class.php:120
 msgctxt "button"
-msgid "Save draft"
-msgstr "Sauver le brouillon"
+msgid "Save as draft"
+msgstr "Sauver comme brouillon"
 
-#: inc/draft.class.php:115 inc/draft.class.php:141 inc/form.class.php:105
-#: inc/form.class.php:132 inc/stepform.class.php:109
+#: inc/draft.class.php:129 inc/form.class.php:95 inc/stepform.class.php:109
 #: inc/stepform.class.php:136
 msgctxt "button"
 msgid "Clean form"
 msgstr "Vider le formulaire"
 
-#: inc/draft.class.php:122
-msgid "New draft"
-msgstr "Nouveau brouillon"
-
-#: inc/draft.class.php:131
-msgid "Draft name"
-msgstr "Nom du brouillon"
-
-#: inc/draft.class.php:134
-msgctxt "button"
-msgid "Save as draft"
-msgstr "Sauver comme brouillon"
-
-#: inc/draft.class.php:152 inc/wizard.class.php:527
+#: inc/draft.class.php:142 inc/wizard.class.php:527
 msgid "Your drafts"
 msgstr "Vos brouillons"
+
+#: inc/draft.class.php:172 inc/form.class.php:168 inc/stepform.class.php:97
+msgctxt "button"
+msgid "Save model"
+msgstr "Sauver le modèle"
 
 #: inc/dropdownmeta.class.php:61
 msgid "Dropdown"
@@ -1030,45 +1025,34 @@ msgstr "Utiliser comme champ de l'objet"
 msgid "Link this to a plugin \"fields\" field"
 msgstr "Lier ce champ à un champ du plugin \"fields\""
 
-#: inc/form.class.php:78 inc/stepform.class.php:83
-msgid "Current form"
-msgstr "Formulaire courant"
+#: inc/form.class.php:76 inc/stepform.class.php:117
+msgid "New model"
+msgstr "Nouveau modèle"
 
-#: inc/form.class.php:89 inc/form.class.php:121 inc/stepform.class.php:94
-#: inc/stepform.class.php:125
+#: inc/form.class.php:84 inc/stepform.class.php:94 inc/stepform.class.php:125
 msgid "Form name"
 msgstr "Nom du formulaire"
 
-#: inc/form.class.php:92 inc/stepform.class.php:97
-msgctxt "button"
-msgid "Save model"
-msgstr "Sauver le modèle"
-
-#: inc/form.class.php:94 inc/form.class.php:124 inc/stepform.class.php:99
-#: inc/stepform.class.php:128
+#: inc/form.class.php:87 inc/stepform.class.php:99 inc/stepform.class.php:128
 msgctxt "button"
 msgid "Save as model"
 msgstr "Sauver comme modèle"
 
-#: inc/form.class.php:113 inc/stepform.class.php:117
-msgid "New model"
-msgstr "Nouveau modèle"
-
-#: inc/form.class.php:333 inc/form.class.php:400
+#: inc/form.class.php:347 inc/form.class.php:414
 msgid "Initial form"
 msgid_plural "Initial forms"
 msgstr[0] "Formulaire initial"
 msgstr[1] "Formulaires initiaux"
 msgstr[2] "Formulaires initiaux"
 
-#: inc/form.class.php:345 inc/form.class.php:493
+#: inc/form.class.php:359 inc/form.class.php:507
 msgid "Associated form"
 msgid_plural "Associated forms"
 msgstr[0] "Formulaire associé"
 msgstr[1] "Formulaires associés"
 msgstr[2] "Formulaires associés"
 
-#: inc/form.class.php:410 inc/form.class.php:502
+#: inc/form.class.php:424 inc/form.class.php:516
 msgid "See form"
 msgstr "Voir le formulaire"
 
@@ -1738,6 +1722,10 @@ msgid_plural "Steps a metademands form"
 msgstr[0] "Étape d'un formulaire de métademandes"
 msgstr[1] "Étapes d'un formulaire de métademandes"
 msgstr[2] "Étapes d'un formulaire de métademandes"
+
+#: inc/stepform.class.php:83
+msgid "Current form"
+msgstr "Formulaire courant"
 
 #: inc/stepform.class.php:333
 msgid "Form in progress"
