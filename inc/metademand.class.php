@@ -6740,7 +6740,7 @@ JAVASCRIPT
                             $toUpdate["is_default"] = $is_default;
                         }
                         if ($comment != "") {
-                            $toUpdate["comment"] = $comment;
+                            $toUpdate["comment"] = Toolbox::addslashes_deep($comment);
                         }
                         $toUpdate["rank"] = $oldrank - 1;
 
@@ -6765,13 +6765,13 @@ JAVASCRIPT
 
                 $toUpdate = [];
                 if ($name != "") {
-                    $toUpdate["name"] = $name;
+                    $toUpdate["name"] = Toolbox::addslashes_deep($name);
                 }
                 if ($is_default != 0) {
                     $toUpdate["is_default"] = $is_default;
                 }
                 if ($comment != "") {
-                    $toUpdate["comment"] = $comment;
+                    $toUpdate["comment"] = Toolbox::addslashes_deep($comment);
                 }
                 if ($rank != 0) {
                     $toUpdate["rank"] = $rank;
