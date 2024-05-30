@@ -158,7 +158,8 @@ class PluginMetademandsConfigstep extends CommonDBTM
         echo __('Interface', 'metademands');
         echo "</td>";
         echo "<td>";
-        Dropdown::showFromArray('step_by_step_interface', self::getEnumInterface(),['value' => $confStep->fields['step_by_step_interface']]);
+        $step_by_step = $confStep->fields['step_by_step_interface'] ?? self::BOTH_INTERFACE;
+        Dropdown::showFromArray('step_by_step_interface', self::getEnumInterface(),['value' => $step_by_step]);
         echo "</td>";
         echo "</tr>";
         echo "<tr><td class='tab_bg_2 center' colspan='6'>";

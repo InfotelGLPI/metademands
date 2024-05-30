@@ -10,4 +10,4 @@ faire TODO MIGRATE
 
 bug dropdown multiple - affichage champ caché - si deselectionner le champ il n'est pas recaché
 
-Droit de validation de meta
+inject custom values

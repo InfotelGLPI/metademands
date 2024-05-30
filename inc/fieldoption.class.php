@@ -1236,10 +1236,15 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 $script .= PluginMetademandsRadio::fieldsLinkScript($data, $idc, $rand);
 
                             } else {
+
+                                $name = "field[" . $data["id"] . "]";
+                                if ($data["item"] == "ITILCategory_Metademands") {
+                                    $name = "field_plugin_servicecatalog_itilcategories_id";
+                                }
                                 $script .= "var metademandWizard$rand = $(document).metademandWizard();";
                                 $script .= "metademandWizard$rand.metademand_setMandatoryField(
                                         'metademands_wizard_red" . $fields_link . "',
-                                        'field[" . $data['id'] . "]',[";
+                                        '$name',[";
                                 if ($check_value > 0) {
                                     $script .= $idc;
                                 }

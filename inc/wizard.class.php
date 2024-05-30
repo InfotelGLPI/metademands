@@ -798,7 +798,7 @@ class PluginMetademandsWizard extends CommonDBTM
         if ($config['display_type'] == 1) {
 
             $metademands = self::selectMetademands(false, "", $type);
-            if (count($metademands) > 0) {
+            if (count($metademands) > 1) {
                 echo "<div id='listmeta'>";
                 $title = __("Find a form", "metademands");
                 echo "<div tabindex='-1' id='mt-fuzzysearch'>";
@@ -814,7 +814,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 foreach ($metademands as $id => $name) {
                     $meta = new PluginMetademandsMetademand();
                     if ($meta->getFromDB($id)) {
-                        echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=2'>";
+                        echo "<a class='bt-buttons' href='" . PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW."'>";
                         echo '<div class="btnsc-normal" >';
                         $fasize = "fa-3x";
                         echo "<div class='center'>";
@@ -858,6 +858,14 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                 }
                 echo "</div>";
+            } elseif (count($metademands) == 1) {
+                foreach ($metademands as $id => $name) {
+                    $meta = new PluginMetademandsMetademand();
+                    if ($meta->getFromDB($id)) {
+                        $url = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $id . "&step=".PluginMetademandsMetademand::STEP_SHOW;
+                        Html::redirect($url);
+                    }
+                }
             }
         } else {
 
