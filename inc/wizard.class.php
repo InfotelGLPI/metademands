@@ -2989,7 +2989,10 @@ class PluginMetademandsWizard extends CommonDBTM
             $data[$id . '-2'] = $value;
         }
 
-        if (isset($post[$fieldname][$id])
+        if (!isset($post[$fieldname][$id])) {
+            $post[$fieldname][$id] = "";
+        }
+        if ($value['is_mandatory'] == 1
             && $value['type'] != 'title'
             && $value['type'] != 'title-block'
             && $value['type'] != 'informations'
@@ -3015,7 +3018,8 @@ class PluginMetademandsWizard extends CommonDBTM
                     $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields'][$id . "-2"] = $post[$fieldname][$id . "-2"];
                 }
             }
-        } elseif ($value['item'] == 'ITILCategory_Metademands') {
+        } elseif ($value['is_mandatory'] == 1
+            && $value['item'] == 'ITILCategory_Metademands') {
             if (!self::checkMandatoryFields(
                 $fieldname,
                 $value,
@@ -3037,19 +3041,22 @@ class PluginMetademandsWizard extends CommonDBTM
                 $content[$id]['type'] = $value['type'];
                 $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields'][$id] = $post[$fieldname][$id];
             }
-        } elseif ($value['type'] == 'checkbox') {
+        } elseif ($value['is_mandatory'] == 1
+            && $value['type'] == 'checkbox') {
             if (!self::checkMandatoryFields($fieldname, $value, ['id' => $id, 'value' => $post[$fieldname][$id]], $post)) {
                 $KO = true;
             } else {
                 $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields'][$id] = $post[$fieldname][$id];
             }
-        } elseif ($value['type'] == 'radio') {
+        } elseif ($value['is_mandatory'] == 1
+            && $value['type'] == 'radio') {
             if (!self::checkMandatoryFields($fieldname, $value, ['id' => $id, 'value' => $post[$fieldname][$id]], $post)) {
                 $KO = true;
             } else {
                 $_SESSION['plugin_metademands'][$post['form_metademands_id']]['fields'][$id] = $post[$fieldname][$id];
             }
-        } elseif ($value['type'] == 'upload') {
+        } elseif ($value['is_mandatory'] == 1
+            && $value['type'] == 'upload') {
             if ($value['is_basket'] == 1
                 && isset($post[$fieldname][$id]) && !empty($post[$fieldname][$id])) {
                 $files = json_decode($post[$fieldname][$id], 1);
@@ -3071,7 +3078,8 @@ class PluginMetademandsWizard extends CommonDBTM
 //                    }
 //                }
             }
-        } elseif ($value['type'] == 'dropdown_multiple') {
+        } elseif ($value['is_mandatory'] == 1
+            && $value['type'] == 'dropdown_multiple') {
             if (!isset($post[$fieldname][$id])) {
                 if (!self::checkMandatoryFields(
                     $fieldname,
@@ -3308,10 +3316,11 @@ class PluginMetademandsWizard extends CommonDBTM
                 || $value['type'] == "datetime"
                 || $value['type'] == "date_interval"
                 || $value['type'] == "datetime_interval") {
+
                 // date not < today
                 if ($fields['value'] != 'NULL'
                     && !empty($fields['value'])
-                    && !empty($value['check_value'])
+                    && $value['use_future_date'] == 1
                     && !(strtotime($fields['value']) >= strtotime(date('Y-m-d')))) {
                     $msg[] = sprintf(__("Date %s cannot be less than today's date", 'metademands'), $value['name']);
                     $checkKo[] = 1;

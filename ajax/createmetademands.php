@@ -301,8 +301,16 @@ if ($nofreeinputs === false) {
 
                         //end fields_link to be mandatory
                         foreach ($data as $id => $value) {
-                            if (!isset($post[$id])) {
-                                continue;
+
+                            $field = new PluginMetademandsField();
+                            if ($field->getFromDB($id)) {
+                                $parameters = PluginMetademandsField::getAllParamsFromField($field);
+                            }
+
+                            if ($parameters['is_mandatory'] == 0) {
+                                if (!isset($post[$id])) {
+                                    continue;
+                                }
                             }
 
                             if (isset($value['options'])) {

@@ -1525,7 +1525,7 @@ class PluginMetademandsField extends CommonDBChild
             'is_basket' => $metademand_params->fields['is_basket']??0,
             'color' => $metademand_params->fields['color']??"",
             'icon' => $metademand_params->fields['icon']??"",
-            'is_mandatory' => 0,
+            'is_mandatory' => $metademand_params->fields['is_mandatory']??0,
             'used_by_ticket' => $metademand_params->fields['used_by_ticket']??0,
             'used_by_child' => $metademand_params->fields['used_by_child']??0,
             'use_richtext' => $metademand_params->fields['use_richtext']??0,
