@@ -6,10 +6,6 @@ Session::checkLoginUser();
 
 use Glpi\Event;
 
-if (!isset($_GET["id"])) {
-    $_GET["id"] = 0;
-}
-
 //Protection in case, we don't find draft id
 if (isset($_POST['metademands_id'])) {
     $draft_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id'];
@@ -35,7 +31,6 @@ else {
 
 
 $datas = PluginOrderfollowupDraft::loadDatasDraft($draft_id);
-
 PluginOrderfollowupDraft::showDraft($datas);
 
 Html::helpFooter();

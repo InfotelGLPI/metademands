@@ -41,7 +41,6 @@ $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
 $fields      = new PluginMetademandsField();
 
-Toolbox::logInfo(print_r($_POST,true));
 
 if (isset($_POST['save_draft'])) {
    $nblines = 0;
