@@ -34,7 +34,6 @@ class PluginMetademandsDraft extends CommonDBTM {
 
    static $rightname = 'plugin_metademands';
 
-
    /**
     * @param $users_id
     * @param $plugin_metademands_metademands_id
@@ -54,6 +53,40 @@ class PluginMetademandsDraft extends CommonDBTM {
     {
         $temp = new PluginMetademandsDraft_Value();
         $temp->deleteByCriteria(['plugin_metademands_drafts_id' => $this->fields['id']]);
+    }
+
+    function rawSearchOptions() {
+
+        $tab = [];
+
+        $tab[] = [
+            'id'            => '1',
+            'table'         => $this->getTable(),
+            'field'         => 'id',
+            'name'          => __('ID'),
+            'massiveaction' => false,
+            'datatype'      => 'number'
+        ];
+
+        $tab[] = [
+            'id' => '2',
+            'table' => $this->getTable(),
+            'field' => 'name',
+            'name' => __('Name'),
+            'datatype' => 'itemlink',
+            'itemlink_type' => $this->getType(),
+        ];
+
+        $tab[] = [
+            'id' => '3',
+            'table' => $this->getTable(),
+            'field' => 'date',
+            'name' => __('Date'),
+            'datatype' => 'datetime',
+        ];
+
+        return $tab;
+
     }
 
 

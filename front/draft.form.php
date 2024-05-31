@@ -10,29 +10,32 @@ if (!isset($_GET["id"])) {
     $_GET["id"] = 0;
 }
 
-Html::Header(PluginMetademandsDraft::getTypeName(),"", "Tools", PluginMetademandsDraft::getType());
+//Protection in case, we don't find draft id
+if (isset($_POST['metademands_id'])) {
+    $draft_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id'];
+    $_SESSION['last_draft'] = $draft_id;
+}elseif(isset($_REQUEST['id'])) {
+    $draft_id = $_REQUEST['id'];
+    $_SESSION['last_draft'] = $draft_id;
+}else{
+    $draft_id =  $_SESSION['last_draft'];
+}
+
+if (Session::getCurrentInterface() == 'central') {
+    Html::Header(PluginOrderfollowupDraft::getTypeName(),"", "Tools", PluginOrderfollowupDraft::getType());
+}
+
+else {
+    if (Plugin::isPluginActive('servicecatalog')) {
+        PluginServicecatalogMain::showDefaultHeaderHelpdesk(PluginOrderfollowupDraft::getTypeName(2));
+    } else {
+        Html::helpHeader(PluginOrderfollowupDraft::getTypeName(2));
+    }
+}
 
 
-$wizard = new PluginMetademandsWizard();
-
-$menus = ["tools", PluginMetademandsDraft::getType()];
-
-$options = ['step' => 2,
-    'metademands_id' => 7,
-    'preview' => false,
-    'tickets_id' => '',
-    'ancestor_tickets_id' => '',
-    'resources_id' => '',
-    'resources_step' => '',
-    'itilcategories_id' => 0];
-
-
-//$wizard->showWizard($options);
-
-$datas = PluginOrderfollowupDraft::loadDatasDraft($_REQUEST['id']);
+$datas = PluginOrderfollowupDraft::loadDatasDraft($draft_id);
 
 PluginOrderfollowupDraft::showDraft($datas);
-
-//PluginMetademandsDraft::displayFullPageForItem($_REQUEST['id'] ?? 0, $menus, $_REQUEST);
 
 Html::helpFooter();
