@@ -41,6 +41,7 @@ $metademands = new PluginMetademandsMetademand();
 $wizard      = new PluginMetademandsWizard();
 $fields      = new PluginMetademandsField();
 
+
 if (isset($_POST['save_draft'])) {
     $nblines = 0;
     $KO = false;

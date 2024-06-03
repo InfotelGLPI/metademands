@@ -465,3 +465,13 @@ textarea.invalid,
 #freeinput_table select:not(.form-control), #freeinput_table input:not(.submit):not(.form-control):not([type=submit]):not([type=color]):not([type=reset]):not([type=checkbox]):not([type=radio]):not(.select2-search__field):not(.numInput):not(.tox-textfield) {
     width: 100%;
 }
+
+.boutons_draft {
+    text-align : center;
+}
+
+.boutons_draft .update_draft,
+.boutons_draft .delete_draft{
+    margin: 20px;
+    font-size: 15px;
+}
