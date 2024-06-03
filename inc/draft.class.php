@@ -30,24 +30,27 @@
 /**
  * Class PluginMetademandsDraft
  */
-class PluginMetademandsDraft extends CommonDBTM {
+class PluginMetademandsDraft extends CommonDBTM
+{
 
-   static $rightname = 'plugin_metademands';
+    static $rightname = 'plugin_metademands';
 
-   /**
-    * @param $users_id
-    * @param $plugin_metademands_metademands_id
-    *
-    * @return int|void
-    */
-   static function countDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id) {
+    /**
+     * @param $users_id
+     * @param $plugin_metademands_metademands_id
+     *
+     * @return int|void
+     */
+    static function countDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id)
+    {
+        $self = new self();
+        $drafts = $self->find([
+            'users_id' => $users_id,
+            'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id
+        ]);
 
-      $self   = new self();
-      $drafts = $self->find(['users_id'                          => $users_id,
-                             'plugin_metademands_metademands_id' => $plugin_metademands_metademands_id]);
-
-      return count($drafts);
-   }
+        return count($drafts);
+    }
 
     public function cleanDBonPurge()
     {
@@ -55,17 +58,17 @@ class PluginMetademandsDraft extends CommonDBTM {
         $temp->deleteByCriteria(['plugin_metademands_drafts_id' => $this->fields['id']]);
     }
 
-    function rawSearchOptions() {
-
+    function rawSearchOptions()
+    {
         $tab = [];
 
         $tab[] = [
-            'id'            => '1',
-            'table'         => $this->getTable(),
-            'field'         => 'id',
-            'name'          => __('ID'),
+            'id' => '1',
+            'table' => $this->getTable(),
+            'field' => 'id',
+            'name' => __('ID'),
             'massiveaction' => false,
-            'datatype'      => 'number'
+            'datatype' => 'number'
         ];
 
         $tab[] = [
@@ -85,17 +88,26 @@ class PluginMetademandsDraft extends CommonDBTM {
             'datatype' => 'datetime',
         ];
 
-        return $tab;
+        $tab[] = [
+            'id' => '99',
+            'table' => 'glpi_plugin_metademands_metademands',
+            'field' => 'name',
+            'linkfield' => 'plugin_metademands_metademands_id',
+            'name' => _n('form', 'forms', 1, 'metademands'),
+            'massiveaction' => false,
+        ];
 
+
+        return $tab;
     }
 
 
-   /**
-    * @param $users_id
-    * @param $plugin_metademands_metademands_id
-    *
-    * @return string
-    */
+    /**
+     * @param $users_id
+     * @param $plugin_metademands_metademands_id
+     *
+     * @return string
+     */
     static function showDraftsForUserMetademand($users_id, $plugin_metademands_metademands_id)
     {
         $self = new self();
@@ -178,7 +190,6 @@ class PluginMetademandsDraft extends CommonDBTM {
         //      $return .= "</th></tr>";
         $return .= "<tbody id='bodyDraft'>";
         if (count($drafts) > 0) {
-
             foreach ($drafts as $draft) {
                 $return .= "<tr class=''>";
                 $return .= "<td>" . Toolbox::stripslashes_deep($draft['name']) . "</td>";

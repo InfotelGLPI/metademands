@@ -655,6 +655,14 @@ function plugin_metademands_install() {
         $query = "DELETE FROM glpi_plugin_metademands_forms_values WHERE plugin_metademands_forms_id = 0;";
         $DB->query($query);
 
+        $DB->query("INSERT INTO glpi_displaypreferences
+                           VALUES (NULL,'PluginMetademandsDraft','1','0','0');");
+        $DB->query("INSERT INTO glpi_displaypreferences
+                           VALUES (NULL,'PluginMetademandsDraft','2','1','0');");
+        $DB->query("INSERT INTO glpi_displaypreferences
+                           VALUES (NULL,'PluginMetademandsDraft','3','2','0');");
+        $DB->query("INSERT INTO glpi_displaypreferences
+                           VALUES (NULL,'PluginMetademandsDraft','99','3','0');");
         foreach ($DB->request("SELECT `profiles_id`
                              FROM `glpi_profilerights` 
                              WHERE `name` LIKE '%plugin_metademands%' 

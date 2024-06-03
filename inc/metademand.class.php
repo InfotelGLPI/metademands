@@ -1587,17 +1587,17 @@ JAVASCRIPT
         }
         if ($type == Ticket::INCIDENT_TYPE || $type == Ticket::DEMAND_TYPE) {
             $condition = "1 AND `" . $this->getTable() . "`.`type` = '$type' 
-                        AND is_active = 1 
-                        AND is_deleted = 0 
-                        AND 'is_template' = 0 ";
+                        AND `is_active` = 1 
+                        AND `is_deleted` = 0 
+                        AND `is_template` = 0 ";
         } else {
             $condition = "1 AND `" . $this->getTable() . "`.`object_to_create` = '$type' 
-                        AND is_active = 1 
-                        AND is_deleted = 0 
-                        AND 'is_template' = 0 ";
+                        AND `is_active` = 1 
+                        AND `is_deleted` = 0 
+                        AND `is_template` = 0 ";
         }
 
-        $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable());
+        $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), '', '', true);
 
         if (!empty($params['condition'])) {
             $condition .= $params['condition'];
@@ -1994,7 +1994,9 @@ JAVASCRIPT
                     if ($object_class == 'Ticket') {
                         $parent_fields['type'] = $this->fields['type'];
                         // Existing tickets id field
-                        $parent_fields['id'] = $values['fields']['tickets_id'];
+                        if (isset($values['fields']['tickets_id'])) {
+                            $parent_fields['id'] = $values['fields']['tickets_id'];
+                        }
                     }
                     $parent_fields['entities_id'] = $_SESSION['glpiactive_entity'];
 
