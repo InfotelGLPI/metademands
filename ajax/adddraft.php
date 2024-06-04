@@ -171,6 +171,8 @@ if (isset($_POST['save_draft'])) {
                 $draft_id = $drafts->add($inputs);
             }
 
+            $_SESSION['my_last_draft'] = $draft_id;
+
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {

@@ -1104,15 +1104,7 @@ class PluginMetademandsDraft extends CommonDBTM
         ])->current();
 
         if ($requester != null) {
-            //Security, we want to check, if server data are updated, and check if the ID is the last
-            if($last_id == $requester['id']){
-                return $requester['id'];
-            }else{
-                return self::checkLastCreate();
-            }
-        }else {
-            //if there is no ID, that's mean, SQL is currently insert datas, so we launch again the function
-            return self::checkLastCreate();
+            return $requester['id'];
         }
 
     }

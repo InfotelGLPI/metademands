@@ -44,12 +44,25 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
     $listMetademand = $meta->listMetademandsForDraft();
 
     if (isset($_REQUEST['metademands_id'])) {
-        //Sleep for 1s, we wait the sql insert
-        sleep(1);
-        $last_id = $_SESSION['plugin_metademands'][$_REQUEST['metademands_id']]['plugin_metademands_drafts_id'];
-        $draft_id = PluginMetademandsDraft::checkLastCreate($last_id);
 
-        header('Location: ' . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id=$draft_id");
+        $draft_id = $_SESSION['my_last_draft'];
+
+        if(!isset($_SESSION['old_draft'])){
+            $_SESSION['old_draft'] = 0;
+        }
+
+        if($draft_id == NULL){
+            $draft_id = PluginMetademandsDraft::checkLastCreate();
+        }
+
+        if($_SESSION['old_draft'] == $draft_id){
+            //Draft Error, redirect to Draft list
+            header('Location: ' . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.php");
+        }else{
+            $_SESSION['old_draft'] = $draft_id;
+            header('Location: ' . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id=$draft_id");
+        }
+
 
     } else {
 
