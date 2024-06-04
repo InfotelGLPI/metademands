@@ -1,0 +1,80 @@
+<div class="tab-pane fade active show" role="tabpanel">
+    <div class="asset" data-select2-id="2392">
+        <form id='wizard_form' data-track-changes="false" enctype="multipart/form-data" data-submit-once="" data-select2-id="2391">
+            <div id="mainformtable" data-select2-id="mainformtable">
+                <div id="header_150288226" style="position:relative" class="card-header main-header d-flex flex-wrap mx-n2 mt-n2 align-items-stretch  flex-grow-1">
+                    <h3 class="card-title d-flex align-items-center ps-4">
+                        <div class="ribbon ribbon-bookmark ribbon-top ribbon-start bg-blue s-1">
+                            <i class="ti ti-file fa-2x"></i>
+                        </div>
+                        <span> {{ new_draft }} </span>
+
+                    </h3>
+                </div>
+                <table class="tab_cadre_fixe" style="margin: 20px 0">
+                    <tbody>
+                    <tr>
+                        <td>{{ draft_name }}</td>
+                        <td><input type="text" name="draft_name" value="" size="40" class="form-control"></td>
+                        <td>{{ metademand_name }}</td>
+                        <td>
+                            <select name ='metademands_id'>
+                                {% for key, value in listMetademand %}
+                                <option value={{ key }}>{{ value }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="row"></div>
+                <div class="card-body mx-n2 mb-4 border-top d-flex flex-row-reverse align-items-start flex-wrap">
+                    <button class="btn btn-primary me-2" id="submitSave" onclick="addDraft(event)" name="add" value="1">
+                        <i class="fas fa-plus"></i>
+                        <span>{{ confirmation }}</span>
+                    </button>
+                </div>
+                <input type="hidden" name="_glpi_csrf_token" value="{{ _glpi_csrf_token }}" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function addDraft(event) {
+        event.stopPropagation();
+        if(typeof tinyMCE !== 'undefined'){
+            tinyMCE.triggerSave();
+        }
+
+        jQuery('.resume_builder_input').trigger('change');
+
+        $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+
+        $('#ajax_loader').show();
+
+        arrayDatas = $('#wizard_form').serializeArray();
+
+        arrayDatas.push({name: 'save_draft', value: true});
+        arrayDatas.push({name: 'step', value: 2});
+        arrayDatas.push({name: 'form_metademands_id', value: 0});
+        arrayDatas.push({name: '_users_id_requester', value: {{ _users_id_requester }}});
+        arrayDatas.push({name: 'resources_id', value: 0});
+        arrayDatas.push({name: 'resources_step', value: 0});
+        arrayDatas.push({name: 'plugin_metademands_drafts_id', value: 0});
+
+        $.ajax({
+            url: '{{ path }}/ajax/adddraft.php',
+            type: 'POST',
+            data: arrayDatas,
+            success: function(response){
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
+            }
+        });
+
+    };
+</script>

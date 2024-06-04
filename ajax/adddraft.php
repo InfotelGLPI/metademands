@@ -165,7 +165,12 @@ if (isset($_POST['save_draft'])) {
             $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
             $inputs['date'] = date('Y-m-d H:i:s');
 
-            $draft_id = $drafts->add($inputs);
+            if(isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])){
+                $draft_id = $_POST['plugin_metademands_drafts_id'];
+            }else{
+                $draft_id = $drafts->add($inputs);
+            }
+
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
