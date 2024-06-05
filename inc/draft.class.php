@@ -405,9 +405,24 @@ class PluginMetademandsDraft extends CommonDBTM
 
     public static function showDraft($datas)
     {
+        global $DB;
         $metademands_id = $datas['plugin_metademands_id'];
         $draft_id = $datas['plugin_metademands_drafts_id'];
         $draft_name = $datas['plugin_metademands_drafts_name'];
+
+        $query_type = " SELECT itil.name 
+                        FROM glpi_plugin_metademands_drafts_values as dvalue
+                        JOIN glpi_itilcategories as itil ON itil.id = dvalue.value
+                        JOIN glpi_plugin_metademands_fields as field ON field.id = dvalue.plugin_metademands_fields_id
+                        WHERE field.item = 'ITILCategory_Metademands' and dvalue.plugin_metademands_drafts_id  = '$draft_id'";
+
+        $result = $DB->doQuery($query_type);
+        $type_achat = "";
+        if ($DB->numrows($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
+                $type_achat = " - ".$data['name'];
+            }
+        }
 
         $metademands = new PluginMetademandsMetademand();
         $metademands_data = $metademands->constructMetademands($metademands_id);
@@ -440,9 +455,9 @@ class PluginMetademandsDraft extends CommonDBTM
             echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
         }
         if (empty($n = PluginMetademandsMetademand::displayField($metademands->getID(), 'name'))) {
-            echo $metademands->getName();
+            echo $metademands->getName(). $type_achat;
         } else {
-            echo $n;
+            echo $n . $type_achat;
         }
         echo "</h2>";
         echo "</div>";
@@ -466,12 +481,16 @@ class PluginMetademandsDraft extends CommonDBTM
                 <input type='hidden' name='form_metademands_id' value='$form_metademands_id'>
                 
                 ";
-                    self::createForm(
+                    PluginMetademandsWizard::constructForm(
                         $metademands_id,
                         $metademands_data,
+                        '',
                         $line['form'],
                         0,
                         0,
+                        false,
+                        0,
+                        1,
                         $draft_id,
                         $draft_name,
                     );
@@ -501,631 +520,6 @@ class PluginMetademandsDraft extends CommonDBTM
         return "fa-regular fa-copy";
     }
 
-    public static function createForm($metademands_id, $metademands_data, $lines, $preview, $itilcategories_id, $draft_id, $draft_name)
-    {
-        $metademands = new PluginMetademandsMetademand();
-        $dbu = new DbUtils();
-        $metademands->getFromDB($metademands_id);
-
-        $users_id = Session::getLoginUserID();
-
-        $lineForStepByStep = [];
-        $data_form = [];
-        $values_saved = $_SESSION['plugin_metademands'][$metademands_id]['fields'] ?? [];
-
-        // fields arranged by their ranks
-        $allfields = [];
-        foreach ($lines as $fields) {
-            if (array_key_exists($fields["rank"], $allfields)) {
-                $allfields[$fields["rank"]][] = $fields;
-            } else {
-                $allfields[$fields["rank"]] = [$fields];
-            }
-        }
-
-        $use_as_step = 0;
-        $stepConfig = new PluginMetademandsConfigstep();
-        $stepConfig->getFromDBByCrit(['plugin_metademands_metademands_id' => $metademands_id]);
-
-        if ($metademands->fields['step_by_step_mode'] == 1) {
-            if (isset($stepConfig->fields['step_by_step_interface'])) {
-                switch ($stepConfig->fields['step_by_step_interface']) {
-                    case PluginMetademandsConfigstep::BOTH_INTERFACE:
-                        $use_as_step = 1;
-                        break;
-                    case PluginMetademandsConfigstep::ONLY_HELPDESK_INTERFACE:
-                        if (Session::getCurrentInterface() == 'helpdesk') {
-                            $use_as_step = 1;
-                        }
-                        break;
-                    case PluginMetademandsConfigstep::ONLY_CENTRAL_INTERFACE:
-                        if (Session::getCurrentInterface() == 'central') {
-                            $use_as_step = 1;
-                        }
-                        break;
-                }
-            }
-        }
-
-        $hidden_blocks = [];
-        $all_hidden_blocks = [];
-
-        $count = 0;
-        $columns = 2;
-        $cpt = 0;
-
-        $basketline = new PluginMetademandsBasketline();
-        if ($basketlinesFind = $basketline->find(['plugin_metademands_metademands_id' => $metademands_id,
-            'users_id' => Session::getLoginUserID()])) {
-            echo "<div class='alert alert-warning d-flex'>";
-            echo "<b>" . __('You have items on your basket', 'metademands') . "</b></div>";
-        }
-
-        if (count($lines)) {
-            if ($use_as_step == 0) {
-                echo "<div class='tab-nostep'>";
-                $cpt = 1;
-            }
-            // #meta-form to avoid hijacking the whole page
-            // e.preventDefault() to avoid reloading the page and lose filled values
-            echo Html::scriptBlock('$("#meta-form").keypress(function(e){
-                            if (e.which == 13){
-                                var target = $(e.target);
-                                if(!target.is("textarea")) {
-                                     e.preventDefault();
-                                     $("#submitjob").click();
-                                     $("#nextBtn").click();
-                                }
-                            }
-                });');
-            sleep(1);
-
-            echo "<script>
-                    /**
-                    *  set the content of the nextBtn element
-                    */
-                    function fixButtonIndicator() {
-                        const use_as_step = '$use_as_step';
-
-                        if (use_as_step) {
-                            x = document.getElementsByClassName('tab-step');
-                        } else {
-                            x = document.getElementsByClassName('tab-nostep');
-                        }
-                    
-                        let create = false;
-                        if (use_as_step == 1) {
-//                            let nextTab = metademands.currentTab + 1;
-                            let nextTab = Object.values(metademands.listBlock)[0];
-                            while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
-                                nextTab = nextTab + 1;
-                            }
-                    
-                            if (x[nextTab] != undefined) {
-                                let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
-                                let id_bloc = parseInt(bloc.replace('bloc', ''));
-                                if (!metademands.listBlock.includes(id_bloc)) {
-                                    create = true;
-                                }
-                            }
-                    
-                            if (nextTab >= x.length) {
-                                document.getElementById('nextBtn').innerHTML = metademands.submittitle;
-                            } else {
-                                if (create) {
-                                    document.getElementById('nextBtn').innerHTML = metademands.submitsteptitle;
-                                } else {
-                                    document.getElementById('nextBtn').innerHTML = metademands.nextsteptitle;
-                                }
-                            }
-                        }
-                    }
-                </script>";
-
-            foreach ($allfields as $block => $line) {
-                if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
-                    if (!in_array($block, $all_hidden_blocks)) {
-                        echo "<div class='tab-step'>";
-                        $cpt++;
-                    }
-                }
-
-                $style_left_right = 'padding: 0.5rem 0.5rem;';
-                $keys = array_keys($line);
-                $keyIndexes = array_flip($keys);
-
-                $style = "";
-
-
-                if (isset($metademands->fields['background_color'])
-                    && !empty($metademands->fields['background_color'])) {
-                    $background_color = $metademands->fields['background_color'];
-                    $style .= ";background-color:" . $background_color . ";";
-                }
-
-                echo "<div bloc-id='bloc" . $block . "' style='$style' class='card tab-sc-child-" . $block . "'>";
-
-                if ($line[$keys[0]]['type'] == 'title-block') {
-
-                    $data = $line[$keys[0]];
-                    $fieldparameter            = new PluginMetademandsFieldParameter();
-                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $line[$keys[0]]['id']])) {
-                        unset($fieldparameter->fields['plugin_metademands_fields_id']);
-                        unset($fieldparameter->fields['id']);
-
-                        $params = $fieldparameter->fields;
-                        $data = array_merge($line[$keys[0]], $params);
-                        if (isset($fieldparameter->fields['default'])) {
-                            $line[$keys[0]]['default_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['default']);
-                        }
-
-                        if (isset($fieldparameter->fields['custom'])) {
-                            $line[$keys[0]]['custom_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
-                        }
-                    }
-
-                    $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
-                    $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
-
-                    //Block Title
-                    if (isset($line[$keys[0]]['type'])
-                        && in_array($line[$keys[0]]['type'], $allowed_customvalues_types)
-                        || in_array($line[$keys[0]]['item'], $allowed_customvalues_items)) {
-                        $field_custom = new PluginMetademandsFieldCustomvalue();
-                        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $line[$keys[0]]['id']], "rank")) {
-                            if (count($customs) > 0) {
-                                $line[$keys[0]]['custom_values'] = $customs;
-                            }
-                        }
-                    }
-
-                    PluginMetademandsField::displayFieldByType($metademands_data, $data, $preview, $itilcategories_id);
-
-                }
-
-                echo "<div class='card-body' bloc-hideid='bloc" . $block . "'>";
-
-                if ($preview) {
-                    echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "'>";
-                } else {
-                    echo "<div class=\"row\" style='$style'>";
-                }
-
-                foreach ($line as $key => $data) {
-                    $config_link = "";
-                    if (Session::getCurrentInterface() == 'central' && $preview) {
-                        $config_link = "&nbsp;<a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsField') . "?id=" . $data['id'] . "'>";
-                        $config_link .= "<i class='fas fa-wrench'></i></a>";
-                    }
-
-                    $fieldparameter            = new PluginMetademandsFieldParameter();
-                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])) {
-                        unset($fieldparameter->fields['plugin_metademands_fields_id']);
-                        unset($fieldparameter->fields['id']);
-
-                        $params = $fieldparameter->fields;
-                        $data = array_merge($data, $params);
-
-                        if (isset($fieldparameter->fields['default'])) {
-                            $data['default_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['default']);
-                        }
-
-                        if (isset($fieldparameter->fields['custom'])) {
-                            $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
-                        }
-                    }
-
-                    $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
-                    $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
-
-                    if (isset($data['type'])
-                        && (in_array($data['type'], $allowed_customvalues_types)
-                            || in_array($data['item'], $allowed_customvalues_items))
-                        && $data['item'] != "urgency"
-                        && $data['item'] != "impact") {
-                        $field_custom = new PluginMetademandsFieldCustomvalue();
-                        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
-                            if (count($customs) > 0) {
-                                $data['custom_values'] = $customs;
-                            }
-                        }
-                    }
-
-                    // Manage ranks ???
-                    if (isset($keyIndexes[$key])
-                        && isset($keys[$keyIndexes[$key] - 1])
-                        && $data['rank'] != $line[$keys[$keyIndexes[$key] - 1]]['rank']) {
-                        //End bloc-hideid
-                        echo "</div>";
-
-                        echo "</div>";
-                        echo "</div>";
-                        echo "<div bloc-id='bloc" . $block . "'>";
-
-                        // Title block field
-                        if ($data['type'] == 'title-block') {
-                            if ($preview) {
-
-                                $color = PluginMetademandsField::setColor($block);
-                                $style = 'padding-top:5px;
-                                          padding-bottom:10px;
-                                          border-top :3px solid #' . $color . ';
-                                          border-left :3px solid #' . $color . ';
-                                          border-right :3px solid #' . $color;
-                                echo '<style type="text/css">
-                                        .preview-md-';
-                                echo $block;
-                                echo ':before {
-                                                 content: attr(data-title);
-                                                 background: #';
-                                echo $color . ";";
-                                echo 'position: absolute;
-                                       padding: 0 20px;
-                                       color: #fff;
-                                       right: 0;
-                                       top: 0;
-                                   }
-                                  </style>';
-                                echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "' style='$style'>";
-                            } else {
-                                echo "<div>";
-                            }
-                            echo "<br><h4 class=\"alert alert-light\"><span style='color:" . $data['color'] . ";'>";
-
-                            if (empty($label = PluginMetademandsField::displayField($data['id'], 'name'))) {
-                                $label = $data['name'];
-                            }
-
-                            echo $label;
-                            echo $config_link;
-                            if (isset($data['label2']) && !empty($data['label2'])) {
-                                echo "&nbsp;";
-                                if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                                    $label2 = $data['label2'];
-                                }
-                                Html::showToolTip(
-                                    Glpi\RichText\RichText::getSafeHtml($label2),
-                                    ['awesome-class' => 'fa-info-circle']
-                                );
-                            }
-                            echo "<i id='up" . $block . "' class='fa-1x fas fa-chevron-up pointer' style='right:40px;position: absolute;color:" . $data['color'] . ";'></i>";
-                            $rand = mt_rand();
-                            echo Html::scriptBlock("
-                                 var myelement$rand = '#up" . $block . "';
-                                 var bloc$rand = 'bloc" . $block . "';
-                                 $(myelement$rand).click(function() {     
-                                     if($('[bloc-hideid =' + bloc$rand + ']:visible').length) {
-                                         $('[bloc-hideid =' + bloc$rand + ']').hide();
-                                         $(myelement$rand).toggleClass('fa-chevron-up fa-chevron-down');
-                                     } else {
-                                         $('[bloc-hideid =' + bloc$rand + ']').show();
-                                         $(myelement$rand).toggleClass('fa-chevron-down fa-chevron-up');
-                                     }
-                                 });");
-                            echo "</span></h4>";
-                            if (!empty($data['comment'])) {
-                                if (empty($comment = PluginMetademandsField::displayField($data['id'], 'comment'))) {
-                                    $comment = $data['comment'];
-                                }
-                                $comment = htmlspecialchars_decode(stripslashes($comment));
-                                echo "<label><i>" . $comment . "</i></label>";
-                            }
-
-                            echo "</div>";
-                            // Other fields
-                        }
-
-                        echo "<div bloc-hideid='bloc" . $block . "'>";
-
-                        if ($preview) {
-
-                            $color = PluginMetademandsField::setColor($block);
-                            echo '<style type="text/css">
-                           .preview-md-';
-                            echo $block;
-                            echo ':before {
-                             content: attr(data-title);
-                             background: #';
-                            echo $color . ";";
-                            echo 'position: absolute;
-                                   padding: 0 20px;
-                                   color: #fff;
-                                   right: 0;
-                                   top: 0;
-                               }
-                              </style>';
-                            $style = 'padding-top:5px;
-                            padding-bottom:10px;
-                            border-top :3px solid #' . $color . ';
-                            border-left :3px solid #' . $color . ';
-                            border-right :3px solid #' . $color;
-                            echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "' style='$style'>";
-                        } else {
-                            $background_color = "";
-                            if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                                $background_color = $meta->fields['background_color'];
-                            }
-                            echo "<div class=\"row class1\" style='background-color: " . $background_color . ";padding: 0.5rem 0.5rem;'>";
-                        }
-
-                        $count = 0;
-                    }
-
-                    if(isset($_SESSION['draft_creation']) && $_SESSION['draft_creation']){
-                        foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $key => $item) {
-                            $_SESSION['plugin_metademands'][$metademands->getID()]['fields'][$key] = '';
-                        }
-                        $_SESSION['draft_creation'] = false;
-                    }
-
-                    // If values are saved in session we retrieve it
-                    if (isset($_SESSION['plugin_metademands'][$metademands->getID()]['fields'])) {
-                        foreach ($_SESSION['plugin_metademands'][$metademands->getID()]['fields'] as $id => $value) {
-                            if (strval($data['id']) === strval($id)) {
-                                $data['value'] = $value;
-                            } elseif ($data['id'] . '-2' === $id) {
-                                $data['value-2'] = $value;
-                            }
-                        }
-                    }
-
-                    // Title field
-                    if ($data['type'] != 'title-block') {
-                        // start wrapper div classes
-                        if ($data['type'] == 'title') {
-                            $data['row_display'] = 1;
-                            $data['is_mandatory'] = 0;
-                        }
-                        $style = "";
-                        $class = "";
-                        if ($data['row_display'] == 1 && $data['type'] == "link") {
-                            $class = "center";
-                        }
-                        //Add possibility to hide field
-                        if ($data['type'] == 'dropdown_meta'
-                            && $data['item'] == "ITILCategory_Metademands"
-                            && Session::getCurrentInterface() != 'central') {
-                            $class .= " itilmeta";
-                        }
-                        if ($data['type'] != 'informations') {
-                            $class = "form-group ";
-                        }
-                        $bottomclass = "";
-                        if ($data['type'] != 'informations') {
-                            $bottomclass = "md-bottom";
-                        }
-                        if ($data['row_display'] == 1) {
-                            echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
-                            $count++;
-                        } else {
-                            echo "<div id-field='field" . $data["id"] . "' $style class=\"col-md-5 $bottomclass $class\">";
-                        }
-                        // end wrapper div classes
-                        //see fields
-                        PluginMetademandsField::displayFieldByType($metademands_data, $data, $preview, $itilcategories_id);
-
-                        // Label 2 (date interval)
-                        if (!empty($data['label2'])
-                            && $data['type'] != 'link') {
-                            $required = "";
-                            $required_icon = "";
-                            if ($data['is_mandatory']) {
-                                $required = "style='color:red'";
-                                $required_icon = " * ";
-                            }
-
-                            if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                                echo "</div><div class=\"form-group col-md-5 md-bottom\">";
-                            }
-                            if (empty($label2 = PluginMetademandsField::displayField($data['id'], 'label2'))) {
-                                $label2 = htmlspecialchars_decode(stripslashes($data['label2']));
-                            }
-                            $style = "";
-                            if ($data['type'] != 'informations') {
-                                $style = "style='padding: 10px;margin-top:10px'";
-                            }
-
-                            if ($data['type'] != 'informations') {
-                                if ($data['type'] != 'datetime_interval' && $data['type'] != 'date_interval') {
-                                    echo "<div class='alert alert-secondary' $style>";
-                                    echo Glpi\RichText\RichText::getSafeHtml($label2);
-                                    echo "</div>";
-                                } else {
-                                    echo "<span for='field[" . $data['id'] . "-2]' class='col-form-label metademand-label'>" . RichText::getTextFromHtml($label2) . "<span $required>" . $required_icon . "</span></label>";
-                                }
-                            }
-                            $value2 = '';
-                            if (isset($data['value-2'])) {
-                                $value2 = $data['value-2'];
-                            }
-
-                            if ($data['type'] == 'datetime_interval' || $data['type'] == 'date_interval') {
-                                echo "<span style='width: 50%!important;display: -webkit-box;'>";
-                                switch ($data['type']) {
-                                    case 'date_interval':
-                                        Html::showDateField("field[" . $data['id'] . "-2]", ['value' => $value2, 'required' => ($data['is_mandatory'] ? "required" : "")]);
-                                        $count++; // If date interval : pass to next line
-                                        break;
-                                    case 'datetime_interval':
-                                        Html::showDateTimeField("field[" . $data['id'] . "-2]", ['value' => $value2, 'required' => ($data['is_mandatory'] ? "required" : "")]);
-                                        $count++; // If date interval : pass to next line
-                                        break;
-                                }
-                                echo "</span>";
-                            }
-                        }
-                        echo "</div>";
-                    }
-
-                    // Next row
-                    if ($count > $columns) {
-                        if ($preview) {
-                            $color = PluginMetademandsField::setColor($data['rank']);
-                            $style_left_right = 'padding-bottom:10px;
-                                       border-left :3px solid #' . $color . ';
-                                       border-right :3px solid #' . $color;
-                        }
-
-                        echo "</div>";
-
-                        $background_color = "";
-                        if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
-                            $background_color = $meta->fields['background_color'];
-                        }
-                        if ($preview) {
-                            echo "<div class=\"row class2\" style='background-color: " . $background_color . ";'>";
-                        } else {
-                            echo "<div class=\"row class2\" style='background-color: " . $background_color . ";$style_left_right'>";
-                        }
-
-                        $count = 0;
-                    }
-                }
-
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-
-                // Fields linked
-                foreach ($line as $data) {
-
-                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id']])) {
-                        unset($fieldparameter->fields['plugin_metademands_fields_id']);
-                        unset($fieldparameter->fields['id']);
-
-                        $params = $fieldparameter->fields;
-                        $data = array_merge($data, $params);
-
-                        if (isset($fieldparameter->fields['default'])) {
-                            $data['default_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['default']);
-                        }
-
-                        if (isset($fieldparameter->fields['custom'])) {
-                            $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
-                        }
-                    }
-
-                    $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
-                    $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
-
-                    if (isset($data['type'])
-                        && in_array($data['type'], $allowed_customvalues_types)
-                        || in_array($data['item'], $allowed_customvalues_items)) {
-                        $field_custom = new PluginMetademandsFieldCustomvalue();
-                        if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $data['id']], "rank")) {
-                            if (count($customs) > 0) {
-                                $data['custom_values'] = $customs;
-                            }
-                        }
-                    }
-
-                    //verifie si une sous metademande doit etre lancé
-                    PluginMetademandsFieldOption::taskScript($data);
-
-                    //Active champs obligatoires sur les fields_link
-                    PluginMetademandsFieldOption::fieldsLinkScript($data);
-
-                    //Affiche les hidden_link
-                    PluginMetademandsFieldOption::fieldsHiddenScript($data);
-
-                    //cache ou affiche les hidden_block & child_blocks
-                    PluginMetademandsFieldOption::blocksHiddenScript($data);
-
-                    PluginMetademandsFieldOption::checkboxScript($data);
-                }
-
-                if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
-                    if (!in_array($block, $all_hidden_blocks)) {
-                        echo "</div>";
-                    }
-                }
-            }
-            if ($use_as_step == 0) {
-                echo "</div>";
-            }
-
-            echo"<div class='boutons_draft'>";
-            echo "<button form='' class='submit btn btn-success btn-sm update_draft' onclick=\"udpateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
-            echo __('Upgrade');
-            echo "</button>";
-
-
-
-            echo "<button form='' class='submit btn btn-danger btn-sm delete_draft' onclick=\"deleteThisDraft(" . $draft_id . ")\">";
-            echo  __('Delete');
-            echo "</button>";
-
-            echo "</div></form>";
-
-            echo "<script> 
-                    if(document.querySelector('#freeinput_table #add_freeinputs')){
-                        document.querySelector('#freeinput_table .add_item').addEventListener('click',function() {
-                           document.querySelector('#freeinput_table #add_freeinputs').parentNode.parentNode.remove(); 
-                        });
-                    }
-                    
-                    function udpateThisDraft(draft_id, draft_name) {
-                         if(typeof tinyMCE !== 'undefined'){
-                            tinyMCE.triggerSave();
-                         }
-                         jQuery('.resume_builder_input').trigger('change');
-                         $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                         $('#ajax_loader').show();
-                         arrayDatas = $('#draft_form').serializeArray();
-                         arrayDatas.push({name: \"save_draft\", value: true});
-                         arrayDatas.push({name: \"plugin_metademands_drafts_id\", value: draft_id});
-                         arrayDatas.push({name: \"draft_name\", value: draft_name});
-                         arrayDatas.push({name: \"step\", value: 2});
-                         arrayDatas.push({name: \"_users_id_requester\", value: $users_id});
-                         arrayDatas.push({name: \"metademands_id\", value: $metademands_id});
-                                                  
-                         $.ajax({
-                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',
-                               type: 'POST',
-                               data: arrayDatas,
-                               success: function(response){
-                               console.log(response);
-                                   window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id='+draft_id
-                                },
-                               error: function(xhr, status, error) {
-                                  console.log(xhr);
-                                  console.log(status);
-                                  console.log(error);
-                                } 
-                         });
-                    }
-                    
-                    function deleteThisDraft(draft_id) {
-                          var self_delete = true;
-                          $('#ajax_loader').show();
-                          $.ajax({
-                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/deletedraft.php',
-                                type: 'POST',
-                                data:
-                                  {
-                                    users_id:$users_id,
-                                    plugin_metademands_metademands_id: $metademands_id,
-                                    drafts_id: draft_id,
-                                    self_delete: self_delete
-                                  },
-                                success: function(response){
-                                    $('#bodyDraft').html(response);
-                                    $('#ajax_loader').hide();
-                                    window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.php'
-                                 },
-                                error: function(xhr, status, error) {
-                                   console.log(xhr);
-                                   console.log(status);
-                                   console.log(error);
-                                 } 
-                             });
-                       };
-                </script>";
-
-        }
-
-    }
-
     static function getMenuContent() {
 
         $menu['title']           = self::getMenuName(2);
@@ -1137,4 +531,23 @@ class PluginMetademandsDraft extends CommonDBTM
         return $menu;
     }
 
+    public static function checkLastCreate($last_id = 0){
+        global $DB;
+        $draft = new PluginMetademandsDraft();
+
+        $requester = $DB->request([
+            'SELECT' => ['id'],
+            'FROM' => $draft::getTable(),
+            'WHERE' => [
+                'users_id' => Session::getLoginUserID(),
+            ],
+            'ORDER' => ['id DESC'],
+            'LIMIT' => '1',
+        ])->current();
+
+        if ($requester != null) {
+            return $requester['id'];
+        }
+
+    }
 }

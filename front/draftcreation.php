@@ -40,8 +40,8 @@ use Glpi\Application\View\TemplateRenderer;
 
 if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() != 'central') {
     $meta = new PluginMetademandsMetademand();
-    $options['empty_value'] = true;
-    $listMetademand = $meta->listMetademands(false, $options);
+    $option['empty_value'] = true;
+    $listMetademand = $meta->listMetademandsForDraft($option);
 
     if (isset($_REQUEST['metademands_id'])) {
 

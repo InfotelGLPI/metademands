@@ -19,8 +19,16 @@
                         <td>{{ metademand_name }}</td>
                         <td>
                             <select name ='metademands_id'>
+                                <option value={{ 0 }} >{{ listMetademand[0] }}</option>
                                 {% for key, value in listMetademand %}
-                                <option value={{ key }}>{{ value }}</option>
+                                    {% if (value | length > 2) %}
+                                        {% for data in value %}
+                                            <option value={{ key }} data-idcat={{ data['itilcategorie'] }}>{{ data['name'] }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value={{ key }} data-idcat={{ value['itilcategorie'] }}>{{ value['name'] }}</option>
+                                    {% endif %}
+
                                 {% endfor %}
                             </select>
                         </td>
@@ -56,12 +64,14 @@
         arrayDatas = $('#wizard_form').serializeArray();
 
         arrayDatas.push({name: 'save_draft', value: true});
+        arrayDatas.push({name: 'new_draft', value: true});
         arrayDatas.push({name: 'step', value: 2});
         arrayDatas.push({name: 'form_metademands_id', value: 0});
         arrayDatas.push({name: '_users_id_requester', value: {{ _users_id_requester }}});
         arrayDatas.push({name: 'resources_id', value: 0});
         arrayDatas.push({name: 'resources_step', value: 0});
         arrayDatas.push({name: 'plugin_metademands_drafts_id', value: 0});
+        arrayDatas.push({name: 'field_plugin_servicecatalog_itilcategories_id', value: $('#wizard_form select[name="metademands_id"]').find(':selected').data('idcat') });
 
         $.ajax({
             url: '{{ path }}/ajax/adddraft.php',

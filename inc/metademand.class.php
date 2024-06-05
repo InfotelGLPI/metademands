@@ -1634,6 +1634,79 @@ JAVASCRIPT
         return $meta_data;
     }
 
+    public function listMetademandsForDraft($options)
+    {
+        global $DB;
+
+        $dbu = new DbUtils();
+        $params['condition'] = '';
+
+        $meta_data = [];
+
+        if (isset($options['empty_value'])) {
+            $meta_data[0] = Dropdown::EMPTY_VALUE;
+        }
+
+        $condition = "  `is_active` = 1 
+                        AND `is_deleted` = 0 
+                        AND `is_template` = 0 ";
+
+        $query_cat = "SELECT id,name FROM glpi_itilcategories";
+
+        $itil_cat = [];
+        $result = $DB->doQuery($query_cat);
+
+        if ($DB->numrows($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
+                $itil_cat[$data['id']] = array(
+                    "id" => $data['id'],
+                    "name" => $data['name'],
+                );
+            }
+        }
+
+
+        $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), '', '', true);
+
+        $query = "SELECT `" . $this->getTable() . "`.`name`, 
+                          `" . $this->getTable() . "`.`id`, 
+                          `" . $this->getTable() . "`.`itilcategories_id`,
+                          `glpi_entities`.`completename` as entities_name
+                   FROM " . $this->getTable() . "
+                   INNER JOIN `glpi_entities`
+                   ON (`" . $this->getTable() . "`.`entities_id` = `glpi_entities`.`id`)
+                   WHERE $condition
+                   ORDER BY `" . $this->getTable() . "`.`name`";
+
+        $result = $DB->doQuery($query);
+        if ($DB->numrows($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
+                if ($this->canCreate() || PluginMetademandsGroup::isUserHaveRight($data['id'])) {
+                    $name = $data['name'];
+
+                    //clean string
+                    $data['itilcategories_id'] = json_decode($data['itilcategories_id']);
+
+                    if(count($data['itilcategories_id']) > 1){
+                        foreach ($data['itilcategories_id'] as $datum) {
+                            $meta_data[$data['id']][] = array(
+                                'name' => $name . ' (' . $data['entities_name'] . ')'. ' - '.$itil_cat[$datum]['name'],
+                                'itilcategorie' => $itil_cat[$datum]['id']
+                            );
+                        }
+
+                    }else{
+                        $meta_data[$data['id']]['name'] = $name . ' (' . $data['entities_name'] . ')';
+                        $meta_data[$data['id']]['itilcategorie'] = $data['itilcategories_id'][0];
+                    }
+
+                }
+            }
+        }
+
+        return $meta_data;
+    }
+
     /**
      * Get all datas for a metademand
      * @param       $metademands_id
