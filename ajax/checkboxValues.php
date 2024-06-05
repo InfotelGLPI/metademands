@@ -36,6 +36,15 @@ Session::checkLoginUser();
 $KO          = false;
 $fields = new PluginMetademandsField();
 $fields->getFromDB($_POST['checkbox_id_val']);
-$arrayValues = PluginMetademandsFieldParameter::_unserialize($fields->getField('custom_values'));
+
+$arrayValues = [];
+$field_custom = new PluginMetademandsFieldCustomvalue();
+if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $fields->getID()], "rank")) {
+    if (count($customs) > 0) {
+        foreach ($customs as $custom) {
+            $arrayValues[$custom['id']] = $custom['name'];
+        }
+    }
+}
 
 Dropdown::showFromArray('checkbox_value',$arrayValues,['display_emptychoice'=> false]);

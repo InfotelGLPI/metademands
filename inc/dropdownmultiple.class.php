@@ -1838,12 +1838,13 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $checkbox_id = $data['options'][$idc]['checkbox_id'];
             $checkbox_value = $data['options'][$idc]['checkbox_value'];
 
-            $custom_value = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+            $custom_values = $data['custom_values'];
+
             $script .= "$.each($(this).siblings('span.select2').children().find('li.select2-selection__choice'), function( key, value ) {";
 
             if (isset($checkbox_id) && $checkbox_id > 0) {
                 if ($data["item"] == "other") {
-                    $title = Toolbox::addslashes_deep($custom_value[$idc]);
+                    $title = Toolbox::addslashes_deep($custom_values[$idc]['name']);
                     $script .= "if ($(value).attr('title') == '$title') {
                                     document.getElementById('field[$checkbox_id][$checkbox_value]').checked=true;
                                 }";
