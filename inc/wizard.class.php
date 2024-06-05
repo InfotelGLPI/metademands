@@ -1077,7 +1077,7 @@ class PluginMetademandsWizard extends CommonDBTM
      * @param bool $preview
      * @param int $itilcategories_id
      */
-    public static function constructForm($metademands_id, $metademands_data, $step, $lines = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1)
+    public static function constructForm($metademands_id, $metademands_data, $step, $lines = [], $preview = false, $itilcategories_id = 0, $seeform = false, $current_ticket = 0, $meta_validated = 1, $draft_id = 0, $draft_name = "")
     {
         global $CFG_GLPI;
 
@@ -1678,304 +1678,405 @@ class PluginMetademandsWizard extends CommonDBTM
                 echo "</div>";
             }
 
-            if ($metademands->fields['is_order'] == 0
-                && !$preview
-                && (!$seeform
-                    || (isset($options['resources_id'])
-                        && $options['resources_id'] > 0)
-                    || ($current_ticket > 0
-                        && ((!$meta_validated
-                                && $metademands->fields['can_update'] == true) ||
-                            ($meta_validated
-                                && $metademands->fields['can_clone'] == true))
-                        && Session::haveRight('plugin_metademands_updatemeta', READ)))
-            ) {
+            if ($draft_id == 0) {
+                if ($metademands->fields['is_order'] == 0
+                    && !$preview
+                    && (!$seeform
+                        || (isset($options['resources_id'])
+                            && $options['resources_id'] > 0)
+                        || ($current_ticket > 0
+                            && ((!$meta_validated
+                                    && $metademands->fields['can_update'] == true) ||
+                                ($meta_validated
+                                    && $metademands->fields['can_clone'] == true))
+                            && Session::haveRight('plugin_metademands_updatemeta', READ)))
+                ) {
+                    $see_summary = 0;
+                    if ($metademands->fields['is_basket'] == 1) {
+                        $see_summary = 1;
+                    }
+                    if ($see_summary == 0) {
+                        echo "<br>";
+                    }
+                    echo "<div class=\"form-sc-group\">";
+                    echo "<div class='center'>";
 
-                $see_summary = 0;
-                if ($metademands->fields['is_basket'] == 1) {
-                    $see_summary = 1;
-                }
-                if ($see_summary == 0) {
-                    echo "<br>";
-                }
-                echo "<div class=\"form-sc-group\">";
-                echo "<div class='center'>";
+                    echo "<div style='overflow:auto;'>";
+                    if ($use_as_step == 1) {
+                        echo "<div id='nextMsg' class='alert alert-info center'>";
+                        echo "</div>";
+                    }
 
-                echo "<div style='overflow:auto;'>";
-                if ($use_as_step == 1) {
-                    echo "<div id='nextMsg' class='alert alert-info center'>";
-                    echo "</div>";
-                }
-
-                if (Session::haveRight("plugin_metademands_cancelform", READ)
-                && isset($_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'])) {
-                    $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
-                    $plugin_metademands_stepforms_id = $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id'];
-                    echo "<br><span style='color:darkred'>";
-                    Html::showSimpleForm(
-                        $target,
-                        'delete_form_from_list',
-                        _sx('button', 'Cancel form', 'metademands'),
-                        ['plugin_metademands_stepforms_id' => $plugin_metademands_stepforms_id],
+                    if (Session::haveRight("plugin_metademands_cancelform", READ)
+                        && isset(
+                            $_SESSION['plugin_metademands'][$metademands->getID()]['plugin_metademands_stepforms_id']
+                        )) {
+                        $target = PLUGIN_METADEMANDS_WEBDIR . "/front/stepform.form.php";
+                        $plugin_metademands_stepforms_id = $_SESSION['plugin_metademands'][$metademands->getID(
+                        )]['plugin_metademands_stepforms_id'];
+                        echo "<br><span style='color:darkred'>";
+                        Html::showSimpleForm(
+                            $target,
+                            'delete_form_from_list',
+                            _sx('button', 'Cancel form', 'metademands'),
+                            ['plugin_metademands_stepforms_id' => $plugin_metademands_stepforms_id],
 //                        'fa-trash-alt fa-2x'
-                    );
-                    echo "</span>";
-                }
+                        );
+                        echo "</span>";
+                    }
 
-                echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button'>";
-                echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
+                    echo "<button type='button' id='prevBtn' class='btn btn-primary ticket-button'>";
+                    echo "<i class='ti ti-chevron-left'></i>&nbsp;" . __('Previous', 'metademands') . "</button>";
 
-                echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'>";
-                echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
+                    echo "&nbsp;<button type='button' id='nextBtn' class='btn btn-primary ticket-button'>";
+                    echo __('Next', 'metademands') . "&nbsp;<i class='ti ti-chevron-right'></i></button>";
 
 
 //                echo "</span>";
-                echo "</div>";
-                echo "</div>";
-                echo "</div>";
-
-                if ($see_summary == 0) {
-                    //Circles which indicates the steps of the form:
-                    echo "<div style='text-align:center;margin-top:20px;'>";
-
-                    if ($cpt > 1) {
-                        for ($j = 1; $j <= $cpt; $j++) {
-                            echo "<span class='step_wizard'></span>";
-                        }
-                    } else {
-                        echo "<span class='step_wizard' style='display: none'></span>";
-                    }
-
                     echo "</div>";
-                }
+                    echo "</div>";
+                    echo "</div>";
 
-                $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                    if ($see_summary == 0) {
+                        //Circles which indicates the steps of the form:
+                        echo "<div style='text-align:center;margin-top:20px;'>";
 
-
-                $title = _sx('button', 'Save & Post', 'metademands');
-
-                $ID = $metademands->fields['id'];
-
-                if ($metademands->fields['is_basket'] == 1) {
-                    $title = _sx('button', 'See basket summary & send it', 'metademands');
-                    echo Html::hidden('see_basket_summary', ['value' => 1]);
-                    $see_summary = 1;
-                }
-                $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($ID);
-                if (count($childs_meta) > 0) {
-                    $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-                }
-                $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
-                $submitmsg = "";
-                $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-                $title = _sx('button', 'Save & send to another user / group', 'metademands');
-
-
-
-                $submitsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
-                $submitstepmsg = "";
-
-
-                echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
-                echo "</div>";
-
-
-                $name = Toolbox::addslashes_deep($metademands->fields['name']) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
-
-                $json_hidden_blocks = json_encode($hidden_blocks);
-                $alert = __('Thanks to fill mandatory fields', 'metademands');
-                $group_user = new Group_User();
-                $groups_users = $group_user->find(['users_id' => Session::getLoginUserID()]);
-                $groups = [];
-                foreach ($groups_users as $gu) {
-                    $groups[] = $gu['groups_id'];
-                }
-                $list_blocks = [];
-                $list_blocks2 = [];
-                if ($use_as_step == 1) {
-                    $step = new PluginMetademandsStep();
-                    $steps = [];
-                    if (!empty($groups)) {
-                        $steps = $step->find(['plugin_metademands_metademands_id' => $ID,
-                            'groups_id' => $groups]);
-
-                        foreach ($steps as $s) {
-                            $list_blocks[] = $s['block_id'];
+                        if ($cpt > 1) {
+                            for ($j = 1; $j <= $cpt; $j++) {
+                                echo "<span class='step_wizard'></span>";
+                            }
+                        } else {
+                            echo "<span class='step_wizard' style='display: none'></span>";
                         }
-                    }
-                    $step2 = new PluginMetademandsStep();
-                    if ($steps2 = $step2->find(['plugin_metademands_metademands_id' => $ID])) {
-                        foreach ($steps2 as $s) {
-                            $list_blocks2[] = $s['block_id'];
-                        }
-                    }
-                    $field = new PluginMetademandsField();
-                    $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
-                    $blocks = [];
 
-                    foreach ($fields as $f) {
-                        $blocks[] = $f["rank"];
+                        echo "</div>";
                     }
-                    foreach ($blocks as $block) {
-                        if (!in_array($block, $list_blocks2)) {
-                            $list_blocks[] = $block;
+
+                    $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+
+
+                    $title = _sx('button', 'Save & Post', 'metademands');
+
+                    $ID = $metademands->fields['id'];
+
+                    if ($metademands->fields['is_basket'] == 1) {
+                        $title = _sx('button', 'See basket summary & send it', 'metademands');
+                        echo Html::hidden('see_basket_summary', ['value' => 1]);
+                        $see_summary = 1;
+                    }
+                    $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($ID);
+                    if (count($childs_meta) > 0) {
+                        $title = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                    }
+                    $submittitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
+                    $submitmsg = "";
+                    $nextsteptitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
+                    $title = _sx('button', 'Save & send to another user / group', 'metademands');
+
+
+                    $submitsteptitle = "<i class=\"fas fa-save\"></i>&nbsp;" . $title;
+                    $submitstepmsg = "";
+
+
+                    echo "<div id='ajax_loader' class=\"ajax_loader hidden\">";
+                    echo "</div>";
+
+
+                    $name = Toolbox::addslashes_deep(
+                            $metademands->fields['name']
+                        ) . "_" . $_SESSION['glpi_currenttime'] . "_" . $_SESSION['glpiID'];
+
+                    $json_hidden_blocks = json_encode($hidden_blocks);
+                    $alert = __('Thanks to fill mandatory fields', 'metademands');
+                    $group_user = new Group_User();
+                    $groups_users = $group_user->find(['users_id' => Session::getLoginUserID()]);
+                    $groups = [];
+                    foreach ($groups_users as $gu) {
+                        $groups[] = $gu['groups_id'];
+                    }
+                    $list_blocks = [];
+                    $list_blocks2 = [];
+                    if ($use_as_step == 1) {
+                        $step = new PluginMetademandsStep();
+                        $steps = [];
+                        if (!empty($groups)) {
+                            $steps = $step->find([
+                                'plugin_metademands_metademands_id' => $ID,
+                                'groups_id' => $groups
+                            ]);
+
+                            foreach ($steps as $s) {
+                                $list_blocks[] = $s['block_id'];
+                            }
                         }
-                    }
+                        $step2 = new PluginMetademandsStep();
+                        if ($steps2 = $step2->find(['plugin_metademands_metademands_id' => $ID])) {
+                            foreach ($steps2 as $s) {
+                                $list_blocks2[] = $s['block_id'];
+                            }
+                        }
+                        $field = new PluginMetademandsField();
+                        $fields = $field->find(["plugin_metademands_metademands_id" => $ID]);
+                        $blocks = [];
+
+                        foreach ($fields as $f) {
+                            $blocks[] = $f["rank"];
+                        }
+                        foreach ($blocks as $block) {
+                            if (!in_array($block, $list_blocks2)) {
+                                $list_blocks[] = $block;
+                            }
+                        }
 
 //                    if (!isset($steps) || (is_array($steps) && count($steps) == 0)) {
 //                    }
 //                    if (count($steps) == 0) {
 //                        $submitsteptitle = $submittitle;
 //                    }
-                    $list_blocks = array_unique($list_blocks);
-                }
+                        $list_blocks = array_unique($list_blocks);
+                    }
 
-                if (!empty($data_form)) {
-                    $modal_html = '';
-                    $parent_fields = $metademands->formatFields($lineForStepByStep, $metademands_id, [$metademands_id => $data_form], []);
-                    $form = new PluginMetademandsStepform();
-                    if (isset($_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id'])
-                        && $form->getFromDBByCrit(['id' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']])) {
-                        $previousUser = new User();
-                        if ($previousUser->getFromDBByCrit(['id' => $form->fields['users_id']])) {
-                            $lbl = __('Previous user', 'metademands');
-                            $modal_html .= "
+                    if (!empty($data_form)) {
+                        $modal_html = '';
+                        $parent_fields = $metademands->formatFields(
+                            $lineForStepByStep,
+                            $metademands_id,
+                            [$metademands_id => $data_form],
+                            []
+                        );
+                        $form = new PluginMetademandsStepform();
+                        if (isset($_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id'])
+                            && $form->getFromDBByCrit(
+                                ['id' => $_SESSION['plugin_metademands'][$metademands_id]['plugin_metademands_stepforms_id']]
+                            )) {
+                            $previousUser = new User();
+                            if ($previousUser->getFromDBByCrit(['id' => $form->fields['users_id']])) {
+                                $lbl = __('Previous user', 'metademands');
+                                $modal_html .= "
                         <table class='tab_cadre_fixe' style='width: 100%;'>
                             <tr class='even'>
                                 <td class='title'> $lbl : " . $previousUser->fields['realname'] . " " . $previousUser->fields['firstname'] . "</td>
                             </tr>
                         </table>";
-                        }
+                            }
 
-                        $modal_html .= Glpi\RichText\RichText::getSafeHtml($parent_fields['content']);
-                        $title = __('Previous data edited', 'metademands');
-                        $setting_dialog = json_encode($modal_html);
-                        echo Html::scriptBlock("$(function() {
+                            $modal_html .= Glpi\RichText\RichText::getSafeHtml($parent_fields['content']);
+                            $title = __('Previous data edited', 'metademands');
+                            $setting_dialog = json_encode($modal_html);
+                            echo Html::scriptBlock(
+                                "$(function() {
                                                         glpi_html_dialog({
                                                              title: '$title',
                                                              body: {$setting_dialog},
                                                              dialogclass: 'modal-lg',
                                                         });
-                                                    });");
+                                                    });"
+                            );
 
-                        if (isset($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
-                            if (is_array($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
-                                $hidden_blocks = $_SESSION['plugin_metademands'][$ID]['hidden_blocks'];
-                                $script = "";
-                                foreach ($hidden_blocks as $hidden_b) {
-                                    foreach ($hidden_b as $hidden_) {
-                                        $script .= "$('div[bloc-id=\"bloc$hidden_\"]').hide();";
+                            if (isset($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
+                                if (is_array($_SESSION['plugin_metademands'][$ID]['hidden_blocks'])) {
+                                    $hidden_blocks = $_SESSION['plugin_metademands'][$ID]['hidden_blocks'];
+                                    $script = "";
+                                    foreach ($hidden_blocks as $hidden_b) {
+                                        foreach ($hidden_b as $hidden_) {
+                                            $script .= "$('div[bloc-id=\"bloc$hidden_\"]').hide();";
+                                        }
                                     }
+                                    echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                                 }
-                                echo Html::scriptBlock('$(document).ready(function() {' . $script . '});');
                             }
                         }
                     }
-                }
 
 
-                if (isset($_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id'])) {
-                    echo Html::hidden('plugin_metademands_stepforms_id', ['value' => $_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id']]);
-                }
-
-                $block_id = $_SESSION['plugin_metademands'][$ID]['block_id'] ?? 0;
-
-                echo "<span id = 'modalgroupspan'>";
-                echo "</span>";
-
-                $modal = true;
-                $updateStepform = 0;
-                if (!isset($stepConfig->fields['link_user_block'])
-                    && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
-                    $modal = false;
-                } else if ($block_current_id_stepform != 99999999) {
-                    $canSeeNextBlock = PluginMetademandsStep::canSeeBlock($metademands_id, $block_current_id_stepform + 1);
-                    if (!$canSeeNextBlock) {
-                        $modal = true;
-                        $updateStepform = 1;
-                    }
-                }
-
-                //used for display mandatory fields on popup
-                $fields = new PluginMetademandsField();
-                $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                $all_meta_fields = [];
-                if (is_array($fields_data) && count($fields_data) > 0) {
-                    foreach ($fields_data as $data) {
-                        $label = "";
-                        if (isset($data['name'])) {
-                            $label = $data['name'];
-                        }
-                        $metademand_params = new PluginMetademandsFieldParameter();
-                        $metademand_params->getFromDBByCrit(
-                            ["plugin_metademands_fields_id" => $data["id"]]
+                    if (isset($_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id'])) {
+                        echo Html::hidden(
+                            'plugin_metademands_stepforms_id',
+                            ['value' => $_SESSION['plugin_metademands'][$ID]['plugin_metademands_stepforms_id']]
                         );
-                        $all_meta_fields[$data['id']] = $metademand_params->fields['hide_title'] == 1 ? PluginMetademandsField::getFieldTypesName($data['type']) : $label;
                     }
-                }
-                $json_all_meta_fields = json_encode($all_meta_fields);
-                $use_condition = false;
-                $show_rule = $metademands->fields['show_rule'];
-                if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS) {
-                    $condition = new PluginMetademandsCondition();
-                    $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands_id]);
-                    if (count($conditions) > 0) {
-                        $use_condition = true;
+
+                    $block_id = $_SESSION['plugin_metademands'][$ID]['block_id'] ?? 0;
+
+                    echo "<span id = 'modalgroupspan'>";
+                    echo "</span>";
+
+                    $modal = true;
+                    $updateStepform = 0;
+                    if (!isset($stepConfig->fields['link_user_block'])
+                        && !isset($stepConfig->fields['multiple_link_groups_blocks'])) {
+                        $modal = false;
+                    } elseif ($block_current_id_stepform != 99999999) {
+                        $canSeeNextBlock = PluginMetademandsStep::canSeeBlock(
+                            $metademands_id,
+                            $block_current_id_stepform + 1
+                        );
+                        if (!$canSeeNextBlock) {
+                            $modal = true;
+                            $updateStepform = 1;
+                        }
                     }
-                }
 
-                $params['nexttitle'] = $nexttitle;
-                $params['submittitle'] = $submittitle;
-                $params['submitmsg'] = $submitmsg;
+                    //used for display mandatory fields on popup
+                    $fields = new PluginMetademandsField();
+                    $fields_data = $fields->find(['plugin_metademands_metademands_id' => $metademands_id]);
+                    $all_meta_fields = [];
+                    if (is_array($fields_data) && count($fields_data) > 0) {
+                        foreach ($fields_data as $data) {
+                            $label = "";
+                            if (isset($data['name'])) {
+                                $label = $data['name'];
+                            }
+                            $metademand_params = new PluginMetademandsFieldParameter();
+                            $metademand_params->getFromDBByCrit(
+                                ["plugin_metademands_fields_id" => $data["id"]]
+                            );
+                            $all_meta_fields[$data['id']] = $metademand_params->fields['hide_title'] == 1 ? PluginMetademandsField::getFieldTypesName(
+                                $data['type']
+                            ) : $label;
+                        }
+                    }
+                    $json_all_meta_fields = json_encode($all_meta_fields);
+                    $use_condition = false;
+                    $show_rule = $metademands->fields['show_rule'];
+                    if ($show_rule != PluginMetademandsCondition::SHOW_RULE_ALWAYS) {
+                        $condition = new PluginMetademandsCondition();
+                        $conditions = $condition->find(['plugin_metademands_metademands_id' => $metademands_id]);
+                        if (count($conditions) > 0) {
+                            $use_condition = true;
+                        }
+                    }
 
-                $params['nextsteptitle'] = $nextsteptitle;
-                $params['submitsteptitle'] = $submitsteptitle;
-                $params['submitstepmsg'] = $submitstepmsg;
+                    $params['nexttitle'] = $nexttitle;
+                    $params['submittitle'] = $submittitle;
+                    $params['submitmsg'] = $submitmsg;
 
-                $params['use_as_step'] = $use_as_step;
-                $params['see_summary'] = $see_summary;
-                $params['json_hidden_blocks'] = $json_hidden_blocks;
-                $params['alert'] = $alert;
-                $params['json_all_meta_fields'] = $json_all_meta_fields;
-                $params['use_condition'] = $use_condition;
-                $params['show_rule'] = $show_rule;
-                $params['block_id'] = $block_id;
-                $params['modal'] = $modal;
+                    $params['nextsteptitle'] = $nextsteptitle;
+                    $params['submitsteptitle'] = $submitsteptitle;
+                    $params['submitstepmsg'] = $submitstepmsg;
 
-                $params['ID'] = $ID;
-                $params['nexthref'] = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $params['ID'] . "&step=" . PluginMetademandsMetademand::STEP_CREATE;
+                    $params['use_as_step'] = $use_as_step;
+                    $params['see_summary'] = $see_summary;
+                    $params['json_hidden_blocks'] = $json_hidden_blocks;
+                    $params['alert'] = $alert;
+                    $params['json_all_meta_fields'] = $json_all_meta_fields;
+                    $params['use_condition'] = $use_condition;
+                    $params['show_rule'] = $show_rule;
+                    $params['block_id'] = $block_id;
+                    $params['modal'] = $modal;
+
+                    $params['ID'] = $ID;
+                    $params['nexthref'] = PLUGIN_METADEMANDS_WEBDIR . "/front/wizard.form.php?metademands_id=" . $params['ID'] . "&step=" . PluginMetademandsMetademand::STEP_CREATE;
 
 
-                $params['name'] = $name;
-                $params['paramUrl'] = $paramUrl;
-                $params['list_blocks'] = $list_blocks;
-                $params['updateStepform'] = $updateStepform;
-                $params['use_richtext'] = 0;
-                $richtext_id = [];
-                if(countElementsInTable("glpi_plugin_metademands_fields", ['plugin_metademands_metademands_id' => $metademands_id, 'type' => 'textarea']) > 0){
-                    $params['use_richtext'] = 1;
-                    $richtext_fields = $dbu->getAllDataFromTable("glpi_plugin_metademands_fields",
-                        ['plugin_metademands_metademands_id' => $metademands_id, 'type' => 'textarea']
-                    );
-                    foreach ($richtext_fields as $f) {
-                        $fieldparameter            = new PluginMetademandsFieldParameter();
-                        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $f['id']])) {
-                            if ($fieldparameter->fields['use_richtext'] == 1) {
-                                $richtext_id[] = $f['id'];
+                    $params['name'] = $name;
+                    $params['paramUrl'] = $paramUrl;
+                    $params['list_blocks'] = $list_blocks;
+                    $params['updateStepform'] = $updateStepform;
+                    $params['use_richtext'] = 0;
+                    $richtext_id = [];
+                    if (countElementsInTable(
+                            "glpi_plugin_metademands_fields",
+                            ['plugin_metademands_metademands_id' => $metademands_id, 'type' => 'textarea']
+                        ) > 0) {
+                        $params['use_richtext'] = 1;
+                        $richtext_fields = $dbu->getAllDataFromTable(
+                            "glpi_plugin_metademands_fields",
+                            ['plugin_metademands_metademands_id' => $metademands_id, 'type' => 'textarea']
+                        );
+                        foreach ($richtext_fields as $f) {
+                            $fieldparameter = new PluginMetademandsFieldParameter();
+                            if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $f['id']])) {
+                                if ($fieldparameter->fields['use_richtext'] == 1) {
+                                    $richtext_id[] = $f['id'];
+                                }
                             }
                         }
-
-
                     }
-                }
-                $params['richtext_id'] = json_encode($richtext_id);
-                self::validateScript($params);
-
-            } else {
-                echo "<script>
+                    $params['richtext_id'] = json_encode($richtext_id);
+                    self::validateScript($params);
+                } else {
+                    echo "<script>
                 
                 function fixButtonIndicator() {
                 }
+                </script>";
+                }
+            } else {
+                echo"<div class='boutons_draft'>";
+                echo "<button form='' class='submit btn btn-success btn-sm update_draft' onclick=\"udpateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
+                echo __('Upgrade');
+                echo "</button>";
+
+                echo "<button form='' class='submit btn btn-danger btn-sm delete_draft' onclick=\"deleteThisDraft(" . $draft_id . ")\">";
+                echo  __('Delete');
+                echo "</button>";
+
+                echo "</div>";
+                $users_id = Session::getLoginUserID();
+                echo "<script> 
+                    if(document.querySelector('#freeinput_table #add_freeinputs')){
+                        document.querySelector('#freeinput_table .add_item').addEventListener('click',function() {
+                           document.querySelector('#freeinput_table #add_freeinputs').parentNode.parentNode.remove(); 
+                        });
+                    }
+                    
+                    function udpateThisDraft(draft_id, draft_name) {
+                         if(typeof tinyMCE !== 'undefined'){
+                            tinyMCE.triggerSave();
+                         }
+                         jQuery('.resume_builder_input').trigger('change');
+                         $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                         $('#ajax_loader').show();
+                         arrayDatas = $('#draft_form').serializeArray();
+                         arrayDatas.push({name: \"save_draft\", value: true});
+                         arrayDatas.push({name: \"plugin_metademands_drafts_id\", value: draft_id});
+                         arrayDatas.push({name: \"draft_name\", value: draft_name});
+                         arrayDatas.push({name: \"step\", value: 2});
+                         arrayDatas.push({name: \"_users_id_requester\", value: $users_id});
+                         arrayDatas.push({name: \"metademands_id\", value: $metademands_id});
+                                                  
+                         $.ajax({
+                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',
+                               type: 'POST',
+                               data: arrayDatas,
+                               success: function(response){
+                               console.log(response);
+                                   window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id='+draft_id
+                                },
+                               error: function(xhr, status, error) {
+                                  console.log(xhr);
+                                  console.log(status);
+                                  console.log(error);
+                                } 
+                         });
+                    }
+                    
+                    function deleteThisDraft(draft_id) {
+                          var self_delete = true;
+                          $('#ajax_loader').show();
+                          $.ajax({
+                             url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/deletedraft.php',
+                                type: 'POST',
+                                data:
+                                  {
+                                    users_id:$users_id,
+                                    plugin_metademands_metademands_id: $metademands_id,
+                                    drafts_id: draft_id,
+                                    self_delete: self_delete
+                                  },
+                                success: function(response){
+                                    $('#bodyDraft').html(response);
+                                    $('#ajax_loader').hide();
+                                    window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.php'
+                                 },
+                                error: function(xhr, status, error) {
+                                   console.log(xhr);
+                                   console.log(status);
+                                   console.log(error);
+                                 } 
+                             });
+                       };
                 </script>";
             }
         } else {
