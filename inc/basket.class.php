@@ -1690,10 +1690,9 @@ class PluginMetademandsBasket extends CommonDBTM
             $withprice = false;
             foreach ($materials as $id => $mat_id) {
 
-                $fieldmeta = new PluginMetademandsField();
-                $fieldmeta->getFromDB($field['id']);
-
-                $custom_values = PluginMetademandsFieldParameter::_unserialize($fieldmeta->fields['custom_values']);
+                $fieldmeta = new PluginMetademandsFieldParameter();
+                $fieldmeta->getFromDBByCrit(["plugin_metademands_fields_id" => $field['id']]);
+                $custom_values = PluginMetademandsFieldParameter::_unserialize($fieldmeta->fields['custom']);
 
                 if ($custom_values[1] == 1) {
                     $withprice = true;

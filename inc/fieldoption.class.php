@@ -381,12 +381,16 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 echo "</td>";
 
                 echo "<td $onhover>";
+
                 $fields = new PluginMetademandsField();
                 if ($fields->getFromDB($data['checkbox_id'])) {
                     echo $fields->getName();
-                    $arrayValues = PluginMetademandsFieldParameter::_unserialize($fields->fields['custom_values']);
-                    echo "<br>";
-                    echo $arrayValues[$data["checkbox_value"]];
+
+                    $field_custom = new PluginMetademandsFieldCustomvalue();
+                    if ($field_custom->getFromDB($data['checkbox_value'])) {
+                        echo "<br>";
+                        echo $field_custom->getName();
+                    }
                 }
 
                 echo "</td>";
@@ -1027,8 +1031,14 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 $arrayValues = [];
                 $arrayValues[0] = Dropdown::EMPTY_VALUE;
                 if (!empty($params['checkbox_id'])) {
-                    $fields->getFromDB($params['checkbox_id']);
-                    $arrayValues = PluginMetademandsFieldParameter::_unserialize($fields->fields['custom_values']);
+                    $field_custom = new PluginMetademandsFieldCustomvalue();
+                    if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $params['checkbox_id']], "rank")) {
+                        if (count($customs) > 0) {
+                            foreach ($customs as $custom) {
+                                $arrayValues[$custom['id']] = $custom['name'];
+                            }
+                        }
+                    }
                 }
                 echo "<span id='checkbox_value'>\n";
                 $elements = $arrayValues ?? [];
