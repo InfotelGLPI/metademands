@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-05 12:17+0000\n"
+"POT-Creation-Date: 2024-06-05 13:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -252,34 +252,34 @@ msgstr ""
 msgid "Basket"
 msgstr ""
 
-#: inc/basket.class.php:124 inc/basket.class.php:1322 inc/basket.class.php:1713
-#: inc/basket.class.php:2030 inc/basketobject.class.php:116
+#: inc/basket.class.php:124 inc/basket.class.php:1322 inc/basket.class.php:1712
+#: inc/basket.class.php:2029 inc/basketobject.class.php:116
 #: inc/basketobject.class.php:221
 msgid "Reference"
 msgstr ""
 
-#: inc/basket.class.php:126 inc/basket.class.php:1323 inc/basket.class.php:1715
-#: inc/basket.class.php:2031 inc/basketobject.class.php:99
+#: inc/basket.class.php:126 inc/basket.class.php:1323 inc/basket.class.php:1714
+#: inc/basket.class.php:2030 inc/basketobject.class.php:99
 #: inc/basketobject.class.php:197
 msgid "Designation"
 msgstr ""
 
-#: inc/basket.class.php:133 inc/basket.class.php:1352 inc/basket.class.php:1738
+#: inc/basket.class.php:133 inc/basket.class.php:1352 inc/basket.class.php:1737
 msgid "Estimated unit price"
 msgstr ""
 
-#: inc/basket.class.php:140 inc/basket.class.php:1358 inc/basket.class.php:1729
-#: inc/basket.class.php:2038
+#: inc/basket.class.php:140 inc/basket.class.php:1358 inc/basket.class.php:1728
+#: inc/basket.class.php:2037
 msgid "Unit"
 msgstr ""
 
-#: inc/basket.class.php:143 inc/basket.class.php:1360 inc/basket.class.php:1745
-#: inc/basket.class.php:2047
+#: inc/basket.class.php:143 inc/basket.class.php:1360 inc/basket.class.php:1744
+#: inc/basket.class.php:2046
 msgid "Unit price (HT)"
 msgstr ""
 
-#: inc/basket.class.php:149 inc/basket.class.php:1366 inc/basket.class.php:1733
-#: inc/basket.class.php:2033 inc/basket.class.php:2070
+#: inc/basket.class.php:149 inc/basket.class.php:1366 inc/basket.class.php:1732
+#: inc/basket.class.php:2032 inc/basket.class.php:2069
 msgid "Quantity"
 msgstr ""
 
@@ -287,15 +287,15 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: inc/basket.class.php:159 inc/basket.class.php:1372 inc/basket.class.php:1753
-#: inc/basket.class.php:2050
+#: inc/basket.class.php:159 inc/basket.class.php:1372 inc/basket.class.php:1752
+#: inc/basket.class.php:2049
 msgid "Total (HT)"
 msgstr ""
 
 #: inc/basket.class.php:162 inc/basket.class.php:167 inc/basket.class.php:172
 #: inc/basket.class.php:1374 inc/basket.class.php:1377
-#: inc/basket.class.php:1380 inc/basket.class.php:1968
-#: inc/basket.class.php:1972
+#: inc/basket.class.php:1380 inc/basket.class.php:1967
+#: inc/basket.class.php:1971
 msgid "Total"
 msgstr ""
 
@@ -312,7 +312,7 @@ msgid "Search for description.."
 msgstr ""
 
 #: inc/basket.class.php:227 inc/basket.class.php:305 inc/basket.class.php:1450
-#: inc/basket.class.php:1520 inc/basket.class.php:1826
+#: inc/basket.class.php:1520 inc/basket.class.php:1825
 msgid "On quotation"
 msgstr ""
 
@@ -376,7 +376,7 @@ msgstr ""
 msgid "* The prices are estimates and do not act as an estimate"
 msgstr ""
 
-#: inc/basket.class.php:1565 inc/basket.class.php:1966
+#: inc/basket.class.php:1565 inc/basket.class.php:1965
 #: inc/metademandpdf.class.php:405 inc/metademandpdf.class.php:456
 msgid "Grand total (HT)"
 msgstr ""
@@ -390,11 +390,11 @@ msgstr ""
 msgid "No items on basket"
 msgstr ""
 
-#: inc/basket.class.php:1722
+#: inc/basket.class.php:1721
 msgid "Order type"
 msgstr ""
 
-#: inc/basket.class.php:1834
+#: inc/basket.class.php:1833
 msgid "On catalog"
 msgstr ""
 
@@ -811,7 +811,7 @@ msgid "Form fields"
 msgstr ""
 
 #: inc/field.class.php:724 inc/fieldoption.class.php:239
-#: inc/fieldoption.class.php:882
+#: inc/fieldoption.class.php:886
 msgid "Link a task to the field"
 msgstr ""
 
@@ -896,74 +896,74 @@ msgstr ""
 msgid "List of options"
 msgstr ""
 
-#: inc/fieldoption.class.php:240 inc/fieldoption.class.php:892
+#: inc/fieldoption.class.php:240 inc/fieldoption.class.php:896
 msgid "Link a field to the field"
 msgstr ""
 
-#: inc/fieldoption.class.php:241 inc/fieldoption.class.php:914
+#: inc/fieldoption.class.php:241 inc/fieldoption.class.php:918
 msgid "Link a hidden field"
 msgstr ""
 
-#: inc/fieldoption.class.php:242 inc/fieldoption.class.php:933
+#: inc/fieldoption.class.php:242 inc/fieldoption.class.php:937
 msgid "Link a hidden block"
 msgstr ""
 
-#: inc/fieldoption.class.php:243 inc/fieldoption.class.php:977
+#: inc/fieldoption.class.php:243 inc/fieldoption.class.php:981
 msgid "Childs blocks"
 msgstr ""
 
-#: inc/fieldoption.class.php:244 inc/fieldoption.class.php:986
+#: inc/fieldoption.class.php:244 inc/fieldoption.class.php:990
 msgid "Link a validation"
 msgstr ""
 
-#: inc/fieldoption.class.php:245 inc/fieldoption.class.php:1005
+#: inc/fieldoption.class.php:245 inc/fieldoption.class.php:1009
 msgid "Bind to the value of this checkbox"
 msgstr ""
 
-#: inc/fieldoption.class.php:883
+#: inc/fieldoption.class.php:887
 msgid "If the value selected equals the value to check, the task is created"
 msgstr ""
 
-#: inc/fieldoption.class.php:893
+#: inc/fieldoption.class.php:897
 msgid ""
 "If the value selected equals the value to check, the field becomes mandatory"
 msgstr ""
 
-#: inc/fieldoption.class.php:915
+#: inc/fieldoption.class.php:919
 msgid ""
 "If the value selected equals the value to check, the field becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:934
+#: inc/fieldoption.class.php:938
 msgid ""
 "If the value selected equals the value to check, the block becomes visible"
 msgstr ""
 
-#: inc/fieldoption.class.php:954
+#: inc/fieldoption.class.php:958
 msgid ""
 "This block is already used by another field. You can have some problems if "
 "the save value to check is used"
 msgstr ""
 
-#: inc/fieldoption.class.php:978
+#: inc/fieldoption.class.php:982
 msgid ""
 "If child blocks exist, these blocks are hidden when you deselect the option "
 "configured"
 msgstr ""
 
-#: inc/fieldoption.class.php:987
+#: inc/fieldoption.class.php:991
 msgid ""
 "If the value selected equals the value to check, the validation is sent to "
 "the user"
 msgstr ""
 
-#: inc/fieldoption.class.php:1006
+#: inc/fieldoption.class.php:1010
 msgid ""
 "If the selected value is equal to the value to check, the checkbox value is "
 "set"
 msgstr ""
 
-#: inc/fieldoption.class.php:1105 inc/mailtask.class.php:150
+#: inc/fieldoption.class.php:1115 inc/mailtask.class.php:150
 #: inc/step.class.php:270 inc/step.class.php:392 inc/step.class.php:416
 #: inc/task.class.php:700 inc/task.class.php:1092 inc/tickettask.class.php:168
 #, php-format
