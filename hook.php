@@ -1547,3 +1547,14 @@ function plugin_metademands_getDropdown()
         return [];
     }
 }
+
+function plugin_metademands_addDefaultWhere($itemtype) {
+
+    switch ($itemtype){
+        case "PluginMetademandsDraft":
+            $currentUser = Session::getLoginUserID();
+            return "users_id = $currentUser";
+    }
+
+}
+
