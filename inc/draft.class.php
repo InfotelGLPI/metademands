@@ -1137,23 +1137,4 @@ class PluginMetademandsDraft extends CommonDBTM
         return $menu;
     }
 
-    public static function checkLastCreate($last_id = 0){
-        global $DB;
-        $draft = new PluginMetademandsDraft();
-
-        $requester = $DB->request([
-            'SELECT' => ['id'],
-            'FROM' => $draft::getTable(),
-            'WHERE' => [
-                'users_id' => Session::getLoginUserID(),
-            ],
-            'ORDER' => ['id DESC'],
-            'LIMIT' => '1',
-        ])->current();
-
-        if ($requester != null) {
-            return $requester['id'];
-        }
-
-    }
 }

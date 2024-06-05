@@ -1634,60 +1634,6 @@ JAVASCRIPT
         return $meta_data;
     }
 
-    public function listMetademandsForDraft()
-    {
-        global $DB;
-
-        $dbu = new DbUtils();
-        $params['condition'] = '';
-
-        $meta_data = [];
-        $meta_data[0] = Dropdown::EMPTY_VALUE;
-
-        $type = Ticket::DEMAND_TYPE;
-
-        $condition = "  `" . $this->getTable() . "`.`type` = '$type' 
-                        AND `is_active` = 1 
-                        AND `is_deleted` = 0 
-                        AND `is_template` = 0 ";
-
-
-        $condition .= $dbu->getEntitiesRestrictRequest("AND", $this->getTable(), '', '', true);
-
-        $query = "SELECT `" . $this->getTable() . "`.`name`, 
-                          `" . $this->getTable() . "`.`id`, 
-                          `glpi_entities`.`completename` as entities_name,
-                         length(glpi_plugin_metademands_metademands.itilcategories_id) - length(replace(glpi_plugin_metademands_metademands.itilcategories_id, ',', '')) + 1
-
-                   FROM " . $this->getTable() . "
-                   INNER JOIN `glpi_entities`
-                   ON (`" . $this->getTable() . "`.`entities_id` = `glpi_entities`.`id`)
-                   WHERE $condition
-                   GROUP BY `" . $this->getTable() . "`.`itilcategories_id`
-                   HAVING length(glpi_plugin_metademands_metademands.itilcategories_id) - length(replace(glpi_plugin_metademands_metademands.itilcategories_id, ',', '')) + 1  = 1
-                   ORDER BY `" . $this->getTable() . "`.`name`";
-
-
-        $result = $DB->doQuery($query);
-        if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
-                if ($this->canCreate() || PluginMetademandsGroup::isUserHaveRight($data['id'])) {
-                    if (!$dbu->countElementsInTable(
-                        "glpi_plugin_metademands_metademands_resources",
-                        ["plugin_metademands_metademands_id" => $data['id']]
-                    )) {
-                        if (empty($name = self::displayField($data['id'], 'name'))) {
-                            $name = $data['name'];
-                        }
-                        $meta_data[$data['id']] = $name . ' (' . $data['entities_name'] . ')';
-                    }
-                }
-            }
-        }
-
-        return $meta_data;
-    }
-
     /**
      * Get all datas for a metademand
      * @param       $metademands_id
