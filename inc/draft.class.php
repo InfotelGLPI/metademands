@@ -1058,11 +1058,11 @@ class PluginMetademandsDraft extends CommonDBTM
             echo "</div></form>";
 
             echo "<script> 
-                    document.querySelector('#freeinput_table .add_item').addEventListener('click',function() {
-                        if(document.querySelector('#freeinput_table #add_freeinputs')){
-                            document.querySelector('#freeinput_table #add_freeinputs').parentNode.parentNode.remove();
-                        }
-                    });
+                    if(document.querySelector('#freeinput_table #add_freeinputs')){
+                        document.querySelector('#freeinput_table .add_item').addEventListener('click',function() {
+                           document.querySelector('#freeinput_table #add_freeinputs').parentNode.parentNode.remove(); 
+                        });
+                    }
                     
                     function udpateThisDraft(draft_id, draft_name) {
                          if(typeof tinyMCE !== 'undefined'){
