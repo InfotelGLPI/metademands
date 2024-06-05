@@ -1687,7 +1687,7 @@ JAVASCRIPT
                     //clean string
                     $data['itilcategories_id'] = json_decode($data['itilcategories_id']);
 
-                    if(count($data['itilcategories_id']) > 1){
+                    if(is_array($data['itilcategories_id']) && count($data['itilcategories_id']) > 1){
                         foreach ($data['itilcategories_id'] as $datum) {
                             $meta_data[$data['id']][] = array(
                                 'name' => $name . ' (' . $data['entities_name'] . ')'. ' - '.$itil_cat[$datum]['name'],
@@ -1697,7 +1697,13 @@ JAVASCRIPT
 
                     }else{
                         $meta_data[$data['id']]['name'] = $name . ' (' . $data['entities_name'] . ')';
-                        $meta_data[$data['id']]['itilcategorie'] = $data['itilcategories_id'][0];
+                        if(isset($data['itilcategories_id'][0])){
+                            $meta_data[$data['id']]['itilcategorie'] = $data['itilcategories_id'][0];
+
+                        }else{
+                            $meta_data[$data['id']]['itilcategorie'] = 0;
+
+                        }
                     }
 
                 }
