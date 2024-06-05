@@ -413,40 +413,51 @@ class PluginMetademandsDraft extends CommonDBTM
         $metademands_data = $metademands->constructMetademands($metademands_id);
         $metademands->getFromDB($metademands_id);
 
+        echo "<div id ='content'>";
+        echo "<div class='bt-container-fluid asset metademands_wizard_rank'> ";
+
+        echo "<div id='meta-form' class='bt-block'> ";
+
         echo "<div class=\"row\">";
 
         echo "<div class=\"col-md-12 md-title\">";
         echo "<div style='background-color: #FFF'>";
-
-        echo "<div class='justify-content-between align-items-center md-color'>";// alert alert-light
-
-        $meta = new PluginMetademandsMetademand();
-        if ($meta->getFromDB($metademands_id)) {
-            if (isset($meta->fields['icon']) && !empty($meta->fields['icon'])) {
-                $icon = $meta->fields['icon'];
-            }
+        $title_color = "#000";
+        if (isset($metademands->fields['title_color']) && !empty($metademands->fields['title_color'])) {
+            $title_color = $metademands->fields['title_color'];
         }
 
-        echo "<h2 class='card-title' style='color: #303f62;font-weight: normal;text-align: center;width: 85%;padding: 10px 0;margin: auto;'> ";
+        $color = PluginMetademandsWizard::hex2rgba($title_color, "0.03");
+        $style_background = "style='background-color: $color!important;border-color: $title_color!important;border-radius: 0;margin-bottom: 10px;'";
+        echo "<div class='card-header d-flex justify-content-between align-items-center md-color' $style_background>";// alert alert-light
+
+        if (isset($metademands->fields['icon']) && !empty($metademands->fields['icon'])) {
+            $icon = $metademands->fields['icon'];
+        }
+
+        echo "<h2 class='card-title' style='color: " . $title_color . ";font-weight: normal;'> ";
         if (!empty($icon)) {
-            echo "<i class='fa-2x fas $icon'\"></i>&nbsp;";
+            echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
         }
-        if (empty($n = PluginMetademandsMetademand::displayField($meta->getID(), 'name'))) {
-            echo $meta->getName();
+        if (empty($n = PluginMetademandsMetademand::displayField($metademands->getID(), 'name'))) {
+            echo $metademands->getName();
         } else {
             echo $n;
         }
         echo "</h2>";
+        echo "</div>";
+        echo "</div>";
+
         echo "<div class='md-basket-wizard'>";
         echo "</div>";
 
-        echo "<div class='md-wizard' style='width: 85%;margin:auto'>";
+        echo "<div class='md-wizard'>";
 
         if (count($metademands_data)) {
             $see_summary = 0;
             foreach ($metademands_data as $form_step => $data) {
                 foreach ($data as $form_metademands_id => $line) {
-                    echo "<form id='draft_form'>
+                    echo "<form id='draft_form' action=''>
                 <input type='hidden' name='tickets_id' value='0'>
                 <input type='hidden' name='resources_id' value='0'>
                 <input type='hidden' name='resources_step'>
@@ -481,6 +492,7 @@ class PluginMetademandsDraft extends CommonDBTM
             echo Html::hidden('previous_metademands_id', ['value' => $metademands_id]);
             echo "</div></div>";
         }
+        echo "</div>";
         echo "</div>";
     }
 
@@ -567,6 +579,48 @@ class PluginMetademandsDraft extends CommonDBTM
                             }
                 });');
             sleep(1);
+
+            echo "<script>
+                    /**
+                    *  set the content of the nextBtn element
+                    */
+                    function fixButtonIndicator() {
+                        const use_as_step = '$use_as_step';
+
+                        if (use_as_step) {
+                            x = document.getElementsByClassName('tab-step');
+                        } else {
+                            x = document.getElementsByClassName('tab-nostep');
+                        }
+                    
+                        let create = false;
+                        if (use_as_step == 1) {
+//                            let nextTab = metademands.currentTab + 1;
+                            let nextTab = Object.values(metademands.listBlock)[0];
+                            while (nextTab < x.length && x[nextTab].firstChild.style.display == 'none') {
+                                nextTab = nextTab + 1;
+                            }
+                    
+                            if (x[nextTab] != undefined) {
+                                let bloc = x[nextTab].firstChild.getAttribute('bloc-id');
+                                let id_bloc = parseInt(bloc.replace('bloc', ''));
+                                if (!metademands.listBlock.includes(id_bloc)) {
+                                    create = true;
+                                }
+                            }
+                    
+                            if (nextTab >= x.length) {
+                                document.getElementById('nextBtn').innerHTML = metademands.submittitle;
+                            } else {
+                                if (create) {
+                                    document.getElementById('nextBtn').innerHTML = metademands.submitsteptitle;
+                                } else {
+                                    document.getElementById('nextBtn').innerHTML = metademands.nextsteptitle;
+                                }
+                            }
+                        }
+                    }
+                </script>";
 
             foreach ($allfields as $block => $line) {
                 if ($use_as_step == 1 && $metademands->fields['is_order'] == 0) {
@@ -990,20 +1044,18 @@ class PluginMetademandsDraft extends CommonDBTM
                 echo "</div>";
             }
 
-            $return ="<div class='boutons_draft'>";
-            $return .= "<button  class='submit btn btn-success btn-sm update_draft' onclick=\"udpateDraft(" . $draft_id . ", '" . $draft_name . "')\">";
-            $return .= __('Upgrade');
-            $return .= "</button>";
+            echo"<div class='boutons_draft'>";
+            echo "<button form='' class='submit btn btn-success btn-sm update_draft' onclick=\"udpateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
+            echo __('Upgrade');
+            echo "</button>";
 
 
 
-            $return .= "<button class='submit btn btn-danger btn-sm delete_draft' onclick=\"deleteDraft(" . $draft_id . ")\">";
-            $return .=  __('Delete');
-            $return .= "</button>";
+            echo "<button form='' class='submit btn btn-danger btn-sm delete_draft' onclick=\"deleteThisDraft(" . $draft_id . ")\">";
+            echo  __('Delete');
+            echo "</button>";
 
-            $return .= "</div></form>";
-
-            echo $return;
+            echo "</div></form>";
 
             echo "<script> 
                     document.querySelector('#freeinput_table .add_item').addEventListener('click',function() {
@@ -1012,7 +1064,7 @@ class PluginMetademandsDraft extends CommonDBTM
                         }
                     });
                     
-                    function udpateDraft(draft_id, draft_name) {
+                    function udpateThisDraft(draft_id, draft_name) {
                          if(typeof tinyMCE !== 'undefined'){
                             tinyMCE.triggerSave();
                          }
@@ -1032,7 +1084,8 @@ class PluginMetademandsDraft extends CommonDBTM
                                type: 'POST',
                                data: arrayDatas,
                                success: function(response){
-                                   document.location.reload();
+                               console.log(response);
+                                   window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id='+draft_id
                                 },
                                error: function(xhr, status, error) {
                                   console.log(xhr);
@@ -1042,11 +1095,8 @@ class PluginMetademandsDraft extends CommonDBTM
                          });
                     }
                     
-                    function deleteDraft(draft_id) {
-                          var self_delete = false;
-                          if($draft_id == draft_id ){
-                              self_delete = true;
-                          }
+                    function deleteThisDraft(draft_id) {
+                          var self_delete = true;
                           $('#ajax_loader').show();
                           $.ajax({
                              url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/deletedraft.php',
@@ -1071,8 +1121,6 @@ class PluginMetademandsDraft extends CommonDBTM
                              });
                        };
                 </script>";
-
-
 
         }
 

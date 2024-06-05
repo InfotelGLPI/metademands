@@ -10,19 +10,23 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
 
     PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Your drafts', 'metademands'));
 
-    //Protection in case, we don't find draft id
-    if (isset($_POST['metademands_id'])) {
-        $draft_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id'];
-        $_SESSION['last_draft'] = $draft_id;
-    } elseif (isset($_REQUEST['id'])) {
-        $draft_id = $_REQUEST['id'];
-        $_SESSION['last_draft'] = $draft_id;
-    } else {
-        $draft_id = $_SESSION['last_draft'];
+    $draft_id = 0;
+
+    if (isset($_GET['id'])) {
+        $draft_id = $_GET['id'];
     }
 
-    $datas = PluginMetademandsDraft::loadDatasDraft($draft_id);
-    PluginMetademandsDraft::showDraft($datas);
+    if ($draft_id > 0) {
+
+        $datas = PluginMetademandsDraft::loadDatasDraft($draft_id);
+        PluginMetademandsDraft::showDraft($datas);
+
+    } else {
+        echo __(
+            'No draft available for this form',
+            'metademands'
+        );
+    }
 
     if ($_SESSION['glpiactiveprofile']['interface'] == 'central') {
         Html::footer();

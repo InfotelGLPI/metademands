@@ -501,7 +501,6 @@ class PluginMetademandsWizard extends CommonDBTM
                 data-hasqtip='0' aria-hidden='true' onclick='$(\"#divnavforms\").toggle();' ></i>";
                     echo "</span>";
                 }
-                echo "</h4>";
 
                 echo "</div></div>";
                 if (!$parameters['seeform']) {

@@ -35,12 +35,11 @@ Html::header_nocache();
 
 Session::checkLoginUser();
 
-$KO          = false;
-$step        = $_POST['step'] + 1;
+$KO = false;
+$step = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
-$wizard      = new PluginMetademandsWizard();
-$fields      = new PluginMetademandsField();
-
+$wizard = new PluginMetademandsWizard();
+$fields = new PluginMetademandsField();
 
 if (isset($_POST['save_draft'])) {
     $nblines = 0;
@@ -54,6 +53,13 @@ if (isset($_POST['save_draft'])) {
         }
 
         $nblines = 1;
+    }
+
+    if (isset($_POST['new_draft'])) {
+        //if not unset, session loads existant values (from old draft)
+        unset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id']);
+        unset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_name']);
+        unset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields']);
     }
 
     if ($KO === false) {
@@ -165,13 +171,13 @@ if (isset($_POST['save_draft'])) {
             $inputs['plugin_metademands_metademands_id'] = $_POST['metademands_id'];
             $inputs['date'] = date('Y-m-d H:i:s');
 
-            if(isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])){
+            if (isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])) {
                 $draft_id = $_POST['plugin_metademands_drafts_id'];
-            }else{
+            } else {
                 $draft_id = $drafts->add($inputs);
             }
 
-            $_SESSION['my_last_draft'] = $draft_id;
+//            $_SESSION['my_last_draft'] = $draft_id;
 
             $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
             if (count($metademands_data)) {
@@ -195,9 +201,9 @@ if (isset($_POST['save_draft'])) {
 }
 
 if ($KO === false) {
-   echo 0;
+    echo 0;
 } else {
-   echo $KO;
+    echo $KO;
 }
 
 

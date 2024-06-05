@@ -46,6 +46,7 @@ $drafts = $self->find(['users_id'                          => $users_id,
 if($_POST['self_delete'] == true){
    unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_id']);
    unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['plugin_metademands_drafts_name']);
+   unset($_SESSION['plugin_metademands'][$plugin_metademands_metademands_id]['fields']);
 }
 $return = "";
 if (count($drafts) > 0) {
