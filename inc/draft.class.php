@@ -212,7 +212,7 @@ class PluginMetademandsDraft extends CommonDBTM
                     $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();udpateDraft(" . $draft['id'] . ", '" . $draft['name'] . "')\">";
                     $return .= "<i class='fas fa-1x fa-save pointer' title='" . _sx(
                             'button',
-                            'Save model',
+                            'Save draft',
                             'metademands'
                         ) . "' 
                                data-hasqtip='0' aria-hidden='true'></i>";
