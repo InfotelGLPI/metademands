@@ -1400,9 +1400,12 @@ class PluginMetademandsField extends CommonDBChild
 
         switch ($value) {
             case 'other':
-                return __('My values', 'metademands');;
+                return __('My values', 'metademands');
             case 'ITILCategory_Metademands':
                 return __('Category of the metademand', 'metademands');
+                //TODO ELCH
+            case 'ITILCategory_Requestevolutions':
+                return __('Category of the SI4', 'metademands');
             case 'mydevices':
                 return __('My devices');
             case 'urgency':

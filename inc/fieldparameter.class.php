@@ -452,7 +452,17 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             if ($objectclass == 'Ticket' || $objectclass == 'Problem' || $objectclass == 'Change') {
                 $allowed_fields = $tt->getAllowedFields(true, true);
             }
+
             //TODO ELCH
+            if ($objectclass == 'PluginRequestevolutionsRequestevolution') {
+                $allowed_fields = $tt->getAllowedFields(true, true);
+                $allowed_fields[9] = 'date_mep';
+                $allowed_fields[18] = 'tps_charge_dmd';
+                $allowed_fields[19] = 'date_mod_status';
+                $allowed_fields[20] = 'complexite';
+                unset($allowed_fields[-1]);
+            }
+
             if ($objectclass == 'PluginReleasesRelease') {
                 $allowed_fields = $tt->getAllowedFields(true, true);
                 $allowed_fields[9] = 'date_production';
@@ -549,6 +559,17 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             }
 
             //TODO ELCH
+            if ($objectclass == 'PluginRequestevolutionsRequestevolution') {
+                if ($params['type'] == "date"
+                    || $params["type"] == "datetime") {
+                    $granted_fields = [
+                        'date_mep',
+                        'date_mod_status'
+                    ];
+                }
+            }
+
+
             if ($objectclass == 'PluginReleasesRelease') {
                 if ($params['type'] == "date"
                     || $params["type"] == "datetime") {

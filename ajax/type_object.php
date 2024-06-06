@@ -62,7 +62,9 @@ if ($_POST['object_to_create'] != NULL) {
       echo "</span>";
       echo "</td>";
       echo "</tr>";
-   } elseif ($object == 'Problem' || $object == 'Change') {
+   }
+
+   elseif ($object == 'Problem' || $object == 'Change') {
       echo "<tr class='tab_bg_1'>";
       echo "<td colspan='2'></td>";
       echo "</td>";
@@ -96,8 +98,26 @@ if ($_POST['object_to_create'] != NULL) {
                                'entity'   => $_SESSION['glpiactiveentities']]);
       echo "</td>";
       echo "</tr>";
-   } else {
+   }
+
+   else {
        //TODO ELCH Add Hook for define linked category
+       echo "<tr class='tab_bg_1'>";
+       $opt  = [
+           'display_emptychoice' => true,
+       ];
+       $rand = Ticket::dropdownType('type', $opt);
+
+       Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
+           PLUGIN_REQUESTEVOLUTIONS_DIR. "/ajax/dropdownITILCategories.php");
+
+       echo "<td>" . __('Category') . "</td>";
+       echo "<td>";
+
+       echo "<span id='show_category_by_type'>";
+       echo "</span>";
+       echo "</td>";
+       echo "</tr>";
    }
 }
 
