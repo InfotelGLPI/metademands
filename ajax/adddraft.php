@@ -201,7 +201,11 @@ if (isset($_POST['save_draft'])) {
 }
 
 if ($KO === false) {
-    echo 0;
+    if (isset($_POST['new_draft']) && isset($draft_id) && $draft_id > 0) {
+        echo $draft_id;
+    } else {
+        echo 0;
+    }
 } else {
     echo $KO;
 }

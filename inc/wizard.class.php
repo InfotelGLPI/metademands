@@ -2041,7 +2041,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                type: 'POST',
                                data: arrayDatas,
                                success: function(response){
-                               console.log(response);
                                    window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id='+draft_id
                                 },
                                error: function(xhr, status, error) {

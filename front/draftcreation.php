@@ -61,6 +61,8 @@ if (Plugin::isPluginActive('servicecatalog') && Session::getCurrentInterface() !
         $metademand_name = ucfirst(_n('form', 'forms', 1, 'metademands'));
         $confirmation = __('Add');
 
+        unset($_SESSION['plugin_metademands']);
+
         echo TemplateRenderer::getInstance()->render(
             '@metademands/draftcreation.html.twig',
             [

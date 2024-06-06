@@ -1691,17 +1691,17 @@ JAVASCRIPT
                         foreach ($data['itilcategories_id'] as $datum) {
                             $meta_data[$data['id']][] = array(
                                 'name' => $name . ' (' . $data['entities_name'] . ')'. ' - '.$itil_cat[$datum]['name'],
-                                'itilcategorie' => $itil_cat[$datum]['id']
+                                'itilcategory' => $itil_cat[$datum]['id']
                             );
                         }
 
                     }else{
                         $meta_data[$data['id']]['name'] = $name . ' (' . $data['entities_name'] . ')';
                         if(isset($data['itilcategories_id'][0])){
-                            $meta_data[$data['id']]['itilcategorie'] = $data['itilcategories_id'][0];
+                            $meta_data[$data['id']]['itilcategory'] = $data['itilcategories_id'][0];
 
                         }else{
-                            $meta_data[$data['id']]['itilcategorie'] = 0;
+                            $meta_data[$data['id']]['itilcategory'] = 0;
 
                         }
                     }
