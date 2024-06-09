@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-06 12:35+0000\n"
+"POT-Creation-Date: 2024-06-06 12:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -706,9 +706,9 @@ msgctxt "button"
 msgid "Clean form"
 msgstr ""
 
-#: inc/draft.class.php:215 inc/form.class.php:168 inc/stepform.class.php:97
+#: inc/draft.class.php:215
 msgctxt "button"
-msgid "Save model"
+msgid "Save draft"
 msgstr ""
 
 #: inc/dropdownmeta.class.php:61
@@ -999,6 +999,11 @@ msgstr ""
 #: inc/form.class.php:87 inc/stepform.class.php:99 inc/stepform.class.php:128
 msgctxt "button"
 msgid "Save as model"
+msgstr ""
+
+#: inc/form.class.php:168 inc/stepform.class.php:97
+msgctxt "button"
+msgid "Save model"
 msgstr ""
 
 #: inc/form.class.php:347 inc/form.class.php:414
