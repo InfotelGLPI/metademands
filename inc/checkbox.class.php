@@ -93,11 +93,17 @@ class PluginMetademandsCheckbox extends CommonDBTM
                     }
                     $field .= "<input $required class='form-check-input' type='checkbox' check='" . $namefield . "[" . $data['id'] . "]' name='" . $namefield . "[" . $data['id'] . "][" . $key . "]' key='$key' id='" . $namefield . "[" . $data['id'] . "][" . $key . "]' value='$key' $checked>";
                     $nbr++;
-                    $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $label['name'] . "</label>";
+                    if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
+                        $name = $label['name'];
+                    }
+                    $field .= "&nbsp;<label class='custom-control-label' for='" . $namefield . "[" . $data['id'] . "][" . $key . "]'>" . $name . "</label>";
                     if (isset($label['comment']) && !empty($label['comment'])) {
                         $field .= "&nbsp;<span style='vertical-align: bottom;'>";
+                        if (empty($comment = PluginMetademandsField::displayCustomvaluesField($data['id'], $key, "comment"))) {
+                            $comment = $label['comment'];
+                        }
                         $field .= Html::showToolTip(
-                            Glpi\RichText\RichText::getSafeHtml($label['comment']),
+                            Glpi\RichText\RichText::getSafeHtml($comment),
                             [
                                 'awesome-class' => 'fa-info-circle',
                                 'display' => false

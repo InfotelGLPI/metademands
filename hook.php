@@ -479,6 +479,7 @@ function plugin_metademands_install() {
                                 $inputs[$k]['comment'] = Toolbox::addslashes_deep($comment_values[$k]);
                             }
                             $inputs[$k]['old_check_value'] = $k;
+                            $inputs[$k]['old_translation_name'] = "custom".$k;
                             $inputs[$k]['rank'] = $rank;
                             $rank++;
                         }
@@ -504,6 +505,19 @@ function plugin_metademands_install() {
                         if (count($fieldoptions) > 0) {
                             foreach ($fieldoptions as $ko => $fieldoption) {
                                 $metademand_options->update(["id" => $fieldoption['id'], "check_value" => $newid]);
+                            }
+                        }
+
+                        $metademand_translations = new PluginMetademandsFieldTranslation();
+                        $fieldtranslations = $metademand_translations->find(
+                            ["items_id" => $field['id'], "field" => $input['old_translation_name']]
+                        );
+                        if (count($fieldtranslations) > 0) {
+                            foreach ($fieldtranslations as $k => $fieldtranslation) {
+                                $new_value = "custom".$input['rank'];
+                                $metademand_translations->update(
+                                    ["id" => $fieldtranslation['id'], "field" => $new_value]
+                                );
                             }
                         }
 

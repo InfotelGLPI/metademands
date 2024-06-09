@@ -80,7 +80,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     $choices = [];
                     if (count($custom_values) > 0) {
                         foreach ($custom_values as $key => $label) {
-                            $choices[$label['id']] = $label['name'];
+
+                            if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
+                                $name = $label['name'];
+                            }
+
+                            $choices[$label['id']] = $name;
                             if ($label['is_default'] == 1) {
                                 $default_value  = $label['id'];
                             }

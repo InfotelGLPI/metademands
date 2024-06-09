@@ -2530,6 +2530,69 @@ class PluginMetademandsField extends CommonDBChild
 
 
     /**
+     * Returns the translation of the field
+     *
+     * @param type $item
+     * @param type $field
+     *
+     * @return type
+     * @global type $DB
+     *
+     */
+    public static function displayCustomvaluesField($id, $field, $type = "name", $lang = '')
+    {
+        global $DB;
+
+        $field_custom = new PluginMetademandsFieldCustomvalue();
+        $field_custom->getFromDB($field);
+        if ($type == "name") {
+            $field = "custom" . $field_custom->fields['rank'];
+        } else if ($type == "comment") {
+            $field = "commentcustom" . $field_custom->fields['rank'];
+        }
+
+
+        $res = "";
+        // Make new database object and fill variables
+        $iterator = $DB->request([
+            'FROM' => 'glpi_plugin_metademands_fieldtranslations',
+            'WHERE' => [
+                'itemtype' => self::getType(),
+                'items_id' => $id,
+                'field' => $field,
+                'language' => $_SESSION['glpilanguage']
+            ]
+        ]);
+        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
+            $iterator2 = $DB->request([
+                'FROM' => 'glpi_plugin_metademands_fieldtranslations',
+                'WHERE' => [
+                    'itemtype' => self::getType(),
+                    'items_id' => $id,
+                    'field' => $field,
+                    'language' => $lang
+                ]
+            ]);
+        }
+
+        if (count($iterator)) {
+            foreach ($iterator as $data) {
+                $res = $data['value'];
+            }
+        }
+        if ($lang != $_SESSION['glpilanguage'] && $lang != '') {
+            if (count($iterator2)) {
+                foreach ($iterator2 as $data2) {
+                    $res .= ' / ' . $data2['value'];
+                    $iterator2->next();
+                }
+            }
+        }
+
+        return $res;
+    }
+
+    /**
      * @return array
      */
     /**
