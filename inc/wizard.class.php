@@ -1329,7 +1329,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 if ($preview) {
                     echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "'>";
                 } else {
-                    echo "<div class=\"row\" style='$style'>";
+                    echo "<div class=\"row\" style='$style;padding: 0.5rem 0.5rem;'>";
                 }
 
                 foreach ($line as $key => $data) {
@@ -1486,7 +1486,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
                                 $background_color = $meta->fields['background_color'];
                             }
-                            echo "<div class=\"row class1\" style='background-color: " . $background_color . ";padding: 0.5rem 0.5rem;'>";
+                            echo "<div class=\"row class1\" style='background-color: " . $background_color . ";$style_left_right'>";
                         }
 
                         $count = 0;
