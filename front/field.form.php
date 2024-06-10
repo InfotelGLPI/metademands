@@ -31,7 +31,7 @@ include('../../../inc/includes.php');
 Session::checkLoginUser();
 
 if (empty($_GET["id"])) {
-   $_GET["id"] = "";
+    $_GET["id"] = "";
 }
 
 $field = new PluginMetademandsField();
@@ -53,69 +53,61 @@ if (isset($_POST['existing_field_id'])) {
 
 if (isset($_POST['item']) && isset($_POST['type'])
     && (empty($_POST['item']) || $_POST['item'] === 0)) {
-   $_POST['item'] = $_POST['type'];
+    $_POST['item'] = $_POST['type'];
 }
 
 if (isset($_POST["add"])) {
-
     $_POST["name"] = Toolbox::addslashes_deep($_POST["name"]);
     $_POST["comment"] = Toolbox::addslashes_deep($_POST["comment"]);
     $_POST["label2"] = Toolbox::addslashes_deep($_POST["label2"]);
-   // Check update rights for fields
-   $field->check(-1, UPDATE, $_POST);
+    // Check update rights for fields
+    $field->check(-1, UPDATE, $_POST);
 
-   if ($_POST['id'] = $field->add($_POST)) {
-
-       $fieldparameter->add(["plugin_metademands_fields_id" => $_POST['id']]);
-      $field->recalculateOrder($_POST);
-      PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_ADD);
-      unset($_SESSION['glpi_plugin_metademands_fields']);
-   }
-
-   Html::back();
-
-} else if (isset($_POST["update"])) {
-
-   if ($_POST["type"] == 'checkbox'
-       || $_POST["type"] == 'radio') {
-      $_POST["item"] = 0;
-   }
-
-   if (!isset($_POST['item'])) {
-      $_POST['item'] = "";
-   }
-
-   //    Check update rights for fields
-   $field->check(-1, UPDATE, $_POST);
-
-   if ($field->update($_POST)) {
-      $field->recalculateOrder($_POST);
-      PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
-
-      //Hook to add and update values add from plugins
-      if (isset($PLUGIN_HOOKS['metademands'])) {
-         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-            $p       = $_POST;
-            $new_res = PluginMetademandsField::getPluginSaveOptions($plug, $p);
-         }
-      }
-   }
+    if ($_POST['id'] = $field->add($_POST)) {
+        $fieldparameter->add(["plugin_metademands_fields_id" => $_POST['id']]);
+        $field->recalculateOrder($_POST);
+        PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_ADD);
+        unset($_SESSION['glpi_plugin_metademands_fields']);
+    }
 
     Html::back();
+} elseif (isset($_POST["update"])) {
+    if ($_POST["type"] == 'checkbox'
+        || $_POST["type"] == 'radio') {
+        $_POST["item"] = 0;
+    }
 
-} else if (isset($_POST["purge"])) {
+    if (!isset($_POST['item'])) {
+        $_POST['item'] = "";
+    }
 
-   // Check update rights for fields
-   $field->check(-1, UPDATE, $_POST);
-   $field->delete($_POST, 1);
-   PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
-   $field->redirectToList();
+    //    Check update rights for fields
+    $field->check(-1, UPDATE, $_POST);
 
+    if ($field->update($_POST)) {
+        $field->recalculateOrder($_POST);
+        PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_UPDATE);
 
+        //Hook to add and update values add from plugins
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $p = $_POST;
+                $new_res = PluginMetademandsField::getPluginSaveOptions($plug, $p);
+            }
+        }
+    }
+
+    Html::back();
+} elseif (isset($_POST["purge"])) {
+    // Check update rights for fields
+    $field->check(-1, UPDATE, $_POST);
+    $field->delete($_POST, 1);
+    PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_DELETE);
+    $field->redirectToList();
 } else {
-   $field->checkGlobal(READ);
-   Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
-   Html::requireJs('tinymce');
-   $field->display(['id' => $_GET["id"]]);
-   Html::footer();
+    $field->checkGlobal(READ);
+    Html::header(PluginMetademandsField::getTypeName(2), '', "helpdesk", "pluginmetademandsmenu");
+    Html::requireJs('tinymce');
+    $field->display(['id' => $_GET["id"]]);
+    Html::footer();
 }

@@ -696,6 +696,10 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             return false;
         }
 
+        if (empty($input['color'])) {
+            $input['color'] = "#000000";
+        }
+
         return $input;
     }
 

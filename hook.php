@@ -508,6 +508,16 @@ function plugin_metademands_install() {
                             }
                         }
 
+                        $metademand_conditions = new PluginMetademandsCondition();
+                        $fieldconditions = $metademand_conditions->find(
+                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']]
+                        );
+                        if (count($fieldconditions) > 0) {
+                            foreach ($fieldconditions as $ko => $fieldcondition) {
+                                $metademand_conditions->update(["id" => $fieldcondition['id'], "check_value" => $newid]);
+                            }
+                        }
+
                         $metademand_translations = new PluginMetademandsFieldTranslation();
                         $fieldtranslations = $metademand_translations->find(
                             ["items_id" => $field['id'], "field" => $input['old_translation_name']]
