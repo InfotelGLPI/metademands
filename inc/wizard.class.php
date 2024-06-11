@@ -2150,7 +2150,9 @@ class PluginMetademandsWizard extends CommonDBTM
                      if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                         $('#nextBtn').on('click', checkConditions);
                      }
+                     $('#wizard_form input[type=\"checkbox\"]').on('change', checkConditions);
                      $('#wizard_form input').on('change, keyup', checkConditions);
+                     
                      $('#wizard_form select').on('change', checkConditions);
                      $('#wizard_form textarea').on('change, keyup', checkConditions);
                      if(use_richtext){
