@@ -119,7 +119,7 @@ if ($nofreeinputs === false) {
         if ($metademands->fields['is_basket'] == 1) {
             if (isset($_POST['is_freeinput']) && $_POST['is_freeinput'] == 1) {
                 echo PluginOrderfollowupFreeinput::displayBasketSummary($post);
-            }else{
+            } else {
                 echo PluginMetademandsBasket::displayBasketSummary($post);
             }
         }

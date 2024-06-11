@@ -419,7 +419,7 @@ function plugin_metademands_install() {
                         'comment_values' => $field['comment_values'],
                         'default_values' => $field['default_values'],
                         'max_upload' => $field['max_upload'],
-                        'regex' => $field['regex'],
+                        'regex' => Toolbox::addslashes_deep($field['regex']),
                         'use_future_date' => $field['use_future_date'],
                         'use_date_now' => $field['use_date_now'],
                         'additional_number_day' => $field['additional_number_day'],

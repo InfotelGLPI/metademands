@@ -1070,7 +1070,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
-                            $('[bloc-id =\"bloc'+$hidden_block+'\"]').hide();
+                            $('[bloc-id =\"bloc'+key+'\"]').hide();
                             " . PluginMetademandsFieldoption::setEmptyBlockFields($hidden_block);
 
                             if (is_array($childs_by_checkvalue)) {
@@ -1083,7 +1083,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                     }
                                 }
             $onchange .= "} else {
-                            $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+
+                            $('[bloc-id =\"bloc'+key+'\"]').show();
                             " .PluginMetademandsFieldoption::setMandatoryFieldsByField($metaid, $hidden_block)."
                         }
                     });
