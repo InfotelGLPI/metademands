@@ -1931,6 +1931,10 @@ JAVASCRIPT
             $itilcategory = $values['field_plugin_servicecatalog_itilcategories_id'];
         }
 
+        if (isset($values['field_plugin_requestevolutions_itilcategories_id'])) {
+            $itilcategory = $values['field_plugin_requestevolutions_itilcategories_id'];
+        }
+
         if (count($metademands_data)) {
             foreach ($metademands_data as $form_step => $data) {
                 $docitem = null;

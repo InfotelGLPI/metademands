@@ -213,7 +213,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $field = "";
                 if ($hidden == 0) {
                     $field .= PluginRequestevolutionsItilcategorie::dropdown($opt);
-                    $field .= "<input type='hidden' name='" . $nameitil . "_plugin_requestevolutions_itilcategories_id' value='" . $data['id'] . "' >";
+                    $field .= "<input type='hidden' name='" . $nameitil . "_plugin_requestevolutions_itilcategories_id_key' value='" . $data['id'] . "' >";
                 }
 
                 if ($readonly == 1 || $hidden == 1) {
@@ -824,6 +824,10 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $name = "field_plugin_servicecatalog_itilcategories_id";
         }
 
+        if ($data["item"] == "ITILCategory_Requestevolutions") {
+            $name = "field_plugin_requestevolutions_itilcategories_id";
+        }
+
         $script .= "$('[name=\"$name\"]').change(function() {";
         $script .= "var tohide = {};";
         foreach ($check_values as $idc => $check_value) {
@@ -922,6 +926,10 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $name = "field_plugin_servicecatalog_itilcategories_id";
         }
 
+        if ($data["item"] == "ITILCategory_Requestevolutions") {
+            $name = "field_plugin_requestevolutions_itilcategories_id";
+        }
+
         $onchange = "";
         $pre_onchange = "";
         $post_onchange = "";
@@ -1010,6 +1018,9 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $name = "field[" . $data["id"] . "]";
         if ($data["item"] == "ITILCategory_Metademands") {
             $name = "field_plugin_servicecatalog_itilcategories_id";
+        }
+        if ($data["item"] == "ITILCategory_Requestevolutions") {
+            $name = "field_plugin_requestevolutions_itilcategories_id";
         }
 
         //add childs by idc

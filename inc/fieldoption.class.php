@@ -1251,6 +1251,9 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                 if ($data["item"] == "ITILCategory_Metademands") {
                                     $name = "field_plugin_servicecatalog_itilcategories_id";
                                 }
+                                if ($data["item"] == "ITILCategory_Requestevolutions") {
+                                    $name = "field_plugin_requestevolutions_itilcategories_id";
+                                }
                                 $script .= "var metademandWizard$rand = $(document).metademandWizard();";
                                 $script .= "metademandWizard$rand.metademand_setMandatoryField(
                                         'metademands_wizard_red" . $fields_link . "',

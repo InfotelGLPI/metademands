@@ -124,6 +124,10 @@ if (isset($_POST['save_draft'])) {
                                 $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                             }
 
+                            if ($value['item'] == 'ITILCategory_Requestevolutions') {
+                                $_POST['field'][$id] = $_POST['field_plugin_requestevolutions_itilcategories_id_key'] ?? 0;
+                            }
+
                             if ($value['type'] == 'basket' && isset($_POST['quantity'])) {
                                 $_POST['field'][$id] = $_POST['quantity'][$id];
                             }
@@ -155,6 +159,12 @@ if (isset($_POST['save_draft'])) {
                     (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
                         && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
 //                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
+
+                if(isset($_POST['field_plugin_requestevolutions_itilcategories_id'])){
+                    //Category id if have category field
+                    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_requestevolutions_itilcategories_id'] = $_POST['field_plugin_requestevolutions_itilcategories_id'];
+                }
+
             }
 
             $drafts = new PluginMetademandsDraft();
