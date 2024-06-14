@@ -255,7 +255,7 @@
 var table = document.getElementById('tablesearch');
 
 if (table !== null) {
-console.log(tablesearch);
+
    // Get input elements and table
    var filterRefInput = document.getElementById('searchref');
    var filterNameInput = document.getElementById('searchname');
