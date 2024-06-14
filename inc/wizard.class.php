@@ -2106,6 +2106,12 @@ class PluginMetademandsWizard extends CommonDBTM
                     prevBtn.addEventListener('click', () => nextPrev(-1));
                     nextBtn.addEventListener('click', () => nextPrev(1));
                     
+                    nextBtn.addEventListener('click', function () {
+                       if(document.querySelector('#button_save_draft')){
+                           document.querySelector('#button_save_draft').remove();
+                       } 
+                    });
+                    
                     window.metademands = {};
                     metademands.nexttitle = '$nexttitle';
                     metademands.submittitle = '$submittitle';
@@ -3554,6 +3560,8 @@ class PluginMetademandsWizard extends CommonDBTM
     public static function createDraftInput($type)
     {
 
+
+
         echo PluginMetademandsWizard::createDraftModalWindow("my_new_draft");
 
 
@@ -3561,9 +3569,9 @@ class PluginMetademandsWizard extends CommonDBTM
 
         //correct css with condition
         if($type == 1){
-            $style = "display:inline-block;margin-right: 10px";
+            $style = "display:inline-block;margin: 10px";
         }else{
-            $style = "display:inline-block;float:right;margin-right: 10px";
+            $style = "display:inline-block;float:left;margin-right: 10px";
         }
 
         $content = "<div style='{$style}'>
