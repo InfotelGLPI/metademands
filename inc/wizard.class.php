@@ -1702,6 +1702,13 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "<div class='center'>";
 
                     echo "<div style='overflow:auto;'>";
+
+                    $config = PluginMetademandsConfig::getInstance();
+                    if ($config['use_draft']) {
+                        //button create draft
+                        echo PluginMetademandsWizard::createDraftInput(1);
+                    }
+
                     if ($use_as_step == 1) {
                         echo "<div id='nextMsg' class='alert alert-info center'>";
                         echo "</div>";
@@ -1753,7 +1760,6 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
 
                     $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
 
                     $title = _sx('button', 'Save & Post', 'metademands');
 
@@ -3544,4 +3550,166 @@ class PluginMetademandsWizard extends CommonDBTM
         return $output;
 
     }
+
+    public static function createDraftInput($type)
+    {
+
+        echo PluginMetademandsWizard::createDraftModalWindow("my_new_draft");
+
+
+        $input_name = _sx('button', 'Save as draft', 'metademands');
+
+        //correct css with condition
+        if($type == 1){
+            $style = "display:inline-block;margin-right: 10px";
+        }else{
+            $style = "display:inline-block;float:right;margin-right: 10px";
+        }
+
+        $content = "<div style='{$style}'>
+                        <input id='button_save_draft' value='{$input_name}' type='button' onclick='load_draft_modal()'>
+                        <script>
+                            function load_draft_modal(){
+                               document.querySelector('#my_new_draft').style = 'display:block;background-color: rgba(0, 0, 0, 0.1);';
+                               document.querySelector('#my_new_draft').classList.remove('fade');
+                            }
+                        </script>
+                      </div>";
+
+        return $content;
+    }
+
+    public static function createDraftModalWindow($domid, $options = [])
+    {
+
+        $param = [
+            'width'         => 1050,
+            'height'        => 500,
+            'modal'         => true,
+            'title'         => '',
+            'display'       => true,
+            'dialog_class'  => 'modal-lg',
+            'autoopen'      => false,
+            'reloadonclose' => false
+        ];
+
+        if (count($options)) {
+            foreach ($options as $key => $val) {
+                if (isset($param[$key])) {
+                    $param[$key] = $val;
+                }
+            }
+        }
+
+        $rand = mt_rand();
+
+        $draft_name = __('Draft name', 'metademands');
+
+        $input_name = Html::input('draft_name', [
+            'value' => '',
+            'maxlength' => 250,
+            'size' => 40,
+            'class' => 'draft_name',
+            'placeholder' => __('Draft name', 'metademands')
+        ]);
+
+        $titl_submit_button = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
+        $titl_submit_button .= _sx('button', 'Save as draft', 'metademands');
+        $submit_button = Html::submit($titl_submit_button, [
+            'name' => 'save_draft',
+            'form' => '',
+            'id' => 'submitSave',
+            'class' => 'btn btn-success btn-sm',
+            'onclick' => 'saveMyDraft()',
+        ]);
+
+        $html = <<<HTML
+         <div id="$domid" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog {$param['dialog_class']}">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                     <h3>{$draft_name}</h3>
+                  </div>
+                  <div id="divcontainer$domid" class="modal-body">
+                    <div >
+                     <div style="float: left">{$input_name}</div>
+                     <div style="float: right">{$submit_button}</div>
+                    </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <script>
+            function saveMyDraft() {
+                let draft_name = document.querySelector('.modal-dialog .modal-body .draft_name').value;
+                udpateDraft('', draft_name)
+            } 
+        </script>
+HTML;
+
+        $reloadonclose = $param['reloadonclose'] ? "true" : "false";
+        $autoopen      = $param['autoopen'] ? "true" : "false";
+        $js = <<<JAVASCRIPT
+      $(function() {
+         myModalEl{$rand} = document.getElementById('{$domid}');
+         myModal{$rand}   = new bootstrap.Modal(myModalEl{$rand});
+
+         // move modal to body
+         $(myModalEl{$rand}).appendTo($("body"));
+         
+       
+         myModalEl{$rand}.addEventListener('hide.bs.modal', function () {
+            if ({$reloadonclose}) {
+               window.location.reload()
+            }
+         });
+         
+         myModalEl{$rand}.querySelector('.btn-close').addEventListener('click', function () {
+            document.querySelector('#my_new_draft').style = '';
+            document.querySelector('#my_new_draft').classList.add('fade');
+         });
+
+         if ({$autoopen}) {
+            myModal{$rand}.show();
+         }
+
+         document.getElementById('divcontainer$domid').onload = function() {
+            if ({$param['height']} !== 'undefined') {
+               var h =  {$param['height']};
+            } else {
+               var h =  $('#divcontainer{$domid}').contents().height();
+            }
+            if ({$param['width']} !== 'undefined') {
+               var w =  {$param['width']};
+            } else {
+               var w =  $('#divcontainer{$domid}').contents().width();
+            }
+
+            $('#iframe{$domid}')
+               .height(h);
+
+            if (w >= 700) {
+               $('#{$domid} .modal-dialog').addClass('modal-xl');
+            } else if (w >= 500) {
+               $('#{$domid} .modal-dialog').addClass('modal-lg');
+            } else if (w <= 300) {
+               $('#{$domid} .modal-dialog').addClass('modal-sm');
+            }
+
+            // reajust height to content
+            myModal{$rand}.handleUpdate()
+         };
+      });
+JAVASCRIPT;
+
+        $out = "<script type='text/javascript'>$js</script>" . trim($html);
+
+        if ($param['display']) {
+            echo $out;
+        } else {
+            return $out;
+        }
+    }
+
 }
