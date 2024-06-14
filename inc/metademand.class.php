@@ -912,8 +912,11 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     private static function getObjectTypeName($value)
     {
-        $item = new $value();
-        return $item->getTypeName(1);
+        if (class_exists($value)) {
+            $item = new $value();
+            return $item->getTypeName(1);
+        }
+        return "";
     }
 
     /**

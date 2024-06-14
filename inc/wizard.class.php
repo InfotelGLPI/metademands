@@ -3567,7 +3567,7 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         $content = "<div style='{$style}'>
-                        <input id='button_save_draft' value='{$input_name}' type='button' onclick='load_draft_modal()'>
+                        <input class='submit btn btn-primary' id='button_save_draft' value='{$input_name}' type='button' onclick='load_draft_modal()'>
                         <script>
                             function load_draft_modal(){
                                document.querySelector('#my_new_draft').style = 'display:block;background-color: rgba(0, 0, 0, 0.1);';
