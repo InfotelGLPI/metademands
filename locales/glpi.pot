@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-14 09:01+0000\n"
+"POT-Creation-Date: 2024-06-14 10:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,8 +178,8 @@ msgstr ""
 msgid "New draft"
 msgstr ""
 
-#: front/draftcreation.php:60 inc/draft.class.php:160 inc/wizard.class.php:3612
-#: inc/wizard.class.php:3619
+#: front/draftcreation.php:60 inc/draft.class.php:160 inc/wizard.class.php:3614
+#: inc/wizard.class.php:3621
 msgid "Draft name"
 msgstr ""
 
@@ -696,7 +696,7 @@ msgstr ""
 msgid "Date & Hour interval"
 msgstr ""
 
-#: inc/draft.class.php:164 inc/wizard.class.php:3566 inc/wizard.class.php:3623
+#: inc/draft.class.php:164 inc/wizard.class.php:3567 inc/wizard.class.php:3625
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
