@@ -3560,8 +3560,6 @@ class PluginMetademandsWizard extends CommonDBTM
     public static function createDraftInput($type)
     {
 
-
-
         echo PluginMetademandsWizard::createDraftModalWindow("my_new_draft");
 
 
