@@ -36,6 +36,7 @@ if (empty($_GET["id"])) {
 
 $field = new PluginMetademandsField();
 $fieldparameter = new PluginMetademandsFieldParameter();
+$fieldcustomvalues = new PluginMetademandsFieldCustomvalue();
 
 if (isset($_POST['existing_field_id'])) {
     if ($field->getFromDB($_POST['existing_field_id'])) {
@@ -64,7 +65,32 @@ if (isset($_POST["add"])) {
     $field->check(-1, UPDATE, $_POST);
 
     if ($_POST['id'] = $field->add($_POST)) {
-        $fieldparameter->add(["plugin_metademands_fields_id" => $_POST['id']]);
+
+        if (isset($_POST['existing_field_id'])
+            && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $_POST['existing_field_id']])) {
+            $inputp = $fieldparameter->fields;
+            unset($inputp['id']);
+            $inputp['plugin_metademands_fields_id'] = $_POST['id'];
+            $fieldparameter->add($inputp);
+        } else {
+            $fieldparameter->add(["plugin_metademands_fields_id" => $_POST['id']]);
+        }
+
+        if (isset($_POST['existing_field_id'])
+            && $customs = $fieldcustomvalues->find(['plugin_metademands_fields_id' => $_POST['existing_field_id']])) {
+
+            if (count($customs) > 0) {
+                foreach ($customs as $key => $val) {
+                    $inputc['name'] = $val['name'];
+                    $inputc['is_default'] = $val['is_default'];
+                    $inputc['comment'] = $val['comment'];
+                    $inputc['rank'] = $val['rank'];
+                    $inputc['plugin_metademands_fields_id'] = $_POST['id'];
+                    $fieldcustomvalues->add($inputc);
+                }
+            }
+        }
+
         $field->recalculateOrder($_POST);
         PluginMetademandsMetademand::addLog($_POST, PluginMetademandsMetademand::LOG_ADD);
         unset($_SESSION['glpi_plugin_metademands_fields']);

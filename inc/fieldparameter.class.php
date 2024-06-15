@@ -730,8 +730,10 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 
         $id = isset($input['id']) ? $input['id'] : 0;
         foreach ($input as $key => $value) {
-            if ($key === 'informations_to_display' && (in_array($input['type'], ['dropdown_multiple', 'dropdown_object']
-                    ) && $input['item'] === 'User')) {
+            if ($key === 'informations_to_display'
+                && (isset($input['type'])
+                    && in_array($input['type'], ['dropdown_multiple', 'dropdown_object'])
+                    && $input['item'] === 'User')) {
                 $temp = json_decode($value);
                 if (empty($temp)) {
                     $msg[] = __("Informations to display in ticket and PDF", "metademands");
