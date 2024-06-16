@@ -59,7 +59,6 @@ switch ($_POST['step']) {
         } else {
 
             $randItem = PluginMetademandsField::dropdownFieldItems(
-                "item",
                 $_POST["type"],
                 ['value' => $_POST['item'], 'rand' => $_POST["rand"]]
             );

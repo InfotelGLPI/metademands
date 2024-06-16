@@ -72,6 +72,37 @@ class PluginMetademandsField extends CommonDBChild
         'parent_field'
     ];
 
+    public static $field_title_types = [
+        'title',
+        'title-block',
+        'informations',
+    ];
+
+    public static $field_customvalues_types = [
+        'dropdown_meta',
+        'dropdown_multiple',
+        'checkbox',
+        'radio',
+    ];
+
+    public static $field_dropdown_types = [
+        'dropdown',
+        'dropdown_object',
+    ];
+
+    public static $field_text_types = [
+        'text',
+        'textarea',
+    ];
+
+    public static $field_date_types = [
+        'date',
+        'time',
+        'datetime',
+        'date_interval',
+        'datetime_interval',
+    ];
+
     public static $not_null = 'NOT_NULL';
 
 
@@ -283,7 +314,7 @@ class PluginMetademandsField extends CommonDBChild
         echo "<td>";
 
         $randType = self::dropdownFieldTypes(
-            "type",
+            self::$field_types,
             ['metademands_id' => $this->fields["plugin_metademands_metademands_id"]]
         );
         $paramsType = [
@@ -503,7 +534,7 @@ class PluginMetademandsField extends CommonDBChild
         echo "<td>";
 
         if ($ID < 1) {
-            $randType = self::dropdownFieldTypes("type", [
+            $randType = self::dropdownFieldTypes(self::$field_types, [
                 'value' => $this->fields["type"],
                 'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
             ]);
@@ -523,7 +554,169 @@ class PluginMetademandsField extends CommonDBChild
                 $paramsType
             );
         } else {
-            echo self::getFieldTypesName($this->fields['type']);
+
+            if (in_array($this->fields["type"],self::$field_title_types)) {
+
+                $randType = self::dropdownFieldTypes(self::$field_title_types, [
+                    'value' => $this->fields["type"],
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                ]);
+
+                $paramsType = [
+                    'value' => '__VALUE__',
+                    'type' => '__VALUE__',
+                    'item' => $this->fields['item'],
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                    'change_type' => 1
+                ];
+                Ajax::updateItemOnSelectEvent(
+                    'dropdown_type' . $randType,
+                    "show_values",
+                    PLUGIN_METADEMANDS_WEBDIR .
+                    "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                    $paramsType
+                );
+            } else if (in_array($this->fields["type"],self::$field_customvalues_types)) {
+
+                if (in_array($this->fields["item"],PluginMetademandsDropdownmultiple::$dropdown_multiple_objects)) {
+                    $randType = self::dropdownFieldTypes(["dropdown_multiple"], [
+                        'value' => $this->fields["type"],
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                    ]);
+
+                    $paramsType = [
+                        'value' => '__VALUE__',
+                        'type' => '__VALUE__',
+                        'item' => $this->fields['item'],
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                        'change_type' => 1
+                    ];
+                    Ajax::updateItemOnSelectEvent(
+                        'dropdown_type' . $randType,
+                        "show_values",
+                        PLUGIN_METADEMANDS_WEBDIR .
+                        "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                        $paramsType
+                    );
+                } else {
+                    $randType = self::dropdownFieldTypes(self::$field_customvalues_types, [
+                        'value' => $this->fields["type"],
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                    ]);
+
+                    $paramsType = [
+                        'value' => '__VALUE__',
+                        'type' => '__VALUE__',
+                        'item' => $this->fields['item'],
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                        'change_type' => 1
+                    ];
+                    Ajax::updateItemOnSelectEvent(
+                        'dropdown_type' . $randType,
+                        "show_values",
+                        PLUGIN_METADEMANDS_WEBDIR .
+                        "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                        $paramsType
+                    );
+                }
+
+            } else if (in_array($this->fields["type"],self::$field_text_types)) {
+
+                $randType = self::dropdownFieldTypes(self::$field_text_types, [
+                    'value' => $this->fields["type"],
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                ]);
+
+                $paramsType = [
+                    'value' => '__VALUE__',
+                    'type' => '__VALUE__',
+                    'item' => $this->fields['item'],
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                    'change_type' => 1
+                ];
+                Ajax::updateItemOnSelectEvent(
+                    'dropdown_type' . $randType,
+                    "show_values",
+                    PLUGIN_METADEMANDS_WEBDIR .
+                    "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                    $paramsType
+                );
+            } else if (in_array($this->fields["type"],self::$field_date_types)) {
+
+                $randType = self::dropdownFieldTypes(self::$field_date_types, [
+                    'value' => $this->fields["type"],
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                ]);
+
+                $paramsType = [
+                    'value' => '__VALUE__',
+                    'type' => '__VALUE__',
+                    'item' => $this->fields['item'],
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                    'change_type' => 1
+                ];
+                Ajax::updateItemOnSelectEvent(
+                    'dropdown_type' . $randType,
+                    "show_values",
+                    PLUGIN_METADEMANDS_WEBDIR .
+                    "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                    $paramsType
+                );
+            } else if (in_array($this->fields["type"],self::$field_dropdown_types)) {
+
+                $randType = self::dropdownFieldTypes(self::$field_dropdown_types, [
+                    'value' => $this->fields["type"],
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                ]);
+
+                $paramsType = [
+                    'value' => '__VALUE__',
+                    'type' => '__VALUE__',
+                    'item' => $this->fields['item'],
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                    'change_type' => 1
+                ];
+                Ajax::updateItemOnSelectEvent(
+                    'dropdown_type' . $randType,
+                    "show_values",
+                    PLUGIN_METADEMANDS_WEBDIR .
+                    "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                    $paramsType
+                );
+            } else if ($this->fields["type"] == "dropdown_multiple") {
+
+                if (in_array($this->fields["item"],PluginMetademandsDropdownmultiple::$dropdown_multiple_objects)) {
+                    echo self::getFieldTypesName($this->fields['type']);
+                    echo Html::hidden('type', ['value' => $this->fields['type']]);
+                } else {
+                    $randType = self::dropdownFieldTypes(["dropdown_multiple"], [
+                        'value' => $this->fields["type"],
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                    ]);
+
+                    $paramsType = [
+                        'value' => '__VALUE__',
+                        'type' => '__VALUE__',
+                        'item' => $this->fields['item'],
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                        'change_type' => 1
+                    ];
+                    Ajax::updateItemOnSelectEvent(
+                        'dropdown_type' . $randType,
+                        "show_values",
+                        PLUGIN_METADEMANDS_WEBDIR .
+                        "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                        $paramsType
+                    );
+                }
+
+            } else {
+
+                echo self::getFieldTypesName($this->fields['type']);
+                echo Html::hidden('type', ['value' => $this->fields['type']]);
+
+            }
+
         }
         if ($metademand->fields['is_basket'] == 0
             && ($this->fields['type'] == 'basket' || $this->fields['type'] == 'free_input')) {
@@ -578,7 +771,7 @@ class PluginMetademandsField extends CommonDBChild
         echo "<td>";
         if ($ID < 1) {
             echo "<span id='show_item' >";
-            $randItem = self::dropdownFieldItems("item", $this->fields["type"], ['value' => $this->fields["item"]]);
+            $randItem = self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"]]);
             echo "</span>";
             $paramsType = [
                 'value' => '__VALUE__',
@@ -600,9 +793,73 @@ class PluginMetademandsField extends CommonDBChild
             echo "<span id='show_item_title' style='display:none'>";
 
         } else {
-            echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
-            echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
-            echo Html::hidden('type', ['value' => $this->fields['type']]);
+
+            if ($this->fields["type"] == "dropdown_meta") {
+                $this->fields['item'] = "other";
+                echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
+                echo Html::hidden('item', ['value' => "other"]);
+
+            } else if (in_array($this->fields["type"],self::$field_dropdown_types)) {
+
+                echo "<span id='show_item' >";
+                $randItem = self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"]]);
+                echo "</span>";
+                $paramsType = [
+                    'value' => '__VALUE__',
+                    'type' => '__VALUE__',
+                    'item' => $this->fields['item'],
+                    'step' => 'object',
+                    'rand' => $randItem,
+                    'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                    'change_type' => 1
+                ];
+                Ajax::updateItemOnSelectEvent(
+                    'dropdown_type' . $randType,
+                    "show_item",
+                    PLUGIN_METADEMANDS_WEBDIR .
+                    "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                    $paramsType
+                );
+
+                echo "<span id='show_item_title' style='display:none'>";
+
+            } else if ($this->fields["type"] == "dropdown_multiple") {
+
+                if ($this->fields["type"] == "dropdown_multiple" && $this->fields["item"] == "other") {
+                    echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
+                    echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
+                } else {
+                    echo "<span id='show_item' >";
+                    $randItem = self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"],
+                        'criteria' =>  PluginMetademandsDropdownmultiple::$dropdown_multiple_objects]);
+                    echo "</span>";
+                    $paramsType = [
+                        'value' => '__VALUE__',
+                        'type' => '__VALUE__',
+                        'item' => $this->fields['item'],
+                        'step' => 'object',
+                        'rand' => $randItem,
+                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                        'change_type' => 1
+                    ];
+                    Ajax::updateItemOnSelectEvent(
+                        'dropdown_type' . $randType,
+                        "show_item",
+                        PLUGIN_METADEMANDS_WEBDIR .
+                        "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                        $paramsType
+                    );
+
+                    echo "<span id='show_item_title' style='display:none'>";
+                }
+
+
+
+            } else {
+                echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
+                echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
+            }
+
         }
 
         // ORDER
@@ -910,16 +1167,15 @@ class PluginMetademandsField extends CommonDBChild
      * @return dropdown of types
      * @throws \GlpitestSQLError
      */
-    public static function dropdownFieldTypes($name, $param = [])
+    public static function dropdownFieldTypes($type_fields, $param = [])
     {
         global $PLUGIN_HOOKS;
 
+        $name = "type";
         $p = [];
         foreach ($param as $key => $val) {
             $p[$key] = $val;
         }
-
-        $type_fields = self::$field_types;
 
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -1304,7 +1560,7 @@ class PluginMetademandsField extends CommonDBChild
      *
      * @return dropdown of items
      */
-    public static function dropdownFieldItems($name, $typefield, $param = [])
+    public static function dropdownFieldItems( $typefield, $param = [])
     {
         global $PLUGIN_HOOKS;
 
@@ -1313,8 +1569,13 @@ class PluginMetademandsField extends CommonDBChild
             $p[$key] = $val;
         }
 
+        $name = "item";
+
         $type_fields = PluginMetademandsDropdownmeta::$dropdown_meta_items;
         $type_fields_multiple = PluginMetademandsDropdownmultiple::$dropdown_multiple_items;
+        if (isset($p["criteria"])) {
+            $type_fields_multiple = $p["criteria"];
+        }
 
         switch ($typefield) {
             case "dropdown_multiple":

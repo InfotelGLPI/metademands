@@ -11,3 +11,9 @@ faire TODO MIGRATE
 bug dropdown multiple - affichage champ caché - si deselectionner le champ il n'est pas recaché
 
 inject custom values
+
+
+3.3.12
+Fix  : Not founded function for datetimeinterval
+Feature : Clone parameters & customvalues when using existing field
+Feature : Permit to change type & item for fields
