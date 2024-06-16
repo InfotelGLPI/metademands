@@ -537,7 +537,7 @@ class PluginMetademandsTask extends CommonDBChild {
 
                 if ($canedit && $solved) {
                     echo "<td $color_class width='10'>";
-                    echo "<input type='checkbox' name='item[" . $this->getType() . "][" . $id . "]' value='1' data-glpicore-ma-tags='common'>";
+                    Html::showMassiveActionCheckBox(__CLASS__,$id);
                     echo "</td>";
                 } else {
                     echo "<td $color_class width='10'></td>";
