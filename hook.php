@@ -73,7 +73,8 @@ function plugin_metademands_install() {
     }
 
     //version 2.4.1
-    if ($DB->tableExists("glpi_plugin_metademands_fields")
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldoptions")
+    && $DB->tableExists("glpi_plugin_metademands_fields")
         && !$DB->fieldExists("glpi_plugin_metademands_fields", "comment_values")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.4.1.sql");
     }
@@ -214,7 +215,8 @@ function plugin_metademands_install() {
     }
 
     //version 2.7.6
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "informations_to_display")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "informations_to_display")
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions")) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.6.sql");
     }
     //version 2.7.8
