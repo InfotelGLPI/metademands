@@ -6588,7 +6588,12 @@ JAVASCRIPT
                     || (isset($field['item']) && in_array($field['item'], $allowed_customvalues_items))
                 ) {
                     $fieldoldcustoms[$k]["id"] = $fields[$k]["id"];
-                    $fieldoldcustoms[$k][$key] = PluginMetademandsFieldParameter::_unserialize($f);
+                    if (is_array($f)) {
+                        $fieldoldcustoms[$k][$key] = PluginMetademandsFieldParameter::_serializeArray($f);
+                    } else {
+                        $fieldoldcustoms[$k][$key] = PluginMetademandsFieldParameter::_unserialize($f);
+                    }
+
 //                    if ($field['type'] != 'yesno') {
 //                        $fieldcustoms[$k][$key] = PluginMetademandsFieldParameter::_serialize($fields[$k][$key]);
 //                    }

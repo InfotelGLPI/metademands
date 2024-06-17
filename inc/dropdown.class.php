@@ -101,7 +101,7 @@ class PluginMetademandsDropdown extends CommonDBTM
                             'item' => User::getType()]);
 
                         $fieldparameter            = new PluginMetademandsFieldParameter();
-                        if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
+                        if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
                             $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
                                 && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
 

@@ -307,7 +307,7 @@ if ($nofreeinputs === false) {
                                 $parameters = PluginMetademandsField::getAllParamsFromField($field);
                             }
 
-                            if ($parameters['is_mandatory'] == 0) {
+                            if ($parameters['is_mandatory'] == 1) {
                                 if (!isset($post[$id])) {
                                     continue;
                                 }
