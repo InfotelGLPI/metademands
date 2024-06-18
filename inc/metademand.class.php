@@ -525,7 +525,7 @@ class PluginMetademandsMetademand extends CommonDBTM
 
         $confStep = new PluginMetademandsConfigstep();
 
-        $confStep->add(['plugin_metademands_metademands_id' => $this->fields['id']]);
+        $confStep->add(['plugin_metademands_metademands_id' => $this->fields['id'], 'step_by_step_interface' => PluginMetademandsConfigstep::BOTH_INTERFACE]);
 
         if (isset($this->input["metademands_oldID"])) {
 
@@ -603,6 +603,12 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $fields->update(['is_basket' => 1, 'id' => $field['id']]);
                 }
             }
+        }
+        $confStep = new PluginMetademandsConfigstep();
+
+        if (!$confStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->fields['id']])) {
+            $confStep->add(['plugin_metademands_metademands_id' => $this->fields['id'],
+                'step_by_step_interface' => PluginMetademandsConfigstep::BOTH_INTERFACE]);
         }
         PluginMetademandsTicketField::updateMandatoryTicketFields($this->input);
     }
