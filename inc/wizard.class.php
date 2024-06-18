@@ -2117,6 +2117,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademands.submittitle = '$submittitle';
                     metademands.submitmsg = '$submitmsg'; 
                     metademands.use_as_step = '$use_as_step';
+                    metademands.submitsteptitle = '$submitsteptitle';
                     metademands.nextsteptitle = '$nextsteptitle';
                     metademands.seesummary = '$see_summary';
                     metademands.msg = '$alert';

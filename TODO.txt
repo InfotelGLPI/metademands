@@ -13,11 +13,5 @@ bug dropdown multiple - affichage champ caché - si deselectionner le champ il n
 inject custom values
 
 
-3.3.12
-Fix : Not founded function for datetimeinterval
-Feature : Clone parameters & customvalues when using existing field
-Feature : Permit to change type & item for fields
-Fix : Select massiveaction for metademand tasks
-Fix : undefined id for dropdown.class.php
-Fix : Mandatory fields for hidden block
-Fix : define Step by step interface on create / update metademands
+3.3.13
+Fix : next group / user title display
