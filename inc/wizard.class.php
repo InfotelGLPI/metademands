@@ -1704,7 +1704,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "<div style='overflow:auto;'>";
 
                     $config = PluginMetademandsConfig::getInstance();
-                    if ($config['use_draft']) {
+                    if ($use_as_step == 0 && $config['use_draft']) {
                         //button create draft
                         echo PluginMetademandsWizard::createDraftInput(1);
                     }
