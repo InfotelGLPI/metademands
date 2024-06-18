@@ -363,7 +363,8 @@ function plugin_metademands_install() {
     }
 
     //version 3.3.2
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "readonly", false)) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "readonly", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.2.sql");
     }
 
