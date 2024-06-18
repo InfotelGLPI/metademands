@@ -20,3 +20,4 @@ Feature : Permit to change type & item for fields
 Fix : Select massiveaction for metademand tasks
 Fix : undefined id for dropdown.class.php
 Fix : Mandatory fields for hidden block
+Fix : define Step by step interface on create / update metademands
