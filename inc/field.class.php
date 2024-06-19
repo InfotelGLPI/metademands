@@ -599,25 +599,32 @@ class PluginMetademandsField extends CommonDBChild
                         $paramsType
                     );
                 } else {
-                    $randType = self::dropdownFieldTypes(self::$field_customvalues_types, [
-                        'value' => $this->fields["type"],
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
-                    ]);
+                    if ($this->fields["item"] == "other") {
+                        $randType = self::dropdownFieldTypes(self::$field_customvalues_types, [
+                            'value' => $this->fields["type"],
+                            'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
+                        ]);
 
-                    $paramsType = [
-                        'value' => '__VALUE__',
-                        'type' => '__VALUE__',
-                        'item' => $this->fields['item'],
-                        'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
-                        'change_type' => 1
-                    ];
-                    Ajax::updateItemOnSelectEvent(
-                        'dropdown_type' . $randType,
-                        "show_values",
-                        PLUGIN_METADEMANDS_WEBDIR .
-                        "/ajax/viewtypefields.php?id=" . $this->fields['id'],
-                        $paramsType
-                    );
+                        $paramsType = [
+                            'value' => '__VALUE__',
+                            'type' => '__VALUE__',
+                            'item' => $this->fields['item'],
+                            'metademands_id' => $this->fields["plugin_metademands_metademands_id"],
+                            'change_type' => 1
+                        ];
+                        Ajax::updateItemOnSelectEvent(
+                            'dropdown_type' . $randType,
+                            "show_values",
+                            PLUGIN_METADEMANDS_WEBDIR .
+                            "/ajax/viewtypefields.php?id=" . $this->fields['id'],
+                            $paramsType
+                        );
+                    } else {
+
+                        echo self::getFieldTypesName($this->fields['type']);
+                        echo Html::hidden('type', ['value' => $this->fields['type']]);
+
+                    }
                 }
 
             } else if (in_array($this->fields["type"],self::$field_text_types)) {
@@ -795,9 +802,8 @@ class PluginMetademandsField extends CommonDBChild
         } else {
 
             if ($this->fields["type"] == "dropdown_meta") {
-                $this->fields['item'] = "other";
                 echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
-                echo Html::hidden('item', ['value' => "other"]);
+                echo Html::hidden('item', ['value' => $this->fields['item']]);
 
             } else if (in_array($this->fields["type"],self::$field_dropdown_types)) {
 
