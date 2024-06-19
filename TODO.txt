@@ -14,4 +14,6 @@ inject custom values
 
 
 3.3.13
-Fix : next group / user title display
+Fix next group / user title display
+Fix display draft button on step by step mode
+Fix duplicate metademands
