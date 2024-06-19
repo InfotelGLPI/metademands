@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-19 08:59+0000\n"
+"POT-Creation-Date: 2024-06-19 13:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1498 inc/metademand.class.php:6034
+#: hook.php:1498 inc/metademand.class.php:6052
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1516 inc/metademand.class.php:6154
+#: hook.php:1516 inc/metademand.class.php:6172
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1533 inc/metademand.class.php:6211
+#: hook.php:1533 inc/metademand.class.php:6229
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1550 inc/metademand.class.php:6086
+#: hook.php:1550 inc/metademand.class.php:6104
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -1325,43 +1325,43 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5900
+#: inc/metademand.class.php:5918
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:6483
+#: inc/metademand.class.php:6501
 msgid "No file specified"
 msgstr ""
 
-#: inc/metademand.class.php:6498
+#: inc/metademand.class.php:6516
 msgid "The file is not an XML file"
 msgstr ""
 
-#: inc/metademand.class.php:7015
+#: inc/metademand.class.php:7033
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:7024
+#: inc/metademand.class.php:7042
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:7136
+#: inc/metademand.class.php:7154
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:7225
+#: inc/metademand.class.php:7243
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:7225
+#: inc/metademand.class.php:7243
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:7238
+#: inc/metademand.class.php:7256
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:7270 inc/wizard.class.php:802
+#: inc/metademand.class.php:7288 inc/wizard.class.php:802
 msgid "Find a form"
 msgstr ""
 
