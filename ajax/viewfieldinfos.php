@@ -55,7 +55,7 @@ if ($field->getFromDB($_POST["fields_id"])) {
     echo "<td>";
 
     $params = PluginMetademandsField::getAllParamsFromField($field);
-
+    $params['is_mandatory'] = 0;
     echo PluginMetademandsField::getFieldInput([], $params, false, 0, 0, false, "");
     echo "</td>";
     echo "</tr>";

@@ -61,6 +61,11 @@ if (isset($_POST["add"])) {
     $_POST["name"] = Toolbox::addslashes_deep($_POST["name"]);
     $_POST["comment"] = Toolbox::addslashes_deep($_POST["comment"]);
     $_POST["label2"] = Toolbox::addslashes_deep($_POST["label2"]);
+    if (isset($_POST["plugin_metademands_metademands_id"])) {
+        $meta = new PluginMetademandsMetademand();
+        $meta->getFromDB($_POST["plugin_metademands_metademands_id"]);
+        $_POST["entities_id"] = $meta->getEntityID();
+    }
     // Check update rights for fields
     $field->check(-1, UPDATE, $_POST);
 
