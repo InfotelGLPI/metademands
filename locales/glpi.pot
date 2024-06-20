@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 11:24+0000\n"
+"POT-Creation-Date: 2024-06-20 11:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -178,8 +178,8 @@ msgstr ""
 msgid "New draft"
 msgstr ""
 
-#: front/draftcreation.php:60 inc/draft.class.php:160 inc/wizard.class.php:3615
-#: inc/wizard.class.php:3622
+#: front/draftcreation.php:60 inc/draft.class.php:160 inc/wizard.class.php:3611
+#: inc/wizard.class.php:3618
 msgid "Draft name"
 msgstr ""
 
@@ -696,7 +696,7 @@ msgstr ""
 msgid "Date & Hour interval"
 msgstr ""
 
-#: inc/draft.class.php:164 inc/wizard.class.php:3568 inc/wizard.class.php:3626
+#: inc/draft.class.php:164 inc/wizard.class.php:3564 inc/wizard.class.php:3622
 msgctxt "button"
 msgid "Save as draft"
 msgstr ""
@@ -2008,22 +2008,22 @@ msgstr ""
 msgid "Previous data edited"
 msgstr ""
 
-#: inc/wizard.class.php:3439
+#: inc/wizard.class.php:3435
 #, php-format
 msgid "Date %s cannot be less than today's date"
 msgstr ""
 
-#: inc/wizard.class.php:3448
+#: inc/wizard.class.php:3444
 #, php-format
 msgid "Date %1$s cannot be greater than date %2$s"
 msgstr ""
 
-#: inc/wizard.class.php:3481
+#: inc/wizard.class.php:3477
 #, php-format
 msgid "Too much documents are upload, max %s. Please correct: %s"
 msgstr ""
 
-#: inc/wizard.class.php:3485
+#: inc/wizard.class.php:3481
 #, php-format
 msgid "Field do not correspond to the expected format. Please correct: %s"
 msgstr ""
