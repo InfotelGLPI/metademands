@@ -2677,10 +2677,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                 if (typeof tinymce !== 'undefined' && tinymce.get(textarea.id)) {
                                     var contenu = tinymce.get(textarea.id).getContent();
                                     // Vérifier si le contenu est vide
-                                    if (contenu.trim() !== '') {
+                                    if (contenu.trim().length) {
                                        $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                       $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                                       $('[name=\"' + fieldname + '\"]').css('border','solid 1px red');
                                     } else {
                                         $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                         $('[name=\"' + fieldname + '\"]').attr('required', 'required');
@@ -2694,11 +2692,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                     }
                                 } else {
                                     var contenu = textarea.value.trim();
-                            
                                     // Vérifier si le contenu est vide
-                                    if (contenu !== '') {
+                                    if (contenu.length) {
                                        $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                       $('[name=\"' + fieldname + '\"]').removeAttr('required');
                                     } else {
                                        $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                        $('[name=\"' + fieldname + '\"]').attr('required', 'required');

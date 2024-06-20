@@ -5,3 +5,4 @@ Fix next group / user title display
 Fix entity of new field in same entity as metademand
 Fix Drop is_mandatory for add existing field
 Fix duplicate metademands
+Fix mandatory textarea check
