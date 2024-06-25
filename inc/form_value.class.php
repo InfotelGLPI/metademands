@@ -131,13 +131,13 @@ class PluginMetademandsForm_Value extends CommonDBTM
                             }
 
 
-                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
+//                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                         }
 
                     } else {
                         $field['value'] = $values[$fields_id];
                     }
-                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $field['value'];
+//                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $field['value'];
 
                 } else if (isset($values[$fields_id]) && is_array($values[$fields_id])) {
 
@@ -150,13 +150,13 @@ class PluginMetademandsForm_Value extends CommonDBTM
                                     foreach ($quantities[$fields_id] as $k => $q) {
                                         if ($q > 0) {
                                             $field['value'] = json_encode($quantities[$fields_id]);
-                                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $quantities[$fields_id];
+//                                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $quantities[$fields_id];
                                         }
                                     }
                                 }
                             } else {
                                 $field['value'] = json_encode($values[$fields_id]);
-                                $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
+//                                $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                             }
 
                         } else if ($metafield->fields["type"] == "free_input") {
@@ -173,7 +173,7 @@ class PluginMetademandsForm_Value extends CommonDBTM
                             }
 
 
-                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
+//                            $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id] = $values[$fields_id];
                         }  else {
                             $field['value'] = json_encode($values[$fields_id]);
                         }
@@ -182,10 +182,10 @@ class PluginMetademandsForm_Value extends CommonDBTM
                 $field['value2'] = '';
                 if (isset($values[$fields_id . "-2"]) && !is_array($values[$fields_id . "-2"])) {
                     $field['value2'] = $values[$fields_id . "-2"];
-                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id . "-2"] = $field['value2'];
+//                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id . "-2"] = $field['value2'];
                 } else if (isset($values[$fields_id . "-2"]) && is_array($values[$fields_id . "-2"])) {
                     $field['value2'] = json_encode($values[$fields_id . "-2"]);
-                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id . "-2"] = $field['value2'];
+//                    $_SESSION['plugin_metademands'][$metademands_id]['fields'][$fields_id . "-2"] = $field['value2'];
                 }
 
                 $form_value->add([
