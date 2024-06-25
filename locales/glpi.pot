@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-20 11:55+0000\n"
+"POT-Creation-Date: 2024-06-25 20:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,11 +67,11 @@ msgstr[1] ""
 msgid "Draft name is required"
 msgstr ""
 
-#: ajax/addform.php:200
+#: ajax/addform.php:180
 msgid "Form name is required"
 msgstr ""
 
-#: ajax/createmetademands.php:61 ajax/createmetademands.php:197
+#: ajax/createmetademands.php:56 ajax/createmetademands.php:195
 #: front/wizard.form.php:181
 msgid "There is no line on the basket"
 msgstr ""
