@@ -1225,7 +1225,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                 }
                             }
                     
-                            if (nextTab >= x.length) {
+                            if (nextTab > x.length) {
                                 document.getElementById('nextBtn').innerHTML = metademands.submittitle;
                             } else {
                                 if (create) {
@@ -1654,7 +1654,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
 
                     //verifie si une sous metademande doit etre lancé
-                    PluginMetademandsFieldOption::taskScript($data);
+//                    PluginMetademandsFieldOption::taskScript($data);
 
                     //Active champs obligatoires sur les fields_link
                     PluginMetademandsFieldOption::fieldsLinkScript($data);

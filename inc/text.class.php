@@ -63,7 +63,8 @@ class PluginMetademandsText extends CommonDBTM
             $size = "70";
         }
         $name = $namefield . "[" . $data['id'] . "]";
-        $opt = ['value' => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
+        $opt = ['id-field' => $name,
+            'value' => Html::cleanInputText(Toolbox::stripslashes_deep($value)),
             'placeholder' => (!$comment == null) ? Glpi\RichText\RichText::getTextFromHtml($comment) : "",
             'size' => $size
         ];
@@ -76,7 +77,7 @@ class PluginMetademandsText extends CommonDBTM
         $updateJs = '';
         if (!empty($data['used_by_ticket'])) {
             $updateJs .= "let field{$data['id']} = $(\"[id-field='field{$data['id']}'] input\");
-                        field{$data['id']}.attr('value', response[{$data['used_by_ticket']}] ?? '');
+                        field{$data['id']}.val(response[{$data['used_by_ticket']}] ?? '');
                         field{$data['id']}.trigger('input');
                         ";
         }

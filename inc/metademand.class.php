@@ -4668,6 +4668,10 @@ JAVASCRIPT
 
                 $son_ticket_data['content'] = Toolbox::addslashes_deep($son_ticket_data['content']);
                 $son_ticket_data['name'] = Toolbox::addslashes_deep($son_ticket_data['name']);
+                if (!isset($son_ticket_data['users_id_recipient']) || empty($son_ticket_data['users_id_recipient'])) {
+                    $son_ticket_data['users_id_recipient'] = Session::getLoginUserID();
+                }
+
                 if ($son_tickets_id = $ticket->add($son_ticket_data)) {
                     if (Plugin::isPluginActive('fields')) {
                         foreach ($inputField as $containers_id => $vals) {

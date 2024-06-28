@@ -39,13 +39,17 @@ $fieldUser = new PluginMetademandsField();
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
-      if ($fieldUser->getFromDBByCrit(['type'         => "dropdown",
+      if ($fields = $fieldUser->find(['type'         => "dropdown",
                                        'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                        'item'         => UserTitle::getType()])) {
-
-          $fieldparameter            = new PluginMetademandsFieldParameter();
-          if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id'], 'link_to_user' => $_POST['id_fielduser']])) {
-              $_POST["field"] = "field[" . $fieldUser->fields['id'] . "]";
+          foreach ($fields as $f) {
+              $fieldparameter = new PluginMetademandsFieldParameter();
+              if ($fieldparameter->getFromDBByCrit(
+                  ['plugin_metademands_fields_id' => $f['id'],
+                      'link_to_user' => $_POST['id_fielduser']]
+              )) {
+                  $_POST["field"] = "field[" . $f['id'] . "]";
+              }
           }
       }
    } else {
