@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-28 07:14+0000\n"
+"POT-Creation-Date: 2024-06-28 16:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1498 inc/metademand.class.php:6052
+#: hook.php:1498 inc/metademand.class.php:6056
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1516 inc/metademand.class.php:6172
+#: hook.php:1516 inc/metademand.class.php:6176
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1533 inc/metademand.class.php:6229
+#: hook.php:1533 inc/metademand.class.php:6233
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1550 inc/metademand.class.php:6104
+#: hook.php:1550 inc/metademand.class.php:6108
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -140,8 +140,8 @@ msgid "Example"
 msgstr ""
 
 #: ajax/viewtypefields.php:55 inc/dropdown.class.php:255
-#: inc/dropdownmeta.class.php:545 inc/dropdownobject.class.php:547
-#: inc/text.class.php:116
+#: inc/dropdownmeta.class.php:545 inc/dropdownobject.class.php:538
+#: inc/dropdownobject.class.php:630 inc/text.class.php:117
 msgid "Link this to a user field"
 msgstr ""
 
@@ -329,7 +329,7 @@ msgstr ""
 #: inc/condition.class.php:337 inc/condition.class.php:471
 #: inc/condition.class.php:569 inc/condition.class.php:892
 #: inc/dropdown.class.php:280 inc/dropdownmeta.class.php:590
-#: inc/dropdownmultiple.class.php:839 inc/dropdownobject.class.php:624
+#: inc/dropdownmultiple.class.php:839 inc/dropdownobject.class.php:707
 #: inc/field.class.php:988 inc/fieldoption.class.php:238
 #: inc/radio.class.php:264 inc/yesno.class.php:130
 msgid "Value to check"
@@ -339,8 +339,8 @@ msgstr ""
 #: inc/checkbox.class.php:301 inc/dropdown.class.php:314
 #: inc/dropdown.class.php:350 inc/dropdownmeta.class.php:644
 #: inc/dropdownmeta.class.php:654 inc/dropdownmeta.class.php:673
-#: inc/dropdownobject.class.php:687 inc/dropdownobject.class.php:697
-#: inc/dropdownobject.class.php:719 inc/radio.class.php:284
+#: inc/dropdownobject.class.php:770 inc/dropdownobject.class.php:780
+#: inc/dropdownobject.class.php:802 inc/radio.class.php:284
 #: inc/radio.class.php:297
 msgid "Not null value"
 msgstr ""
@@ -348,8 +348,8 @@ msgstr ""
 #: inc/basket.class.php:596 inc/checkbox.class.php:403
 #: inc/dropdown.class.php:447 inc/dropdownmeta.class.php:768
 #: inc/dropdownmultiple.class.php:1035 inc/dropdownmultiple.class.php:1188
-#: inc/dropdownobject.class.php:822 inc/radio.class.php:376
-#: inc/text.class.php:266 inc/textarea.class.php:218 inc/wizard.class.php:1764
+#: inc/dropdownobject.class.php:905 inc/radio.class.php:376
+#: inc/text.class.php:267 inc/textarea.class.php:218 inc/wizard.class.php:1764
 #: inc/yesno.class.php:223
 msgctxt "button"
 msgid "Save & Post"
@@ -358,8 +358,8 @@ msgstr ""
 #: inc/basket.class.php:597 inc/checkbox.class.php:404
 #: inc/dropdown.class.php:448 inc/dropdownmeta.class.php:770
 #: inc/dropdownmultiple.class.php:1036 inc/dropdownmultiple.class.php:1189
-#: inc/dropdownobject.class.php:823 inc/radio.class.php:377
-#: inc/text.class.php:267 inc/textarea.class.php:219 inc/wizard.class.php:885
+#: inc/dropdownobject.class.php:906 inc/radio.class.php:377
+#: inc/text.class.php:268 inc/textarea.class.php:219 inc/wizard.class.php:885
 #: inc/wizard.class.php:1739 inc/wizard.class.php:1762
 #: inc/wizard.class.php:1775 inc/wizard.class.php:1779 inc/yesno.class.php:224
 msgid "Next"
@@ -664,8 +664,8 @@ msgid "Date"
 msgstr ""
 
 #: inc/date.class.php:82 inc/datetime.class.php:82 inc/dropdown.class.php:242
-#: inc/dropdownmeta.class.php:534 inc/dropdownobject.class.php:484
-#: inc/dropdownobject.class.php:566
+#: inc/dropdownmeta.class.php:534 inc/dropdownobject.class.php:567
+#: inc/dropdownobject.class.php:649
 msgid "Use this field for child ticket field"
 msgstr ""
 
@@ -716,7 +716,7 @@ msgstr ""
 msgid "Dropdown"
 msgstr ""
 
-#: inc/dropdownmeta.class.php:569 inc/dropdownobject.class.php:515
+#: inc/dropdownmeta.class.php:569 inc/dropdownobject.class.php:598
 msgid "Read-Only"
 msgstr ""
 
@@ -744,19 +744,19 @@ msgstr ""
 msgid "Display type of the field"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:784 inc/dropdownobject.class.php:476
+#: inc/dropdownmultiple.class.php:784 inc/dropdownobject.class.php:559
 msgid "Only users of my groups"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:794 inc/dropdownobject.class.php:496
+#: inc/dropdownmultiple.class.php:794 inc/dropdownobject.class.php:579
 msgid "Use id of requester by default"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:801 inc/dropdownobject.class.php:503
+#: inc/dropdownmultiple.class.php:801 inc/dropdownobject.class.php:586
 msgid "Use id of supervisor requester by default"
 msgstr ""
 
-#: inc/dropdownmultiple.class.php:813 inc/dropdownobject.class.php:522
+#: inc/dropdownmultiple.class.php:813 inc/dropdownobject.class.php:605
 #: inc/fieldparameter.class.php:739
 msgid "Informations to display in ticket and PDF"
 msgstr ""
@@ -1282,86 +1282,86 @@ msgstr ""
 msgid "Ticket \"%s\" successfully updated"
 msgstr ""
 
-#: inc/metademand.class.php:5138
+#: inc/metademand.class.php:5142
 msgid "Metademand need a validation"
 msgstr ""
 
-#: inc/metademand.class.php:5140
+#: inc/metademand.class.php:5144
 msgid "Do you want to validate her?"
 msgstr ""
 
-#: inc/metademand.class.php:5145 inc/metademand.class.php:5150
+#: inc/metademand.class.php:5149 inc/metademand.class.php:5154
 #: inc/metademandvalidation.class.php:57 inc/metademandvalidation.class.php:322
 #: inc/metademandvalidation.class.php:327
 #: inc/metademandvalidation.class.php:349
 msgid "Metademand validation"
 msgstr ""
 
-#: inc/metademand.class.php:5164
+#: inc/metademand.class.php:5168
 msgid "List of tickets / tasks which be created after validation"
 msgstr ""
 
-#: inc/metademand.class.php:5249
+#: inc/metademand.class.php:5253
 msgid "Demand followup"
 msgstr ""
 
-#: inc/metademand.class.php:5265
+#: inc/metademand.class.php:5269
 msgid "Existent tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5275 inc/metademand.class.php:5410
+#: inc/metademand.class.php:5279 inc/metademand.class.php:5414
 msgid "Due date"
 msgstr ""
 
-#: inc/metademand.class.php:5400
+#: inc/metademand.class.php:5404
 msgid "Next tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5486
+#: inc/metademand.class.php:5490
 msgid "Coming"
 msgstr ""
 
-#: inc/metademand.class.php:5507
+#: inc/metademand.class.php:5511
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5918
+#: inc/metademand.class.php:5922
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:6501
+#: inc/metademand.class.php:6505
 msgid "No file specified"
 msgstr ""
 
-#: inc/metademand.class.php:6516
+#: inc/metademand.class.php:6520
 msgid "The file is not an XML file"
 msgstr ""
 
-#: inc/metademand.class.php:7033
+#: inc/metademand.class.php:7037
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:7042
+#: inc/metademand.class.php:7046
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:7154
+#: inc/metademand.class.php:7158
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:7243
+#: inc/metademand.class.php:7247
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:7243
+#: inc/metademand.class.php:7247
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:7256
+#: inc/metademand.class.php:7260
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:7288 inc/wizard.class.php:802
+#: inc/metademand.class.php:7292 inc/wizard.class.php:802
 msgid "Find a form"
 msgstr ""
 
@@ -1751,15 +1751,15 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
-#: inc/text.class.php:135
+#: inc/text.class.php:136
 msgid "User information to get"
 msgstr ""
 
-#: inc/text.class.php:156
+#: inc/text.class.php:157
 msgid "Regex to respect"
 msgstr ""
 
-#: inc/text.class.php:171 inc/textarea.class.php:139
+#: inc/text.class.php:172 inc/textarea.class.php:139
 msgid "If field empty"
 msgstr ""
 
