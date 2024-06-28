@@ -195,19 +195,33 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             echo "</td><td $onhover>";
             $searchOption = $item->getSearchOptionByField('field', $data['field']);
             if (empty($searchOption)) {
-               if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
-                  $custom = PluginMetademandsFieldParameter::_unserialize($item->fields["custom_values"]);
 
-                  foreach ($custom as $key => $val) {
-                     if ("custom" . $key == $data["field"]) {
-                        $searchOption['name'] = $val;
-                     }
+                $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+                $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
 
-                  }
+                if (isset($item->fields['type'])
+                    && (in_array($item->fields['type'], $allowed_customvalues_types)
+                        || in_array($item->fields['item'], $allowed_customvalues_items))
+                    && $item->fields['item'] != "urgency"
+                    && $item->fields['item'] != "impact") {
+                    $field_custom = new PluginMetademandsFieldCustomvalue();
+                    if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $item->getID()], "rank")) {
 
-               }
+                        if (count($customs) > 0) {
+                            foreach ($customs as $key => $val) {
+                                $rank = $val['rank'];
+                                if ("custom" . $rank  == $data["field"]) {
+                                    $searchOption['name'] = $val['name'];
+                                }
+                                if ("commentcustom" . $rank  == $data["field"]) {
+                                    $searchOption['name'] = __('Comment').' '.$val['name'];
+                                }
+                            }
+                        }
+                    }
+                }
             }
-            echo $searchOption['name'] . "</td>";
+            echo $searchOption['name'] ?? "" . "</td>";
             echo "<td $onhover>" . $data['value'] . "</td>";
             echo "</tr>";
          }
@@ -321,14 +335,26 @@ class PluginMetademandsFieldTranslation extends CommonDBChild {
             $options[$field['field']] = $field['name'];
          }
       }
-      if (isset($item->fields["custom_values"]) && !empty($item->fields["custom_values"])) {
-         $custom = PluginMetademandsFieldParameter::_unserialize($item->fields["custom_values"]);
-         if (is_array($custom)) {
-            foreach ($custom as $key => $val) {
-               $options["custom" . $key] = $val;
-            }
-         }
-      }
+
+       $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+       $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+       if (isset($item->fields['type'])
+           && (in_array($item->fields['type'], $allowed_customvalues_types)
+               || in_array($item->fields['item'], $allowed_customvalues_items))
+           && $item->fields['item'] != "urgency"
+           && $item->fields['item'] != "impact") {
+           $field_custom = new PluginMetademandsFieldCustomvalue();
+           if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $item->getID()], "rank")) {
+               if (count($customs) > 0) {
+                   foreach ($customs as $key => $val) {
+                       $rank = $val['rank'];
+                       $options["custom" . $rank] =  $val['name'];
+                       $options["commentcustom" . $rank] =  __('Comment').' '.$val['name'];
+                   }
+               }
+           }
+       }
 
       $used = [];
       if (!empty($options)) {

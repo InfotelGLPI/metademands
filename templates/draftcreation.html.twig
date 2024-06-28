@@ -23,10 +23,10 @@
                                 {% for key, value in listMetademand %}
                                     {% if (value | length > 2) %}
                                         {% for data in value %}
-                                            <option value={{ key }} data-idcat={{ data['itilcategorie'] }}>{{ data['name'] }}</option>
+                                            <option value={{ key }} data-idcat={{ data['itilcategory'] }}>{{ data['name'] }}</option>
                                         {% endfor %}
                                     {% else %}
-                                        <option value={{ key }} data-idcat={{ value['itilcategorie'] }}>{{ value['name'] }}</option>
+                                        <option value={{ key }} data-idcat={{ value['itilcategory'] }}>{{ value['name'] }}</option>
                                     {% endif %}
 
                                 {% endfor %}
@@ -37,7 +37,7 @@
                 </table>
                 <div class="row"></div>
                 <div class="card-body mx-n2 mb-4 border-top d-flex flex-row-reverse align-items-start flex-wrap">
-                    <button class="btn btn-primary me-2" id="submitSave" onclick="addDraft(event)" name="add" value="1">
+                    <button form='' class="btn btn-primary me-2" id="submitSave" onclick="addDraft(event)" name="add" value="1">
                         <i class="fas fa-plus"></i>
                         <span>{{ confirmation }}</span>
                     </button>
@@ -78,6 +78,7 @@
             type: 'POST',
             data: arrayDatas,
             success: function(response){
+                window.location.href = '{{ path }}/front/draft.form.php?id=' + response;
             },
             error: function(xhr, status, error) {
                 console.log(xhr);

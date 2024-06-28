@@ -1570,7 +1570,13 @@ class PluginMetademandsBasket extends CommonDBTM
             $content .= "</table>";
 
 //            if ($grandtotal > 0) {
-            $content .= "<br><span style='float:right'>";
+            $content .= "<br><div>";
+            $config = PluginMetademandsConfig::getInstance();
+            if ($config['use_draft']) {
+                //button create draft
+                $content .= PluginMetademandsWizard::createDraftInput(2);
+            }
+            $content .= "<span style='float:right'>";
             $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');
 
             $current_ticket = $fields["current_ticket_id"] = $fields["tickets_id"];
@@ -1578,7 +1584,7 @@ class PluginMetademandsBasket extends CommonDBTM
                 'form' => '',
                 'id' => 'submitOrder',
                 'class' => 'btn btn-success right']);
-            $content .= "</span>";
+            $content .= "</span></div>";
 
             $paramUrl = "";
             $meta_validated = false;
@@ -1639,6 +1645,7 @@ class PluginMetademandsBasket extends CommonDBTM
                         </script>";
 //            }
             }
+
         } else {
             $content .= "<table>";
             $content .= "<tr class='tab_bg_1'>";

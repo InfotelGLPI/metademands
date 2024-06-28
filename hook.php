@@ -36,67 +36,69 @@ function plugin_metademands_install() {
 
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
 
-    if (!$DB->tableExists("glpi_plugin_metademands_fields")) {
-        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.11.sql");
+    if (!$DB->tableExists("glpi_plugin_metademands_fields", false)) {
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/empty-3.3.12.sql");
         install_notifications_metademands();
         install_notifications_forms_metademands();
     }
 
-    if ($DB->tableExists("glpi_plugin_metademands_profiles")
-        && !$DB->fieldExists("glpi_plugin_metademands_profiles", "requester")) {
+    if ($DB->tableExists("glpi_plugin_metademands_profiles", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_profiles", "requester", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.0.1.sql");
     }
 
-    if (!$DB->tableExists("glpi_plugin_metademands_configs")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_configs", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.0.2.sql");
     }
 
-    if ($DB->tableExists("glpi_plugin_metademands_fields")
-        && !$DB->fieldExists("glpi_plugin_metademands_fields", "order")) {
+    if ($DB->tableExists("glpi_plugin_metademands_fields", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_fields", "order", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.0.3.sql");
     }
 
-    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "create_pdf")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "create_pdf", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.1.4.sql");
     }
 
-    if ($DB->tableExists("glpi_plugin_metademands_fields")
-        && !$DB->fieldExists("glpi_plugin_metademands_fields", "color")) {
+    if ($DB->tableExists("glpi_plugin_metademands_metademands", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_metademands", "is_active", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.3.1.sql");
     }
 
     //version 2.3.2
-    if ($DB->tableExists("glpi_plugin_metademands_fields")
-        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions")
-        && !$DB->fieldExists("glpi_plugin_metademands_fields", "parent_field_id")) {
+    if ($DB->tableExists("glpi_plugin_metademands_fields", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_fields", "parent_field_id", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.3.2.sql");
     }
 
     //version 2.4.1
-    if ($DB->tableExists("glpi_plugin_metademands_fields")
-        && !$DB->fieldExists("glpi_plugin_metademands_fields", "comment_values")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)
+    && $DB->tableExists("glpi_plugin_metademands_fields", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_fields", "comment_values", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.4.1.sql");
     }
     //version 2.5.2
-    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "childs_parent_content")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "childs_parent_content", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.5.2.sql");
     }
 
     //version 2.6.2
-    if ($DB->tableExists("glpi_plugin_metademands_fields")
-        && !$DB->fieldExists("glpi_plugin_metademands_fields", "row_display")) {
+    if ($DB->tableExists("glpi_plugin_metademands_metademands", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_metademands", "icon", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.6.2.sql");
     }
 
     //version 2.6.3
-    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "display_type")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "display_type", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.6.3.sql");
     }
 
     //version 2.7.1
-    if ($DB->tableExists("glpi_plugin_metademands_fields")
-        && !$DB->fieldExists("glpi_plugin_metademands_fields", "is_basket") &&
-        !$DB->fieldExists("glpi_plugin_metademands_metademands", "is_order")) {
+    if ($DB->tableExists("glpi_plugin_metademands_fields", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_fields", "is_basket", false) &&
+        !$DB->fieldExists("glpi_plugin_metademands_metademands", "is_order", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.1.sql");
 
         include(PLUGIN_METADEMANDS_DIR . "/install/update270_271.php");
@@ -116,10 +118,10 @@ function plugin_metademands_install() {
     }
 
     //version 2.7.2
-    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "create_one_ticket")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "create_one_ticket", false)) {
 
         $sql    = "SHOW COLUMNS FROM `glpi_plugin_metademands_metademands`";
-        $result = $DB->query($sql);
+        $result = $DB->doQuery($sql);
         while ($data = $DB->fetchArray($result)) {
             if ($data['Field'] == 'itilcategories_id' && $data['Type'] == 'int(1)') {
                 include(PLUGIN_METADEMANDS_DIR . "/install/update270_271.php");
@@ -131,8 +133,8 @@ function plugin_metademands_install() {
     }
 
     //version 2.7.4
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_block")
-        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden_block", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.4.sql");
 
         $field  = new PluginMetademandsField();
@@ -189,11 +191,11 @@ function plugin_metademands_install() {
     }
 
     //version 2.7.5
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "display_type")
-        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "display_type", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.5.sql");
         $sql    = "SHOW COLUMNS FROM `glpi_plugin_metademands_fields`";
-        $result = $DB->query($sql);
+        $result = $DB->doQuery($sql);
         while ($data = $DB->fetchArray($result)) {
             if ($data['Field'] == 'fields_link') {
                 include(PLUGIN_METADEMANDS_DIR . "/install/update274_275.php");
@@ -206,66 +208,68 @@ function plugin_metademands_install() {
 
     PluginMetademandsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
     PluginMetademandsProfile::initProfile();
-    $DB->query("DROP TABLE IF EXISTS `glpi_plugin_metademands_profiles`;");
+    $DB->doQuery("DROP TABLE IF EXISTS `glpi_plugin_metademands_profiles`;");
 
     //version 2.7.5 ++
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "link_to_user")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldparameters", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_fields", "link_to_user", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.5b.sql");
     }
 
     //version 2.7.6
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "informations_to_display")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "informations_to_display", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.6.sql");
     }
     //version 2.7.8
-    if (!$DB->tableExists("glpi_plugin_metademands_pluginfields")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_pluginfields", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.8.sql");
     }
     //version 2.7.9
-    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "useBlock")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "useBlock", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-2.7.9.sql");
     }
     //version 2.7.10 - released after 3.0.0
     //version 3.0.0
-    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "formatastable")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "formatastable", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.0.0.sql");
-        if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks")) {
+        if (!$DB->fieldExists("glpi_plugin_metademands_fields", "childs_blocks", false)) {
             $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `childs_blocks` VARCHAR (255) NOT NULL DEFAULT '[]';";
-            $DB->query($query);
+            $DB->doQuery($query);
             install_notifications_metademands();
         }
     }
 
     //version 3.1.0
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "checkbox_value")
-        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "checkbox_value", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)) {
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `checkbox_value` VARCHAR (255) NOT NULL DEFAULT '[]';";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "checkbox_id")
-        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "checkbox_id", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)) {
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `checkbox_id` VARCHAR (255) NOT NULL DEFAULT '[]';";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
-    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "can_update")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "can_update", false)) {
         $query = "ALTER TABLE `glpi_plugin_metademands_metademands` ADD `can_update` tinyint NOT NULL DEFAULT '0';;";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
-    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "can_clone")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "can_clone", false)) {
         $query = "ALTER TABLE `glpi_plugin_metademands_metademands` ADD `can_clone` tinyint NOT NULL DEFAULT '0';;";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
-    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "show_form_changes")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_configs", "show_form_changes", false)) {
         $query = "ALTER TABLE `glpi_plugin_metademands_configs` ADD `show_form_changes` tinyint NOT NULL DEFAULT '0';";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
 
-    if (!$DB->fieldExists("glpi_plugin_metademands_forms", "resources_id")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_forms", "resources_id", false)) {
         $query = "ALTER TABLE `glpi_plugin_metademands_forms` ADD `resources_id` int unsigned NOT NULL default '0';";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
 
-    if (!$DB->tableExists("glpi_plugin_metademands_interticketfollowups")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_interticketfollowups", false)) {
         $query = "CREATE TABLE `glpi_plugin_metademands_interticketfollowups`
          (
              `id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -282,112 +286,115 @@ function plugin_metademands_install() {
              `timeline_position` tinyint NOT NULL DEFAULT '0',
              PRIMARY KEY (`id`)
          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
 
     //version 3.2.0
-    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "force_create_tasks")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "force_create_tasks", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.0.sql");
     }
     //version 3.2.1
-    if ($DB->tableExists("glpi_plugin_metademands_tickets_fields")
-        && !$DB->fieldExists("glpi_plugin_metademands_tickets_fields", "value2")) {
+    if ($DB->tableExists("glpi_plugin_metademands_tickets_fields", false)
+        && !$DB->fieldExists("glpi_plugin_metademands_tickets_fields", "value2", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.1.sql");
     }
     //version 3.2.8
-    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "step_by_step_mode")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_metademands", "step_by_step_mode", false)) {
       $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.8.sql");
     }
     //version 3.2.18
-    if (!$DB->fieldExists("glpi_plugin_metademands_tickets_fields", "value2")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_tickets_fields", "value2", false)) {
         $query = "ALTER TABLE `glpi_plugin_metademands_tickets_fields` ADD `value2` text COLLATE utf8mb4_unicode_ci default NULL;";
-        $DB->query($query);
+        $DB->doQuery($query);
     }
     //version 3.2.19
-    if (!$DB->fieldExists("glpi_plugin_metademands_drafts_values", "value2")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_drafts_values", "value2", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.2.19.sql");
     }
     //version 3.3.0
-    if (!$DB->tableExists("glpi_plugin_metademands_fieldoptions")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.0.sql");
 
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` ADD `use_future_date` tinyint DEFAULT 0";
-        $DB->query($query);
+        $DB->doQuery($query);
 
         include(PLUGIN_METADEMANDS_DIR . "/install/migrateFieldsOptions.php");
         migrateFieldsOptions();
 
         $query = "UPDATE `glpi_plugin_metademands_fieldoptions` SET `childs_blocks` = '[]' WHERE `childs_blocks` = '\"\"'";
-        $DB->query($query);
+        $DB->doQuery($query);
 
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `check_value`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `plugin_metademands_tasks_id`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `fields_link`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `hidden_link`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `hidden_block`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `users_id_validate`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `childs_blocks`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `parent_field_id`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `checkbox_value`";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fields` DROP `checkbox_id`";
-        $DB->query($query);
+        $DB->doQuery($query);
 
         install_notifications_forms_metademands();
 
-        if ($DB->fieldExists("glpi_plugin_metademands_tickets_fields", "color")) {
+        if ($DB->fieldExists("glpi_plugin_metademands_tickets_fields", "color", false)) {
             $query = "ALTER TABLE `glpi_plugin_metademands_tickets_fields` DROP `color`";
-            $DB->query($query);
+            $DB->doQuery($query);
         }
-        if (!$DB->fieldExists("glpi_plugin_metademands_drafts_values", "value2")) {
+        if (!$DB->fieldExists("glpi_plugin_metademands_drafts_values", "value2", false)) {
             $query = "ALTER TABLE `glpi_plugin_metademands_drafts_values` ADD `value2` text NOT NULL;";
-            $DB->query($query);
+            $DB->doQuery($query);
         }
     }
 
     //version 3.3.1
-    if (!$DB->tableExists("glpi_plugin_metademands_groupconfigs")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_groupconfigs", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.1.sql");
     }
 
     //version 3.3.2
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "readonly")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "readonly", false)
+        && !$DB->tableExists("glpi_plugin_metademands_fieldoptions", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.2.sql");
     }
 
     //version 3.3.3
-    if (!$DB->tableExists("glpi_plugin_metademands_conditions")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_conditions", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.3.sql");
     }
 
     //version 3.3.4
-    if (!$DB->fieldExists("glpi_plugin_metademands_fields", "hidden")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_tickettasks", "entities_id", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.4.sql");
     }
 
     //version 3.3.7
-    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "block_parent_ticket_resolution")) {
+    if (!$DB->fieldExists("glpi_plugin_metademands_tasks", "block_parent_ticket_resolution", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.7.sql");
     }
 
     //version 3.3.8
-    if (!$DB->tableExists("glpi_plugin_metademands_basketobjecttypes")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_basketobjecttypes", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.8.sql");
     }
 
-    //version 3.3.9
-    $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.9.sql");
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldcustomvalues", false)) {
+        //version 3.3.9
+        $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.9.sql");
+    }
 
     //version 3.3.11
-    if (!$DB->tableExists("glpi_plugin_metademands_fieldparameters")) {
+    if (!$DB->tableExists("glpi_plugin_metademands_fieldparameters", false)) {
         $DB->runFile(PLUGIN_METADEMANDS_DIR . "/install/sql/update-3.3.11.sql");
         ini_set("memory_limit", "-1");
         ini_set("max_execution_time", 0);
@@ -419,7 +426,7 @@ function plugin_metademands_install() {
                         'comment_values' => $field['comment_values'],
                         'default_values' => $field['default_values'],
                         'max_upload' => $field['max_upload'],
-                        'regex' => $field['regex'],
+                        'regex' => Toolbox::addslashes_deep($field['regex']),
                         'use_future_date' => $field['use_future_date'],
                         'use_date_now' => $field['use_date_now'],
                         'additional_number_day' => $field['additional_number_day'],
@@ -479,6 +486,7 @@ function plugin_metademands_install() {
                                 $inputs[$k]['comment'] = Toolbox::addslashes_deep($comment_values[$k]);
                             }
                             $inputs[$k]['old_check_value'] = $k;
+                            $inputs[$k]['old_translation_name'] = "custom".$k;
                             $inputs[$k]['rank'] = $rank;
                             $rank++;
                         }
@@ -504,6 +512,29 @@ function plugin_metademands_install() {
                         if (count($fieldoptions) > 0) {
                             foreach ($fieldoptions as $ko => $fieldoption) {
                                 $metademand_options->update(["id" => $fieldoption['id'], "check_value" => $newid]);
+                            }
+                        }
+
+                        $metademand_conditions = new PluginMetademandsCondition();
+                        $fieldconditions = $metademand_conditions->find(
+                            ["plugin_metademands_fields_id" => $field['id'], "check_value" => $input['old_check_value']]
+                        );
+                        if (count($fieldconditions) > 0) {
+                            foreach ($fieldconditions as $ko => $fieldcondition) {
+                                $metademand_conditions->update(["id" => $fieldcondition['id'], "check_value" => $newid]);
+                            }
+                        }
+
+                        $metademand_translations = new PluginMetademandsFieldTranslation();
+                        $fieldtranslations = $metademand_translations->find(
+                            ["items_id" => $field['id'], "field" => $input['old_translation_name']]
+                        );
+                        if (count($fieldtranslations) > 0) {
+                            foreach ($fieldtranslations as $k => $fieldtranslation) {
+                                $new_value = "custom".$input['rank'];
+                                $metademand_translations->update(
+                                    ["id" => $fieldtranslation['id'], "field" => $new_value]
+                                );
                             }
                         }
 
@@ -595,74 +626,66 @@ function plugin_metademands_install() {
 
 
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `custom_values`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `default_values`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `comment_values`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `hide_title`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `is_mandatory`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `max_upload`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `regex`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `color`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `row_display`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `is_basket`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `display_type`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `used_by_ticket`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `used_by_child`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `link_to_user`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `default_use_id_requester`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `default_use_id_requester_supervisor`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `use_future_date`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `use_date_now`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `additional_number_day`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `informations_to_display`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `use_richtext`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `icon`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `readonly`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fields DROP `hidden`;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fieldparameters` CHANGE `custom_values` `custom` TEXT COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE `glpi_plugin_metademands_fieldparameters` CHANGE `default_values` `default` TEXT COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;";
-        $DB->query($query);
+        $DB->doQuery($query);
         $query = "ALTER TABLE glpi_plugin_metademands_fieldparameters DROP `comment_values`;";
-        $DB->query($query);
+        $DB->doQuery($query);
 
         $query = "DELETE FROM glpi_plugin_metademands_drafts_values WHERE plugin_metademands_drafts_id = 0;";
-        $DB->query($query);
+        $DB->doQuery($query);
 
         $query = "DELETE FROM glpi_plugin_metademands_forms_values WHERE plugin_metademands_forms_id = 0;";
-        $DB->query($query);
+        $DB->doQuery($query);
 
-        $DB->query("INSERT INTO glpi_displaypreferences
-                           VALUES (NULL,'PluginMetademandsDraft','1','0','0');");
-        $DB->query("INSERT INTO glpi_displaypreferences
-                           VALUES (NULL,'PluginMetademandsDraft','2','1','0');");
-        $DB->query("INSERT INTO glpi_displaypreferences
-                           VALUES (NULL,'PluginMetademandsDraft','3','2','0');");
-        $DB->query("INSERT INTO glpi_displaypreferences
-                           VALUES (NULL,'PluginMetademandsDraft','99','3','0');");
         foreach ($DB->request("SELECT `profiles_id`
                              FROM `glpi_profilerights` 
                              WHERE `name` LIKE '%plugin_metademands%' 
@@ -672,6 +695,14 @@ function plugin_metademands_install() {
             PluginMetademandsProfile::addDefaultProfileInfos($prof['profiles_id'], $rights);
         }
     }
+    $DB->doQuery("INSERT INTO glpi_displaypreferences
+                           VALUES (NULL,'PluginMetademandsDraft','1','0','0');");
+    $DB->doQuery("INSERT INTO glpi_displaypreferences
+                           VALUES (NULL,'PluginMetademandsDraft','2','1','0');");
+    $DB->doQuery("INSERT INTO glpi_displaypreferences
+                           VALUES (NULL,'PluginMetademandsDraft','3','2','0');");
+    $DB->doQuery("INSERT INTO glpi_displaypreferences
+                           VALUES (NULL,'PluginMetademandsDraft','99','3','0');");
 
     $rep_files_metademands = GLPI_PLUGIN_DOC_DIR . "/metademands";
     if (!is_dir($rep_files_metademands)) {
@@ -801,7 +832,7 @@ function plugin_metademands_uninstall() {
         "glpi_plugin_metademands_fieldparameters",
         "glpi_plugin_metademands_fieldcustomvalues"];
     foreach ($tables as $table) {
-        $DB->query("DROP TABLE IF EXISTS `$table`;");
+        $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
     }
 
     include_once(PLUGIN_METADEMANDS_DIR . "/inc/profile.class.php");
@@ -1295,7 +1326,7 @@ function plugin_metademands_giveItem($type, $field, $data, $num, $linkfield = ""
                     $dbu->getEntitiesRestrictRequest('AND', 'glpi_tickets');
 
 
-                $total_running_parents_meta = $DB->query($get_running_parents_tickets_meta);
+                $total_running_parents_meta = $DB->doQuery($get_running_parents_tickets_meta);
 
                 $total_running = 0;
                 while ($row = $DB->fetchArray($total_running_parents_meta)) {
@@ -1344,10 +1375,10 @@ function install_notifications_metademands() {
     // Notification
     // Request
     $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('New inter ticket Followup','PluginMetademandsInterticketfollowup', NOW());";
-    $DB->query($query_id) or die($DB->error());
+    $DB->doQuery($query_id) or die($DB->error());
 
     $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='PluginMetademandsInterticketfollowup' AND `name` = 'New inter ticket Followup'";
-    $result = $DB->query($query_id) or die($DB->error());
+    $result = $DB->doQuery($query_id) or die($DB->error());
     $templates_id = $DB->result($result, 0, 'id');
 
     $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
@@ -1379,21 +1410,21 @@ Documents :##ENDFOREACHdocuments####FOREACHdocuments##
 ##document.filename####ENDFOREACHdocuments##
 Ticket ###ticket.id##
 ','');";
-    $DB->query($query);
+    $DB->doQuery($query);
 
     $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`)
               VALUES ('New inter ticket Followup', 0, 'PluginMetademandsInterticketfollowup', 'add_interticketfollowup', 1);";
-    $DB->query($query);
+    $DB->doQuery($query);
 
     //retrieve notification id
     $query_id = "SELECT `id` FROM `glpi_notifications`
                WHERE `name` = 'New inter ticket Followup' AND `itemtype` = 'PluginMetademandsInterticketfollowup' AND `event` = 'add_interticketfollowup'";
-    $result = $DB->query($query_id) or die ($DB->error());
+    $result = $DB->doQuery($query_id) or die ($DB->error());
     $notification = $DB->result($result, 0, 'id');
 
     $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
-    $DB->query($query);
+    $DB->doQuery($query);
 
 
     $migration->executeMigration();
@@ -1411,10 +1442,10 @@ function install_notifications_forms_metademands() {
     // Notification
     // Request
     $query_id = "INSERT INTO `glpi_notificationtemplates`(`name`, `itemtype`, `date_mod`) VALUES ('New form completed','PluginMetademandsStepform', NOW());";
-    $DB->query($query_id) or die($DB->error());
+    $DB->doQuery($query_id) or die($DB->error());
 
     $query_id = "SELECT `id` FROM `glpi_notificationtemplates` WHERE `itemtype`='PluginMetademandsStepform' AND `name` = 'New form completed'";
-    $result = $DB->query($query_id) or die($DB->error());
+    $result = $DB->doQuery($query_id) or die($DB->error());
     $templates_id = $DB->result($result, 0, 'id');
 
     $query = "INSERT INTO `glpi_notificationtemplatetranslations` (`notificationtemplates_id`, `subject`, `content_text`, `content_html`)
@@ -1430,21 +1461,21 @@ VALUES('" . $templates_id . "',
 ##lang.pluginmetademandsstepform.user_editor## : ##pluginmetademandsstepform.user_editor##
 ##lang.pluginmetademandsstepform.nextgroup## : ##pluginmetademandsstepform.nextgroup##
 ##lang.pluginmetademandsstepform.users_id_dest## : ##pluginmetademandsstepform.users_id_dest##');";
-    $DB->query($query);
+    $DB->doQuery($query);
 
     $query = "INSERT INTO `glpi_notifications` (`name`, `entities_id`, `itemtype`, `event`, `is_recursive`)
               VALUES ('New form completed', 0, 'PluginMetademandsStepform', 'new_step_form', 1);";
-    $DB->query($query);
+    $DB->doQuery($query);
 
     //retrieve notification id
     $query_id = "SELECT `id` FROM `glpi_notifications`
                WHERE `name` = 'New form completed' AND `itemtype` = 'PluginMetademandsStepform' AND `event` = 'new_step_form'";
-    $result = $DB->query($query_id) or die ($DB->error());
+    $result = $DB->doQuery($query_id) or die ($DB->error());
     $notification = $DB->result($result, 0, 'id');
 
     $query = "INSERT INTO `glpi_notifications_notificationtemplates` (`notifications_id`, `mode`, `notificationtemplates_id`) 
                VALUES (" . $notification . ", 'mailing', " . $templates_id . ");";
-    $DB->query($query);
+    $DB->doQuery($query);
 
 
     $migration->executeMigration();

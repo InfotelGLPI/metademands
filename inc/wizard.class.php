@@ -1332,7 +1332,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 if ($preview) {
                     echo "<div class=\"row preview-md preview-md-$block\" data-title='" . $block . "'>";
                 } else {
-                    echo "<div class=\"row\" style='$style'>";
+                    echo "<div class=\"row\" style='$style;padding: 0.5rem 0.5rem;'>";
                 }
 
                 foreach ($line as $key => $data) {
@@ -1489,7 +1489,7 @@ class PluginMetademandsWizard extends CommonDBTM
                             if (isset($meta->fields['background_color']) && !empty($meta->fields['background_color'])) {
                                 $background_color = $meta->fields['background_color'];
                             }
-                            echo "<div class=\"row class1\" style='background-color: " . $background_color . ";padding: 0.5rem 0.5rem;'>";
+                            echo "<div class=\"row class1\" style='background-color: " . $background_color . ";$style_left_right'>";
                         }
 
                         $count = 0;
@@ -1705,6 +1705,13 @@ class PluginMetademandsWizard extends CommonDBTM
                     echo "<div class='center'>";
 
                     echo "<div style='overflow:auto;'>";
+
+                    $config = PluginMetademandsConfig::getInstance();
+                    if ($use_as_step == 0 && $config['use_draft']) {
+                        //button create draft
+                        echo PluginMetademandsWizard::createDraftInput(1);
+                    }
+
                     if ($use_as_step == 1) {
                         echo "<div id='nextMsg' class='alert alert-info center'>";
                         echo "</div>";
@@ -1756,7 +1763,6 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
 
                     $nexttitle = __('Next', 'metademands') . "&nbsp;<i class=\"ti ti-chevron-right\"></i>";
-
 
                     $title = _sx('button', 'Save & Post', 'metademands');
 
@@ -2044,7 +2050,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                type: 'POST',
                                data: arrayDatas,
                                success: function(response){
-                               console.log(response);
                                    window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id='+draft_id
                                 },
                                error: function(xhr, status, error) {
@@ -2104,11 +2109,18 @@ class PluginMetademandsWizard extends CommonDBTM
                     prevBtn.addEventListener('click', () => nextPrev(-1));
                     nextBtn.addEventListener('click', () => nextPrev(1));
                     
+                    nextBtn.addEventListener('click', function () {
+                       if(document.querySelector('#button_save_draft')){
+                           document.querySelector('#button_save_draft').remove();
+                       } 
+                    });
+                    
                     window.metademands = {};
                     metademands.nexttitle = '$nexttitle';
                     metademands.submittitle = '$submittitle';
                     metademands.submitmsg = '$submitmsg'; 
                     metademands.use_as_step = '$use_as_step';
+                    metademands.submitsteptitle = '$submitsteptitle';
                     metademands.nextsteptitle = '$nextsteptitle';
                     metademands.seesummary = '$see_summary';
                     metademands.msg = '$alert';
@@ -2154,7 +2166,9 @@ class PluginMetademandsWizard extends CommonDBTM
                      if (document.getElementById('nextBtn').innerHTML == nexttitle) {
                         $('#nextBtn').on('click', checkConditions);
                      }
+                     $('#wizard_form input[type=\"checkbox\"]').on('change', checkConditions);
                      $('#wizard_form input').on('change, keyup', checkConditions);
+                     
                      $('#wizard_form select').on('change', checkConditions);
                      $('#wizard_form textarea').on('change, keyup', checkConditions);
                      if(use_richtext){
@@ -2666,10 +2680,8 @@ class PluginMetademandsWizard extends CommonDBTM
                                 if (typeof tinymce !== 'undefined' && tinymce.get(textarea.id)) {
                                     var contenu = tinymce.get(textarea.id).getContent();
                                     // Vérifier si le contenu est vide
-                                    if (contenu.trim() !== '') {
+                                    if (contenu.trim().length) {
                                        $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                       $('[name=\"' + fieldname + '\"]').removeAttr('required');
-                                       $('[name=\"' + fieldname + '\"]').css('border','solid 1px red');
                                     } else {
                                         $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                         $('[name=\"' + fieldname + '\"]').attr('required', 'required');
@@ -2683,11 +2695,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                     }
                                 } else {
                                     var contenu = textarea.value.trim();
-                            
                                     // Vérifier si le contenu est vide
-                                    if (contenu !== '') {
+                                    if (contenu.length) {
                                        $('[name=\"' + fieldname + '\"]').removeClass('invalid');
-                                       $('[name=\"' + fieldname + '\"]').removeAttr('required');
                                     } else {
                                        $('[name=\"' + fieldname + '\"]').addClass('invalid');
                                        $('[name=\"' + fieldname + '\"]').attr('required', 'required');
@@ -3546,4 +3556,168 @@ class PluginMetademandsWizard extends CommonDBTM
         return $output;
 
     }
+
+    public static function createDraftInput($type)
+    {
+
+        echo PluginMetademandsWizard::createDraftModalWindow("my_new_draft");
+
+
+        $input_name = "<i class='fa-1x ".PluginMetademandsDraft::getIcon()."'></i>&nbsp;";
+        $input_name .= _sx('button', 'Save as draft', 'metademands');
+
+        //correct css with condition
+        if($type == 1){
+            $style = "display:inline-block;margin: 10px";
+        }else{
+            $style = "display:inline-block;float:left;margin-right: 10px";
+        }
+
+        $content = "<div style='{$style}'>
+                        <button form='' class='submit btn btn-primary' id='button_save_draft' type='submit' onclick='load_draft_modal()'>".$input_name."
+                        </button>
+                        <script>
+                            function load_draft_modal(){
+                               document.querySelector('#my_new_draft').style = 'display:block;background-color: rgba(0, 0, 0, 0.1);';
+                               document.querySelector('#my_new_draft').classList.remove('fade');
+                            }
+                        </script>
+                      </div>";
+
+        return $content;
+    }
+
+    public static function createDraftModalWindow($domid, $options = [])
+    {
+
+        $param = [
+            'width'         => 1050,
+            'height'        => 500,
+            'modal'         => true,
+            'title'         => '',
+            'display'       => true,
+            'dialog_class'  => 'modal-lg',
+            'autoopen'      => false,
+            'reloadonclose' => false
+        ];
+
+        if (count($options)) {
+            foreach ($options as $key => $val) {
+                if (isset($param[$key])) {
+                    $param[$key] = $val;
+                }
+            }
+        }
+
+        $rand = mt_rand();
+
+        $draft_name = __('Draft name', 'metademands');
+
+        $input_name = Html::input('draft_name', [
+            'value' => '',
+            'maxlength' => 250,
+            'size' => 40,
+            'class' => 'draft_name',
+            'placeholder' => __('Draft name', 'metademands')
+        ]);
+
+        $titl_submit_button = "<i class='fas fa-1x fa-cloud-upload-alt pointer'></i>&nbsp;";
+        $titl_submit_button .= _sx('button', 'Save as draft', 'metademands');
+        $submit_button = Html::submit($titl_submit_button, [
+            'name' => 'save_draft',
+            'form' => '',
+            'id' => 'submitSave',
+            'class' => 'btn btn-success btn-sm',
+            'onclick' => 'saveMyDraft()',
+        ]);
+
+        $html = <<<HTML
+         <div id="$domid" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog {$param['dialog_class']}">
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                     <h3>{$draft_name}</h3>
+                  </div>
+                  <div id="divcontainer$domid" class="modal-body">
+                    <div >
+                     <div style="float: left">{$input_name}</div>
+                     <div style="float: right">{$submit_button}</div>
+                    </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <script>
+            function saveMyDraft() {
+                let draft_name = document.querySelector('.modal-dialog .modal-body .draft_name').value;
+                udpateDraft('', draft_name)
+            } 
+        </script>
+HTML;
+
+        $reloadonclose = $param['reloadonclose'] ? "true" : "false";
+        $autoopen      = $param['autoopen'] ? "true" : "false";
+        $js = <<<JAVASCRIPT
+      $(function() {
+         myModalEl{$rand} = document.getElementById('{$domid}');
+         myModal{$rand}   = new bootstrap.Modal(myModalEl{$rand});
+
+         // move modal to body
+         $(myModalEl{$rand}).appendTo($("body"));
+         
+       
+         myModalEl{$rand}.addEventListener('hide.bs.modal', function () {
+            if ({$reloadonclose}) {
+               window.location.reload()
+            }
+         });
+         
+         myModalEl{$rand}.querySelector('.btn-close').addEventListener('click', function () {
+            document.querySelector('#my_new_draft').style = '';
+            document.querySelector('#my_new_draft').classList.add('fade');
+         });
+
+         if ({$autoopen}) {
+            myModal{$rand}.show();
+         }
+
+         document.getElementById('divcontainer$domid').onload = function() {
+            if ({$param['height']} !== 'undefined') {
+               var h =  {$param['height']};
+            } else {
+               var h =  $('#divcontainer{$domid}').contents().height();
+            }
+            if ({$param['width']} !== 'undefined') {
+               var w =  {$param['width']};
+            } else {
+               var w =  $('#divcontainer{$domid}').contents().width();
+            }
+
+            $('#iframe{$domid}')
+               .height(h);
+
+            if (w >= 700) {
+               $('#{$domid} .modal-dialog').addClass('modal-xl');
+            } else if (w >= 500) {
+               $('#{$domid} .modal-dialog').addClass('modal-lg');
+            } else if (w <= 300) {
+               $('#{$domid} .modal-dialog').addClass('modal-sm');
+            }
+
+            // reajust height to content
+            myModal{$rand}.handleUpdate()
+         };
+      });
+JAVASCRIPT;
+
+        $out = "<script type='text/javascript'>$js</script>" . trim($html);
+
+        if ($param['display']) {
+            echo $out;
+        } else {
+            return $out;
+        }
+    }
+
 }

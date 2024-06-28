@@ -61,21 +61,30 @@ class PluginMetademandsNumber extends CommonDBTM
         if (is_array($value)) {
             $value = 0;
         }
-
-        $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom']);
-        $opt                   = ['value'         => $value,
-            'min'           => ((isset($custom_values[0]) && $custom_values[0] != "") ? $custom_values[0] : 0),
-            'max'           => ((isset($custom_values[1]) && $custom_values[1] != "") ? $custom_values[1] : 999999),
-            'step'          => ((isset($custom_values[2]) && $custom_values[2] != "") ? $custom_values[2] : 1),
-            'display'       => false,
+        $opt = [
+            'value' => $value,
+            'display' => false,
         ];
-        $minimal_mandatory = ((isset($custom_values[3]) && $custom_values[3] != "") ? $custom_values[3] : 0);
-        if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
-            $opt['specific_tags'] = ['required' => 'required',
-                'isnumber' => 'isnumber',
-                'minimal_mandatory' => $minimal_mandatory
+
+        if (isset($data['custom_values'])) {
+            $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+            $opt = [
+                'value' => $value,
+                'min' => ((isset($custom_values[0]) && $custom_values[0] != "") ? $custom_values[0] : 0),
+                'max' => ((isset($custom_values[1]) && $custom_values[1] != "") ? $custom_values[1] : 999999),
+                'step' => ((isset($custom_values[2]) && $custom_values[2] != "") ? $custom_values[2] : 1),
+                'display' => false,
             ];
+            $minimal_mandatory = ((isset($custom_values[3]) && $custom_values[3] != "") ? $custom_values[3] : 0);
+            if (isset($data["is_mandatory"]) && $data['is_mandatory'] == 1) {
+                $opt['specific_tags'] = [
+                    'required' => 'required',
+                    'isnumber' => 'isnumber',
+                    'minimal_mandatory' => $minimal_mandatory
+                ];
+            }
         }
+
         $field = Dropdown::showNumber($namefield . "[" . $data['id'] . "]", $opt);
 
         echo $field;

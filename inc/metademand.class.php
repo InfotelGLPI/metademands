@@ -525,7 +525,7 @@ class PluginMetademandsMetademand extends CommonDBTM
 
         $confStep = new PluginMetademandsConfigstep();
 
-        $confStep->add(['plugin_metademands_metademands_id' => $this->fields['id']]);
+        $confStep->add(['plugin_metademands_metademands_id' => $this->fields['id'], 'step_by_step_interface' => PluginMetademandsConfigstep::BOTH_INTERFACE]);
 
         if (isset($this->input["metademands_oldID"])) {
 
@@ -603,6 +603,12 @@ class PluginMetademandsMetademand extends CommonDBTM
                     $fields->update(['is_basket' => 1, 'id' => $field['id']]);
                 }
             }
+        }
+        $confStep = new PluginMetademandsConfigstep();
+
+        if (!$confStep->getFromDBByCrit(['plugin_metademands_metademands_id' => $this->fields['id']])) {
+            $confStep->add(['plugin_metademands_metademands_id' => $this->fields['id'],
+                'step_by_step_interface' => PluginMetademandsConfigstep::BOTH_INTERFACE]);
         }
         PluginMetademandsTicketField::updateMandatoryTicketFields($this->input);
     }
@@ -912,8 +918,11 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     private static function getObjectTypeName($value)
     {
-        $item = new $value();
-        return $item->getTypeName(1);
+        if (class_exists($value)) {
+            $item = new $value();
+            return $item->getTypeName(1);
+        }
+        return "";
     }
 
     /**
@@ -1698,17 +1707,17 @@ JAVASCRIPT
                         foreach ($data['itilcategories_id'] as $datum) {
                             $meta_data[$data['id']][] = array(
                                 'name' => $name . ' (' . $data['entities_name'] . ')'. ' - '.$itil_cat[$datum]['name'],
-                                'itilcategorie' => $itil_cat[$datum]['id']
+                                'itilcategory' => $itil_cat[$datum]['id']
                             );
                         }
 
                     }else{
                         $meta_data[$data['id']]['name'] = $name . ' (' . $data['entities_name'] . ')';
                         if(isset($data['itilcategories_id'][0])){
-                            $meta_data[$data['id']]['itilcategorie'] = $data['itilcategories_id'][0];
+                            $meta_data[$data['id']]['itilcategory'] = $data['itilcategories_id'][0];
 
                         }else{
-                            $meta_data[$data['id']]['itilcategorie'] = 0;
+                            $meta_data[$data['id']]['itilcategory'] = 0;
 
                         }
                     }
@@ -5560,6 +5569,7 @@ JAVASCRIPT
 
                 if (count($metademands_data)) {
                     $associated_fields = [];
+                    $associated_oldfields = [];
                     $associated_tasks = [];
                     foreach ($metademands_data as $form_step => $data) {
                         foreach ($data as $form_metademands_id => $line) {
@@ -5569,19 +5579,28 @@ JAVASCRIPT
                                     foreach ($line['form'] as $values) {
                                         $id = $values['id'];
                                         unset($values['id']);
-                                        $values['plugin_metademands_metademands_id'] = $new_metademands_id;
+                                        $input['type'] = $values['type'];
+                                        $input['item'] = $values['item'];
+                                        $input['rank'] = $values['rank'];
+                                        $input['order'] = $values['order'];
+                                        $input['entities_id'] = $values['entities_id'];
+                                        $input['is_recursive'] = $values['is_recursive'];
+                                        $input['plugin_metademands_metademands_id'] = $new_metademands_id;
                                         if (!empty($values['name'])) {
-                                            $values['name'] = addslashes($values['name']);
+                                            $input['name'] = addslashes($values['name']);
                                         }
                                         if (!empty($values['label2'])) {
-                                            $values['label2'] = addslashes($values['label2']);
+                                            $input['label2'] = addslashes($values['label2']);
                                         }
                                         if (!empty($values['comment'])) {
-                                            $values['comment'] = addslashes($values['comment']);
+                                            $input['comment'] = addslashes($values['comment']);
                                         }
-                                        $newID = $fields->add($values);
-                                        $associated_fields[$id] = $newID;
+
+                                        $newID = $fields->add($input);
+                                        $associated_oldfields[$id] = $newID;
+
                                         $associated_fields[$newID] = $id;
+
                                         $translation = new PluginMetademandsFieldTranslation();
                                         $translations = $translation->find(['itemtype' => "PluginMetademandsField", "items_id" => $id]);
                                         foreach ($translations as $tr) {
@@ -5647,7 +5666,10 @@ JAVASCRIPT
                     }
                 }
                 $associated_fields[0] = 0;
+                $associated_oldfields[0] = 0;
                 $associated_tasks[0] = 0;
+
+                $mapTableCheckValue = [];
                 // duplicate metademand task
                 $tasks_data = $tasks->find(['plugin_metademands_metademands_id' => $metademands_id,
                     'type' => PluginMetademandsTask::METADEMAND_TYPE]);
@@ -5672,13 +5694,10 @@ JAVASCRIPT
                 foreach ($newFields as $newField) {
 
                     $old_field_id = $associated_fields[$newField["id"]];
-                    $oldfielddata = new PluginMetademandsField();
-                    $oldfielddata->getFromDB($old_field_id);
                     $oldParams = $fieldparameters->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldParams as $oldParam) {
-                        $input['custom_values'] = $oldParam['custom_values'];
-                        $input['default_values'] = $oldParam['default_values'];
-                        $input['comment_values'] = $oldParam['comment_values'];
+                        $input['custom'] = $oldParam['custom'];
+                        $input['default'] = $oldParam['default'];
                         $input['hide_title'] = $oldParam['hide_title'];
                         $input['is_mandatory'] = $oldParam['is_mandatory'];
                         $input['max_upload'] = $oldParam['max_upload'];
@@ -5701,35 +5720,43 @@ JAVASCRIPT
                         $input['readonly'] = $oldParam['readonly'];
                         $input['hidden'] = $oldParam['hidden'];
                         $input['plugin_metademands_fields_id'] = $newField['id'];
-                        $input['type'] = $oldfielddata->fields['type'];
-                        $input['item'] = $oldfielddata->fields['item'];
                         $fieldparameters->add($input);
+                    }
+
+                    $old_field_id = $associated_fields[$newField["id"]];
+                    $oldCustoms = $fieldcustoms->find(['plugin_metademands_fields_id' => $old_field_id]);
+                    foreach ($oldCustoms as $oldCustom) {
+                        $inputc['name'] = Toolbox::addslashes_deep($oldCustom['name']);
+                        $inputc['is_default'] = $oldCustom['is_default'];
+                        $inputc['comment'] = Toolbox::addslashes_deep($oldCustom['comment']);
+                        $inputc['rank'] = $oldCustom['rank'];
+                        $inputc['plugin_metademands_fields_id'] = $newField['id'];
+
+                        $newcustomfield = $fieldcustoms->add($inputc);
+                        $mapTableCheckValue[$oldCustom["id"]] = $newcustomfield;
                     }
 
                     $old_field_id = $associated_fields[$newField["id"]];
                     $oldOptions = $fieldoptions->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldOptions as $oldOption) {
-                        $input['plugin_metademands_tasks_id'] = $associated_tasks[$oldOption['plugin_metademands_tasks_id']];
-                        $input['check_value'] = $oldOption['check_value'];
-                        $input['fields_link'] = $associated_fields[$oldOption['fields_link']];
-                        $input['hidden_link'] = $associated_fields[$oldOption['hidden_link']];
-                        $input['hidden_block'] = $oldOption['hidden_block'];
-                        $input['users_id_validate'] = $oldOption['users_id_validate'];
-                        $input['childs_blocks'] = $oldOption['childs_blocks'];
-                        $input['checkbox_value'] = $oldOption['checkbox_value'];
-                        $input['checkbox_id'] = $oldOption['checkbox_id'];
-                        $input['plugin_metademands_fields_id'] = $newField['id'];
-                        $fieldoptions->add($input);
-                    }
+                        $inputo['plugin_metademands_tasks_id'] = $associated_tasks[$oldOption['plugin_metademands_tasks_id']];
 
-                    $oldCustoms = $fieldcustoms->find(['plugin_metademands_fields_id' => $old_field_id]);
-                    foreach ($oldCustoms as $oldCustom) {
-                        $input['name'] = $oldOption['name'];
-                        $input['is_default'] = $oldOption['is_default'];
-                        $input['comment'] = $oldOption['comment'];
-                        $input['rank'] = $oldOption['rank'];
-                        $input['plugin_metademands_fields_id'] = $newField['id'];
-                        $fieldoptions->add($input);
+                        $inputo['fields_link'] = $associated_oldfields[$oldOption['fields_link']] ?? 0;
+                        $inputo['hidden_link'] = $associated_oldfields[$oldOption['hidden_link']] ?? 0;
+                        $inputo['hidden_block'] = $oldOption['hidden_block'];
+                        $inputo['users_id_validate'] = $oldOption['users_id_validate'];
+                        $inputo['childs_blocks'] = $oldOption['childs_blocks'];
+                        $inputo['checkbox_value'] = $oldOption['checkbox_value'];
+                        $inputo['checkbox_id'] = $oldOption['checkbox_id'];
+                        $inputo['plugin_metademands_fields_id'] = $newField['id'];
+
+                        $check_value = $oldOption["check_value"] ?? 0;
+                        if ($check_value != 0
+                            && isset($mapTableCheckValue[$check_value])) {
+                            $inputo['check_value'] = $mapTableCheckValue[$check_value];
+                        }
+
+                        $fieldoptions->add($inputo);
                     }
                 }
                 // Add ticket fields
@@ -6599,7 +6626,12 @@ JAVASCRIPT
                     || (isset($field['item']) && in_array($field['item'], $allowed_customvalues_items))
                 ) {
                     $fieldoldcustoms[$k]["id"] = $fields[$k]["id"];
-                    $fieldoldcustoms[$k][$key] = PluginMetademandsFieldParameter::_unserialize($f);
+                    if (is_array($f)) {
+                        $fieldoldcustoms[$k][$key] = PluginMetademandsFieldParameter::_serializeArray($f);
+                    } else {
+                        $fieldoldcustoms[$k][$key] = PluginMetademandsFieldParameter::_unserialize($f);
+                    }
+
 //                    if ($field['type'] != 'yesno') {
 //                        $fieldcustoms[$k][$key] = PluginMetademandsFieldParameter::_serialize($fields[$k][$key]);
 //                    }

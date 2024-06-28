@@ -385,6 +385,28 @@ class PluginMetademandsTools extends CommonDBTM
             }
         }
 
+        $query = "SELECT `glpi_plugin_metademands_fields`.`id`,
+       `glpi_plugin_metademands_fields`.`plugin_metademands_metademands_id`,
+       `glpi_plugin_metademands_fields`.`entities_id` as field_entity,
+       `glpi_plugin_metademands_metademands`.`entities_id` as meta_entity
+                    FROM
+                        `glpi_plugin_metademands_fields`
+                    LEFT JOIN `glpi_plugin_metademands_metademands` 
+                        ON (`glpi_plugin_metademands_fields`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
+                    WHERE
+                        `glpi_plugin_metademands_metademands`.`entities_id` != `glpi_plugin_metademands_fields`.`entities_id`";
+
+        $result = $DB->query($query);
+
+        if ($DB->numrows($result) > 0) {
+            $field = new PluginMetademandsField();
+            while ($array = $DB->fetchAssoc($result)) {
+                $input['entities_id'] = $array["meta_entity"];
+                $input['id'] = $array["id"];
+                $field->update($input, 1);
+            }
+        }
+
         echo "</table></div>";
     }
 }

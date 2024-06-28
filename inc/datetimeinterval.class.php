@@ -74,7 +74,7 @@ class PluginMetademandsDatetimeinterval extends CommonDBTM
 
     }
 
-    static function showFieldCustomFields($params)
+    static function showFieldParameters($params)
     {
 
         echo "<tr class='tab_bg_1'>";

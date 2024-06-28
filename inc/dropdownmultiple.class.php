@@ -40,6 +40,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
     public static $dropdown_multiple_items = ['other', 'Location', 'Appliance', 'User'];
 
+    public static $dropdown_multiple_objects = ['Location', 'Appliance', 'User'];
     const CLASSIC_DISPLAY = 0;
     const DOUBLE_COLUMN_DISPLAY = 1;
 

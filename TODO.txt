@@ -1,13 +1,8 @@
-avoir menu - vos brouillons
-Avoir bouton - ajouter en tant que brouillon
-rééditer une ligne avec bouton dédié
-
-bug réenregistrement brouillon sur commande libre
-
 groupe proposé dans pas à pas : independant de l'entité
 
-faire TODO MIGRATE
-
-bug dropdown multiple - affichage champ caché - si deselectionner le champ il n'est pas recaché
-
-inject custom values
+3.3.13
+Fix next group / user title display
+Fix entity of new field in same entity as metademand
+Fix Drop is_mandatory for add existing field
+Fix duplicate metademands
+Fix mandatory textarea check

@@ -81,7 +81,12 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     $choices = [];
                     if (count($custom_values) > 0) {
                         foreach ($custom_values as $key => $label) {
-                            $choices[$label['id']] = $label['name'];
+
+                            if (empty($name = PluginMetademandsField::displayCustomvaluesField($data['id'], $key))) {
+                                $name = $label['name'];
+                            }
+
+                            $choices[$label['id']] = $name;
                             if ($label['is_default'] == 1) {
                                 $default_value  = $label['id'];
                             }
@@ -1117,7 +1122,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
             $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
-                            $('[bloc-id =\"bloc'+$hidden_block+'\"]').hide();
+                            $('[bloc-id =\"bloc'+key+'\"]').hide();
                             " . PluginMetademandsFieldoption::setEmptyBlockFields($hidden_block);
 
                             if (is_array($childs_by_checkvalue)) {
@@ -1130,7 +1135,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                                     }
                                 }
             $onchange .= "} else {
-                            $('[bloc-id =\"bloc'+$hidden_block+'\"]').show();
+
+                            $('[bloc-id =\"bloc'+key+'\"]').show();
                             " .PluginMetademandsFieldoption::setMandatoryFieldsByField($metaid, $hidden_block)."
                         }
                     });

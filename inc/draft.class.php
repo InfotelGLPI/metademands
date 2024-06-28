@@ -212,7 +212,7 @@ class PluginMetademandsDraft extends CommonDBTM
                     $return .= "<button  class='submit btn btn-success btn-sm' onclick=\"event.preventDefault();event.stopPropagation();udpateDraft(" . $draft['id'] . ", '" . $draft['name'] . "')\">";
                     $return .= "<i class='fas fa-1x fa-save pointer' title='" . _sx(
                             'button',
-                            'Save model',
+                            'Save draft',
                             'metademands'
                         ) . "' 
                                data-hasqtip='0' aria-hidden='true'></i>";
@@ -420,7 +420,7 @@ class PluginMetademandsDraft extends CommonDBTM
         $type_achat = "";
         if ($DB->numrows($result)) {
             while ($data = $DB->fetchAssoc($result)) {
-                $type_achat = " - ".$data['name'];
+                $type_achat = " - " . $data['name'];
             }
         }
 
@@ -455,7 +455,7 @@ class PluginMetademandsDraft extends CommonDBTM
             echo "<i class='fa-2x fas $icon' style=\"font-family:'Font Awesome 5 Free', 'Font Awesome 5 Brands';\"></i>&nbsp;";
         }
         if (empty($n = PluginMetademandsMetademand::displayField($metademands->getID(), 'name'))) {
-            echo $metademands->getName(). $type_achat;
+            echo $metademands->getName() . $type_achat;
         } else {
             echo $n . $type_achat;
         }
@@ -496,9 +496,7 @@ class PluginMetademandsDraft extends CommonDBTM
                     );
                 }
             }
-        }
-
-        else {
+        } else {
             echo "</div>";
             echo "<div class='center first-bloc'>";
             echo "<div class=\"row\">";
@@ -520,34 +518,14 @@ class PluginMetademandsDraft extends CommonDBTM
         return "fa-regular fa-copy";
     }
 
-    static function getMenuContent() {
-
-        $menu['title']           = self::getMenuName(2);
-        $menu['page']            = self::getSearchURL(false);
+    static function getMenuContent()
+    {
+        $menu['title'] = self::getMenuName(2);
+        $menu['page'] = self::getSearchURL(false);
         $menu['links']['search'] = self::getSearchURL(false);
-        $menu['icon']            = static::getIcon();
-        $menu['links']['add']    = PLUGIN_ORDERFOLLOWUP_DIR_NOFULL . "/front/draftcreation.php";
+        $menu['icon'] = static::getIcon();
+        $menu['links']['add'] = PLUGIN_ORDERFOLLOWUP_DIR_NOFULL . "/front/draftcreation.php";
 
         return $menu;
-    }
-
-    public static function checkLastCreate($last_id = 0){
-        global $DB;
-        $draft = new PluginMetademandsDraft();
-
-        $requester = $DB->request([
-            'SELECT' => ['id'],
-            'FROM' => $draft::getTable(),
-            'WHERE' => [
-                'users_id' => Session::getLoginUserID(),
-            ],
-            'ORDER' => ['id DESC'],
-            'LIMIT' => '1',
-        ])->current();
-
-        if ($requester != null) {
-            return $requester['id'];
-        }
-
     }
 }

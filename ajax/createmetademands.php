@@ -119,7 +119,7 @@ if ($nofreeinputs === false) {
         if ($metademands->fields['is_basket'] == 1) {
             if (isset($_POST['is_freeinput']) && $_POST['is_freeinput'] == 1) {
                 echo PluginOrderfollowupFreeinput::displayBasketSummary($post);
-            }else{
+            } else {
                 echo PluginMetademandsBasket::displayBasketSummary($post);
             }
         }
@@ -312,7 +312,7 @@ if ($nofreeinputs === false) {
                                 $parameters = PluginMetademandsField::getAllParamsFromField($field);
                             }
 
-                            if ($parameters['is_mandatory'] == 0) {
+                            if ($parameters['is_mandatory'] == 1) {
                                 if (!isset($post[$id])) {
                                     continue;
                                 }
