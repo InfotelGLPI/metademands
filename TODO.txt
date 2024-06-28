@@ -8,3 +8,5 @@ Fix duplicate metademands
 Fix mandatory textarea check
 Fix no submitted values from serializeArray
 Add link usertitle & usercategory to user field
+Fix wrong button title on stepbystep
+Fix empty users_id_recipient in son ticket
