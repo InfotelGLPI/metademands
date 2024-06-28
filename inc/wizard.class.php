@@ -2020,6 +2020,8 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 echo "</div>";
                 $users_id = Session::getLoginUserID();
+                $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
+
                 echo "<script> 
                     if(document.querySelector('#freeinput_table #add_freeinputs')){
                         document.querySelector('#freeinput_table .add_item').addEventListener('click',function() {
@@ -2041,7 +2043,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                         tr_line.querySelector(\"td input[name='name']\").value != '' && 
                                         tr_line.querySelector(\"td input[name='quantity']\").value != '' && 
                                         tr_line.querySelector(\"td input[name='unit_price']\").value != ''){
-                                        if(!confirm('Attention des lignes ne sont pas confirmées, souhaitez-vous tout de même continuer ?')){   
+                                        if(!confirm('{$trad}')){   
                                             ev.stopPropagation();
                                         }
                                     }
@@ -3593,6 +3595,8 @@ class PluginMetademandsWizard extends CommonDBTM
             $style = "display:inline-block;float:left;margin-right: 10px;display:none";
         }
 
+        $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
+
         $content = "<div id='div_save_draft'  style='{$style}'>
                         <button form='' class='submit btn btn-primary' id='button_save_draft' type='submit' onclick='load_draft_modal()'>".$input_name."
                         </button>
@@ -3610,7 +3614,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                                 tr_line.querySelector(\"td input[name='quantity']\").value != '' && 
                                                 tr_line.querySelector(\"td input[name='unit_price']\").value != ''){
                                                 
-                                                if(!confirm('Attention des lignes ne sont pas confirmées, souhaitez-vous tout de même continuer ?')){   
+                                                if(!confirm('{$trad}')){   
                                                     ev.stopPropagation();
                                                 }
                                             }
