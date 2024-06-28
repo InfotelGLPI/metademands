@@ -2009,8 +2009,8 @@ class PluginMetademandsWizard extends CommonDBTM
                 </script>";
                 }
             } else {
-                echo"<div class='boutons_draft'>";
-                echo "<button form='' class='submit btn btn-success btn-sm update_draft' onclick=\"udpateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
+                echo"<div class='boutons_draft' >";
+                echo "<button form='' id='button_save_mydraft' style='display:none' class='submit btn btn-success btn-sm update_draft' onclick=\"udpateThisDraft(" . $draft_id . ", '" . $draft_name . "')\">";
                 echo __('Upgrade');
                 echo "</button>";
 
@@ -2028,33 +2028,56 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
                     
                     function udpateThisDraft(draft_id, draft_name) {
-                         if(typeof tinyMCE !== 'undefined'){
+                    
+                        //Sécurité en cas de ligne non confirmé
+                        
+                        var tr_input = document.querySelectorAll('#freeinput_table #tr_input');
+                        
+                        if(tr_input.length > 0){
+                            if(tr_input.length > 0 ){
+                                for(var i = 0; i < tr_input.length; i++) {
+                                    var tr_line = tr_input[i];
+                                    if(tr_line.querySelector(\"td input[name='reference']\").value != '' && 
+                                        tr_line.querySelector(\"td input[name='name']\").value != '' && 
+                                        tr_line.querySelector(\"td input[name='quantity']\").value != '' && 
+                                        tr_line.querySelector(\"td input[name='unit_price']\").value != ''){
+                                        if(!confirm('Attention des lignes ne sont pas confirmées, souhaitez-vous tout de même continuer ?')){   
+                                            ev.stopPropagation();
+                                        }
+                                    }
+                                    
+                                }
+                            }                        
+                        }
+                        
+                        if(typeof tinyMCE !== 'undefined'){
                             tinyMCE.triggerSave();
-                         }
-                         jQuery('.resume_builder_input').trigger('change');
-                         $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
-                         $('#ajax_loader').show();
-                         arrayDatas = $('#draft_form').serializeArray();
-                         arrayDatas.push({name: \"save_draft\", value: true});
-                         arrayDatas.push({name: \"plugin_metademands_drafts_id\", value: draft_id});
-                         arrayDatas.push({name: \"draft_name\", value: draft_name});
-                         arrayDatas.push({name: \"step\", value: 2});
-                         arrayDatas.push({name: \"_users_id_requester\", value: $users_id});
-                         arrayDatas.push({name: \"metademands_id\", value: $metademands_id});
-                                                  
-                         $.ajax({
-                            url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',
-                               type: 'POST',
-                               data: arrayDatas,
-                               success: function(response){
-                                   window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id='+draft_id
-                                },
-                               error: function(xhr, status, error) {
-                                  console.log(xhr);
-                                  console.log(status);
-                                  console.log(error);
-                                } 
-                         });
+                        }
+                        
+                        jQuery('.resume_builder_input').trigger('change');
+                        $('select[id$=\"_to\"] option').each(function () { $(this).prop('selected', true); });
+                        $('#ajax_loader').show();
+                        arrayDatas = $('#draft_form').serializeArray();
+                        arrayDatas.push({name: \"save_draft\", value: true});
+                        arrayDatas.push({name: \"plugin_metademands_drafts_id\", value: draft_id});
+                        arrayDatas.push({name: \"draft_name\", value: draft_name});
+                        arrayDatas.push({name: \"step\", value: 2});
+                        arrayDatas.push({name: \"_users_id_requester\", value: $users_id});
+                        arrayDatas.push({name: \"metademands_id\", value: $metademands_id});
+                                              
+                        $.ajax({
+                        url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/adddraft.php',
+                           type: 'POST',
+                           data: arrayDatas,
+                           success: function(response){
+                               window.location.href = '" . PLUGIN_METADEMANDS_WEBDIR . "/front/draft.form.php?id='+draft_id
+                            },
+                           error: function(xhr, status, error) {
+                              console.log(xhr);
+                              console.log(status);
+                              console.log(error);
+                            } 
+                        }); 
                     }
                     
                     function deleteThisDraft(draft_id) {
@@ -3565,16 +3588,38 @@ class PluginMetademandsWizard extends CommonDBTM
 
         //correct css with condition
         if($type == 1){
-            $style = "display:inline-block;margin: 10px";
+            $style = "display:inline-block;margin: 10px;display:none";
         }else{
-            $style = "display:inline-block;float:left;margin-right: 10px";
+            $style = "display:inline-block;float:left;margin-right: 10px;display:none";
         }
 
-        $content = "<div style='{$style}'>
+        $content = "<div id='div_save_draft'  style='{$style}'>
                         <button form='' class='submit btn btn-primary' id='button_save_draft' type='submit' onclick='load_draft_modal()'>".$input_name."
                         </button>
                         <script>
-                            function load_draft_modal(){
+                            function load_draft_modal(ev){
+                                
+                                var tr_input = document.querySelectorAll('#freeinput_table #tr_input');
+                        
+                                if(tr_input.length > 0){
+                                    if(tr_input.length > 0 ){
+                                        for(var i = 0; i < tr_input.length; i++) {
+                                            var tr_line = tr_input[i];
+                                            if(tr_line.querySelector(\"td input[name='reference']\").value != '' && 
+                                                tr_line.querySelector(\"td input[name='name']\").value != '' && 
+                                                tr_line.querySelector(\"td input[name='quantity']\").value != '' && 
+                                                tr_line.querySelector(\"td input[name='unit_price']\").value != ''){
+                                                
+                                                if(!confirm('Attention des lignes ne sont pas confirmées, souhaitez-vous tout de même continuer ?')){   
+                                                    ev.stopPropagation();
+                                                }
+                                            }
+                                            
+                                        }
+                                    }                        
+                                }
+                                
+                                
                                document.querySelector('#my_new_draft').style = 'display:block;background-color: rgba(0, 0, 0, 0.1);';
                                document.querySelector('#my_new_draft').classList.remove('fade');
                             }
