@@ -114,6 +114,54 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     $field .= "});</script>";
                 }
                 if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                    $paramstit
+                        = ['value' => '__VALUE__',
+                        'id_fielduser' => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+
+                    $toupdate[] = ['value_fieldname'
+                    => 'value',
+                        'id_fielduser' => $data['id'],
+                        'to_update' => "title_user" . $data['id'],
+                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
+                        'moreparams' => $paramstit];
+
+                    $field .= "<script type='text/javascript'>";
+                    $field .= "$(function() {";
+                    Ajax::updateItemJsCode(
+                        "title_user" . $data['id'],
+                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/utitleUpdate.php",
+                        $paramstit,
+                        $namefield . "[" . $data['id'] . "]",
+                        false
+                    );
+                    $field .= "});</script>";
+                }
+                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                    $paramscat
+                        = ['value' => '__VALUE__',
+                        'id_fielduser' => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+
+                    $toupdate[] = ['value_fieldname'
+                    => 'value',
+                        'id_fielduser' => $data['id'],
+                        'to_update' => "category_user" . $data['id'],
+                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
+                        'moreparams' => $paramscat];
+
+                    $field .= "<script type='text/javascript'>";
+                    $field .= "$(function() {";
+                    Ajax::updateItemJsCode(
+                        "category_user" . $data['id'],
+                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/ucategoryUpdate.php",
+                        $paramscat,
+                        $namefield . "[" . $data['id'] . "]",
+                        false
+                    );
+                    $field .= "});</script>";
+                }
+                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
                     $paramsgroup
                         = ['value' => '__VALUE__',
                         'id_fielduser' => $data['id'],
