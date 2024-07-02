@@ -1574,7 +1574,7 @@ class PluginMetademandsBasket extends CommonDBTM
             $config = PluginMetademandsConfig::getInstance();
             if ($config['use_draft']) {
                 //button create draft
-                $content .= PluginMetademandsWizard::createDraftInput(2);
+                $content .= PluginMetademandsDraft::createDraftInput(PluginMetademandsDraft::BASKET_MODE);
             }
             $content .= "<span style='float:right'>";
             $title = "<i class='fas fa-shopping-basket'></i> " . _sx('button', 'Send order', 'metademands');

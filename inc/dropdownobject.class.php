@@ -234,6 +234,30 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     );
                     $field .= "});</script>";
                 }
+                if (!isset($_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data["id"]])) {
+                    $paramsman
+                        = ['value' => '__VALUE__',
+                        'id_fielduser' => $data['id'],
+                        'metademands_id' => $data['plugin_metademands_metademands_id']];
+
+                    $toupdate[] = ['value_fieldname'
+                    => 'value',
+                        'id_fielduser' => $data['id'],
+                        'to_update' => "manager_user" . $data['id'],
+                        'url' => PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
+                        'moreparams' => $paramsman];
+
+                    $field .= "<script type='text/javascript'>";
+                    $field .= "$(function() {";
+                    Ajax::updateItemJsCode(
+                        "manager_user" . $data['id'],
+                        PLUGIN_METADEMANDS_WEBDIR . "/ajax/umanagerUpdate.php",
+                        $paramsman,
+                        $namefield . "[" . $data['id'] . "]",
+                        false
+                    );
+                    $field .= "});</script>";
+                }
                 if (empty($value)) {
                     $value = ($data['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
                 }
@@ -275,8 +299,40 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 if ($data['readonly'] == 1) {
                     $field .= Html::hidden($namefield . "[" . $data['id'] . "]", ['value' => $value]);
                 }
-                echo User::dropdown($opt);
 
+                if ($data['link_to_user'] > 0) {
+
+                    echo "<div id='manager_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                    $_POST['field']        = $namefield . "[" . $data['id'] . "]";
+                    $_POST['users_id_supervisor'] = $value;
+                    $fieldUser             = new PluginMetademandsField();
+                    $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
+                        'type' => "dropdown_object",
+                        'item' => User::getType()]);
+
+                    $fieldparameter            = new PluginMetademandsFieldParameter();
+                    if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
+                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                            && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+
+                        if (empty($_POST['value'])) {
+                            $user = new User();
+                            $user->getFromDB(Session::getLoginUserID());
+                            $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                        }
+                    }
+
+                    $_POST['id_fielduser'] = $data['link_to_user'];
+                    $_POST['fields_id']    = $data['id'];
+                    $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
+                    if ($data['is_mandatory'] == 1) {
+                        $_POST['is_mandatory'] = 1;
+                    }
+                    include(PLUGIN_METADEMANDS_DIR . "/ajax/umanagerUpdate.php");
+                    echo "</div>";
+                } else {
+                    echo User::dropdown($opt);
+                }
                 $relatedTextFields = new PluginMetademandsField();
                 $relatedTextFields = $relatedTextFields->find([
                     'plugin_metademands_metademands_id' => $data['plugin_metademands_metademands_id'],
@@ -284,18 +340,23 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 ]);
                 $field_parameter = new PluginMetademandsFieldParameter();
 
+
                 if (count($relatedTextFields)) {
                     $updateJs = '';
 
                     foreach ($relatedTextFields as $textField) {
-                        if ($field_parameter->getFromDBByCrit(
-                            ["plugin_metademands_fields_id" => $textField['id'], 'link_to_user' => $data['id']]
+                        if ($fields = $field_parameter->find(
+                            ["plugin_metademands_fields_id" => $textField['id'],
+                                'link_to_user' => $data['id']]
                         )) {
-                            if (!empty($field_parameter->fields['used_by_ticket'])) {
-                                $updateJs .= "let field{$textField['id']} = $(\"[id-field='field{$textField['id']}'] input\");
-                        field{$textField['id']}.attr('value', response[{$field_parameter->fields['used_by_ticket']}] ?? '');
+                            foreach ($fields as $f) {
+                                if (!empty($f['used_by_ticket'])) {
+                                    $updateJs .= "let field{$textField['id']} = $(\"[id-field='field{$textField['id']}'] input\");
+                        field{$textField['id']}.val(response[{$f['used_by_ticket']}] ?? '');
                         field{$textField['id']}.trigger('input');
                         ";
+
+                                }
                             }
                         }
                     }
@@ -470,6 +531,28 @@ class PluginMetademandsDropdownobject extends CommonDBTM
 
             $custom_values = PluginMetademandsFieldParameter::_unserialize($params['custom_values']);
             $user_group = $custom_values['user_group'] ?? 0;
+
+
+            echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            echo __('Link this to a user field', 'metademands');
+            echo "</td>";
+
+            echo "<td>";
+            $arrayAvailable[0] = Dropdown::EMPTY_VALUE;
+            $field = new PluginMetademandsField();
+            $fields = $field->find([
+                "plugin_metademands_metademands_id" => $params['plugin_metademands_metademands_id'],
+                'type' => "dropdown_object",
+                "item" => User::getType()
+            ]);
+            foreach ($fields as $f) {
+                $arrayAvailable [$f['id']] = $f['rank'] . " - " . urldecode(html_entity_decode($f['name']));
+            }
+            Dropdown::showFromArray('link_to_user', $arrayAvailable, ['value' => $params['link_to_user']]);
+            echo "</td>";
+            echo "<td colspan='2'></td>";
+            echo "</tr>";
 
             echo "<tr class='tab_bg_1'>";
             echo "<td>";

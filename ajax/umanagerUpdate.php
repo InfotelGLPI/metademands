@@ -28,7 +28,7 @@
  */
 
 $AJAX_INCLUDE = 1;
-if (strpos($_SERVER['PHP_SELF'], "ucategoryUpdate.php")) {
+if (strpos($_SERVER['PHP_SELF'], "umanagerUpdate.php")) {
    include('../../../inc/includes.php');
    header("Content-Type: text/html; charset=UTF-8");
    Html::header_nocache();
@@ -39,16 +39,16 @@ $fieldUser = new PluginMetademandsField();
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
-      if ($fields = $fieldUser->find(['type'         => "dropdown",
+      if ($fields = $fieldUser->find(['type'         => "dropdown_object",
                                        'plugin_metademands_metademands_id' => $_POST['metademands_id'],
-                                       'item'         => UserCategory::getType()])) {
+                                       'item'         => User::getType()])) {
 
           foreach ($fields as $f) {
               $fieldparameter = new PluginMetademandsFieldParameter();
-              if ($fieldparameter->getFromDBByCrit(
-                  ['plugin_metademands_fields_id' => $f['id'],
-                      'link_to_user' => $_POST['id_fielduser']]
-              )) {
+              if ($fieldparameter->getFromDBByCrit([
+                  'plugin_metademands_fields_id' => $f['id'],
+                  'link_to_user' => $_POST['id_fielduser']
+              ])) {
                   $_POST["field"] = "field[" . $f['id'] . "]";
               }
           }
@@ -60,30 +60,30 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    }
 }
 
-$usercategories_id = 0;
+$users_id_supervisor = 0;
 if (isset($_POST['value']) && $_POST["value"] > 0
     && isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    $user = new User();
    if ($user->getFromDB($_POST["value"])) {
-       $usercategories_id = $user->fields['usercategories_id'];
+       $users_id_supervisor = $user->fields['users_id_supervisor'];
    }
 }
 
 if (isset($_POST['fields_id'])
     && isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']])) {
-    $usercategories_id = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
+    $users_id_supervisor = $_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['fields_id']];
 }
 
 $opt = ['name'  => $_POST["field"],
-        'value' => $usercategories_id,
+        'value' => $users_id_supervisor,
     'width' => '200px'];
 
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
    $opt['specific_tags'] = ['required' => 'required'];
 }
 
-UserCategory::dropdown($opt);
+User::dropdown($opt);
 
-$_POST['name'] = "category_user";
+$_POST['name'] = "manager_user";
 $_POST['rand'] = "";
 Ajax::commonDropdownUpdateItem($_POST);

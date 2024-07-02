@@ -46,12 +46,12 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
            'plugin_metademands_metademands_id' => $_POST['metademands_id'],
            'item'         => "mydevices"])) {
            foreach ($fields as $field) {
-               if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id'], 'link_to_user' => $_POST['id_fielduser']])) {
+               if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field['id'],
+                   'link_to_user' => $_POST['id_fielduser']])) {
                    $id             = $field['id'];
                    $_POST["field"] = "field[$id]";
                }
            }
-
        }
 
    } else {

@@ -183,26 +183,46 @@ if (isset($_POST['save_draft'])) {
 
             if (isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])) {
                 $draft_id = $_POST['plugin_metademands_drafts_id'];
+
+                $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                if (count($metademands_data)) {
+                    foreach ($metademands_data as $form_step => $data) {
+                        $docitem = null;
+                        foreach ($data as $form_metademands_id => $line) {
+                            PluginMetademandsDraft_Value::updateDraftValues(
+                                $_POST['metademands_id'],
+                                $line['form'],
+                                $_POST['field'],
+                                $draft_id,
+
+                            );
+                        }
+                    }
+                }
+
             } else {
                 $draft_id = $drafts->add($inputs);
+
+                $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                if (count($metademands_data)) {
+                    foreach ($metademands_data as $form_step => $data) {
+                        $docitem = null;
+                        foreach ($data as $form_metademands_id => $line) {
+                            PluginMetademandsDraft_Value::setDraftValues(
+                                $_POST['metademands_id'],
+                                $line['form'],
+                                $_POST['field'],
+                                $draft_id,
+
+                            );
+                        }
+                    }
+                }
             }
 
 //            $_SESSION['my_last_draft'] = $draft_id;
 
-            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
-            if (count($metademands_data)) {
-                foreach ($metademands_data as $form_step => $data) {
-                    $docitem = null;
-                    foreach ($data as $form_metademands_id => $line) {
-                        PluginMetademandsDraft_Value::setDraftValues(
-                            $_POST['metademands_id'],
-                            $line['form'],
-                            $_POST['field'],
-                            $draft_id
-                        );
-                    }
-                }
-            }
+
 
             $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_id'] = $draft_id;
             $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_drafts_name'] = $_POST['draft_name'];

@@ -41,15 +41,21 @@ $cond       = [];
 
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
     if (!isset($_POST['field'])) {
-        if ($fieldEntity->getFromDBByCrit(['type'                              => "dropdown_object",
+        if ($fields = $fieldEntity->find(['type'                              => "dropdown_object",
                                           'plugin_metademands_metademands_id' => $_POST['metademands_id'],
                                           'item'                              => Entity::getType()])) {
-            $fieldparameter            = new PluginMetademandsFieldParameter();
-            if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldEntity->fields['id'], 'link_to_user' => $_POST['id_fielduser']])) {
-                $id             = $fieldEntity->fields['id'];
-                $_POST["field"] = "field[$id]";
+            foreach ($fields as $f) {
+                $fieldparameter = new PluginMetademandsFieldParameter();
+                if ($fieldparameter->getFromDBByCrit(
+                    [
+                        'plugin_metademands_fields_id' => $f['id'],
+                        'link_to_user' => $_POST['id_fielduser']
+                    ]
+                )) {
+                    $id = $f['id'];
+                    $_POST["field"] = "field[$id]";
+                }
             }
-
         }
     } else {
         if (isset($_SESSION['plugin_metademands'][$_POST['metademands_id']]['fields'][$_POST['id_fielduser']])) {

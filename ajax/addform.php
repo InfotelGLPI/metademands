@@ -75,6 +75,12 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
     if ($nblines == 0) {
         if (isset($_POST['field'])) {
             $post = $_POST['field'];
+
+            if (isset($_POST['field_plugin_servicecatalog_itilcategories_id_key'])
+                && isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
+                $post[$_POST['field_plugin_servicecatalog_itilcategories_id_key']] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
+            }
+
         } else {
             $post['field'] = [];
         }
