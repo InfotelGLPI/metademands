@@ -35,25 +35,20 @@ if (isset($_POST['see_basket_summary'])) {
     header("Content-Type: application/json; charset=UTF-8");
 }
 
-
 Html::header_nocache();
 
 Session::checkLoginUser();
-
-//unset($_SESSION['metademands_hide']);
 
 $KO = false;
 $step = $_POST['step'] + 1;
 $metademands = new PluginMetademandsMetademand();
 $wizard = new PluginMetademandsWizard();
 $fields = new PluginMetademandsField();
-
 $nofreeinputs = false;
 
 if (isset($_POST['is_freeinput'])
     && $_POST['is_freeinput'] == 1
     && isset($_SESSION['plugin_orderfollowup']['freeinputs'])) {
-
     if (count($_SESSION['plugin_orderfollowup']['freeinputs']) == 0) {
         $nofreeinputs = true;
         $step = $_POST['step'];
@@ -93,9 +88,7 @@ if (isset($_GET['meta_validated'])) {
 }
 
 if ($nofreeinputs === false) {
-
     if (isset($_POST['see_basket_summary'])) {
-
         unset($_POST['see_basket_summary']);
         $post = $_POST;
 
@@ -126,7 +119,6 @@ if ($nofreeinputs === false) {
 
 
         if ($metademands->fields['is_order'] == 1) {
-
             $metademands_data = $metademands->constructMetademands($_POST['form_metademands_id']);
             //Reorder array
             $metademands_data = array_values($metademands_data);
@@ -137,13 +129,16 @@ if ($nofreeinputs === false) {
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
                     foreach ($data as $form_metademands_id => $line) {
-                        echo PluginMetademandsBasketline::displayBasketSummary($_POST['form_metademands_id'], $line['form'], $post);
+                        echo PluginMetademandsBasketline::displayBasketSummary(
+                            $_POST['form_metademands_id'],
+                            $line['form'],
+                            $post
+                        );
                     }
                 }
             }
         }
-    } else if (isset($_POST['form_metademands_id'])) {
-
+    } elseif (isset($_POST['form_metademands_id'])) {
         if ($metademands->canCreate()
             || PluginMetademandsGroup::isUserHaveRight($_POST['form_metademands_id'])) {
             $data = $fields->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id']]);
@@ -173,8 +168,10 @@ if ($nofreeinputs === false) {
                 //Create ticket
                 if ($metademands->fields['is_order'] == 1) {
                     $basketline = new PluginMetademandsBasketline();
-                    $basketToSend = $basketline->find(['plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
-                        'users_id' => Session::getLoginUserID()]);
+                    $basketToSend = $basketline->find([
+                        'plugin_metademands_metademands_id' => $_POST['form_metademands_id'],
+                        'users_id' => Session::getLoginUserID()
+                    ]);
 
                     $basketLines = [];
                     foreach ($basketToSend as $basketLine) {
@@ -194,20 +191,15 @@ if ($nofreeinputs === false) {
                         $_POST['field'] = $basket;
                     } else {
                         $KO = true;
-                        Session::addMessageAfterRedirect(__("There is no line on the basket", "metademands"), false, ERROR);
+                        Session::addMessageAfterRedirect(
+                            __("There is no line on the basket", "metademands"),
+                            false,
+                            ERROR
+                        );
                     }
                 }
                 if ($nblines == 0) {
                     $post = $_POST['field'];
-
-//                if (isset($_POST['_filename'])) {
-//                    foreach ($_POST['_filename'] as $key => $filename) {
-//                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_prefix_filename'][] = $_POST['_prefix_filename'][$key];
-//                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_tag_filename'][] = $_POST['_tag_filename'][$key];
-//                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']['_filename'][] = $_POST['_filename'][$key];
-//                    }
-//                }
-
                     if (isset($_POST['field_plugin_servicecatalog_itilcategories_id_key'])
                         && isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
                         $post[$_POST['field_plugin_servicecatalog_itilcategories_id_key']] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
@@ -227,24 +219,21 @@ if ($nofreeinputs === false) {
                         if ($metademands->fields['is_order'] == 1) {
                             $post = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['basket'][$i];
                         } else {
-
                             if (isset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'])) {
-//                            unset($_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['files']);
                                 $post = $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'];
                             }
-
                         }
 
 
                         foreach ($data as $idf => $form_data_fields) {
-
                             $fieldopt = new PluginMetademandsFieldOption();
                             if ($opts = $fieldopt->find(["plugin_metademands_fields_id" => $idf])) {
-
                                 foreach ($opts as $opt) {
                                     $check_value = $opt["check_value"];
-                                    if ($fieldopt->getFromDBByCrit(["plugin_metademands_fields_id" => $idf,
-                                        "check_value" => $check_value])) {
+                                    if ($fieldopt->getFromDBByCrit([
+                                        "plugin_metademands_fields_id" => $idf,
+                                        "check_value" => $check_value
+                                    ])) {
                                         $data[$idf]["options"][$check_value]['plugin_metademands_tasks_id'] = $fieldopt->fields['plugin_metademands_tasks_id'] ?? 0;
                                         $data[$idf]["options"][$check_value]['fields_link'] = $fieldopt->fields['fields_link'] ?? 0;
                                         $data[$idf]["options"][$check_value]['hidden_link'] = $fieldopt->fields['hidden_link'] ?? 0;
@@ -266,47 +255,10 @@ if ($nofreeinputs === false) {
                         $dataOld = $data;
 
                         // Double appel for prevent order fields
-//                        PluginMetademandsFieldOption::unsetHidden($data, $post);
-//                        PluginMetademandsFieldOption::unsetHidden($dataOld, $post);
                         $_POST['field'] = $post;
-
-
-                        //check fields_link to be mandatory
-//                        $fields_links = [];
-//                        foreach ($data as $id => $value) {
-//                            if (isset($value['options'])) {
-//                                $unserialisedCheck = $value['options'];
-//                                foreach ($unserialisedCheck as $key => $check) {
-//                                    $fields_links[] = $check['fields_link'];
-//                                }
-//                            }
-//                        }
-//
-//                        $fields_links = array_unique($fields_links);
-//                        $fields_links = array_filter($fields_links);
-
-//                    $toBeMandatory = [];
-//                    foreach ($fields_links as $fields_link) {
-//                        if (isset($_POST['field'][$fields_link])
-//                            && empty($_POST['field'][$fields_link])) {
-//                            $toBeMandatory[] = $fields_link;
-//                        }
-//                    }
-//
-//                    $toBeMandatory = array_unique($toBeMandatory);
-//                    $toBeMandatory = array_filter($toBeMandatory);
-
-//                    if (is_array($toBeMandatory) && count($toBeMandatory) > 0) {
-//                        foreach ($toBeMandatory as $keyMandatory => $valueMandatory) {
-//                            if (isset($data[$valueMandatory]['type'])) {
-//                                $data[$valueMandatory]['is_mandatory'] = true;
-//                            }
-//                        }
-//                    }
 
                         //end fields_link to be mandatory
                         foreach ($data as $id => $value) {
-
                             $field = new PluginMetademandsField();
                             if ($field->getFromDB($id)) {
                                 $parameters = PluginMetademandsField::getAllParamsFromField($field);
@@ -322,27 +274,11 @@ if ($nofreeinputs === false) {
                                 $check_values = $value['options'];
                                 foreach ($check_values as $key => $check) {
                                     //Permit to launch child metademand on check value
-//                                $checkchild = $key;
-//                                if (is_array($checkchild)) {
-//                             Check if no form values block the creation of meta
-//                                $metademandtasks_tasks_id = PluginMetademandsMetademandTask::getSonMetademandTaskId($_POST['form_metademands_id']);
-
-//                                if (!is_null($metademandtasks_tasks_id)) {
-//                                    $_SESSION['son_meta'] = $metademandtasks_tasks_id;
-//                                    if (!isset($post)) {
-//                                        $post[$id] = 0;
-//                                    }
-//                                    $wizard->checkValueOk($key, $check['plugin_metademands_tasks_id'], $metademandtasks_tasks_id, $id, $value, $post);
-//                                }
-
-//                                    foreach ($checkchild as $keyId => $check_value) {
                                     $value['check_value'] = $key;
                                     if (isset($check['hidden_link'])) {
                                         $value['plugin_metademands_tasks_id'] = $check['hidden_link'];
                                     }
                                     $value['fields_link'] = $check['fields_link'] ?? 0;
-//                                    }
-//                                }
                                 }
                             }
 
@@ -376,11 +312,10 @@ if ($nofreeinputs === false) {
                             if ($check['result'] == true) {
                                 $KO = true;
                             }
-                            $content = array_merge($content, $check['content']);
+//                            $content = array_merge($content, $check['content']);
                         }
 
                         if ($KO === false) {
-
                             // Save requester user
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields']['_users_id_requester'] = $_POST['_users_id_requester'];
                             // Case of simple ticket convertion
@@ -403,21 +338,12 @@ if ($nofreeinputs === false) {
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
                                 (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
                                     && $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'];
-//                        $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_type'] = $metademands->fields['type'];
-                            if(isset($_POST['field_plugin_requestevolutions_itilcategories_id'])){
-                                //Category id if have category field
-                                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_requestevolutions_itilcategories_id'] = $_POST['field_plugin_requestevolutions_itilcategories_id'];
-                            }
 
                         }
 
                         if ($KO) {
-//                        if (isset($_SESSION['metademands_hide'])) {
-//                            unset($_SESSION['metademands_hide']);
-//                        }
                             $step = $_POST['step'];
                         } elseif (isset($_POST['create_metademands'])) {
-
                             if (isset($_POST['quantity'])) {
                                 $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['quantities'] = $_POST['quantity'];
                             }
@@ -432,7 +358,7 @@ if ($nofreeinputs === false) {
         } else {
             echo $KO;
         }
-    }  else {
+    } else {
         $KO = true;
         echo $KO;
     }

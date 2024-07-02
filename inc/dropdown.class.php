@@ -131,6 +131,88 @@ class PluginMetademandsDropdown extends CommonDBTM
                         $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
                         $field            .= Location::dropdown($options);
                     }
+                } else if ($data['item'] == "UserTitle") {
+                    if ($data['link_to_user'] > 0) {
+                        echo "<div id='title_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                        $_POST['field']        = $namefield . "[" . $data['id'] . "]";
+                        $_POST['usertitles_id'] = $value;
+                        $fieldUser             = new PluginMetademandsField();
+                        $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
+                            'type' => "dropdown_object",
+                            'item' => User::getType()]);
+
+                        $fieldparameter            = new PluginMetademandsFieldParameter();
+                        if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
+                            $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                                && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+
+                            if (empty($_POST['value'])) {
+                                $user = new User();
+                                $user->getFromDB(Session::getLoginUserID());
+                                $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            }
+                        }
+
+                        $_POST['id_fielduser'] = $data['link_to_user'];
+                        $_POST['fields_id']    = $data['id'];
+                        $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
+                        if ($data['is_mandatory'] == 1) {
+                            $_POST['is_mandatory'] = 1;
+                        }
+                        include(PLUGIN_METADEMANDS_DIR . "/ajax/utitleUpdate.php");
+                        echo "</div>";
+                    } else {
+                        $options['name']    = $namefield . "[" . $data['id'] . "]";
+                        $options['width']    = "400px";
+                        $options['display'] = false;
+                        if ($data['is_mandatory'] == 1) {
+                            $options['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
+                        }
+                        //TODO Error if mode basket : $value good value - not $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']]
+                        $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
+                        $field            .= UserTitle::dropdown($options);
+                    }
+                } elseif ($data['item'] == "UserCategory") {
+                    if ($data['link_to_user'] > 0) {
+                        echo "<div id='category_user" . $data['link_to_user'] . "' class=\"input-group\">";
+                        $_POST['field']        = $namefield . "[" . $data['id'] . "]";
+                        $_POST['usercategories_id'] = $value;
+                        $fieldUser             = new PluginMetademandsField();
+                        $fieldUser->getFromDBByCrit(['id'   => $data['link_to_user'],
+                            'type' => "dropdown_object",
+                            'item' => User::getType()]);
+
+                        $fieldparameter            = new PluginMetademandsFieldParameter();
+                        if (isset($fieldUser->fields['id']) && $fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $fieldUser->fields['id']])) {
+                            $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                                && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+
+                            if (empty($_POST['value'])) {
+                                $user = new User();
+                                $user->getFromDB(Session::getLoginUserID());
+                                $_POST['value'] = ($fieldparameter->fields['default_use_id_requester_supervisor'] == 0) ? 0 : ($user->fields['users_id_supervisor'] ?? 0);
+                            }
+                        }
+
+                        $_POST['id_fielduser'] = $data['link_to_user'];
+                        $_POST['fields_id']    = $data['id'];
+                        $_POST['metademands_id']    = $data['plugin_metademands_metademands_id'];
+                        if ($data['is_mandatory'] == 1) {
+                            $_POST['is_mandatory'] = 1;
+                        }
+                        include(PLUGIN_METADEMANDS_DIR . "/ajax/ucategoryUpdate.php");
+                        echo "</div>";
+                    } else {
+                        $options['name']    = $namefield . "[" . $data['id'] . "]";
+                        $options['width']    = "400px";
+                        $options['display'] = false;
+                        if ($data['is_mandatory'] == 1) {
+                            $options['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
+                        }
+                        //TODO Error if mode basket : $value good value - not $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']]
+                        $options['value'] = $_SESSION['plugin_metademands'][$data['plugin_metademands_metademands_id']]['fields'][$data['id']] ?? 0;
+                        $field            .= UserCategory::dropdown($options);
+                    }
                 } else {
                     if ($data['item'] == "PluginResourcesResource") {
                         $opt['showHabilitations'] = true;
@@ -166,7 +248,9 @@ class PluginMetademandsDropdown extends CommonDBTM
             echo "<td colspan='2'></td>";
         }
 
-        if ($params["item"] == "Location") {
+        if ($params["item"] == "Location"
+        || $params["item"] == "UserTitle"
+            || $params["item"] == "UserCategory") {
             echo "<td>";
             echo __('Link this to a user field', 'metademands');
             echo "</td>";
