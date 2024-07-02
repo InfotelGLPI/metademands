@@ -7,6 +7,5 @@ Fix Drop is_mandatory for add existing field
 Fix duplicate metademands
 Fix mandatory textarea check
 Fix no submitted values from serializeArray
-Add link usertitle & usercategory to user field
-Fix wrong button title on stepbystep
-Fix empty users_id_recipient in son ticket
+Add link usertitle & usercategory & manager to user field
+Fix multiple users used with matricule/phone
