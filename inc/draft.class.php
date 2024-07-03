@@ -305,7 +305,9 @@ class PluginMetademandsDraft extends CommonDBTM
                              });
                        };
                      </script>";
+
         $step = PluginMetademandsMetademand::STEP_SHOW;
+
         $return .= "<script>
                       var meta_id = {$plugin_metademands_metademands_id};
                       var step = {$step};
@@ -328,6 +330,7 @@ class PluginMetademandsDraft extends CommonDBTM
                              });
                        };
                      </script>";
+
         $return .= "<script>
                           function udpateDraft(draft_id, draft_name) {
                              if(typeof tinyMCE !== 'undefined'){
@@ -356,6 +359,7 @@ class PluginMetademandsDraft extends CommonDBTM
                                 });
                           }
                         </script>";
+
         $return .= "<script>
                           $('#submitSave').click(function() {
                            
@@ -383,6 +387,7 @@ class PluginMetademandsDraft extends CommonDBTM
                                 });
                           });
                         </script>";
+
         $return .= "</span>";
 
         return $return;
@@ -429,6 +434,7 @@ class PluginMetademandsDraft extends CommonDBTM
         $metademands_id = $datas['plugin_metademands_id'];
         $draft_id = $datas['plugin_metademands_drafts_id'];
         $draft_name = $datas['plugin_metademands_drafts_name'];
+
 
         $query_type = " SELECT itil.name 
                         FROM glpi_plugin_metademands_drafts_values as dvalue
@@ -488,19 +494,27 @@ class PluginMetademandsDraft extends CommonDBTM
 
         echo "<div class='md-wizard'>";
 
+        $userid = Session::getLoginUserID();
+
+
         if (count($metademands_data)) {
             $see_summary = 0;
             foreach ($metademands_data as $form_step => $data) {
                 foreach ($data as $form_metademands_id => $line) {
-                    echo "<form id='draft_form' action=''>
-                <input type='hidden' name='tickets_id' value='0'>
-                <input type='hidden' name='resources_id' value='0'>
-                <input type='hidden' name='resources_step'>
-                <input type='hidden' name='block_id' value='0'>
-                <input type='hidden' name='ancestor_tickets_id' value='0'>
-                <input type='hidden' name='form_metademands_id' value='$form_metademands_id'>
-                
-                ";
+                    echo "<form id='wizard_form' method='post' class='formCustomDraft'
+                        action= '" . Toolbox::getItemTypeFormURL("PluginMetademandsWizard") . "'
+                        enctype='multipart/form-data' class='metademands_img'>
+                    ";
+                    echo Html::hidden('tickets_id', ['value' => 0]);
+                    echo Html::hidden('resources_id', ['value' => 0]);
+                    echo Html::hidden('resources_step', ['value' => 0]);
+                    echo Html::hidden('block_id', ['value' => 0]);
+                    echo Html::hidden('ancestor_tickets_id', ['value' => 0]);
+                    echo Html::hidden('step', ['value' => 1]);
+                    echo Html::hidden('form_metademands_id', ['value' => $form_metademands_id]);
+                    echo Html::hidden('metademands_id', ['value' => $metademands_id]);
+                    echo Html::hidden('_users_id_requester', ['value' => $userid]);
+
                     PluginMetademandsWizard::constructForm(
                         $metademands_id,
                         $metademands_data,
@@ -533,7 +547,7 @@ class PluginMetademandsDraft extends CommonDBTM
         echo "</div>";
     }
 
-    public static function createDraftInput($type)
+    public static function createDraftInput($type, $free_input = 0)
     {
         echo self::createDraftModalWindow("my_new_draft");
 
@@ -542,9 +556,13 @@ class PluginMetademandsDraft extends CommonDBTM
 
         //correct css with condition
         if ($type == 1) {
-            $style = "display:inline-block;margin: 10px;";
+            if($free_input == 'free_input'){
+                $style = "display:inline-block;margin: 10px;display:none";
+            }else{
+                $style = "display:inline-block;margin: 10px;";
+            }
         } else {
-            $style = "display:inline-block;float:left;margin-right: 10px;display:none";
+            $style = "display:inline-block;float:left;margin-right: 10px;";
         }
 
         $trad = __('Careful all the lines are not confirm, are you sure you want to continue ?', 'metademands');
@@ -553,27 +571,26 @@ class PluginMetademandsDraft extends CommonDBTM
                         <button form='' class='submit btn btn-primary' id='button_save_draft' type='submit' onclick='load_draft_modal()'>" . $input_name . "
                         </button>
                         <script>
-                            function load_draft_modal(ev){
+                            function load_draft_modal(){
                                 
-                                var tr_input = document.querySelectorAll('#freeinput_table #tr_input');
-                        
-                                if(tr_input.length > 0){
-                                    if(tr_input.length > 0 ){
-                                        for(var i = 0; i < tr_input.length; i++) {
-                                            var tr_line = tr_input[i];
-                                            if(tr_line.querySelector(\"td input[name='reference']\").value != '' && 
-                                                tr_line.querySelector(\"td input[name='name']\").value != '' && 
-                                                tr_line.querySelector(\"td input[name='quantity']\").value != '' && 
-                                                tr_line.querySelector(\"td input[name='unit_price']\").value != ''){
-                                                
-                                                if(!confirm('{$trad}')){   
-                                                    ev.stopPropagation();
-                                                }
-                                            }
-                                            
+                                var tr_input = document.querySelectorAll('#freeinput_table #tr_input input');
+                                if (tr_input.length > 0) {
+                                    var careful = false;    
+                                
+                                    for(var j = 0; j < tr_input.length; j++) {
+                                       if(tr_input[j].value != '' && tr_input[j].value != '0'){
+                                            careful = true;
+                                       } 
+                                    }
+                                    
+                                    if(careful){
+                                        if (!confirm('{$trad}')) {   
+                                            return;
                                         }
-                                    }                        
+                                    }
+                                    
                                 }
+                                
                                document.querySelector('#my_new_draft').style = 'display:block;background-color: rgba(0, 0, 0, 0.1);';
                                document.querySelector('#my_new_draft').classList.remove('fade');
                             }

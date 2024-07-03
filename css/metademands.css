@@ -465,13 +465,22 @@ textarea.invalid,
 #freeinput_table select:not(.form-control), #freeinput_table input:not(.submit):not(.form-control):not([type=submit]):not([type=color]):not([type=reset]):not([type=checkbox]):not([type=radio]):not(.select2-search__field):not(.numInput):not(.tox-textfield) {
     width: 100%;
 }
-
-.boutons_draft {
+#wizard_form.formCustomDraft .form-sc-group {
+    display: inline-block;
+    float: right;
+    margin-top: 3px;
+}
+#wizard_form.formCustomDraft .boutons_draft {
+    display: inline-block;
     text-align : center;
 }
 
-.boutons_draft .update_draft,
-.boutons_draft .delete_draft{
-    margin: 20px;
+#wizard_form.formCustomDraft .boutons_draft .update_draft,
+#wizard_form.formCustomDraft .boutons_draft .delete_draft{
+    margin: 10px 20px;
     font-size: 15px;
+}
+
+#wizard_form .addlineFI:hover{
+    cursor:pointer;
 }
