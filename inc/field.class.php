@@ -343,11 +343,26 @@ class PluginMetademandsField extends CommonDBChild
         echo "<tr class='tab_bg_1'>";
         echo "<td>" . __('Block', 'metademands') . "</td>";
         echo "<td>";
-        $randRank = Dropdown::showNumber('rank', [
-            'value' => $this->fields["rank"],
-            'min' => 1,
-            'max' => self::MAX_FIELDS
-        ]);
+
+        $values = [];
+
+        for ($i = 1; $i < self::MAX_FIELDS; $i++) {
+
+            $field  = new PluginMetademandsField();
+            $fields = $field->find(["type" => "title-block",
+                "rank" => $i,
+                "plugin_metademands_metademands_id" => $this->fields["plugin_metademands_metademands_id"]]);
+            if (count($fields) > 0) {
+                foreach ($fields as $f) {
+                    $values[] = $i . " - " . $f["name"];
+                }
+            } else {
+                $values[] = $i;
+            }
+        }
+
+        $randRank = Dropdown::showFromArray("rank", $values, ['value' => $this->fields['rank']]);
+
         $paramsRank = [
             'rank' => '__VALUE__',
             'step' => 'order',
@@ -735,11 +750,24 @@ class PluginMetademandsField extends CommonDBChild
 
         echo "<td>" . __('Block', 'metademands') . "</td>";
         echo "<td>";
-        $randRank = Dropdown::showNumber('rank', [
-            'value' => $this->fields["rank"],
-            'min' => 1,
-            'max' => self::MAX_FIELDS
-        ]);
+        $values = [];
+
+        for ($i = 1; $i < self::MAX_FIELDS; $i++) {
+
+            $field  = new PluginMetademandsField();
+            $fields = $field->find(["type" => "title-block",
+                "rank" => $i,
+                "plugin_metademands_metademands_id" => $this->fields["plugin_metademands_metademands_id"]]);
+            if (count($fields) > 0) {
+                foreach ($fields as $f) {
+                    $values[] = $i . " - " . $f["name"];
+                }
+            } else {
+                $values[] = $i;
+            }
+        }
+
+        $randRank = Dropdown::showFromArray("rank", $values, ['value' => $this->fields['rank']]);
         $paramsRank = [
             'rank' => '__VALUE__',
             'step' => 'order',
@@ -812,7 +840,7 @@ class PluginMetademandsField extends CommonDBChild
                     echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
                     echo Html::hidden('item', ['value' => $this->fields['item']]);
                 }
-                
+
             } else if (in_array($this->fields["type"],self::$field_dropdown_types)) {
 
                 echo "<span id='show_item' >";
