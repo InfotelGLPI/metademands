@@ -1607,7 +1607,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                                 case 'select-one':
                                                 case 'select-multiple':
                                                     jQuery(this).val('0').trigger('change');
-                                                    jQuery(this).val('0');
                                                     break;
                                                 case 'checkbox':
                                                 case 'radio':
@@ -1692,7 +1691,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             case 'select-one':
                                             case 'select-multiple':
                                                 jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
@@ -1749,7 +1747,6 @@ class PluginMetademandsFieldOption extends CommonDBChild
                                             case 'select-one':
                                             case 'select-multiple':
                                                 jQuery(this).val('0').trigger('change');
-                                                jQuery(this).val('0');
                                                 break;
                                             case 'checkbox':
                                             case 'radio':
