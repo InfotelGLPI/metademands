@@ -484,3 +484,7 @@ textarea.invalid,
 #wizard_form .addlineFI:hover{
     cursor:pointer;
 }
+
+.step_wizard_div {
+    margin-top: 10px;
+}

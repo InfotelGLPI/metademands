@@ -1888,7 +1888,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 if ($see_summary == 0) {
                     //Circles which indicates the steps of the form:
-                    echo "<div style=''>";
+                    echo "<div class='step_wizard_div center'>";
 
                     if ($cpt > 1) {
                         for ($j = 1; $j <= $cpt; $j++) {
