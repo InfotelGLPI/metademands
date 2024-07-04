@@ -204,7 +204,7 @@ function plugin_version_metademands()
        'homepage'     => 'https://github.com/InfotelGLPI/metademands',
        'requirements' => [
           'glpi' => [
-             'min' => '10.0',
+             'min' => '10.0.11',
              'max' => '11.0',
              'dev' => false
           ]
