@@ -5545,7 +5545,7 @@ JAVASCRIPT
             $fieldoptions = new PluginMetademandsFieldOption();
             $fieldparameters = new PluginMetademandsFieldParameter();
             $fieldcustoms = new PluginMetademandsFieldCustomvalue();
-
+            $fieldcondition = new PluginMetademandsCondition();
             $ticketfields = new PluginMetademandsTicketField();
             $tasks = new PluginMetademandsTask();
             $groups = new PluginMetademandsGroup();
@@ -5581,6 +5581,7 @@ JAVASCRIPT
                                 if ($form_metademands_id == $metademands_id) {
                                     // Add metademand fields
                                     foreach ($line['form'] as $values) {
+                                        $input = [];
                                         $id = $values['id'];
                                         unset($values['id']);
                                         $input['type'] = $values['type'];
@@ -5700,6 +5701,7 @@ JAVASCRIPT
                     $old_field_id = $associated_fields[$newField["id"]];
                     $oldParams = $fieldparameters->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldParams as $oldParam) {
+                        $input = [];
                         $input['custom'] = $oldParam['custom'];
                         $input['default'] = $oldParam['default'];
                         $input['hide_title'] = $oldParam['hide_title'];
@@ -5730,6 +5732,7 @@ JAVASCRIPT
                     $old_field_id = $associated_fields[$newField["id"]];
                     $oldCustoms = $fieldcustoms->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldCustoms as $oldCustom) {
+                        $inputc = [];
                         $inputc['name'] = Toolbox::addslashes_deep($oldCustom['name']);
                         $inputc['is_default'] = $oldCustom['is_default'];
                         $inputc['comment'] = Toolbox::addslashes_deep($oldCustom['comment']);
@@ -5743,8 +5746,8 @@ JAVASCRIPT
                     $old_field_id = $associated_fields[$newField["id"]];
                     $oldOptions = $fieldoptions->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldOptions as $oldOption) {
+                        $inputo = [];
                         $inputo['plugin_metademands_tasks_id'] = $associated_tasks[$oldOption['plugin_metademands_tasks_id']];
-
                         $inputo['fields_link'] = $associated_oldfields[$oldOption['fields_link']] ?? 0;
                         $inputo['hidden_link'] = $associated_oldfields[$oldOption['hidden_link']] ?? 0;
                         $inputo['hidden_block'] = $oldOption['hidden_block'];
@@ -5761,6 +5764,33 @@ JAVASCRIPT
                         }
 
                         $fieldoptions->add($inputo);
+                    }
+
+                    $old_field_id = $associated_fields[$newField["id"]];
+                    $oldConds = $fieldcondition->find(['plugin_metademands_fields_id' => $old_field_id]);
+
+                    foreach ($oldConds as $oldCond) {
+                        $input = [];
+                        $input['type'] = $oldCond['type'];
+                        $input['order'] = $oldCond['order'];
+                        $input['show_condition'] = $oldCond['show_condition'];
+                        $input['show_logic'] = $oldCond['show_logic'];
+                        if (isset($oldCond["check_value"]) && is_numeric($oldCond["check_value"])) {
+                            $check_value = $oldCond["check_value"] ?? 0;
+                            if ($check_value != 0
+                                && isset($mapTableCheckValue[$check_value])) {
+                                $input['check_value'] = $mapTableCheckValue[$check_value];
+                            }
+                        } else if (isset($oldCond["check_value"]) && is_string($oldCond["check_value"])) {
+                            $input['check_value'] = $oldCond["check_value"];
+                        } else  {
+                            $input['check_value'] = 0;
+                        }
+                        $input['item'] = $oldCond['item'];
+                        $input['items_id'] = $oldCond['items_id'];
+                        $input['plugin_metademands_metademands_id'] = $new_metademands_id;
+                        $input['plugin_metademands_fields_id'] = $newField['id'];
+                        $fieldcondition->add($input);
                     }
                 }
                 // Add ticket fields

@@ -343,6 +343,9 @@ class PluginMetademandsField extends CommonDBChild
         echo "<tr class='tab_bg_1'>";
         echo "<td>" . __('Block', 'metademands') . "</td>";
         echo "<td>";
+
+        $values = [];
+
         $randRank = Dropdown::showNumber('rank', [
             'value' => $this->fields["rank"],
             'min' => 1,
@@ -802,8 +805,16 @@ class PluginMetademandsField extends CommonDBChild
         } else {
 
             if ($this->fields["type"] == "dropdown_meta") {
-                echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
-                echo Html::hidden('item', ['value' => $this->fields['item']]);
+                $metademand_custom = new PluginMetademandsFieldCustomvalue();
+                if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $this->fields['id']])) {
+                    if (count($customs) > 0) {
+                        echo self::getFieldItemsName($this->fields['type'], 'other');
+                        echo Html::hidden('item', ['value' => 'other']);
+                    }
+                } else {
+                    echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
+                    echo Html::hidden('item', ['value' => $this->fields['item']]);
+                }
 
             } else if (in_array($this->fields["type"],self::$field_dropdown_types)) {
 

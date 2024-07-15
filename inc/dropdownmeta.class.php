@@ -1137,7 +1137,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $onchange .= "} else {
 
                             $('[bloc-id =\"bloc'+key+'\"]').show();
-                            " .PluginMetademandsFieldoption::setMandatoryFieldsByField($metaid, $hidden_block)."
+                            " .PluginMetademandsFieldoption::setMandatoryBlockFields($metaid, $hidden_block)."
                         }
                     });
               ";

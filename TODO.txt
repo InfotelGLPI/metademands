@@ -1,12 +1,3 @@
 groupe proposé dans pas à pas : independant de l'entité
 
-3.3.13
-Fix next group / user title display
-Fix entity of new field in same entity as metademand
-Fix Drop is_mandatory for add existing field
-Fix duplicate metademands
-Fix mandatory textarea check
-Fix no submitted values from serializeArray
-Add link usertitle & usercategory to user field
-Fix wrong button title on stepbystep
-Fix empty users_id_recipient in son ticket
+3.3.14

@@ -27,7 +27,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_METADEMANDS_VERSION', '3.3.13');
+define('PLUGIN_METADEMANDS_VERSION', '3.3.14');
 
 if (!defined("PLUGIN_METADEMANDS_DIR")) {
     define("PLUGIN_METADEMANDS_DIR", Plugin::getPhpDir("metademands"));
@@ -204,7 +204,7 @@ function plugin_version_metademands()
        'homepage'     => 'https://github.com/InfotelGLPI/metademands',
        'requirements' => [
           'glpi' => [
-             'min' => '10.0',
+             'min' => '10.0.11',
              'max' => '11.0',
              'dev' => false
           ]
