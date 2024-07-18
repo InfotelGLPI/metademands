@@ -446,11 +446,21 @@ class PluginMetademandsField extends CommonDBChild
         $this->showFormHeader($options);
 
         $metademand_fields = new self();
-        $metademand_fields->getFromDBByCrit([
-            'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-            'item' => 'ITILCategory_Metademands'
-        ]);
+
+        if ($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution') {
+            $metademand_fields->getFromDBByCrit([
+                'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
+                'item' => 'ITILCategory_Requestevolutions'
+            ]);
+        }else{
+            $metademand_fields->getFromDBByCrit([
+                'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
+                'item' => 'ITILCategory_Metademands'
+            ]);
+        }
+
         $categories = [];
+
         if (isset($metademand->fields['itilcategories_id'])) {
             if (is_array(json_decode($metademand->fields['itilcategories_id'], true))) {
                 $categories = json_decode($metademand->fields['itilcategories_id'], true);

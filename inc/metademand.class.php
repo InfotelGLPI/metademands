@@ -2592,11 +2592,6 @@ JAVASCRIPT
                                 }
                             }
                         }
-                        //TODO ELCH Add Hook
-                        if($object_class == "RequestEvolution"){
-
-                        }
-
                         // Create sons tickets
                         if ($object_class == 'Ticket') {
                             if (isset($line['tasks'])
@@ -7501,8 +7496,6 @@ HTML;
         } elseif ($metademand->fields['object_to_create'] == 'Change') {
             $critCategory = ['is_change' => 1];
             $critMeta = ['object_to_create' => 'Change'];
-
-            //TODO ELCH Add Hook for define linked crits ?
         } elseif ($metademand->fields['object_to_create'] == 'PluginReleasesRelease') {
             $critCategory = [];
             $critMeta = ['object_to_create' => 'PluginReleasesRelease'];
@@ -7549,7 +7542,7 @@ HTML;
             ]];
         }
         if($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution'){
-            $result = $dbu->getAllDataFromTable(PluginRequestevolutionsItilcategorie::getTable(), []);
+            $result = $dbu->getAllDataFromTable(PluginRequestevolutionsItilcategory::getTable(), []);
         }else{
             $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
         }

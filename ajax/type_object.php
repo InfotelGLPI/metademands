@@ -109,7 +109,7 @@ if ($_POST['object_to_create'] != NULL) {
        $rand = Ticket::dropdownType('type', $opt);
 
        Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-           PLUGIN_REQUESTEVOLUTIONS_DIR. "/ajax/dropdownITILCategories.php");
+           PLUGIN_REQUESTEVOLUTIONS_DIR. "/ajax/dropdownITILCategoriesRequestevo.php");
 
        echo "<td>" . __('Category') . "</td>";
        echo "<td>";

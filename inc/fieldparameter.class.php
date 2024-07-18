@@ -455,6 +455,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 
             //TODO ELCH
             if ($objectclass == 'PluginRequestevolutionsRequestevolution') {
+                $tt = new PluginRequestevolutionsRequestevolutionTemplate();
                 $allowed_fields = $tt->getAllowedFields(true, true);
                 $allowed_fields[9] = 'date_mep';
                 $allowed_fields[18] = 'tps_charge_dmd';
