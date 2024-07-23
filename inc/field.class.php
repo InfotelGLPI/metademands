@@ -1693,7 +1693,7 @@ class PluginMetademandsField extends CommonDBChild
                 return __('Category of the metademand', 'metademands');
                 //TODO ELCH
             case 'ITILCategory_Requestevolutions':
-                return __('Category of the SI4', 'metademands');
+                return __('SI4 categories', 'metademands');
             case 'mydevices':
                 return __('My devices');
             case 'urgency':
