@@ -262,7 +262,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             $this->addStandardTab('PluginMetademandsConfigstep', $ong, $options);
         }
         //TODO Change / problem ?
-        if ($this->getField('object_to_create') == 'Ticket') {
+        if ($this->getField('object_to_create') == 'Ticket' ) {
             $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
         }
         $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);

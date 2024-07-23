@@ -216,12 +216,11 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $field = "";
                 if ($hidden == 0) {
                     $field .= PluginRequestevolutionsItilcategory::dropdown($opt);
-                    $field .= "<input type='hidden' name='" . $nameitil . "_plugin_requestevolutions_itilcategories_id' value='" . $data['id'] . "' >";
                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_requestevolutions_itilcategories_id_key' value='" . $data['id'] . "' >";
                 }
 
                 if ($readonly == 1 || $hidden == 1) {
-                    $field .= Html::hidden($nameitil . "_plugin_servicecatalog_itilcategories_id", ['value' => $value]);
+                    $field .= Html::hidden($nameitil . "_plugin_requestevolutions_itilcategories_id", ['value' => $value]);
                 }
                 break;
             case 'mydevices':

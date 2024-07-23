@@ -339,6 +339,9 @@ if ($nofreeinputs === false) {
                                 (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
                                     && $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'];
 
+                            if (isset($_POST['field_plugin_requestevolutions_itilcategories_id'])) {
+                                $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_requestevolutions_itilcategories_id'] = $_POST['field_plugin_requestevolutions_itilcategories_id'];
+                            }
                         }
 
                         if ($KO) {
