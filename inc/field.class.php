@@ -2935,6 +2935,17 @@ class PluginMetademandsField extends CommonDBChild
             $optgroup[__("Assets")][PassiveDCEquipment::class] = PassiveDCEquipment::getTypeName(2);
         }
 
+        $plugin = new Plugin();
+        if ($plugin->isActivated("genericobject")) {
+            foreach (PluginGenericobjectType::getTypes() as $id => $objecttype) {
+                $itemtype = $objecttype['itemtype'];
+                if (class_exists($itemtype)) {
+                    $item = new $itemtype();
+                    $optgroup[__("Assets")][$item::class] = $item::getTypeName(2);
+                }
+            }
+        }
+
         return $optgroup;
     }
 

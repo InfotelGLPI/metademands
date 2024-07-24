@@ -376,6 +376,19 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 $field .= Ticket::dropdownPriority($options);
                 break;
             default:
+                //example other plugin with metademand class
+                $cond = [];
+                $field = "";
+                $opt = [
+                    'value' => $value,
+                    'entity' => $_SESSION['glpiactiveentities'],
+                    'name' => $namefield . "[" . $data['id'] . "]",
+                    //                          'readonly'  => true,
+                    'condition' => $cond,
+                    'display' => false
+                ];
+                $container_class = new $data['item']();
+                $field .= $container_class::dropdown($opt);
                 break;
         }
 

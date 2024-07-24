@@ -321,7 +321,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                    <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
                 if (is_array($value) && count($value) > 0) {
                     foreach ($value as $k => $val) {
-                        $field .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
+                        $field .= "<option selected value=\"$val\" >" . Dropdown::getDropdownName(getTableForItemType($data['item']), $val) . "</option>";
                     }
                 }
                 $field .= "</select></div>";
