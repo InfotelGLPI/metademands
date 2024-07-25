@@ -696,7 +696,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     $information = json_decode($elt['informations_to_display']);
                                     $item = new $elt["item"]();
                                     $dataItems = "";
-                                    if ($item->getFromDB($fields[$elt['id']])) {
+                                    if ($item->getFromDB($fields[$elt['id']]) && $information) {
 
                                         if (in_array('full_name', $information)) {
                                             $dataItems .= " " . $elt["item"]::getFriendlyNameById($fields[$elt['id']]) . " ";
