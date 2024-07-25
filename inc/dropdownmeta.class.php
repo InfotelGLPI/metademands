@@ -42,7 +42,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         '',
         'other',
         'ITILCategory_Metademands',
-        'ITILCategory_Requestevolutions',
         'urgency',
         'impact',
         'priority',
@@ -176,51 +175,16 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 }
                 $field = "";
                 if ($hidden == 0) {
-                    $field .= ITILCategory::dropdown($opt);
+                    if($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution'){
+                        $field .= PluginRequestevolutionsItilcategory::dropdown($opt);
+                    }else{
+                        $field .= ITILCategory::dropdown($opt);
+                    }
                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
                 }
 
                 if ($readonly == 1 || $hidden == 1) {
                     $field .= Html::hidden($nameitil . "_plugin_servicecatalog_itilcategories_id", ['value' => $value]);
-                }
-                break;
-            case 'ITILCategory_Requestevolutions':
-                $nameitil = 'field';
-                $values = json_decode($metademand->fields['itilcategories_id']);
-                //from Service Catalog
-                if ($itilcategories_id > 0) {
-                    $value = $itilcategories_id;
-                }
-                $readonly = $data['readonly'];
-                $hidden = $data['hidden'];
-                if ($hidden == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
-                    && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
-                    $hidden = 0;
-                }
-                if ($data['readonly'] == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
-                    && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
-                    $readonly = 0;
-                }
-                $opt = [
-                    'name' => $nameitil . "_plugin_requestevolutions_itilcategories_id",
-                    'right' => 'all',
-                    'value' => $value,
-                    'condition' => ["id" => $values],
-                    'display' => false,
-                    'readonly' => $readonly ?? false,
-                    'class' => 'form-select itilmeta'
-                ];
-                if ($data['is_mandatory'] == 1) {
-                    $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
-                }
-                $field = "";
-                if ($hidden == 0) {
-                    $field .= PluginRequestevolutionsItilcategory::dropdown($opt);
-                    $field .= "<input type='hidden' name='" . $nameitil . "_plugin_requestevolutions_itilcategories_id_key' value='" . $data['id'] . "' >";
-                }
-
-                if ($readonly == 1 || $hidden == 1) {
-                    $field .= Html::hidden($nameitil . "_plugin_requestevolutions_itilcategories_id", ['value' => $value]);
                 }
                 break;
             case 'mydevices':
@@ -827,10 +791,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $name = "field_plugin_servicecatalog_itilcategories_id";
         }
 
-        if ($data["item"] == "ITILCategory_Requestevolutions") {
-            $name = "field_plugin_requestevolutions_itilcategories_id";
-        }
-
         $script .= "$('[name=\"$name\"]').change(function() {";
         $script .= "var tohide = {};";
         foreach ($check_values as $idc => $check_value) {
@@ -927,10 +887,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         $name = "field[" . $data["id"] . "]";
         if ($data["item"] == "ITILCategory_Metademands") {
         $name = "field_plugin_servicecatalog_itilcategories_id";
-        }
-
-        if ($data["item"] == "ITILCategory_Requestevolutions") {
-            $name = "field_plugin_requestevolutions_itilcategories_id";
         }
 
         $onchange = "";

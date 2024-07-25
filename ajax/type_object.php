@@ -100,7 +100,7 @@ if ($_POST['object_to_create'] != NULL) {
       echo "</tr>";
    }
 
-   else {
+   elseif ($object == 'PluginRequestevolutionsRequestevolution') {
        //TODO ELCH Add Hook for define linked category
        echo "<tr class='tab_bg_1'>";
        $opt  = [

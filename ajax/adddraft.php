@@ -124,10 +124,6 @@ if (isset($_POST['save_draft'])) {
                                 $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                             }
 
-                            if ($value['item'] == 'ITILCategory_Requestevolutions') {
-                                $_POST['field'][$id] = $_POST['field_plugin_requestevolutions_itilcategories_id_key'] ?? 0;
-                            }
-
                             if ($value['type'] == 'basket' && isset($_POST['quantity'])) {
                                 $_POST['field'][$id] = $_POST['quantity'][$id];
                             }

@@ -841,9 +841,6 @@ class PluginMetademandsStep extends CommonDBChild
                                         $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                                     }
 
-                                    if ($data["item"] == "ITILCategory_Requestevolutions") {
-                                        $_POST['field'][$id] = $_POST['field_plugin_requestevolutions_itilcategories_id'] ?? 0;
-                                    }
                                 }
                             }
                         }

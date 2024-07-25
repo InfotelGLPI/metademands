@@ -7500,18 +7500,19 @@ HTML;
             $critCategory = [];
             $critMeta = ['object_to_create' => 'PluginReleasesRelease'];
         }
-        elseif ($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution') {
+
+        $critCategory += getEntitiesRestrictCriteria(
+            \ITILCategory::getTable(),
+            'entities_id',
+            $_SESSION['glpiactiveentities'],
+            true
+        );
+
+        if ($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution') {
             //TODO ELCH Add Hook for define linked category
             $critCategory = [];
             $critMeta = ['object_to_create' => 'PluginRequestevolutionsRequestevolution'];
         }
-
-        $critCategory += getEntitiesRestrictCriteria(
-                \ITILCategory::getTable(),
-                'entities_id',
-                $_SESSION['glpiactiveentities'],
-                true
-            );
 
 
 
@@ -7541,6 +7542,7 @@ HTML;
                 'id' => $usedCategories
             ]];
         }
+
         if($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution'){
             $result = $dbu->getAllDataFromTable(PluginRequestevolutionsItilcategory::getTable(), []);
         }else{

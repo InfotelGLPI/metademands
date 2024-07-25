@@ -447,17 +447,12 @@ class PluginMetademandsField extends CommonDBChild
 
         $metademand_fields = new self();
 
-        if ($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution') {
-            $metademand_fields->getFromDBByCrit([
-                'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-                'item' => 'ITILCategory_Requestevolutions'
-            ]);
-        }else{
-            $metademand_fields->getFromDBByCrit([
-                'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
-                'item' => 'ITILCategory_Metademands'
-            ]);
-        }
+
+        $metademand_fields->getFromDBByCrit([
+            'plugin_metademands_metademands_id' => $this->fields['plugin_metademands_metademands_id'],
+            'item' => 'ITILCategory_Metademands'
+        ]);
+
 
         $categories = [];
 
@@ -1691,9 +1686,6 @@ class PluginMetademandsField extends CommonDBChild
                 return __('My values', 'metademands');
             case 'ITILCategory_Metademands':
                 return __('Category of the metademand', 'metademands');
-                //TODO ELCH
-            case 'ITILCategory_Requestevolutions':
-                return __('SI4 categories', 'metademands');
             case 'mydevices':
                 return __('My devices');
             case 'urgency':

@@ -302,9 +302,6 @@ if ($nofreeinputs === false) {
                                 $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
                             }
 
-                            if ($value['item'] == 'ITILCategory_Requestevolutions') {
-                                $_POST['field'][$id] = isset($_POST['field_plugin_requestevolutions_itilcategories_id']) ? $_POST['field_plugin_requestevolutions_itilcategories_id'] : 0;
-                            }
                             $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
                         }
 

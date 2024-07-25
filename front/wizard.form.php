@@ -254,10 +254,6 @@ if (isset($_POST['next'])) {
                                 $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                             }
 
-                            if ($value['item'] == 'ITILCategory_Requestevolutions') {
-                                $_POST['field'][$id] = $_POST['field_plugin_requestevolutions_itilcategories_id'] ?? 0;
-                            }
-
                             $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
                         }
                         foreach ($checks as $check) {
@@ -485,9 +481,6 @@ elseif (isset($_POST['add_to_basket'])) {
             $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
         }
 
-        if ($value['item'] == 'ITILCategory_Requestevolutions') {
-            $_POST['field'][$id] = $_POST['field_plugin_requestevolutions_itilcategories_id'] ?? 0;
-        }
 
         $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
     }
