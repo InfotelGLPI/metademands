@@ -455,12 +455,16 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 
             //TODO ELCH
             if ($objectclass == 'PluginRequestevolutionsRequestevolution') {
-                $tt = new PluginRequestevolutionsRequestevolutionTemplate();
-                $allowed_fields = $tt->getAllowedFields(true, true);
-                $allowed_fields[9] = 'date_mep';
-                $allowed_fields[18] = 'tps_charge_dmd';
-                $allowed_fields[19] = 'date_mod_status';
-                $allowed_fields[20] = 'complexite';
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        if (Plugin::isPluginActive($plug)) {
+                            $new_fields = self::addPluginFieldItems($plug);
+                            if (is_array($new_fields) && count($new_fields) > 0) {
+                                $allowed_fields = array_merge($allowed_fields, $new_fields);
+                            }
+                        }
+                    }
+                }
                 unset($allowed_fields[-1]);
             }
 

@@ -936,12 +936,6 @@ class PluginMetademandsMetademand extends CommonDBTM
             $types[$type] = $item->getTypeName(1);
         }
 
-        //Add RequestEvolution
-        if (Plugin::isPluginActive("requestevolutions")) {
-            $types['PluginRequestevolutionsRequestevolution'] = "Demande d'évolution";
-        }
-
-
         return $types;
     }
 
@@ -7511,6 +7505,15 @@ HTML;
         if ($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution') {
             //TODO ELCH Add Hook for define linked category
             $critCategory = [];
+
+            if (isset($PLUGIN_HOOKS['metademands'])) {
+                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                    $new_fields = PluginMetademandsField::addPluginDropdownFieldItems($plug);
+                    if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                        $critCategory = array_merge_recursive($critCategory, $new_fields);
+                    }
+                }
+            }
             $critMeta = ['object_to_create' => 'PluginRequestevolutionsRequestevolution'];
         }
 
