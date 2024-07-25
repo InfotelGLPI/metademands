@@ -1764,6 +1764,7 @@ JAVASCRIPT
 
                     $fieldparameter            = new PluginMetademandsFieldParameter();
                     if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field_data["id"]])) {
+                        $fields_data[$id]['informations_to_display'] = $fieldparameter->fields['informations_to_display'];
                         if ($fieldparameter->fields['link_to_user']) {
                             continue;
                         }
