@@ -81,11 +81,6 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 $post[$_POST['field_plugin_servicecatalog_itilcategories_id_key']] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
             }
 
-            if(isset($_POST['field_plugin_requestevolutions_itilcategories_id'])){
-                //Category id if have category field
-                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_requestevolutions_itilcategories_id'] = $_POST['field_plugin_requestevolutions_itilcategories_id'];
-            }
-
         } else {
             $post['field'] = [];
         }
@@ -181,9 +176,6 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 //Category id if have category field
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
 
-                if(isset($_POST['field_plugin_requestevolutions_itilcategories_id'])){
-                    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_requestevolutions_itilcategories_id'] = $_POST['field_plugin_requestevolutions_itilcategories_id'] ?? 0;
-                }
 
             }
 

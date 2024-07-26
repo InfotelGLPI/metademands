@@ -284,10 +284,6 @@ if (isset($_POST['next'])) {
                                     && $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
 //                            $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_type']                                    = $metademands->fields['type'];
 
-                            if(isset($_POST['field_plugin_requestevolutions_itilcategories_id'])){
-                                //Category id if have category field
-                                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_requestevolutions_itilcategories_id'] = $_POST['field_plugin_requestevolutions_itilcategories_id'];
-                            }
                         }
 
                         if ($KO) {

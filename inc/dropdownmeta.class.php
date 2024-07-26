@@ -63,6 +63,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     static function showWizardField($data, $namefield, $value, $on_order, $itilcategories_id)
     {
+        global $PLUGIN_HOOKS;
+
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
 
@@ -175,11 +177,22 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 }
                 $field = "";
                 if ($hidden == 0) {
-                    if($metademand->fields['object_to_create'] == 'PluginRequestevolutionsRequestevolution'){
-                        $field .= PluginRequestevolutionsItilcategory::dropdown($opt);
-                    }else{
+                    $pass = false;
+                    if (isset($PLUGIN_HOOKS['metademands'])) {
+
+                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                            $new_drop = self::getPluginDropdownItilcategory($plug, $opt);
+                            if (Plugin::isPluginActive($plug) && $new_drop != false) {
+                                $field .= $new_drop;
+                                $pass = true;
+                            }
+                        }
+                    }
+
+                    if(!$pass){
                         $field .= ITILCategory::dropdown($opt);
                     }
+
                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
                 }
 
@@ -978,10 +991,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         if ($data["item"] == "ITILCategory_Metademands") {
             $name = "field_plugin_servicecatalog_itilcategories_id";
         }
-        if ($data["item"] == "ITILCategory_Requestevolutions") {
-            $name = "field_plugin_requestevolutions_itilcategories_id";
-        }
-
         //add childs by idc
         $childs_by_checkvalue = [];
         foreach ($check_values as $idc => $check_value) {
@@ -1296,5 +1305,26 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         }
 
         return $result;
+    }
+
+    private static function getPluginDropdownItilcategory(int|string $plug, $opt)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getdropdownItilcategory'])) {
+                    return $item->getdropdownItilcategory($opt);
+                }
+            }
+        }
     }
 }

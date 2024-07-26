@@ -33,6 +33,9 @@ Html::header_nocache();
 
 Session::checkCentralAccess();
 
+global $PLUGIN_HOOKS;
+
+
 if ($_POST['object_to_create'] != NULL) {
    $object = $_POST['object_to_create'];
 
@@ -100,7 +103,7 @@ if ($_POST['object_to_create'] != NULL) {
       echo "</tr>";
    }
 
-   elseif ($object == 'PluginRequestevolutionsRequestevolution') {
+   else{
        //TODO ELCH Add Hook for define linked category
        echo "<tr class='tab_bg_1'>";
        $opt  = [
@@ -108,15 +111,28 @@ if ($_POST['object_to_create'] != NULL) {
        ];
        $rand = Ticket::dropdownType('type', $opt);
 
-       Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-           PLUGIN_REQUESTEVOLUTIONS_DIR. "/ajax/dropdownITILCategoriesRequestevo.php");
+       if (isset($PLUGIN_HOOKS['metademands'])) {
+           foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+               if (Plugin::isPluginActive($plug)) {
+                   $url = PluginMetademandsMetademand::getPluginUniqueDropdownUrl($plug);
+               }
+           }
+       }
 
-       echo "<td>" . __('Category') . "</td>";
-       echo "<td>";
+       if($url != '') {
+           Ajax::updateItemOnSelectEvent(
+               "dropdown_type$rand",
+               "show_category_by_type",
+               $url
+           );
 
-       echo "<span id='show_category_by_type'>";
-       echo "</span>";
-       echo "</td>";
+           echo "<td>" . __('Category') . "</td>";
+           echo "<td>";
+
+           echo "<span id='show_category_by_type'>";
+           echo "</span>";
+           echo "</td>";
+       }
        echo "</tr>";
    }
 }
