@@ -63,6 +63,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     static function showWizardField($data, $namefield, $value, $on_order, $itilcategories_id)
     {
+        global $PLUGIN_HOOKS;
+
         $metademand = new PluginMetademandsMetademand();
         $metademand->getFromDB($data['plugin_metademands_metademands_id']);
 
@@ -180,7 +182,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     if (isset($PLUGIN_HOOKS['metademands'])) {
                         foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                             if (Plugin::isPluginActive($plug)) {
-                                self::getPluginDropdownItilcategory($plug, $opt);
+                                $field .= self::getPluginDropdownItilcategory($plug, $opt);
                                 $pass = true;
                             }
                         }
