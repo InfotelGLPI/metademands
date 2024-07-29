@@ -176,7 +176,20 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                 }
                 $field = "";
                 if ($hidden == 0) {
-                    $field .= ITILCategory::dropdown($opt);
+                    $pass = false;
+                    if (isset($PLUGIN_HOOKS['metademands'])) {
+                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                            if (Plugin::isPluginActive($plug)) {
+                                self::getPluginDropdownItilcategory($plug, $opt);
+                                $pass = true;
+                            }
+                        }
+                    }
+
+                    if(!$pass){
+                        $field .= ITILCategory::dropdown($opt);
+                    }
+
                     $field .= "<input type='hidden' name='" . $nameitil . "_plugin_servicecatalog_itilcategories_id_key' value='" . $data['id'] . "' >";
                 }
 
@@ -612,6 +625,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     static function showValueToCheck($item, $params)
     {
+        global $PLUGIN_HOOKS;
+
         $field = new PluginMetademandsFieldOption();
         $existing_options = $field->find(["plugin_metademands_fields_id" => $params["plugin_metademands_fields_id"]]);
         $already_used = [];
@@ -635,7 +650,21 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     'display' => true,
                     'used' => $already_used
                 ];
-                ITILCategory::dropdown($opt);
+
+                $pass = false;
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        $new_drop = self::getPluginDropdownItilcategory($plug, $opt);
+                        if (Plugin::isPluginActive($plug) && $new_drop != false) {
+                            $field .= $new_drop;
+                            $pass = true;
+                        }
+                    }
+                }
+
+                if(!$pass){
+                    ITILCategory::dropdown($opt);
+                }
 
                 break;
             default:
@@ -682,12 +711,29 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     static function showParamsValueToCheck($params)
     {
+        global $PLUGIN_HOOKS;
+
         if ($params['check_value'] == -1) {
             echo __('Not null value', 'metademands');
         } else {
             switch ($params["item"]) {
                 case 'ITILCategory_Metademands':
-                    echo Dropdown::getDropdownName('glpi_itilcategories', $params['check_value']);
+
+                    $pass = false;
+                    if (isset($PLUGIN_HOOKS['metademands'])) {
+                        foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                            $new_drop = self::getPluginDropdownItilcategoryName($plug, $params['check_value']);
+                            if (Plugin::isPluginActive($plug) && $new_drop != false) {
+                                echo $new_drop;
+                                $pass = true;
+                            }
+                        }
+                    }
+
+                    if(!$pass){
+                        echo Dropdown::getDropdownName('glpi_itilcategories', $params['check_value']);
+                    }
+
                     break;
                 default:
                     $dbu = new DbUtils();
@@ -1145,6 +1191,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
 
     public static function getFieldValue($field, $lang)
     {
+        global $PLUGIN_HOOKS;
+
         $dbu = new DbUtils();
         if (!empty($field['custom_values'])
             && $field['item'] == 'other') {
@@ -1167,11 +1215,27 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         } else {
             if ($field['value'] != 0) {
                 switch ($field['item']) {
+
                     case 'ITILCategory_Metademands':
-                        return Dropdown::getDropdownName(
-                            $dbu->getTableForItemType('ITILCategory'),
-                            $field['value']
-                        );
+
+                        $pass = false;
+                        if (isset($PLUGIN_HOOKS['metademands'])) {
+                            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                                $new_drop = self::getPluginDropdownItilcategoryName($plug, $field['value']);
+                                if (Plugin::isPluginActive($plug) && $new_drop != false) {
+                                    return $new_drop;
+                                    $pass = true;
+                                }
+                            }
+                        }
+
+                        if(!$pass){
+                            return Dropdown::getDropdownName(
+                                $dbu->getTableForItemType('ITILCategory'),
+                                $field['value']
+                            );
+                        }
+
                     case 'mydevices':
                         $splitter = explode("_", $field['value']);
                         if (count($splitter) == 2) {
@@ -1303,5 +1367,47 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         }
 
         return $result;
+    }
+
+    private static function getPluginDropdownItilcategory(int|string $plug, $opt)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getdropdownItilcategory'])) {
+                    return $item->getdropdownItilcategory($opt);
+                }
+            }
+        }
+    }
+
+    static function getPluginDropdownItilcategoryName(int|string $plug, $opt)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getdropdownItilcategoryName'])) {
+                    return $item->getdropdownItilcategoryName($opt);
+                }
+            }
+        }
     }
 }

@@ -822,6 +822,8 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     public static function getSpecificValueToDisplay($field, $values, array $options = [])
     {
+        global $PLUGIN_HOOKS;
+
         if (!is_array($values)) {
             $values = [$field => $values];
         }
@@ -836,7 +838,23 @@ class PluginMetademandsMetademand extends CommonDBTM
                 $display = "";
                 if (count($categories) > 0) {
                     foreach ($categories as $category) {
-                        $display .= Dropdown::getDropdownName("glpi_itilcategories", $category) . "<br>";
+                        $pass = false;
+                        if (isset($PLUGIN_HOOKS['metademands'])) {
+                            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                                $new_drop = PluginMetademandsDropdownmeta::getPluginDropdownItilcategoryName(
+                                    $plug,
+                                    $category
+                                );
+                                if (Plugin::isPluginActive($plug) && $new_drop > 0) {
+                                    $display .= $new_drop . "<br>";
+                                    $pass = true;
+                                }
+                            }
+                        }
+
+                        if (!$pass) {
+                            $display .= Dropdown::getDropdownName("glpi_itilcategories", $category) . "<br>";
+                        }
                     }
                 }
                 return $display;
@@ -934,6 +952,20 @@ class PluginMetademandsMetademand extends CommonDBTM
         foreach (self::getTypes(true) as $type) {
             $item = new $type();
             $types[$type] = $item->getTypeName(1);
+        }
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                if (Plugin::isPluginActive($plug)) {
+                    $datas = PluginMetademandsMetademand::getPluginObjectType($plug);
+                    if(is_array($datas)){
+                        $type = $datas['type'];
+                        $name = $datas['name'];
+
+                        $types[$type] = $name;
+                    }
+
+                }
+            }
         }
         return $types;
     }
@@ -2582,7 +2614,6 @@ JAVASCRIPT
                                 }
                             }
                         }
-                        //TODO ELCH Add Hook
 
                         // Create sons tickets
                         if ($object_class == 'Ticket') {
@@ -3736,18 +3767,17 @@ JAVASCRIPT
             if ($object_class == 'Ticket') {
                 if (!in_array(1, $ticket_exists_array)) {
                     $message = sprintf(__('Demand "%s" added with success', 'metademands'),
-                        "<a href='" . Ticket::getFormURL() . "?id=" . $parent_tickets_id . "'>" . $parent_metademands_name . "</a>");
+                        "<a href='" . $object_class::getFormURL() . "?id=" . $parent_tickets_id . "'>" . $parent_metademands_name . "</a>");
                 } else {
                     $message = sprintf(
                         __('Ticket "%s" successfully updated', 'metademands'),
-                        "<a href='" . Ticket::getFormURL() . "?id=" . $object->getID() . "'>" . $object->getID() . "</a>");
+                        "<a href='" . $object_class::getFormURL() . "?id=" . $object->getID() . "'>" . $object->getID() . "</a>");
                 }
             } else {
                 $message = sprintf(
-                    __('%s %d successfully created'),
-                    $object::getTypeName(1),
-                    $object->getID(),
-                );
+                    __('%1$s %2$s successfully created', 'metademands'),
+                    $object_class::getTypeName(1),
+                    "<a href='" . $object_class::getFormURL() . "?id=" . $object->fields['id'] . "'>" . $object->fields['id'] . "</a>");
             }
             //launch child meta if needed
             $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($metademands_id);
@@ -7461,10 +7491,13 @@ HTML;
      */
     public static function getAvailableItilCategories($id) {
 
+        global $PLUGIN_HOOKS;
+
         $metademand = new self();
         $metademand->getFromDB($id);
 
         $critMeta = [];
+        $critCategory = [];
         if ($metademand->fields['object_to_create'] == 'Ticket') {
             if ($metademand->fields['type']) {
                 switch ($metademand->fields['type']) {
@@ -7489,19 +7522,22 @@ HTML;
             $critCategory = ['is_change' => 1];
             $critMeta = ['object_to_create' => 'Change'];
 
-            //TODO ELCH Add Hook for define linked crits ?
-        } elseif ($metademand->fields['object_to_create'] == 'PluginReleasesRelease') {
-            $critCategory = [];
-            //TODO ELCH Add Hook for define linked category
-            $critMeta = ['object_to_create' => 'PluginReleasesRelease'];
         }
-
         $critCategory += getEntitiesRestrictCriteria(
             \ITILCategory::getTable(),
             'entities_id',
             $_SESSION['glpiactiveentities'],
             true
         );
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $new_fields = self::addPluginObjectItems($plug);
+                if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                    $critMeta = ['object_to_create' => $new_fields['object_to_create']];
+                    $critCategory = $new_fields['critcategory'];
+                }
+            }
+        }
 
         $dbu = new DbUtils();
 
@@ -7529,12 +7565,108 @@ HTML;
                 'id' => $usedCategories
             ]];
         }
-        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
+
+
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $new_categories = self::checkPluginUniqueItilcategory($plug, $dbu);
+                if (Plugin::isPluginActive($plug) && $new_categories != null) {
+                    $result = $new_categories;
+                }
+            }
+        } else {
+            $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
+        }
+
         $availableCategories = [];
         foreach ($result as $item) {
             $availableCategories[$item['id']] = html_entity_decode($item['completename']);
         }
 
         return $availableCategories;
+    }
+
+    public static function getPluginUniqueDropdown(int|string $plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getUniqueDropdown'])) {
+                    return $item->getUniqueDropdown();
+                }
+            }
+        }
+    }
+
+    public static function checkPluginUniqueItilcategory(int|string $plug, $dbu)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'checkUniqueItilcategory'])) {
+                    return $item->checkUniqueItilcategory($dbu);
+                }
+            }
+        }
+    }
+
+    public static function addPluginObjectItems(int|string $plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'objectItems'])) {
+                    return $item->objectItems();
+                }
+            }
+        }
+    }
+
+    private static function getPluginObjectType(int|string $plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getObjectType'])) {
+                    return $item->getObjectType();
+                }
+            }
+        }
     }
 }

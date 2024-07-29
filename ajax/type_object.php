@@ -33,6 +33,8 @@ Html::header_nocache();
 
 Session::checkCentralAccess();
 
+global $PLUGIN_HOOKS;
+
 if ($_POST['object_to_create'] != NULL) {
    $object = $_POST['object_to_create'];
 
@@ -97,7 +99,14 @@ if ($_POST['object_to_create'] != NULL) {
       echo "</td>";
       echo "</tr>";
    } else {
-       //TODO ELCH Add Hook for define linked category
+
+       if (isset($PLUGIN_HOOKS['metademands'])) {
+           foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+               if (Plugin::isPluginActive($plug)) {
+                   echo PluginMetademandsMetademand::getPluginUniqueDropdown($plug);
+               }
+           }
+       }
    }
 }
 

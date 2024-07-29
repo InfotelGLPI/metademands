@@ -799,6 +799,8 @@ class PluginMetademandsWizard extends CommonDBTM
      */
     public static function listMetademandTypes()
     {
+        global $PLUGIN_HOOKS;
+
         echo Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/wizard.css.php");
 
         $data = [];
@@ -821,7 +823,23 @@ class PluginMetademandsWizard extends CommonDBTM
         if (count($metademands_changes) > 0) {
             $data['Change'] = __('Make a change request', 'metademands');
         }
-        //TODO ELCH
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            $pass = false;
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $new_cat = self::createPluginNewKindOfCategory($plug);
+                if (Plugin::isPluginActive($plug) && is_array($new_cat)) {
+
+                    $objectCreate = $new_cat['type'];
+                    $objectName = $new_cat['name'];
+
+                    $metademands_plugin = self::selectMetademands(false, "", $objectCreate);
+                    if (count($metademands_plugin) > 0) {
+                        $data[$objectCreate] = $objectName ;
+                    }
+
+                }
+            }
+        }
 
 
         if (count($data) > 0) {
@@ -3774,5 +3792,26 @@ class PluginMetademandsWizard extends CommonDBTM
 
         // Return rgb(a) color string
         return $output;
+    }
+
+    public static function createPluginNewKindOfCategory(int|string $plug)
+    {
+        global $PLUGIN_HOOKS;
+
+        $dbu = new DbUtils();
+        if (isset($PLUGIN_HOOKS['metademands'][$plug])) {
+            $pluginclasses = $PLUGIN_HOOKS['metademands'][$plug];
+
+            foreach ($pluginclasses as $pluginclass) {
+                if (!class_exists($pluginclass)) {
+                    continue;
+                }
+                $form[$pluginclass] = [];
+                $item = $dbu->getItemForItemtype($pluginclass);
+                if ($item && is_callable([$item, 'getNewKindOfCategory'])) {
+                    return $item->getNewKindOfCategory();
+                }
+            }
+        }
     }
 }

@@ -1,3 +1,4 @@
 groupe proposé dans pas à pas : independant de l'entité
 
-3.3.14
+3.3.16
+Add hooks for other plugins

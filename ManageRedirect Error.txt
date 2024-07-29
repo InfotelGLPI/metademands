@@ -1,3 +1,29 @@
 Add into toolbox.php
 
-default case dor interface like central
+
+public static function manageRedirect($where)
+
+default case dor interface like central :
+
+default:
+    // redirect to item
+    if (
+        !empty($data[0])
+        && isset($data[1])
+        && is_numeric($data[1])
+        && ($data[1] > 0)
+    ) {
+        // Check entity
+        if ($item = getItemForItemtype($data[0])) {
+            if ($item->isEntityAssign()) {
+                if ($item->getFromDB($data[1])) {
+                    if (!Session::haveAccessToEntity($item->getEntityID())) {
+                        Session::changeActiveEntities($item->getEntityID(), 1);
+                    }
+                }
+            }
+            Html::redirect($item->getFormURLWithID($data[1]));
+        }
+    }
+    Html::redirect($CFG_GLPI["root_doc"] . "/front/helpdesk.public.php");
+    break;
