@@ -824,6 +824,8 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     public static function getSpecificValueToDisplay($field, $values, array $options = [])
     {
+        global $PLUGIN_HOOKS;
+
         if (!is_array($values)) {
             $values = [$field => $values];
         }
@@ -838,7 +840,23 @@ class PluginMetademandsMetademand extends CommonDBTM
                 $display = "";
                 if (count($categories) > 0) {
                     foreach ($categories as $category) {
-                        $display .= Dropdown::getDropdownName("glpi_itilcategories", $category) . "<br>";
+                        $pass = false;
+                        if (isset($PLUGIN_HOOKS['metademands'])) {
+                            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                                $new_drop = PluginMetademandsDropdownmeta::getPluginDropdownItilcategoryName(
+                                    $plug,
+                                    $category
+                                );
+                                if (Plugin::isPluginActive($plug) && $new_drop > 0) {
+                                    $display .= $new_drop . "<br>";
+                                    $pass = true;
+                                }
+                            }
+                        }
+
+                        if (!$pass) {
+                            $display .= Dropdown::getDropdownName("glpi_itilcategories", $category) . "<br>";
+                        }
                     }
                 }
                 return $display;
@@ -954,7 +972,6 @@ class PluginMetademandsMetademand extends CommonDBTM
                 }
             }
         }
-
         return $types;
     }
 
@@ -1784,6 +1801,7 @@ JAVASCRIPT
 
                     $fieldparameter            = new PluginMetademandsFieldParameter();
                     if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $field_data["id"]])) {
+                        $fields_data[$id]['informations_to_display'] = $fieldparameter->fields['informations_to_display'];
                         if ($fieldparameter->fields['link_to_user']) {
                             continue;
                         }
@@ -2602,6 +2620,10 @@ JAVASCRIPT
                                 }
                             }
                         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
                         // Create sons tickets
                         if ($object_class == 'Ticket') {
                             if (isset($line['tasks'])
@@ -3754,18 +3776,17 @@ JAVASCRIPT
             if ($object_class == 'Ticket') {
                 if (!in_array(1, $ticket_exists_array)) {
                     $message = sprintf(__('Demand "%s" added with success', 'metademands'),
-                        "<a href='" . Ticket::getFormURL() . "?id=" . $parent_tickets_id . "'>" . $parent_metademands_name . "</a>");
+                        "<a href='" . $object_class::getFormURL() . "?id=" . $parent_tickets_id . "'>" . $parent_metademands_name . "</a>");
                 } else {
                     $message = sprintf(
                         __('Ticket "%s" successfully updated', 'metademands'),
-                        "<a href='" . Ticket::getFormURL() . "?id=" . $object->getID() . "'>" . $object->getID() . "</a>");
+                        "<a href='" . $object_class::getFormURL() . "?id=" . $object->getID() . "'>" . $object->getID() . "</a>");
                 }
             } else {
                 $message = sprintf(
-                    __('%s %d successfully created'),
-                    $object::getTypeName(1),
-                    $object->getID(),
-                );
+                    __('%1$s %2$s successfully created', 'metademands'),
+                    $object_class::getTypeName(1),
+                    "<a href='" . $object_class::getFormURL() . "?id=" . $object->fields['id'] . "'>" . $object->fields['id'] . "</a>");
             }
             //launch child meta if needed
             $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($metademands_id);
@@ -7485,6 +7506,7 @@ HTML;
         $metademand->getFromDB($id);
 
         $critMeta = [];
+        $critCategory = [];
         if ($metademand->fields['object_to_create'] == 'Ticket') {
             if ($metademand->fields['type']) {
                 switch ($metademand->fields['type']) {
@@ -7508,6 +7530,7 @@ HTML;
         } elseif ($metademand->fields['object_to_create'] == 'Change') {
             $critCategory = ['is_change' => 1];
             $critMeta = ['object_to_create' => 'Change'];
+<<<<<<< HEAD
         } elseif ($metademand->fields['object_to_create'] == 'PluginReleasesRelease') {
             $critCategory = [];
             $critMeta = ['object_to_create' => 'PluginReleasesRelease'];
@@ -7522,14 +7545,25 @@ HTML;
                     }
                 }
             }
-        }
+=======
 
+>>>>>>> master
+        }
         $critCategory += getEntitiesRestrictCriteria(
             \ITILCategory::getTable(),
             'entities_id',
             $_SESSION['glpiactiveentities'],
             true
         );
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                $new_fields = self::addPluginObjectItems($plug);
+                if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
+                    $critMeta = ['object_to_create' => $new_fields['object_to_create']];
+                    $critCategory = $new_fields['critcategory'];
+                }
+            }
+        }
 
         $dbu = new DbUtils();
 
@@ -7559,9 +7593,12 @@ HTML;
         }
 
 
+<<<<<<< HEAD
         $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
 
 
+=======
+>>>>>>> master
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $new_categories = self::checkPluginUniqueItilcategory($plug, $dbu);
@@ -7569,10 +7606,17 @@ HTML;
                     $result = $new_categories;
                 }
             }
+<<<<<<< HEAD
         }
 
 
 
+=======
+        } else {
+            $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
+        }
+
+>>>>>>> master
         $availableCategories = [];
         foreach ($result as $item) {
             $availableCategories[$item['id']] = html_entity_decode($item['completename']);
@@ -7581,7 +7625,11 @@ HTML;
         return $availableCategories;
     }
 
+<<<<<<< HEAD
     public static function getPluginUniqueDropdownUrl(int|string $plug)
+=======
+    public static function getPluginUniqueDropdown(int|string $plug)
+>>>>>>> master
     {
         global $PLUGIN_HOOKS;
 
@@ -7595,8 +7643,13 @@ HTML;
                 }
                 $form[$pluginclass] = [];
                 $item = $dbu->getItemForItemtype($pluginclass);
+<<<<<<< HEAD
                 if ($item && is_callable([$item, 'getUniqueDropdownUrl'])) {
                     return $item->getUniqueDropdownUrl();
+=======
+                if ($item && is_callable([$item, 'getUniqueDropdown'])) {
+                    return $item->getUniqueDropdown();
+>>>>>>> master
                 }
             }
         }

@@ -693,7 +693,11 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             $value = " ";
                             switch ($elt['item']) {
                                 case 'User':
-                                    $information = json_decode($elt['informations_to_display']);
+                                    $information = ['full_name'];
+                                    if (isset($elt['informations_to_display'])) {
+                                        $information = json_decode($elt['informations_to_display']);
+                                        $information = empty($information) ? ['full_name'] : $information;
+                                    }
                                     $item = new $elt["item"]();
                                     $dataItems = "";
                                     if ($item->getFromDB($fields[$elt['id']])) {
@@ -828,7 +832,11 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                     $values = json_decode($values);
                                 }
 
-                                $information = json_decode($elt['informations_to_display']);
+                                $information = ['full_name'];
+                                if (isset($elt['informations_to_display'])) {
+                                    $information = json_decode($elt['informations_to_display']);
+                                    $information = empty($information) ? ['full_name'] : $information;
+                                }
                                 $item = new $elt["item"]();
                                 foreach ($values as $k => $v) {
                                     $dataItems = "";

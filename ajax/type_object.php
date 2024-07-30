@@ -35,7 +35,6 @@ Session::checkCentralAccess();
 
 global $PLUGIN_HOOKS;
 
-
 if ($_POST['object_to_create'] != NULL) {
    $object = $_POST['object_to_create'];
 
@@ -103,13 +102,7 @@ if ($_POST['object_to_create'] != NULL) {
       echo "</tr>";
    }
 
-   else{
-       //TODO ELCH Add Hook for define linked category
-       echo "<tr class='tab_bg_1'>";
-       $opt  = [
-           'display_emptychoice' => true,
-       ];
-       $rand = Ticket::dropdownType('type', $opt);
+   else {
 
        if (isset($PLUGIN_HOOKS['metademands'])) {
            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -134,6 +127,10 @@ if ($_POST['object_to_create'] != NULL) {
            echo "</td>";
        }
        echo "</tr>";
+                   echo PluginMetademandsMetademand::getPluginUniqueDropdown($plug);
+
+
+
    }
 }
 

@@ -291,9 +291,9 @@ var btn = $('#backtotop');
 
 $(window).scroll(function() {
    if ($(window).scrollTop() > 300) {
-      btn.addClass('show');
+      $('#backtotop').addClass('show');
    } else {
-      btn.removeClass('show');
+      $('#backtotop').removeClass('show');
    }
 });
 
