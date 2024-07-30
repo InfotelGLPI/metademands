@@ -261,10 +261,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             $this->addStandardTab('PluginMetademandsStep', $ong, $options);
             $this->addStandardTab('PluginMetademandsConfigstep', $ong, $options);
         }
-        //TODO Change / problem ?
-        if ($this->getField('object_to_create') == 'Ticket') {
-            $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
-        }
+        $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
         $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
         $this->addStandardTab('PluginMetademandsTask', $ong, $options);
         $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
@@ -2150,11 +2147,7 @@ JAVASCRIPT
                     // Get predefined ticket fields
                     //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
                     $parent_ticketfields = [];
-                    if ($object_class == 'Ticket') {
-                        //TODO Change / problem ?
-                        $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester'], $parent_fields['entities_id']);
-                    }
-
+                    $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester'], $parent_fields['entities_id']);
                     $list_fields = $line['form'];
 
 
@@ -2267,11 +2260,7 @@ JAVASCRIPT
                     if (empty($parent_fields['id'])) {
                         unset($parent_fields['id']);
 
-                        if ($object_class == 'Ticket') {
-                            $input = $this->mergeFields($parent_fields, $parent_ticketfields);
-                        } else {
-                            $input = $parent_fields;
-                        }
+                        $input = $this->mergeFields($parent_fields, $parent_ticketfields);
 
                         $input['_filename'] = [];
                         $input['_tag_filename'] = [];
@@ -4246,10 +4235,13 @@ JAVASCRIPT
         $ticket_field = new PluginMetademandsTicketField();
         $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
-        $ticket = new Ticket();
         $meta = new PluginMetademandsMetademand();
         $meta->getFromDB($metademands_id);
-        $tt = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $itilcategory, $meta->fields['entities_id']);
+        $object = $meta->fields['object_to_create'];
+
+        $obj = new $object();
+
+        $tt = $obj->getITILTemplateToUse(0, $meta->fields["type"], $itilcategory, $meta->fields['entities_id']);
 
         if (count($parent_ticketfields)) {
             $allowed_fields = $tt->getAllowedFields(true, true);
