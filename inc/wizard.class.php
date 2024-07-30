@@ -794,6 +794,38 @@ class PluginMetademandsWizard extends CommonDBTM
         return $metademands;
     }
 
+    public static function getMetademandTypeName($object, $type = 0)
+    {
+        global $PLUGIN_HOOKS;
+
+        switch ($object) {
+            case 'Ticket':
+                switch ($type) {
+                    case Ticket::INCIDENT_TYPE:
+                        return __('Report an incident', 'metademands');
+                    case Ticket::DEMAND_TYPE:
+                        return __('Make a request', 'metademands');
+                }
+                break;
+            case 'Problem':
+                return __('Report a problem', 'metademands');
+            case 'Change':
+                return __('Make a change request', 'metademands');
+            default:
+                if (isset($PLUGIN_HOOKS['metademands'])) {
+                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                        $new_cat = self::createPluginNewKindOfCategory($plug);
+                        if (Plugin::isPluginActive($plug) && is_array($new_cat)) {
+                            $objectName = $new_cat['name'];
+                            return $objectName;
+
+                        }
+                    }
+                }
+                break;
+        }
+
+    }
     /**
      * @throws \GlpitestSQLError
      */
@@ -807,21 +839,21 @@ class PluginMetademandsWizard extends CommonDBTM
 
         $metademands_incidents = self::selectMetademands(false, "", Ticket::INCIDENT_TYPE);
         if (count($metademands_incidents) > 0) {
-            $data[Ticket::INCIDENT_TYPE] = __('Report an incident', 'metademands');
+            $data[Ticket::INCIDENT_TYPE] = self::getMetademandTypeName('Ticket',Ticket::INCIDENT_TYPE);
         }
 
         $metademands_requests = self::selectMetademands(false, "", Ticket::DEMAND_TYPE);
         if (count($metademands_requests) > 0) {
-            $data[Ticket::DEMAND_TYPE] = __('Make a request', 'metademands');
+            $data[Ticket::DEMAND_TYPE] = self::getMetademandTypeName('Ticket',Ticket::DEMAND_TYPE);
         }
 
         $metademands_problems = self::selectMetademands(false, "", "Problem");
         if (count($metademands_problems) > 0) {
-            $data['Problem'] = __('Report a problem', 'metademands');
+            $data['Problem'] = self::getMetademandTypeName('Problem');
         }
         $metademands_changes = self::selectMetademands(false, "", "Change");
         if (count($metademands_changes) > 0) {
-            $data['Change'] = __('Make a change request', 'metademands');
+            $data['Change'] = self::getMetademandTypeName('Change');
         }
         if (isset($PLUGIN_HOOKS['metademands'])) {
             $pass = false;
@@ -830,17 +862,15 @@ class PluginMetademandsWizard extends CommonDBTM
                 if (Plugin::isPluginActive($plug) && is_array($new_cat)) {
 
                     $objectCreate = $new_cat['type'];
-                    $objectName = $new_cat['name'];
 
                     $metademands_plugin = self::selectMetademands(false, "", $objectCreate);
                     if (count($metademands_plugin) > 0) {
-                        $data[$objectCreate] = $objectName ;
+                        $data[$objectCreate] = self::getMetademandTypeName($objectCreate);
                     }
 
                 }
             }
         }
-
 
         if (count($data) > 0) {
             foreach ($data as $type => $typename) {
