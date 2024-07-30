@@ -1650,7 +1650,8 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                         $style = "";
                         $class = "";
-                        if ($data['row_display'] == 1 && $data['type'] == "link") {
+                        if (isset($data['row_display'])
+                            && $data['row_display'] == 1 && $data['type'] == "link") {
                             $class = "center";
                         }
                         //Add possibility to hide field
@@ -1666,7 +1667,8 @@ class PluginMetademandsWizard extends CommonDBTM
                         if ($data['type'] != 'informations') {
                             $bottomclass = "md-bottom";
                         }
-                        if ($data['row_display'] == 1) {
+                        if (isset($data['row_display'])
+                            && $data['row_display'] == 1) {
                             echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
                             $count++;
                         } else {
