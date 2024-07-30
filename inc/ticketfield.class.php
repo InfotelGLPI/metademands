@@ -332,11 +332,14 @@ class PluginMetademandsTicketField extends CommonDBChild
         }
 
         $this->showFormHeader(['colspan' => 2]);
+        $meta = new PluginMetademandsMetademand();
+        $meta->getFromDB($this->fields["plugin_metademands_metademands_id"]);
+        $object = $meta->fields['object_to_create'];
 
         echo "<tr class='tab_bg_1'>";
         echo "<td>" . __('Name') . "</td>";
         echo "<td>";
-        $searchOption = Search::getOptions('Ticket');
+        $searchOption = Search::getOptions($object);
         echo $searchOption[$this->fields['num']]['name'];
 
         echo Html::hidden('entities_id', ['value' => $this->fields["entities_id"]]);
@@ -345,7 +348,7 @@ class PluginMetademandsTicketField extends CommonDBChild
         echo "</td>";
         echo "<td>" . __('Value') . "</td>";
         echo "<td>";
-        $used_fields = $this->getPredefinedFields($ID, true);
+        $used_fields = $this->getPredefinedFields($this->fields["plugin_metademands_metademands_id"], true);
         $itemtype_used = '';
         if (isset($used_fields['itemtype'])) {
             $itemtype_used = $used_fields['itemtype'];
@@ -355,7 +358,7 @@ class PluginMetademandsTicketField extends CommonDBChild
             'id_field' => $this->fields["num"],
             'value' => $this->fields["value"],
             'name' => 'value',
-            'itemtype' => 'Ticket',
+            'itemtype' => $object,
             'itemtype_used' => $itemtype_used,
             'relative_dates' => 1
         ];
