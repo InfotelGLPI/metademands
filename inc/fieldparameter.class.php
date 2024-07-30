@@ -594,7 +594,9 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 if ((isset($searchOption[$id]['linkfield'])
                         && in_array($searchOption[$id]['linkfield'], $granted_fields))
                     || in_array($id, $granted_fields)) {
-                    $ticket_fields[$id] = $searchOption[$id]['name'];
+                    if (isset($searchOption[$id]['name'])) {
+                        $ticket_fields[$id] = $searchOption[$id]['name'];
+                    }
                 }
             }
 

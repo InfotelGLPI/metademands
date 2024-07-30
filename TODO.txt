@@ -2,3 +2,5 @@ groupe proposé dans pas à pas : independant de l'entité
 
 3.3.16
 Add hooks for other plugins
+Add warning for fields without custom values
+Fix list user of my groups in multiple dropdown
