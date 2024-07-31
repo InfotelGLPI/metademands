@@ -1830,7 +1830,7 @@ JAVASCRIPT
                     $tasks = new PluginMetademandsTask();
                     $tasks_data = $tasks->getTasks(
                         $metademands_id,
-                        ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TASK_TYPE]]
+                        ['condition' => ['glpi_plugin_metademands_tasks.type' => [PluginMetademandsTask::TICKET_TYPE, PluginMetademandsTask::MAIL_TYPE]]]
                     );
 
                     $forms[$step][$metademands_id]['tasks'] = $tasks_data;
@@ -1838,7 +1838,7 @@ JAVASCRIPT
                     $tasks = new PluginMetademandsTask();
                     $tasks_data = $tasks->getTasks(
                         $metademands_id,
-                        ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]
+                        ['condition' => ['glpi_plugin_metademands_tasks.type' => [PluginMetademandsTask::TICKET_TYPE, PluginMetademandsTask::MAIL_TYPE]]]
                     );
 
                     $forms[$step][$metademands_id]['tasks'] = $tasks_data;
@@ -5545,7 +5545,6 @@ JAVASCRIPT
      */
     public function executeDuplicate($options = [])
     {
-        global $CFG_GLPI;
 
         if (isset($options['metademands_id'])) {
             $metademands_id = $options['metademands_id'];
@@ -5559,6 +5558,7 @@ JAVASCRIPT
             $tasks = new PluginMetademandsTask();
             $groups = new PluginMetademandsGroup();
             $tickettasks = new PluginMetademandsTicketTask();
+            $mailtasks = new PluginMetademandsMailTask();
             $metademandtasks = new PluginMetademandsMetademandTask();
 
             // Add the new metademand
@@ -5567,7 +5567,9 @@ JAVASCRIPT
             unset($this->fields['itilcategories_id']);
 
             //TODO To translate ?
-            $this->fields['comment'] = addslashes($this->fields['comment']);
+            if ($this->fields['comment'] != null) {
+                $this->fields['comment'] = addslashes($this->fields['comment']);
+            }
             $this->fields['name'] = addslashes($this->fields['name']);
 
             if ($new_metademands_id = $this->add($this->fields)) {
@@ -5578,7 +5580,6 @@ JAVASCRIPT
                     $translationMeta->clone(["items_id" => $new_metademands_id]);
                 }
                 $metademands_data = $this->constructMetademands($metademands_id);
-
 
                 if (count($metademands_data)) {
                     $associated_fields = [];
@@ -5674,6 +5675,22 @@ JAVASCRIPT
                                             }
                                         }
                                     }
+                                    if ($values['type'] == PluginMetademandsTask::MAIL_TYPE) {
+                                        $mailtasks_data = $mailtasks->find(['plugin_metademands_tasks_id' => $values['tasks_id']]);
+                                        if (count($mailtasks_data)) {
+                                            foreach ($mailtasks_data as $values) {
+                                                unset($values['id']);
+                                                $values['plugin_metademands_tasks_id'] = $new_tasks_id;
+                                                if (!empty($values['content'])) {
+                                                    $values['content'] = addslashes($values['content']);
+                                                }
+                                                if (!empty($values['email'])) {
+                                                    $values['email'] = addslashes($values['email']);
+                                                }
+                                                $mailtasks->add($values);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -5756,7 +5773,7 @@ JAVASCRIPT
                     $oldOptions = $fieldoptions->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldOptions as $oldOption) {
                         $inputo = [];
-                        $inputo['plugin_metademands_tasks_id'] = $associated_tasks[$oldOption['plugin_metademands_tasks_id']];
+                        $inputo['plugin_metademands_tasks_id'] = $associated_tasks[$oldOption['plugin_metademands_tasks_id']] ?? 0;
                         $inputo['fields_link'] = $associated_oldfields[$oldOption['fields_link']] ?? 0;
                         $inputo['hidden_link'] = $associated_oldfields[$oldOption['hidden_link']] ?? 0;
                         $inputo['hidden_block'] = $oldOption['hidden_block'];
@@ -6493,11 +6510,20 @@ JAVASCRIPT
         foreach ($metatasks as $id => $task) {
             $fields['metatasks']['metatask' . $id] = $task;
         }
+
         $ticketTask = new PluginMetademandsTicketTask();
+        $metaMailTask = new PluginMetademandsMailTask();
 
         foreach ($fields['tasks'] as $id => $task) {
-            $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
-            $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
+
+            if ($task['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+                $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
+            }
+            if ($task['type'] == PluginMetademandsTask::MAIL_TYPE) {
+                $metaMailTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+                $fields['tasks'][$id]['mailtask'] = $metaMailTask->fields;
+            }
         }
 
         $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand><version>".PLUGIN_METADEMANDS_VERSION."</version></metademand>");
@@ -6642,7 +6668,6 @@ JAVASCRIPT
             $translations = $datas['translations'];
         }
 
-
         foreach ($datas as $key => $data) {
             if (is_array($data) && empty($data)) {
                 $datas[$key] = '';
@@ -6756,23 +6781,23 @@ JAVASCRIPT
         $mapTableTask = [];
         $mapTableTaskReverse = [];
 
+
         foreach ($tasks as $k => $task) {
             $oldIDTask = $task['id'];
             unset($task['id']);
             unset($task['ancestors_cache']);
             unset($task['sons_cache']);
             $task = Toolbox::addslashes_deep($task);
-            $tickettask = $task['tickettask'];
+            $tickettask = $task['tickettask'] ?? [];
+            $mailtask = $task['mailtask'] ?? [];
+
             foreach ($task as $key => $val) {
-                if (is_array($val)) {
-                    $task[$key] = "";
-                } else {
-                    $task[$key] = Html::entity_decode_deep($val);
-                }
+                $task[$key] = Html::entity_decode_deep($val);
             }
             $task['entities_id'] = $_SESSION['glpiactive_entity'];
 
             $task['plugin_metademands_metademands_id'] = $newIDMeta;
+            
             $meta_task = new PluginMetademandsTask();
             $newIDTask = $meta_task->add($task);
 
@@ -6792,6 +6817,21 @@ JAVASCRIPT
                 $tickettask['plugin_metademands_tasks_id'] = $newIDTask;
                 $tickettaskP = new PluginMetademandsTicketTask();
                 $tickettaskP->add($tickettask);
+            }
+
+            if (is_array($mailtask) && !empty($mailtask)) {
+                unset($mailtask['id']);
+
+                foreach ($mailtask as $key => $val) {
+                    if (is_array($val) && empty($val)) {
+                        $mailtask[$key] = '';
+                    } elseif (!is_array($val)) {
+                        $mailtask[$key] = Html::entity_decode_deep($val);
+                    }
+                }
+                $mailtask['plugin_metademands_tasks_id'] = $newIDTask;
+                $mailtaskP = new PluginMetademandsMailTask();
+                $mailtaskP->add($mailtask);
             }
         }
 
