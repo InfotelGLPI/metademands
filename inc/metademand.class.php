@@ -76,8 +76,6 @@ class PluginMetademandsMetademand extends CommonDBTM
         self::$SON_PREFIX = $config['son_ticket_tag'] . ' ';
     }
 
-
-
     /**
      * functions mandatory
      * getTypeName(), canCreate(), canView()
@@ -264,7 +262,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             $this->addStandardTab('PluginMetademandsConfigstep', $ong, $options);
         }
         //TODO Change / problem ?
-        if ($this->getField('object_to_create') == 'Ticket' ) {
+        if ($this->getField('object_to_create') == 'Ticket') {
             $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
         }
         $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
@@ -950,14 +948,11 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     private static function getObjectTypes()
     {
-        global $PLUGIN_HOOKS;
-
         $types = [];
         foreach (self::getTypes(true) as $type) {
             $item = new $type();
             $types[$type] = $item->getTypeName(1);
         }
-
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 if (Plugin::isPluginActive($plug)) {
@@ -1971,7 +1966,6 @@ JAVASCRIPT
             $itilcategory = $values['field_plugin_servicecatalog_itilcategories_id'];
         }
 
-
         if (count($metademands_data)) {
             foreach ($metademands_data as $form_step => $data) {
                 $docitem = null;
@@ -2620,10 +2614,7 @@ JAVASCRIPT
                                 }
                             }
                         }
-<<<<<<< HEAD
-=======
 
->>>>>>> master
                         // Create sons tickets
                         if ($object_class == 'Ticket') {
                             if (isset($line['tasks'])
@@ -7530,24 +7521,7 @@ HTML;
         } elseif ($metademand->fields['object_to_create'] == 'Change') {
             $critCategory = ['is_change' => 1];
             $critMeta = ['object_to_create' => 'Change'];
-<<<<<<< HEAD
-        } elseif ($metademand->fields['object_to_create'] == 'PluginReleasesRelease') {
-            $critCategory = [];
-            $critMeta = ['object_to_create' => 'PluginReleasesRelease'];
-        }else{
-            $critCategory = [];
-            if (isset($PLUGIN_HOOKS['metademands'])) {
-                foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                    $new_fields = self::addPluginObjectItems($plug);
-                    if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
-                        $critMeta = ['object_to_create' => $new_fields['object_to_create']];
-                        $critCategory = $new_fields['critcategory'];
-                    }
-                }
-            }
-=======
 
->>>>>>> master
         }
         $critCategory += getEntitiesRestrictCriteria(
             \ITILCategory::getTable(),
@@ -7593,12 +7567,6 @@ HTML;
         }
 
 
-<<<<<<< HEAD
-        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
-
-
-=======
->>>>>>> master
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $new_categories = self::checkPluginUniqueItilcategory($plug, $dbu);
@@ -7606,17 +7574,10 @@ HTML;
                     $result = $new_categories;
                 }
             }
-<<<<<<< HEAD
-        }
-
-
-
-=======
         } else {
             $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
         }
 
->>>>>>> master
         $availableCategories = [];
         foreach ($result as $item) {
             $availableCategories[$item['id']] = html_entity_decode($item['completename']);
@@ -7625,11 +7586,7 @@ HTML;
         return $availableCategories;
     }
 
-<<<<<<< HEAD
-    public static function getPluginUniqueDropdownUrl(int|string $plug)
-=======
     public static function getPluginUniqueDropdown(int|string $plug)
->>>>>>> master
     {
         global $PLUGIN_HOOKS;
 
@@ -7643,13 +7600,8 @@ HTML;
                 }
                 $form[$pluginclass] = [];
                 $item = $dbu->getItemForItemtype($pluginclass);
-<<<<<<< HEAD
-                if ($item && is_callable([$item, 'getUniqueDropdownUrl'])) {
-                    return $item->getUniqueDropdownUrl();
-=======
                 if ($item && is_callable([$item, 'getUniqueDropdown'])) {
                     return $item->getUniqueDropdown();
->>>>>>> master
                 }
             }
         }

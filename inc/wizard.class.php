@@ -823,10 +823,6 @@ class PluginMetademandsWizard extends CommonDBTM
         if (count($metademands_changes) > 0) {
             $data['Change'] = __('Make a change request', 'metademands');
         }
-<<<<<<< HEAD
-
-        //TODO ELCH
-=======
         if (isset($PLUGIN_HOOKS['metademands'])) {
             $pass = false;
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
@@ -844,26 +840,6 @@ class PluginMetademandsWizard extends CommonDBTM
                 }
             }
         }
->>>>>>> master
-
-        if (isset($PLUGIN_HOOKS['metademands'])) {
-            $pass = false;
-            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                $new_cat = self::createPluginNewKindOfCategory($plug);
-                if (Plugin::isPluginActive($plug) && is_array($new_cat)) {
-
-                    $objectCreate = $new_cat['type'];
-                    $objectName = $new_cat['name'];
-
-                    $metademands_requestEvolutions = self::selectMetademands(false, "", $objectCreate);
-                    if (count($metademands_requestEvolutions) > 0) {
-                        $data[$objectCreate] = $objectName ;
-                    }
-
-                }
-            }
-        }
-
 
 
         if (count($data) > 0) {
@@ -1674,7 +1650,8 @@ class PluginMetademandsWizard extends CommonDBTM
                         }
                         $style = "";
                         $class = "";
-                        if ($data['row_display'] == 1 && $data['type'] == "link") {
+                        if (isset($data['row_display'])
+                            && $data['row_display'] == 1 && $data['type'] == "link") {
                             $class = "center";
                         }
                         //Add possibility to hide field
@@ -1690,7 +1667,8 @@ class PluginMetademandsWizard extends CommonDBTM
                         if ($data['type'] != 'informations') {
                             $bottomclass = "md-bottom";
                         }
-                        if ($data['row_display'] == 1) {
+                        if (isset($data['row_display'])
+                            && $data['row_display'] == 1) {
                             echo "<div id-field='field" . $data["id"] . "' $style class=\"$bottomclass $class\">";
                             $count++;
                         } else {

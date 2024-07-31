@@ -365,13 +365,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 
     static function showGlobalParameters($params)
     {
-<<<<<<< HEAD
-
         global $PLUGIN_HOOKS;
-
-=======
-        global $PLUGIN_HOOKS;
->>>>>>> master
         // MANDATORY
         echo "<tr class='tab_bg_1'>";
         if ($params['type'] != "title"
@@ -453,36 +447,10 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 $tt = new ProblemTemplate();
             } elseif ($objectclass == 'Change') {
                 $tt = new ChangeTemplate();
-<<<<<<< HEAD
-            } elseif ($objectclass == 'PluginReleasesRelease') {
-                $tt = new PluginReleasesReleaseTemplate();
-            }else{
-                //TODO ELCH
-                if (isset($PLUGIN_HOOKS['metademands'])) {
-                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                        if (Plugin::isPluginActive($plug)) {
-                            $new_fields = self::addPluginFieldItems($plug);
-                            if (is_array($new_fields) && count($new_fields) > 0) {
-                                $allowed_fields = array_merge($allowed_fields, $new_fields);
-                            }
-                        }
-                    }
-                }
-                unset($allowed_fields[-1]);
-=======
->>>>>>> master
             }
             if ($objectclass == 'Ticket' || $objectclass == 'Problem' || $objectclass == 'Change') {
                 $allowed_fields = $tt->getAllowedFields(true, true);
             }
-<<<<<<< HEAD
-
-            if ($objectclass == 'PluginReleasesRelease') {
-                $allowed_fields = $tt->getAllowedFields(true, true);
-                $allowed_fields[9] = 'date_production';
-                $allowed_fields[18] = 'date_preproduction';
-                unset($allowed_fields[-1]);
-=======
             if (isset($PLUGIN_HOOKS['metademands'])) {
                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                     if (Plugin::isPluginActive($plug)) {
@@ -493,7 +461,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                         }
                     }
                 }
->>>>>>> master
             }
 
 //            //TODO ELCH into releases
@@ -539,7 +506,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                     59
                 ];
             }
-            elseif ($params['type'] == "dropdown_object"
+            if ($params['type'] == "dropdown_object"
                 && $params["item"] == "Group") {
                 $granted_fields = [
                     71,
@@ -547,7 +514,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 ];
             }
 
-            elseif ($params['type'] == "dropdown_object"
+            if ($params['type'] == "dropdown_object"
                 && $params["item"] == "Entity") {
                 $allowed_fields[80] = 'entities_id';
                 $granted_fields = [
@@ -555,21 +522,21 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 ];
             }
 
-            elseif ($params['type'] == "dropdown"
+            if ($params['type'] == "dropdown"
                 && $params["item"] == "Location") {
                 $granted_fields = [
                     'locations_id',
                 ];
             }
 
-            elseif ($params['type'] == "dropdown"
+            if ($params['type'] == "dropdown"
                 && $params["item"] == "RequestType") {
                 $granted_fields = [
                     'requesttypes_id',
                 ];
             }
 
-            elseif ($params['type'] == "dropdown_meta"
+            if ($params['type'] == "dropdown_meta"
                 && ($params["item"] == "urgency"
                     || $params["item"] == "impact"
                     || $params["item"] == "priority")) {
@@ -578,25 +545,21 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 ];
             }
 
-            elseif ($params['type'] == "dropdown_meta"
+            if ($params['type'] == "dropdown_meta"
                 && ($params["item"] == "ITILCategory_Metademands")) {
                 $granted_fields = [
                     'itilcategories_id'
                 ];
             }
 
-            elseif ($params['type'] == "date"
+            if ($params['type'] == "date"
                 || $params["type"] == "datetime") {
                 $granted_fields = [
                     'time_to_resolve'
                 ];
             }
 
-<<<<<<< HEAD
-            elseif (($params['type'] == "dropdown_meta"
-=======
             if (($params['type'] == "dropdown_meta"
->>>>>>> master
                     && $params["item"] == "mydevices")
                 || ($params['type'] == "dropdown_multiple"
                     && $params["item"] == "Appliance")
@@ -605,30 +568,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 $granted_fields = [
                     13
                 ];
-<<<<<<< HEAD
-            }
-
-            elseif ($objectclass == 'PluginReleasesRelease') {
-                if ($params['type'] == "date"
-                    || $params["type"] == "datetime") {
-                    $granted_fields = [
-                        'date_preproduction',
-                        'date_production'
-                    ];
-                }
-            }
-
-            else{
-                if (isset($PLUGIN_HOOKS['metademands'])) {
-                    foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-                        $g_fields = self::getPluginGrantedFields($plug, $params);
-                        if (Plugin::isPluginActive($plug) && is_array($g_fields)) {
-                            $granted_fields = $g_fields;
-                        }
-                    }
-                }
-=======
->>>>>>> master
             }
 
             if (isset($PLUGIN_HOOKS['metademands'])) {
@@ -949,8 +888,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 //        }
 //    }
 
-<<<<<<< HEAD
-=======
     /**
      * Load fields from plugins
      *
@@ -977,7 +914,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         }
     }
 
->>>>>>> master
     private static function getPluginGrantedFields(int|string $plug, $params)
     {
         global $PLUGIN_HOOKS;
