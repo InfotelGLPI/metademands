@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-30 15:12+0000\n"
+"POT-Creation-Date: 2024-07-31 12:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1498 inc/metademand.class.php:6109
+#: hook.php:1498 inc/metademand.class.php:6126
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1516 inc/metademand.class.php:6229
+#: hook.php:1516 inc/metademand.class.php:6246
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1533 inc/metademand.class.php:6286
+#: hook.php:1533 inc/metademand.class.php:6303
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1550 inc/metademand.class.php:6161
+#: hook.php:1550 inc/metademand.class.php:6178
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -969,7 +969,7 @@ msgstr ""
 
 #: inc/fieldoption.class.php:1115 inc/mailtask.class.php:150
 #: inc/step.class.php:270 inc/step.class.php:392 inc/step.class.php:416
-#: inc/task.class.php:700 inc/task.class.php:1092 inc/tickettask.class.php:168
+#: inc/task.class.php:717 inc/task.class.php:1114 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
 msgstr ""
@@ -1161,7 +1161,7 @@ msgid "Demand Progression"
 msgstr ""
 
 #: inc/metademand.class.php:376 inc/metademand.class.php:469
-#: inc/task.class.php:934 inc/tickettask.class.php:655
+#: inc/task.class.php:956 inc/tickettask.class.php:655
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -1337,43 +1337,43 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5975
+#: inc/metademand.class.php:5992
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:6558
+#: inc/metademand.class.php:6584
 msgid "No file specified"
 msgstr ""
 
-#: inc/metademand.class.php:6573
+#: inc/metademand.class.php:6599
 msgid "The file is not an XML file"
 msgstr ""
 
-#: inc/metademand.class.php:7090
+#: inc/metademand.class.php:7130
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:7099
+#: inc/metademand.class.php:7139
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:7211
+#: inc/metademand.class.php:7251
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:7300
+#: inc/metademand.class.php:7340
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:7300
+#: inc/metademand.class.php:7340
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:7313
+#: inc/metademand.class.php:7353
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:7345 inc/wizard.class.php:911
+#: inc/metademand.class.php:7385 inc/wizard.class.php:911
 msgid "Find a form"
 msgstr ""
 
@@ -1746,15 +1746,15 @@ msgstr ""
 msgid "Block parent ticket resolution"
 msgstr ""
 
-#: inc/task.class.php:662
+#: inc/task.class.php:670
 msgid "Recipients"
 msgstr ""
 
-#: inc/task.class.php:679 inc/task.class.php:688
+#: inc/task.class.php:696 inc/task.class.php:705
 msgid "Root"
 msgstr ""
 
-#: inc/task.class.php:1069
+#: inc/task.class.php:1091
 msgctxt "button"
 msgid "Update block to use"
 msgstr ""
