@@ -4,4 +4,4 @@ groupe proposé dans pas à pas : independant de l'entité
 Add hooks for other plugins
 Add warning for fields without custom values
 Fix list user of my groups in multiple dropdown
-Fix duplicate  / XML for mailtasks
+Fix duplicate / XML for mailtasks
