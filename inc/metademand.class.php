@@ -6797,7 +6797,7 @@ JAVASCRIPT
             $task['entities_id'] = $_SESSION['glpiactive_entity'];
 
             $task['plugin_metademands_metademands_id'] = $newIDMeta;
-            
+
             $meta_task = new PluginMetademandsTask();
             $newIDTask = $meta_task->add($task);
 
@@ -7598,7 +7598,7 @@ HTML;
             ]];
         }
 
-
+        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $new_categories = self::checkPluginUniqueItilcategory($plug, $dbu);
@@ -7606,8 +7606,6 @@ HTML;
                     $result = $new_categories;
                 }
             }
-        } else {
-            $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
         }
 
         $availableCategories = [];
