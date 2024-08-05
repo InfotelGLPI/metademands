@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-05 14:34+0000\n"
+"POT-Creation-Date: 2024-08-05 14:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,19 +38,19 @@ msgstr ""
 msgid "Technician child ticket"
 msgstr ""
 
-#: hook.php:1498 inc/metademand.class.php:6146
+#: hook.php:1498 inc/metademand.class.php:6149
 msgid "Running metademands"
 msgstr ""
 
-#: hook.php:1516 inc/metademand.class.php:6266
+#: hook.php:1516 inc/metademand.class.php:6269
 msgid "Metademands to be closed"
 msgstr ""
 
-#: hook.php:1533 inc/metademand.class.php:6323
+#: hook.php:1533 inc/metademand.class.php:6326
 msgid "Metademands to be validated"
 msgstr ""
 
-#: hook.php:1550 inc/metademand.class.php:6198
+#: hook.php:1550 inc/metademand.class.php:6201
 msgid "Running metademands with tickets of my groups"
 msgstr ""
 
@@ -1341,53 +1341,57 @@ msgstr ""
 msgid "There is no childs tickets"
 msgstr ""
 
-#: inc/metademand.class.php:5948
+#: inc/metademand.class.php:5949
 msgid "Start the download"
 msgstr ""
 
-#: inc/metademand.class.php:5950
+#: inc/metademand.class.php:5951
 msgid ""
 "This action may take some time depending on the number of selected "
 "metademands"
 msgstr ""
 
-#: inc/metademand.class.php:6012
+#: inc/metademand.class.php:5956
+msgid "This action requires PHP extension zip"
+msgstr ""
+
+#: inc/metademand.class.php:6015
 msgid "Configure demands"
 msgstr ""
 
-#: inc/metademand.class.php:6604
+#: inc/metademand.class.php:6607
 msgid "No file specified"
 msgstr ""
 
-#: inc/metademand.class.php:6619
+#: inc/metademand.class.php:6622
 msgid "The file is not an XML file"
 msgstr ""
 
-#: inc/metademand.class.php:7150
+#: inc/metademand.class.php:7153
 msgid "Metademand file to import"
 msgstr ""
 
-#: inc/metademand.class.php:7159
+#: inc/metademand.class.php:7162
 msgid "Import"
 msgstr ""
 
-#: inc/metademand.class.php:7271
+#: inc/metademand.class.php:7274
 msgid "Progression of your demand"
 msgstr ""
 
-#: inc/metademand.class.php:7360
+#: inc/metademand.class.php:7363
 msgid "Done on"
 msgstr ""
 
-#: inc/metademand.class.php:7360
+#: inc/metademand.class.php:7363
 msgid "In progress"
 msgstr ""
 
-#: inc/metademand.class.php:7373
+#: inc/metademand.class.php:7376
 msgid "Not yet completed"
 msgstr ""
 
-#: inc/metademand.class.php:7405 inc/wizard.class.php:911
+#: inc/metademand.class.php:7408 inc/wizard.class.php:911
 msgid "Find a form"
 msgstr ""
 
