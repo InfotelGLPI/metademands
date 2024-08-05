@@ -5934,24 +5934,27 @@ JAVASCRIPT
                     Html::submit(__('Validate'), ['name' => 'massiveaction']);
                 return true;
             case 'export':
-                $items = $_POST['items'][__CLASS__];
-                $url = PLUGIN_METADEMANDS_WEBDIR."/front/export_metademand.php?";
-                $first = true;
-                foreach($items as $index => $id) {
-                    if (!$first) {
-                        $url .= "&";
-                    }
-                    $url .= "metademands[$index]=$id";
-                    $first = false;
-                };
-                echo "&nbsp;";
-                echo "<a href='$url' target='_blank' class='btn'>". __('Start the download', 'metademands') . "</a>";
-                echo "<br><small class='text-danger'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i>" . __(
-                        'This action may take some time depending on the number of selected metademands',
-                        'metademands'
-                    ) . "</small>";
-                return true;
-
+                if (extension_loaded('zip')) {
+                    $items = $_POST['items'][__CLASS__];
+                    $url = PLUGIN_METADEMANDS_WEBDIR."/front/export_metademand.php?";
+                    $first = true;
+                    foreach($items as $index => $id) {
+                        if (!$first) {
+                            $url .= "&";
+                        }
+                        $url .= "metademands[$index]=$id";
+                        $first = false;
+                    };
+                    echo "&nbsp;";
+                    echo "<a href='$url' target='_blank' class='btn'>". __('Start the download', 'metademands') . "</a>";
+                    echo "<br><small class='text-danger'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i>" . __(
+                            'This action may take some time depending on the number of selected metademands',
+                            'metademands'
+                        ) . "</small>";
+                    return true;
+                }
+                echo __('This action requires PHP extension zip', 'metademands');
+                return false;
         }
         return parent::showMassiveActionsSubForm($ma);
     }
