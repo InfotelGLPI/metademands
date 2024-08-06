@@ -5936,21 +5936,58 @@ JAVASCRIPT
             case 'export':
                 if (extension_loaded('zip')) {
                     $items = $_POST['items'][__CLASS__];
-                    $url = PLUGIN_METADEMANDS_WEBDIR."/front/export_metademand.php?";
-                    $first = true;
-                    foreach($items as $index => $id) {
-                        if (!$first) {
-                            $url .= "&";
-                        }
-                        $url .= "metademands[$index]=$id";
-                        $first = false;
-                    };
+                    $url = PLUGIN_METADEMANDS_WEBDIR."/ajax/export_metademand.php";
+                    $data = json_encode($items);
                     echo "&nbsp;";
-                    echo "<a href='$url' target='_blank' class='btn'>". __('Start the download', 'metademands') . "</a>";
+                    echo "<button id='export_metademand' class='btn'>". __('Start the download', 'metademands') . "</button>";
                     echo "<br><small class='text-danger'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i>" . __(
                             'This action may take some time depending on the number of selected metademands',
                             'metademands'
                         ) . "</small>";
+                    // download done through ajax & POST request to avoid request length restriction from GET request
+                    echo "<script>
+                        $(document).ready(function() {
+                            $('#export_metademand').on('click', function(e) {
+                                e.preventDefault();
+                                const buttonExport = document.getElementById('export_metademand');
+                                buttonExport.style.display = 'none';
+                                const spinner = document.createElement('i');
+                                spinner.classList = 'fas fa-3x fa-spinner fa-pulse m-1'
+                                buttonExport.parentElement.prepend(spinner);
+                                $.ajax({
+                                    url: '$url',
+                                    type: 'POST',
+                                    data: { metademands : $data },
+                                    xhrFields: {
+                                        responseType: 'blob'
+                                    },
+                                    success: function(blob, status, xhr) {
+                                            let url = window.URL.createObjectURL(blob);
+                                            let link = document.createElement('a');
+                                            link.href = url;
+                                
+                                            const contentDisposition = xhr.getResponseHeader('Content-Disposition');
+                                            let filename = 'export_' + new Date().toISOString().slice(0, 10) + '.zip';
+                                
+                                            if (contentDisposition) {
+                                                let matches = contentDisposition.match(/filename[^;=\\n]*=((['\"]).*?\\2|[^;\\n]*)/);
+                                                if (matches != null && matches[1]) {
+                                                    filename = matches[1].replace(/['\"]/g, '');
+                                                }
+                                            }
+                                
+                                            link.download = filename;
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            buttonExport.parentElement.removeChild(spinner);
+                                            buttonExport.removeAttribute('style');
+                                            window.URL.revokeObjectURL(url);
+                                            document.body.removeChild(link);
+                                    }
+                                }) 
+                            })
+                        }) 
+                    </script>";
                     return true;
                 }
                 echo __('This action requires PHP extension zip', 'metademands');

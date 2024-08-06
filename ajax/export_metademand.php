@@ -28,13 +28,13 @@
 
 include('../../../inc/includes.php');
 
-if (isset($_GET["metademands"]) && is_array($_GET["metademands"])) {
+if (isset($_POST["metademands"]) && is_array($_POST["metademands"])) {
     $old_memory = ini_set("memory_limit", "-1");
     $old_execution = ini_set("max_execution_time", "0");
 
     $metademand = new PluginMetademandsMetademand();
     $files = [];
-    foreach($_GET["metademands"] as $id) {
+    foreach($_POST["metademands"] as $id) {
         $metademand->getFromDB($id);
 
         $file            = $metademand->exportAsXML();
@@ -65,7 +65,17 @@ if (isset($_GET["metademands"]) && is_array($_GET["metademands"])) {
         foreach($files as $file) {
             unlink($file);
         }
-        Toolbox::sendFile($fullZip, $filename);
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename=export_' . date('Y-m-d') . '.zip');
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header('Content-Length: ' . filesize($fullZip));
+
+        readfile($fullZip);
         unlink($fullZip);
 
         ini_set("memory_limit", $old_memory);
