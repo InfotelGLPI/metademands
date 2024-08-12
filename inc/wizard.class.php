@@ -2605,7 +2605,7 @@ class PluginMetademandsWizard extends CommonDBTM
                                    success: function (response) {
                                       if(response != 1){
                                           $.ajax({
-                                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php',
+                                                url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/createmetademands.php?" . $paramUrl . "',
                                                 type: 'POST',
                                                 data: arrayDatas,
                                                 success: function (response) {
