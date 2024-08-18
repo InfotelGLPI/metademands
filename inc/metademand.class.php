@@ -1933,10 +1933,6 @@ JAVASCRIPT
     {
         global $PLUGIN_HOOKS;
 
-//        Toolbox::logInfo($metademands_id);
-//        Toolbox::logInfo($values);
-//        Toolbox::logInfo($options);
-
         $tasklevel = 1;
 
         $metademands_data = $this->constructMetademands($metademands_id);
@@ -4695,7 +4691,14 @@ JAVASCRIPT
                     $son_ticket_data['users_id_recipient'] = Session::getLoginUserID();
                 }
 
-                if ($son_tickets_id = $ticket->add($son_ticket_data)) {
+                // check if son ticket already exists in case we come from an update of the parent ticket
+                if ($ticket_task->getFromDBByCrit([
+                    'parent_tickets_id' => $parent_tickets_id,
+                    'level' => $son_ticket_data['level'],
+                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']
+                ])) {
+                    $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
+                } else if ($son_tickets_id = $ticket->add($son_ticket_data)) {
                     if (Plugin::isPluginActive('fields')) {
                         foreach ($inputField as $containers_id => $vals) {
                             $container = new PluginFieldsContainer;
@@ -4728,10 +4731,19 @@ JAVASCRIPT
                 if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $parent_tickets_id)) {
                     continue;
                 }
-                $ticket_task->add(['tickets_id' => 0,
+                // TODO  check use of this if
+                if ($ticket_task->find([
                     'parent_tickets_id' => $parent_tickets_id,
                     'level' => $son_ticket_data['level'],
-                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']
+                ])) {
+                    $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
+                } else {
+                    $ticket_task->add(['tickets_id' => 0,
+                        'parent_tickets_id' => $parent_tickets_id,
+                        'level' => $son_ticket_data['level'],
+                        'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                }
             }
         }
 
