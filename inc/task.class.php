@@ -292,9 +292,9 @@ class PluginMetademandsTask extends CommonDBChild {
                     $values = [
                         'mailtask_id' => $mailtask->getID(),
                         'type' => $type,
-                        'itilcategories_id' => $mailtask->fields['itilcategories_id'],
+                        'itilcategories_id' => $mailtask->fields['itilcategories_id'] ?? 0,
                         'plugin_metademands_tasks_id' => $ID,
-                        'content' => $mailtask->fields['content'],
+                        'content' => $mailtask->fields['content'] ?? "",
                         'name' => $this->fields['name'],
                         'block_use' => json_decode($this->fields['block_use'], true),
                         'useBlock' => $this->fields['useBlock'],
@@ -302,8 +302,8 @@ class PluginMetademandsTask extends CommonDBChild {
                         'formatastable' => $this->fields['formatastable'],
                         'entities_id' => $this->fields['entities_id'],
                         'is_recursive' => $this->fields['is_recursive'],
-                        'users_id_recipient' => $mailtask->fields['users_id_recipient'],
-                        'groups_id_recipient' => $mailtask->fields['groups_id_recipient'],
+                        'users_id_recipient' => $mailtask->fields['users_id_recipient'] ?? 0,
+                        'groups_id_recipient' => $mailtask->fields['groups_id_recipient'] ?? 0,
                     ];
                     PluginMetademandsMailTask::showMailTaskForm($item->getID(), $type, $values);
                 } else {
@@ -637,7 +637,9 @@ class PluginMetademandsTask extends CommonDBChild {
                         $cat = Dropdown::getDropdownName("glpi_itilcategories", $value['itilcategories_id']);
                     }
                 } else if ($value['type'] == self::MAIL_TYPE) {
-                    $cat = Dropdown::getDropdownName("glpi_itilcategories", $mailtask->fields['itilcategories_id']);
+                    if (isset($mailtask->fields['itilcategories_id']) && $mailtask->fields['itilcategories_id'] > 0) {
+                        $cat = Dropdown::getDropdownName("glpi_itilcategories", $mailtask->fields['itilcategories_id']);
+                    }
                 }
                 if ($value['type'] == self::TASK_TYPE) {
                     $cat = "---";
@@ -649,19 +651,34 @@ class PluginMetademandsTask extends CommonDBChild {
                 //assign
                 $techdata = "";
                 if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE ) {
-                    if (isset($value['users_id_assign'])
-                        && $value['users_id_assign'] > 0) {
-                        $techdata .= getUserName($value['users_id_assign'], 0, true);
-                        $techdata .= "<br>";
+
+                    if ($value['type'] != self::MAIL_TYPE) {
+                        if (isset($value['users_id_assign'])
+                            && $value['users_id_assign'] > 0) {
+                            $techdata .= getUserName($value['users_id_assign'], 0, true);
+                            $techdata .= "<br>";
+                        }
+                        if (isset($value['groups_id_assign'])
+                            && $value['groups_id_assign'] > 0) {
+                            $techdata .= Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
+                        }
                     }
-                    if (isset($value['groups_id_assign'])
-                        && $value['groups_id_assign'] > 0) {
-                        $techdata .= Dropdown::getDropdownName("glpi_groups", $value['groups_id_assign']);
-                    }
-                    if ($value['type'] == self::MAIL_TYPE) {
+
+                    if ($value['type'] == self::MAIL_TYPE
+                        && (isset($mailtask->fields['users_id_recipient']) || isset($mailtask->fields['groups_id_recipient']))
+                        && ($mailtask->fields['users_id_recipient'] > 0 || $mailtask->fields['groups_id_recipient'] > 0)) {
                         $techdata .= __('Recipients', 'metademands') . " : <br>";
-                        $techdata .= getUserName($mailtask->fields['users_id_recipient'], 0, true);
-                        $techdata .= Dropdown::getDropdownName("glpi_groups", $mailtask->fields['groups_id_recipient']);
+                        if (isset($mailtask->fields['users_id_recipient'])
+                            && $mailtask->fields['users_id_recipient'] > 0) {
+                            $techdata .= getUserName($mailtask->fields['users_id_recipient'], 0, true);
+                        }
+                        if (isset($mailtask->fields['groups_id_recipient'])
+                            && $mailtask->fields['groups_id_recipient'] > 0) {
+                            $techdata .= Dropdown::getDropdownName(
+                                "glpi_groups",
+                                $mailtask->fields['groups_id_recipient']
+                            );
+                        }
                     }
                 }
                 echo "<td $onhover $color_class>";
@@ -803,7 +820,12 @@ class PluginMetademandsTask extends CommonDBChild {
 
         if (count($params['condition']) > 0) {
             foreach ($params['condition'] as $cond => $value) {
-                $query .= " AND " . $cond . " = " . $value;
+                if (is_array($value)) {
+                    $query .= " AND " . $cond . " IN ( " . implode(",", $value) . ")";
+                } else {
+                    $query .= " AND " . $cond . " = " . $value;
+                }
+
             }
         }
 

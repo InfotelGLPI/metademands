@@ -73,7 +73,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $criteria['FROM'] = User::getTable();
             $criteria['WHERE'][User::getTable() . '.is_deleted'] = 0;
             $criteria['WHERE'][User::getTable() . '.is_active'] = 1;
-            $criteria['ORDER'] = ['name ASC'];
+//            $criteria['ORDER'] = ['name ASC'];
 
             if (!empty($data['custom_values'])) {
                 $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
@@ -81,15 +81,12 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 if (isset($options['user_group']) && $options['user_group'] == 1) {
                     $condition = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
                     $group_user_data = Group_User::getUserGroups(Session::getLoginUserID(), $condition);
-
-                    $requester_users = [];
+                    $users = [];
                     foreach ($group_user_data as $groups) {
                         $requester_users = Group_User::getGroupUsers($groups['id']);
-                    }
-
-                    $users = [];
-                    foreach ($requester_users as $k => $v) {
-                        $users[] = $v['id'];
+                        foreach ($requester_users as $k => $v) {
+                            $users[] = $v['id'];
+                        }
                     }
 
                     $criteria['WHERE'][User::getTable() . '.id'] = $users;

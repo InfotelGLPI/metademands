@@ -261,10 +261,7 @@ class PluginMetademandsMetademand extends CommonDBTM
             $this->addStandardTab('PluginMetademandsStep', $ong, $options);
             $this->addStandardTab('PluginMetademandsConfigstep', $ong, $options);
         }
-        //TODO Change / problem ?
-        if ($this->getField('object_to_create') == 'Ticket') {
-            $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
-        }
+        $this->addStandardTab('PluginMetademandsTicketField', $ong, $options);
         $this->addStandardTab('PluginMetademandsMetademandTranslation', $ong, $options);
         $this->addStandardTab('PluginMetademandsTask', $ong, $options);
         $this->addStandardTab('PluginMetademandsGroup', $ong, $options);
@@ -1833,7 +1830,7 @@ JAVASCRIPT
                     $tasks = new PluginMetademandsTask();
                     $tasks_data = $tasks->getTasks(
                         $metademands_id,
-                        ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TASK_TYPE]]
+                        ['condition' => ['glpi_plugin_metademands_tasks.type' => [PluginMetademandsTask::TICKET_TYPE, PluginMetademandsTask::MAIL_TYPE]]]
                     );
 
                     $forms[$step][$metademands_id]['tasks'] = $tasks_data;
@@ -1841,7 +1838,7 @@ JAVASCRIPT
                     $tasks = new PluginMetademandsTask();
                     $tasks_data = $tasks->getTasks(
                         $metademands_id,
-                        ['condition' => ['glpi_plugin_metademands_tasks.type' => PluginMetademandsTask::TICKET_TYPE]]
+                        ['condition' => ['glpi_plugin_metademands_tasks.type' => [PluginMetademandsTask::TICKET_TYPE, PluginMetademandsTask::MAIL_TYPE]]]
                     );
 
                     $forms[$step][$metademands_id]['tasks'] = $tasks_data;
@@ -1935,10 +1932,6 @@ JAVASCRIPT
     public function addObjects($metademands_id, $values, $options = [])
     {
         global $PLUGIN_HOOKS;
-
-//        Toolbox::logInfo($metademands_id);
-//        Toolbox::logInfo($values);
-//        Toolbox::logInfo($options);
 
         $tasklevel = 1;
 
@@ -2150,11 +2143,7 @@ JAVASCRIPT
                     // Get predefined ticket fields
                     //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
                     $parent_ticketfields = [];
-                    if ($object_class == 'Ticket') {
-                        //TODO Change / problem ?
-                        $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester'], $parent_fields['entities_id']);
-                    }
-
+                    $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester'], $parent_fields['entities_id']);
                     $list_fields = $line['form'];
 
 
@@ -2171,7 +2160,7 @@ JAVASCRIPT
                         if ($fields_values['used_by_ticket'] > 0 && !($fields_values['type'] == 'text' && $fields_values['item'] == 'User')) {
                             foreach ($values_form as $k => $v) {
                                 if (isset($v[$id])) {
-                                    $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'];
+                                    $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'] ?? "";
                                     if ($v[$id] > 0 && $fields_values['used_by_ticket'] == 4) {
                                         $name = "_users_id_requester";
                                     }
@@ -2267,11 +2256,7 @@ JAVASCRIPT
                     if (empty($parent_fields['id'])) {
                         unset($parent_fields['id']);
 
-                        if ($object_class == 'Ticket') {
-                            $input = $this->mergeFields($parent_fields, $parent_ticketfields);
-                        } else {
-                            $input = $parent_fields;
-                        }
+                        $input = $this->mergeFields($parent_fields, $parent_ticketfields);
 
                         $input['_filename'] = [];
                         $input['_tag_filename'] = [];
@@ -4246,10 +4231,13 @@ JAVASCRIPT
         $ticket_field = new PluginMetademandsTicketField();
         $parent_ticketfields = $ticket_field->find(['plugin_metademands_metademands_id' => $metademands_id]);
 
-        $ticket = new Ticket();
         $meta = new PluginMetademandsMetademand();
         $meta->getFromDB($metademands_id);
-        $tt = $ticket->getITILTemplateToUse(0, $meta->fields["type"], $itilcategory, $meta->fields['entities_id']);
+        $object = $meta->fields['object_to_create'];
+
+        $obj = new $object();
+
+        $tt = $obj->getITILTemplateToUse(0, $meta->fields["type"], $itilcategory, $meta->fields['entities_id']);
 
         if (count($parent_ticketfields)) {
             $allowed_fields = $tt->getAllowedFields(true, true);
@@ -4703,7 +4691,14 @@ JAVASCRIPT
                     $son_ticket_data['users_id_recipient'] = Session::getLoginUserID();
                 }
 
-                if ($son_tickets_id = $ticket->add($son_ticket_data)) {
+                // check if son ticket already exists in case we come from an update of the parent ticket
+                if ($ticket_task->getFromDBByCrit([
+                    'parent_tickets_id' => $parent_tickets_id,
+                    'level' => $son_ticket_data['level'],
+                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']
+                ])) {
+                    $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
+                } else if ($son_tickets_id = $ticket->add($son_ticket_data)) {
                     if (Plugin::isPluginActive('fields')) {
                         foreach ($inputField as $containers_id => $vals) {
                             $container = new PluginFieldsContainer;
@@ -4736,10 +4731,19 @@ JAVASCRIPT
                 if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $parent_tickets_id)) {
                     continue;
                 }
-                $ticket_task->add(['tickets_id' => 0,
+                // TODO  check use of this if
+                if ($ticket_task->find([
                     'parent_tickets_id' => $parent_tickets_id,
                     'level' => $son_ticket_data['level'],
-                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']
+                ])) {
+                    $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
+                } else {
+                    $ticket_task->add(['tickets_id' => 0,
+                        'parent_tickets_id' => $parent_tickets_id,
+                        'level' => $son_ticket_data['level'],
+                        'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                }
             }
         }
 
@@ -5553,7 +5557,6 @@ JAVASCRIPT
      */
     public function executeDuplicate($options = [])
     {
-        global $CFG_GLPI;
 
         if (isset($options['metademands_id'])) {
             $metademands_id = $options['metademands_id'];
@@ -5567,6 +5570,7 @@ JAVASCRIPT
             $tasks = new PluginMetademandsTask();
             $groups = new PluginMetademandsGroup();
             $tickettasks = new PluginMetademandsTicketTask();
+            $mailtasks = new PluginMetademandsMailTask();
             $metademandtasks = new PluginMetademandsMetademandTask();
 
             // Add the new metademand
@@ -5575,7 +5579,9 @@ JAVASCRIPT
             unset($this->fields['itilcategories_id']);
 
             //TODO To translate ?
-            $this->fields['comment'] = addslashes($this->fields['comment']);
+            if ($this->fields['comment'] != null) {
+                $this->fields['comment'] = addslashes($this->fields['comment']);
+            }
             $this->fields['name'] = addslashes($this->fields['name']);
 
             if ($new_metademands_id = $this->add($this->fields)) {
@@ -5586,7 +5592,6 @@ JAVASCRIPT
                     $translationMeta->clone(["items_id" => $new_metademands_id]);
                 }
                 $metademands_data = $this->constructMetademands($metademands_id);
-
 
                 if (count($metademands_data)) {
                     $associated_fields = [];
@@ -5682,6 +5687,22 @@ JAVASCRIPT
                                             }
                                         }
                                     }
+                                    if ($values['type'] == PluginMetademandsTask::MAIL_TYPE) {
+                                        $mailtasks_data = $mailtasks->find(['plugin_metademands_tasks_id' => $values['tasks_id']]);
+                                        if (count($mailtasks_data)) {
+                                            foreach ($mailtasks_data as $values) {
+                                                unset($values['id']);
+                                                $values['plugin_metademands_tasks_id'] = $new_tasks_id;
+                                                if (!empty($values['content'])) {
+                                                    $values['content'] = addslashes($values['content']);
+                                                }
+                                                if (!empty($values['email'])) {
+                                                    $values['email'] = addslashes($values['email']);
+                                                }
+                                                $mailtasks->add($values);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -5764,7 +5785,7 @@ JAVASCRIPT
                     $oldOptions = $fieldoptions->find(['plugin_metademands_fields_id' => $old_field_id]);
                     foreach ($oldOptions as $oldOption) {
                         $inputo = [];
-                        $inputo['plugin_metademands_tasks_id'] = $associated_tasks[$oldOption['plugin_metademands_tasks_id']];
+                        $inputo['plugin_metademands_tasks_id'] = $associated_tasks[$oldOption['plugin_metademands_tasks_id']] ?? 0;
                         $inputo['fields_link'] = $associated_oldfields[$oldOption['fields_link']] ?? 0;
                         $inputo['hidden_link'] = $associated_oldfields[$oldOption['hidden_link']] ?? 0;
                         $inputo['hidden_block'] = $oldOption['hidden_block'];
@@ -5902,6 +5923,7 @@ JAVASCRIPT
         $actions = parent::getSpecificMassiveActions($checkitem);
         if ($isadmin) {
             $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'duplicate'] = _sx('button', 'Duplicate');
+            $actions[__CLASS__ . MassiveAction::CLASS_ACTION_SEPARATOR . 'export'] = __('Export', 'metademands');
         }
 
         return $actions;
@@ -5923,6 +5945,65 @@ JAVASCRIPT
                 echo "&nbsp;" .
                     Html::submit(__('Validate'), ['name' => 'massiveaction']);
                 return true;
+            case 'export':
+                if (extension_loaded('zip')) {
+                    $items = $_POST['items'][__CLASS__];
+                    $url = PLUGIN_METADEMANDS_WEBDIR."/ajax/export_metademand.php";
+                    $data = json_encode($items);
+                    echo "&nbsp;";
+                    echo "<button id='export_metademand' class='btn'>". __('Start the download', 'metademands') . "</button>";
+                    echo "<br><small class='text-danger'><i class='fa fa-exclamation-triangle' aria-hidden='true'></i>" . __(
+                            'This action may take some time depending on the number of selected metademands',
+                            'metademands'
+                        ) . "</small>";
+                    // download done through ajax & POST request to avoid request length restriction from GET request
+                    echo "<script>
+                        $(document).ready(function() {
+                            $('#export_metademand').on('click', function(e) {
+                                e.preventDefault();
+                                const buttonExport = document.getElementById('export_metademand');
+                                buttonExport.style.display = 'none';
+                                const spinner = document.createElement('i');
+                                spinner.classList = 'fas fa-3x fa-spinner fa-pulse m-1'
+                                buttonExport.parentElement.prepend(spinner);
+                                $.ajax({
+                                    url: '$url',
+                                    type: 'POST',
+                                    data: { metademands : $data },
+                                    xhrFields: {
+                                        responseType: 'blob'
+                                    },
+                                    success: function(blob, status, xhr) {
+                                            let url = window.URL.createObjectURL(blob);
+                                            let link = document.createElement('a');
+                                            link.href = url;
+                                
+                                            const contentDisposition = xhr.getResponseHeader('Content-Disposition');
+                                            let filename = 'export_' + new Date().toISOString().slice(0, 10) + '.zip';
+                                
+                                            if (contentDisposition) {
+                                                let matches = contentDisposition.match(/filename[^;=\\n]*=((['\"]).*?\\2|[^;\\n]*)/);
+                                                if (matches != null && matches[1]) {
+                                                    filename = matches[1].replace(/['\"]/g, '');
+                                                }
+                                            }
+                                
+                                            link.download = filename;
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            buttonExport.parentElement.removeChild(spinner);
+                                            buttonExport.removeAttribute('style');
+                                            window.URL.revokeObjectURL(url);
+                                            document.body.removeChild(link);
+                                    }
+                                }) 
+                            })
+                        }) 
+                    </script>";
+                    return true;
+                }
+                echo __('This action requires PHP extension zip', 'metademands');
+                return false;
         }
         return parent::showMassiveActionsSubForm($ma);
     }
@@ -6501,11 +6582,20 @@ JAVASCRIPT
         foreach ($metatasks as $id => $task) {
             $fields['metatasks']['metatask' . $id] = $task;
         }
+
         $ticketTask = new PluginMetademandsTicketTask();
+        $metaMailTask = new PluginMetademandsMailTask();
 
         foreach ($fields['tasks'] as $id => $task) {
-            $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
-            $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
+
+            if ($task['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                $ticketTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+                $fields['tasks'][$id]['tickettask'] = $ticketTask->fields;
+            }
+            if ($task['type'] == PluginMetademandsTask::MAIL_TYPE) {
+                $metaMailTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $task['id']]);
+                $fields['tasks'][$id]['mailtask'] = $metaMailTask->fields;
+            }
         }
 
         $xml = new SimpleXMLElement("<?xml version=\"1.0\" encoding=\"UTF-8\"?><metademand><version>".PLUGIN_METADEMANDS_VERSION."</version></metademand>");
@@ -6650,7 +6740,6 @@ JAVASCRIPT
             $translations = $datas['translations'];
         }
 
-
         foreach ($datas as $key => $data) {
             if (is_array($data) && empty($data)) {
                 $datas[$key] = '';
@@ -6764,23 +6853,23 @@ JAVASCRIPT
         $mapTableTask = [];
         $mapTableTaskReverse = [];
 
+
         foreach ($tasks as $k => $task) {
             $oldIDTask = $task['id'];
             unset($task['id']);
             unset($task['ancestors_cache']);
             unset($task['sons_cache']);
             $task = Toolbox::addslashes_deep($task);
-            $tickettask = $task['tickettask'];
+            $tickettask = $task['tickettask'] ?? [];
+            $mailtask = $task['mailtask'] ?? [];
+
             foreach ($task as $key => $val) {
-                if (is_array($val)) {
-                    $task[$key] = "";
-                } else {
-                    $task[$key] = Html::entity_decode_deep($val);
-                }
+                $task[$key] = Html::entity_decode_deep($val);
             }
             $task['entities_id'] = $_SESSION['glpiactive_entity'];
 
             $task['plugin_metademands_metademands_id'] = $newIDMeta;
+
             $meta_task = new PluginMetademandsTask();
             $newIDTask = $meta_task->add($task);
 
@@ -6800,6 +6889,21 @@ JAVASCRIPT
                 $tickettask['plugin_metademands_tasks_id'] = $newIDTask;
                 $tickettaskP = new PluginMetademandsTicketTask();
                 $tickettaskP->add($tickettask);
+            }
+
+            if (is_array($mailtask) && !empty($mailtask)) {
+                unset($mailtask['id']);
+
+                foreach ($mailtask as $key => $val) {
+                    if (is_array($val) && empty($val)) {
+                        $mailtask[$key] = '';
+                    } elseif (!is_array($val)) {
+                        $mailtask[$key] = Html::entity_decode_deep($val);
+                    }
+                }
+                $mailtask['plugin_metademands_tasks_id'] = $newIDTask;
+                $mailtaskP = new PluginMetademandsMailTask();
+                $mailtaskP->add($mailtask);
             }
         }
 
@@ -7566,7 +7670,7 @@ HTML;
             ]];
         }
 
-
+        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
         if (isset($PLUGIN_HOOKS['metademands'])) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $new_categories = self::checkPluginUniqueItilcategory($plug, $dbu);
@@ -7574,8 +7678,6 @@ HTML;
                     $result = $new_categories;
                 }
             }
-        } else {
-            $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
         }
 
         $availableCategories = [];

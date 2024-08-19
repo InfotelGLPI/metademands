@@ -311,13 +311,19 @@ elseif (isset($_POST['previous'])) {
     if (isset($_SESSION['metademands_child_meta'])) {
         unset($_SESSION['metademands_child_meta']);
     }
+
+    $name = __('Create a metademand', 'metademands');
+    if (isset($_POST['form_metademands_id']) && $metademands->getFromDB($_POST['form_metademands_id'])) {
+        $name = PluginMetademandsWizard::getMetademandTypeName($metademands->fields['object_to_create'], $metademands->fields['type']);
+    }
+
     if (Session::getCurrentInterface() == 'central') {
-        Html::header(__('Create a metademand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu");
+        Html::header($name, '', "helpdesk", "pluginmetademandsmenu");
     } else {
         if (Plugin::isPluginActive('servicecatalog')) {
-            PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a metademand', 'metademands'));
+            PluginServicecatalogMain::showDefaultHeaderHelpdesk($name);
         } else {
-            Html::helpHeader(__('Create a metademand', 'metademands'));
+            Html::helpHeader($name);
         }
     }
 
@@ -577,14 +583,20 @@ elseif (isset($_POST['clean_form'])) {
 
 else {
 
+    $name = __('Create a metademand', 'metademands');
+    if ($metademands->getFromDB($_GET['metademands_id'])) {
+        $name = PluginMetademandsWizard::getMetademandTypeName($metademands->fields['object_to_create'], $metademands->fields['type']);
+    }
+
     //Default wizard
     if (Session::getCurrentInterface() == 'central') {
-        Html::header(__('Create a metademand', 'metademands'), '', "helpdesk", "pluginmetademandsmenu", "wizard");
+        Html::header($name, '', "helpdesk", "pluginmetademandsmenu", "wizard");
     } else {
         if (Plugin::isPluginActive('servicecatalog')) {
-            PluginServicecatalogMain::showDefaultHeaderHelpdesk(__('Create a metademand', 'metademands'));
+
+            PluginServicecatalogMain::showDefaultHeaderHelpdesk($name);
         } else {
-            Html::helpHeader(__('Create a metademand', 'metademands'));
+            Html::helpHeader($name);
         }
     }
 

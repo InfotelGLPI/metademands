@@ -904,6 +904,22 @@ class PluginMetademandsField extends CommonDBChild
 
         echo "</tr>";
 
+        if ($ID > 0) {
+            $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+            $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+            if (isset($this->fields['type'])
+                && in_array($this->fields['type'], $allowed_customvalues_types)
+                || in_array($this->fields['item'], $allowed_customvalues_items)) {
+                $field_custom = new PluginMetademandsFieldCustomvalue();
+                if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
+                    echo "<div class='alert alert-important alert-warning d-flex'>";
+                    echo "<b>" . __('Warning : there is no custom values for this object', 'metademands') . "</b></div>";
+                }
+
+            }
+        }
+
         $this->showFormButtons(['colspan' => 2]);
         return true;
     }
@@ -1895,7 +1911,7 @@ class PluginMetademandsField extends CommonDBChild
                 $data['value'] = date('Y-m-d H:i:s', strtotime("+$addDays day", $startDate));
             }
         }
-        $hidden = $data['hidden'];
+        $hidden = $data['hidden'] ?? 0;
         if ($hidden == 1 && isset($_SESSION['glpiactiveprofile']['interface'])
             && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $hidden = 0;
@@ -1903,7 +1919,7 @@ class PluginMetademandsField extends CommonDBChild
         if ($data['type'] != "title"
             && $data['type'] != "title-block"
             && $data['type'] != "informations") {
-            if ($data['hide_title'] == 0) {
+            if (isset($data['hide_title']) && $data['hide_title'] == 0) {
                 if ($hidden == 0) {
                     echo "<span $required class='col-form-label metademand-label'>";
                     echo $label . " $upload";
@@ -1964,7 +1980,7 @@ class PluginMetademandsField extends CommonDBChild
         if ($data['type'] != "title"
             && $data['type'] != "title-block"
             && $data['type'] != "informations") {
-            if ($data['hide_title'] == 1) {
+            if (isset($data['hide_title']) && $data['hide_title'] == 1) {
                 echo "</div>";
             }
         }

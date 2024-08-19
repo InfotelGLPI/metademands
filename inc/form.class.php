@@ -453,7 +453,7 @@ class PluginMetademandsForm extends CommonDBTM {
                            data-hasqtip='0' aria-hidden='true'></i>";
             echo "</button>";
             $step = PluginMetademandsMetademand::STEP_SHOW;
-            $is_validate = 1;
+            $is_validate = 0;
             $metaValidation = new PluginMetademandsMetademandValidation();
             if ($metaValidation->getFromDBByCrit(['tickets_id' => $items_id])) {
                $is_validate = $metaValidation->fields['validate'];
