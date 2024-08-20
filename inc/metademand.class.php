@@ -7633,7 +7633,7 @@ HTML;
             $_SESSION['glpiactiveentities'],
             true
         );
-        if (isset($PLUGIN_HOOKS['metademands'])) {
+        if (isset($PLUGIN_HOOKS['metademands']) && $metademand->fields['type'] != 1 && $metademand->fields['type'] != 2) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $new_fields = self::addPluginObjectItems($plug);
                 if (Plugin::isPluginActive($plug) && is_array($new_fields)) {
@@ -7671,7 +7671,8 @@ HTML;
         }
 
         $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $critCategory);
-        if (isset($PLUGIN_HOOKS['metademands'])) {
+
+        if (isset($PLUGIN_HOOKS['metademands']) && $critMeta["type"] != 1 && $critMeta["type"] != 2) {
             foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                 $new_categories = self::checkPluginUniqueItilcategory($plug, $dbu);
                 if (Plugin::isPluginActive($plug) && $new_categories != null) {
