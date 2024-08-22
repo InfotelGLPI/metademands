@@ -171,11 +171,12 @@ JAVASCRIPT
         
     }
 
-    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang)
+    public static function displayFieldItems(&$result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order = false)
     {
 
         if ($formatAsTable) {
-            $result[$field['rank']]['content'] .= "<th colspan='10'>";
+            $colspan = $is_order ? 10 : 2;
+            $result[$field['rank']]['content'] .= "<th colspan='$colspan'>";
         }
         $result[$field['rank']]['content'] .= $label;
         if ($formatAsTable) {
