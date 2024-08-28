@@ -1026,7 +1026,8 @@ class PluginMetademandsDropdownobject extends CommonDBTM
         //Initialize default value - force change after onchange fonction
         foreach ($check_values as $idc => $check_value) {
             $hidden_link = $check_value['hidden_link'];
-            if (is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
+            if (isset($data['default_values'])
+                && is_array(PluginMetademandsFieldParameter::_unserialize($data['default_values']))) {
                 $default_values = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
 
                 foreach ($default_values as $k => $v) {
