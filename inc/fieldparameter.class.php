@@ -451,12 +451,13 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             if ($objectclass == 'Ticket' || $objectclass == 'Problem' || $objectclass == 'Change') {
                 $allowed_fields = $tt->getAllowedFields(true, true);
             }
+
             if (isset($PLUGIN_HOOKS['metademands'])) {
                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                     if (Plugin::isPluginActive($plug)) {
                         $new_fields = self::addPluginAllowedFieldItems($plug);
                         if (is_array($new_fields) && count($new_fields) > 0) {
-                            $allowed_fields = $new_fields;
+                            $allowed_fields = array_merge($allowed_fields, $new_fields);
                             unset($allowed_fields[-1]);
                         }
                     }
@@ -574,7 +575,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
                     $g_fields = self::getPluginGrantedFields($plug, $params);
                     if (Plugin::isPluginActive($plug) && is_array($g_fields)) {
-                        $granted_fields = $g_fields;
+                        $granted_fields = array_merge($granted_fields, $g_fields);
                     }
                 }
             }
