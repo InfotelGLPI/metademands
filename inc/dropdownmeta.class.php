@@ -1132,8 +1132,8 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             $onchange .= "$.each( tohide, function( key, value ) {
                         if (value == true) {
                             $('[bloc-id =\"bloc'+key+'\"]').hide();
-                            " . PluginMetademandsFieldoption::setEmptyBlockFields($hidden_block);
-
+                            " . PluginMetademandsFieldoption::setEmptyBlockFields($hidden_block)
+                            . PluginMetademandsFieldoption::resetMandatoryBlockFields($hidden_block);
                             if (is_array($childs_by_checkvalue)) {
                                 foreach ($childs_by_checkvalue as $k => $childs_blocks) {
                                         if ($idc == $k) {
