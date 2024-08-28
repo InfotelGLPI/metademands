@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-28 08:11+0000\n"
+"POT-Creation-Date: 2024-08-28 09:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -764,7 +764,7 @@ msgid "Use id of supervisor requester by default"
 msgstr ""
 
 #: inc/dropdownmultiple.class.php:810 inc/dropdownobject.class.php:605
-#: inc/fieldparameter.class.php:761
+#: inc/fieldparameter.class.php:762
 msgid "Informations to display in ticket and PDF"
 msgstr ""
 
@@ -996,7 +996,7 @@ msgstr ""
 msgid "Use this field as object field"
 msgstr ""
 
-#: inc/fieldparameter.class.php:617
+#: inc/fieldparameter.class.php:618
 msgid "Link this to a plugin \"fields\" field"
 msgstr ""
 
