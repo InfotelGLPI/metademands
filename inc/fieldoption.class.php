@@ -1644,6 +1644,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
                 if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['id'], 'is_mandatory' => 1])) {
                     $id = $data['id'];
                     $script .= "$(\"[name='field[$id]']\").attr('required', 'required');";
+                    $script .= "$(\"[check='field[$id]']\").attr('required', 'required');";
                     if ($data['type'] == 'upload') {
                         $script .= "document.querySelector(\"[id-field='field$id'] div input\").required = true;";
                     }
