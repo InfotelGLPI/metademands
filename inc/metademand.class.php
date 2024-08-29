@@ -2042,6 +2042,7 @@ JAVASCRIPT
                             $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                         }
                     } elseif ($metademand->fields['is_order'] == 1) {
+                        $options['is_order'] = true;
                         if ($metademand->fields['create_one_ticket'] == 0) {
                             //create one ticket for each basket
                             $values_form[0] = isset($values['basket']) ? $values['basket'] : [];
@@ -3827,6 +3828,10 @@ JAVASCRIPT
         $result['content'] = "";
         $parent_fields_id = 0;
         $colors = [];
+        $isOrder = false;
+        if (isset($options['is_order'])) {
+            $isOrder = $options['is_order'];
+        }
 
         foreach ($values_form as $k => $values) {
             if (is_array($values) && $config_data['show_form_changes']) {
@@ -3844,8 +3849,7 @@ JAVASCRIPT
             if (!isset($options['formatastable'])
                 || (isset($options['formatastable'])
                     && $options['formatastable'] == true)) {
-                $result['content'] .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>"; // class='mticket'
-//                 $result['content'] .= "<tr><th colspan='2'>" . $name . "</th></tr>";
+                $result['content'] .= "<table class='tab_cadre' style='width: 100%;border:0;background:none;word-break: unset;'>";
             }
 
             if (!empty($options['resources_id'])) {
@@ -3917,7 +3921,7 @@ JAVASCRIPT
                             $i++;
                             $field['value'] = $val;
                             $color = substr($key, strpos($key, '#') + 1);
-                            self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech, $color);
+                            self::getContentWithField($parent_fields, $newKey, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech, $color, $isOrder);
                             unset($colors[$key]);
                             if (!isset($options['formatastable'])
                                 || (isset($options['formatastable']) && $options['formatastable'] == true)) {
@@ -3926,7 +3930,7 @@ JAVASCRIPT
                         }
                     }
                 } else {
-                    self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech);
+                    self::getContentWithField($parent_fields, $fields_id, $field, $resultTemp, $parent_fields_id, false, $formatAsTable, $langTech, '', $isOrder);
 
                     if (!isset($options['formatastable'])
                         || (isset($options['formatastable']) && $options['formatastable'] == true)) {
@@ -3957,7 +3961,7 @@ JAVASCRIPT
      * @param $parent_fields_id
      * @param $return_value
      */
-    public static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color = '')
+    public static function getContentWithField($parent_fields, $fields_id, $field, &$result, &$parent_fields_id, $return_value = false, $formatAsTable = true, $lang = '', $color = '', $is_order = false)
     {
         global $PLUGIN_HOOKS;
 
@@ -4022,10 +4026,10 @@ JAVASCRIPT
             switch ($field['type']) {
 
                 case 'title-block':
-                    PluginMetademandsTitleblock::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    PluginMetademandsTitleblock::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order);
                     break;
                 case 'title':
-                    PluginMetademandsTitle::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    PluginMetademandsTitle::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order);
                     break;
                 case 'dropdown':
                     if ($field['value'] != 0) {
