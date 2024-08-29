@@ -36,97 +36,76 @@ Session::checkCentralAccess();
 global $PLUGIN_HOOKS;
 
 if ($_POST['object_to_create'] != NULL) {
-   $object = $_POST['object_to_create'];
+    $object = $_POST['object_to_create'];
 
-   if ($object == 'Ticket') {
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . _n('Type', 'Types', 1) . "</td>";
-      echo "<td>";
-      $opt  = [
-         'display_emptychoice' => true,
-      ];
-      $rand = Ticket::dropdownType('type', $opt);
+    if ($object == 'Ticket') {
+        echo "<tr class='tab_bg_1'>";
+        echo "<td>" . _n('Type', 'Types', 1) . "</td>";
+        echo "<td>";
+        $opt  = [
+            'display_emptychoice' => true,
+        ];
+        $rand = Ticket::dropdownType('type', $opt);
 
-      $params = ['type'             => '__VALUE__',
-                 'value'            => 0,
-                 'object_to_create' => $object,
-                 'entity_restrict'  => $_SESSION['glpiactiveentities']];
+        $params = ['type'             => '__VALUE__',
+            'value'            => 0,
+            'object_to_create' => $object,
+            'entity_restrict'  => $_SESSION['glpiactiveentities']];
 
-      Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
-                                    PLUGIN_METADEMANDS_WEBDIR. "/ajax/dropdownITILCategories.php",
-                                    $params);
-      echo "</td>";
+        Ajax::updateItemOnSelectEvent("dropdown_type$rand", "show_category_by_type",
+            PLUGIN_METADEMANDS_WEBDIR. "/ajax/dropdownITILCategories.php",
+            $params);
+        echo "</td>";
 
-      echo "<td>" . __('Category') . "</td>";
-      echo "<td>";
+        echo "<td>" . __('Category') . "</td>";
+        echo "<td>";
 
-      echo "<span id='show_category_by_type'>";
-      echo "</span>";
-      echo "</td>";
-      echo "</tr>";
-   } elseif ($object == 'Problem' || $object == 'Change') {
-      echo "<tr class='tab_bg_1'>";
-      echo "<td colspan='2'></td>";
-      echo "</td>";
+        echo "<span id='show_category_by_type'>";
+        echo "</span>";
+        echo "</td>";
+        echo "</tr>";
+    } elseif ($object == 'Problem' || $object == 'Change') {
+        echo "<tr class='tab_bg_1'>";
+        echo "<td colspan='2'></td>";
+        echo "</td>";
 
-      echo "<td>" . __('Category') . "</td>";
-      echo "<td>";
+        echo "<td>" . __('Category') . "</td>";
+        echo "<td>";
 
-      if ($object == 'Problem') {
-         $criteria = ['is_problem' => 1];
-      } elseif ($object == 'Change') {
-         $criteria = ['is_change' => 1];
-      }
-
-
-      $criteria += getEntitiesRestrictCriteria(
-         \ITILCategory::getTable(),
-         'entities_id',
-         $_SESSION['glpiactiveentities'],
-         true
-      );
-
-      $dbu    = new DbUtils();
-      $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
-      $temp   = [];
-      foreach ($result as $item) {
-         $temp[$item['id']] = $item['completename'];
-      }
-      Dropdown::showFromArray('itilcategories_id', $temp,
-                              ['width'    => '100%',
-                               'multiple' => true,
-                               'entity'   => $_SESSION['glpiactiveentities']]);
-      echo "</td>";
-      echo "</tr>";
-   } else {
-
-       if (isset($PLUGIN_HOOKS['metademands'])) {
-           foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
-               if (Plugin::isPluginActive($plug)) {
-                   $url = PluginMetademandsMetademand::getPluginUniqueDropdownUrl($plug);
-               }
-           }
-       }
-
-       if($url != '') {
-           Ajax::updateItemOnSelectEvent(
-               "dropdown_type$rand",
-               "show_category_by_type",
-               $url
-           );
-
-           echo "<td>" . __('Category') . "</td>";
-           echo "<td>";
-
-           echo "<span id='show_category_by_type'>";
-           echo "</span>";
-           echo "</td>";
-       }
-       echo "</tr>";
-                   echo PluginMetademandsMetademand::getPluginUniqueDropdown($plug);
+        if ($object == 'Problem') {
+            $criteria = ['is_problem' => 1];
+        } elseif ($object == 'Change') {
+            $criteria = ['is_change' => 1];
+        }
 
 
+        $criteria += getEntitiesRestrictCriteria(
+            \ITILCategory::getTable(),
+            'entities_id',
+            $_SESSION['glpiactiveentities'],
+            true
+        );
 
-   }
+        $dbu    = new DbUtils();
+        $result = $dbu->getAllDataFromTable(ITILCategory::getTable(), $criteria);
+        $temp   = [];
+        foreach ($result as $item) {
+            $temp[$item['id']] = $item['completename'];
+        }
+        Dropdown::showFromArray('itilcategories_id', $temp,
+            ['width'    => '100%',
+                'multiple' => true,
+                'entity'   => $_SESSION['glpiactiveentities']]);
+        echo "</td>";
+        echo "</tr>";
+    } else {
+
+        if (isset($PLUGIN_HOOKS['metademands'])) {
+            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {
+                if (Plugin::isPluginActive($plug)) {
+                    echo PluginMetademandsMetademand::getPluginUniqueDropdown($plug);
+                }
+            }
+        }
+    }
 }
-
