@@ -175,8 +175,6 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
 
                 //Category id if have category field
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
-
-
             }
 
             $forms = new PluginMetademandsForm();

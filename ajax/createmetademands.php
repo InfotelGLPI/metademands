@@ -204,8 +204,6 @@ if ($nofreeinputs === false) {
                         && isset($_POST['field_plugin_servicecatalog_itilcategories_id'])) {
                         $post[$_POST['field_plugin_servicecatalog_itilcategories_id_key']] = $_POST['field_plugin_servicecatalog_itilcategories_id'];
                     }
-
-
                     $nblines = 1;
                 }
                 if ($KO === false) {
@@ -298,7 +296,6 @@ if ($nofreeinputs === false) {
                             if ($value['item'] == 'ITILCategory_Metademands') {
                                 $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
                             }
-
                             $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
                         }
 
@@ -332,8 +329,6 @@ if ($nofreeinputs === false) {
                             $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
                                 (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
                                     && $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['field_plugin_servicecatalog_itilcategories_id'];
-
-
                         }
 
                         if ($KO) {

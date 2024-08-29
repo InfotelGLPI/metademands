@@ -155,8 +155,6 @@ if (isset($_POST['save_draft'])) {
                     (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
                         && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
 //                $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
-
-
             }
 
             $drafts = new PluginMetademandsDraft();

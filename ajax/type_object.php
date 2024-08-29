@@ -64,9 +64,7 @@ if ($_POST['object_to_create'] != NULL) {
       echo "</span>";
       echo "</td>";
       echo "</tr>";
-   }
-
-   elseif ($object == 'Problem' || $object == 'Change') {
+   } elseif ($object == 'Problem' || $object == 'Change') {
       echo "<tr class='tab_bg_1'>";
       echo "<td colspan='2'></td>";
       echo "</td>";
@@ -100,9 +98,7 @@ if ($_POST['object_to_create'] != NULL) {
                                'entity'   => $_SESSION['glpiactiveentities']]);
       echo "</td>";
       echo "</tr>";
-   }
-
-   else {
+   } else {
 
        if (isset($PLUGIN_HOOKS['metademands'])) {
            foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {

@@ -66,8 +66,8 @@ if ($form->getFromDB($_POST['plugin_metademands_forms_id'])) {
       (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
           && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
 //   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_type']                                    = $metademands->fields['type'];
-    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id']                  = $_POST['plugin_metademands_forms_id'];
-    $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name']                = $form_name;
+   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id']                  = $_POST['plugin_metademands_forms_id'];
+   $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name']                = $form_name;
 
 } else {
    $KO = true;

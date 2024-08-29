@@ -128,6 +128,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
                     );
                 }
                 break;
+
             case 'ITILCategory_Metademands':
                 if ($on_order == false) {
                     $nameitil = 'field';
@@ -1035,6 +1036,7 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
         if ($data["item"] == "ITILCategory_Metademands") {
             $name = "field_plugin_servicecatalog_itilcategories_id";
         }
+
         //add childs by idc
         $childs_by_checkvalue = [];
         foreach ($check_values as $idc => $check_value) {
@@ -1389,7 +1391,6 @@ class PluginMetademandsDropdownmeta extends CommonDBTM
             }
         }
     }
-
 
     static function getPluginDropdownItilcategoryName(int|string $plug, $opt)
     {

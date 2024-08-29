@@ -840,7 +840,6 @@ class PluginMetademandsStep extends CommonDBChild
                                     if ($value['item'] == 'ITILCategory_Metademands') {
                                         $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
                                     }
-
                                 }
                             }
                         }
@@ -863,7 +862,6 @@ class PluginMetademandsStep extends CommonDBChild
                         $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] =
                             (isset($_POST['basket_plugin_servicecatalog_itilcategories_id'])
                                 && $_SESSION['plugin_metademands'][$_POST['metademands_id']]['field_plugin_servicecatalog_itilcategories_id'] == 0) ? $_POST['basket_plugin_servicecatalog_itilcategories_id'] : 0;
-
                     }
 
                     $forms = new PluginMetademandsStepform();
