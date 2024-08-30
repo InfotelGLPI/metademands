@@ -38,9 +38,9 @@ if (!defined('GLPI_ROOT')) {
 class PluginMetademandsDropdownmultiple extends CommonDBTM
 {
 
-    public static $dropdown_multiple_items = ['other', 'Location', 'Appliance', 'User'];
+    public static $dropdown_multiple_items = ['other', 'Location', 'Appliance', 'User', 'Group'];
 
-    public static $dropdown_multiple_objects = ['Location', 'Appliance', 'User'];
+    public static $dropdown_multiple_objects = ['Location', 'Appliance', 'User', 'Group'];
     const CLASSIC_DISPLAY = 0;
     const DOUBLE_COLUMN_DISPLAY = 1;
 
@@ -81,11 +81,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
         if ($data['item'] == User::getType()) {
             $self = new PluginMetademandsField();
-//            $data['custom_values'] = [];
+
             $criteria = $self->getDistinctUserCriteria() + $self->getProfileJoinCriteria();
-            $criteria['FROM'] = User::getTable();
-            $criteria['WHERE'][User::getTable() . '.is_deleted'] = 0;
-            $criteria['WHERE'][User::getTable() . '.is_active'] = 1;
+            $criteria['FROM'] = getTableForItemType($data['item']);
+            $criteria['WHERE'][getTableForItemType($data['item']) . '.is_deleted'] = 0;
+            $criteria['WHERE'][getTableForItemType($data['item']) . '.is_active'] = 1;
             $criteria['ORDER'] = ['realname, firstname ASC'];
 
             if (!empty($data['custom_values'])) {
@@ -102,7 +102,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                         }
                     }
 
-                    $criteria['WHERE'][User::getTable() . '.id'] = $users;
+                    $criteria['WHERE'][getTableForItemType($data['item']) . '.id'] = $users;
                 }
             }
 
@@ -158,16 +158,63 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     ]
                 );
             }
-        } else if ($data['item'] == Location::getType() || $data['item'] == Appliance::getType()) {
+        } else if ($data['item'] == 'other') {
 
-            if ($data['item'] == Location::getType()) {
-                $criteria['FROM'] = Location::getTable();
-            } else {
-                $criteria['FROM'] = Appliance::getTable();
-                $criteria['WHERE'][Appliance::getTable() . '.is_deleted'] = 0;
-//                $criteria['WHERE'][Appliance::getTable() . '.is_template'] = 0;
-                $criteria['WHERE'] =  getEntitiesRestrictCriteria("glpi_appliances");
+            if (!empty($data['custom_values'])) {
+
+                $custom_values = $data['custom_values'] ?? [];
+
+                if (!empty($value) && !is_array($value)) {
+                    $value = json_decode($value);
+                }
+                if (!is_array($value)) {
+                    $value = [];
+                }
+
+                if ($data["display_type"] != self::CLASSIC_DISPLAY) {
+
+                    $field .= self::loadMultiselectDiv($namefield, $data['id'], $data['item'], $required, $custom_values, $value);
+
+                    $field .= self::loadMultiselectScript($namefield, $data['id']);
+
+                } else {
+
+                    if (count($custom_values) > 0) {
+                        foreach ($custom_values as $k => $val) {
+                            $custom_values[$k] = $val['name'];
+                        }
+                    }
+                    if (!is_array($value)) {
+                        $value = [];
+                    }
+                    $field = Dropdown::showFromArray(
+                        $namefield . "[" . $data['id'] . "]",
+                        $custom_values,
+                        [
+                            'values' => $value,
+                            'width' => '250px',
+                            'multiple' => true,
+                            'display' => false,
+                            'required' => ($data['is_mandatory'] ? "required" : "")
+                        ]
+                    );
+                }
             }
+
+        } else {
+
+            $item = new $data['item'];
+            $criteria['FROM'] = getTableForItemType($data['item']);
+
+            if ($item->maybeDeleted()) {
+                $criteria['WHERE'][getTableForItemType($data['item']) . '.is_deleted'] = 0;
+            }
+
+            if ($item->maybeTemplate()) {
+                $criteria['WHERE'][getTableForItemType($data['item']) . '.is_template'] = 0;
+            }
+
+            $criteria['WHERE'] = getEntitiesRestrictCriteria(getTableForItemType($data['item']), '', '', $item->maybeRecursive());
 
             $criteria['ORDER'] = ['name ASC'];
 
@@ -209,47 +256,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                     ]
                 );
             }
-        } else {
-            if (!empty($data['custom_values'])) {
-
-                $custom_values = $data['custom_values'] ?? [];
-
-                if (!empty($value) && !is_array($value)) {
-                    $value = json_decode($value);
-                }
-                if (!is_array($value)) {
-                    $value = [];
-                }
-
-                if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-
-                    $field .= self::loadMultiselectDiv($namefield, $data['id'], $data['item'], $required, $custom_values, $value);
-
-                    $field .= self::loadMultiselectScript($namefield, $data['id']);
-
-                } else {
-
-                    if (count($custom_values) > 0) {
-                        foreach ($custom_values as $k => $val) {
-                            $custom_values[$k] = $val['name'];
-                        }
-                    }
-                    if (!is_array($value)) {
-                        $value = [];
-                    }
-                    $field = Dropdown::showFromArray(
-                        $namefield . "[" . $data['id'] . "]",
-                        $custom_values,
-                        [
-                            'values' => $value,
-                            'width' => '250px',
-                            'multiple' => true,
-                            'display' => false,
-                            'required' => ($data['is_mandatory'] ? "required" : "")
-                        ]
-                    );
-                }
-            }
         }
 
         echo $field;
@@ -263,20 +269,18 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $div =  "<div class='row'>";
         $div .= "<div class='zone'>";
         $div .= "<select name='from' id=\"multiselect$namefield" . $id . "\" class='formCol' size='8' multiple='multiple'>";
-
         if (is_array($list) && count($list) > 0) {
             foreach ($list as $k => $val) {
                 if (!in_array($k, $value)) {
 
-                    if ($item == User::getType() || $item == Location::getType() || $item == Appliance::getType()) {
-                        $div .= "<option value=\"$k\" >$val</option>";
-                    } else {
+                    if ($item == 'other') {
                         $div .= "<option value=\"$k\">".$val['name']."</option>";
+                    } else {
+                        $div .= "<option value=\"$k\" >$val</option>";
                     }
                 }
             }
         }
-
         $div .= "</select>";
         $div .= "</div>";
 
@@ -291,16 +295,15 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         $div .= "<select class='form-select formCol' $required name='$name' id=\"multiselect$namefield" . $id . "_to\" size='8' multiple='multiple'>";
         if (is_array($value) && count($value) > 0) {
             foreach ($value as $k => $val) {
-
-                if ($item == User::getType()) {
+                if ($item == 'other') {
+                    $div .= "<option selected value=\"" . $val['id'] . "\" >" . $val['name'] . "</option>";
+                } else if ($item == User::getType()) {
                     $div .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
-                } else if ($item == Location::getType() || $item == Appliance::getType()) {
+                } else {
                     $div .= "<option selected value=\"$val\" >" . Dropdown::getDropdownName(
                             getTableForItemType($item),
                             $val
                         ) . "</option>";
-                } else {
-                    $div .= "<option selected value=\"" . $val['id'] . "\" >" . $val['name'] . "</option>";
                 }
             }
         }
