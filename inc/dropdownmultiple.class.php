@@ -66,6 +66,19 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         }
         $field = "";
 
+        if ($data["display_type"] != self::CLASSIC_DISPLAY) {
+            $js = Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/multiselect2/dist/js/multiselect.js");
+            $css = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/multiselect2/dist/css/multiselect.css");
+
+            $field = $js;
+            $field .= $css;
+        }
+
+        $required = "";
+        if ($data['is_mandatory'] == 1) {
+            $required = "required=required";
+        }
+
         if ($data['item'] == User::getType()) {
             $self = new PluginMetademandsField();
 //            $data['custom_values'] = [];
@@ -73,7 +86,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             $criteria['FROM'] = User::getTable();
             $criteria['WHERE'][User::getTable() . '.is_deleted'] = 0;
             $criteria['WHERE'][User::getTable() . '.is_active'] = 1;
-//            $criteria['ORDER'] = ['name ASC'];
+            $criteria['ORDER'] = ['realname, firstname ASC'];
 
             if (!empty($data['custom_values'])) {
                 $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
@@ -118,115 +131,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                $name = $namefield . "[" . $data['id'] . "][]";
-                $css = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
-                $field = "$css
-                           <div class=\"row\">";
-                $field .= "<div class=\"zone\">
-                                   <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
 
-                if (is_array($list) && count($list) > 0) {
-                    foreach ($list as $k => $val) {
-                        if (!in_array($k, $value)) {
-                            $field .= "<option value=\"$k\" >$val</option>";
-                        }
-                    }
-                }
+                $field .= self::loadMultiselectDiv($namefield, $data['id'], $data['item'], $required, $list, $value);
 
-                $field .= "</select></div>";
+                $field .= self::loadMultiselectScript($namefield, $data['id']);
 
-                $field .= " <div class=\"centralCol\" style='width: 3%;'>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn  buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
-                               </div>";
-
-                $required = "";
-                if ($data['is_mandatory'] == 1) {
-                    $required = "required=required";
-                }
-                $field .= "<div class=\"zone\">
-                                   <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-                if (is_array($value) && count($value) > 0) {
-                    foreach ($value as $k => $val) {
-                        $field .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
-                    }
-                }
-                $field .= "</select></div>";
-
-                $field .= "</div>";
-
-                $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
-                           <script type="text/javascript">
-                           jQuery(document).ready(function($) {
-                                  $("#multiselect' . $namefield . $data["id"] . '").multiselect({
-                                      search: {
-                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                      },
-                                      keepRenderingSort: true,
-                                      fireSearch: function(value) {
-                                          return value.length > 2;
-                                      },
-                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
-                                        let self = Multiselect;
-                        
-                                        $options.each(function(index, option) {
-                                            let $option = $(option);
-                        
-                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
-                                                return true;
-                                            }
-                        
-                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
-                                                let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
-                                                let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
-                                                let $destinationGroup = $destination.find(optgroupSelector);
-                        
-                                                if (!$destinationGroup.length) {
-                                                    $destinationGroup = $sourceGroup.clone(true);
-                                                    $destinationGroup.empty();
-                        
-                                                    $destination.move($destinationGroup);
-                                                }
-                        
-                                                if ($option.is("optgroup")) {
-                                                    let disabledSelector = "";
-                        
-                                                    if (self.options.ignoreDisabled) {
-                                                        disabledSelector = ":not(:disabled)";
-                                                    }
-                        
-                                                    $destinationGroup.move($option.find("option" + disabledSelector));
-                                                } else {
-                                                    $destinationGroup.move($option);
-                                                }
-                        
-                                                $sourceGroup.removeIfEmpty();
-                                            } else {
-                                                $destination.move($option);
-                                                //Color change when multiselect value is switch
-                                                $destination[0].value = $options[index].value;
-                                                let selected = $destination[0].selectedIndex;
-                                                let destOption = $destination[0].options[selected];
-                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
-                                                    if($destination[0].name=="from"){
-                                                        destOption.style.color = "red";
-                                                    } else{
-                                                        destOption.style.color = "green";
-                                                    }
-                                                } else{
-                                                    destOption.style.color="#555555";
-                                                }
-                                            }
-                                        });                        
-                                        return self;
-                                          
-                                      }
-                                  });
-                              });
-                           </script>';
             } else {
 
                 $default_user = $data['default_use_id_requester'] == 0 ? 0 : Session::getLoginUserID();
@@ -250,9 +159,6 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 );
             }
         } else if ($data['item'] == Location::getType() || $data['item'] == Appliance::getType()) {
-
-            $self = new PluginMetademandsField();
-
 
             if ($data['item'] == Location::getType()) {
                 $criteria['FROM'] = Location::getTable();
@@ -286,115 +192,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             }
 
             if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                $name = $namefield . "[" . $data['id'] . "][]";
-                $css = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
-                $field = "$css
-                           <div class=\"row\">";
-                $field .= "<div class=\"zone\">
-                                   <select name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
 
-                if (is_array($list) && count($list) > 0) {
-                    foreach ($list as $k => $val) {
-                        if (!in_array($k, $value)) {
-                            $field .= "<option value=\"$k\" >$val</option>";
-                        }
-                    }
-                }
+                $field .= self::loadMultiselectDiv($namefield, $data['id'], $data['item'], $required, $list, $value);
 
-                $field .= "</select></div>";
+                $field .= self::loadMultiselectScript($namefield, $data['id']);
 
-                $field .= " <div class=\"centralCol\" style='width: 3%;'>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn  buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
-                               </div>";
-
-                $required = "";
-                if ($data['is_mandatory'] == 1) {
-                    $required = "required=required";
-                }
-                $field .= "<div class=\"zone\">
-                                   <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-                if (is_array($value) && count($value) > 0) {
-                    foreach ($value as $k => $val) {
-                        $field .= "<option selected value=\"$val\" >" . Dropdown::getDropdownName(getTableForItemType($data['item']), $val) . "</option>";
-                    }
-                }
-                $field .= "</select></div>";
-
-                $field .= "</div>";
-
-                $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
-                           <script type="text/javascript">
-                           jQuery(document).ready(function($) {
-                                  $("#multiselect' . $namefield . $data["id"] . '").multiselect({
-                                      search: {
-                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                      },
-                                      keepRenderingSort: true,
-                                      fireSearch: function(value) {
-                                          return value.length > 2;
-                                      },
-                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
-                                        let self = Multiselect;
-                        
-                                        $options.each(function(index, option) {
-                                            let $option = $(option);
-                        
-                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
-                                                return true;
-                                            }
-                        
-                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
-                                                let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
-                                                let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
-                                                let $destinationGroup = $destination.find(optgroupSelector);
-                        
-                                                if (!$destinationGroup.length) {
-                                                    $destinationGroup = $sourceGroup.clone(true);
-                                                    $destinationGroup.empty();
-                        
-                                                    $destination.move($destinationGroup);
-                                                }
-                        
-                                                if ($option.is("optgroup")) {
-                                                    let disabledSelector = "";
-                        
-                                                    if (self.options.ignoreDisabled) {
-                                                        disabledSelector = ":not(:disabled)";
-                                                    }
-                        
-                                                    $destinationGroup.move($option.find("option" + disabledSelector));
-                                                } else {
-                                                    $destinationGroup.move($option);
-                                                }
-                        
-                                                $sourceGroup.removeIfEmpty();
-                                            } else {
-                                                $destination.move($option);
-                                                //Color change when multiselect value is switch
-                                                $destination[0].value = $options[index].value;
-                                                let selected = $destination[0].selectedIndex;
-                                                let destOption = $destination[0].options[selected];
-                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
-                                                    if($destination[0].name=="from"){
-                                                        destOption.style.color = "red";
-                                                    } else{
-                                                        destOption.style.color = "green";
-                                                    }
-                                                } else{
-                                                    destOption.style.color="#555555";
-                                                }
-                                            }
-                                        });                        
-                                        return self;
-                                          
-                                      }
-                                  });
-                              });
-                           </script>';
             } else {
                 $field = Dropdown::showFromArray(
                     $namefield . "[" . $data['id'] . "]",
@@ -410,167 +212,21 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         } else {
             if (!empty($data['custom_values'])) {
 
-                //TODO MIGRATE
                 $custom_values = $data['custom_values'] ?? [];
-//            $custom_values = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
 
-//                $data['custom_values'] = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
-//                foreach ($data['custom_values'] as $k => $val) {
-//                    if ($data['item'] != "other") {
-//                        $data['custom_values'][$k] = $data["item"]::getFriendlyNameById($k);
-//                    } else {
-//                        if (!empty($ret = PluginMetademandsField::displayField($data["id"], "custom" . $k))) {
-//                            $data['custom_values'][$k] = $ret;
-//                        }
-//                    }
-//                }
-//
-//                $defaults = PluginMetademandsFieldParameter::_unserialize($data['default_values']);
-//                $default_values = [];
-//                if ($defaults) {
-//                    foreach ($defaults as $k => $v) {
-//                        if ($v == 1) {
-//                            $default_values[] = $k;
-//                        }
-//                    }
-//                }
-//                //                  sort($data['custom_values']);
-//                if (!empty($value) && !is_array($value)) {
-//                    $value = json_decode($value);
-//                }
-//                $value = is_array($value) ? $value : $default_values;
-
+                if (!empty($value) && !is_array($value)) {
+                    $value = json_decode($value);
+                }
+                if (!is_array($value)) {
+                    $value = [];
+                }
 
                 if ($data["display_type"] != self::CLASSIC_DISPLAY) {
-                    $name = $namefield . "[" . $data['id'] . "][]";
-                    $css = Html::css(PLUGIN_METADEMANDS_DIR_NOFULL . "/css/doubleform.css");
-                    $field = "$css
-                           <div class=\"row\">";
-                    $field .= "<div class=\"zone\">
-                                   <select class='form-select' name=\"from\" id=\"multiselect$namefield" . $data["id"] . "\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
 
-                    if (count($custom_values) > 0) {
-                        foreach ($custom_values as $k => $val) {
-//                        if (in_array($val['id'], $value)) {
-//
-//                        }
-                            $field .= "<option selected value=\"" . $val['id'] . "\" >" . $val['name'] . "</option>";
-                        }
-                    }
+                    $field .= self::loadMultiselectDiv($namefield, $data['id'], $data['item'], $required, $custom_values, $value);
 
-                    $field .= "</select></div>";
+                    $field .= self::loadMultiselectScript($namefield, $data['id']);
 
-                    $field .= " <div class=\"centralCol\" style='width: 3%;'>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightAll\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_rightSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
-                                   <button type=\"button\" id=\"multiselect$namefield" . $data["id"] . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
-                               </div>";
-
-                    $required = "";
-                    if ($data['is_mandatory'] == 1) {
-                        $required = "required=required";
-                    }
-                    $field .= "<div class=\"zone\">
-                                   <select class='form-select' $required name=\"$name\" id=\"multiselect$namefield" . $data["id"] . "_to\" class=\"formCol\" size=\"8\" multiple=\"multiple\">";
-                    if (count($custom_values) > 0) {
-                        foreach ($custom_values as $k => $val) {
-                            if ($val['is_default'] == 1) {
-                                $field .= "<option selected value=\"" . $val['id'] . "\" >" . $val['name'] . "</option>";
-                            }
-                        }
-                    }
-
-                    $field .= "</select></div>";
-
-                    $field .= "</div>";
-
-                    $field .= '<script src="../lib/multiselect2/dist/js/multiselect.js" type="text/javascript"></script>
-                           <script type="text/javascript">
-                           jQuery(document).ready(function($) {
-                                  $("#multiselect' . $namefield . $data["id"] . '").multiselect({
-                                      search: {
-                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
-                                      },
-                                      keepRenderingSort: true,
-                                      fireSearch: function(value) {
-                                          return value.length > 2;
-                                      },
-                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
-                                        let self = Multiselect;
-                        
-                                        $options.each(function(index, option) {
-                                            let $option = $(option);
-                        
-                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
-                                                return true;
-                                            }
-                        
-                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
-                                                let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
-                                                let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
-                                                let $destinationGroup = $destination.find(optgroupSelector);
-                        
-                                                if (!$destinationGroup.length) {
-                                                    $destinationGroup = $sourceGroup.clone(true);
-                                                    $destinationGroup.empty();
-                        
-                                                    $destination.move($destinationGroup);
-                                                }
-                        
-                                                if ($option.is("optgroup")) {
-                                                    let disabledSelector = "";
-                        
-                                                    if (self.options.ignoreDisabled) {
-                                                        disabledSelector = ":not(:disabled)";
-                                                    }
-                        
-                                                    $destinationGroup.move($option.find("option" + disabledSelector));
-                                                } else {
-                                                    $destinationGroup.move($option);
-                                                }
-                        
-                                                $sourceGroup.removeIfEmpty();
-                                            } else {
-                                                $destination.move($option);
-                                                //Color change when multiselect value is switch
-                                                $destination[0].value = $options[index].value;
-                                                let selected = $destination[0].selectedIndex;
-                                                let destOption = $destination[0].options[selected];
-                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
-                                                    if($destination[0].name=="from"){
-                                                        destOption.style.color = "red";
-                                                    } else{
-                                                        destOption.style.color = "green";
-                                                    }
-                                                } else{
-                                                    destOption.style.color="#555555";
-                                                }
-                                            }
-                                        });                        
-                                        return self;
-                                          
-                                      }
-                                  });
-                              });
-                           </script>';
-                    //
-                    //                     $field .= "<script src=\"../lib/multiselect2/dist/js/multiselect.min.js\" type=\"text/javascript\"></script>
-                    //                           <script type=\"text/javascript\">
-                    //                           jQuery(document).ready(function($) {
-                    //                                  $('#multiselect$namefield" . $data["id"] . "').multiselect({
-                    //                                      search: {
-                    //                                          left: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
-                    //                                          right: '<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol form-control\" placeholder=\"" . __('Search') . "...\" />',
-                    //                                      },
-                    //                                      keepRenderingSort: true,
-                    //                                      fireSearch: function(value) {
-                    //                                          return value.length > 2;
-                    //                                      },
-                    //                                  });
-                    //                              });
-                    //                           </script>";
                 } else {
 
                     if (count($custom_values) > 0) {
@@ -597,6 +253,135 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         }
 
         echo $field;
+    }
+
+    static function loadMultiselectDiv($namefield, $id, $item, $required, $list, $value)
+    {
+
+        $name = $namefield . "[" . $id . "][]";
+
+        $div =  "<div class='row'>";
+        $div .= "<div class='zone'>";
+        $div .= "<select name='from' id=\"multiselect$namefield" . $id . "\" class='formCol' size='8' multiple='multiple'>";
+
+        if (is_array($list) && count($list) > 0) {
+            foreach ($list as $k => $val) {
+                if (!in_array($k, $value)) {
+
+                    if ($item == User::getType() || $item == Location::getType() || $item == Appliance::getType()) {
+                        $div .= "<option value=\"$k\" >$val</option>";
+                    } else {
+                        $div .= "<option value=\"$k\">".$val['name']."</option>";
+                    }
+                }
+            }
+        }
+
+        $div .= "</select>";
+        $div .= "</div>";
+
+        $div .= " <div class=\"centralCol\" style='width: 3%;'>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $id . "_rightAll\" class=\"btn buttonColTop buttonCol\"><i class=\"fas fa-angle-double-right\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $id . "_rightSelected\" class=\"btn  buttonCol\"><i class=\"fas fa-angle-right\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $id . "_leftSelected\" class=\"btn buttonCol\"><i class=\"fas fa-angle-left\"></i></button>
+                                   <button type=\"button\" id=\"multiselect$namefield" . $id . "_leftAll\" class=\"btn buttonCol\"><i class=\"fas fa-angle-double-left\"></i></button>
+                               </div>";
+
+        $div .= "<div class='zone'>";
+        $div .= "<select class='form-select formCol' $required name='$name' id=\"multiselect$namefield" . $id . "_to\" size='8' multiple='multiple'>";
+        if (is_array($value) && count($value) > 0) {
+            foreach ($value as $k => $val) {
+
+                if ($item == User::getType()) {
+                    $div .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
+                } else if ($item == Location::getType() || $item == Appliance::getType()) {
+                    $div .= "<option selected value=\"$val\" >" . Dropdown::getDropdownName(
+                            getTableForItemType($item),
+                            $val
+                        ) . "</option>";
+                } else {
+                    $div .= "<option selected value=\"" . $val['id'] . "\" >" . $val['name'] . "</option>";
+                }
+            }
+        }
+        $div .= "</select>";
+        $div .= "</div>";
+        $div .= "</div>";
+
+        return $div;
+    }
+    
+    static function loadMultiselectScript($namefield, $id)
+    {
+
+        $script = Html::scriptBlock('$(document).ready(function() {
+                            $("#multiselect' . $namefield . $id . '").multiselect({
+                                      search: {
+                                          left: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
+                                          right: "<input type=\"text\" name=\"q\" autocomplete=\"off\" class=\"searchCol\" placeholder=\"' . __("Search") . '...\" />",
+                                      },
+                                      keepRenderingSort: true,
+                                      fireSearch: function(value) {
+                                          return value.length > 2;
+                                      },
+                                      moveFromAtoB: function(Multiselect, $source, $destination, $options, event, silent, skipStack ) {
+                                        let self = Multiselect;
+                        
+                                        $options.each(function(index, option) {
+                                            let $option = $(option);
+                        
+                                            if (self.options.ignoreDisabled && $option.is(":disabled")) {
+                                                return true;
+                                            }
+                        
+                                            if ($option.is("optgroup") || $option.parent().is("optgroup")) {
+                                                let $sourceGroup = $option.is("optgroup") ? $option : $option.parent();
+                                                let optgroupSelector = "optgroup[" + self.options.matchOptgroupBy + "=\'" + $sourceGroup.prop(self.options.matchOptgroupBy) + "\']";
+                                                let $destinationGroup = $destination.find(optgroupSelector);
+                        
+                                                if (!$destinationGroup.length) {
+                                                    $destinationGroup = $sourceGroup.clone(true);
+                                                    $destinationGroup.empty();
+                        
+                                                    $destination.move($destinationGroup);
+                                                }
+                        
+                                                if ($option.is("optgroup")) {
+                                                    let disabledSelector = "";
+                        
+                                                    if (self.options.ignoreDisabled) {
+                                                        disabledSelector = ":not(:disabled)";
+                                                    }
+                        
+                                                    $destinationGroup.move($option.find("option" + disabledSelector));
+                                                } else {
+                                                    $destinationGroup.move($option);
+                                                }
+                        
+                                                $sourceGroup.removeIfEmpty();
+                                            } else {
+                                                $destination.move($option);
+                                                //Color change when multiselect value is switch
+                                                $destination[0].value = $options[index].value;
+                                                let selected = $destination[0].selectedIndex;
+                                                let destOption = $destination[0].options[selected];
+                                                if(destOption.style.color!="red" && destOption.style.color!="green") {
+                                                    if($destination[0].name=="from"){
+                                                        destOption.style.color = "red";
+                                                    } else{
+                                                        destOption.style.color = "green";
+                                                    }
+                                                } else{
+                                                    destOption.style.color="#555555";
+                                                }
+                                            }
+                                        });                        
+                                        return self;
+                                          
+                                      }
+                                  });
+                            });');
+        return $script;
     }
 
     static function showFieldCustomValues($params)
