@@ -451,7 +451,7 @@ class PluginMetademandsDraft extends CommonDBTM
         }
 
         $metademands = new PluginMetademandsMetademand();
-        $metademands_data = $metademands->constructMetademands($metademands_id);
+        $metademands_data = PluginMetademandsMetademand::constructMetademands($metademands_id);
         $metademands->getFromDB($metademands_id);
 
         echo "<div id ='content'>";

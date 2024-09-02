@@ -111,7 +111,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 }
             }
 
-            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
 
             if (count($metademands_data)) {
                 foreach ($metademands_data as $form_step => $data) {
@@ -214,7 +214,7 @@ if (isset($_POST['save_form']) && isset($_POST['metademands_id'])) {
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_id'] = $form_new_id;
                 $_SESSION['plugin_metademands'][$_POST['metademands_id']]['plugin_metademands_forms_name'] = $_POST['form_name'];
 
-                $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
 
                 if ($metademands->fields['is_basket'] == 1
                     && isset($_POST['quantity'])) {

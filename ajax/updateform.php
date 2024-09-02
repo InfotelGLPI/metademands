@@ -112,7 +112,7 @@ if (isset($_POST['save_model'])) {
         $metademands = new PluginMetademandsMetademand();
         $forms_values = new PluginMetademandsForm_Value();
         $forms_values->deleteByCriteria(['plugin_metademands_forms_id' => $_POST['plugin_metademands_forms_id']]);
-        $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+        $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
 
         $nblines = 0;
         $KO = false;
@@ -139,7 +139,7 @@ if (isset($_POST['save_model'])) {
                 }
             }
 
-            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
 
             if(!isset($post) || !is_array($post)){
                 $_POST['field'] = [];

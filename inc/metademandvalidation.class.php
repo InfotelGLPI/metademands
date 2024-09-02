@@ -244,7 +244,8 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
         }
 
         if ($params["create_subticket"] == 1) {
-            if (!$meta->createSonsTickets(
+            if (!PluginMetademandsMetademand::createSonsTickets(
+                $meta->getID(),
                 $ticket_id,
                 $ticket->fields,
                 $ticket_id,
@@ -276,6 +277,18 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             $input['_itil_assign']["groups_id"] = $params["group_to_assign"];
 
             $ticket->update($input);
+
+            $where_keep = [
+                'tickets_id' => $ticket_id,
+                'type' => CommonITILActor::ASSIGN
+            ];
+            $ticket_user = new Ticket_User();
+            $found = $ticket_user->find($where_keep);
+            foreach ($found as $id => $tu) {
+                //delete user
+                $ticket_user->delete(['id' => $id]);
+            }
+
             $inputVal['validate'] = self::TASK_CREATION;
         } else {
             $input                              = [];
@@ -284,6 +297,18 @@ class PluginMetademandsMetademandValidation extends CommonDBTM
             $input['_itil_assign']["groups_id"] = $params["group_to_assign"];
 
             $ticket->update($input);
+
+            $where_keep = [
+                'tickets_id' => $ticket_id,
+                'type' => CommonITILActor::ASSIGN
+            ];
+            $ticket_user = new Ticket_User();
+            $found = $ticket_user->find($where_keep);
+            foreach ($found as $id => $tu) {
+                //delete user
+                $ticket_user->delete(['id' => $id]);
+            }
+
             $inputVal['validate'] = self::VALIDATE_WITHOUT_TASK;
         }
 

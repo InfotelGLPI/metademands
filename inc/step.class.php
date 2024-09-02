@@ -804,7 +804,7 @@ class PluginMetademandsStep extends CommonDBChild
 
                 for ($i = 0; $i < $nblines; $i++) {
                     $_POST['field'] = $post;
-                    $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                    $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
                     if (count($metademands_data)) {
                         foreach ($metademands_data as $form_step => $data) {
                             $docitem = null;
@@ -871,7 +871,7 @@ class PluginMetademandsStep extends CommonDBChild
                     //            $forms->getFromDB($_POST['plugin_metademands_forms_id']);
                     //            $forms_values = new PluginMetademandsForm_Value();
                     //            $forms_values->deleteByCriteria(['plugin_metademands_forms_id' => $form_id]);
-                    //            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                    //            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
                     //            if (count($metademands_data)) {
                     //               foreach ($metademands_data as $form_step => $data) {
                     //                  $docitem = null;
@@ -950,7 +950,7 @@ class PluginMetademandsStep extends CommonDBChild
                             ]);
                         }
 
-                        $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                        $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
                         if (count($metademands_data) && $form_new_id > 0) {
                             foreach ($metademands_data as $form_step => $data) {
                                 $docitem = null;
@@ -978,7 +978,7 @@ class PluginMetademandsStep extends CommonDBChild
                             }
                             unset($_SESSION['plugin_metademands'][$user_id]);
 
-                            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
 
                             if (count($metademands_data) && $form_new_id > 0) {
                                 foreach ($metademands_data as $form_step => $data) {

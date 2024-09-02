@@ -28,13 +28,14 @@
  */
 
 if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
+    die("Sorry. You can't access directly to this file");
 }
 
 /**
  * Class PluginMetademandsMetademandTask
  */
-class PluginMetademandsMetademandTask extends CommonDBChild {
+class PluginMetademandsMetademandTask extends CommonDBChild
+{
 
     public static $rightname = 'plugin_metademands';
 
@@ -43,89 +44,106 @@ class PluginMetademandsMetademandTask extends CommonDBChild {
 
 
     /**
-    * functions mandatory
-    * getTypeName(), canCreate(), canView()
-    *
-    * @param int $nb
-    *
-    * @return string
-    */
-   static function getTypeName($nb = 0) {
-      return __('Task creation', 'metademands');
-   }
+     * functions mandatory
+     * getTypeName(), canCreate(), canView()
+     *
+     * @param int $nb
+     *
+     * @return string
+     */
+    static function getTypeName($nb = 0)
+    {
+        return __('Task creation', 'metademands');
+    }
 
-   /**
-    * @return bool|int
-    */
-   static function canView() {
-      return Session::haveRight(self::$rightname, READ);
-   }
+    /**
+     * @return bool|int
+     */
+    static function canView()
+    {
+        return Session::haveRight(self::$rightname, READ);
+    }
 
-   /**
-    * @return bool
-    */
-   static function canCreate() {
-      return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
-   }
+    /**
+     * @return bool
+     */
+    static function canCreate()
+    {
+        return Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, DELETE]);
+    }
 
-   /**
-    * @param $ID
-    *
-    * @throws \GlpitestSQLError
-    */
-   static function showMetademandTaskForm($ID) {
+    /**
+     * @param $ID
+     *
+     * @throws \GlpitestSQLError
+     */
+    static function showMetademandTaskForm($ID)
+    {
+        // Avoid select of parent metademands
+        $used = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($ID);
+        $used[] = $ID;
 
-      // Avoid select of parent metademands
-      $used   = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($ID);
-      $used[] = $ID;
+        echo PluginMetademandsMetademand::getTypeName(1) . "&nbsp;:&nbsp;";
+        Dropdown::show(
+            'PluginMetademandsMetademand',
+            [
+                'name' => 'link_metademands_id',
+                'is_deleted' => 0,
+                'is_active' => 1,
+                'used' => $used,
+                'condition' => [
+                    'is_order' => 0,
+                    'object_to_create' => 'Ticket'
+                ]
+            ]
+        );
 
-      echo PluginMetademandsMetademand::getTypeName(1) . "&nbsp;:&nbsp;";
-      Dropdown::show('PluginMetademandsMetademand',
-                     ['name'      => 'link_metademands_id',
-                      'used'      => $used,
-                      'condition' => ['is_order' => 0,
-                                      'object_to_create' => 'Ticket']
-                     ]);
+        unset($used[array_search($ID, $used)]);
 
-      unset($used[array_search($ID, $used)]);
+        foreach ($used as $metademands_id) {
+            if ($metademands_id > 0) {
+                echo "<br><span style='color:red'>" . __(
+                        'This demand is already used in',
+                        'metademands'
+                    ) . "&nbsp;:&nbsp;" .
+                    Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id) . "</span>";
+            }
+        }
+    }
 
-      foreach ($used as $metademands_id) {
-         echo "<br><span style='color:red'>" . __('This demand is already used in', 'metademands') . "&nbsp;:&nbsp;" .
-              Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $metademands_id) . "</span>";
-      }
+    /**
+     * @param $tasks_id
+     *
+     * @return mixed
+     * @throws \GlpitestSQLError
+     */
+    static function getMetademandTaskName($tasks_id)
+    {
+        global $DB;
 
-   }
-
-   /**
-    * @param $tasks_id
-    *
-    * @return mixed
-    * @throws \GlpitestSQLError
-    */
-   static function getMetademandTaskName($tasks_id) {
-      global $DB;
-
-      if ($tasks_id > 0) {
-         $query  = "SELECT `glpi_plugin_metademands_metademands`.`name`
+        if ($tasks_id > 0) {
+            $query = "SELECT `glpi_plugin_metademands_metademands`.`name`
                FROM `glpi_plugin_metademands_metademands`
                LEFT JOIN `glpi_plugin_metademands_metademandtasks`
                   ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = `glpi_plugin_metademands_metademands`.`id`)
                WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = " . $tasks_id;
-         $result = $DB->query($query);
+            $result = $DB->query($query);
 
-         if ($DB->numrows($result)) {
-            while ($data = $DB->fetchAssoc($result)) {
-               return $data['name'];
+            if ($DB->numrows($result)) {
+                while ($data = $DB->fetchAssoc($result)) {
+                    return $data['name'];
+                }
             }
-         }
-      }
-   }
+        }
+    }
 
 
     static function getChildMetademandsToCreate($ID)
     {
         $tasks = new PluginMetademandsTask();
-        $existing_tasks = $tasks->find(["plugin_metademands_metademands_id" => $ID, "type" =>  PluginMetademandsTask::METADEMAND_TYPE]);
+        $existing_tasks = $tasks->find(
+            ["plugin_metademands_metademands_id" => $ID, "type" => PluginMetademandsTask::METADEMAND_TYPE]
+        );
 
         $childs = [];
         foreach ($existing_tasks as $k => $existing_task) {
@@ -145,12 +163,14 @@ class PluginMetademandsMetademandTask extends CommonDBChild {
             if ($tasks->fields['type'] == PluginMetademandsTask::METADEMAND_TYPE) {
                 $metaTask = new PluginMetademandsMetademandTask();
                 if ($metaTask->getFromDBByCrit(['plugin_metademands_tasks_id' => $tasks_id])) {
+
                     $idChild = $metaTask->getField('plugin_metademands_metademands_id');
+
                     if ($used == 0) {
-                        $_SESSION['metademands_hide'][$idChild] = $idChild;
+                        $_SESSION['childs_metademands_hide'][$idChild] = $idChild;
                         return false;
                     } else {
-                        unset($_SESSION['metademands_hide'][$idChild]);
+                        unset($_SESSION['childs_metademands_hide'][$idChild]);
                         return true;
                     }
                 }
@@ -158,12 +178,12 @@ class PluginMetademandsMetademandTask extends CommonDBChild {
         }
     }
 
-   /**
-    * @param $metademands_id
-    *
-    * @return mixed
-    * @throws \GlpitestSQLError
-    */
+    /**
+     * @param $metademands_id
+     *
+     * @return mixed
+     * @throws \GlpitestSQLError
+     */
 //   static function getSonMetademandTaskId($metademands_id) {
 //      global $DB;
 //
@@ -184,77 +204,82 @@ class PluginMetademandsMetademandTask extends CommonDBChild {
 //      }
 //   }
 
-   /**
-    * @param $metademands_id
-    *
-    * @return mixed
-    * @throws \GlpitestSQLError
-    */
-   static function getMetademandTask_TaskId($metademands_id) {
-      global $DB;
+    /**
+     * @param $metademands_id
+     *
+     * @return mixed
+     * @throws \GlpitestSQLError
+     */
+    static function getMetademandTask_TaskId($metademands_id)
+    {
+        global $DB;
 
-      $return = [];
+        $return = [];
 
-      $query  = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id
+        $query = "SELECT `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` as tasks_id
                FROM `glpi_plugin_metademands_metademandtasks`
                WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = " . $metademands_id;
-      $result = $DB->query($query);
+        $result = $DB->query($query);
 
-      if ($DB->numrows($result)) {
-         while ($data = $DB->fetchAssoc($result)) {
-            $return['tasks_id'][] = $data['tasks_id'];
-         }
-      }
-      return $return['tasks_id'];
-   }
+        if ($DB->numrows($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
+                $return['tasks_id'][] = $data['tasks_id'];
+            }
+        }
+        return $return['tasks_id'];
+    }
 
-   /**
-    * @param       $metademands_id
-    * @param array $id_found
-    *
-    * @return array
-    * @throws \GlpitestSQLError
-    */
-   static function getAncestorOfMetademandTask($metademands_id, $id_found = []) {
-      global $DB;
+    /**
+     * @param       $metademands_id
+     * @param array $id_found
+     *
+     * @return array
+     * @throws \GlpitestSQLError
+     */
+    static function getAncestorOfMetademandTask($metademands_id, $id_found = [])
+    {
+        global $DB;
 
-      $metademandtask = new self();
+        $metademandtask = new self();
 
-      // Get next elements
-      $query  = "SELECT `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` as parent_metademands_id,
+        // Get next elements
+        $query = "SELECT `glpi_plugin_metademands_tasks`.`plugin_metademands_metademands_id` as parent_metademands_id,
                        `glpi_plugin_metademands_tasks`.`id` as tasks_id
           FROM `glpi_plugin_metademands_tasks`
           LEFT JOIN `glpi_plugin_metademands_metademandtasks`
               ON (`glpi_plugin_metademands_metademandtasks`.`plugin_metademands_tasks_id` = `glpi_plugin_metademands_tasks`.`id`)
           WHERE `glpi_plugin_metademands_metademandtasks`.`plugin_metademands_metademands_id` = '$metademands_id'";
-      $result = $DB->query($query);
-      if ($DB->numrows($result)) {
-         while ($data = $DB->fetchAssoc($result)) {
-            $id_found[] = $data['parent_metademands_id'];
-            $id_found   = $metademandtask->getAncestorOfMetademandTask($data['parent_metademands_id'], $id_found);
-         }
-      }
-
-      return $id_found;
-   }
-
-   function post_deleteFromDB() {
-      $metademands_id = $this->fields['plugin_metademands_metademands_id'];
-
-      // list of parents
-      $metademands_parent = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($metademands_id);
-
-      $field  = new PluginMetademandsField();
-      $fields = $field->find(['type' => 'parent_field',
-                              'plugin_metademands_metademands_id' => $metademands_id]);
-
-      //delete of the metademand fields in the present child requests as father fields
-      foreach ($fields as $data) {
-         if (isset($data['parent_field_id']) && $field->getFromDB($data['parent_field_id'])) {
-            if (!in_array($field->fields['plugin_metademands_metademands_id'], $metademands_parent)) {
-               $field->delete(['id' => $field->getID()]);
+        $result = $DB->query($query);
+        if ($DB->numrows($result)) {
+            while ($data = $DB->fetchAssoc($result)) {
+                $id_found[] = $data['parent_metademands_id'];
+                $id_found = $metademandtask->getAncestorOfMetademandTask($data['parent_metademands_id'], $id_found);
             }
-         }
-      }
-   }
+        }
+
+        return $id_found;
+    }
+
+    function post_deleteFromDB()
+    {
+        $metademands_id = $this->fields['plugin_metademands_metademands_id'];
+
+        // list of parents
+        $metademands_parent = PluginMetademandsMetademandTask::getAncestorOfMetademandTask($metademands_id);
+
+        $field = new PluginMetademandsField();
+        $fields = $field->find([
+            'type' => 'parent_field',
+            'plugin_metademands_metademands_id' => $metademands_id
+        ]);
+
+        //delete of the metademand fields in the present child requests as father fields
+        foreach ($fields as $data) {
+            if (isset($data['parent_field_id']) && $field->getFromDB($data['parent_field_id'])) {
+                if (!in_array($field->fields['plugin_metademands_metademands_id'], $metademands_parent)) {
+                    $field->delete(['id' => $field->getID()]);
+                }
+            }
+        }
+    }
 }

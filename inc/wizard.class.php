@@ -1037,7 +1037,7 @@ class PluginMetademandsWizard extends CommonDBTM
         }
 
         $metademands = new PluginMetademandsMetademand();
-        $metademands_data = $metademands->constructMetademands($metademands_id);
+        $metademands_data = PluginMetademandsMetademand::constructMetademands($metademands_id);
         $metademands->getFromDB($metademands_id);
 
         echo "<div class='md-basket-wizard'>";
@@ -1845,7 +1845,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     }
 
                     //verifie si une sous metademande doit etre lancé
-//                    PluginMetademandsFieldOption::taskScript($data);
+                    PluginMetademandsFieldOption::taskScript($data);
 
                     //Active champs obligatoires sur les fields_link
                     PluginMetademandsFieldOption::fieldsLinkScript($data);
@@ -2036,7 +2036,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 if (!empty($data_form)) {
                     $modal_html = '';
-                    $parent_fields = $metademands->formatFields(
+                    $parent_fields = PluginMetademandsMetademand::formatFields(
                         $lineForStepByStep,
                         $metademands_id,
                         [$metademands_id => $data_form],
@@ -3163,7 +3163,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                         $datas['fields'] = $values['fields'];
 
-                        $result = $metademands->addObjects($metademands_id, $datas, $options);
+                        $result = PluginMetademandsMetademand::addObjects($metademands_id, $datas, $options);
                         if (is_array($result)) {
                             Session::addMessageAfterRedirect($result['message']);
                         }
@@ -3217,14 +3217,14 @@ class PluginMetademandsWizard extends CommonDBTM
                         'users_id' => Session::getLoginUserID()
                     ]);
 
-                    $result = $metademands->addObjects($metademands_id, $values, $options);
+                    $result = PluginMetademandsMetademand::addObjects($metademands_id, $values, $options);
                     if (is_array($result)) {
                         Session::addMessageAfterRedirect($result['message']);
                     }
                 }
             } else {
                 //not in basket
-                $result = $metademands->addObjects($metademands_id, $values, $options);
+                $result = PluginMetademandsMetademand::addObjects($metademands_id, $values, $options);
                 if (isset($values['plugin_metademands_stepforms_id'])) {
                     //Add all form contributors as ticket requester
                     $configstep = new PluginMetademandsConfigstep();

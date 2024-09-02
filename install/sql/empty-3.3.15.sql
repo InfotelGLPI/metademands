@@ -50,6 +50,7 @@ CREATE TABLE `glpi_plugin_metademands_metademands`
   COLLATE = utf8mb4_unicode_ci
   ROW_FORMAT = DYNAMIC;
 
+
 -- ----------------------------------------------------------
 --
 -- Structure de la table 'glpi_plugin_metademands_tasks'

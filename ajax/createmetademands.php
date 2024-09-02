@@ -119,7 +119,7 @@ if ($nofreeinputs === false) {
 
 
         if ($metademands->fields['is_order'] == 1) {
-            $metademands_data = $metademands->constructMetademands($_POST['form_metademands_id']);
+            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['form_metademands_id']);
             //Reorder array
             $metademands_data = array_values($metademands_data);
             array_unshift($metademands_data, "", "");

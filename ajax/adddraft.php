@@ -84,7 +84,7 @@ if (isset($_POST['save_draft'])) {
                 }
             }
 
-            $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+            $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
 
             if (!isset($_POST['field']) || !is_array($_POST['field'])) {
                 $_POST['field'] = [];
@@ -174,7 +174,7 @@ if (isset($_POST['save_draft'])) {
             if (isset($_POST['plugin_metademands_drafts_id']) && !empty($_POST['plugin_metademands_drafts_id'])) {
                 $draft_id = $_POST['plugin_metademands_drafts_id'];
 
-                $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
                 if (count($metademands_data)) {
                     foreach ($metademands_data as $form_step => $data) {
                         $docitem = null;
@@ -193,7 +193,7 @@ if (isset($_POST['save_draft'])) {
             } else {
                 $draft_id = $drafts->add($inputs);
 
-                $metademands_data = $metademands->constructMetademands($_POST['metademands_id']);
+                $metademands_data = PluginMetademandsMetademand::constructMetademands($_POST['metademands_id']);
                 if (count($metademands_data)) {
                     foreach ($metademands_data as $form_step => $data) {
                         $docitem = null;

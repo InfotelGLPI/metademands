@@ -111,14 +111,6 @@ class PluginMetademandsMetademand extends CommonDBTM
     }
 
     /**
-     * @return bool|mixed
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    /**
      * Display tab for each tickets
      *
      * @param CommonGLPI $item
@@ -484,7 +476,7 @@ class PluginMetademandsMetademand extends CommonDBTM
         }
 
         if (isset($input['is_order']) && $input['is_order'] == 1) {
-            $metademands_data = $this->constructMetademands($this->getID());
+            $metademands_data = self::constructMetademands($this->getID());
             $metademands_data = array_values($metademands_data);
             if (isset($metademands_data['tasks'])
                 && is_array($metademands_data['tasks'])
@@ -1552,7 +1544,7 @@ JAVASCRIPT
     //         return PluginWebservicesMethodCommon::Error($protocol, WEBSERVICES_ERROR_NOTALLOWED);
     //      }
     //
-    //      $result = $metademands->constructMetademands($params['metademands_id']);
+    //      $result = PluginMetademandsMetademand::constructMetademands($params['metademands_id']);
     //
     //      $response = [];
     //      foreach ($result as $step => $values) {
@@ -1762,10 +1754,8 @@ JAVASCRIPT
      * 'tasks' => array, PluginMetademandsTask->getTasks()
      * @throws \GlpitestSQLError
      */
-    public function constructMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW)
+    public static function constructMetademands($metademands_id, $forms = [], $step = self::STEP_SHOW)
     {
-        global $DB;
-
         $metademands = new self();
         $metademands->getFromDB($metademands_id);
 
@@ -1781,7 +1771,6 @@ JAVASCRIPT
                 ['plugin_metademands_metademands_id' => $metademands_id],
                 ['rank', 'order']
             );
-
 
             // Construct array
             $forms[$step][$metademands_id]['form'] = [];
@@ -1856,7 +1845,7 @@ JAVASCRIPT
 //                if ($DB->numrows($result)) {
 //                    while ($data = $DB->fetchAssoc($result)) {
 //                        $step++;
-//                        $forms = $this->constructMetademands($data['link_metademands_id'], $forms, $step);
+//                        $forms = self::constructMetademands($data['link_metademands_id'], $forms, $step);
 //                    }
 //                }
 //            }
@@ -1929,21 +1918,22 @@ JAVASCRIPT
      * @return array
      * @throws \GlpitestSQLError
      */
-    public function addObjects($metademands_id, $values, $options = [])
+    public static function addObjects($metademands_id, $values, $options = [])
     {
         global $PLUGIN_HOOKS;
 
         $tasklevel = 1;
 
-        $metademands_data = $this->constructMetademands($metademands_id);
+        $metademands_data = self::constructMetademands($metademands_id);
 
-        $this->getFromDB($metademands_id);
-        $metaCategories = new self();
-        if (!$this->fields['object_to_create']
-            || !getItemForItemtype($this->fields['object_to_create'])) {
+        $metademand_initial = new self();
+        $metademand_initial->getFromDB($metademands_id);
+
+        if (!$metademand_initial->fields['object_to_create']
+            || !getItemForItemtype($metademand_initial->fields['object_to_create'])) {
             return false;
         }
-        $object_class = $this->fields['object_to_create'];
+        $object_class = $metademand_initial->fields['object_to_create'];
         $object = new $object_class();
 
         $ticket_metademand = new PluginMetademandsTicket_Metademand();
@@ -1952,7 +1942,7 @@ JAVASCRIPT
         $KO = [];
         $ancestor_tickets_id = 0;
         $ticket_exists_array = [];
-        $config = $this->getConfig();
+        $config = PluginMetademandsConfig::getInstance();
 
         $itilcategory = 0;
         if (isset($values['field_plugin_servicecatalog_itilcategories_id'])) {
@@ -1963,7 +1953,7 @@ JAVASCRIPT
             foreach ($metademands_data as $form_step => $data) {
                 $docitem = null;
                 foreach ($data as $form_metademands_id => $line) {
-                    $metaCategories->getFromDB($form_metademands_id);
+
 //                    if ($object_class == 'Ticket') {
 //                        $noChild = false;
 //                        if ($ancestor_tickets_id > 0) {
@@ -2037,7 +2027,7 @@ JAVASCRIPT
                             }
                             unset($_SESSION['plugin_metademands'][$form_metademands_id]['form_to_compare']);
                             $values_form[0] = $values['fields'];
-                            $parent_fields = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
+                            $parent_fields = self::formatFields($line['form'], $metademands_id, $values_form, $options);
 
                             $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                         }
@@ -2063,7 +2053,7 @@ JAVASCRIPT
                             }
                         }
 
-                        $parent_fields = $this->formatFields($line['form'], $metademands_id, $values_form, $options);
+                        $parent_fields = self::formatFields($line['form'], $metademands_id, $values_form, $options);
                         $parent_fields['content'] = Html::cleanPostForTextArea($parent_fields['content']);
                     }
 
@@ -2100,14 +2090,14 @@ JAVASCRIPT
                     }
 
                     if (empty($n = self::displayField($form_metademands_id, 'name'))) {
-                        $n = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
+                        $n = Dropdown::getDropdownName(self::getTable(), $form_metademands_id);
                     }
 
                     $parent_fields['name'] = self::$PARENT_PREFIX .
                         $n;
 
                     if ($object_class == 'Ticket') {
-                        $parent_fields['type'] = $this->fields['type'];
+                        $parent_fields['type'] = $metademand->fields['type'];
                         // Existing tickets id field
                         if (isset($values['fields']['tickets_id'])) {
                             $parent_fields['id'] = $values['fields']['tickets_id'];
@@ -2144,7 +2134,7 @@ JAVASCRIPT
                     // Get predefined ticket fields
                     //TODO Add check if metademand fields linked to a ticket field with used_by_ticket ?
                     $parent_ticketfields = [];
-                    $parent_ticketfields = $this->formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester'], $parent_fields['entities_id']);
+                    $parent_ticketfields = self::formatTicketFields($form_metademands_id, $itilcategory, $values, $parent_fields['_users_id_requester'], $parent_fields['entities_id']);
                     $list_fields = $line['form'];
 
 
@@ -2257,7 +2247,7 @@ JAVASCRIPT
                     if (empty($parent_fields['id'])) {
                         unset($parent_fields['id']);
 
-                        $input = $this->mergeFields($parent_fields, $parent_ticketfields);
+                        $input = self::mergeFields($parent_fields, $parent_ticketfields);
 
                         $input['_filename'] = [];
                         $input['_tag_filename'] = [];
@@ -2287,7 +2277,7 @@ JAVASCRIPT
                         if ($itilcategory > 0) {
                             $input['itilcategories_id'] = $itilcategory;
                         } else {
-                            $cats = json_decode($metaCategories->fields['itilcategories_id'], true);
+                            $cats = json_decode($metademand->fields['itilcategories_id'], true);
                             if (is_array($cats) && count($cats) == 1) {
                                 foreach ($cats as $cat) {
                                     $input['itilcategories_id'] = $cat;
@@ -2334,7 +2324,7 @@ JAVASCRIPT
                         }
 
                         if ($input['name'] == 0 || $input['name'] == "0" || empty($input['name'])) {
-                            $input['name'] = Dropdown::getDropdownName($this->getTable(), $form_metademands_id);
+                            $input['name'] = Dropdown::getDropdownName(self::getTable(), $form_metademands_id);
                         }
 
 //                        $input['name'] = Glpi\RichText\RichText::getTextFromHtml($input['name']);
@@ -2444,13 +2434,10 @@ JAVASCRIPT
                             if ($docitem == null && $config['create_pdf']) {
                                 //document PDF Generation
                                 //TODO TO Tranlate
-                                if (empty($n = self::displayField($this->getID(), 'name'))) {
-                                    $n = $this->getName();
+                                if (empty($n = self::displayField($metademand->getID(), 'name'))) {
+                                    $n = $metademand->getName();
                                 }
 
-//                                if (empty($comm = self::displayField($this->getID(), 'comment'))) {
-//                                    $comm = $this->getField("comment");
-//                                }
                                 $comm = Dropdown::getDropdownName("glpi_entities", $_SESSION['glpiactive_entity']);
                                 $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm);
                                 if ($metademand->fields['is_order'] == 0) {
@@ -2608,7 +2595,7 @@ JAVASCRIPT
                                 && count($line['tasks'])) {
                                 //                     $line['tasks'] = $this->checkTaskAllowed($metademands_id, $values, $line['tasks']);
 
-                                if ($this->fields["validation_subticket"] == 0) {
+                                if ($metademand->fields["validation_subticket"] == 0) {
                                     $ticket2 = new Ticket();
                                     $ticket2->getFromDB($parent_tickets_id);
                                     $parent_fields["requesttypes_id"] = $ticket2->fields['requesttypes_id'];
@@ -2616,7 +2603,7 @@ JAVASCRIPT
                                         if ($l['type'] != PluginMetademandsTask::MAIL_TYPE) {
                                             //replace #id# in title with the value
                                             do {
-                                                $match = $this->getBetween($l['tickettasks_name'], '[', ']');
+                                                $match = self::getBetween($l['tickettasks_name'], '[', ']');
                                                 if (empty($match)) {
                                                     $explodeTitle = [];
                                                     $explodeTitle = explode("#", $l['tickettasks_name']);
@@ -2766,7 +2753,7 @@ JAVASCRIPT
 
                                             //replace #id# in content with the value
                                             do {
-                                                $match = $this->getBetween($l['content'], '[', ']');
+                                                $match = self::getBetween($l['content'], '[', ']');
                                                 if (empty($match) && $l['content'] != null) {
                                                     $explodeContent = explode("#", $l['content']);
                                                     foreach ($explodeContent as $content) {
@@ -2957,7 +2944,7 @@ JAVASCRIPT
                                                         }
                                                     }
 
-                                                    $parent_fields_content = $this->formatFields($line['form'], $this->getID(), [$values_form], ['formatastable' => $l['formatastable']]);
+                                                    $parent_fields_content = self::formatFields($line['form'], $metademand->getID(), [$values_form], ['formatastable' => $l['formatastable']]);
                                                     $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
                                                 } else {
                                                     $parent_fields_content['content'] = $parent_fields['content'];
@@ -2986,7 +2973,7 @@ JAVASCRIPT
                                             }
                                             //replace #id# in title with the value
                                             do {
-                                                $match = $this->getBetween($l['tickettasks_name'], '[', ']');
+                                                $match = self::getBetween($l['tickettasks_name'], '[', ']');
                                                 if (empty($match)) {
                                                     $explodeTitle = [];
                                                     $explodeTitle = explode("#", $l['tickettasks_name']);
@@ -3089,7 +3076,7 @@ JAVASCRIPT
                                             } while (!empty($match));
                                             //replace #id# for content
                                             do {
-                                                $match = $this->getBetween($son_ticket_data['content'], '[', ']');
+                                                $match = self::getBetween($son_ticket_data['content'], '[', ']');
                                                 if (empty($match) && $son_ticket_data['content'] != null) {
                                                     $explodeContent = explode("#", $son_ticket_data['content']);
                                                     foreach ($explodeContent as $content) {
@@ -3293,9 +3280,9 @@ JAVASCRIPT
                                     }
                                     if ($metademand->fields['force_create_tasks'] == 0) {
                                         //first sons
-                                        if (!$this->createSonsTickets(
+                                        if (!self::createSonsTickets(
                                             $parent_tickets_id,
-                                            $this->mergeFields(
+                                            self::mergeFields(
                                                 $parent_fields,
                                                 $parent_ticketfields
                                             ),
@@ -3343,7 +3330,7 @@ JAVASCRIPT
                                                 }
                                                 $line['tasks'][$key]['items_id'] = ['PluginResourcesResource' => [$resource_id]];
                                             }
-                                            $match = $this->getBetween($l['tickettasks_name'], '[', ']');
+                                            $match = self::getBetween($l['tickettasks_name'], '[', ']');
                                             if (empty($match)) {
                                                 $explodeTitle = [];
                                                 $explodeTitle = explode("#", $l['tickettasks_name']);
@@ -3499,7 +3486,7 @@ JAVASCRIPT
 
                                         //replace #id# in content with the value
                                         do {
-                                            $match = $this->getBetween($l['content'], '[', ']');
+                                            $match = self::getBetween($l['content'], '[', ']');
                                             if (empty($match)) {
                                                 if ($l['content'] != null) {
                                                     $explodeContent = explode("#", $l['content']);
@@ -3693,7 +3680,7 @@ JAVASCRIPT
                                     }
                                 }
                             } else {
-                                if ($this->fields["validation_subticket"] == 1) {
+                                if ($metademand->fields["validation_subticket"] == 1) {
                                     $metaValid = new PluginMetademandsMetademandValidation();
                                     $paramIn["tickets_id"] = $parent_tickets_id;
                                     $paramIn["plugin_metademands_metademands_id"] = $metademands_id;
@@ -3734,7 +3721,7 @@ JAVASCRIPT
                                         '_type' => 'group'];
                                 }
 
-                                $object->update($this->mergeFields($parent_fields, $parent_ticketfields));
+                                $object->update(self::mergeFields($parent_fields, $parent_ticketfields));
                             }
                         }
                     } else {
@@ -3769,8 +3756,8 @@ JAVASCRIPT
             $childs_meta = PluginMetademandsMetademandTask::getChildMetademandsToCreate($metademands_id);
             if (count($childs_meta) > 0) {
                 foreach ($childs_meta as $k => $child_meta) {
-                    if (isset($_SESSION['metademands_hide'])
-                        && in_array($child_meta, $_SESSION['metademands_hide'])) {
+                    if (isset($_SESSION['childs_metademands_hide'])
+                        && in_array($child_meta, $_SESSION['childs_metademands_hide'])) {
                         continue;
                     }
                     Html::redirect(PluginMetademandsWizard::getFormURL() . "?ancestor_tickets_id=" . $parent_tickets_id . "&metademands_id=" . $child_meta . "&step=" . self::STEP_SHOW);
@@ -3793,7 +3780,7 @@ JAVASCRIPT
      *
      * @return mixed
      */
-    private function mergeFields($parent_fields, $parent_ticketfields)
+    public static function mergeFields($parent_fields, $parent_ticketfields)
     {
         foreach ($parent_ticketfields as $key => $val) {
             switch ($key) {
@@ -3820,7 +3807,7 @@ JAVASCRIPT
      *
      * @return array
      */
-    public function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
+    public static function formatFields(array $parent_fields, $metademands_id, $values_form, $options = [])
     {
         $config_data = PluginMetademandsConfig::getInstance();
         $langTech = $config_data['languageTech'];
@@ -3844,7 +3831,7 @@ JAVASCRIPT
                 }
             }
             if (empty($name = self::displayField($metademands_id, 'name', $langTech))) {
-                $name = Dropdown::getDropdownName($this->getTable(), $metademands_id);
+                $name = Dropdown::getDropdownName(self::getTable(), $metademands_id);
             }
             if (!isset($options['formatastable'])
                 || (isset($options['formatastable'])
@@ -4229,7 +4216,7 @@ JAVASCRIPT
      *
      * @return array
      */
-    public function formatTicketFields($metademands_id, $itilcategory, $values, $users_id_requester, $entities_id)
+    public static function formatTicketFields($metademands_id, $itilcategory, $values, $users_id_requester, $entities_id)
     {
         $inputs = [];
         $ticket_field = new PluginMetademandsTicketField();
@@ -4253,7 +4240,7 @@ JAVASCRIPT
                     //Title of father ticket
                     if ($value['item'] == 'name') {
                         do {
-                            $match = $this->getBetween($value['value'], '[', ']');
+                            $match = self::getBetween($value['value'], '[', ']');
                             if (empty($match)) {
                                 $explodeTitle = [];
                                 $explodeTitle = explode("#", $value['value']);
@@ -4493,9 +4480,11 @@ JAVASCRIPT
      * @return bool
      * @throws \GlpitestSQLError
      */
-    public function createSonsTickets($parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1, $inputField = [], $inputFieldMain = [])
+    public static function createSonsTickets($metademands_id, $parent_tickets_id, $parent_fields, $ancestor_tickets_id, $tickettasks_data = [], $tasklevel = 1, $inputField = [], $inputFieldMain = [])
     {
 
+        $meta = new PluginMetademandsMetademand();
+        $meta->getFromDB($metademands_id);
 
         $ticket_ticket = new Ticket_Ticket();
         $ticket_task = new PluginMetademandsTicket_Task();
@@ -4506,8 +4495,8 @@ JAVASCRIPT
         $ticketParent->getFromDB($parent_tickets_id);
 
         if (!isset($parent_fields['_users_id_requester'])
-            && isset($this->fields['initial_requester_childs_tickets'])
-            && $this->fields['initial_requester_childs_tickets'] == 1) {
+            && isset($meta->fields['initial_requester_childs_tickets'])
+            && $meta->fields['initial_requester_childs_tickets'] == 1) {
             $users = $ticketParent->getUsers(CommonITILActor::REQUESTER);
             if (count($users) > 0) {
                 foreach ($ticketParent->getUsers(CommonITILActor::REQUESTER) as $user) {
@@ -4547,10 +4536,11 @@ JAVASCRIPT
                     }
                 }
 
-                if (!isset($this->fields['id'])) {
+                if (!isset($meta->fields['id'])) {
                     $ticket_meta = new PluginMetademandsTicket_Metademand();
                     $ticket_meta->getFromDBByCrit(['tickets_id' => $ancestor_tickets_id]);
-                    $this->getFromDB($ticket_meta->fields['plugin_metademands_metademands_id']);
+                    $meta = new PluginMetademandsMetademand();
+                    $meta->getFromDB($ticket_meta->fields['plugin_metademands_metademands_id']);
                 }
 
                 $values_form = [];
@@ -4568,13 +4558,13 @@ JAVASCRIPT
                         }
                     }
                 }
-                $metademands_data = $this->constructMetademands($this->getID());
+                $metademands_data = self::constructMetademands($meta->getID());
 
                 $son_ticket_data['users_id_recipient'] = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
 
                 if (!$son_ticket_data['_users_id_requester']
-                    && isset($this->fields['initial_requester_childs_tickets'])
-                    && $this->fields['initial_requester_childs_tickets'] == 1) {
+                    && isset($meta->fields['initial_requester_childs_tickets'])
+                    && $meta->fields['initial_requester_childs_tickets'] == 1) {
                     $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
                 }
 
@@ -4593,7 +4583,7 @@ JAVASCRIPT
                                                 unset($values_form[$i]);
                                             }
                                         }
-                                        $parent_fields_content = $this->formatFields($line['form'], $this->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
+                                        $parent_fields_content = self::formatFields($line['form'], $meta->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
                                         $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
                                     } else {
                                         $parent_fields_content['content'] = $parent_fields['content'];
@@ -4687,7 +4677,7 @@ JAVASCRIPT
                 if (isset($parent_fields['_groups_id_assign'])) {
                     $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
                 }
-                $son_ticket_data = $this->mergeFields($son_ticket_data, $inputFieldMain);
+                $son_ticket_data = self::mergeFields($son_ticket_data, $inputFieldMain);
 
                 $son_ticket_data['content'] = Toolbox::addslashes_deep($son_ticket_data['content']);
                 $son_ticket_data['name'] = Toolbox::addslashes_deep($son_ticket_data['name']);
@@ -4842,7 +4832,7 @@ JAVASCRIPT
 
                             $l = $tasks_data[$child_tasks_id];
                             do {
-                                $match = $this->getBetween($l['tickettasks_name'], '[', ']');
+                                $match = self::getBetween($l['tickettasks_name'], '[', ']');
                                 if (empty($match)) {
                                     $explodeTitle = [];
                                     $explodeTitle = explode("#", $l['tickettasks_name']);
@@ -4992,7 +4982,7 @@ JAVASCRIPT
 
                             //replace #id# in content with the value
                             do {
-                                $match = $this->getBetween($l['content'], '[', ']');
+                                $match = self::getBetween($l['content'], '[', ']');
                                 if (empty($match)) {
                                     if ($l['content'] != null) {
                                         $explodeContent = explode("#", $l['content']);
@@ -5144,7 +5134,7 @@ JAVASCRIPT
                                 }
                             }
                             //childs sons
-                            $this->createSonsTickets($tickets_data['id'], $ticket->fields, $tickets_found[0]['tickets_id'], $tasks_data, $data['parent_level'] + 1);
+                            self::createSonsTickets(0, $tickets_data['id'], $ticket->fields, $tickets_found[0]['tickets_id'], $tasks_data, $data['parent_level'] + 1);
                         }
                     }
                 }
@@ -5595,7 +5585,7 @@ JAVASCRIPT
                     $translationMeta->getFromDB($tr['id']);
                     $translationMeta->clone(["items_id" => $new_metademands_id]);
                 }
-                $metademands_data = $this->constructMetademands($metademands_id);
+                $metademands_data = self::constructMetademands($metademands_id);
 
                 if (count($metademands_data)) {
                     $associated_fields = [];
@@ -7220,7 +7210,7 @@ JAVASCRIPT
         echo "</div>";
     }
 
-    public function getBetween($string, $start = "", $end = "")
+    public static function getBetween($string, $start = "", $end = "")
     {
         if ($string != null && str_contains($string, $start)) { // required if $start not exist in $string
             $startCharCount = strpos($string, $start) + strlen($start);

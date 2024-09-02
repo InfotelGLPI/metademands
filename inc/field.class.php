@@ -1102,6 +1102,7 @@ class PluginMetademandsField extends CommonDBChild
                                     } else {
                                         echo $metatask->getName();
                                     }
+                                    echo "<br>";
                                 }
                             }
                         }
