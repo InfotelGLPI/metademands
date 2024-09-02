@@ -466,13 +466,13 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                     'condition' => $cond,
                     'display'   => false];
 
-                if ($data['readonly'] == 1 && $data['item'] == "Entity") {
+                if (isset($data['readonly']) && $data['readonly'] == 1 && $data['item'] == "Entity") {
                     $opt['readonly'] = true;
                     if ($data['link_to_user'] == 0) {
                         $field .= Html::hidden($namefield . "[" . $data['id'] . "]", ['value' => $value]);
                     }
                 }
-                if ($data['is_mandatory'] == 1) {
+                if (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) {
                     $opt['specific_tags'] = ['required' => ($data['is_mandatory'] == 1 ? "required" : "")];
                 }
                 if (!($item = getItemForItemtype($data['item']))) {

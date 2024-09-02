@@ -2951,7 +2951,7 @@ JAVASCRIPT
                                                 }
                                             }
                                             $content = "";
-                                            $son_ticket_data['content'] = $mail->fields['content'];
+                                            $son_ticket_data['content'] = $mail->fields['content'] ?? "";
                                             if (!empty($son_ticket_data['content'])) {
                                                 if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
                                                     $content = "<table class='tab_cadre_fixe' style='width: 100%;'>";
@@ -3281,6 +3281,7 @@ JAVASCRIPT
                                     if ($metademand->fields['force_create_tasks'] == 0) {
                                         //first sons
                                         if (!self::createSonsTickets(
+                                            $metademands_id,
                                             $parent_tickets_id,
                                             self::mergeFields(
                                                 $parent_fields,
@@ -4492,255 +4493,255 @@ JAVASCRIPT
         $ticket = new Ticket();
         $KO = [];
         $ticketParent = new Ticket();
-        $ticketParent->getFromDB($parent_tickets_id);
+        if ($ticketParent->getFromDB($parent_tickets_id)) {
 
-        if (!isset($parent_fields['_users_id_requester'])
-            && isset($meta->fields['initial_requester_childs_tickets'])
-            && $meta->fields['initial_requester_childs_tickets'] == 1) {
-            $users = $ticketParent->getUsers(CommonITILActor::REQUESTER);
-            if (count($users) > 0) {
-                foreach ($ticketParent->getUsers(CommonITILActor::REQUESTER) as $user) {
-                    $parent_fields['_users_id_requester'][] = $user['users_id'];
+            if (!isset($parent_fields['_users_id_requester'])
+                && isset($meta->fields['initial_requester_childs_tickets'])
+                && $meta->fields['initial_requester_childs_tickets'] == 1) {
+                $users = $ticketParent->getUsers(CommonITILActor::REQUESTER);
+                if (count($users) > 0) {
+                    foreach ($ticketParent->getUsers(CommonITILActor::REQUESTER) as $user) {
+                        $parent_fields['_users_id_requester'][] = $user['users_id'];
+                    }
                 }
             }
-        }
 
-        foreach ($tickettasks_data as $son_ticket_data) {
-            if ($son_ticket_data['level'] == $tasklevel) {
-                if (isset($_SESSION['metademands_hide'])
-                    && in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
-                    continue;
-                }
-                // Skip ticket creation if not allowed by metademand form
-                if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $ancestor_tickets_id)) {
-                    continue;
-                }
-
-                $tt = $ticket->getITILTemplateToUse(0, $ticketParent->fields['type'], $son_ticket_data['itilcategories_id'], $ticketParent->fields['entities_id']);
-                $predefined_fields = $tt->predefined;
-
-                unset($predefined_fields['content']);
-                $son_ticket_data = array_merge($son_ticket_data, $predefined_fields);
-
-                // Field format for ticket
-                foreach ($son_ticket_data as $field => $value) {
-                    if (strstr($field, 'groups_id_')
-                        || strstr($field, 'users_id_')) {
-                        $son_ticket_data['_' . $field] = $son_ticket_data[$field];
+            foreach ($tickettasks_data as $son_ticket_data) {
+                if ($son_ticket_data['level'] == $tasklevel) {
+                    if (isset($_SESSION['metademands_hide'])
+                        && in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
+                        continue;
                     }
-                }
-                foreach ($parent_fields as $field => $value) {
-                    if (strstr($field, 'groups_id_')
-                        || strstr($field, 'users_id_')) {
-                        $parent_fields['_' . $field] = $parent_fields[$field];
+                    // Skip ticket creation if not allowed by metademand form
+                    if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $ancestor_tickets_id)) {
+                        continue;
                     }
-                }
 
-                if (!isset($meta->fields['id'])) {
-                    $ticket_meta = new PluginMetademandsTicket_Metademand();
-                    $ticket_meta->getFromDBByCrit(['tickets_id' => $ancestor_tickets_id]);
-                    $meta = new PluginMetademandsMetademand();
-                    $meta->getFromDB($ticket_meta->fields['plugin_metademands_metademands_id']);
-                }
+                    $tt = $ticket->getITILTemplateToUse(0, $ticketParent->fields['type'], $son_ticket_data['itilcategories_id'], $ticketParent->fields['entities_id']);
+                    $predefined_fields = $tt->predefined;
 
-                $values_form = [];
-                $ticket_field = new PluginMetademandsTicket_Field();
-                $fields = $ticket_field->find(['tickets_id' => $ancestor_tickets_id]);
-                foreach ($fields as $f) {
-                    $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
-                    if ($values_form[$f['plugin_metademands_fields_id']] === null) {
-                        $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
-                    }
-                    if (!empty($f['value2'])) {
-                        $values_form[$f['plugin_metademands_fields_id'] . '-2'] = json_decode($f['value2']);
-                        if ($values_form[$f['plugin_metademands_fields_id'] . '-2'] === null) {
-                            $values_form[$f['plugin_metademands_fields_id'] . '-2'] = $f['value2'];
+                    unset($predefined_fields['content']);
+                    $son_ticket_data = array_merge($son_ticket_data, $predefined_fields);
+
+                    // Field format for ticket
+                    foreach ($son_ticket_data as $field => $value) {
+                        if (strstr($field, 'groups_id_')
+                            || strstr($field, 'users_id_')) {
+                            $son_ticket_data['_' . $field] = $son_ticket_data[$field];
                         }
                     }
-                }
-                $metademands_data = self::constructMetademands($meta->getID());
+                    foreach ($parent_fields as $field => $value) {
+                        if (strstr($field, 'groups_id_')
+                            || strstr($field, 'users_id_')) {
+                            $parent_fields['_' . $field] = $parent_fields[$field];
+                        }
+                    }
 
-                $son_ticket_data['users_id_recipient'] = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
+                    if (!isset($meta->fields['id'])) {
+                        $ticket_meta = new PluginMetademandsTicket_Metademand();
+                        $ticket_meta->getFromDBByCrit(['tickets_id' => $ancestor_tickets_id]);
+                        $meta = new PluginMetademandsMetademand();
+                        $meta->getFromDB($ticket_meta->fields['plugin_metademands_metademands_id']);
+                    }
 
-                if (!$son_ticket_data['_users_id_requester']
-                    && isset($meta->fields['initial_requester_childs_tickets'])
-                    && $meta->fields['initial_requester_childs_tickets'] == 1) {
-                    $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
-                }
+                    $values_form = [];
+                    $ticket_field = new PluginMetademandsTicket_Field();
+                    $fields = $ticket_field->find(['tickets_id' => $ancestor_tickets_id]);
+                    foreach ($fields as $f) {
+                        $values_form[$f['plugin_metademands_fields_id']] = json_decode($f['value']);
+                        if ($values_form[$f['plugin_metademands_fields_id']] === null) {
+                            $values_form[$f['plugin_metademands_fields_id']] = $f['value'];
+                        }
+                        if (!empty($f['value2'])) {
+                            $values_form[$f['plugin_metademands_fields_id'] . '-2'] = json_decode($f['value2']);
+                            if ($values_form[$f['plugin_metademands_fields_id'] . '-2'] === null) {
+                                $values_form[$f['plugin_metademands_fields_id'] . '-2'] = $f['value2'];
+                            }
+                        }
+                    }
+                    $metademands_data = self::constructMetademands($meta->getID());
 
-                if (count($metademands_data)) {
-                    foreach ($metademands_data as $form_step => $data) {
-                        foreach ($data as $form_metademands_id => $line) {
-                            $list_fields = $line['form'];
-                            $searchOption = Search::getOptions('Ticket');
-                            if ($task->getFromDB($son_ticket_data['tasks_id'])) {
-                                if (isset($task->fields['useBlock']) && $task->fields['useBlock'] == 1) {
-                                    $blocks = json_decode($task->fields["block_use"], true);
-                                    if (!empty($blocks)) {
-                                        foreach ($line['form'] as $i => $l) {
-                                            if (!in_array($l['rank'], $blocks)) {
-                                                unset($line['form'][$i]);
-                                                unset($values_form[$i]);
+                    $son_ticket_data['users_id_recipient'] = isset($parent_fields['users_id_recipient']) ? $parent_fields['users_id_recipient'] : 0;
+
+                    if (!$son_ticket_data['_users_id_requester']
+                        && isset($meta->fields['initial_requester_childs_tickets'])
+                        && $meta->fields['initial_requester_childs_tickets'] == 1) {
+                        $son_ticket_data['_users_id_requester'] = isset($parent_fields['_users_id_requester']) ? $parent_fields['_users_id_requester'] : 0;
+                    }
+
+                    if (count($metademands_data)) {
+                        foreach ($metademands_data as $form_step => $data) {
+                            foreach ($data as $form_metademands_id => $line) {
+                                $list_fields = $line['form'];
+                                $searchOption = Search::getOptions('Ticket');
+                                if ($task->getFromDB($son_ticket_data['tasks_id'])) {
+                                    if (isset($task->fields['useBlock']) && $task->fields['useBlock'] == 1) {
+                                        $blocks = json_decode($task->fields["block_use"], true);
+                                        if (!empty($blocks)) {
+                                            foreach ($line['form'] as $i => $l) {
+                                                if (!in_array($l['rank'], $blocks)) {
+                                                    unset($line['form'][$i]);
+                                                    unset($values_form[$i]);
+                                                }
                                             }
+                                            $parent_fields_content = self::formatFields($line['form'], $meta->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
+                                            $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
+                                        } else {
+                                            $parent_fields_content['content'] = $parent_fields['content'];
                                         }
-                                        $parent_fields_content = self::formatFields($line['form'], $meta->getID(), [$values_form], ['formatastable' => $task->fields['formatastable']]);
-                                        $parent_fields_content['content'] = Html::cleanPostForTextArea($parent_fields_content['content']);
-                                    } else {
-                                        $parent_fields_content['content'] = $parent_fields['content'];
                                     }
-                                }
-                                foreach ($list_fields as $id => $fields_values) {
-                                    $params = [];
-                                    $field = new PluginMetademandsField();
-                                    if ($field->getFromDB($id)) {
-                                        $params = PluginMetademandsField::getAllParamsFromField($field);
-                                    }
-                                    if ($params['used_by_ticket'] > 0 && $params['used_by_child'] == 1) {
-                                        if (isset($values_form[$id])) {
-                                            $name = $searchOption[$params['used_by_ticket']]['linkfield'];
-                                            if ($values_form[$id] > 0 && $params['used_by_ticket'] == 4) {
-                                                $name = "_users_id_requester";
+                                    foreach ($list_fields as $id => $fields_values) {
+                                        $params = [];
+                                        $field = new PluginMetademandsField();
+                                        if ($field->getFromDB($id)) {
+                                            $params = PluginMetademandsField::getAllParamsFromField($field);
+                                        }
+                                        if ($params['used_by_ticket'] > 0 && $params['used_by_child'] == 1) {
+                                            if (isset($values_form[$id])) {
+                                                $name = $searchOption[$params['used_by_ticket']]['linkfield'];
+                                                if ($values_form[$id] > 0 && $params['used_by_ticket'] == 4) {
+                                                    $name = "_users_id_requester";
+                                                }
+                                                if ($params['used_by_ticket'] == 71) {
+                                                    $name = "_groups_id_requester";
+                                                }
+                                                if ($params['used_by_ticket'] == 66) {
+                                                    $name = "_users_id_observer";
+                                                }
+                                                if ($params['used_by_ticket'] == 65) {
+                                                    $name = "_groups_id_observer";
+                                                }
+                                                $son_ticket_data[$name] = $values_form[$id];
                                             }
-                                            if ($params['used_by_ticket'] == 71) {
-                                                $name = "_groups_id_requester";
-                                            }
-                                            if ($params['used_by_ticket'] == 66) {
-                                                $name = "_users_id_observer";
-                                            }
-                                            if ($params['used_by_ticket'] == 65) {
-                                                $name = "_groups_id_observer";
-                                            }
-                                            $son_ticket_data[$name] = $values_form[$id];
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
 
-                // Add son ticket
-//                $son_ticket_data['_disablenotif']      = true;
-                $son_ticket_data['name'] = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
-                $son_ticket_data['name'] = trim($son_ticket_data['name']);
-                $son_ticket_data['name'] = Glpi\RichText\RichText::getTextFromHtml($son_ticket_data['name']);
-                $son_ticket_data['type'] = $parent_fields['type'];
-                $son_ticket_data['entities_id'] = $parent_fields['entities_id'];
+                    // Add son ticket
+    //                $son_ticket_data['_disablenotif']      = true;
+                    $son_ticket_data['name'] = self::$SON_PREFIX . $son_ticket_data['tickettasks_name'];
+                    $son_ticket_data['name'] = trim($son_ticket_data['name']);
+                    $son_ticket_data['name'] = Glpi\RichText\RichText::getTextFromHtml($son_ticket_data['name']);
+                    $son_ticket_data['type'] = $parent_fields['type'];
+                    $son_ticket_data['entities_id'] = $parent_fields['entities_id'];
 
 
-                $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
-                $son_ticket_data['_auto_import'] = 1;
-                $son_ticket_data['status'] = Ticket::INCOMING;
-                if (isset($parent_fields['urgency'])) {
-                    $son_ticket_data['urgency'] = $parent_fields['urgency'];
-                }
-                if (isset($parent_fields['impact'])) {
-                    $son_ticket_data['impact'] = $parent_fields['impact'];
-                }
-                if (isset($parent_fields['priority'])) {
-                    $son_ticket_data['priority'] = $parent_fields['priority'];
-                }
-
-                $content = '';
-                $config = new PluginMetademandsConfig();
-                $config->getFromDB(1);
-
-                if (!empty($son_ticket_data['content'])) {
-                    if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                        $content = "<table class='tab_cadre_fixe' style='width: 100%;'>";
-                        $content .= "<tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
-                            "</th></tr><tr><td colspan='2'>";
+                    $son_ticket_data['requesttypes_id'] = $parent_fields['requesttypes_id'];
+                    $son_ticket_data['_auto_import'] = 1;
+                    $son_ticket_data['status'] = Ticket::INCOMING;
+                    if (isset($parent_fields['urgency'])) {
+                        $son_ticket_data['urgency'] = $parent_fields['urgency'];
+                    }
+                    if (isset($parent_fields['impact'])) {
+                        $son_ticket_data['impact'] = $parent_fields['impact'];
+                    }
+                    if (isset($parent_fields['priority'])) {
+                        $son_ticket_data['priority'] = $parent_fields['priority'];
                     }
 
-                    $content .= Glpi\RichText\RichText::getSafeHtml($son_ticket_data['content']);
+                    $content = '';
+                    $config = new PluginMetademandsConfig();
+                    $config->getFromDB(1);
 
-                    if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
-                        $content .= "</td></tr></table><br>";
-                    }
-                }
+                    if (!empty($son_ticket_data['content'])) {
+                        if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
+                            $content = "<table class='tab_cadre_fixe' style='width: 100%;'>";
+                            $content .= "<tr><th colspan='2'>" . __('Child Ticket', 'metademands') .
+                                "</th></tr><tr><td colspan='2'>";
+                        }
 
-                if ($config->getField('childs_parent_content') == 1
-                    && $task->fields['formatastable'] == true) {
-                    if (!empty($parent_fields_content['content'])) {
-                        //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                        $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
-                        $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
-                            "</th></tr><tr><td colspan='2'>" . Glpi\RichText\RichText::getSafeHtml($parent_fields_content['content']);
-                        //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
-                        $content .= "</td></tr></table><br>";
-                        //}
-                    }
-                }
+                        $content .= Glpi\RichText\RichText::getSafeHtml($son_ticket_data['content']);
 
-                $son_ticket_data['content'] = $content;
-                if (isset($parent_fields['_groups_id_assign'])) {
-                    $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
-                }
-                $son_ticket_data = self::mergeFields($son_ticket_data, $inputFieldMain);
-
-                $son_ticket_data['content'] = Toolbox::addslashes_deep($son_ticket_data['content']);
-                $son_ticket_data['name'] = Toolbox::addslashes_deep($son_ticket_data['name']);
-                if (!isset($son_ticket_data['users_id_recipient']) || empty($son_ticket_data['users_id_recipient'])) {
-                    $son_ticket_data['users_id_recipient'] = Session::getLoginUserID();
-                }
-
-                // check if son ticket already exists in case we come from an update of the parent ticket
-                if ($ticket_task->getFromDBByCrit([
-                    'parent_tickets_id' => $parent_tickets_id,
-                    'level' => $son_ticket_data['level'],
-                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']
-                ])) {
-                    $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
-                } else if ($son_tickets_id = $ticket->add($son_ticket_data)) {
-                    if (Plugin::isPluginActive('fields')) {
-                        foreach ($inputField as $containers_id => $vals) {
-                            $container = new PluginFieldsContainer;
-                            $vals['plugin_fields_containers_id'] = $containers_id;
-                            $vals['itemtype'] = "Ticket";
-                            $vals['items_id'] = $son_tickets_id;
-                            $container->updateFieldsValues($vals, "Ticket", false);
+                        if (isset($task->fields['formatastable']) && $task->fields['formatastable'] == true) {
+                            $content .= "</td></tr></table><br>";
                         }
                     }
-                    // Add son link to parent
-                    $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
-                        'tickets_id_2' => $son_tickets_id,
-                        'link' => Ticket_Ticket::PARENT_OF]);
 
-                    // task - ticket relation
-                    $ticket_task->add(['tickets_id' => $son_tickets_id,
+                    if ($config->getField('childs_parent_content') == 1
+                        && $task->fields['formatastable'] == true) {
+                        if (!empty($parent_fields_content['content'])) {
+                            //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
+                            $content .= "<table class='tab_cadre_fixe' style='width: 100%;'><tr><th colspan='2'>";
+                            $content .= _n('Parent tickets', 'Parent tickets', 1, 'metademands') .
+                                "</th></tr><tr><td colspan='2'>" . Glpi\RichText\RichText::getSafeHtml($parent_fields_content['content']);
+                            //if (!strstr($parent_fields['content'], __('Parent ticket', 'metademands'))) {
+                            $content .= "</td></tr></table><br>";
+                            //}
+                        }
+                    }
+
+                    $son_ticket_data['content'] = $content;
+                    if (isset($parent_fields['_groups_id_assign'])) {
+                        $son_ticket_data['_groups_id_requester'] = $parent_fields['_groups_id_assign'];
+                    }
+                    $son_ticket_data = self::mergeFields($son_ticket_data, $inputFieldMain);
+
+                    $son_ticket_data['content'] = Toolbox::addslashes_deep($son_ticket_data['content']);
+                    $son_ticket_data['name'] = Toolbox::addslashes_deep($son_ticket_data['name']);
+                    if (!isset($son_ticket_data['users_id_recipient']) || empty($son_ticket_data['users_id_recipient'])) {
+                        $son_ticket_data['users_id_recipient'] = Session::getLoginUserID();
+                    }
+
+                    // check if son ticket already exists in case we come from an update of the parent ticket
+                    if ($ticket_task->getFromDBByCrit([
                         'parent_tickets_id' => $parent_tickets_id,
                         'level' => $son_ticket_data['level'],
-                        'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
-                } else {
-                    $KO[] = 1;
-                }
-            } else {
+                        'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']
+                    ])) {
+                        $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
+                    } else if ($son_tickets_id = $ticket->add($son_ticket_data)) {
+                        if (Plugin::isPluginActive('fields')) {
+                            foreach ($inputField as $containers_id => $vals) {
+                                $container = new PluginFieldsContainer;
+                                $vals['plugin_fields_containers_id'] = $containers_id;
+                                $vals['itemtype'] = "Ticket";
+                                $vals['items_id'] = $son_tickets_id;
+                                $container->updateFieldsValues($vals, "Ticket", false);
+                            }
+                        }
+                        // Add son link to parent
+                        $ticket_ticket->add(['tickets_id_1' => $parent_tickets_id,
+                            'tickets_id_2' => $son_tickets_id,
+                            'link' => Ticket_Ticket::PARENT_OF]);
 
-                if (isset($_SESSION['metademands_hide'])
-                    && in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
-                    continue;
-                }
-                // task - ticket relation for next tickets
-                if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $parent_tickets_id)) {
-                    continue;
-                }
-                // TODO  check use of this if
-                if ($ticket_task->find([
-                    'parent_tickets_id' => $parent_tickets_id,
-                    'level' => $son_ticket_data['level'],
-                    'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']
-                ])) {
-                    $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
+                        // task - ticket relation
+                        $ticket_task->add(['tickets_id' => $son_tickets_id,
+                            'parent_tickets_id' => $parent_tickets_id,
+                            'level' => $son_ticket_data['level'],
+                            'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                    } else {
+                        $KO[] = 1;
+                    }
                 } else {
-                    $ticket_task->add(['tickets_id' => 0,
+
+                    if (isset($_SESSION['metademands_hide'])
+                        && in_array($son_ticket_data['tickettasks_id'], $_SESSION['metademands_hide'])) {
+                        continue;
+                    }
+                    // task - ticket relation for next tickets
+                    if (!PluginMetademandsTicket_Field::checkTicketCreation($son_ticket_data['tasks_id'], $parent_tickets_id)) {
+                        continue;
+                    }
+                    // TODO  check use of this if
+                    if ($ticket_task->find([
                         'parent_tickets_id' => $parent_tickets_id,
                         'level' => $son_ticket_data['level'],
-                        'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                        'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']
+                    ])) {
+                        $ticket->update($son_ticket_data + ['id' => $ticket_task->fields['tickets_id']]);
+                    } else {
+                        $ticket_task->add(['tickets_id' => 0,
+                            'parent_tickets_id' => $parent_tickets_id,
+                            'level' => $son_ticket_data['level'],
+                            'plugin_metademands_tasks_id' => $son_ticket_data['tasks_id']]);
+                    }
                 }
             }
         }
-
         if (count($KO)) {
             return false;
         }

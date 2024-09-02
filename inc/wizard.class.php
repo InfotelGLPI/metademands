@@ -2129,7 +2129,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         $metademand_params->getFromDBByCrit(
                             ["plugin_metademands_fields_id" => $data["id"]]
                         );
-                        $all_meta_fields[$data['id']] = $metademand_params->fields['hide_title'] == 1 ? PluginMetademandsField::getFieldTypesName(
+                        $all_meta_fields[$data['id']] = (isset($metademand_params->fields['hide_title']) && $metademand_params->fields['hide_title'] == 1) ? PluginMetademandsField::getFieldTypesName(
                             $data['type']
                         ) : $label;
                     }

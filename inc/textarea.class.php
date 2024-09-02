@@ -63,10 +63,10 @@ class PluginMetademandsTextarea extends CommonDBTM
         $value = Html::cleanPostForTextArea($value);
         $self = new self();
         $required = "";
-        if ($data['is_mandatory'] == 1) {
+        if (isset($data['is_mandatory']) && $data['is_mandatory'] == 1) {
             $required = "required='required'";
         }
-        if ($data['use_richtext'] == 1) {
+        if (isset($data['use_richtext']) && $data['use_richtext'] == 1) {
             $rand = mt_rand();
             $name = 'field['. $data['id'] .']';
             $field = Html::textarea([
