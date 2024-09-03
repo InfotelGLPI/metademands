@@ -904,7 +904,9 @@ class PluginMetademandsField extends CommonDBChild
             $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
 
             if (isset($this->fields['type'])
-                && (in_array($this->fields['type'], $allowed_customvalues_types) && $this->fields['item'] != "ITILCategory_Metademands")
+                && (in_array($this->fields['type'], $allowed_customvalues_types) && ($this->fields['item'] != "ITILCategory_Metademands"
+                        && $this->fields['item'] != "urgency"
+                        && $this->fields['item'] != "impact"))
                 || in_array($this->fields['item'], $allowed_customvalues_items)) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
@@ -997,7 +999,9 @@ class PluginMetademandsField extends CommonDBChild
             }
 
             if (isset($value['type'])
-                && (in_array($value['type'], $allowed_customvalues_types) && $value['item'] != "ITILCategory_Metademands")
+                && (in_array($value['type'], $allowed_customvalues_types) && ($value['item'] != "ITILCategory_Metademands"
+                        && $value['item'] != "urgency"
+                        && $value['item'] != "impact"))
                 || in_array($value['item'], $allowed_customvalues_items)) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
@@ -1065,10 +1069,11 @@ class PluginMetademandsField extends CommonDBChild
                 echo "<td>";
 
                 if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]) || ((isset($value['type'])
-                        && (in_array($value['type'], $allowed_customvalues_types) && $value['item'] != "ITILCategory_Metademands")
+                        && (in_array($value['type'], $allowed_customvalues_types) && ($value['item'] != "ITILCategory_Metademands"
+                                    && $value['item'] != "urgency"
+                                    && $value['item'] != "impact"))
                         || in_array($value['item'], $allowed_customvalues_items))
                     && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
-                    Toolbox::logInfo($value);
                     echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
 
                 }
