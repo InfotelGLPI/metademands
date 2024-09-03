@@ -904,14 +904,13 @@ class PluginMetademandsField extends CommonDBChild
             $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
 
             if (isset($this->fields['type'])
-                && in_array($this->fields['type'], $allowed_customvalues_types)
+                && (in_array($this->fields['type'], $allowed_customvalues_types) && $this->fields['item'] != "ITILCategory_Metademands")
                 || in_array($this->fields['item'], $allowed_customvalues_items)) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
                     echo "<div class='alert alert-important alert-warning d-flex'>";
                     echo "<b>" . __('Warning : there is no custom values for this object', 'metademands') . "</b></div>";
                 }
-
             }
         }
 
@@ -986,6 +985,35 @@ class PluginMetademandsField extends CommonDBChild
         );
 
         $fieldparameter = new PluginMetademandsFieldParameter();
+
+        $allowed_customvalues_types = PluginMetademandsFieldCustomvalue::$allowed_customvalues_types;
+        $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
+
+        $koparams = 0;
+        $kocustom = 0;
+        foreach ($data as $value) {
+            if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']])) {
+                $koparams++;
+            }
+
+            if (isset($value['type'])
+                && (in_array($value['type'], $allowed_customvalues_types) && $value['item'] != "ITILCategory_Metademands")
+                || in_array($value['item'], $allowed_customvalues_items)) {
+                $field_custom = new PluginMetademandsFieldCustomvalue();
+                if (!$field_custom->find(["plugin_metademands_fields_id" => $value['id']])) {
+                    $kocustom++;
+                }
+            }
+        }
+        if ($koparams > 0) {
+            echo "<div class='alert alert-important alert-warning d-flex'>";
+            echo "<b>" . __('Warning : there are fields without parameters, please check', 'metademands') . "</b></div>";
+        }
+        if ($kocustom > 0) {
+            echo "<div class='alert alert-important alert-warning d-flex'>";
+            echo "<b>" . __('Warning : there are fields without custom values, please check', 'metademands') . "</b></div>";
+        }
+
         $fieldopt = new PluginMetademandsFieldOption();
 
         if (is_array($data) && count($data) > 0) {
@@ -1006,6 +1034,7 @@ class PluginMetademandsField extends CommonDBChild
                 echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
                 echo "</th>";
             }
+            echo "<th class='center b'></th>";
             echo "<th class='center b'>" . __('ID') . "</th>";
             echo "<th class='center b'>" . __('Label') . "</th>";
             echo "<th class='center b'>" . __('Type') . "</th>";
@@ -1032,6 +1061,18 @@ class PluginMetademandsField extends CommonDBChild
                     Html::showMassiveActionCheckBox(__CLASS__, $value["id"]);
                     echo "</td>";
                 }
+
+                echo "<td>";
+
+                if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]) || ((isset($value['type'])
+                        && (in_array($value['type'], $allowed_customvalues_types) && $value['item'] != "ITILCategory_Metademands")
+                        || in_array($value['item'], $allowed_customvalues_items))
+                    && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
+                    Toolbox::logInfo($value);
+                    echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
+
+                }
+                echo "</td>";
                 echo "<td>";
                 echo $value['id'];
                 echo "</td>";
