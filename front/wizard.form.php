@@ -252,10 +252,12 @@ if (isset($_POST['next'])) {
                             }
                             if ($value['item'] == 'ITILCategory_Metademands') {
                                 $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+                                $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'][$id] = $_POST['field'][$id];
                             }
 
                             $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
                         }
+
                         foreach ($checks as $check) {
                             if ($check['result'] == true) {
                                 $KO = true;
@@ -480,6 +482,7 @@ elseif (isset($_POST['add_to_basket'])) {
         }
         if ($value['item'] == 'ITILCategory_Metademands') {
             $_POST['field'][$id] = $_POST['field_plugin_servicecatalog_itilcategories_id'] ?? 0;
+            $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'][$id] = $_POST['field'][$id];
         }
 
         $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
@@ -530,6 +533,7 @@ elseif (isset($_POST['update_basket_line'])) {
             //            }
             if ($value['item'] == 'ITILCategory_Metademands') {
                 $_POST['field_basket_' . $line][$id] = $_POST['basket_plugin_servicecatalog_itilcategories_id'] ?? 0;
+                $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'][$id] = $_POST['field_basket_' . $line][$id];
             }
             $fieldname = 'field_basket_' . $line;
             $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, $fieldname, true);

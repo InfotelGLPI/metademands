@@ -259,7 +259,7 @@ if ($nofreeinputs === false) {
                                 $parameters = PluginMetademandsField::getAllParamsFromField($field);
                             }
 
-                            if ($parameters['is_mandatory'] == 1) {
+                            if ($parameters['is_mandatory'] == 1 && !$value['item'] == 'ITILCategory_Metademands') {
                                 if (!isset($post[$id])) {
                                     continue;
                                 }
@@ -295,6 +295,7 @@ if ($nofreeinputs === false) {
                             }
                             if ($value['item'] == 'ITILCategory_Metademands') {
                                 $_POST['field'][$id] = isset($_POST['field_plugin_servicecatalog_itilcategories_id']) ? $_POST['field_plugin_servicecatalog_itilcategories_id'] : 0;
+                                $_SESSION['plugin_metademands'][$_POST['form_metademands_id']]['fields'][$id] = $_POST['field'][$id];
                             }
                             $checks[] = PluginMetademandsWizard::checkvalues($value, $id, $_POST, 'field');
                         }
