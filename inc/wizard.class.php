@@ -2892,8 +2892,9 @@ class PluginMetademandsWizard extends CommonDBTM
                             var textarea = w[y];
                             var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
                             //hack for tinymce
-                            if (document.querySelector('.tox-tinymce') !== null) {
-                               if(document.querySelector('.tox-tinymce').classList.contains('required')) {
+
+                            if (document.querySelector('div[id-field=\"' + fieldid +'\"] > .tox-tinymce') !== null) {
+                               if(document.querySelector('div[id-field=\"' + fieldid + '\"] > .tox-tinymce').classList.contains('required')) {
                                   fieldmandatory = true;
                                }
                             }
