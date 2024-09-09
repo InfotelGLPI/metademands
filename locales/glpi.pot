@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-09 13:02+0000\n"
+"POT-Creation-Date: 2024-09-09 14:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -242,12 +242,12 @@ msgstr ""
 msgid "This metademand cannot be used with this entity"
 msgstr ""
 
-#: front/wizard.form.php:314 front/wizard.form.php:584 inc/menu.class.php:56
+#: front/wizard.form.php:316 front/wizard.form.php:588 inc/menu.class.php:56
 #: inc/menu.class.php:61
 msgid "Create a metademand"
 msgstr ""
 
-#: front/wizard.form.php:498
+#: front/wizard.form.php:501
 msgid "There is a problem with the basket"
 msgstr ""
 
