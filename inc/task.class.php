@@ -418,6 +418,39 @@ class PluginMetademandsTask extends CommonDBChild {
         return true;
     }
 
+
+    function sortByParentChild($data) {
+        // Tableau pour stocker le résultat final
+        $sortedData = [];
+
+        // Tableau pour indexer les éléments par ID
+        $indexedData = [];
+
+        // Indexer les éléments par leur ID
+        foreach ($data as $item) {
+            $indexedData[$item['tasks_id']] = $item;
+        }
+
+        // Fonction récursive pour ajouter un parent et ses enfants au tableau trié
+        function addParentAndChildren($item, &$sortedData, $indexedData) {
+            $sortedData[] = $item;
+            foreach ($indexedData as $child) {
+                if ($child['parent_task'] == $item['tasks_id']) {
+                    addParentAndChildren($child, $sortedData, $indexedData);
+                }
+            }
+        }
+
+        // Ajouter les éléments parents et leurs enfants au tableau trié
+        foreach ($indexedData as $item) {
+            if ($item['parent_task'] === 0) {
+                addParentAndChildren($item, $sortedData, $indexedData);
+            }
+        }
+
+        return $sortedData;
+    }
+
     /**
      * @param $item
      *
@@ -486,13 +519,14 @@ class PluginMetademandsTask extends CommonDBChild {
         if (count($tasks)) {
 //            Session::initNavigateListItems('PluginMetademandsTicketTask', self::getTypeName(1));
 
+            echo Html::script(PLUGIN_METADEMANDS_DIR_NOFULL . "/lib/treetable/treetable.js");
             echo "<div class='left first-bloc'>";
             if ($canedit && $solved) {
                 Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
                 $massiveactionparams = ['item' => __CLASS__, 'container' => 'mass' . __CLASS__ . $rand];
                 Html::showMassiveActions($massiveactionparams);
             }
-            echo "<table class='tab_cadre_fixehov'>";
+            echo "<table id='tree-table' class='tab_cadre_fixehov'>";
             echo "<tr class='tab_bg_2'>";
             echo "<th class='left b' colspan='11'>" . __('Tasks', 'metademands') . "</th>";
             echo "</tr>";
@@ -503,8 +537,8 @@ class PluginMetademandsTask extends CommonDBChild {
                 echo Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
             }
             echo "</th>";
-            echo "<th class='center b'></th>";
-            echo "<th class='center b'>" . __('ID') . "</th>";
+//            echo "<th class='center b'>#</th>";
+            echo "<th class='center b' width='6%'>" . __('ID') . "</th>";
             echo "<th class='center b'>" . __('Name') . "</th>";
             echo "<th class='center b'>" . __('Type') . "</th>";
             echo "<th class='center b'>" . __('Category') . "</th>";
@@ -516,17 +550,41 @@ class PluginMetademandsTask extends CommonDBChild {
             echo "<th class='center b'>" . __('Block parent ticket resolution', 'metademands') . "</th>";
             echo "</tr>";
 
-            foreach ($tasks as $id => $value) {
+            $tasks = $this->sortByParentChild($tasks);
+
+            foreach ($tasks as $key => $value) {
+
+                $id = $value['tasks_id'];
                 if($value['type'] == PluginMetademandsTask::MAIL_TYPE){
                     $mailtask = new PluginMetademandsMailTask();
                     $mailtask->getFromDBByCrit(['plugin_metademands_tasks_id' => $id]);
                 }
-                echo "<tr class='tab_bg_1'>";
+
+                $class = "";
+                $metaclass = "metademand_metademandtasks";
+                $fieldopt = new PluginMetademandsFieldOption();
+                if ($fieldopt->find(["plugin_metademands_tasks_id" => $id])) {
+                    if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
+                        $class = "linkedtooption";
+                    } else {
+                        $class = "metatooption";
+                        $metaclass = "";
+                    }
+                }
+
+                $style = "";
+                if ($value['type'] == PluginMetademandsTask::TICKET_TYPE) {
+                    if ($value['level'] > 1) {
+                        $style = "style='background-color:#ebebeb'";
+                    }
+                }
+
+                echo "<tr class='tab_bg_1 $class' $style data-id='$id' data-parent='".$value['parent_task']."' data-level='".$value['level']."'>";
 
                 if ($value['type'] == self::TICKET_TYPE || $value['type'] == self::TASK_TYPE || $value['type'] == self::MAIL_TYPE) {
                     $color_class = '';
                 } else {
-                    $color_class = "class='metademand_metademandtasks'";
+                    $color_class = "class='$metaclass'";
                 }
 
                 $onhover = '';
@@ -546,17 +604,7 @@ class PluginMetademandsTask extends CommonDBChild {
                 // ID
                 $color_class = '';
 
-                echo "<td $onhover>";
-                if ($value['type'] == PluginMetademandsTask::TICKET_TYPE) {
-                    if ($value['level'] > 1) {
-                        echo "&nbsp;&nbsp;".$value['parent_task'];
-                        $width = (10 * $value['level']);
-                        echo "<div style='margin-left:" . $width . "px' class='metademands_tree'></div>";
-                    }
-                }
-                echo "</td>";
-
-                echo "<td $onhover>";
+                echo "<td data-column='name'>";
                 if ($canedit) {
                     echo "\n<script type='text/javascript' >\n";
                     echo "function viewEditchild" . $item->getType() . $id . "$rand() {\n";
@@ -571,6 +619,7 @@ class PluginMetademandsTask extends CommonDBChild {
                     echo "};";
                     echo "</script>\n";
                 }
+
                 echo $id;
                 echo "</td>";
 
@@ -623,7 +672,7 @@ class PluginMetademandsTask extends CommonDBChild {
                //               echo "<a href='#' onClick=\"" . Html::jsGetElementbyID('metademandTicketTask' . $value['tickettasks_id']) . ".dialog('open');\">" . $value['tickettasks_name'] . "</a>";
                     echo "</td>";
                 } else {
-                    $color_class = "class='metademand_metademandtasks'";
+                    $color_class = "class='$metaclass'";
                     echo "<td $onhover $color_class><a href='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') .
                         "?id=" . $value['link_metademands_id'] . "'>" . Dropdown::getDropdownName('glpi_plugin_metademands_metademands', $value['link_metademands_id']) . "</a></td>";
                 }
