@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GLPI - Metademands plugin\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-09 07:59+0000\n"
+"POT-Creation-Date: 2024-09-09 13:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -981,7 +981,7 @@ msgstr ""
 
 #: inc/fieldoption.class.php:1115 inc/mailtask.class.php:150
 #: inc/step.class.php:270 inc/step.class.php:392 inc/step.class.php:416
-#: inc/task.class.php:717 inc/task.class.php:1114 inc/tickettask.class.php:168
+#: inc/task.class.php:766 inc/task.class.php:1163 inc/tickettask.class.php:168
 #, php-format
 msgid "Block %s"
 msgstr ""
@@ -1131,17 +1131,17 @@ msgstr ""
 msgid "Task creation"
 msgstr ""
 
-#: inc/mailtask.class.php:131 inc/task.class.php:514
+#: inc/mailtask.class.php:131 inc/task.class.php:548
 #: inc/tickettask.class.php:149
 msgid "Use block"
 msgstr ""
 
-#: inc/mailtask.class.php:142 inc/task.class.php:513
+#: inc/mailtask.class.php:142 inc/task.class.php:547
 #: inc/tickettask.class.php:160
 msgid "Block to use"
 msgstr ""
 
-#: inc/mailtask.class.php:170 inc/task.class.php:515
+#: inc/mailtask.class.php:170 inc/task.class.php:549
 #: inc/tickettask.class.php:190
 msgid "Format the description of the childs ticket as a table"
 msgstr ""
@@ -1173,7 +1173,7 @@ msgid "Demand Progression"
 msgstr ""
 
 #: inc/metademand.class.php:368 inc/metademand.class.php:461
-#: inc/task.class.php:956 inc/tickettask.class.php:655
+#: inc/task.class.php:1005 inc/tickettask.class.php:655
 msgid "The category is related to a demand. Thank you to select another"
 msgstr ""
 
@@ -1758,31 +1758,31 @@ msgstr ""
 msgid "You cannot add new tasks if linked tickets are not solved"
 msgstr ""
 
-#: inc/task.class.php:463
+#: inc/task.class.php:496
 msgid "Add a task"
 msgstr ""
 
-#: inc/task.class.php:497
+#: inc/task.class.php:531
 msgid "Tasks"
 msgstr ""
 
-#: inc/task.class.php:512
+#: inc/task.class.php:546
 msgid "Level"
 msgstr ""
 
-#: inc/task.class.php:516 inc/tickettask.class.php:198
+#: inc/task.class.php:550 inc/tickettask.class.php:198
 msgid "Block parent ticket resolution"
 msgstr ""
 
-#: inc/task.class.php:670
+#: inc/task.class.php:719
 msgid "Recipients"
 msgstr ""
 
-#: inc/task.class.php:696 inc/task.class.php:705
+#: inc/task.class.php:745 inc/task.class.php:754
 msgid "Root"
 msgstr ""
 
-#: inc/task.class.php:1091
+#: inc/task.class.php:1140
 msgctxt "button"
 msgid "Update block to use"
 msgstr ""
