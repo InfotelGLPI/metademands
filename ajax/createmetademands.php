@@ -259,7 +259,7 @@ if ($nofreeinputs === false) {
                                 $parameters = PluginMetademandsField::getAllParamsFromField($field);
                             }
 
-                            if ($parameters['is_mandatory'] == 1 && !$value['item'] == 'ITILCategory_Metademands') {
+                            if ($parameters['is_mandatory'] == 1 && $value['item'] != 'ITILCategory_Metademands') {
                                 if (!isset($post[$id])) {
                                     continue;
                                 }

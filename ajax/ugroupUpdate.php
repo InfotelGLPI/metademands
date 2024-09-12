@@ -66,7 +66,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
 
     }
 
-    if (!empty($fieldGroup->fields['custom_values']) && $_POST["value"]) {
+    if (!empty($fieldparameter->fields['custom']) && $_POST["value"]) {
         $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
         $group_user_data = Group_User::getUserGroups($_POST["value"], $condition);
 
@@ -75,7 +75,7 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
             $requester_groups[] = $groups['id'];
         }
 
-        $options = PluginMetademandsFieldParameter::_unserialize($fieldGroup->fields['custom_values']);
+        $options = PluginMetademandsFieldParameter::_unserialize($fieldparameter->fields['custom']);
 
         foreach ($options as $type_group => $values) {
             if ($type_group != 'user_group') {

@@ -152,6 +152,9 @@ if (isset($_POST["add"])) {
         }
     }
 
+    if (isset($field->fields['item']) && $field->fields['item'] == 'Group') {
+        $_POST["custom"] = PluginMetademandsFieldParameter::_serialize($custom_values);
+    }
 
     //    Check update rights for fields
     $fieldparameter->check(-1, UPDATE, $_POST);

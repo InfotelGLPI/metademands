@@ -268,8 +268,9 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 }
 
                 $right = "all";
-                if (!empty($data['custom_values'])) {
-                    $options = PluginMetademandsFieldParameter::_unserialize($data['custom_values']);
+
+                if (!empty($data['custom'])) {
+                    $options = PluginMetademandsFieldParameter::_unserialize($data['custom']);
                     if (isset($options['user_group']) && $options['user_group'] == 1) {
                         $condition       = getEntitiesRestrictCriteria(Group::getTable(), '', '', true);
                         $group_user_data = Group_User::getUserGroups(Session::getLoginUserID(), $condition);
@@ -384,6 +385,17 @@ class PluginMetademandsDropdownobject extends CommonDBTM
                 $_POST['field'] = $namefield . "[" . $data['id'] . "]";
 
                 if ($data['link_to_user'] > 0) {
+
+                    $fieldparameter            = new PluginMetademandsFieldParameter();
+                    if ($fieldparameter->getFromDBByCrit(['plugin_metademands_fields_id' => $data['link_to_user']])) {
+                        $_POST['value']        = (isset($fieldparameter->fields['default_use_id_requester'])
+                            && $fieldparameter->fields['default_use_id_requester'] == 0) ? 0 : Session::getLoginUserID();
+
+                        if (empty($_POST['value'])) {
+                            $_POST['value'] = 0;
+                        }
+                    }
+
                     echo "<div id='group_user" . $data['link_to_user'] . "' class=\"input-group\">";
                     $_POST['groups_id'] = $value;
 //                    $fieldUser          = new PluginMetademandsField();
