@@ -169,6 +169,11 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
                 if (!is_array($value)) {
                     $value = [];
+                    foreach ($custom_values as $custom_value) {
+                        if ($custom_value['is_default'] == 1) {
+                            $value[$custom_value['id']] = $custom_value['name'];
+                        }
+                    }
                 }
 
                 if ($data["display_type"] != self::CLASSIC_DISPLAY) {
@@ -296,7 +301,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
         if (is_array($value) && count($value) > 0) {
             foreach ($value as $k => $val) {
                 if ($item == 'other') {
-                    $div .= "<option selected value=\"" . $val['id'] . "\" >" . $val['name'] . "</option>";
+                    $div .= "<option selected value=\"" . $k . "\" >" . $val . "</option>";
                 } else if ($item == User::getType()) {
                     $div .= "<option selected value=\"$val\" >" . getUserName($val, 0, true) . "</option>";
                 } else {

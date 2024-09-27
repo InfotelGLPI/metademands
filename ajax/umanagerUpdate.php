@@ -36,7 +36,7 @@ if (strpos($_SERVER['PHP_SELF'], "umanagerUpdate.php")) {
 
 Session::checkLoginUser();
 $fieldUser = new PluginMetademandsField();
-
+$readonly = 0;
 if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
    if (!isset($_POST['field'])) {
       if ($fields = $fieldUser->find(['type'         => "dropdown_object",
@@ -49,6 +49,10 @@ if (isset($_POST['id_fielduser']) && $_POST["id_fielduser"] > 0) {
                   'plugin_metademands_fields_id' => $f['id'],
                   'link_to_user' => $_POST['id_fielduser']
               ])) {
+
+                  if ($fieldparameter->fields['readonly'] == 1) {
+                      $readonly = 1;
+                  }
                   $_POST["field"] = "field[" . $f['id'] . "]";
               }
           }
@@ -77,6 +81,11 @@ if (isset($_POST['fields_id'])
 $opt = ['name'  => $_POST["field"],
         'value' => $users_id_supervisor,
     'width' => '200px'];
+
+if ($readonly == 1) {
+    $opt['display_emptychoice'] = false;
+}
+
 
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
    $opt['specific_tags'] = ['required' => 'required'];

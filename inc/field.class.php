@@ -848,7 +848,7 @@ class PluginMetademandsField extends CommonDBChild
                 } else {
                     echo "<span id='show_item' >";
                     $randItem = self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"],
-                        'criteria' =>  PluginMetademandsDropdownmultiple::$dropdown_multiple_objects]);
+                        'criteria' =>  PluginMetademandsDropdownmultiple::$dropdown_multiple_items]);
                     echo "</span>";
                     $paramsType = [
                         'value' => '__VALUE__',
@@ -906,6 +906,7 @@ class PluginMetademandsField extends CommonDBChild
             if (isset($this->fields['type'])
                 && (in_array($this->fields['type'], $allowed_customvalues_types) && ($this->fields['item'] != "ITILCategory_Metademands"
                         && $this->fields['item'] != "urgency"
+                        && $this->fields['item'] != "mydevices"
                         && $this->fields['item'] != "impact"))
                 || in_array($this->fields['item'], $allowed_customvalues_items)) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
@@ -1001,6 +1002,7 @@ class PluginMetademandsField extends CommonDBChild
             if (isset($value['type'])
                 && (in_array($value['type'], $allowed_customvalues_types) && ($value['item'] != "ITILCategory_Metademands"
                         && $value['item'] != "urgency"
+                        && $value['item'] != "mydevices"
                         && $value['item'] != "impact"))
                 || in_array($value['item'], $allowed_customvalues_items)) {
                 $field_custom = new PluginMetademandsFieldCustomvalue();
@@ -1071,6 +1073,7 @@ class PluginMetademandsField extends CommonDBChild
                 if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]) || ((isset($value['type'])
                         && (in_array($value['type'], $allowed_customvalues_types) && ($value['item'] != "ITILCategory_Metademands"
                                     && $value['item'] != "urgency"
+                                    && $value['item'] != "mydevices"
                                     && $value['item'] != "impact"))
                         || in_array($value['item'], $allowed_customvalues_items))
                     && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
@@ -1092,7 +1095,7 @@ class PluginMetademandsField extends CommonDBChild
                 if (empty(trim($name))) {
                     echo __('ID') . " - " . $value['id'];
                 } else {
-                    echo $name;
+                    echo Toolbox::stripslashes_deep($name);
                 }
                 echo "</a>";
                 echo "</td>";
@@ -1839,6 +1842,7 @@ class PluginMetademandsField extends CommonDBChild
             && (in_array($field->fields['type'], $allowed_customvalues_types)
                 || in_array($field->fields['item'], $allowed_customvalues_items))
             && $field->fields['item'] != "urgency"
+            && $field->fields['item'] != "mydevices"
             && $field->fields['item'] != "impact") {
             $custom_values = [];
             if ($customs = $field_custom->find(["plugin_metademands_fields_id" => $field->getID()], "rank")) {
@@ -1964,7 +1968,7 @@ class PluginMetademandsField extends CommonDBChild
             if (isset($data['hide_title']) && $data['hide_title'] == 0) {
                 if ($hidden == 0) {
                     echo "<span $required class='col-form-label metademand-label'>";
-                    echo $label . " $upload";
+                    echo Toolbox::stripslashes_deep($label) . " $upload";
                     if ($preview) {
                         echo $config_link;
                     }
@@ -2511,22 +2515,22 @@ class PluginMetademandsField extends CommonDBChild
     public function cleanDBonPurge()
     {
         $temp = new PluginMetademandsTicket_Field();
-        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
         $temp = new PluginMetademandsBasketline();
-        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
         $temp = new PluginMetademandsFieldOption();
-        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
         $temp = new PluginMetademandsFieldParameter();
-        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
         $temp = new PluginMetademandsFieldCustomvalue();
-        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']]);
+        $temp->deleteByCriteria(['plugin_metademands_fields_id' => $this->fields['id']], false, false);
 
         $temp = new PluginMetademandsFieldOption();
-        $temp->deleteByCriteria(['parent_field_id' => $this->fields['id']]);
+        $temp->deleteByCriteria(['parent_field_id' => $this->fields['id']], false, false);
     }
 
     /**
@@ -2746,7 +2750,7 @@ class PluginMetademandsField extends CommonDBChild
         $order = [Dropdown::EMPTY_VALUE];
 
         foreach ($this->find($restrict, ['order']) as $id => $values) {
-            $order[$id] = $values['name'] ?? $id;
+            $order[$id] = $values['name'] ? Toolbox::stripslashes_deep($values['name']) : $id;
             //if (!empty($values['label2'])) {
             //   $order[$id] .= ' - ' . $values['label2'];
             //}

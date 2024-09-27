@@ -2148,7 +2148,9 @@ JAVASCRIPT
                         $fields_values = array_merge($fields_values, $params);
 
                         // ignore used_by_ticket when used to autofill text field
-                        if ($fields_values['used_by_ticket'] > 0 && !($fields_values['type'] == 'text' && $fields_values['item'] == 'User')) {
+                        if ($fields_values['used_by_ticket'] > 0
+                            && !($fields_values['type'] == 'text' && $fields_values['link_to_user'] > 0)) {
+
                             foreach ($values_form as $k => $v) {
                                 if (isset($v[$id])) {
                                     $name = $searchOption[$fields_values['used_by_ticket']]['linkfield'] ?? "";
@@ -3267,9 +3269,7 @@ JAVASCRIPT
                                                         $recipients[$user->fields['id']]['email'] = $adr['email'];
                                                         $recipients[$user->fields['id']]['name'] = $user->fields['realname'] . " " . $user->fields['firstname'];
                                                     }
-
                                                 }
-
                                             }
                                             if (count($recipients) > 0) {
                                                 PluginMetademandsMailTask::sendMail($line['tasks'][$key]['tickettasks_name'], $recipients, $line['tasks'][$key]['content']);

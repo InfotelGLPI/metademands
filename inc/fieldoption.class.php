@@ -906,7 +906,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands"
                     && $value['item'] != "informations") {
-                    $data[$id] = $value['rank'] . " - " . urldecode(html_entity_decode($value['name']));
+                    $data[$id] = $value['rank'] . " - " . urldecode(html_entity_decode(Toolbox::stripslashes_deep($value['name'])));
                 }
             }
 
@@ -926,7 +926,7 @@ class PluginMetademandsFieldOption extends CommonDBChild
             $data = [Dropdown::EMPTY_VALUE];
             foreach ($fields_data as $id => $value) {
                 if ($value['item'] != "ITILCategory_Metademands") {
-                    $data[$id] = $value['rank'] . " - " . urldecode(html_entity_decode($value['name']));
+                    $data[$id] = $value['rank'] . " - " . urldecode(html_entity_decode(Toolbox::stripslashes_deep($value['name'])));
                 }
             }
             Dropdown::showFromArray('hidden_link', $data, ['value' => $params['hidden_link']]);

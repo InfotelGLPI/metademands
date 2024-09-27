@@ -2123,7 +2123,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     foreach ($fields_data as $data) {
                         $label = "";
                         if (isset($data['name'])) {
-                            $label = $data['name'];
+                            $label = Toolbox::stripslashes_deep($data['name']);
                         }
                         $metademand_params = new PluginMetademandsFieldParameter();
                         $metademand_params->getFromDBByCrit(
@@ -2388,6 +2388,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         $('#nextBtn').on('click', checkConditions);
                      }
                      $('#wizard_form input[type=\"checkbox\"]').on('change', checkConditions);
+                     $('#wizard_form input[type=\"radio\"]').on('change', checkConditions);
                      $('#wizard_form input').on('change, keyup', checkConditions);
                      
                      $('#wizard_form select').on('change', checkConditions);
