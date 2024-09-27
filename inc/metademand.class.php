@@ -4685,6 +4685,9 @@ JAVASCRIPT
                     if (!isset($son_ticket_data['users_id_recipient']) || empty($son_ticket_data['users_id_recipient'])) {
                         $son_ticket_data['users_id_recipient'] = Session::getLoginUserID();
                     }
+                    if (!isset($son_ticket_data['locations_id']) || empty($son_ticket_data['locations_id'])) {
+                        $son_ticket_data['locations_id'] = 0;
+                    }
 
                     // check if son ticket already exists in case we come from an update of the parent ticket
                     if ($ticket_task->getFromDBByCrit([

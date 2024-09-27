@@ -77,6 +77,10 @@ $opt = ['name'  => $_POST["field"],
         'value' => $locations_id,
     'width' => '200px'];
 
+if (isset($fieldparameter->fields["is_mandatory"]) && $fieldparameter->fields['is_mandatory'] == 1) {
+    $opt['specific_tags'] = ['required' => 'required'];
+}
+
 if (isset($_POST["is_mandatory"]) && $_POST['is_mandatory'] == 1) {
    $opt['specific_tags'] = ['required' => 'required'];
 }

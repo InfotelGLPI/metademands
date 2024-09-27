@@ -286,7 +286,7 @@ class PluginMetademandsTask extends CommonDBChild {
 //                    'actiontime' => $tickettask->fields['actiontime'],
 //                    'itemtype' => $tickettask->fields['itemtype']
                     ];
-                } else if ($this->fields['type'] == self::MAIL_TYPE){
+                } else if ($this->fields['type'] == self::MAIL_TYPE) {
                     $mailtask = new PluginMetademandsMailTask();
                     $mailtask->getFromDBByCrit(["plugin_metademands_tasks_id" => $ID]);
                     $values = [
