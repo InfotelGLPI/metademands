@@ -1683,7 +1683,10 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
         if (!empty($field['custom_values'])
             && $field['item'] != 'User'
-            && $field['item'] != 'Location') {
+            && $field['item'] != 'Location'
+            && $field['item'] != 'Group'
+            && $field['item'] != 'Appliance') {
+
             if ($field['item'] != "other") {
                 $custom_values = PluginMetademandsFieldParameter::_unserialize($field['custom_values']);
                 foreach ($custom_values as $k => $val) {
@@ -1725,7 +1728,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                 }
             }
             return implode(',', $parseValue);
-        } else if ($field['item'] == 'Location') {
+        } else if ($field['item'] == 'Location' || $field['item'] == 'Group' || $field['item'] == 'Appliance') {
             $parseValue = [];
             $item = new $field["item"]();
             foreach ($field['value'] as $value) {
@@ -1741,7 +1744,10 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
     {
 
         if (!empty($field['custom_values'])
-            && $field['item'] != 'User' && $field['value'] > 0) {
+            && $field['item'] != 'User'
+            && $field['item'] != 'Location'
+            && $field['item'] != 'Group'
+            && $field['item'] != 'Appliance' && $field['value'] > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title>";
@@ -1754,7 +1760,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
-        } else if ($field['item'] == 'Location' && $field['value'] > 0) {
+        } else if (($field['item'] == 'Location' || $field['item'] == 'Group' || $field['item'] == 'Appliance')
+            && $field['value'] > 0) {
             $result[$field['rank']]['display'] = true;
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "<td $style_title>";
@@ -1767,7 +1774,8 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
             if ($formatAsTable) {
                 $result[$field['rank']]['content'] .= "</td>";
             }
-        } else if ($field['item'] == 'User' && ($field['value'] > 0 || (is_array($field['value']) && count($field['value']) > 0))) {
+        } else if ($field['item'] == 'User' && ($field['value'] > 0
+                || (is_array($field['value']) && count($field['value']) > 0))) {
             $information = json_decode($field['informations_to_display']);
 
             // legacy support
