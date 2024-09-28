@@ -1986,6 +1986,7 @@ class PluginMetademandsWizard extends CommonDBTM
 
                 $json_hidden_blocks = json_encode($hidden_blocks);
                 $alert = __('Thanks to fill mandatory fields', 'metademands');
+                $alert_regex = __("These fields don\'t respect regex", 'metademands');
                 $group_user = new Group_User();
                 $groups_users = $group_user->find(['users_id' => Session::getLoginUserID()]);
                 $groups = [];
@@ -2157,6 +2158,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 $params['see_summary'] = $see_summary;
                 $params['json_hidden_blocks'] = $json_hidden_blocks;
                 $params['alert'] = $alert;
+                $params['alert_regex'] = $alert_regex;
                 $params['json_all_meta_fields'] = $json_all_meta_fields;
                 $params['use_condition'] = $use_condition;
                 $params['show_rule'] = $show_rule;
@@ -2345,6 +2347,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     metademands.nextsteptitle = '$nextsteptitle';
                     metademands.seesummary = '$see_summary';
                     metademands.msg = '$alert';
+                    metademands.msg_regex = '$alert_regex';
                     metademands.all_meta_fields = {$json_all_meta_fields};
                     metademands.firstnumTab = 0;
                     metademands.currentTab = 0; // Current tab is set to be the first tab (0)
@@ -2363,6 +2366,7 @@ class PluginMetademandsWizard extends CommonDBTM
                     var nextsteptitle = '$nextsteptitle';
                     var seesummary = '$see_summary';
                     var msg = '$alert';
+                    var msg_regex = '$alert_regex';
                     var all_meta_fields = {$json_all_meta_fields};
                     var firstnumTab = 0;
                     var currentTab = 0; // Current tab is set to be the first tab (0)
@@ -2731,7 +2735,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                   function validateForm() {
                      // This function deals with validation of the form fields
-                     var x, y, i, valid = true, ko = 0, radioexists = 0, lengthr = 0;
+                     var x, y, i, valid = true, ko = 0, kop = 0, radioexists = 0, lengthr = 0;
                   
                      if (use_as_step == 1) {
                         var x = document.getElementsByClassName('tab-step');
@@ -2742,6 +2746,7 @@ class PluginMetademandsWizard extends CommonDBTM
                      z = x[currentTab].getElementsByTagName('select');
                      w = x[currentTab].getElementsByTagName('textarea');
                      var mandatory = [];
+                     var mandatory_regex = [];
                      // A loop that checks every input field in the current tab:
                      for (i = 0; i < y.length; i++) {
                   
@@ -2785,9 +2790,9 @@ class PluginMetademandsWizard extends CommonDBTM
                                                     $('[name=\"' + fieldname + '\"]').attr('required', 'required');
                                                     var newfieldname = fieldname.match(/\[(.*?)\]/);
                                                      if (newfieldname) {
-                                                        mandatory.push(newfieldname[1]);
+                                                        mandatory_regex.push(newfieldname[1]);
                                                      }
-                                                     ko++;
+                                                     kop++;
                                                 }
                                             }
                                         }
@@ -3036,7 +3041,28 @@ class PluginMetademandsWizard extends CommonDBTM
                             });
                         });
                         alert_mandatory_fields_list = alert_mandatory_fields.join('<br> ');
-                        alert_msg = msg + ': <br><br>' + alert_mandatory_fields_list;
+                        alert_msg = msg + ' : <br><br>' + alert_mandatory_fields_list;
+                        alert(alert_msg);
+                     }
+                     
+                     if (kop > 0) {
+//                        console.log(mandatory);
+                        valid = false;
+                        
+                        const fields_mandatory_regex = mandatory_regex.filter(element => element !== '' && element !== null && element !== undefined);
+                        const fields_mandatory_unique_regex = fields_mandatory_regex.filter((element, index) => fields_mandatory_regex.indexOf(element) === index);
+                        fields_mandatory_unique_regex.sort((a, b) => a - b);
+                        //all_meta_fields
+                        var alert_regex_fields = [];
+                        $.each( fields_mandatory_unique_regex, function( k, v ) {
+                            $.each( all_meta_fields, function( key, value ) {
+                                if (v == key) {
+                                   alert_regex_fields.push(value);
+                                }
+                            });
+                        });
+                        alert_regex_fields_list = alert_regex_fields.join('<br> ');
+                        alert_msg = msg_regex + ' : <br><br>' + alert_regex_fields_list;
                         alert(alert_msg);
                      }
                   
