@@ -1719,11 +1719,11 @@ msgstr "Signature"
 
 #: inc/signature.class.php:67
 msgid "Your signature has been uploaded"
-msgstr "Votre signature a été envoyé"
+msgstr "Votre signature a été envoyée"
 
 #: inc/signature.class.php:68
 msgid "Your signature has been deleted"
-msgstr "Votre signature a été supprimé"
+msgstr "Votre signature a été supprimée"
 
 #: inc/signature.class.php:69
 msgid "There was a problem on upload your signature"
