@@ -4008,6 +4008,7 @@ JAVASCRIPT
             || $field['type'] == 'title'
             || $field['type'] == 'title-block'
             || $field['type'] == 'radio'
+            || $field['type'] == 'signature'
             || $field['type'] == 'basket'
             || in_array($field['type'], $types)) {
 
@@ -4142,6 +4143,13 @@ JAVASCRIPT
                         return PluginMetademandsBasket::getFieldValue($field);
                     } else {
                         PluginMetademandsBasket::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    }
+                    break;
+                case 'signature':
+                    if ($return_value == true) {
+                        return PluginMetademandsSignature::getFieldValue($field);
+                    } else {
+                        PluginMetademandsSignature::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'parent_field':

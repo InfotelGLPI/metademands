@@ -338,7 +338,7 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
             $this->SetBackgroundColor($color);
             $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
-        } else if ($type == 'title' || $type == 'title-block' || $type == 'textarea') {
+        } else if ($type == 'title' || $type == 'title-block' || $type == 'textarea' || $type == 'signature') {
             $this->MultiCell($this->title_width, $h, $label, $border, $align, true);
 
         } else {
@@ -352,14 +352,18 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
             //Draw values
             if ($type == 'link') {
                 $this->Cell($w, $h, $label, $border, 1, $align, true, $link);
-            } else if ($type == 'textarea') {
+            } elseif ($type == 'textarea') {
                 $this->MultiCell($w, $h, $values, $border, $align, true);
+            } elseif ($type == 'signature') {
+                $this->MultiCell($w, $h + 10, $this->Image($values, $x, $y + 8, 33.78), $border, $align, false);
             } else {
                 $width_values = $w;
                 //            if ($width != $this->label_width) {
                 //               $width_values = $w - $width;
                 //            }
                 //fix php8 fpdf
+
+
                 if (is_null($values)) {
                     $values = "";
                 }
@@ -1054,6 +1058,12 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             }
                             break;
 
+                        case 'signature' ;
+                            $value = GLPI_PICTURE_DIR . '/' . $fields[$elt['id']];
+                            $this->MultiCellValue($this->title_width, $this->multiline_height, $elt['type'], $label, $value, 'LRBT', 'L', '', 0, '', 'black');
+                            break;
+                        default:
+
                         case 'free_input':
                             if (Plugin::isPluginActive('orderfollowup')) {
                                 $ordermaterialmeta = new PluginOrderfollowupMetademand();
@@ -1072,8 +1082,6 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                                 }
                             }
                             break;
-
-                        default:
 
                             if (isset($PLUGIN_HOOKS['metademands'])) {
                                 foreach ($PLUGIN_HOOKS['metademands'] as $plug => $method) {

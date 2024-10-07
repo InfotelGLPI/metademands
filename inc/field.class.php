@@ -69,6 +69,7 @@ class PluginMetademandsField extends CommonDBChild
         'datetime_interval',
         'upload',
         'link',
+        'signature',
         'parent_field'
     ];
 
@@ -93,6 +94,7 @@ class PluginMetademandsField extends CommonDBChild
     public static $field_text_types = [
         'text',
         'textarea',
+        'signature',
     ];
 
     public static $field_date_types = [
@@ -1358,6 +1360,8 @@ class PluginMetademandsField extends CommonDBChild
                 return PluginMetademandsLink::getTypeName();
             case 'basket':
                 return PluginMetademandsBasket::getTypeName();
+            case 'signature':
+                return PluginMetademandsSignature::getTypeName();
             case 'parent_field':
                 return __('Father\'s field', 'metademands');
             default:
@@ -2159,6 +2163,9 @@ class PluginMetademandsField extends CommonDBChild
                 break;
             case 'basket':
                 PluginMetademandsBasket::showWizardField($data, $on_order, $itilcategories_id, $idline);
+                break;
+            case 'signature':
+                PluginMetademandsSignature::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'parent_field':
                 foreach ($metademands_data as $metademands_data_steps) {

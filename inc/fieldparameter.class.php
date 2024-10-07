@@ -64,6 +64,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         'datetime_interval',
         'upload',
         'link',
+        'signature',
     ];
     public static $allowed_parameters_items = ['User', 'Group'];
 
@@ -344,6 +345,9 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                     echo PluginMetademandsUpload::showFieldParameters($params);
                     break;
                 case 'link':
+                    break;
+                case 'signature':
+                    echo PluginMetademandsSignature::showFieldParameters($params);
                     break;
                 case 'parent_field':
                     break;

@@ -2746,7 +2746,16 @@ class PluginMetademandsWizard extends CommonDBTM
                      z = x[currentTab].getElementsByTagName('select');
                      w = x[currentTab].getElementsByTagName('textarea');
                      var mandatory = [];
+
                      var mandatory_regex = [];
+
+                     //check mandatory signature
+                     let keys = Object.keys(sessionStorage);
+                     for(let key of keys) {
+                         mandatory.push(sessionStorage.getItem(key));
+                         ko++;
+                     }
+                        
                      // A loop that checks every input field in the current tab:
                      for (i = 0; i < y.length; i++) {
                   
@@ -2754,6 +2763,7 @@ class PluginMetademandsWizard extends CommonDBTM
                         fieldid = y[i].id;
                         fieldname = y[i].name;
                         fieldtype = y[i].type;
+
                         fieldmandatory = y[i].required;
                         if (fieldname != '_uploader_filename[]'
                            && fieldname != '_uploader_content[]'
