@@ -193,6 +193,15 @@ class PluginMetademandsTicketField extends CommonDBChild
         $fields = $metafield->find(['plugin_metademands_metademands_id' => $id]);
         $res = [];
         foreach ($fields as $field) {
+
+            if ($field['type'] == 'title'
+                || $field['type'] == 'title-block'
+                || $field['type'] == 'informations'
+                || $field['type'] == 'upload'
+                || $field['type'] == 'basket'
+                || $field['type'] == 'signature') {
+                continue;
+            }
             $res[$field['id']] = $field['name'];
             if ($field['type'] == 'dropdown_object' && $field['item'] == User::getType()) {
                 $res[$field['id'] . ".login"] = $field['name'] . " : " . __('Login');

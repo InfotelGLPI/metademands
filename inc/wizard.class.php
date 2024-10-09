@@ -2752,8 +2752,10 @@ class PluginMetademandsWizard extends CommonDBTM
                      //check mandatory signature
                      let keys = Object.keys(sessionStorage);
                      for(let key of keys) {
-                         mandatory.push(sessionStorage.getItem(key));
-                         ko++;
+                         if (key == 'mandatory_sign') {
+                             mandatory.push(sessionStorage.getItem(key));
+                             ko++;
+                         } 
                      }
                         
                      // A loop that checks every input field in the current tab:
