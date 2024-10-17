@@ -221,7 +221,12 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
 
             $criteria['WHERE'] = getEntitiesRestrictCriteria(getTableForItemType($data['item']), '', '', $item->maybeRecursive());
 
-            $criteria['ORDER'] = ['name ASC'];
+            if ($data['item'] == Location::getType()) {
+                $criteria['ORDER'] = ['completename ASC'];
+            } else {
+                $criteria['ORDER'] = ['name ASC'];
+            }
+
 
             $iterator = $DB->request($criteria);
 
