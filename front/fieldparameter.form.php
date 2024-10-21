@@ -105,6 +105,7 @@ if (isset($_POST["add"])) {
                     || $field->fields['item'] == 'urgency'
                     || $field->fields['item'] == 'impact'))
             || $field->fields['type'] == 'number'
+            || $field->fields['type'] == 'range'
             || $field->fields['type'] == 'basket')) {
         $comment_values = "";
         $custom_values = [];

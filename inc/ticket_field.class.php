@@ -219,6 +219,12 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                 case 'text':
                     PluginMetademandsText::isCheckValueOK($value, $check_value);
                     break;
+                case 'tel':
+                    PluginMetademandsTel::isCheckValueOK($value, $check_value);
+                    break;
+                case 'email':
+                    PluginMetademandsEmail::isCheckValueOK($value, $check_value);
+                    break;
                 case 'textarea':
                     PluginMetademandsTextarea::isCheckValueOK($value, $check_value);
                     break;
@@ -244,6 +250,8 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                     PluginMetademandsYesno::isCheckValueOK($value, $check_value);
                     break;
                 case 'number':
+                    break;
+                case 'range':
                     break;
                 case 'date':
                     break;
@@ -339,6 +347,8 @@ class PluginMetademandsTicket_Field extends CommonDBTM
                     }
                     break;
                 case 'text':
+                case 'tel':
+                case 'email':
                 case 'textarea':
                     if (($check_value == 2 && $field_value != "")) {
                         return false;

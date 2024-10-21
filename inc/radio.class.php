@@ -674,6 +674,7 @@ class PluginMetademandsRadio extends CommonDBTM
                                                     case 'file':
                                                     case 'date':
                                                     case 'number':
+                                                    case 'range':
                                                     case 'tel':
                                                     case 'email':
                                                         jQuery(this).val('');
@@ -718,6 +719,7 @@ class PluginMetademandsRadio extends CommonDBTM
                                                     case 'file':
                                                     case 'date':
                                                     case 'number':
+                                                    case 'range':
                                                     case 'tel':
                                                     case 'email':
                                                         jQuery(this).val('');

@@ -46,6 +46,7 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
         'yesno',
         'link',
         'number',
+        'range',
         'basket',
     ];
 
@@ -301,6 +302,10 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
                     break;
                 case 'text':
                     break;
+                case 'tel':
+                    break;
+                case 'email':
+                    break;
                 case 'textarea':
                     break;
                 case 'dropdown_meta':
@@ -323,6 +328,9 @@ class PluginMetademandsFieldCustomvalue extends CommonDBTM
                     break;
                 case 'number':
                     PluginMetademandsNumber::showFieldCustomValues($params);
+                    break;
+                case 'range':
+                    PluginMetademandsRange::showFieldCustomValues($params);
                     break;
                 case 'date':
                     break;

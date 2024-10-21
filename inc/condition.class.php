@@ -64,8 +64,24 @@ class PluginMetademandsCondition extends CommonDBChild
     public static $itemtype = 'PluginMetademandsMetademand';
     public static $items_id = 'plugin_metademands_metademands_id';
 
-    public static $field_types_available = ['', 'dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple', 'text', 'checkbox', 'textarea',
-        'date', 'datetime', 'number', 'yesno', 'radio'];
+    public static $field_types_available = [
+        '',
+        'dropdown',
+        'dropdown_object',
+        'dropdown_meta',
+        'dropdown_multiple',
+        'text',
+        'tel',
+        'email',
+        'checkbox',
+        'textarea',
+        'date',
+        'datetime',
+        'number',
+        'range',
+        'yesno',
+        'radio'
+    ];
 
 
     public static function getTypeName($nb = 0)
@@ -97,7 +113,6 @@ class PluginMetademandsCondition extends CommonDBChild
             return self::getTypeName();
         }
         return '';
-
     }
 
     static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
@@ -118,24 +133,23 @@ class PluginMetademandsCondition extends CommonDBChild
      */
     public static function getEnumShowCondition($type): array
     {
-
         $enumConditions = [];
         $dropdown_types = ['dropdown', 'dropdown_object', 'dropdown_meta', 'dropdown_multiple'];
         $special_types = ['yesno', 'radio', 'checkbox'];
-        $text_types = ['text', 'textarea', ''];
-        $number_types = ['date', 'datetime', 'number'];
+        $text_types = ['text', 'tel', 'email', 'textarea', ''];
+        $number_types = ['date', 'datetime', 'number', 'range'];
 
         if (in_array($type, $dropdown_types)) {
             $enumConditions = [
                 self::SHOW_CONDITION_EQ => '=',
                 self::SHOW_CONDITION_NE => '≠',
             ];
-        } else if (in_array($type, $special_types)) {
+        } elseif (in_array($type, $special_types)) {
             $enumConditions = [
                 self::SHOW_CONDITION_EQ => '=',
                 self::SHOW_CONDITION_NE => '≠',
             ];
-        } else if (in_array($type, $text_types)) {
+        } elseif (in_array($type, $text_types)) {
             $enumConditions = [
                 self::SHOW_CONDITION_EQ => '=',
                 self::SHOW_CONDITION_NE => '≠',
@@ -143,7 +157,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 self::SHOW_CONDITION_EMPTY => __('Empty', 'metademands'),
                 self::SHOW_CONDITION_NOTEMPTY => __('Not empty', 'metademands')
             ];
-        } else if (in_array($type, $number_types)) {
+        } elseif (in_array($type, $number_types)) {
             $enumConditions = [
                 self::SHOW_CONDITION_EQ => '=',
                 self::SHOW_CONDITION_NE => '≠',
@@ -154,7 +168,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 self::SHOW_CONDITION_EMPTY => __('Empty', 'metademands'),
                 self::SHOW_CONDITION_NOTEMPTY => __('Not empty', 'metademands')
             ];
-        } else if ($type == 0) {
+        } elseif ($type == 0) {
             $enumConditions = [
                 self::SHOW_CONDITION_EQ => '=',
                 self::SHOW_CONDITION_NE => '≠',
@@ -180,7 +194,6 @@ class PluginMetademandsCondition extends CommonDBChild
      */
     public static function showCondition($showCondition): string
     {
-
         $return = '';
         switch ($showCondition) {
             case self::SHOW_CONDITION_EQ:
@@ -210,7 +223,6 @@ class PluginMetademandsCondition extends CommonDBChild
             case self::SHOW_CONDITION_NOTEMPTY:
                 $return = __('Not empty', 'metademands');
                 break;
-
         }
 
         return $return;
@@ -292,11 +304,12 @@ class PluginMetademandsCondition extends CommonDBChild
 
 
     public function showForMetademand($item)
-
     {
         $canedit = $item->can($item->fields['id'], UPDATE);
         if ($canedit) {
-            echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL('PluginMetademandsMetademand') . "'>";
+            echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL(
+                    'PluginMetademandsMetademand'
+                ) . "'>";
             echo Html::hidden('id', ['value' => $item->fields['id']]);
             echo "<table class='tab_cadre_fixe'>";
             echo "<tr>";
@@ -325,9 +338,9 @@ class PluginMetademandsCondition extends CommonDBChild
             $rand = mt_rand();
 
             if ($item->fields['show_rule'] != self::SHOW_RULE_ALWAYS) {
-
-
-                echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL('PluginMetademandsCondition') . "'>";
+                echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL(
+                        'PluginMetademandsCondition'
+                    ) . "'>";
                 echo "<table class='tab_cadre_fixe'>";
                 echo "<tr>";
                 echo "<th> " . __('Logical operator', 'metademands') . " </th>";
@@ -336,7 +349,10 @@ class PluginMetademandsCondition extends CommonDBChild
                 echo "<th>" . __('Equality operator', 'metademands') . " <span style='color : red'> *</span></th>";
                 echo "<th>" . __('Value to check', 'metademands') . "</th>";
                 echo "<th>" . __('Pool', 'metademands') . " <span style='color : red'> *</span>";
-                echo "<h6 style='color: royalblue'>" . __('Order of execution and grouping of conditions', 'metademands') . "</h6>";
+                echo "<h6 style='color: royalblue'>" . __(
+                        'Order of execution and grouping of conditions',
+                        'metademands'
+                    ) . "</h6>";
                 echo "</th>";
                 echo "<th></th>";
 
@@ -369,8 +385,10 @@ class PluginMetademandsCondition extends CommonDBChild
                 Dropdown::showFromArray(
                     'plugin_metademands_fields_id',
                     $dropdown_fields,
-                    ['rand' => $rand,
-                        'display_emptychoice' => true]
+                    [
+                        'rand' => $rand,
+                        'display_emptychoice' => true
+                    ]
                 );
                 echo "</td>";
                 echo "<td>";
@@ -427,9 +445,7 @@ class PluginMetademandsCondition extends CommonDBChild
                 Html::closeForm();
             }
             self::listConditions($item);
-
         }
-
     }
 
 
@@ -447,11 +463,13 @@ class PluginMetademandsCondition extends CommonDBChild
         }
         $self = new self();
         $allConditions = [];
-        $allConditions = $self->find(['plugin_metademands_metademands_id' => $item->fields['id']], ['order','id']);
+        $allConditions = $self->find(['plugin_metademands_metademands_id' => $item->fields['id']], ['order', 'id']);
         if (count($allConditions) > 0) {
             html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $params = ['item' => __CLASS__,
-                'container' => 'mass' . __CLASS__ . $rand];
+            $params = [
+                'item' => __CLASS__,
+                'container' => 'mass' . __CLASS__ . $rand
+            ];
             Html::showMassiveActions($params);
 
 
@@ -491,13 +509,17 @@ class PluginMetademandsCondition extends CommonDBChild
                     if ($canedit) {
                         echo "\n<script type='text/javascript' >\n";
                         echo "function viewEditcondition" . $item->getType() . $condition['id'] . "$rand() {\n";
-                        $params = ['type' => __CLASS__,
+                        $params = [
+                            'type' => __CLASS__,
                             'parenttype' => get_class($item),
                             $item->getForeignKeyField() => $item->getID(),
-                            'id' => $condition["id"]];
-                        Ajax::updateItemJsCode("viewcondition" . $item->getType() . $item->getID() . "$rand",
+                            'id' => $condition["id"]
+                        ];
+                        Ajax::updateItemJsCode(
+                            "viewcondition" . $item->getType() . $item->getID() . "$rand",
                             $CFG_GLPI["root_doc"] . "/ajax/viewsubitem.php",
-                            $params);
+                            $params
+                        );
                         echo "};";
                         echo "</script>\n";
 
@@ -512,7 +534,10 @@ class PluginMetademandsCondition extends CommonDBChild
                             $fieldURL = $field->getLinkURL();
                             echo "<a href='$fieldURL' style='color:royalblue;'>";
                         }
-                        echo Dropdown::getDropdownName(PluginMetademandsField::getTable(), $condition['plugin_metademands_fields_id']) . " (" . $condition['plugin_metademands_fields_id'] . ") ";
+                        echo Dropdown::getDropdownName(
+                                PluginMetademandsField::getTable(),
+                                $condition['plugin_metademands_fields_id']
+                            ) . " (" . $condition['plugin_metademands_fields_id'] . ") ";
                         if (Session::haveRight('plugin_metademands', UPDATE)) {
                             echo "</a> ";
                         }
@@ -534,8 +559,6 @@ class PluginMetademandsCondition extends CommonDBChild
                         echo $condition['order'];
                         echo "</td>";
                         echo "</tr>";
-
-
                     }
                 } else {
                     $input = [
@@ -544,7 +567,6 @@ class PluginMetademandsCondition extends CommonDBChild
                     $cond->delete($input);
                 }
             }
-
         } else {
             echo "<br><div class='alert alert-info center'>";
             echo __("No conditions founded", 'metademands');
@@ -590,6 +612,7 @@ class PluginMetademandsCondition extends CommonDBChild
 
         return $tab;
     }
+
     static function displayCheckValue($ID)
     {
         $condition = new self();
@@ -612,12 +635,15 @@ class PluginMetademandsCondition extends CommonDBChild
 
             case 'text':
             case 'textarea':
+            case 'tel':
+            case 'email':
             case 'number':
-            if (empty($condition->fields['check_value'])) {
-                echo "";
-            } else {
-                echo Glpi\RichText\RichText::getTextFromHtml($condition->fields['check_value']);
-            }
+            case 'range':
+                if (empty($condition->fields['check_value'])) {
+                    echo "";
+                } else {
+                    echo Glpi\RichText\RichText::getTextFromHtml($condition->fields['check_value']);
+                }
                 break;
 
             case 'date':
@@ -677,9 +703,7 @@ class PluginMetademandsCondition extends CommonDBChild
                         echo CommonITILObject::getPriorityName($condition->fields['check_value']);
                         break;
                 }
-
         }
-
     }
 
 
@@ -739,7 +763,6 @@ class PluginMetademandsCondition extends CommonDBChild
         $show_condition = $condition['show_condition'];
         if (!is_array($value)) {
             switch ($show_condition) {
-
                 case self::SHOW_CONDITION_EQ:
                     if ($items_id == 0) {
                         if ($value == $check_value) {
@@ -766,7 +789,7 @@ class PluginMetademandsCondition extends CommonDBChild
 
                 case self::SHOW_CONDITION_LT:
                     if ($value < $check_value) {
-                        if($value != ''){
+                        if ($value != '') {
                             $return = true;
                         }
                     }
@@ -780,7 +803,7 @@ class PluginMetademandsCondition extends CommonDBChild
 
                 case self::SHOW_CONDITION_LE:
                     if ($value <= $check_value) {
-                        if($value != ''){
+                        if ($value != '') {
                             $return = true;
                         }
                     }
@@ -811,7 +834,6 @@ class PluginMetademandsCondition extends CommonDBChild
                         return false;
                     }
                     break;
-
             }
         } else {            // For checkbox and multiple choice dropdown field
             switch ($show_condition) {
@@ -882,7 +904,9 @@ class PluginMetademandsCondition extends CommonDBChild
         foreach ($fields as $f) {
             $dropdown_fields[$f['id']] = $f['name'] . " (" . $f['id'] . ") ";
         }
-        echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL('PluginMetademandsCondition') . "'>";
+        echo "<form name = 'form' method='post' action='" . Toolbox::getItemTypeFormURL(
+                'PluginMetademandsCondition'
+            ) . "'>";
         echo "<table class='tab_cadre_fixe'>";
         echo "<tr>";
         echo "<th> " . __('Logical operator', 'metademands') . " </th>";
@@ -891,7 +915,10 @@ class PluginMetademandsCondition extends CommonDBChild
         echo "<th>" . __('Equality operator', 'metademands') . " <span style='color : red'> *</span></th>";
         echo "<th>" . __('Value to check', 'metademands') . "</th>";
         echo "<th>" . __('Pool', 'metademands') . " <span style='color : red'> *</span>";
-        echo "<h6 style='color: royalblue'>" . __('Order of execution and grouping of conditions', 'metademands') . "</h6>";
+        echo "<h6 style='color: royalblue'>" . __(
+                'Order of execution and grouping of conditions',
+                'metademands'
+            ) . "</h6>";
         echo "</th>";
         echo "<th></th>";
         echo "</tr>";
@@ -987,9 +1014,10 @@ class PluginMetademandsCondition extends CommonDBChild
         return true;
     }
 
-    static function showCheckValue($fields_id, $ID = -1){
+    static function showCheckValue($fields_id, $ID = -1)
+    {
         $field = new PluginMetademandsField();
-        if($ID > 0){
+        if ($ID > 0) {
             $condition = new self();
             $condition->getFromDB($ID);
         }
@@ -1023,8 +1051,9 @@ class PluginMetademandsCondition extends CommonDBChild
                             Dropdown::showFromArray(
                                 $options['name'],
                                 $choices,
-                                ['width' => '100%',
-                                  'value' => $condition->fields['check_value'] ?? 0
+                                [
+                                    'width' => '100%',
+                                    'value' => $condition->fields['check_value'] ?? 0
                                 ]
                             );
                             break;
@@ -1045,7 +1074,13 @@ class PluginMetademandsCondition extends CommonDBChild
                                 'name' => $name,
                                 'value' => $condition->fields['check_value'] ?? 0
                             ];
-                            PluginMetademandsField::dropdownMyDevices(Session::getLoginUserID(), $_SESSION['glpiactiveentities'], 0, 0, $params);
+                            PluginMetademandsField::dropdownMyDevices(
+                                Session::getLoginUserID(),
+                                $_SESSION['glpiactiveentities'],
+                                0,
+                                0,
+                                $params
+                            );
                             break;
                         case 'urgency':
                             $params = [
@@ -1070,7 +1105,7 @@ class PluginMetademandsCondition extends CommonDBChild
                             break;
                     }
                 } else {
-                    if ($ID > 0){
+                    if ($ID > 0) {
                         $options['value'] = $condition->fields['items_id'];
                     }
                     $item::dropdown($options);
@@ -1082,7 +1117,7 @@ class PluginMetademandsCondition extends CommonDBChild
                         $option = [
                             'required' => true
                         ];
-                        if($ID > 0 ){
+                        if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
                         echo Html::input(
@@ -1095,7 +1130,20 @@ class PluginMetademandsCondition extends CommonDBChild
                             'type' => 'number',
                             'required' => true,
                         ];
-                        if($ID > 0 ){
+                        if ($ID > 0) {
+                            $option['value'] = $condition->fields['check_value'];
+                        }
+                        echo Html::input(
+                            "$name",
+                            $option
+                        );
+                        break;
+                    case 'range' :
+                        $option = [
+                            'type' => 'range',
+                            'required' => true,
+                        ];
+                        if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
                         echo Html::input(
@@ -1125,7 +1173,7 @@ class PluginMetademandsCondition extends CommonDBChild
                         $option = [
                             'size' => 60
                         ];
-                        if($ID > 0) {
+                        if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
                         echo "<span style='width: 50%!important;display: -webkit-box;'>";
@@ -1139,7 +1187,7 @@ class PluginMetademandsCondition extends CommonDBChild
                         $option = [
                             'size' => 60
                         ];
-                        if($ID > 0) {
+                        if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
                         echo "<span style='width: 50%!important;display: -webkit-box;'>";
@@ -1155,16 +1203,18 @@ class PluginMetademandsCondition extends CommonDBChild
                             'display_emptychoice' => false,
                             'width' => '70px',
                         ];
-                        if($ID > 0) {
+                        if ($ID > 0) {
                             $option['value'] = $condition->fields['check_value'];
                         }
                         $choice[1] = __('No');
                         $choice[2] = __('Yes');
-                        Dropdown::showFromArray($name, $choice, $option
+                        Dropdown::showFromArray(
+                            $name,
+                            $choice,
+                            $option
                         );
                         break;
                 }
-
             }
         }
     }

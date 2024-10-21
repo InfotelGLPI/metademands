@@ -56,11 +56,14 @@ class PluginMetademandsField extends CommonDBChild
         'title-block',
         'informations',
         'text',
+        'tel',
+        'email',
         'textarea',
         'yesno',
         'checkbox',
         'radio',
         'number',
+        'range',
         'basket',
         'date',
         'time',
@@ -93,6 +96,8 @@ class PluginMetademandsField extends CommonDBChild
 
     public static $field_text_types = [
         'text',
+        'tel',
+        'email',
         'textarea',
         'signature',
     ];
@@ -433,7 +438,6 @@ class PluginMetademandsField extends CommonDBChild
             $this->check(-1, CREATE, $options);
             $this->getEmpty();
             $this->fields["plugin_metademands_metademands_id"] = $item->fields['id'];
-
         }
 
         // Data saved in session
@@ -559,9 +563,7 @@ class PluginMetademandsField extends CommonDBChild
                 $paramsType
             );
         } else {
-
-            if (in_array($this->fields["type"],self::$field_title_types)) {
-
+            if (in_array($this->fields["type"], self::$field_title_types)) {
                 $randType = self::dropdownFieldTypes(self::$field_title_types, [
                     'value' => $this->fields["type"],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
@@ -581,9 +583,8 @@ class PluginMetademandsField extends CommonDBChild
                     "/ajax/viewtypefields.php?id=" . $this->fields['id'],
                     $paramsType
                 );
-            } else if (in_array($this->fields["type"],self::$field_customvalues_types)) {
-
-                if (in_array($this->fields["item"],PluginMetademandsDropdownmultiple::$dropdown_multiple_objects)) {
+            } elseif (in_array($this->fields["type"], self::$field_customvalues_types)) {
+                if (in_array($this->fields["item"], PluginMetademandsDropdownmultiple::$dropdown_multiple_objects)) {
                     $randType = self::dropdownFieldTypes(["dropdown_multiple"], [
                         'value' => $this->fields["type"],
                         'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
@@ -625,15 +626,11 @@ class PluginMetademandsField extends CommonDBChild
                             $paramsType
                         );
                     } else {
-
                         echo self::getFieldTypesName($this->fields['type']);
                         echo Html::hidden('type', ['value' => $this->fields['type']]);
-
                     }
                 }
-
-            } else if (in_array($this->fields["type"],self::$field_text_types)) {
-
+            } elseif (in_array($this->fields["type"], self::$field_text_types)) {
                 $randType = self::dropdownFieldTypes(self::$field_text_types, [
                     'value' => $this->fields["type"],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
@@ -653,8 +650,7 @@ class PluginMetademandsField extends CommonDBChild
                     "/ajax/viewtypefields.php?id=" . $this->fields['id'],
                     $paramsType
                 );
-            } else if (in_array($this->fields["type"],self::$field_date_types)) {
-
+            } elseif (in_array($this->fields["type"], self::$field_date_types)) {
                 $randType = self::dropdownFieldTypes(self::$field_date_types, [
                     'value' => $this->fields["type"],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
@@ -674,8 +670,7 @@ class PluginMetademandsField extends CommonDBChild
                     "/ajax/viewtypefields.php?id=" . $this->fields['id'],
                     $paramsType
                 );
-            } else if (in_array($this->fields["type"],self::$field_dropdown_types)) {
-
+            } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
                 $randType = self::dropdownFieldTypes(self::$field_dropdown_types, [
                     'value' => $this->fields["type"],
                     'metademands_id' => $this->fields["plugin_metademands_metademands_id"]
@@ -695,9 +690,8 @@ class PluginMetademandsField extends CommonDBChild
                     "/ajax/viewtypefields.php?id=" . $this->fields['id'],
                     $paramsType
                 );
-            } else if ($this->fields["type"] == "dropdown_multiple") {
-
-                if (in_array($this->fields["item"],PluginMetademandsDropdownmultiple::$dropdown_multiple_objects)) {
+            } elseif ($this->fields["type"] == "dropdown_multiple") {
+                if (in_array($this->fields["item"], PluginMetademandsDropdownmultiple::$dropdown_multiple_objects)) {
                     echo self::getFieldTypesName($this->fields['type']);
                     echo Html::hidden('type', ['value' => $this->fields['type']]);
                 } else {
@@ -721,14 +715,10 @@ class PluginMetademandsField extends CommonDBChild
                         $paramsType
                     );
                 }
-
             } else {
-
                 echo self::getFieldTypesName($this->fields['type']);
                 echo Html::hidden('type', ['value' => $this->fields['type']]);
-
             }
-
         }
         if ($metademand->fields['is_basket'] == 0
             && ($this->fields['type'] == 'basket' || $this->fields['type'] == 'free_input')) {
@@ -803,9 +793,7 @@ class PluginMetademandsField extends CommonDBChild
             );
 
             echo "<span id='show_item_title' style='display:none'>";
-
         } else {
-
             if ($this->fields["type"] == "dropdown_meta") {
                 $metademand_custom = new PluginMetademandsFieldCustomvalue();
                 if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $this->fields['id']])) {
@@ -817,9 +805,7 @@ class PluginMetademandsField extends CommonDBChild
                     echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
                     echo Html::hidden('item', ['value' => $this->fields['item']]);
                 }
-
-            } else if (in_array($this->fields["type"],self::$field_dropdown_types)) {
-
+            } elseif (in_array($this->fields["type"], self::$field_dropdown_types)) {
                 echo "<span id='show_item' >";
                 $randItem = self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"]]);
                 echo "</span>";
@@ -841,16 +827,16 @@ class PluginMetademandsField extends CommonDBChild
                 );
 
                 echo "<span id='show_item_title' style='display:none'>";
-
-            } else if ($this->fields["type"] == "dropdown_multiple") {
-
+            } elseif ($this->fields["type"] == "dropdown_multiple") {
                 if ($this->fields["type"] == "dropdown_multiple" && $this->fields["item"] == "other") {
                     echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
                     echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
                 } else {
                     echo "<span id='show_item' >";
-                    $randItem = self::dropdownFieldItems($this->fields["type"], ['value' => $this->fields["item"],
-                        'criteria' =>  PluginMetademandsDropdownmultiple::$dropdown_multiple_items]);
+                    $randItem = self::dropdownFieldItems($this->fields["type"], [
+                        'value' => $this->fields["item"],
+                        'criteria' => PluginMetademandsDropdownmultiple::$dropdown_multiple_items
+                    ]);
                     echo "</span>";
                     $paramsType = [
                         'value' => '__VALUE__',
@@ -871,14 +857,10 @@ class PluginMetademandsField extends CommonDBChild
 
                     echo "<span id='show_item_title' style='display:none'>";
                 }
-
-
-
             } else {
                 echo self::getFieldItemsName($this->fields['type'], $this->fields['item']);
                 echo Html::hidden('item', ['value' => isset($this->fields['item']) ? $this->fields['item'] : null]);
             }
-
         }
 
         // ORDER
@@ -906,7 +888,10 @@ class PluginMetademandsField extends CommonDBChild
             $allowed_customvalues_items = PluginMetademandsFieldCustomvalue::$allowed_customvalues_items;
 
             if (isset($this->fields['type'])
-                && (in_array($this->fields['type'], $allowed_customvalues_types) && ($this->fields['item'] != "ITILCategory_Metademands"
+                && (in_array(
+                        $this->fields['type'],
+                        $allowed_customvalues_types
+                    ) && ($this->fields['item'] != "ITILCategory_Metademands"
                         && $this->fields['item'] != "urgency"
                         && $this->fields['item'] != "mydevices"
                         && $this->fields['item'] != "impact"))
@@ -914,7 +899,10 @@ class PluginMetademandsField extends CommonDBChild
                 $field_custom = new PluginMetademandsFieldCustomvalue();
                 if (!$field_custom->find(["plugin_metademands_fields_id" => $this->getID()])) {
                     echo "<div class='alert alert-important alert-warning d-flex'>";
-                    echo "<b>" . __('Warning : there is no custom values for this object', 'metademands') . "</b></div>";
+                    echo "<b>" . __(
+                            'Warning : there is no custom values for this object',
+                            'metademands'
+                        ) . "</b></div>";
                 }
             }
         }
@@ -1002,7 +990,10 @@ class PluginMetademandsField extends CommonDBChild
             }
 
             if (isset($value['type'])
-                && (in_array($value['type'], $allowed_customvalues_types) && ($value['item'] != "ITILCategory_Metademands"
+                && (in_array(
+                        $value['type'],
+                        $allowed_customvalues_types
+                    ) && ($value['item'] != "ITILCategory_Metademands"
                         && $value['item'] != "urgency"
                         && $value['item'] != "mydevices"
                         && $value['item'] != "impact"))
@@ -1015,11 +1006,17 @@ class PluginMetademandsField extends CommonDBChild
         }
         if ($koparams > 0) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
-            echo "<b>" . __('Warning : there are fields without parameters, please check', 'metademands') . "</b></div>";
+            echo "<b>" . __(
+                    'Warning : there are fields without parameters, please check',
+                    'metademands'
+                ) . "</b></div>";
         }
         if ($kocustom > 0) {
             echo "<div class='alert alert-important alert-warning d-flex'>";
-            echo "<b>" . __('Warning : there are fields without custom values, please check', 'metademands') . "</b></div>";
+            echo "<b>" . __(
+                    'Warning : there are fields without custom values, please check',
+                    'metademands'
+                ) . "</b></div>";
         }
 
         $fieldopt = new PluginMetademandsFieldOption();
@@ -1073,14 +1070,16 @@ class PluginMetademandsField extends CommonDBChild
                 echo "<td>";
 
                 if (!$fieldparameter->find(["plugin_metademands_fields_id" => $value['id']]) || ((isset($value['type'])
-                        && (in_array($value['type'], $allowed_customvalues_types) && ($value['item'] != "ITILCategory_Metademands"
+                            && (in_array(
+                                    $value['type'],
+                                    $allowed_customvalues_types
+                                ) && ($value['item'] != "ITILCategory_Metademands"
                                     && $value['item'] != "urgency"
                                     && $value['item'] != "mydevices"
                                     && $value['item'] != "impact"))
-                        || in_array($value['item'], $allowed_customvalues_items))
-                    && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
+                            || in_array($value['item'], $allowed_customvalues_items))
+                        && !$field_custom->find(["plugin_metademands_fields_id" => $value['id']]))) {
                     echo "<i class='fa fa-warning fa-1x' style='color: orange;'></i>";
-
                 }
                 echo "</td>";
                 echo "<td>";
@@ -1184,14 +1183,15 @@ class PluginMetademandsField extends CommonDBChild
                             if (isset($value['type'])
                                 && in_array($value['type'], $allowed_customvalues_types)
                                 || in_array($value['item'], $allowed_customvalues_items)) {
-
                                 $data['custom_values'] = [];
-                                if ($customs = $metademand_custom->find(["plugin_metademands_fields_id" => $value['id']], "rank")) {
+                                if ($customs = $metademand_custom->find(
+                                    ["plugin_metademands_fields_id" => $value['id']],
+                                    "rank"
+                                )) {
                                     if (count($customs) > 0) {
                                         $data['custom_values'] = $customs;
                                     }
                                 }
-
                             } else {
                                 $data['custom_values'] = $value['custom_values'] ?? [];
                             }
@@ -1326,6 +1326,10 @@ class PluginMetademandsField extends CommonDBChild
                 return PluginMetademandsInformation::getTypeName();
             case 'text':
                 return PluginMetademandsText::getTypeName();
+            case 'tel':
+                return PluginMetademandsTel::getTypeName();
+            case 'email':
+                return PluginMetademandsEmail::getTypeName();
             case 'textarea':
                 return PluginMetademandsTextarea::getTypeName();
             case 'dropdown_meta':
@@ -1344,6 +1348,8 @@ class PluginMetademandsField extends CommonDBChild
                 return PluginMetademandsYesno::getTypeName();
             case 'number':
                 return PluginMetademandsNumber::getTypeName();
+            case 'range':
+                return PluginMetademandsRange::getTypeName();
             case 'date':
                 return PluginMetademandsDate::getTypeName();
             case 'time':
@@ -1647,7 +1653,7 @@ class PluginMetademandsField extends CommonDBChild
      *
      * @return dropdown of items
      */
-    public static function dropdownFieldItems( $typefield, $param = [])
+    public static function dropdownFieldItems($typefield, $param = [])
     {
         global $PLUGIN_HOOKS;
 
@@ -1818,8 +1824,8 @@ class PluginMetademandsField extends CommonDBChild
     }
 
 
-    public static function getAllParamsFromField($field) {
-
+    public static function getAllParamsFromField($field)
+    {
         $metademand = new PluginMetademandsMetademand();
         $metademand_params = new PluginMetademandsFieldParameter();
         $field_custom = new PluginMetademandsFieldCustomvalue();
@@ -1869,34 +1875,32 @@ class PluginMetademandsField extends CommonDBChild
             'plugin_metademands_fields_id' => $field->getID(),
             'item' => $field->fields['item'],
             'type' => $field->fields['type'],
-            'row_display' => $metademand_params->fields['row_display']??0 ,
-            'hide_title' => $metademand_params->fields['hide_title']??0,
-            'is_basket' => $metademand_params->fields['is_basket']??0,
-            'color' => $metademand_params->fields['color']??"",
-            'icon' => $metademand_params->fields['icon']??"",
-            'is_mandatory' => $metademand_params->fields['is_mandatory']??0,
-            'used_by_ticket' => $metademand_params->fields['used_by_ticket']??0,
-            'used_by_child' => $metademand_params->fields['used_by_child']??0,
-            'use_richtext' => $metademand_params->fields['use_richtext']??0,
-            'default_use_id_requester' => $metademand_params->fields['default_use_id_requester']??0,
-            'default_use_id_requester_supervisor' => $metademand_params->fields['default_use_id_requester_supervisor']??0,
-            'readonly' => $metademand_params->fields['readonly']??0,
-            'max_upload' => $metademand_params->fields['max_upload']??0,
-            'regex' => $metademand_params->fields['regex']??0,
-            'use_future_date' => $metademand_params->fields['use_future_date']??0,
-            'use_date_now' => $metademand_params->fields['use_date_now']??0,
-            'additional_number_day' => $metademand_params->fields['additional_number_day']??0,
-            'display_type' => $metademand_params->fields['display_type']??0,
-            'informations_to_display' => $metademand_params->fields['informations_to_display']??['fullname'],
-            'link_to_user' => $metademand_params->fields["link_to_user"]??0,
-            'readonly' => $metademand_params->fields["readonly"]??0,
-            'hidden' => $metademand_params->fields["hidden"]??0,
+            'row_display' => $metademand_params->fields['row_display'] ?? 0,
+            'hide_title' => $metademand_params->fields['hide_title'] ?? 0,
+            'is_basket' => $metademand_params->fields['is_basket'] ?? 0,
+            'color' => $metademand_params->fields['color'] ?? "",
+            'icon' => $metademand_params->fields['icon'] ?? "",
+            'is_mandatory' => $metademand_params->fields['is_mandatory'] ?? 0,
+            'used_by_ticket' => $metademand_params->fields['used_by_ticket'] ?? 0,
+            'used_by_child' => $metademand_params->fields['used_by_child'] ?? 0,
+            'use_richtext' => $metademand_params->fields['use_richtext'] ?? 0,
+            'default_use_id_requester' => $metademand_params->fields['default_use_id_requester'] ?? 0,
+            'default_use_id_requester_supervisor' => $metademand_params->fields['default_use_id_requester_supervisor'] ?? 0,
+            'readonly' => $metademand_params->fields['readonly'] ?? 0,
+            'max_upload' => $metademand_params->fields['max_upload'] ?? 0,
+            'regex' => $metademand_params->fields['regex'] ?? 0,
+            'use_future_date' => $metademand_params->fields['use_future_date'] ?? 0,
+            'use_date_now' => $metademand_params->fields['use_date_now'] ?? 0,
+            'additional_number_day' => $metademand_params->fields['additional_number_day'] ?? 0,
+            'display_type' => $metademand_params->fields['display_type'] ?? 0,
+            'informations_to_display' => $metademand_params->fields['informations_to_display'] ?? ['fullname'],
+            'link_to_user' => $metademand_params->fields["link_to_user"] ?? 0,
+            'hidden' => $metademand_params->fields["hidden"] ?? 0,
             'custom_values' => $custom_values,
             'default_values' => $default_values,
         ];
 
         return $params;
-
     }
 
     /**
@@ -1982,6 +1986,8 @@ class PluginMetademandsField extends CommonDBChild
                         $comment = $data['comment'];
                     }
                     if ($data['type'] != "text"
+                        && $data['type'] != "tel"
+                        && $data['type'] != "email"
                         && !empty($comment)) {
                         $display = true;
                         if ($data['use_richtext'] == 0) {
@@ -1989,7 +1995,8 @@ class PluginMetademandsField extends CommonDBChild
                         }
                         if ($display) {
                             echo "&nbsp;";
-                            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['display' => false]);
+                            echo Html::showToolTip(Glpi\RichText\RichText::getSafeHtml($comment), ['awesome-class' => 'fa-info-circle',
+                                'display' => false]);
                         }
                     }
                     echo "<span class='metademands_wizard_red' id='metademands_wizard_red" . $data['id'] . "'>";
@@ -2101,6 +2108,12 @@ class PluginMetademandsField extends CommonDBChild
             case 'text':
                 PluginMetademandsText::showWizardField($data, $namefield, $value, $on_order);
                 break;
+            case 'tel':
+                PluginMetademandsTel::showWizardField($data, $namefield, $value, $on_order);
+                break;
+            case 'email':
+                PluginMetademandsEmail::showWizardField($data, $namefield, $value, $on_order);
+                break;
             case 'textarea':
                 PluginMetademandsTextarea::showWizardField($data, $namefield, $value, $on_order);
                 break;
@@ -2139,6 +2152,9 @@ class PluginMetademandsField extends CommonDBChild
                 break;
             case 'number':
                 PluginMetademandsNumber::showWizardField($data, $namefield, $value, $on_order);
+                break;
+            case 'range':
+                PluginMetademandsRange::showWizardField($data, $namefield, $value, $on_order);
                 break;
             case 'date':
                 PluginMetademandsDate::showWizardField($data, $namefield, $value, $on_order);
@@ -2899,7 +2915,7 @@ class PluginMetademandsField extends CommonDBChild
         $field_custom->getFromDB($field);
         if ($type == "name") {
             $field = "custom" . $field_custom->fields['rank'];
-        } else if ($type == "comment") {
+        } elseif ($type == "comment") {
             $field = "commentcustom" . $field_custom->fields['rank'];
         }
 

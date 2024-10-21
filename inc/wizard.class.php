@@ -2601,7 +2601,6 @@ class PluginMetademandsWizard extends CommonDBTM
                                    }
                                 });
                         } else {
-                        
                                 $.ajax({
                                    url: '" . PLUGIN_METADEMANDS_WEBDIR . "/ajax/addform.php',
                                    type: 'POST',
@@ -2760,12 +2759,19 @@ class PluginMetademandsWizard extends CommonDBTM
                         
                      // A loop that checks every input field in the current tab:
                      for (i = 0; i < y.length; i++) {
-                  
+    
                         // If a field is empty...
                         fieldid = y[i].id;
                         fieldname = y[i].name;
                         fieldtype = y[i].type;
 
+                        if((fieldtype == 'email' || fieldtype == 'tel') 
+                        && document.getElementById(fieldid) != null
+                        && !document.getElementById(fieldid).checkValidity()){
+                            document.getElementById(fieldid).reportValidity();
+                            return false;
+                        }
+    
                         fieldmandatory = y[i].required;
                         if (fieldname != '_uploader_filename[]'
                            && fieldname != '_uploader_content[]'
@@ -2898,7 +2904,27 @@ class PluginMetademandsWizard extends CommonDBTM
                                ko++;
                             }
                         }
+
+                         if (y[i].type == 'range' && fieldmandatory == true) {
+                               minimal_mandatory = y[i].getAttribute('minimal_mandatory');
+                              var fieldname = y[i].name;
+                              var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
+                              if (res != 'none' && parseInt(y[i].value) < parseInt(minimal_mandatory) ) {
+                                 $('[name=\"' + fieldname + '\"]').addClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').attr('required', 'required');
+                                 var newfieldname = fieldname.match(/\[(.*?)\]/);
+                                 if (newfieldname) {
+                                    mandatory.push(newfieldname[1]);
+                                 }
+                                 ko++;
+                              } else {
+                                 $('[name=\"' + fieldname + '\"]').removeClass('invalid');
+                                 $('[name=\"' + fieldname + '\"]').removeAttr('required');
+                              }
+                  
+                           }
                      }
+                     
                   
                      //for textarea
                      if (w.length > 0) {
@@ -2985,6 +3011,7 @@ class PluginMetademandsWizard extends CommonDBTM
                   
                            } else if (isnumber == 'isnumber' && ismultiplenumber == null && fieldmandatory == true) {
                               // add an 'invalid' class to the field:
+                              console.log('ici');
                               var fieldname = z[i].name;
                               var res = $('[name=\"' + fieldname + '\"]').closest('[bloc-id]').css('display');
                               if (res != 'none' && parseInt(z[i].value) < parseInt(minimal_mandatory) ) {
@@ -3581,6 +3608,20 @@ class PluginMetademandsWizard extends CommonDBTM
                         $msg[] = $result['msg'];
                     }
                     break;
+                case 'tel':
+                    $result = PluginMetademandsTel::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'email':
+                    $result = PluginMetademandsEmail::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
                 case 'textarea':
                     $result = PluginMetademandsTextarea::checkMandatoryFields($value, $fields);
                     if ($result['checkKo'] == 1) {
@@ -3633,6 +3674,13 @@ class PluginMetademandsWizard extends CommonDBTM
                     break;
                 case 'number':
                     $result = PluginMetademandsNumber::checkMandatoryFields($value, $fields);
+                    if ($result['checkKo'] == 1) {
+                        $checkKo[] = $result['checkKo'];
+                        $msg[] = $result['msg'];
+                    }
+                    break;
+                case 'range':
+                    $result = PluginMetademandsRange::checkMandatoryFields($value, $fields);
                     if ($result['checkKo'] == 1) {
                         $checkKo[] = $result['checkKo'];
                         $msg[] = $result['msg'];
@@ -3756,7 +3804,7 @@ class PluginMetademandsWizard extends CommonDBTM
                 && !empty($value["regex"])) {
                 if ((!empty($fields['value']) && $value['is_mandatory'] == 0) || $value['is_mandatory'] == 1) {
                     if (!preg_match('/' . $value['regex'] . '/', $fields['value'])) {
-                        $msg3[] = $value['name'];
+                        $msg3[] = Toolbox::stripslashes_deep($value['name']);
                         $checkRegex[] = 1;
                     }
                 }

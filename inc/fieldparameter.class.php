@@ -47,6 +47,8 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         'title-block',
         'informations',
         'text',
+        'tel',
+        'email',
         'textarea',
         'dropdown_meta',
         'dropdown_object',
@@ -56,6 +58,7 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         'yesno',
         'radio',
         'number',
+        'range',
         'basket',
         'date',
         'time',
@@ -99,10 +102,9 @@ class PluginMetademandsFieldParameter extends CommonDBTM
 //    }
 
 
-
     /**
      * @param CommonGLPI $item
-     * @param int        $withtemplate
+     * @param int $withtemplate
      *
      * @return string
      */
@@ -111,7 +113,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         $nb = self::getNumberOfParametersForItem($item);
         return self::createTabEntry(self::getTypeName(Session::getPluralNumber()), $nb);
     }
-
 
 
     /**
@@ -301,6 +302,12 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 case 'text':
                     echo PluginMetademandsText::showFieldParameters($params);
                     break;
+                case 'tel':
+                    echo PluginMetademandsTel::showFieldParameters($params);
+                    break;
+                case 'email':
+                    echo PluginMetademandsEmail::showFieldParameters($params);
+                    break;
                 case 'textarea':
                     echo PluginMetademandsTextarea::showFieldParameters($params);
                     break;
@@ -323,6 +330,8 @@ class PluginMetademandsFieldParameter extends CommonDBTM
                 case 'yesno':
                     break;
                 case 'number':
+                    break;
+                case 'range':
                     break;
                 case 'basket':
                     break;
@@ -375,8 +384,6 @@ class PluginMetademandsFieldParameter extends CommonDBTM
         if ($params['type'] != "title"
             && $params['type'] != "title-block"
             && $params['type'] != "informations") {
-
-
             if ($params['type'] != "link") {
                 echo "<td>" . __('Mandatory field') . "</td>";
                 echo "<td>";
@@ -427,14 +434,16 @@ class PluginMetademandsFieldParameter extends CommonDBTM
             && $params['type'] != "title-block"
             && $params['type'] != "informations"
             && $params['type'] != 'text'
+            && $params['type'] != 'tel'
+            && $params['type'] != 'email'
             && $params['type'] != 'textarea'
             && $params['type'] != 'checkbox'
             && $params['type'] != 'yesno'
             && $params['type'] != 'radio'
             && $params['type'] != 'number'
+            && $params['type'] != 'range'
             && $params['type'] != 'basket'
             && $params['type'] != 'link') {
-
             echo "<td>";
             echo __('Use this field as object field', 'metademands');
             echo "</td>";

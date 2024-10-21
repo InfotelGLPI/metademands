@@ -1399,6 +1399,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                             case 'file':
                                             case 'date':
                                             case 'number':
+                                            case 'range':
                                             case 'tel':
                                             case 'email':
                                                 jQuery(this).val('');
@@ -1553,6 +1554,7 @@ class PluginMetademandsDropdownmultiple extends CommonDBTM
                                             case 'file':
                                             case 'date':
                                             case 'number':
+                                            case 'range':
                                             case 'tel':
                                             case 'email':
                                                 jQuery(this).val('');

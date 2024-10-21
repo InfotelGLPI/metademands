@@ -937,7 +937,7 @@ class PluginMetademandsMetademand extends CommonDBTM
      */
     private static function getObjectTypes()
     {
-        $types = [];
+        $types = [Dropdown::EMPTY_VALUE];
         foreach (self::getTypes(true) as $type) {
             $item = new $type();
             $types[$type] = $item->getTypeName(1);
@@ -2149,7 +2149,10 @@ JAVASCRIPT
 
                         // ignore used_by_ticket when used to autofill text field
                         if ($fields_values['used_by_ticket'] > 0
-                            && !($fields_values['type'] == 'text' && $fields_values['link_to_user'] > 0)) {
+                            && !(($fields_values['type'] == 'text'
+                                || $fields_values['type'] == 'tel'
+                                    || $fields_values['type'] == 'email')
+                                && $fields_values['link_to_user'] > 0)) {
 
                             foreach ($values_form as $k => $v) {
                                 if (isset($v[$id])) {
@@ -2368,6 +2371,7 @@ JAVASCRIPT
                                 return false;
                             }
                             $input['_actors'] = [];
+
                             $parent_tickets_id = $object->add($input);
                         }
 
@@ -2757,8 +2761,19 @@ JAVASCRIPT
                                             do {
                                                 $match = self::getBetween($l['content'], '[', ']');
                                                 if (empty($match) && $l['content'] != null) {
+                                                    //TODO all $l['content'];
+                                                    $l['content'] = Glpi\RichText\RichText::getTextFromHtml($l['content']);
+
                                                     $explodeContent = explode("#", $l['content']);
                                                     foreach ($explodeContent as $content) {
+
+//                                                        $field_object = new PluginMetademandsField();
+//                                                        if ($field_object->getFromDB($content)) {
+//                                                            if ($field_object->fields['type'] == "informations") {
+//                                                                $values['fields'][$content] = $field_object->fields['label2'];
+//                                                            }
+//                                                        }
+
                                                         if (isset($values['fields'][$content])) {
                                                             $field = new PluginMetademandsField();
                                                             $field->getFromDB($content);
@@ -2885,8 +2900,17 @@ JAVASCRIPT
                                                 $l['content'] = str_replace("@>", "]", $l['content']);
                                             }
                                             if ($l['content'] != null) {
+
+                                                $l['content'] = Glpi\RichText\RichText::getTextFromHtml($l['content']);
                                                 $explodeContent = explode("#", $l['content']);
                                                 foreach ($explodeContent as $content) {
+
+//                                                    $field_object = new PluginMetademandsField();
+//                                                    if ($field_object->getFromDB($content)) {
+//                                                        if ($field_object->fields['type'] == "informations") {
+//                                                            $values['fields'][$content] = $field_object->fields['label2'];
+//                                                        }
+//                                                    }
                                                     if (isset($values['fields'][$content])) {
                                                         $field = new PluginMetademandsField();
                                                         $field->getFromDB($content);
@@ -3202,8 +3226,17 @@ JAVASCRIPT
                                                 $l['content'] = str_replace("@>", "]", $l['content']);
                                             }
                                             if ($l['content'] != null) {
+                                                $l['content'] = Glpi\RichText\RichText::getTextFromHtml($l['content']);
                                                 $explodeContent = explode("#", $l['content']);
                                                 foreach ($explodeContent as $content) {
+
+//                                                    $field_object = new PluginMetademandsField();
+//                                                    if ($field_object->getFromDB($content)) {
+//                                                        if ($field_object->fields['type'] == "informations") {
+//                                                            $values['fields'][$content] = $field_object->fields['label2'];
+//                                                        }
+//                                                    }
+
                                                     if (isset($values['fields'][$content])) {
                                                         $field = new PluginMetademandsField();
                                                         $field->getFromDB($content);
@@ -3490,8 +3523,16 @@ JAVASCRIPT
                                             $match = self::getBetween($l['content'], '[', ']');
                                             if (empty($match)) {
                                                 if ($l['content'] != null) {
+                                                    $l['content'] = Glpi\RichText\RichText::getTextFromHtml($l['content']);
                                                     $explodeContent = explode("#", $l['content']);
                                                     foreach ($explodeContent as $content) {
+
+//                                                        $field_object = new PluginMetademandsField();
+//                                                        if ($field_object->getFromDB($content)) {
+//                                                            if ($field_object->fields['type'] == "informations") {
+//                                                                $values['fields'][$content] = $field_object->fields['label2'];
+//                                                            }
+//                                                        }
                                                         if (isset($values['fields'][$content])) {
                                                             $field = new PluginMetademandsField();
                                                             $field->getFromDB($content);
@@ -3606,8 +3647,17 @@ JAVASCRIPT
                                         $l['content'] = str_replace("<@", "[", $l['content']);
                                         $l['content'] = str_replace("@>", "]", $l['content']);
 
+                                        $l['content'] = Glpi\RichText\RichText::getTextFromHtml($l['content']);
                                         $explodeContent = explode("#", $l['content']);
                                         foreach ($explodeContent as $content) {
+
+//                                            $field_object = new PluginMetademandsField();
+//                                            if ($field_object->getFromDB($content)) {
+//                                                if ($field_object->fields['type'] == "informations") {
+//                                                    $values['fields'][$content] = $field_object->fields['label2'];
+//                                                }
+//                                            }
+
                                             if (isset($values['fields'][$content])) {
                                                 $field = new PluginMetademandsField();
                                                 $field->getFromDB($content);
@@ -3872,6 +3922,9 @@ JAVASCRIPT
                     if ($field['type'] == 'number' && $field['value'] == "0") {
                         continue;
                     }
+                    if ($field['type'] == 'range' && $field['value'] == "0") {
+                        continue;
+                    }
                     if ($field['type'] == 'checkbox' && ($field['value'] == "" || $field['value'] == "0")) {
                         continue;
                     }
@@ -4007,6 +4060,7 @@ JAVASCRIPT
             && $field['value'] != 'NULL'
             || $field['type'] == 'title'
             || $field['type'] == 'title-block'
+            || $field['type'] == 'informations'
             || $field['type'] == 'radio'
             || $field['type'] == 'signature'
             || $field['type'] == 'basket'
@@ -4019,6 +4073,13 @@ JAVASCRIPT
                     break;
                 case 'title':
                     PluginMetademandsTitle::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang, $is_order);
+                    break;
+                case 'informations':
+                    if ($return_value == true) {
+                        return PluginMetademandsInformation::getFieldValue($field);
+                    } else {
+                        PluginMetademandsInformation::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    }
                     break;
                 case 'dropdown':
                     if ($field['value'] != 0) {
@@ -4072,6 +4133,20 @@ JAVASCRIPT
                         return PluginMetademandsText::getFieldValue($field);
                     } else {
                         PluginMetademandsText::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    }
+                    break;
+                case 'tel':
+                    if ($return_value == true) {
+                        return PluginMetademandsTel::getFieldValue($field);
+                    } else {
+                        PluginMetademandsTel::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    }
+                    break;
+                case 'email':
+                    if ($return_value == true) {
+                        return PluginMetademandsEmail::getFieldValue($field);
+                    } else {
+                        PluginMetademandsEmail::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'checkbox':
@@ -4129,6 +4204,13 @@ JAVASCRIPT
                         return PluginMetademandsNumber::getFieldValue($field);
                     } else {
                         PluginMetademandsNumber::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
+                    }
+                    break;
+                case 'range':
+                    if ($return_value == true) {
+                        return PluginMetademandsRange::getFieldValue($field);
+                    } else {
+                        PluginMetademandsRange::displayFieldItems($result, $formatAsTable, $style_title, $label, $field, $return_value, $lang);
                     }
                     break;
                 case 'yesno':
@@ -4997,8 +5079,16 @@ JAVASCRIPT
                                 $match = self::getBetween($l['content'], '[', ']');
                                 if (empty($match)) {
                                     if ($l['content'] != null) {
+                                        $l['content'] = Glpi\RichText\RichText::getTextFromHtml($l['content']);
                                         $explodeContent = explode("#", $l['content']);
                                         foreach ($explodeContent as $content) {
+
+//                                            $field_object = new PluginMetademandsField();
+//                                            if ($field_object->getFromDB($content)) {
+//                                                if ($field_object->fields['type'] == "informations") {
+//                                                    $values['fields'][$content] = $field_object->fields['label2'];
+//                                                }
+//                                            }
                                             if (isset($values['fields'][$content])) {
                                                 $field = new PluginMetademandsField();
                                                 $field->getFromDB($content);
@@ -5105,8 +5195,16 @@ JAVASCRIPT
                                 $l['content'] = str_replace("<@", "[", $l['content']);
                                 $l['content'] = str_replace("@>", "]", $l['content']);
 
+                                $l['content'] = Glpi\RichText\RichText::getTextFromHtml($l['content']);
                                 $explodeContent = explode("#", $l['content']);
                                 foreach ($explodeContent as $content) {
+
+//                                    $field_object = new PluginMetademandsField();
+//                                    if ($field_object->getFromDB($content)) {
+//                                        if ($field_object->fields['type'] == "informations") {
+//                                            $values['fields'][$content] = $field_object->fields['label2'];
+//                                        }
+//                                    }
                                     if (isset($values['fields'][$content])) {
                                         $field = new PluginMetademandsField();
                                         $field->getFromDB($content);

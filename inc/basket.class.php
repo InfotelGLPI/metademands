@@ -804,6 +804,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                                                 case 'file':
                                                                 case 'date':
                                                                 case 'number':
+                                                                case 'range':
                                                                 case 'tel':
                                                                 case 'email':
                                                                     jQuery(this).val('');
@@ -866,6 +867,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                     case 'file':
                                     case 'date':
                                     case 'number':
+                                     case 'range':
                                     case 'tel':
                                     case 'email':
                                         jQuery(this).val('');
@@ -1002,6 +1004,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                        case 'file':
                                        case 'date':
                                        case 'number':
+                                        case 'range':
                                        case 'tel':
                                        case 'email':
                                            jQuery(this).val('');
@@ -1063,6 +1066,7 @@ class PluginMetademandsBasket extends CommonDBTM
                                            case 'file':
                                            case 'date':
                                            case 'number':
+                                            case 'range':
                                            case 'tel':
                                            case 'email':
                                                jQuery(this).val('');
@@ -1201,6 +1205,12 @@ class PluginMetademandsBasket extends CommonDBTM
                     case 'text':
                         echo PluginMetademandsText::getFieldValue($values);
                         break;
+                    case 'tel':
+                        echo PluginMetademandsTel::getFieldValue($values);
+                        break;
+                    case 'email':
+                        echo PluginMetademandsEmail::getFieldValue($values);
+                        break;
                     case 'checkbox':
 //                        $values['custom_values'] = $fieldmeta->fields['custom'];
 //                        $values['id'] = $id;
@@ -1228,6 +1238,9 @@ class PluginMetademandsBasket extends CommonDBTM
                         break;
                     case 'number':
                         echo PluginMetademandsNumber::getFieldValue($values);
+                        break;
+                    case 'range':
+                        echo PluginMetademandsRange::getFieldValue($values);
                         break;
                     case 'yesno':
                         echo PluginMetademandsYesno::getFieldValue($values);

@@ -80,6 +80,7 @@ if (isset($_POST["add"])) {
 
     if ($_POST['type'] == "link"
         || $_POST['type'] == "number"
+        || $_POST['type'] == "range"
         || $_POST['type'] == "basket") {
         $input["custom"]  = PluginMetademandsFieldParameter::_serialize($_POST['custom']);
         $input["plugin_metademands_fields_id"]  = $_POST['plugin_metademands_fields_id'];

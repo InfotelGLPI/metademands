@@ -558,6 +558,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                     if ($elt['type'] == 'number' && $fields[$elt['id']] == "0") {
                         continue;
                     }
+                    if ($elt['type'] == 'range' && $fields[$elt['id']] == "0") {
+                        continue;
+                    }
                     if ($elt['type'] == 'checkbox' && ($fields[$elt['id']] == "" || $fields[$elt['id']] == "0")) {
                         continue;
                     }
@@ -610,7 +613,10 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                             break;
 
                         case 'text':
+                        case 'tel':
+                        case 'email':
                         case 'number':
+                        case 'range':
                             $value = $fields[$elt['id']];
                             $value = Toolbox::stripslashes_deep($value);
                             if ($value != null) {
