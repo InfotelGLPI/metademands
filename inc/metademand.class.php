@@ -2445,7 +2445,7 @@ JAVASCRIPT
                                 }
 
                                 $comm = Dropdown::getDropdownName("glpi_entities", $_SESSION['glpiactive_entity']);
-                                $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm);
+                                $docPdf = new PluginMetaDemandsMetaDemandPdf($n, $comm, $parent_tickets_id);
                                 if ($metademand->fields['is_order'] == 0) {
                                     $values_form['0'] = isset($values) ? $values : [];
                                     $docPdf->drawPdf($line['form'], $values_form, $metademand->getID(), $parent_tickets_id, false);

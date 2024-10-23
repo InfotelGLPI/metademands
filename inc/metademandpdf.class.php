@@ -66,12 +66,13 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
      * @param $title
      * @param $subtitle
      */
-    public function __construct($title, $subtitle)
+    public function __construct($title, $subtitle, $id)
     {
         parent::__construct('P', 'mm', 'A4');
 
         $this->title = $title;
         $this->subtitle = $subtitle;
+        $this->id = $id;
         $this->page_width = $this->big_width_cell - ($this->margin_left * 2);
         $this->title_width = $this->page_width;
         $quarter = ($this->page_width / 4);
@@ -211,8 +212,9 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
         $target = 20;
         list($width, $height, $type, $attr) = getimagesize($image);
         list($width, $height) = $this->imageResize($width, $height, $target);
-        $this->CellTitleValue($largeurCoteTitre, 20, '', 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
+
         if (!Plugin::isPluginActive('orderfollowup')) {
+            $this->CellTitleValue($largeurCoteTitre, 20, $this->id, 'TBL', 'L', 'grey', 0, $this->font_size, 'black');
             $this->Image(
                 $image,
                 $this->margin_left + 5,
@@ -220,6 +222,8 @@ class PluginMetaDemandsMetaDemandPdf extends Fpdf\Fpdf
                 $width,
                 $height
             ); // x, y, w, h
+        } else {
+            $this->CellTitleValue($largeurCoteTitre, 20, "ID : ".$this->id, 'TBL', 'C', 'grey', 0, $this->font_size, 'black');
         }
         if (Plugin::isPluginActive('orderfollowup')) {
             $largeurCaseTitre += 85;
